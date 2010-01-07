@@ -175,7 +175,6 @@ public class AccessibleTest {
          * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
          *      java.lang.Object)
          */
-        @Override
         public void change(Object bean, String propertyName, String oldValue, String newValue) {
             property = propertyName;
         }

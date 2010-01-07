@@ -15,10 +15,7 @@
  */
 package ezbean.performance;
 
-
 import java.util.concurrent.Callable;
-
-
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,7 +23,6 @@ import org.junit.Test;
 import ezbean.I;
 import ezbean.benchmark.AbstractMicroBenchmarkTest;
 import ezbean.model.ClassUtil;
-
 
 /**
  * DOCUMENT.
@@ -47,7 +43,6 @@ public class ConstructorInjectionBenchmark extends AbstractMicroBenchmarkTest {
             /**
              * @see java.util.concurrent.Callable#call()
              */
-            @Override
             public Object call() throws Exception {
                 return I.make(ConstructorInjection.class);
             }

@@ -309,7 +309,6 @@ class Module implements ClassVisitor {
      * @see org.objectweb.asm.ClassAdapter#visit(int, int, java.lang.String, java.lang.String,
      *      java.lang.String, java.lang.String[])
      */
-    @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         // exclude a class file which is in invalid location
         if (!name.equals(fqcn.replace('.', '/'))) {
@@ -346,7 +345,6 @@ class Module implements ClassVisitor {
     /**
      * @see org.objectweb.asm.ClassAdapter#visitAnnotation(java.lang.String, boolean)
      */
-    @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         // exclude runtime invisible
         if (visible) {
@@ -367,7 +365,6 @@ class Module implements ClassVisitor {
      * @see org.objectweb.asm.ClassAdapter#visitField(int, java.lang.String, java.lang.String,
      *      java.lang.String, java.lang.Object)
      */
-    @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         // all needed information was scanned, stop parsing
         throw STOP;
@@ -377,7 +374,6 @@ class Module implements ClassVisitor {
      * @see org.objectweb.asm.ClassAdapter#visitMethod(int, java.lang.String, java.lang.String,
      *      java.lang.String, java.lang.String[])
      */
-    @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         // all needed information was scanned, stop parsing
         throw STOP;
@@ -387,7 +383,6 @@ class Module implements ClassVisitor {
      * @see org.objectweb.asm.ClassAdapter#visitInnerClass(java.lang.String, java.lang.String,
      *      java.lang.String, int)
      */
-    @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         // all needed information was scanned, stop parsing
         throw STOP;
@@ -397,7 +392,6 @@ class Module implements ClassVisitor {
      * @see org.objectweb.asm.ClassAdapter#visitOuterClass(java.lang.String, java.lang.String,
      *      java.lang.String)
      */
-    @Override
     public void visitOuterClass(String owner, String name, String desc) {
         // skip for annotation
     }
@@ -405,7 +399,6 @@ class Module implements ClassVisitor {
     /**
      * @see org.objectweb.asm.ClassAdapter#visitEnd()
      */
-    @Override
     public void visitEnd() {
         // finish scanning
     }
@@ -413,7 +406,6 @@ class Module implements ClassVisitor {
     /**
      * @see org.objectweb.asm.ClassAdapter#visitSource(java.lang.String, java.lang.String)
      */
-    @Override
     public void visitSource(String source, String debug) {
         // skip for annotation
     }
@@ -421,7 +413,6 @@ class Module implements ClassVisitor {
     /**
      * @see org.objectweb.asm.ClassAdapter#visitAttribute(org.objectweb.asm.Attribute)
      */
-    @Override
     public void visitAttribute(Attribute attr) {
         // skip for annotation
     }

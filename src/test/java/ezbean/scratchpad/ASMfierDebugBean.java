@@ -75,7 +75,6 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
     /**
      * @see ezbean.Accessible#ezAccess(int, java.lang.Object)
      */
-    @Override
     public Object ezAccess(int id, Object params) {
         switch (id) {
         default:
@@ -100,7 +99,6 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
     /**
      * @see ezbean.Accessible#ezCall(int, boolean, java.lang.Object[])
      */
-    @Override
     public Object ezCall(int id, Object... params) {
         switch (id) {
         default:
@@ -132,7 +130,6 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
     /**
      * @see ezbean.Accessible#ezContext()
      */
-    @Override
     public Context ezContext() {
         return null;
     }

@@ -90,7 +90,6 @@ public class Property implements Comparable<Property> {
     /**
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    @Override
     public int compareTo(Property o) {
         // compare type
         if (isAttribute() != o.isAttribute()) {
