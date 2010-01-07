@@ -26,13 +26,13 @@ import ezbean.model.ClassUtil;
 /**
  * @version 2009/12/31 14:38:51
  */
-public class ClassModule extends EzMethodRule {
+public class ClassModule extends EzRule {
 
     /** The class module. */
     public final File moduleFile = FileSystem.createTemporary();
 
     /**
-     * @see ezbean.unit.EzMethodRule#beforeClass()
+     * @see ezbean.unit.EzRule#beforeClass()
      */
     @Override
     protected void beforeClass() throws Exception {
@@ -56,7 +56,7 @@ public class ClassModule extends EzMethodRule {
     }
 
     /**
-     * @see ezbean.unit.EzMethodRule#before(java.lang.reflect.Method)
+     * @see ezbean.unit.EzRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -65,7 +65,7 @@ public class ClassModule extends EzMethodRule {
     }
 
     /**
-     * @see ezbean.unit.EzMethodRule#after(java.lang.reflect.Method)
+     * @see ezbean.unit.EzRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {

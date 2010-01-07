@@ -17,31 +17,31 @@ package ezbean.module;
 
 import static org.junit.Assert.*;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.I;
 import ezbean.ClassLoadListener;
+import ezbean.I;
 import ezbean.Manageable;
 import ezbean.Singleton;
 import ezbean.sample.MarkerInterface1;
 import ezbean.sample.MarkerInterface2;
 import ezbean.sample.RuntimeAnnotation1;
 
-
 /**
  * DOCUMENT.
  * 
  * @version 2008/06/20 15:43:04
  */
-public class ClassLoadListenerTest extends ModuleTestCase {
+public class ClassLoadListenerTest {
+
+    @Rule
+    public static ModuleTestRule registry = new ModuleTestRule();
 
     /** The listener. */
     private MarkerListener markerListener = I.make(MarkerListener.class);
@@ -78,7 +78,7 @@ public class ClassLoadListenerTest extends ModuleTestCase {
      */
     @Test
     public void testLoad1() {
-        File moduleFile = resolveExternalJar();
+        File moduleFile = registry.jar;
 
         registry.load(markerListener.getClass());
 
@@ -101,7 +101,7 @@ public class ClassLoadListenerTest extends ModuleTestCase {
      */
     @Test
     public void testLoad2() {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         registry.load(listener.getClass());
 
@@ -124,7 +124,7 @@ public class ClassLoadListenerTest extends ModuleTestCase {
      */
     @Test
     public void testLoad3() {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         registry.load(frozenListener.getClass());
 
@@ -147,7 +147,7 @@ public class ClassLoadListenerTest extends ModuleTestCase {
      */
     @Test
     public void testLoad7() {
-        File moduleFile = resolveExternalJar();
+        File moduleFile = registry.jar;
 
         registry.load(markerListener.getClass());
 
@@ -170,7 +170,7 @@ public class ClassLoadListenerTest extends ModuleTestCase {
      */
     @Test
     public void testLoad8() {
-        File moduleFile = resolveExternalJar();
+        File moduleFile = registry.jar;
 
         registry.load(frozenListener.getClass());
 
@@ -193,7 +193,7 @@ public class ClassLoadListenerTest extends ModuleTestCase {
      */
     @Test
     public void testLoad9() {
-        File moduleFile = resolveExternalJar();
+        File moduleFile = registry.jar;
 
         registry.load(listener.getClass());
 
@@ -216,7 +216,7 @@ public class ClassLoadListenerTest extends ModuleTestCase {
      */
     @Test
     public void testLoad10() {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         registry.load(annotationListener.getClass());
 
@@ -236,7 +236,7 @@ public class ClassLoadListenerTest extends ModuleTestCase {
 
     @Test
     public void testLoad11() {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         registry.load(extendedListener.getClass());
 

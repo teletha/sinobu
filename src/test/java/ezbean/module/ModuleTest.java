@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
@@ -38,14 +39,17 @@ import ezbean.sample.SourceAnnotation;
  * 
  * @version 2008/11/22 17:28:56
  */
-public class ModuleTest extends ModuleTestCase {
+public class ModuleTest {
+
+    @Rule
+    public static ModuleTestRule registry = new ModuleTestRule();
 
     /**
      * Test method for {@link ezbean.module.Module#getModuleFile()}.
      */
     @Test
     public void testGetModuleFile() {
-        File moduleFile = resolveExternal();
+        File moduleFile = registry.dir;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -58,7 +62,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testEzbeanModuleLoader() {
-        File moduleFile = resolveExternal();
+        File moduleFile = registry.dir;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -82,7 +86,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testFindProviders1() throws Exception {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -109,7 +113,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testFindProviders2() throws Exception {
-        File moduleFile = resolveExternalJar();
+        File moduleFile = registry.jar;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -134,7 +138,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testFindProviders3() {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -168,7 +172,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testFindProviders4() throws Exception {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -198,7 +202,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testFindProviders5() throws Exception {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -226,7 +230,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testFindProviders6() throws Exception {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -245,7 +249,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testFindProviders7() throws Exception {
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
@@ -264,7 +268,7 @@ public class ModuleTest extends ModuleTestCase {
      */
     @Test
     public void testModuleInModule() throws Exception {
-        File moduleFile = resolveExternalInline();
+        File moduleFile = registry.nest;
         Module module = new Module(moduleFile);
         assertNotNull(module);
 

@@ -17,22 +17,21 @@ package ezbean.module;
 
 import static org.junit.Assert.*;
 
-
 import java.io.File;
 import java.util.List;
 
-
-
+import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.module.Module;
 import ezbean.sample.MarkerInterface1;
-
 
 /**
  * @version 2009/12/23 13:20:51
  */
-public class ModuleRegistryTest extends ModuleTestCase {
+public class ModuleRegistryTest {
+
+    @Rule
+    public static ModuleTestRule registry = new ModuleTestRule();
 
     /**
      * Test method for {@link ezbean.module.ModuleRegistry#load(java.io.File, boolean)}.
@@ -40,7 +39,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
     @Test
     public void testLoad1() {
         assertEquals(0, registry.modules.size());
-        registry.load(resolveExternal());
+        registry.load(registry.dir);
         assertEquals(1, registry.modules.size());
     }
 
@@ -50,7 +49,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
     @Test
     public void testLoad2() {
         assertEquals(0, registry.modules.size());
-        registry.load(resolveExternalJar());
+        registry.load(registry.jar);
         assertEquals(1, registry.modules.size());
     }
 
@@ -60,7 +59,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
     @Test
     public void testLoad3() {
         assertEquals(0, registry.modules.size());
-        registry.load(resolveExternalZip());
+        registry.load(registry.zip);
         assertEquals(1, registry.modules.size());
     }
 
@@ -70,13 +69,13 @@ public class ModuleRegistryTest extends ModuleTestCase {
     @Test
     public void testLoad4() {
         assertEquals(0, registry.modules.size());
-        registry.load(resolveExternal());
+        registry.load(registry.dir);
         assertEquals(1, registry.modules.size());
 
-        registry.load(resolveExternalJar());
+        registry.load(registry.jar);
         assertEquals(2, registry.modules.size());
 
-        registry.load(resolveExternalZip());
+        registry.load(registry.zip);
         assertEquals(3, registry.modules.size());
     }
 
@@ -106,13 +105,13 @@ public class ModuleRegistryTest extends ModuleTestCase {
     @Test
     public void testReload1() {
         assertEquals(0, registry.modules.size());
-        registry.load(resolveExternal());
+        registry.load(registry.dir);
         assertEquals(1, registry.modules.size());
 
-        registry.load(resolveExternal());
+        registry.load(registry.dir);
         assertEquals(1, registry.modules.size());
 
-        registry.load(resolveExternal());
+        registry.load(registry.dir);
         assertEquals(1, registry.modules.size());
     }
 
@@ -122,13 +121,13 @@ public class ModuleRegistryTest extends ModuleTestCase {
     @Test
     public void testReload2() {
         assertEquals(0, registry.modules.size());
-        registry.load(resolveExternalJar());
+        registry.load(registry.jar);
         assertEquals(1, registry.modules.size());
 
-        registry.load(resolveExternalJar());
+        registry.load(registry.jar);
         assertEquals(1, registry.modules.size());
 
-        registry.load(resolveExternalJar());
+        registry.load(registry.jar);
         assertEquals(1, registry.modules.size());
     }
 
@@ -138,13 +137,13 @@ public class ModuleRegistryTest extends ModuleTestCase {
     @Test
     public void testReload3() {
         assertEquals(0, registry.modules.size());
-        registry.load(resolveExternalZip());
+        registry.load(registry.zip);
         assertEquals(1, registry.modules.size());
 
-        registry.load(resolveExternalZip());
+        registry.load(registry.zip);
         assertEquals(1, registry.modules.size());
 
-        registry.load(resolveExternalZip());
+        registry.load(registry.zip);
         assertEquals(1, registry.modules.size());
     }
 
@@ -154,7 +153,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
     @Test
     public void testReload4() {
         // as relative
-        File moduleFileRelative = resolveExternal();
+        File moduleFileRelative = registry.dir;
         assertFalse(moduleFileRelative.isAbsolute());
 
         assertEquals(0, registry.modules.size());
@@ -177,7 +176,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
     public void testUnload1() {
         assertEquals(0, registry.modules.size());
 
-        File moduleFile = resolveExternal();
+        File moduleFile = registry.dir;
         registry.load(moduleFile);
 
         List<Module> modules = registry.modules;
@@ -195,7 +194,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
     public void testUnload2() {
         assertEquals(0, registry.modules.size());
 
-        File moduleFile = resolveExternalJar();
+        File moduleFile = registry.jar;
         registry.load(moduleFile);
 
         List<Module> modules = registry.modules;
@@ -213,7 +212,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
     public void testUnload3() {
         assertEquals(0, registry.modules.size());
 
-        File moduleFile = resolveExternalZip();
+        File moduleFile = registry.zip;
         registry.load(moduleFile);
 
         List<Module> modules = registry.modules;
@@ -249,7 +248,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
      */
     @Test
     public void testDupulicateClassLoading() {
-        File moduleFile1 = resolveExternal();
+        File moduleFile1 = registry.dir;
 
         registry.load(moduleFile1);
         Module module1 = registry.modules.get(0);
@@ -262,7 +261,7 @@ public class ModuleRegistryTest extends ModuleTestCase {
         }
 
         // load another module which content is same
-        File moduleFile2 = resolveExternalJar();
+        File moduleFile2 = registry.jar;
 
         registry.load(moduleFile2);
         Module module2 = registry.modules.get(1);
