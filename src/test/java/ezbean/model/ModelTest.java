@@ -65,8 +65,8 @@ public class ModelTest {
         Property property = model.getProperty(propertyName);
         assertNotNull(property);
         assertEquals(propertyType, property.model.type);
-        assertNotNull(property.getter);
-        assertNotNull(property.setter);
+        assertNotNull(property.accessors[0]);
+        assertNotNull(property.accessors[1]);
     }
 
     /**

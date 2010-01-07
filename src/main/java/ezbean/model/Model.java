@@ -106,6 +106,7 @@ public class Model<M> {
     /** The external annotatons repository. */
     private final Map<Class, Annotation> annotations;
 
+    /** The built-in codec. */
     private Codec codec = null;
 
     // public final List<Method> intercepts = new ArrayList();
@@ -209,8 +210,7 @@ public class Model<M> {
                 if (model.type == load(methods[1].getGenericParameterTypes()[0], type).type) {
                     // this property is valid
                     Property property = new Property(model, entry.getKey());
-                    property.getter = methods[0];
-                    property.setter = methods[1];
+                    property.accessors = methods;
 
                     // register it
                     properties.add(property);
@@ -309,7 +309,7 @@ public class Model<M> {
         }
 
         try {
-            return property.getter.invoke(object);
+            return property.accessors[0].invoke(object);
         } catch (Exception e) {
             // If this exception will be thrown, it is bug of this program. So we must rethrow the
             // wrapped error in here.
@@ -331,7 +331,7 @@ public class Model<M> {
             ((Accessible) object).ezAccess(property.id + 1, propertyValue);
         } else {
             try {
-                property.setter.invoke(object, propertyValue);
+                property.accessors[1].invoke(object, propertyValue);
             } catch (Exception e) {
                 // If this exception will be thrown, it is bug of this program. So we must rethrow
                 // the wrapped error in here.
