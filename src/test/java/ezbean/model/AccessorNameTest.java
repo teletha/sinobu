@@ -17,14 +17,10 @@ package ezbean.model;
 
 import static org.junit.Assert.*;
 
-
 import org.junit.Test;
 
-import ezbean.model.Model;
-import ezbean.model.Property;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
-
 
 /**
  * DOCUMENT.
@@ -43,8 +39,8 @@ public class AccessorNameTest {
 
         Property property = model.getProperty("age");
 
-        assertEquals("getAge", property.getter.getName());
-        assertEquals("setAge", property.setter.getName());
+        assertEquals("getAge", property.accessors[0].getName());
+        assertEquals("setAge", property.accessors[1].getName());
     }
 
     /**
@@ -57,12 +53,12 @@ public class AccessorNameTest {
 
         Property property = model.getProperty("boolean");
 
-        assertEquals("isBoolean", property.getter.getName());
-        assertEquals("setBoolean", property.setter.getName());
+        assertEquals("isBoolean", property.accessors[0].getName());
+        assertEquals("setBoolean", property.accessors[1].getName());
 
         property = model.getProperty("int");
 
-        assertEquals("getInt", property.getter.getName());
-        assertEquals("setInt", property.setter.getName());
+        assertEquals("getInt", property.accessors[0].getName());
+        assertEquals("setInt", property.accessors[1].getName());
     }
 }

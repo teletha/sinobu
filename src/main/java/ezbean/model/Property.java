@@ -41,11 +41,8 @@ public class Property implements Comparable<Property> {
     /** The machine readable identifier of this property. */
     int id;
 
-    /** The actual getter method. */
-    Method getter;
-
-    /** The actual setter method. */
-    Method setter;
+    /** The actual accessor methods. */
+    Method[] accessors;
 
     /**
      * Create a property.
@@ -87,7 +84,7 @@ public class Property implements Comparable<Property> {
      *         is not found.
      */
     public Method getAccessor(boolean setter) {
-        return setter ? this.setter : this.getter;
+        return setter ? accessors[1] : accessors[0];
     }
 
     /**
