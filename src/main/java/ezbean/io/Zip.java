@@ -84,7 +84,6 @@ class Zip extends InputStream implements Archiver {
     /**
      * @see ezbean.io.Archiver#unpack(java.io.File, java.io.File)
      */
-    @Override
     public void unpack(File zip, File destination) throws IOException {
         archive = new RandomAccessFile(zip, "r");
 

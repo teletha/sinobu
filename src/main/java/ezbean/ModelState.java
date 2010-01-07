@@ -49,10 +49,9 @@ final class ModelState implements PropertyWalker {
     }
 
     /**
-     * @see ezbean.model.PropertyWalker#walk(ezbean.model.Model,
-     *      ezbean.model.Property, java.lang.Object)
+     * @see ezbean.model.PropertyWalker#walk(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
      */
-    @Override
     public void walk(Model model, Property property, Object node) {
         Property dest = this.model.getProperty(property.name);
 

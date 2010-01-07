@@ -135,7 +135,6 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
             /**
              * @see java.io.FileFilter#accept(java.io.File)
              */
-            @Override
             public boolean accept(File file) {
                 return file.isFile();
             }

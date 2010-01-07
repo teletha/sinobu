@@ -57,11 +57,12 @@ public class EzMethodRule implements MethodRule {
      * @see org.junit.rules.MethodRule#apply(org.junit.runners.model.Statement,
      *      org.junit.runners.model.FrameworkMethod, java.lang.Object)
      */
-    @Override
     public final Statement apply(final Statement base, final FrameworkMethod method, final Object target) {
         return new Statement() {
 
-            @Override
+            /**
+             * @see org.junit.runners.model.Statement#evaluate()
+             */
             public void evaluate() throws Throwable {
                 try {
                     // call before class

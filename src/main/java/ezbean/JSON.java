@@ -15,7 +15,6 @@
  */
 package ezbean;
 
-
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.List;
@@ -24,8 +23,6 @@ import ezbean.model.Model;
 import ezbean.model.ModelWalkListener;
 import ezbean.model.ModelWalker;
 import ezbean.model.Property;
-
-
 
 /**
  * @version 2009/04/14 16:36:21
@@ -54,10 +51,9 @@ class JSON extends ModelWalker implements ModelWalkListener {
     }
 
     /**
-     * @see ezbean.model.ModelWalkListener#enterNode(ezbean.model.Model,
-     *      ezbean.model.Property, java.lang.Object)
+     * @see ezbean.model.ModelWalkListener#enterNode(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
      */
-    @Override
     public void enterNode(Model model, Property property, Object node) {
         if (stack.contains(node)) {
             throw new IllegalStateException("Circular Reference : " + stack);
@@ -99,10 +95,9 @@ class JSON extends ModelWalker implements ModelWalkListener {
     }
 
     /**
-     * @see ezbean.model.ModelWalkListener#leaveNode(ezbean.model.Model,
-     *      ezbean.model.Property, java.lang.Object)
+     * @see ezbean.model.ModelWalkListener#leaveNode(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
      */
-    @Override
     public void leaveNode(Model model, Property property, Object node) {
         try {
             if (!property.isAttribute()) {
