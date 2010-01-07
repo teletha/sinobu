@@ -15,7 +15,6 @@
  */
 package ezbean.io;
 
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -25,8 +24,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import ezbean.I;
-
-
 
 /**
  * DOCUMENT.

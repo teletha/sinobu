@@ -492,12 +492,10 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
 
         // normalize
         try {
-            one = one.getCanonicalFile();
-            other = other.getCanonicalFile();
+            return one.getCanonicalFile().equals(other.getCanonicalFile());
         } catch (IOException e) {
             return false;
         }
-        return one.equals(other);
     }
 
     /**
