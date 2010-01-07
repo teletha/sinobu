@@ -17,30 +17,30 @@ package ezbean.module;
 
 import static org.junit.Assert.*;
 
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
+import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
 import ezbean.model.Model;
-import ezbean.module.ModuleRegistry;
 
 /**
  * @version 2009/12/23 13:21:17
  */
-public class ClassCacheProblemTest extends ModuleTestCase {
+public class ClassCacheProblemTest {
+
+    @Rule
+    public static ModuleTestRule registry = new ModuleTestRule();
 
     /**
      * Cached prototype class's identity check.
      */
     @Test
     public void testClassCacheForPrototype() {
-        File moduleFile = resolveExternal();
+        File moduleFile = registry.dir;
 
         registry.load(moduleFile);
 
@@ -83,7 +83,7 @@ public class ClassCacheProblemTest extends ModuleTestCase {
      */
     @Test
     public void testClassCacheForSingleton() {
-        File moduleFile = resolveExternal();
+        File moduleFile = registry.dir;
 
         registry.load(moduleFile);
 
@@ -131,7 +131,7 @@ public class ClassCacheProblemTest extends ModuleTestCase {
      */
     @Test
     public void testClassCacheInMapKeyReference() {
-        File moduleFile = resolveExternal();
+        File moduleFile = registry.dir;
 
         registry.load(moduleFile);
 

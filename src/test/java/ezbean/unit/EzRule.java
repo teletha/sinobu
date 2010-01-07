@@ -26,9 +26,9 @@ import org.junit.runners.model.Statement;
 import ezbean.I;
 
 /**
- * @version 2009/12/30 16:51:49
+ * @version 2010/01/08 2:19:31
  */
-public class EzMethodRule implements MethodRule {
+public class EzRule implements MethodRule {
 
     /** The testcase class. */
     protected final Class testcase = getCaller();
@@ -42,10 +42,13 @@ public class EzMethodRule implements MethodRule {
     /** The initialization error holder. */
     private Throwable initializationError;
 
+    /** The shutdown hook to invoke afterClass method when only selected test method is executed. */
+    private final AfterClassInvoker invoker = new AfterClassInvoker();
+
     /**
      * 
      */
-    protected EzMethodRule() {
+    protected EzRule() {
         for (Method method : testcase.getMethods()) {
             if (method.isAnnotationPresent(Test.class) && !method.isAnnotationPresent(Ignore.class)) {
                 tests++;
@@ -68,6 +71,10 @@ public class EzMethodRule implements MethodRule {
                     // call before class
                     if (executed++ == 0) {
                         try {
+                            // register
+                            Runtime.getRuntime().addShutdownHook(invoker);
+
+                            // invoke beforeClass
                             beforeClass();
                         } catch (Exception e) {
                             throw I.quiet(initializationError = e);
@@ -80,20 +87,24 @@ public class EzMethodRule implements MethodRule {
                     }
 
                     try {
-                        // call before
+                        // invoke before
                         before(method.getMethod());
 
-                        // call test method
+                        // invoke test method
                         base.evaluate();
                     } catch (Exception e) {
                         throw I.quiet(e);
                     } finally {
-                        // call after
+                        // invoke after
                         after(method.getMethod());
                     }
                 } finally {
                     // call before class
                     if (executed == tests) {
+                        // unregister
+                        Runtime.getRuntime().removeShutdownHook(invoker);
+
+                        // invoke afterClass
                         afterClass();
                     }
                 }
@@ -169,5 +180,19 @@ public class EzMethodRule implements MethodRule {
         // If this exception will be thrown, it is bug of this program. So we must rethrow the
         // wrapped error in here.
         throw new Error("Testcas is not found.");
+    }
+
+    /**
+     * @version 2010/01/08 2:11:08
+     */
+    private final class AfterClassInvoker extends Thread {
+
+        /**
+         * @see java.lang.Thread#run()
+         */
+        @Override
+        public void run() {
+            afterClass();
+        }
     }
 }

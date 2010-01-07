@@ -17,8 +17,7 @@ package ezbean.module;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-
+import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.ClassLoadListener;
@@ -32,20 +31,21 @@ import ezbean.Singleton;
  * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
  * @version $ Id: ClassLoaderUpdateTest.java,v 1.0 2007/02/04 1:06:48 Teletha Exp $
  */
-public class ClassLoaderUpdateTest extends ModuleTestCase {
+public class ClassLoaderUpdateTest {
+
+    @Rule
+    public static ModuleTestRule registry = new ModuleTestRule();
 
     /**
      * Check whether a class loader of the module class is changed or not when module reloading.
      */
     @Test
     public void test1() {
-        File moduleFile = resolveExternal();
-
         Checker checker = I.make(Checker.class);
         registry.load(checker.getClass());
 
         // load
-        registry.load(moduleFile);
+        registry.load(registry.dir);
 
         // store
         ClassLoader loader = checker.loader;
@@ -54,7 +54,7 @@ public class ClassLoaderUpdateTest extends ModuleTestCase {
         checker.loader = null;
 
         // reload
-        registry.load(moduleFile);
+        registry.load(registry.dir);
 
         // assert classloader
         assertNotSame(loader, checker.loader);
@@ -70,13 +70,11 @@ public class ClassLoaderUpdateTest extends ModuleTestCase {
      */
     @Test
     public void test2() {
-        File moduleFile = resolveExternalJar();
-
         Checker checker = I.make(Checker.class);
         registry.load(checker.getClass());
 
         // load
-        registry.load(moduleFile);
+        registry.load(registry.jar);
 
         // store
         ClassLoader loader = checker.loader;
@@ -85,7 +83,7 @@ public class ClassLoaderUpdateTest extends ModuleTestCase {
         checker.loader = null;
 
         // reload
-        registry.load(moduleFile);
+        registry.load(registry.jar);
 
         // assert classloader
         assertNotSame(loader, checker.loader);
@@ -101,13 +99,11 @@ public class ClassLoaderUpdateTest extends ModuleTestCase {
      */
     @Test
     public void test3() {
-        File moduleFile = resolveExternalZip();
-
         Checker checker = I.make(Checker.class);
         registry.load(checker.getClass());
 
         // load
-        registry.load(moduleFile);
+        registry.load(registry.zip);
 
         // store
         ClassLoader loader = checker.loader;
@@ -116,7 +112,7 @@ public class ClassLoaderUpdateTest extends ModuleTestCase {
         checker.loader = null;
 
         // reload
-        registry.load(moduleFile);
+        registry.load(registry.zip);
 
         // assert classloader
         assertNotSame(loader, checker.loader);
@@ -132,13 +128,11 @@ public class ClassLoaderUpdateTest extends ModuleTestCase {
      */
     @Test
     public void test4() {
-        File moduleFile = resolveExternalZip();
-
         Creator creator = I.make(Creator.class);
         registry.load(creator.getClass());
 
         // load
-        registry.load(moduleFile);
+        registry.load(registry.zip);
 
         // store
         Object object1 = creator.object;
@@ -148,7 +142,7 @@ public class ClassLoaderUpdateTest extends ModuleTestCase {
         creator.object = null;
 
         // reload
-        registry.load(moduleFile);
+        registry.load(registry.zip);
 
         // assert classloader
         Object object2 = creator.object;
@@ -160,7 +154,7 @@ public class ClassLoaderUpdateTest extends ModuleTestCase {
         assertNotSame(object1.getClass().getClassLoader(), object2.getClass().getClassLoader());
 
         // clean up
-        registry.unload(moduleFile);
+        registry.unload(registry.zip);
         registry.unload(creator.getClass());
         creator.object = null;
     }

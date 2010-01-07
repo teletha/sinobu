@@ -17,7 +17,7 @@ package ezbean.module;
 
 import static junit.framework.Assert.*;
 
-
+import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.model.Model;
@@ -25,11 +25,14 @@ import ezbean.model.Model;
 /**
  * @version 2009/12/22 19:19:13
  */
-public class PseudoExternalClassTest extends ModuleTestCase {
+public class PseudoExternalClassTest {
+
+    @Rule
+    public static ModuleTestRule registry = new ModuleTestRule();
 
     @Test
     public void resolveClass() {
-        registry.load(resolveExternal());
+        registry.load(registry.dir);
 
         assertNotNull(Model.load("external.Class1"));
     }
