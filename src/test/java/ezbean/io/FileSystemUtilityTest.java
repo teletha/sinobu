@@ -15,20 +15,14 @@
  */
 package ezbean.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-
 import org.junit.Test;
-
-import ezbean.io.FileSystem;
 
 /**
  * DOCUMENT.
@@ -204,8 +198,7 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
     }
 
     /**
-     * Test method for
-     * {@link ezbean.io.FileSystem#copy(java.io.InputStream, java.io.OutputStream)}.
+     * Test method for {@link ezbean.io.FileSystem#copy(java.io.InputStream, java.io.OutputStream)}.
      */
     @Test
     public void testCopyInputStreamOutputStream() {
@@ -410,6 +403,18 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
 
         assertTrue(FileSystem.equals(one, other));
         assertTrue(FileSystem.equals(other, one));
+    }
+
+    /**
+     * Test A and A.
+     */
+    @Test
+    public void testEquals8() throws Exception {
+        File one = new File("a");
+        File other = new File("a/../a");
+
+        assertFalse(one.equals(other));
+        assertFalse(other.equals(one));
     }
 
     /**
