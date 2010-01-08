@@ -112,18 +112,28 @@ class XMLReader extends XMLFilterImpl {
             state = new ModelState(object, property.model);
             state.property = property;
 
-            // assign
-            // parent.model.set(parent.object, property, object);
-
             if (!property.isAttribute()) {
                 objects.add(state.object);
             }
-
-            // parent.model.set(parent.object, state.property, state.object);
         }
 
         // assign properties which are represented by attributes
-        processAttributes(state.model, state.object, attributes);
+        for (int i = 0; i < attributes.getLength(); i++) {
+            // check namespace
+            if (!attributes.getURI(i).equals(URI)) {
+                Property property = state.model.getProperty(attributes.getLocalName(i));
+
+                // ignore deprecated property
+                if (property != null) {
+                    // restore a property value form an attribute value
+                    Codec codec = property.model.getCodec();
+
+                    if (codec != null) {
+                        state.model.set(state.object, property, codec.decode(attributes.getValue(i)));
+                    }
+                }
+            }
+        }
 
         // stack current state for reference
         states.offer(state);
@@ -140,37 +150,6 @@ class XMLReader extends XMLFilterImpl {
 
         if (parent != null) {
             parent.model.set(parent.object, current.property, current.object);
-        }
-    }
-
-    /**
-     * Helper mehod to process all propertied which are represented by attributes.
-     * 
-     * @param model A current model.
-     * @param object A current object.
-     * @param attributes A list of attributes.
-     */
-    private void processAttributes(Model model, Object object, Attributes attributes) {
-        // process attributes
-        for (int i = 0; i < attributes.getLength(); i++) {
-            // check namespace
-            if (attributes.getURI(i).equals(URI)) {
-                continue;
-            }
-
-            // property
-            Property property = model.getProperty(attributes.getLocalName(i));
-
-            if (property == null) {
-                continue; // ignore deprecated property
-            }
-
-            // restore a property value form an attribute value
-            Codec codec = property.model.getCodec();
-
-            if (codec != null) {
-                model.set(object, property, codec.decode(attributes.getValue(i)));
-            }
         }
     }
 }
