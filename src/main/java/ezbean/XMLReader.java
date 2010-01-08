@@ -17,11 +17,8 @@ package ezbean;
 
 import static ezbean.I.*;
 
-
 import java.util.ArrayList;
 import java.util.LinkedList;
-
-
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -72,8 +69,15 @@ class XMLReader extends XMLFilterImpl {
             //
             // A name of the current element indicates the hint of the property name.
             // So you can get a valid property from the parent state.
-            Property property = parent.model.getProperty(parent.model.isCollection() ? attributes.getValue(URI, "key")
-                    : localName);
+            if (parent.model.isCollection()) {
+                localName = attributes.getValue(URI, "key");
+
+                if (localName == null) {
+                    localName = String.valueOf(parent.i++);
+                }
+            }
+
+            Property property = parent.model.getProperty(localName);
 
             // Compute object
             //
@@ -114,6 +118,8 @@ class XMLReader extends XMLFilterImpl {
             if (!property.isAttribute()) {
                 objects.add(state.object);
             }
+
+            // parent.model.set(parent.object, state.property, state.object);
         }
 
         // assign properties which are represented by attributes
@@ -121,7 +127,6 @@ class XMLReader extends XMLFilterImpl {
 
         // stack current state for reference
         states.offer(state);
-
     }
 
     /**
@@ -136,7 +141,6 @@ class XMLReader extends XMLFilterImpl {
         if (parent != null) {
             parent.model.set(parent.object, current.property, current.object);
         }
-
     }
 
     /**
@@ -147,28 +151,25 @@ class XMLReader extends XMLFilterImpl {
      * @param attributes A list of attributes.
      */
     private void processAttributes(Model model, Object object, Attributes attributes) {
-        // check model type
-        if (!model.isCollection() && model.getCodec() == null) {
-            // process attributes
-            for (int i = 0; i < attributes.getLength(); i++) {
-                // check namespace
-                if (attributes.getURI(i).equals(URI)) {
-                    continue;
-                }
+        // process attributes
+        for (int i = 0; i < attributes.getLength(); i++) {
+            // check namespace
+            if (attributes.getURI(i).equals(URI)) {
+                continue;
+            }
 
-                // property
-                Property property = model.getProperty(attributes.getLocalName(i));
+            // property
+            Property property = model.getProperty(attributes.getLocalName(i));
 
-                if (property == null) {
-                    continue; // ignore deprecated property
-                }
+            if (property == null) {
+                continue; // ignore deprecated property
+            }
 
-                // restore a property value form an attribute value
-                Codec codec = property.model.getCodec();
+            // restore a property value form an attribute value
+            Codec codec = property.model.getCodec();
 
-                if (codec != null) {
-                    model.set(object, property, codec.decode(attributes.getValue(i)));
-                }
+            if (codec != null) {
+                model.set(object, property, codec.decode(attributes.getValue(i)));
             }
         }
     }
