@@ -15,6 +15,20 @@
  */
 package ezbean.scratchpad;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.CharBuffer;
+
+import org.xml.sax.InputSource;
+
 import ezbean.I;
 import ezbean.Manageable;
 import ezbean.Singleton;
@@ -60,23 +74,23 @@ public class EzbeanScratchpad {
      * 
      * <pre>
      * School school = I.create(School.class);
-     *  List&lt;Student&gt; list = new ArrayList();
-     *  school.setStudents(list);
-     *
-     *  Student person = I.create(Student.class);
-     *  person.setAge(1);
-     *  list.add(person);
-     *
-     *  person = I.create(Student.class);
-     *  person.setAge(2);
-     *  list.add(person);
-     *
-     *  person = I.create(Student.class);
-     *  person.setAge(3);
-     *  list.add(person);
-     *
-     *  int sum = I.xpath(school, "sum(/School/students/item/@age)");
-     *  assertEquals(6, sum);
+     * List&lt;Student&gt; list = new ArrayList();
+     * school.setStudents(list);
+     * 
+     * Student person = I.create(Student.class);
+     * person.setAge(1);
+     * list.add(person);
+     * 
+     * person = I.create(Student.class);
+     * person.setAge(2);
+     * list.add(person);
+     * 
+     * person = I.create(Student.class);
+     * person.setAge(3);
+     * list.add(person);
+     * 
+     * int sum = I.xpath(school, &quot;sum(/School/students/item/@age)&quot;);
+     * assertEquals(6, sum);
      * </pre>
      * 
      * @param model
@@ -101,5 +115,142 @@ public class EzbeanScratchpad {
 
         // XPath path = XPathFactory.newInstance().newXPath();
         // return path.evaluate(xpath, converter.getDocument());
+    }
+
+    /**
+     * @param <M>
+     * @param file
+     * @param config
+     * @return
+     */
+    public static <M> M xml(File file, M config) {
+        // read
+        try {
+            return xml(new InputStreamReader(new FileInputStream(file), I.getEncoding()), config);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * @param <M>
+     * @param input
+     * @param config
+     * @return
+     */
+    public static <M> M xml(Reader input, M config) {
+        // read
+        InputSource source = new InputSource(input);
+
+        return config;
+    }
+
+    /**
+     * @param <M>
+     * @param input
+     * @param config
+     * @return
+     */
+    public static <M> M xml(final Readable input, M config) {
+        // read
+        InputSource source = new InputSource(new ReadableReader(input));
+
+        return config;
+    }
+
+    /**
+     * @param config
+     * @param output
+     */
+    public static void xml(Object config, File output) {
+        // write
+        try {
+            xml(config, new OutputStreamWriter(new FileOutputStream(output), I.getEncoding()));
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    public static void xml(Object config, Appendable output) {
+        // write
+    }
+
+    /**
+     * @version 2010/01/08 11:47:20
+     */
+    public static class ReadableReader extends Reader {
+
+        /** The actual input. */
+        private final Readable readable;
+
+        /**
+         * @param readable
+         */
+        public ReadableReader(Readable readable) {
+            this.readable = readable;
+        }
+
+        /**
+         * @see java.io.Reader#close()
+         */
+        @Override
+        public void close() throws IOException {
+            if (readable instanceof Closeable) {
+                ((Closeable) readable).close();
+            }
+        }
+
+        /**
+         * @see java.io.Reader#read(char[], int, int)
+         */
+        @Override
+        public int read(char[] cbuf, int off, int len) throws IOException {
+            return readable.read(CharBuffer.wrap(cbuf, off, len));
+        }
+
+    }
+
+    /**
+     * @version 2010/01/08 11:46:58
+     */
+    public static class AppendableWriter extends Writer {
+
+        /** The actual output. */
+        private final Appendable appendable;
+
+        /**
+         * @param appendable
+         */
+        public AppendableWriter(Appendable appendable) {
+            this.appendable = appendable;
+        }
+
+        /**
+         * @see java.io.Writer#close()
+         */
+        @Override
+        public void close() throws IOException {
+            if (appendable instanceof Closeable) {
+                ((Closeable) appendable).close();
+            }
+        }
+
+        /**
+         * @see java.io.Writer#flush()
+         */
+        @Override
+        public void flush() throws IOException {
+            if (appendable instanceof Flushable) {
+                ((Flushable) appendable).flush();
+            }
+        }
+
+        /**
+         * @see java.io.Writer#write(char[], int, int)
+         */
+        @Override
+        public void write(char[] cbuf, int off, int len) throws IOException {
+            appendable.append(new String(cbuf, off, len));
+        }
     }
 }
