@@ -70,7 +70,7 @@ public class ModuleTestRule extends EzRule {
     private static final File ZIP = I.locate(classes, "module.zip");
 
     /** The pseudo external module. */
-    private static final File INLINE = I.locate(classes, "inline.zip");
+    private static final File NEST = I.locate(classes, "inline.zip");
 
     // create external modules
     static {
@@ -91,8 +91,9 @@ public class ModuleTestRule extends EzRule {
     public final File zip = ZIP;
 
     /** The pseudo external module. */
-    public final File nest = INLINE;
+    public final File nest = NEST;
 
+    /** field access helper */
     public final List<Module> modules = registry.modules;
 
     /** The pre-defined module store. */

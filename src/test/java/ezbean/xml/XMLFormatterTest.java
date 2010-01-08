@@ -20,10 +20,9 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.StringTokenizer;
-
 
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -31,9 +30,6 @@ import org.xml.sax.XMLFilter;
 
 import ezbean.I;
 import ezbean.io.FileSystem;
-import ezbean.xml.Rule;
-import ezbean.xml.XMLFormatter;
-import ezbean.xml.XMLScanner;
 
 /**
  * DOCUMENT.
@@ -230,7 +226,7 @@ public class XMLFormatterTest {
     public void testXMLWriter() throws SAXException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-        XMLFormatter writer = new XMLFormatter(output);
+        XMLFormatter writer = new XMLFormatter(new OutputStreamWriter(output));
         writer.setContentHandler(writer);
         writer.startDocument();
         writer.startElement("root");
@@ -269,15 +265,16 @@ public class XMLFormatterTest {
     private void assertBinaryXML(String expectedXMLFilePath, String testedXMLFilePath, Class<? extends XMLFormatter> clazz) {
         try {
             // tested
-            ByteArrayOutputStream testedOutput = new ByteArrayOutputStream();
-            XMLFormatter formatter = clazz.getConstructor(OutputStream.class).newInstance(testedOutput);
+            StringBuilder testedOutput = new StringBuilder();
+            XMLFormatter formatter = clazz.getConstructor(Appendable.class).newInstance(testedOutput);
             I.parse(locateSource(testedXMLFilePath), formatter);
-            String[] testedResult = line(testedOutput.toByteArray());
+            String[] testedResult = line(testedOutput);
 
             // expected
             ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
             FileInputStream expectedInput = new FileInputStream(locate(expectedXMLFilePath));
             FileSystem.copy(expectedInput, expectedOutput);
+
             String[] expectedResult = line(expectedOutput.toByteArray());
 
             // assert
@@ -318,12 +315,12 @@ public class XMLFormatterTest {
     private void assertBinaryXML(String expectedXMLFilePath, String testedXMLFilePath, Class<? extends XMLFormatter> clazz, XMLFilter... filters) {
         try {
             // tested
-            ByteArrayOutputStream testedOutput = new ByteArrayOutputStream();
+            StringBuilder testedOutput = new StringBuilder();
             filters = Arrays.copyOf(filters, filters.length + 1);
-            filters[filters.length - 1] = clazz.getConstructor(OutputStream.class).newInstance(testedOutput);
+            filters[filters.length - 1] = clazz.getConstructor(Appendable.class).newInstance(testedOutput);
 
             I.parse(locateSource(testedXMLFilePath), filters);
-            String[] testedResult = line(testedOutput.toByteArray());
+            String[] testedResult = line(testedOutput);
 
             // expected
             ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
@@ -366,7 +363,17 @@ public class XMLFormatterTest {
      * @return
      */
     private String[] line(byte[] bytes) {
-        StringTokenizer tokenizer = new StringTokenizer(new String(bytes), "\n\r");
+        return line(new String(bytes));
+    }
+
+    /**
+     * Divide by line.
+     * 
+     * @param bytes
+     * @return
+     */
+    private String[] line(CharSequence xml) {
+        StringTokenizer tokenizer = new StringTokenizer(xml.toString(), "\n\r");
 
         int i = 0;
         String[] lines = new String[tokenizer.countTokens()];
@@ -388,10 +395,10 @@ public class XMLFormatterTest {
         /**
          * Create EM instance.
          * 
-         * @param stream
+         * @param out
          */
-        public EM(OutputStream stream) {
-            super(stream);
+        public EM(Appendable out) {
+            super(out);
         }
 
         /**
@@ -416,10 +423,10 @@ public class XMLFormatterTest {
         /**
          * Create AsCharacter instance.
          * 
-         * @param stream
+         * @param out
          */
-        public AsCharacter(OutputStream stream) {
-            super(stream);
+        public AsCharacter(Appendable out) {
+            super(out);
         }
 
         /**

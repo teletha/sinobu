@@ -15,17 +15,11 @@
  */
 package ezbean.xml;
 
-
-import java.io.BufferedWriter;
+import java.io.Flushable;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
-
-
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -42,12 +36,12 @@ import ezbean.I;
  * @see ContentHandler
  * @see LexicalHandler
  * @see Attributes
- * @version 2008/08/31 21:55:41
+ * @version 2010/01/08 13:39:08
  */
 public class XMLFormatter extends XMLScanner implements LexicalHandler {
 
     /** The line separator character */
-    private static final char[] EOL = System.getProperty("line.separator").toCharArray();
+    private static final String EOL = System.getProperty("line.separator");
 
     /** The event state for other. */
     private static final int OTHER = 0;
@@ -62,7 +56,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     private static final int CHARACTER = 3;
 
     /** The output stream. */
-    protected final Writer out;
+    protected final Appendable out;
 
     /** The previous sax event state. */
     private int state = 0;
@@ -85,15 +79,8 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     /**
      * Create XMLFormatter instance.
      */
-    public XMLFormatter(OutputStream stream) {
-        this(new OutputStreamWriter(stream, I.getEncoding()));
-    }
-
-    /**
-     * Create XMLFormatter instance.
-     */
-    public XMLFormatter(Writer writer) {
-        this.out = new BufferedWriter(writer);
+    public XMLFormatter(Appendable out) {
+        this.out = out;
     }
 
     /**
@@ -106,9 +93,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     public void startDocument() throws SAXException {
         try {
             // write xml declaration
-            out.write("<?xml version=\"1.0\" encoding=\"");
-            out.write(I.getEncoding().name());
-            out.write("\"?>");
+            out.append("<?xml version=\"1.0\" encoding=\"").append(I.getEncoding().name()).append("\"?>");
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -118,10 +103,12 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
      * @see org.xml.sax.ContentHandler#endDocument()
      */
     public void endDocument() throws SAXException {
-        try {
-            out.flush();
-        } catch (IOException e) {
-            throw new SAXException(e);
+        if (out instanceof Flushable) {
+            try {
+                ((Flushable) out).flush();
+            } catch (IOException e) {
+                throw new SAXException(e);
+            }
         }
     }
 
@@ -154,7 +141,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
                 if (breaks != 0) writeIndent();
             } else {
                 if (!asCharacter(uri, local)) {
-                    out.write(EOL);
+                    out.append(EOL);
                     writeIndent();
 
                     // mark position
@@ -163,8 +150,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
             }
 
             // start output
-            out.write('<');
-            out.write(name);
+            out.append('<').append(name);
 
             for (int i = 0; i < atts.getLength(); i++) {
                 // exclude xmlns declarations
@@ -175,13 +161,10 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
                     if (name.length() == 0) name = atts.getLocalName(i);
 
                     // write attribute
-                    out.write(' ');
-                    out.write(name);
-                    out.write('=');
-                    out.write('"');
+                    out.append(' ').append(name).append('=').append('"');
                     name = atts.getValue(i); // attribute value reuses name variable for footprint
                     if (name != null) write(name.toCharArray(), 0, name.length());
-                    out.write('"');
+                    out.append('"');
                 }
             }
 
@@ -197,16 +180,11 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
                     }
 
                     // start writing namespace declaration
-                    out.write(' ');
-                    out.write("xmlns");
+                    out.append(" xmlns");
                     if (name.length() != 0) {
-                        out.write(':');
-                        out.write(name);
+                        out.append(':').append(name);
                     }
-                    out.write('=');
-                    out.write('"');
-                    out.write(uri);
-                    out.write('"');
+                    out.append('=').append('"').append(uri).append('"');
                 }
 
                 // reset namespace declaration count
@@ -233,7 +211,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
 
             // decide to write a break
             if (last == depth + 1 && !asCharacter(uri, local)) {
-                out.write(EOL);
+                out.append(EOL);
                 writeIndent();
 
                 // remark position
@@ -241,10 +219,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
             }
 
             // start output
-            out.write('<');
-            out.write('/');
-            out.write(name);
-            out.write('>');
+            out.append('<').append('/').append(name).append('>');
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -276,17 +251,15 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     public void processingInstruction(String target, String data) throws SAXException {
         try {
             checkEvent(OTHER);
-            out.write(EOL);
+            out.append(EOL);
 
             // start output
-            out.write("<?");
-            out.write(target);
+            out.append("<?").append(target);
 
             if (data != null) {
-                out.write(' ');
-                out.write(data);
+                out.append(' ').append(data);
             }
-            out.write("?>");
+            out.append("?>");
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -335,7 +308,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     public void startCDATA() throws SAXException {
         try {
             checkEvent(CHARACTER);
-            out.write("<[CDATA[");
+            out.append("<[CDATA[");
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -347,7 +320,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     public void endCDATA() throws SAXException {
         try {
             checkEvent(CHARACTER);
-            out.write("]]>");
+            out.append("]]>");
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -361,21 +334,21 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
             int prev = checkEvent(OTHER);
 
             if (prev != CHARACTER || breaks != 0) {
-                out.write(EOL);
+                out.append(EOL);
                 writeIndent();
             }
 
             // write comment
-            out.write("<!--");
+            out.append("<!--");
 
             for (int i = start; i < length; i++) {
-                out.write(ch[i]);
+                out.append(ch[i]);
 
                 if (ch[i] == '\r' || ch[i] == '\n') {
                     writeIndent();
                 }
             }
-            out.write("-->");
+            out.append("-->");
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -438,7 +411,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
      */
     protected void writeIndent() throws IOException {
         for (int i = 0; i < depth * 2; i++) {
-            out.write(' ');
+            out.append(' ');
         }
     }
 
@@ -474,14 +447,13 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
         if (callState == END) {
             // check the element is pair
             if (asPair(uri, local)) {
-                out.write('>');
+                out.append('>');
                 state = callState;
                 return CHARACTER;
             }
-            out.write('/');
-            out.write('>');
+            out.append('/').append('>');
         } else {
-            out.write('>');
+            out.append('>');
         }
         int prev = state;
         state = callState;
@@ -502,27 +474,27 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
         for (int i = start; i < start + length; i++) {
             switch (data[i]) {
             case '&':
-                out.write("&amp;");
+                out.append("&amp;");
                 break;
 
             case '<':
-                out.write("&lt;");
+                out.append("&lt;");
                 break;
 
             case '>':
-                out.write("&gt;");
+                out.append("&gt;");
                 break;
 
             case '"':
-                out.write("&quot;");
+                out.append("&quot;");
                 break;
 
             case '\'':
-                out.write("&apos;");
+                out.append("&apos;");
                 break;
 
             default:
-                out.write(data[i]);
+                out.append(data[i]);
             }
         }
     }
