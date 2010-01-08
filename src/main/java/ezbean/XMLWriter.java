@@ -15,10 +15,8 @@
  */
 package ezbean;
 
-
 import java.util.HashMap;
-
-
+import java.util.Map;
 
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -65,8 +63,8 @@ class XMLWriter extends HashMap<Object, Integer> implements ModelWalkListener {
     }
 
     /**
-     * @see ezbean.model.ModelWalkListener#enterNode(ezbean.model.Model,
-     *      ezbean.model.Property, java.lang.Object)
+     * @see ezbean.model.ModelWalkListener#enterNode(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
      */
     public void enterNode(Model model, Property property, Object node) {
         // If the specfied model or property requires new element for serialization, we must write
@@ -96,7 +94,9 @@ class XMLWriter extends HashMap<Object, Integer> implements ModelWalkListener {
                 name = "item";
 
                 // collection needs key attribute
-                attributes.addAttribute(I.URI, null, "ez:key", null, property.name);
+                if (model.type == Map.class) {
+                    attributes.addAttribute(I.URI, null, "ez:key", null, property.name);
+                }
             }
         }
 
@@ -108,8 +108,8 @@ class XMLWriter extends HashMap<Object, Integer> implements ModelWalkListener {
     }
 
     /**
-     * @see ezbean.model.ModelWalkListener#leaveNode(ezbean.model.Model,
-     *      ezbean.model.Property, java.lang.Object)
+     * @see ezbean.model.ModelWalkListener#leaveNode(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
      */
     public void leaveNode(Model model, Property property, Object node) {
         // If the specfied model or property requires new element for serialization, we must write

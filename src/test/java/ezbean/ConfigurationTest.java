@@ -108,34 +108,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * Test List.
-     */
-    @Test
-    public void readAndWriteList() throws Exception {
-        StringList stringList = I.make(StringList.class);
-        List<String> list = new ArrayList<String>();
-        list.add("1");
-        list.add("2");
-        list.add("3");
-
-        stringList.setList(list);
-
-        // write
-        I.write(stringList, testFile);
-
-        // read
-        stringList = I.read(StringList.class, testFile);
-        assertNotNull(stringList);
-
-        list = stringList.getList();
-        assertNotNull(list);
-        assertEquals(3, list.size());
-        assertEquals("1", list.get(0));
-        assertEquals("2", list.get(1));
-        assertEquals("3", list.get(2));
-    }
-
-    /**
      * Test nesting List.
      */
     @Test
@@ -267,38 +239,10 @@ public class ConfigurationTest {
     }
 
     /**
-     * Test Map.
-     */
-    @Test
-    public void testReadAndWrite7() throws Exception {
-        StringMap stringMap = I.make(StringMap.class);
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("one", "one");
-        map.put("two", "two");
-        map.put("three", "three");
-
-        stringMap.setMap(map);
-
-        // write
-        I.write(stringMap, testFile);
-
-        // read
-        stringMap = I.read(StringMap.class, testFile);
-        assertNotNull(stringMap);
-
-        map = stringMap.getMap();
-        assertNotNull(map);
-        assertEquals(3, map.size());
-        assertEquals("one", map.get("one"));
-        assertEquals("two", map.get("two"));
-        assertEquals("three", map.get("three"));
-    }
-
-    /**
      * Test Map with non-string key.
      */
     @Test
-    public void testReadAndWrite08() throws Exception {
+    public void testReadAndWrite7() throws Exception {
         NonStringKeyMapBean bean = I.make(NonStringKeyMapBean.class);
         Map<Integer, Class> map = new HashMap<Integer, Class>();
         map.put(1, String.class);
@@ -495,6 +439,37 @@ public class ConfigurationTest {
         assertEquals(17, person.getAge());
     }
 
+    /**
+     * Test List.
+     */
+    @Test
+    public void readAndWriteList() throws Exception {
+        StringList stringList = I.make(StringList.class);
+        List<String> list = new ArrayList<String>();
+        list.add("1");
+        list.add("2");
+        list.add("3");
+
+        stringList.setList(list);
+
+        // write
+        I.write(stringList, testFile);
+
+        // read
+        stringList = I.read(StringList.class, testFile);
+        assertNotNull(stringList);
+
+        list = stringList.getList();
+        assertNotNull(list);
+        assertEquals(3, list.size());
+        assertEquals("1", list.get(0));
+        assertEquals("2", list.get(1));
+        assertEquals("3", list.get(2));
+
+        // list must not have ez:key attribute
+        assertXPathEqual("", testFile, "//item[1]/@ez:key");
+    }
+
     @Test
     public void readAndWriteNullContainsList() throws Exception {
         List<String> list = new ArrayList();
@@ -522,6 +497,37 @@ public class ConfigurationTest {
         assertNull(list.get(2));
         assertEquals("k-on", list.get(3));
         assertNull(list.get(4));
+    }
+
+    /**
+     * Test Map.
+     */
+    @Test
+    public void readAndWriteMap() throws Exception {
+        StringMap stringMap = I.make(StringMap.class);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("one", "one");
+        map.put("two", "two");
+        map.put("three", "three");
+
+        stringMap.setMap(map);
+
+        // write
+        I.write(stringMap, testFile);
+
+        // read
+        stringMap = I.read(StringMap.class, testFile);
+        assertNotNull(stringMap);
+
+        map = stringMap.getMap();
+        assertNotNull(map);
+        assertEquals(3, map.size());
+        assertEquals("one", map.get("one"));
+        assertEquals("two", map.get("two"));
+        assertEquals("three", map.get("three"));
+
+        // map must have ez:key attribute
+        assertXPathEqual("two", testFile, "//item[1]/@ez:key");
     }
 
     @Test
@@ -678,6 +684,9 @@ public class ConfigurationTest {
         assertEquals(3, checker.size);
     }
 
+    /**
+     * @version 2010/01/08 17:11:38
+     */
     protected static class Checker extends StringList {
 
         private int size = -1;

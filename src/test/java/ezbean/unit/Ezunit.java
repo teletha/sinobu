@@ -21,8 +21,10 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -278,6 +280,7 @@ public class Ezunit {
     public static final void assertXPathEqual(String expected, File testedXMLFile, String xpath) {
         try {
             XPath context = XPathFactory.newInstance().newXPath();
+            context.setNamespaceContext(new Namespaces());
             String result = context.evaluate(xpath, locateSource(testedXMLFile));
 
             assertEquals(expected, result);
@@ -330,6 +333,39 @@ public class Ezunit {
                     return;
                 }
             }
+        }
+    }
+
+    /**
+     * @version 2010/01/08 15:56:46
+     */
+    private static class Namespaces implements NamespaceContext {
+
+        /**
+         * @see javax.xml.namespace.NamespaceContext#getNamespaceURI(java.lang.String)
+         */
+        @Override
+        public String getNamespaceURI(String prefix) {
+            if (prefix.equals("ez")) {
+                return "http://ez.bean/";
+            }
+            return null;
+        }
+
+        /**
+         * @see javax.xml.namespace.NamespaceContext#getPrefix(java.lang.String)
+         */
+        @Override
+        public String getPrefix(String namespaceURI) {
+            return null;
+        }
+
+        /**
+         * @see javax.xml.namespace.NamespaceContext#getPrefixes(java.lang.String)
+         */
+        @Override
+        public Iterator getPrefixes(String namespaceURI) {
+            return null;
         }
     }
 }

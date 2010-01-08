@@ -30,12 +30,14 @@ import ezbean.model.PropertyWalker;
 final class ModelState implements PropertyWalker {
 
     /** The current model. */
-    final Model model;
+    Model model;
 
     /** The curret object. */
-    final Object object;
+    Object object;
 
     Property property;
+
+    int i = 0;
 
     /**
      * Create State instance.
