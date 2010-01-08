@@ -25,18 +25,20 @@ import ezbean.model.PropertyWalker;
  * other a {@link PropertyWalker} implementation for bean transformation.
  * </p>
  * 
- * @version 2008/07/30 15:27:18
+ * @version 2010/01/08 19:42:29
  */
 final class ModelState implements PropertyWalker {
 
     /** The current model. */
-    Model model;
+    final Model model;
 
     /** The curret object. */
-    Object object;
+    final Object object;
 
+    /** The property for {@link XMLReader} process. */
     Property property;
 
+    /** The current location for {@link XMLReader} process. */
     int i = 0;
 
     /**
