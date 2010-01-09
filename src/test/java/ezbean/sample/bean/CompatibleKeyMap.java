@@ -22,12 +22,12 @@ import java.util.Map;
  * 
  * @version 2007/06/01 10:44:18
  */
-public class NonStringKeyMapBean {
+public class CompatibleKeyMap {
 
     private Map<Integer, Class> integerKey;
 
     /**
-     * Get the integerKey property of this {@link NonStringKeyMapBean}.
+     * Get the integerKey property of this {@link CompatibleKeyMap}.
      * 
      * @return The integerKey property.
      */
@@ -36,7 +36,7 @@ public class NonStringKeyMapBean {
     }
 
     /**
-     * Set the integerKey property of this {@link NonStringKeyMapBean}.
+     * Set the integerKey property of this {@link CompatibleKeyMap}.
      * 
      * @param integerKey The integerKey value to set.
      */

@@ -15,6 +15,8 @@
  */
 package ezbean;
 
+import static ezbean.I.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,41 +71,39 @@ class XMLWriter extends HashMap<Object, Integer> implements ModelWalkListener {
     public void enterNode(Model model, Property property, Object node) {
         // If the specfied model or property requires new element for serialization, we must write
         // out the previous start element.
-        if (model.isCollection() || !property.isAttribute()) {
+        if (model.isCollection()) {
             write();
 
-            if (!property.isAttribute()) {
+            // collection item property
+            name = property.model.name;
+
+            // collection needs key attribute
+            if (model.type == Map.class) {
+                attributes.addAttribute(URI, null, "ez:key", null, property.name);
+            }
+        } else if (!property.isAttribute()) {
+            write();
+
+            name = property.name;
+        }
+
+        // If the collection item is attribute node, that is represented as xml value attribute and
+        // attribute node that collection node doesn't host is written as xml attribute too.
+        if (node != null) {
+            if (property.isAttribute()) {
+                attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null, I.transform(node, String.class));
+            } else {
                 // check cyclic node
                 Integer i = get(node);
 
                 if (i != null) {
                     // create reference id attribute
-                    attributes.addAttribute(I.URI, null, "ez:ref", null, i.toString());
+                    attributes.addAttribute(URI, null, "ez:ref", null, i.toString());
                 }
 
                 // record node with identifier
                 put(node, identifier++);
             }
-
-            // decide to element name
-            if (!model.isCollection()) {
-                // bean property
-                name = property.name;
-            } else {
-                // collection item property
-                name = "item";
-
-                // collection needs key attribute
-                if (model.type == Map.class) {
-                    attributes.addAttribute(I.URI, null, "ez:key", null, property.name);
-                }
-            }
-        }
-
-        // If the collection item is attribute node, that is represented as xml value attribute and
-        // attribute node that collection node doesn't host is written as xml attribute too.
-        if (node != null && property.isAttribute()) {
-            attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null, I.transform(node, String.class));
         }
     }
 
@@ -118,7 +118,7 @@ class XMLWriter extends HashMap<Object, Integer> implements ModelWalkListener {
             write();
 
             try {
-                handler.endElement(null, null, (model.isCollection()) ? "item" : property.name);
+                handler.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
             } catch (SAXException e) {
                 // If this exception will be thrown, it is bug of this program. So we must rethrow
                 // the wrapped error in here.

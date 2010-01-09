@@ -19,6 +19,7 @@ import static ezbean.unit.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,10 +31,11 @@ import org.junit.Test;
 
 import ezbean.io.FileSystem;
 import ezbean.sample.bean.BuiltinBean;
+import ezbean.sample.bean.CompatibleKeyMap;
 import ezbean.sample.bean.GenericPersonBean;
+import ezbean.sample.bean.IncompatibleKeyMap;
 import ezbean.sample.bean.NestedCollection;
 import ezbean.sample.bean.NestingList;
-import ezbean.sample.bean.NonStringKeyMapBean;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.School;
@@ -239,34 +241,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * Test Map with non-string key.
-     */
-    @Test
-    public void testReadAndWrite7() throws Exception {
-        NonStringKeyMapBean bean = I.make(NonStringKeyMapBean.class);
-        Map<Integer, Class> map = new HashMap<Integer, Class>();
-        map.put(1, String.class);
-        map.put(2, Class.class);
-        map.put(3, Integer.class);
-
-        bean.setIntegerKey(map);
-
-        // write
-        I.write(bean, testFile);
-
-        // read
-        bean = I.read(NonStringKeyMapBean.class, testFile);
-        assertNotNull(bean);
-
-        map = bean.getIntegerKey();
-        assertNotNull(map);
-        assertEquals(3, map.size());
-        assertEquals(String.class, map.get(1));
-        assertEquals(Class.class, map.get(2));
-        assertEquals(Integer.class, map.get(3));
-    }
-
-    /**
      * Test Map with invalid element name.
      */
     @Test
@@ -320,6 +294,59 @@ public class ConfigurationTest {
         assertEquals("one", map.get("\""));
         assertEquals("two", map.get(" "));
         assertEquals("three", map.get("<"));
+    }
+
+    /**
+     * Test Map with non-string key.
+     */
+    @Test
+    public void compatibleKeyMap() throws Exception {
+        CompatibleKeyMap bean = I.make(CompatibleKeyMap.class);
+        Map<Integer, Class> map = new HashMap<Integer, Class>();
+        map.put(1, String.class);
+        map.put(2, Class.class);
+        map.put(3, Integer.class);
+
+        bean.setIntegerKey(map);
+
+        // write
+        I.write(bean, testFile);
+
+        // read
+        bean = I.read(CompatibleKeyMap.class, testFile);
+        assertNotNull(bean);
+
+        map = bean.getIntegerKey();
+        assertNotNull(map);
+        assertEquals(3, map.size());
+        assertEquals(String.class, map.get(1));
+        assertEquals(Class.class, map.get(2));
+        assertEquals(Integer.class, map.get(3));
+    }
+
+    /**
+     * Test Map with non-string key.
+     */
+    @Test
+    public void incompatibleKeyMap() throws Exception {
+        IncompatibleKeyMap bean = I.make(IncompatibleKeyMap.class);
+        Map<Serializable, Class> map = new HashMap<Serializable, Class>();
+        map.put("1", String.class);
+        map.put("2", Class.class);
+        map.put("3", Integer.class);
+
+        bean.setIncompatible(map);
+
+        // write
+        I.write(bean, testFile);
+
+        // read
+        bean = I.read(IncompatibleKeyMap.class, testFile);
+        assertNotNull(bean);
+
+        map = bean.getIncompatible();
+        assertNotNull(map);
+        assertEquals(0, map.size());
     }
 
     /**
@@ -467,7 +494,8 @@ public class ConfigurationTest {
         assertEquals("3", list.get(2));
 
         // list must not have ez:key attribute
-        assertXPathEqual("", testFile, "//item[1]/@ez:key");
+        assertXPathEqual("String", testFile, "local-name(//String[1])");
+        assertXPathEqual("", testFile, "//String[1]/@ez:key");
     }
 
     @Test
@@ -527,7 +555,7 @@ public class ConfigurationTest {
         assertEquals("three", map.get("three"));
 
         // map must have ez:key attribute
-        assertXPathEqual("two", testFile, "//item[1]/@ez:key");
+        assertXPathEqual("two", testFile, "//String[1]/@ez:key");
     }
 
     @Test
