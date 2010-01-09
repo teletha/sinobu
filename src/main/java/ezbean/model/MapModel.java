@@ -59,7 +59,7 @@ class MapModel extends Model<Map> {
      */
     @Override
     public Property getProperty(String propertyIName) {
-        return (key.isCollection()) ? null : new Property(value, propertyIName);
+        return (key.getCodec() == null) ? null : new Property(value, propertyIName);
     }
 
     /**
@@ -75,7 +75,7 @@ class MapModel extends Model<Map> {
      */
     @Override
     public Object get(Map object, Property property) {
-        if (key.isCollection()) {
+        if (key.getCodec() == null) {
             return super.get(object, property);
         } else {
             return object.get(I.transform(property.name, key.type));
@@ -87,7 +87,7 @@ class MapModel extends Model<Map> {
      */
     @Override
     public void set(Map object, Property property, Object propertyValue) {
-        if (key.isCollection()) {
+        if (key.getCodec() == null) {
             super.set(object, property, propertyValue);
         } else {
             object.put(I.transform(property.name, key.type), propertyValue);
@@ -99,7 +99,7 @@ class MapModel extends Model<Map> {
      */
     @Override
     public void walk(Map object, PropertyWalker walker) {
-        if (key.isCollection()) {
+        if (key.getCodec() == null) {
             super.walk(object, walker);
         } else {
             for (Entry<Object, Object> entry : (Set<Entry<Object, Object>>) object.entrySet()) {

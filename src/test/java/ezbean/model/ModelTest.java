@@ -24,13 +24,14 @@ import java.util.Map;
 import org.junit.Test;
 
 import ezbean.I;
+import ezbean.sample.bean.CompatibleKeyMap;
 import ezbean.sample.bean.GenericBean;
 import ezbean.sample.bean.GenericBoundedTypedBean;
 import ezbean.sample.bean.GenericGetterBean;
 import ezbean.sample.bean.GenericSetterBean;
 import ezbean.sample.bean.GenericStringBean;
+import ezbean.sample.bean.IncompatibleKeyMap;
 import ezbean.sample.bean.InheritanceBean;
-import ezbean.sample.bean.NonStringKeyMapBean;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.StringMap;
 import ezbean.sample.bean.Student;
@@ -170,8 +171,8 @@ public class ModelTest {
      * Test {@link Map} model with the key which can convert to string.
      */
     @Test
-    public void testModel05() {
-        Model model = Model.load(NonStringKeyMapBean.class);
+    public void compatibleKeyMap() {
+        Model model = Model.load(CompatibleKeyMap.class);
         assertNotNull(model);
 
         Property property = model.getProperty("integerKey");
@@ -190,6 +191,25 @@ public class ModelTest {
         model = property.model;
         assertNotNull(model);
         assertEquals(Class.class, model.type);
+    }
+
+    /**
+     * Test {@link Map} model with the key which can convert to string.
+     */
+    @Test
+    public void incompatibleKeyMap() {
+        Model model = Model.load(IncompatibleKeyMap.class);
+        assertNotNull(model);
+
+        Property property = model.getProperty("incompatible");
+        assertNotNull(property);
+
+        model = property.model;
+        assertNotNull(model);
+        assertEquals(Map.class, model.type);
+        assertEquals(0, model.properties.size());
+        assertEquals(false, model.isCollection());
+        assertNull(model.getCodec());
     }
 
     /**
