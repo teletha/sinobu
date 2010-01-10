@@ -63,53 +63,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * Test simple bean.
-     */
-    @Test
-    public void testReadAndWrite1() throws Exception {
-        School school = I.make(School.class);
-        school.setName("OtoTatibana");
-
-        Student student = I.make(Student.class);
-        student.setAge(17);
-        student.setFirstName("Himeko");
-        student.setLastName("Kurusugawa");
-        student.setSchool(school);
-
-        Student student2 = I.make(Student.class);
-        student2.setAge(17);
-        student2.setFirstName("Tikane");
-        student2.setLastName("Himemiya");
-        student2.setSchool(school);
-
-        List<Student> students = new ArrayList();
-        students.add(student);
-        students.add(student2);
-
-        school.setStudents(students);
-
-        // write
-        I.write(student, testFile);
-
-        // read
-        student = I.read(Student.class, testFile);
-        assertNotNull(student);
-        assertEquals(17, student.getAge());
-        assertEquals("Himeko", student.getFirstName());
-        assertEquals("Kurusugawa", student.getLastName());
-
-        school = student.getSchool();
-        assertEquals("OtoTatibana", school.getName());
-        assertEquals(2, school.getStudents().size());
-
-        student = school.getStudents().get(0);
-        assertNotNull(student);
-        assertEquals(17, student.getAge());
-        assertEquals("Himeko", student.getFirstName());
-        assertEquals("Kurusugawa", student.getLastName());
-    }
-
-    /**
      * Test nesting List.
      */
     @Test
@@ -710,6 +663,53 @@ public class ConfigurationTest {
         checker = I.read(Checker.class, testFile);
         assertNotNull(checker);
         assertEquals(3, checker.size);
+    }
+
+    /**
+     * Test circular reference.
+     */
+    @Test
+    public void circularReference() throws Exception {
+        School school = I.make(School.class);
+        school.setName("OtoTatibana");
+
+        Student student = I.make(Student.class);
+        student.setAge(17);
+        student.setFirstName("Himeko");
+        student.setLastName("Kurusugawa");
+        student.setSchool(school);
+
+        Student student2 = I.make(Student.class);
+        student2.setAge(17);
+        student2.setFirstName("Tikane");
+        student2.setLastName("Himemiya");
+        student2.setSchool(school);
+
+        List<Student> students = new ArrayList();
+        students.add(student);
+        students.add(student2);
+
+        school.setStudents(students);
+
+        // write
+        I.write(student, testFile);
+
+        // read
+        student = I.read(Student.class, testFile);
+        assertNotNull(student);
+        assertEquals(17, student.getAge());
+        assertEquals("Himeko", student.getFirstName());
+        assertEquals("Kurusugawa", student.getLastName());
+
+        school = student.getSchool();
+        assertEquals("OtoTatibana", school.getName());
+        assertEquals(2, school.getStudents().size());
+
+        student = school.getStudents().get(0);
+        assertNotNull(student);
+        assertEquals(17, student.getAge());
+        assertEquals("Himeko", student.getFirstName());
+        assertEquals("Kurusugawa", student.getLastName());
     }
 
     /**

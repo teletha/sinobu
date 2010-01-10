@@ -15,24 +15,23 @@
  */
 package ezbean;
 
-
 import java.util.List;
 
 import ezbean.model.Model;
-import ezbean.model.ModelWalkListener;
 import ezbean.model.ModelWalker;
 import ezbean.model.Property;
-
-
 
 /**
  * <p>
  * This implementation is dirty, but small footprint.
  * </p>
  * 
- * @version 2008/06/13 3:52:59
+ * @version 2010/01/10 8:44:55
  */
-class Observer extends ModelWalker implements ModelWalkListener, PropertyListener, Disposable {
+class Observer extends ModelWalker implements PropertyListener, Disposable {
+
+    /** The root object. */
+    final Object root;
 
     /** The property path. */
     final List<String> path;
@@ -52,35 +51,32 @@ class Observer extends ModelWalker implements ModelWalkListener, PropertyListene
     /** The flag. */
     private boolean whileUpdate = false;
 
+    /** [0] is object(Object), [1] is property name(String) and [2] is old value(Object). */
     private Object[] info = new Object[3];
 
     /**
-     * Create Observer instance.
+     * Initialization : register listener for each nodes on path
      * 
-     * @param base
-     * @param path
+     * @param tracer
+     * @param listener
      */
     Observer(List tracer, PropertyListener listener) {
-        super(tracer.remove(0));
-
-        // register model walk listener
-        addListener(this);
-
+        this.root = tracer.remove(0);
         this.path = tracer;
         this.length = path.size();
         this.listener = listener;
 
         path.get(0);
 
-        traverse(path);
+        traverse(root, path);
         mode = 0;
     }
 
     /**
-     * @see ezbean.model.ModelWalkListener#enterNode(ezbean.model.Model,
-     *      ezbean.model.Property, java.lang.Object)
+     * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object, boolean)
      */
-    public void enterNode(Model model, Property property, Object node) {
+    protected void enter(Model model, Property property, Object node, boolean cyclic) {
         switch (mode) {
         case 1:
             if (info[0] == node) {
@@ -98,15 +94,13 @@ class Observer extends ModelWalker implements ModelWalkListener, PropertyListene
             if (info[2] != null) {
                 mode = 3; // move into remove mode
 
-                // remove actually
-                ModelWalker walker = new ModelWalker(info[2]);
-                walker.addListener(this);
-
+                // Remove actually
+                // 
                 // Only if we remove listeners, we can do like the following
                 // walker.traverse(path.subList(index, length - 1));
                 // But, in the greed, we need the actual old value which is indicated by the
                 // property path at once method call.
-                info[2] = walker.traverse(path.subList(index, length));
+                info[2] = traverse(info[2], path.subList(index, length));
             }
 
             // don't break, step into the next to add listeners
@@ -123,7 +117,6 @@ class Observer extends ModelWalker implements ModelWalkListener, PropertyListene
                     context.addListener(path.get(index), this);
 
                     info[0] = node;
-
                 } else {
                     context.removeListener(path.get(index), this);
                 }
@@ -137,16 +130,16 @@ class Observer extends ModelWalker implements ModelWalkListener, PropertyListene
     }
 
     /**
-     * @see ezbean.model.ModelWalkListener#leaveNode(ezbean.model.Model,
-     *      ezbean.model.Property, java.lang.Object)
+     * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object, boolean)
      */
-    public void leaveNode(Model model, Property property, Object node) {
+    protected void leave(Model model, Property property, Object node, boolean cyclic) {
         index--;
     }
 
     /**
-     * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String,
-     *      java.lang.Object, java.lang.Object)
+     * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
+     *      java.lang.Object)
      */
     public void change(Object object, String propertyName, Object oldValue, Object newValue) {
         // The property value of the specified object was changed in some property path, but we
@@ -160,7 +153,7 @@ class Observer extends ModelWalker implements ModelWalkListener, PropertyListene
         info[2] = oldValue;
 
         mode = 1;
-        newValue = traverse(path);
+        newValue = traverse(root, path);
         mode = 0;
 
         if (listener instanceof Observer) {
@@ -171,7 +164,7 @@ class Observer extends ModelWalker implements ModelWalkListener, PropertyListene
                 whileUpdate = true;
 
                 // retrieve host object in the pair observer
-                Object target = pair.traverse(pair.path.subList(0, pair.length - 1));
+                Object target = pair.traverse(pair.root, pair.path.subList(0, pair.length - 1));
 
                 if (target != null) {
                     Model model = Model.load(target.getClass());
@@ -194,12 +187,11 @@ class Observer extends ModelWalker implements ModelWalkListener, PropertyListene
         if (mode != 3) {
             // remove all registered listener from each elements on property path
             mode = 3; // remove mode
-            traverse(path);
+            traverse(root, path);
 
             if (listener instanceof Observer) {
                 ((Observer) listener).dispose();
             }
         }
     }
-
 }

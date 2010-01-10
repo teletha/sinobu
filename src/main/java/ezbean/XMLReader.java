@@ -29,7 +29,16 @@ import ezbean.model.Model;
 import ezbean.model.Property;
 
 /**
- * @version 2009/07/22 21:36:25
+ * <p>
+ * XML reader for Object Graph deserialization.
+ * </p>
+ * <p>
+ * We could select to use List implementaion instead of Map for management of implicit object
+ * identifier. But it requires linear time to search the existing element. So we should use Map
+ * which provides constant-time performance for seaching element.
+ * </p>
+ * 
+ * @version 2010/01/10 17:11:45
  */
 class XMLReader extends XMLFilterImpl {
 
