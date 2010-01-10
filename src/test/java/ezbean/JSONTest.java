@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import ezbean.sample.bean.BuiltinBean;
 import ezbean.sample.bean.ChainBean;
+import ezbean.sample.bean.Group;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.School;
@@ -120,7 +121,7 @@ public class JSONTest {
     }
 
     @Test
-    public void testList() {
+    public void list() {
         List<String> list = new ArrayList();
         list.add("one");
         list.add("two");
@@ -143,7 +144,7 @@ public class JSONTest {
     }
 
     @Test
-    public void testMap() {
+    public void map() {
         Map<String, String> map = new HashMap();
         map.put("one", "1");
         map.put("two", "2");
@@ -179,6 +180,25 @@ public class JSONTest {
         assertEquals(String.class, bean.getSomeClass());
         assertEquals(new Date(0), bean.getDate());
         assertEquals(new BigInteger("1234567890987654321"), bean.getBigInteger());
+    }
+
+    @Test
+    public void duplication() {
+        Group group = I.make(Group.class);
+        List<Person> list = new ArrayList();
+        Person person1 = I.make(Person.class);
+        person1.setAge(1);
+        Person person2 = I.make(Person.class);
+        person2.setAge(2);
+
+        list.add(person1);
+        list.add(person1);
+        list.add(person2);
+        group.setMembers(list);
+
+        // write
+        String json = I.json(group);
+        assertEquals("{\"members\":[{\"age\":\"1\"},{\"age\":\"1\"},{\"age\":\"2\"}]}", json);
     }
 
     @Test
@@ -229,7 +249,7 @@ public class JSONTest {
         assertNotNull(I.json(Person.class, "@"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ClassCircularityError.class)
     public void testCyclicRootNode() {
         ChainBean chain = I.make(ChainBean.class);
         chain.setNext(chain);

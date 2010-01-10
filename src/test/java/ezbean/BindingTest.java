@@ -17,11 +17,8 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
-
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.Disposable;
 import ezbean.sample.bean.ChainBean;
 import ezbean.sample.bean.GenericBean;
 import ezbean.sample.bean.GenericGetterBean;
@@ -30,7 +27,6 @@ import ezbean.sample.bean.GenericStringBean;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
 import ezbean.sample.bean.Student;
-
 
 /**
  * DOCUMENT.

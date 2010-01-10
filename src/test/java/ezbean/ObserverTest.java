@@ -17,17 +17,12 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
-
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.Disposable;
-import ezbean.PropertyListener;
 import ezbean.sample.bean.GenericStringBean;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
 import ezbean.sample.bean.Student;
-
 
 /**
  * DOCUMENT.
@@ -240,8 +235,8 @@ public class ObserverTest {
         private Object newValue;
 
         /**
-         * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String,
-         *      java.lang.Object, java.lang.Object)
+         * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
+         *      java.lang.Object)
          */
         public void change(Object bean, String propertyName, Object oldValue, Object newValue) {
             this.bean = bean;

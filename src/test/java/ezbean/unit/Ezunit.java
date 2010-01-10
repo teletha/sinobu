@@ -344,7 +344,6 @@ public class Ezunit {
         /**
          * @see javax.xml.namespace.NamespaceContext#getNamespaceURI(java.lang.String)
          */
-        @Override
         public String getNamespaceURI(String prefix) {
             if (prefix.equals("ez")) {
                 return "http://ez.bean/";
@@ -355,7 +354,6 @@ public class Ezunit {
         /**
          * @see javax.xml.namespace.NamespaceContext#getPrefix(java.lang.String)
          */
-        @Override
         public String getPrefix(String namespaceURI) {
             return null;
         }
@@ -363,7 +361,6 @@ public class Ezunit {
         /**
          * @see javax.xml.namespace.NamespaceContext#getPrefixes(java.lang.String)
          */
-        @Override
         public Iterator getPrefixes(String namespaceURI) {
             return null;
         }

@@ -16,7 +16,28 @@
 package ezbean;
 
 /**
+ * <p>
  * This lifestyle guarantees that only one instance of a specific class exists per thread.
+ * </p>
+ * <p>
+ * This class can be used instead of {@link ThreadLocal} class like the following:
+ * </p>
+ * 
+ * <pre>
+ * private static final ThreadSpecific&lt;SimpleDateFormat&gt; formatter = new ThreadSpecific(SimpleDateFormat.class);
+ * </pre>
+ * <p>
+ * This is equivalent to the next code.
+ * </p>
+ * 
+ * <pre>
+ * private static final ThreadLocal&lt;SimpleDateFormat&gt; formatter = new ThreadLocal&lt;SimpleDateFormat&gt;() {
+ *     &#064;Override
+ *     protected SimpleDateFormat initialValue() {
+ *         return new SimpleDateFormat();
+ *     }
+ * };
+ * </pre>
  * 
  * @see Prototype
  * @see Singleton

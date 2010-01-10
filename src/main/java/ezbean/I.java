@@ -66,7 +66,6 @@ import ezbean.io.FileSystem;
 import ezbean.model.ClassUtil;
 import ezbean.model.Codec;
 import ezbean.model.Model;
-import ezbean.model.ModelWalker;
 import ezbean.model.Property;
 import ezbean.module.ModuleLoader;
 import ezbean.module.ModuleRegistry;
@@ -552,7 +551,7 @@ public class I implements ClassLoadListener<Extensible> {
         StringBuilder builder = new StringBuilder();
 
         // jsonize
-        new JSON(config, builder).traverse();
+        new JSON(builder).traverse(config);
 
         // API definition
         return builder.toString();
@@ -722,12 +721,15 @@ public class I implements ClassLoadListener<Extensible> {
         // must initialize it.
         Deque<Class> context = dependencies.resolve();
 
-        // If the context contains the service class already, it has a circular reference in
-        // dependencies.
+        // Don't use 'contains method' check here to resolve singleton based circular reference. So
+        // we must judge it from the size of context. If the context contains too many classes, it
+        // has a circular reference independencies.
         if (context.size() > 64) {
+            // Deque will be contain repeated Classes so we must shrink it with
+            // maintaining its class order.
             throw new ClassCircularityError(new LinkedHashSet(context).toString());
         }
-        context.offer(modelClass);
+        context.add(modelClass);
 
         // create new life style for the service class
         try {
@@ -1226,9 +1228,7 @@ public class I implements ClassLoadListener<Extensible> {
             xml.startPrefixMapping("ez", URI);
 
             // traverse configuration
-            ModelWalker walker = new ModelWalker(config);
-            walker.addListener(new XMLWriter(xml));
-            walker.traverse();
+            new XMLWriter(xml).traverse(config);
 
             xml.endDocument();
             // xml end

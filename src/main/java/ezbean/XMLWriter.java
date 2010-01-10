@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 import ezbean.model.Model;
-import ezbean.model.ModelWalkListener;
+import ezbean.model.ModelWalker;
 import ezbean.model.Property;
 
 /**
@@ -38,16 +38,18 @@ import ezbean.model.Property;
  * which provides constant-time performance for seaching element.
  * </p>
  * 
- * @version 2009/07/23 15:55:48
+ * @version 2010/01/10 17:11:26
  */
-@SuppressWarnings("serial")
-class XMLWriter extends HashMap<Object, Integer> implements ModelWalkListener {
+class XMLWriter extends ModelWalker {
 
     /** The content handler. */
     private final ContentHandler handler;
 
-    /** The implicit object identifier. */
-    private int identifier = 0;
+    /** The implicit object identifier counter. */
+    private int id = 0;
+
+    /** The implicit object identifier mapping. */
+    private Map<Object, Integer> ids = new HashMap();
 
     /** The current stored node name. */
     private String name;
@@ -65,10 +67,10 @@ class XMLWriter extends HashMap<Object, Integer> implements ModelWalkListener {
     }
 
     /**
-     * @see ezbean.model.ModelWalkListener#enterNode(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object)
+     * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object, boolean)
      */
-    public void enterNode(Model model, Property property, Object node) {
+    protected void enter(Model model, Property property, Object node, boolean cyclic) {
         // If the specfied model or property requires new element for serialization, we must write
         // out the previous start element.
         if (model.isCollection()) {
@@ -93,25 +95,22 @@ class XMLWriter extends HashMap<Object, Integer> implements ModelWalkListener {
             if (property.isAttribute()) {
                 attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null, I.transform(node, String.class));
             } else {
-                // check cyclic node
-                Integer i = get(node);
-
-                if (i != null) {
+                if (cyclic) {
                     // create reference id attribute
-                    attributes.addAttribute(URI, null, "ez:ref", null, i.toString());
+                    attributes.addAttribute(URI, null, "ez:ref", null, ids.get(node).toString());
                 }
 
                 // record node with identifier
-                put(node, identifier++);
+                ids.put(node, id++);
             }
         }
     }
 
     /**
-     * @see ezbean.model.ModelWalkListener#leaveNode(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object)
+     * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object, boolean)
      */
-    public void leaveNode(Model model, Property property, Object node) {
+    protected void leave(Model model, Property property, Object node, boolean cyclic) {
         // If the specfied model or property requires new element for serialization, we must write
         // out the previous start element.
         if (model.isCollection() || !property.isAttribute()) {

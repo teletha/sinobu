@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import ezbean.I;
 
 /**
- * @version 2009/12/30 22:35:22
+ * @version 2010/01/10 17:10:23
  */
 class MapModel extends Model<Map> {
 
