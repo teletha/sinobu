@@ -575,7 +575,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void readAndWriteMultipleReference() throws Exception {
+    public void multipleReference() throws Exception {
         Person koume = I.make(Person.class);
         koume.setFirstName("Koume");
         koume.setLastName("Suzukawa");
@@ -614,10 +614,13 @@ public class ConfigurationTest {
         assertEquals("Tamaki", list.get(3).getFirstName());
         assertEquals("Akiko", list.get(4).getFirstName());
         assertEquals("Tamaki", list.get(5).getFirstName());
+        assertEquals(list.get(0), list.get(1));
+        assertEquals(list.get(2), list.get(4));
+        assertEquals(list.get(3), list.get(5));
     }
 
     @Test
-    public void readAndWriteMultipleAttributeReference() throws Exception {
+    public void multipleAttributeReference() throws Exception {
         StringList stringList = I.make(StringList.class);
         List<String> list = new ArrayList<String>();
         list.add("1");
