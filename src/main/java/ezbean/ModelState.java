@@ -33,7 +33,7 @@ final class ModelState implements PropertyWalker {
     final Model model;
 
     /** The curret object. */
-    final Object object;
+    Object object;
 
     /** The property for {@link XMLReader} process. */
     Property property;
@@ -62,5 +62,4 @@ final class ModelState implements PropertyWalker {
         // never check null because PropertyWalker traverses existing properties
         this.model.set(object, dest, I.transform(node, dest.model.type));
     }
-
 }

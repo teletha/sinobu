@@ -23,7 +23,12 @@ import ezbean.model.ModelWalker;
 import ezbean.model.Property;
 
 /**
- * @version 2010/01/10 10:20:13
+ * <p>
+ * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor nodes,
+ * but same object in sibling nodes will be acceptable.
+ * </p>
+ * 
+ * @version 2010/01/12 20:32:11
  */
 class JSON extends ModelWalker {
 
@@ -34,23 +39,19 @@ class JSON extends ModelWalker {
     private boolean first = true;
 
     /**
-     * @param root
-     * @param out
+     * JSON serializer.
+     * 
+     * @param out An output target.
      */
-    public JSON(Appendable out) {
-        // setup
+    JSON(Appendable out) {
         this.out = out;
     }
 
     /**
      * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object, boolean)
+     *      java.lang.Object)
      */
-    protected void enter(Model model, Property property, Object node, boolean cyclic) {
-        if (cyclic) {
-            throw new ClassCircularityError(record.toString());
-        }
-
+    protected void enter(Model model, Property property, Object node) {
         try {
             // check whether this is first property in current context or not.
             if (first) {
@@ -61,8 +62,8 @@ class JSON extends ModelWalker {
                 out.append(',');
             }
 
-            // write property key
-            if (record.size() != 1 && model.type != List.class) {
+            // write property key (root node and List node doesn't need key)
+            if (nodes.size() != 0 && model.type != List.class) {
                 write(property.name);
                 out.append(':');
             }
@@ -71,11 +72,13 @@ class JSON extends ModelWalker {
             if (property.isAttribute()) {
                 write(I.transform(node, String.class));
             } else {
-                if (property.model.type == List.class) {
-                    out.append('[');
-                } else {
-                    out.append('{');
+                // check cyclic node (non-attribute node only apply this check)
+                if (nodes.contains(node)) {
+                    throw new ClassCircularityError(nodes.toString());
                 }
+
+                // write suitable brace
+                out.append(property.model.type == List.class ? '[' : '{');
 
                 // reset next context
                 first = true;
@@ -87,16 +90,16 @@ class JSON extends ModelWalker {
 
     /**
      * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object, boolean)
+     *      java.lang.Object)
      */
-    protected void leave(Model model, Property property, Object node, boolean cyclic) {
+    protected void leave(Model model, Property property, Object node) {
         try {
             if (!property.isAttribute()) {
-                if (property.model.type == List.class) {
-                    out.append(']');
-                } else {
-                    out.append('}');
-                }
+                // unregister non-attribute node
+                nodes.remove(node);
+
+                // write suitable brace
+                out.append(property.model.type == List.class ? ']' : '}');
             }
         } catch (IOException e) {
             throw I.quiet(e);
@@ -108,14 +111,14 @@ class JSON extends ModelWalker {
      * Write JSON literal with quote.
      * </p>
      * 
-     * @param chars A character sequence.
+     * @param value A character sequence.
      * @throws IOException
      */
-    private void write(CharSequence chars) throws IOException {
+    private void write(String value) throws IOException {
         out.append('"');
 
-        for (int i = 0; i < chars.length(); i++) {
-            char c = chars.charAt(i);
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
 
             switch (c) {
             case '"':

@@ -18,42 +18,40 @@ package ezbean.model;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
  * ModelWalker can walk around in the object graph. Whenever this walker traverses the object graph,
  * the graph walk event will happen and you can receive it by overwrite
- * {@link #enter(Model, Property, Object, boolean)} and
- * {@link #leave(Model, Property, Object, boolean)} methods.
+ * {@link #enter(Model, Property, Object)} and {@link #leave(Model, Property, Object)} methods.
  * </p>
  * <p>
- * This class is <em>thread-safe</em>. The "snapshot" style traverse method uses a reference to the
- * state of the listener's list at the point that the traverse was started. This list never changes
- * during the traversing of the object graph, so interference is impossible.
+ * This class is <em>not thread-safe</em>.
  * </p>
  * 
- * @version 2010/01/10 8:30:22
+ * @version 2010/01/12 20:58:22
  */
 public abstract class ModelWalker implements PropertyWalker {
 
     /** The record for traversed objects. */
-    protected final LinkedHashSet record = new LinkedHashSet();
+    protected final Set nodes = new LinkedHashSet();
 
     /**
      * <p>
      * Traverse this object graph and process each object.
      * </p>
      * 
-     * @param base A point of departure.
+     * @param node A point of departure.
      */
-    public void traverse(Object base) {
-        Model model = Model.load(base.getClass());
+    public void traverse(Object node) {
+        Model model = Model.load(node.getClass());
 
         // traverse all nodes
-        traverse(model, new Property(model, model.name), base, null);
+        traverse(model, new Property(model, model.name), node, null);
 
         // clear walker information
-        record.clear();
+        nodes.clear();
     }
 
     /**
@@ -63,16 +61,16 @@ public abstract class ModelWalker implements PropertyWalker {
      * will be returned.
      * </p>
      * 
-     * @param base A point of departure.
+     * @param node A point of departure.
      * @param path A list of property paths to traverse.
      * @return A point of arrival.
      * @throws NullPointerException If the specified path is <code>null</code>.
      */
-    public Object traverse(Object base, List<String> path) {
-        Model model = Model.load(base.getClass());
+    public Object traverse(Object node, List<String> path) {
+        Model model = Model.load(node.getClass());
 
         // start traversing along the path
-        return traverse(model, new Property(model, model.name), base, path.iterator());
+        return traverse(model, new Property(model, model.name), node, path.iterator());
     }
 
     /**
@@ -97,11 +95,8 @@ public abstract class ModelWalker implements PropertyWalker {
      * @param path A iterator of property names.
      */
     private Object traverse(Model model, Property property, Object node, Iterator<String> path) {
-        // check cyclic reference
-        boolean cyclic = !record.add(node);
-
         // enter node
-        enter(model, property, node, cyclic);
+        enter(model, property, node);
 
         // traverse
         Object value = node;
@@ -109,7 +104,7 @@ public abstract class ModelWalker implements PropertyWalker {
         if (node != null) {
             if (path == null) {
                 // check cyclic node
-                if (!cyclic) property.model.walk(value, this);
+                if (nodes.add(node)) property.model.walk(value, this);
             } else {
                 if (path.hasNext()) {
                     Model nextModel = property.model;
@@ -125,10 +120,7 @@ public abstract class ModelWalker implements PropertyWalker {
         }
 
         // leave node
-        leave(model, property, node, cyclic);
-
-        // check cyclic reference
-        record.remove(node);
+        leave(model, property, node);
 
         // API definition
         return value;
@@ -143,9 +135,8 @@ public abstract class ModelWalker implements PropertyWalker {
      * @param property An arc in object graph. This value must not be <code>null</code>. If the
      *            visited node is root, this value will be a object property of the root node.
      * @param node A current node that {@link ModelWalker} arrives at.
-     * @param cyclic TODO
      */
-    protected abstract void enter(Model model, Property property, Object node, boolean cyclic);
+    protected abstract void enter(Model model, Property property, Object node);
 
     /**
      * This method is called whenever the {@link ModelWalker} leaves a node in object graph.
@@ -156,7 +147,6 @@ public abstract class ModelWalker implements PropertyWalker {
      * @param property An arc in object graph. This value must not be <code>null</code>. If the
      *            visited node is root, this value will be a object property of the root node.
      * @param node A current node that {@link ModelWalker} arrives at.
-     * @param cyclic TODO
      */
-    protected abstract void leave(Model model, Property property, Object node, boolean cyclic);
+    protected abstract void leave(Model model, Property property, Object node);
 }

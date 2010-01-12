@@ -74,9 +74,9 @@ class Observer extends ModelWalker implements PropertyListener, Disposable {
 
     /**
      * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object, boolean)
+     *      java.lang.Object)
      */
-    protected void enter(Model model, Property property, Object node, boolean cyclic) {
+    protected void enter(Model model, Property property, Object node) {
         switch (mode) {
         case 1:
             if (info[0] == node) {
@@ -131,9 +131,9 @@ class Observer extends ModelWalker implements PropertyListener, Disposable {
 
     /**
      * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object, boolean)
+     *      java.lang.Object)
      */
-    protected void leave(Model model, Property property, Object node, boolean cyclic) {
+    protected void leave(Model model, Property property, Object node) {
         index--;
     }
 

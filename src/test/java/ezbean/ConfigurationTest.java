@@ -705,11 +705,12 @@ public class ConfigurationTest {
         assertEquals("OtoTatibana", school.getName());
         assertEquals(2, school.getStudents().size());
 
-        student = school.getStudents().get(0);
-        assertNotNull(student);
-        assertEquals(17, student.getAge());
-        assertEquals("Himeko", student.getFirstName());
-        assertEquals("Kurusugawa", student.getLastName());
+        student2 = school.getStudents().get(0);
+        assertNotNull(student2);
+        assertEquals(17, student2.getAge());
+        assertEquals("Himeko", student2.getFirstName());
+        assertEquals("Kurusugawa", student2.getLastName());
+        assertEquals(student, student2);
     }
 
     /**
