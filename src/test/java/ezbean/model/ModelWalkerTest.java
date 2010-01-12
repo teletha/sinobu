@@ -197,9 +197,9 @@ public class ModelWalkerTest {
 
         /**
          * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
-         *      java.lang.Object, boolean)
+         *      java.lang.Object)
          */
-        protected void enter(Model model, Property property, Object node, boolean cyclic) {
+        protected void enter(Model model, Property property, Object node) {
             Info info = new Info();
             info.model = model;
             info.property = property;
@@ -210,9 +210,9 @@ public class ModelWalkerTest {
 
         /**
          * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
-         *      java.lang.Object, boolean)
+         *      java.lang.Object)
          */
-        protected void leave(Model model, Property property, Object propertyValue, boolean cyclic) {
+        protected void leave(Model model, Property property, Object propertyValue) {
             Info info = new Info();
             info.model = model;
             info.property = property;
@@ -249,19 +249,19 @@ public class ModelWalkerTest {
 
         /**
          * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
-         *      java.lang.Object, boolean)
+         *      java.lang.Object)
          */
         @Override
-        protected void enter(Model model, Property property, Object node, boolean cyclic) {
+        protected void enter(Model model, Property property, Object node) {
             // do nothing
         }
 
         /**
          * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
-         *      java.lang.Object, boolean)
+         *      java.lang.Object)
          */
         @Override
-        protected void leave(Model model, Property property, Object node, boolean cyclic) {
+        protected void leave(Model model, Property property, Object node) {
             // do nothing
         }
     }

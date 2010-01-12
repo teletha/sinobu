@@ -17,7 +17,7 @@ package ezbean;
 
 import static ezbean.I.*;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.xml.sax.Attributes;
@@ -38,18 +38,18 @@ import ezbean.model.Property;
  * which provides constant-time performance for seaching element.
  * </p>
  * 
- * @version 2010/01/10 17:11:45
+ * @version 2010/01/12 22:54:15
  */
 class XMLReader extends XMLFilterImpl {
 
     /** The root object. */
     private final Object root;
 
+    /** The id and object mapping. */
+    private final HashMap objects = new HashMap();
+
     /** The stack of states. */
     private final LinkedList<ModelState> states = new LinkedList<ModelState>();
-
-    /** The object trace. */
-    private final ArrayList objects = new ArrayList();
 
     /**
      * Create ConfigurationReader instance.
@@ -58,7 +58,6 @@ class XMLReader extends XMLFilterImpl {
      */
     XMLReader(Object root) {
         this.root = root;
-        objects.add(root);
     }
 
     /**
@@ -91,45 +90,50 @@ class XMLReader extends XMLFilterImpl {
             // Compute object
             //
             // Property indicates a object, so you should create a suitable object.
-            Object object;
+            Object object = null;
 
-            // check reference
-            String ref = attributes.getValue(URI, "ref");
+            // check attribute model
+            Codec codec = property.model.getCodec();
 
-            if (ref != null) {
-                object = objects.get(Integer.parseInt(ref));
-            } else {
-                // check attribute model
-                Codec codec = property.model.getCodec();
+            if (codec != null) {
+                String value = attributes.getValue("value");
 
-                if (codec != null) {
-                    String value = attributes.getValue("value");
-
-                    if (value == null) {
-                        object = null;
-                    } else {
-                        object = codec.decode(value);
-                    }
-
+                if (value == null) {
+                    object = null;
                 } else {
-                    // collection model and normal model
-                    object = make(property.model.type);
+                    object = codec.decode(value);
                 }
+            } else {
+                // collection model and normal model
+                object = make(property.model.type);
             }
 
             // create next state
             state = new ModelState(object, property.model);
             state.property = property;
-
-            if (!property.isAttribute()) {
-                objects.add(state.object);
-            }
         }
 
         // assign properties which are represented by attributes
         for (int i = 0; i < attributes.getLength(); i++) {
             // check namespace
-            if (!attributes.getURI(i).equals(URI)) {
+            if (attributes.getURI(i).equals(URI)) {
+                if (attributes.getLocalName(i).equals("id")) {
+                    // retrieve identifier for the current object
+                    localName = attributes.getValue(i);
+
+                    // retrieve object for the identifier
+                    Object object = objects.get(localName);
+
+                    if (object == null) {
+                        // Object is not registered for the identifier, so this is first encounter
+                        // of thie object.
+                        objects.put(localName, state.object);
+                    } else {
+                        // Object is registered for the identifier, so this is referenced object.
+                        state.object = object;
+                    }
+                }
+            } else {
                 Property property = state.model.getProperty(attributes.getLocalName(i));
 
                 // ignore deprecated property

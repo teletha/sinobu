@@ -17,8 +17,8 @@ package ezbean;
 
 import static ezbean.I.*;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -38,18 +38,18 @@ import ezbean.model.Property;
  * which provides constant-time performance for seaching element.
  * </p>
  * 
- * @version 2010/01/10 17:11:26
+ * @version 2010/01/12 22:54:06
  */
 class XMLWriter extends ModelWalker {
 
     /** The content handler. */
     private final ContentHandler handler;
 
-    /** The implicit object identifier counter. */
-    private int id = 0;
+    /** The object and id mapping. */
+    private ConcurrentHashMap<Object, Integer> objects = new ConcurrentHashMap();
 
-    /** The implicit object identifier mapping. */
-    private Map<Object, Integer> ids = new HashMap();
+    /** The current traversing mode. */
+    private boolean mode = true;
 
     /** The current stored node name. */
     private String name;
@@ -67,61 +67,78 @@ class XMLWriter extends ModelWalker {
     }
 
     /**
-     * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object, boolean)
+     * @see ezbean.model.ModelWalker#traverse(java.lang.Object)
      */
-    protected void enter(Model model, Property property, Object node, boolean cyclic) {
-        // If the specfied model or property requires new element for serialization, we must write
-        // out the previous start element.
-        if (model.isCollection()) {
-            write();
+    @Override
+    public void traverse(Object node) {
+        super.traverse(node);
+        mode = false;
+        super.traverse(node);
+    }
 
-            // collection item property
-            name = property.model.name;
-
-            // collection needs key attribute
-            if (model.type == Map.class) {
-                attributes.addAttribute(URI, null, "ez:key", null, property.name);
+    /**
+     * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
+     */
+    protected void enter(Model model, Property property, Object node) {
+        if (mode) {
+            if (!property.isAttribute() && nodes.contains(node)) {
+                objects.putIfAbsent(node, objects.size());
             }
-        } else if (!property.isAttribute()) {
-            write();
+        } else {
+            // If the specfied model or property requires new element for serialization, we must
+            // write out the previous start element.
+            if (model.isCollection()) {
+                write();
 
-            name = property.name;
-        }
+                // collection item property
+                name = property.model.name;
 
-        // If the collection item is attribute node, that is represented as xml value attribute and
-        // attribute node that collection node doesn't host is written as xml attribute too.
-        if (node != null) {
-            if (property.isAttribute()) {
-                attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null, I.transform(node, String.class));
-            } else {
-                if (cyclic) {
-                    // create reference id attribute
-                    attributes.addAttribute(URI, null, "ez:ref", null, ids.get(node).toString());
+                // collection needs key attribute
+                if (model.type == Map.class) {
+                    attributes.addAttribute(URI, null, "ez:key", null, property.name);
                 }
+            } else if (!property.isAttribute()) {
+                write();
 
-                // record node with identifier
-                ids.put(node, id++);
+                name = property.name;
+            }
+
+            // If the collection item is attribute node, that is represented as xml value attribute
+            // and attribute node that collection node doesn't host is written as xml attribute too.
+            if (node != null) {
+                if (property.isAttribute()) {
+                    attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null, I.transform(node, String.class));
+                } else {
+                    Integer integer = objects.get(node);
+
+                    if (integer != null) {
+                        // create reference id attribute
+                        attributes.addAttribute(URI, null, "ez:id", null, integer.toString());
+                    }
+                }
             }
         }
     }
 
     /**
      * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object, boolean)
+     *      java.lang.Object)
      */
-    protected void leave(Model model, Property property, Object node, boolean cyclic) {
-        // If the specfied model or property requires new element for serialization, we must write
-        // out the previous start element.
-        if (model.isCollection() || !property.isAttribute()) {
-            write();
+    protected void leave(Model model, Property property, Object node) {
+        if (!mode) {
+            // If the specfied model or property requires new element for serialization, we must
+            // write out the previous start element.
+            if (model.isCollection() || !property.isAttribute()) {
+                write();
 
-            try {
-                handler.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
-            } catch (SAXException e) {
-                // If this exception will be thrown, it is bug of this program. So we must rethrow
-                // the wrapped error in here.
-                throw new Error(e);
+                try {
+                    handler.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
+                } catch (SAXException e) {
+                    // If this exception will be thrown, it is bug of this program. So we must
+                    // rethrow the wrapped error in here.
+                    throw new Error(e);
+                }
             }
         }
     }
