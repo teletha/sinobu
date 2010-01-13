@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.model.Codec;
@@ -65,7 +64,7 @@ class XMLReader extends XMLFilterImpl {
      *      java.lang.String, org.xml.sax.Attributes)
      */
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) {
         ModelState state;
 
         if (states.size() == 0) {
@@ -157,7 +156,7 @@ class XMLReader extends XMLFilterImpl {
      *      java.lang.String)
      */
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         ModelState current = states.pollLast();
         ModelState parent = states.peekLast();
 
