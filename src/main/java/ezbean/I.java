@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -42,7 +43,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -173,7 +173,7 @@ import ezbean.xml.XMLFormatter;
  * </pre>
  * 
  * @see ServiceLoader
- * @version 2010/01/05 19:42:40
+ * @version 2010/01/13 20:57:32
  */
 public class I implements ClassLoadListener<Extensible> {
 
@@ -202,7 +202,7 @@ public class I implements ClassLoadListener<Extensible> {
     // unload
     // v
     // write weave
-    // xerox xml
+    // xml xerox
     // yield
     // zip
 
@@ -266,7 +266,7 @@ public class I implements ClassLoadListener<Extensible> {
     private static final ThreadSpecific<Deque<List>> tracers = new ThreadSpecific(ArrayDeque.class);
 
     /** The configuration assosiation manager. */
-    private static final Map<Object, File> configurations = new WeakHashMap();
+    // private static final Map<Object, File> configurations = new WeakHashMap();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -544,14 +544,14 @@ public class I implements ClassLoadListener<Extensible> {
      * Write out the given configuration object as JSON.
      * </p>
      * 
-     * @param config A configuration object. <code>null</code> is acceptable, but this method will
-     *            do nothing (don't throw {@link java.lang.NullPointerException}).
+     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
+     *            nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static String json(Object config) {
+    public static String json(Object model) {
         StringBuilder builder = new StringBuilder();
 
         // jsonize
-        new JSON(builder).traverse(config);
+        new JSON(builder).traverse(model);
 
         // API definition
         return builder.toString();
@@ -562,7 +562,7 @@ public class I implements ClassLoadListener<Extensible> {
      * Read the given configuration as json and create the configuration object.
      * </p>
      * 
-     * @param configClass A configuration class. <code>null</code> will throw
+     * @param modelClass A model class. <code>null</code> will throw
      *            {@link java.lang.NullPointerException}.
      * @param input A configuration as json to be red. If <code>null</code>, empty string or invalid
      *            json string is passed, this method ignores this input and returns the default
@@ -573,11 +573,11 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws UnsupportedOperationException If the config class is inner-class.
      * @throws ClassCircularityError If the config class has circular dependency.
      */
-    public static <T> T json(Class<T> configClass, String input) {
+    public static <M> M json(Class<M> modelClass, String input) {
         try {
-            return json(Model.load(configClass), script.eval("a=" + input));
+            return json(Model.load(modelClass), script.eval("a=" + input));
         } catch (ScriptException e) {
-            return make(configClass);
+            return make(modelClass);
         }
     }
 
@@ -586,14 +586,14 @@ public class I implements ClassLoadListener<Extensible> {
      * Helper method to traverse json structure using Java Object {@link Model}.
      * </p>
      * 
-     * @param <T> A current model type.
+     * @param <M> A current model type.
      * @param model A java object model.
      * @param js A javascript value.
      * @return A restored java object.
      */
-    private static <T> T json(Model<T> model, Object js) {
+    private static <M> M json(Model<M> model, Object js) {
         // create new java object to restore values
-        T java = make(model.type);
+        M java = make(model.type);
 
         if (js instanceof IdScriptableObject) {
             for (Object id : ((IdScriptableObject) js).getIds()) {
@@ -1014,89 +1014,53 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Read the given configuration file and create the configuration object. It is the exact
-     * equivalent of the following:
+     * Write out the given configuration object to the file.
      * </p>
      * 
-     * <pre>
-     * try {
-     *     read(configClass, null);
-     * } catch (IOException e) {
-     *     // error handling
-     * }
-     * </pre>
-     * 
-     * @param configClass A configuration class. <code>null</code> will throw
-     *            {@link java.lang.NullPointerException}.
-     * @return A configuration object to be created.
-     * @throws NullPointerException If the config class is null.
-     * @throws IllegalArgumentException If the config class is non-accessible or final class.
-     * @throws UnsupportedOperationException If the config class is inner-class.
-     * @throws ClassCircularityError If the config class has circular dependency.
+     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
+     *            nothing (don't throw {@link java.lang.NullPointerException}).
+     * @param output A target configuration file to write out. <code>null</code> is acceptable, but
+     *            this method will do nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static <T> T read(Class<T> configClass) {
-        try {
-            return read(configClass, null);
-        } catch (IOException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
-        }
-    }
+    public static void xml(Object model, File output) {
+        if (model != null && output != null) {
+            // We must confirm that the parent directory exists because FileOutputStream can't
+            // create nested file.
+            output.getAbsoluteFile().getParentFile().mkdirs();
 
-    /**
-     * <p>
-     * Read the given configuration file and create the configuration object.
-     * </p>
-     * 
-     * @param configClass A configuration class. <code>null</code> will throw
-     *            {@link java.lang.NullPointerException}.
-     * @param configFile A configuration file to be red. If <code>null</code> is passed, EaseBean
-     *            uses a default file which is assosiated with the given configuration object.
-     * @return A configuration object to be created.
-     * @throws NullPointerException If the config class is null.
-     * @throws IllegalArgumentException If the config class is non-accessible or final class.
-     * @throws UnsupportedOperationException If the config class is inner-class.
-     * @throws IOException If the configuration file exists but is a directory rather than a regular
-     *             file, or cannot be opened for any other reason.
-     * @throws ClassCircularityError If the config class has circular dependency.
-     */
-    public static <T> T read(Class<T> configClass, File configFile) throws IOException {
-        // create configuration
-        T config = make(configClass);
+            // lock
+            lock.writeLock().lock();
 
-        // read configuration data
-        read(config, configFile);
+            Writer writer = null;
 
-        // API definition
-        return config;
-    }
+            try {
+                // prepare stream
+                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output), encoding));
+                XMLFormatter xml = new XMLFormatter(writer);
 
-    /**
-     * <p>
-     * Read the given configuration file and create the configuration object. It is the exact
-     * equivalent of the following:
-     * </p>
-     * 
-     * <pre>
-     * try {
-     *     read(config, null);
-     * } catch (IOException e) {
-     *     // error handling
-     * }
-     * </pre>
-     * 
-     * @param config A configuration object. <code>null</code> is acceptable, but this method will
-     *            do nothing (don't throw {@link java.lang.NullPointerException}).
-     * @see #read(Object, File)
-     */
-    public static void read(Object config) {
-        try {
-            read(config, null);
-        } catch (IOException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
+                // xml start
+                xml.startDocument();
+                xml.startPrefixMapping("ez", URI);
+
+                // traverse configuration
+                new XMLWriter(xml).traverse(model);
+
+                xml.endDocument();
+                // xml end
+            } catch (Exception e) {
+                throw quiet(e);
+            } finally {
+                // unlock
+                lock.writeLock().unlock();
+
+                try {
+                    if (writer != null) {
+                        writer.close();
+                    }
+                } catch (IOException e) {
+                    throw quiet(e);
+                }
+            }
         }
     }
 
@@ -1108,140 +1072,41 @@ public class I implements ClassLoadListener<Extensible> {
      * In view of the initial state (e.g. when the system starts up, the configuration file may been
      * not created yet), this method will do nothing when the file doesn't exist. </p>
      * 
-     * @param config A configuration object. <code>null</code> is acceptable, but this method will
-     *            do nothing (don't throw {@link java.lang.NullPointerException}).
-     * @param configFile A configuration file to be red. If <code>null</code> is passed, EaseBean
-     *            uses a default file which is assosiated with the given configuration object.
-     * @throws IOException If the configuration file exists but is a directory rather than a regular
-     *             file, or cannot be opened for any other reason.
+     * @param input A configuration file to be red. <code>null</code> is acceptable, but this method
+     *            will do nothing (don't throw {@link java.lang.NullPointerException}).
+     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
+     *            nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static void read(Object config, File configFile) throws IOException {
-        // check null
-        if (config == null) {
-            return; // The given configuration object is null, so we do nothing.
-        }
+    public static <M> M xml(File input, M model) {
+        if (input != null && input.exists() && model != null) {
+            // lock
+            lock.readLock().lock();
 
-        // read lock
-        lock.readLock().lock();
+            Reader reader = null;
 
-        // try to read
-        try {
-            // check configuration file
-            if (configFile == null) {
-                configFile = new File(workingDirectory, Model.load(config.getClass()).name + ".xml");
-            }
+            try {
+                // prepare stream
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(input), encoding));
 
-            if (!configFile.exists()) {
-                return; // The given configuration file doesn't exist, so we do nothing.
-            }
+                parse(new InputSource(reader), new ezbean.XMLReader(model));
+            } catch (IOException e) {
+                throw quiet(e);
+            } finally {
+                // unlock
+                lock.readLock().unlock();
 
-            // read configuration
-            parse(new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(configFile), encoding))), new ezbean.XMLReader(config));
-
-            // manage configuration
-            configurations.put(config, configFile);
-        } finally {
-            // read unlock
-            lock.readLock().unlock();
-        }
-    }
-
-    /**
-     * <p>
-     * Write out the given configuration object to the file. It is the exact equivalent of the
-     * following:
-     * </p>
-     * 
-     * <pre>
-     * try {
-     *     write(config, null);
-     * } catch (IOException e) {
-     *     // error handling
-     * }
-     * </pre>
-     * 
-     * @param config A configuration object. <code>null</code> is acceptable, but this method will
-     *            do nothing (don't throw {@link java.lang.NullPointerException}).
-     * @see #write(Object, File)
-     */
-    public static void write(Object config) {
-        try {
-            write(config, null);
-        } catch (IOException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
-        }
-    }
-
-    /**
-     * <p>
-     * Write out the given configuration object to the file.
-     * </p>
-     * 
-     * @param config A configuration object. <code>null</code> is acceptable, but this method will
-     *            do nothing (don't throw {@link java.lang.NullPointerException}).
-     * @param configFile A target configuration file to write out. If <code>null</code> is passed,
-     *            EaseBean uses a default file which is assosiated with the given configuration
-     *            object.
-     * @throws IOException If the configuration file exists but is a directory rather than a regular
-     *             file, does not exist but cannot be created, or cannot be opened for any other
-     *             reason.
-     */
-    public static void write(Object config, File configFile) throws IOException {
-        // check null
-        if (config == null) {
-            return; // The given configuration object is null, so we do nothing.
-        }
-
-        // write lock
-        lock.writeLock().lock();
-
-        // try to write
-        Writer writer = null;
-
-        try {
-            // check configration file
-            if (configFile == null) {
-                // check configuration manager
-                configFile = configurations.get(config);
-
-                if (configFile == null) {
-                    configFile = new File(workingDirectory, Model.load(config.getClass()).name + ".xml");
-
-                    // manage configuration
-                    configurations.put(config, configFile);
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    throw quiet(e);
                 }
             }
-
-            // We must confirm that the parent directory exists because FileOutputStream can't
-            // create nested file.
-            configFile.getAbsoluteFile().getParentFile().mkdirs();
-
-            // create data stream
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFile), encoding));
-
-            XMLFormatter xml = new XMLFormatter(writer);
-
-            // xml start
-            xml.startDocument();
-            xml.startPrefixMapping("ez", URI);
-
-            // traverse configuration
-            new XMLWriter(xml).traverse(config);
-
-            xml.endDocument();
-            // xml end
-        } catch (SAXException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow
-            // the wrapped error in here.
-            throw new Error(e);
-        } finally {
-            if (writer != null) writer.close();
-
-            // write unlock
-            lock.writeLock().unlock();
         }
+
+        // API definition
+        return model;
     }
 
     /**

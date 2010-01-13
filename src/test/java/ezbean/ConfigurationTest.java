@@ -85,10 +85,11 @@ public class ConfigurationTest {
         nestingList.setNesting(root);
 
         // write
-        I.write(nestingList, testFile);
+        I.xml(nestingList, testFile);
 
         // read
-        nestingList = I.read(NestingList.class, testFile);
+        nestingList = I.xml(testFile, I.make(NestingList.class));
+
         assertNotNull(nestingList);
 
         root = nestingList.getNesting();
@@ -124,10 +125,10 @@ public class ConfigurationTest {
         primitive.setShort((short) 21);
 
         // write
-        I.write(primitive, testFile);
+        I.xml(primitive, testFile);
 
         // read
-        primitive = I.read(Primitive.class, testFile);
+        primitive = I.xml(testFile, I.make(Primitive.class));
         assertNotNull(primitive);
         assertEquals(true, primitive.isBoolean());
         assertEquals('c', primitive.getChar());
@@ -154,10 +155,10 @@ public class ConfigurationTest {
         stringList.setList(list);
 
         // write
-        I.write(stringList, testFile);
+        I.xml(stringList, testFile);
 
         // read
-        stringList = I.read(StringList.class, testFile);
+        stringList = I.xml(testFile, I.make(StringList.class));
         assertNotNull(stringList);
 
         list = stringList.getList();
@@ -181,10 +182,10 @@ public class ConfigurationTest {
         stringList.setList(list);
 
         // write
-        I.write(stringList, testFile);
+        I.xml(stringList, testFile);
 
         // read
-        stringList = I.read(StringList.class, testFile);
+        stringList = I.xml(testFile, I.make(StringList.class));
         assertNotNull(stringList);
 
         list = stringList.getList();
@@ -207,10 +208,10 @@ public class ConfigurationTest {
         stringMap.setMap(map);
 
         // write
-        I.write(stringMap, testFile);
+        I.xml(stringMap, testFile);
 
         // read
-        stringMap = I.read(StringMap.class, testFile);
+        stringMap = I.xml(testFile, I.make(StringMap.class));
         assertNotNull(stringMap);
 
         map = stringMap.getMap();
@@ -235,10 +236,10 @@ public class ConfigurationTest {
         stringMap.setMap(map);
 
         // write
-        I.write(stringMap, testFile);
+        I.xml(stringMap, testFile);
 
         // read
-        stringMap = I.read(StringMap.class, testFile);
+        stringMap = I.xml(testFile, I.make(StringMap.class));
         assertNotNull(stringMap);
 
         map = stringMap.getMap();
@@ -263,10 +264,10 @@ public class ConfigurationTest {
         bean.setIntegerKey(map);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(CompatibleKeyMap.class, testFile);
+        bean = I.xml(testFile, I.make(CompatibleKeyMap.class));
         assertNotNull(bean);
 
         map = bean.getIntegerKey();
@@ -291,10 +292,10 @@ public class ConfigurationTest {
         bean.setIncompatible(map);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(IncompatibleKeyMap.class, testFile);
+        bean = I.xml(testFile, I.make(IncompatibleKeyMap.class));
         assertNotNull(bean);
 
         map = bean.getIncompatible();
@@ -311,10 +312,10 @@ public class ConfigurationTest {
         bean.setSchoolEnum(SchoolEnum.Miator);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(BuiltinBean.class, testFile);
+        bean = I.xml(testFile, I.make(BuiltinBean.class));
         assertNotNull(bean);
         assertEquals(SchoolEnum.Miator, bean.getSchoolEnum());
     }
@@ -328,10 +329,10 @@ public class ConfigurationTest {
         bean.setDate(new Date(0L));
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(BuiltinBean.class, testFile);
+        bean = I.xml(testFile, I.make(BuiltinBean.class));
         assertNotNull(bean);
         assertEquals(new Date(0L), bean.getDate());
 
@@ -348,10 +349,10 @@ public class ConfigurationTest {
         bean.setSomeClass(EzbeanTest.class);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(BuiltinBean.class, testFile);
+        bean = I.xml(testFile, I.make(BuiltinBean.class));
         assertNotNull(bean);
         assertEquals(EzbeanTest.class, bean.getSomeClass());
 
@@ -368,10 +369,10 @@ public class ConfigurationTest {
         bean.setFile(testFile);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(BuiltinBean.class, testFile);
+        bean = I.xml(testFile, I.make(BuiltinBean.class));
         assertNotNull(bean);
         assertEquals(testFile, bean.getFile());
     }
@@ -385,10 +386,10 @@ public class ConfigurationTest {
         bean.setFile(I.locate(testFile.getAbsolutePath()));
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(BuiltinBean.class, testFile);
+        bean = I.xml(testFile, I.make(BuiltinBean.class));
         assertNotNull(bean);
         assertEquals(testFile, bean.getFile());
     }
@@ -405,10 +406,10 @@ public class ConfigurationTest {
         bean.setNest(map);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(NestedCollection.class, testFile);
+        bean = I.xml(testFile, I.make(NestedCollection.class));
         assertNotNull(bean);
         map = bean.getNest();
         assertNotNull(bean);
@@ -433,10 +434,10 @@ public class ConfigurationTest {
         stringList.setList(list);
 
         // write
-        I.write(stringList, testFile);
+        I.xml(stringList, testFile);
 
         // read
-        stringList = I.read(StringList.class, testFile);
+        stringList = I.xml(testFile, I.make(StringList.class));
         assertNotNull(stringList);
 
         list = stringList.getList();
@@ -464,10 +465,10 @@ public class ConfigurationTest {
         bean.setList(list);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(StringList.class, testFile);
+        bean = I.xml(testFile, I.make(StringList.class));
         assertNotNull(bean);
 
         list = bean.getList();
@@ -494,10 +495,10 @@ public class ConfigurationTest {
         stringMap.setMap(map);
 
         // write
-        I.write(stringMap, testFile);
+        I.xml(stringMap, testFile);
 
         // read
-        stringMap = I.read(StringMap.class, testFile);
+        stringMap = I.xml(testFile, I.make(StringMap.class));
         assertNotNull(stringMap);
 
         map = stringMap.getMap();
@@ -521,10 +522,10 @@ public class ConfigurationTest {
         bean.setMap(map);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(StringMap.class, testFile);
+        bean = I.xml(testFile, I.make(StringMap.class));
         assertNotNull(bean);
 
         map = bean.getMap();
@@ -554,10 +555,10 @@ public class ConfigurationTest {
         bean.setGenericList(list);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(GenericPersonBean.class, testFile);
+        bean = I.xml(testFile, I.make(GenericPersonBean.class));
         assertNotNull(bean);
 
         Person person = bean.getGeneric();
@@ -600,10 +601,10 @@ public class ConfigurationTest {
         bean.setGenericList(list);
 
         // write
-        I.write(bean, testFile);
+        I.xml(bean, testFile);
 
         // read
-        bean = I.read(GenericPersonBean.class, testFile);
+        bean = I.xml(testFile, I.make(GenericPersonBean.class));
         assertNotNull(bean);
 
         list = bean.getGenericList();
@@ -633,10 +634,10 @@ public class ConfigurationTest {
         stringList.setList(list);
 
         // write
-        I.write(stringList, testFile);
+        I.xml(stringList, testFile);
 
         // read
-        stringList = I.read(StringList.class, testFile);
+        stringList = I.xml(testFile, I.make(StringList.class));
         assertNotNull(stringList);
 
         list = stringList.getList();
@@ -660,10 +661,10 @@ public class ConfigurationTest {
         checker.setList(list);
 
         // write
-        I.write(checker, testFile);
+        I.xml(checker, testFile);
 
         // read
-        checker = I.read(Checker.class, testFile);
+        checker = I.xml(testFile, I.make(Checker.class));
         assertNotNull(checker);
         assertEquals(3, checker.size);
     }
@@ -695,10 +696,10 @@ public class ConfigurationTest {
         school.setStudents(students);
 
         // write
-        I.write(student, testFile);
+        I.xml(student, testFile);
 
         // read
-        student = I.read(Student.class, testFile);
+        student = I.xml(testFile, I.make(Student.class));
         assertNotNull(student);
         assertEquals(17, student.getAge());
         assertEquals("Himeko", student.getFirstName());
@@ -735,28 +736,28 @@ public class ConfigurationTest {
     }
 
     /**
-     * Test method for {@link ezbean.I#read(java.lang.Object, java.io.File)}.
+     * Test method for {@link ezbean.I#read(java.io.File, java.lang.Object)}.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testReadWithNull1() throws Exception {
-        I.read(null, null);
+        I.xml((File) null, (Object) null);
     }
 
     /**
-     * Test method for {@link ezbean.I#read(java.lang.Object, java.io.File)}.
+     * Test method for {@link ezbean.I#read(java.io.File, java.lang.Object)}.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testReadWithNull2() throws Exception {
         assertNotNull(testFile);
-        I.read(null, testFile);
+        I.xml(testFile, (Object) null);
     }
 
     /**
-     * Test method for {@link ezbean.I#read(java.lang.Object, java.io.File)}.
+     * Test method for {@link ezbean.I#read(java.io.File, java.lang.Object)}.
      */
     @Test
     public void testReadWithNull3() throws Exception {
-        I.read(Student.class, null);
+        I.xml((File) null, Student.class);
     }
 
     /**
@@ -764,7 +765,7 @@ public class ConfigurationTest {
      */
     @Test
     public void testWriteWithNull1() throws Exception {
-        I.write(null, null);
+        I.xml((Object) null, (File) null);
     }
 
     /**
@@ -773,7 +774,7 @@ public class ConfigurationTest {
     @Test
     public void testWriteWithNull2() throws Exception {
         assertNotNull(testFile);
-        I.write(null, testFile);
+        I.xml((Object) null, testFile);
     }
 
     /**
@@ -789,7 +790,7 @@ public class ConfigurationTest {
         person.setAge(1);
 
         // write Ezbean
-        I.write(person, notExist);
+        I.xml(person, notExist);
 
         // test
         assertTrue(notExist.exists());
@@ -813,7 +814,7 @@ public class ConfigurationTest {
         person.setAge(1);
 
         // write Ezbean
-        I.write(person, notExist);
+        I.xml(person, notExist);
 
         // test
         assertTrue(notExist.exists());

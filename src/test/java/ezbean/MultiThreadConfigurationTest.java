@@ -17,9 +17,7 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
-
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -27,16 +25,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ezbean.I;
 import ezbean.io.FileSystem;
 import ezbean.sample.bean.StringList;
-
 
 /**
  * DOCUMENT.
@@ -73,7 +67,7 @@ public class MultiThreadConfigurationTest {
     }
 
     /**
-     * Test method for {@link ezbean.Configuration#read(java.lang.Object, java.io.File)}.
+     * Test method for {@link ezbean.Configuration#read(java.io.File, java.lang.Object)}.
      */
     @Test
     public void testReadAndWrite1() throws Exception {
@@ -116,7 +110,7 @@ public class MultiThreadConfigurationTest {
          * @see java.util.concurrent.Callable#call()
          */
         public StringList call() throws Exception {
-            return I.read(StringList.class, testFile);
+            return I.xml(testFile, I.make(StringList.class));
         }
     }
 
@@ -142,11 +136,7 @@ public class MultiThreadConfigurationTest {
          * @see java.lang.Runnable#run()
          */
         public void run() {
-            try {
-                I.write(bean, testFile);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            I.xml(bean, testFile);
         }
     }
 }

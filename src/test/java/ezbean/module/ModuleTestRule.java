@@ -74,11 +74,7 @@ public class ModuleTestRule extends EzRule {
 
     // create external modules
     static {
-        try {
-            I.read(UpdateChecker.class, checksum).update();
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
+        I.xml(checksum, I.make(UpdateChecker.class)).update();
     }
 
     /** The pseudo external module. */
@@ -360,11 +356,7 @@ public class ModuleTestRule extends EzRule {
                 // recalculate
                 sum = calculate(dir, 0);
 
-                try {
-                    I.write(this, checksum);
-                } catch (IOException e) {
-                    throw I.quiet(e);
-                }
+                I.xml(this, checksum);
             }
         }
 
