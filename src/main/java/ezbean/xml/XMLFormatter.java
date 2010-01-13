@@ -115,7 +115,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     /**
      * @see org.xml.sax.ContentHandler#startPrefixMapping(java.lang.String, java.lang.String)
      */
-    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+    public void startPrefixMapping(String prefix, String uri) {
         count++;
         namespaces.add(prefix); // add prefix
         namespaces.add(uri); // add uri
@@ -124,7 +124,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     /**
      * @see org.xml.sax.ContentHandler#endPrefixMapping(java.lang.String)
      */
-    public void endPrefixMapping(String prefix) throws SAXException {
+    public void endPrefixMapping(String prefix) {
         namespaces.remove(namespaces.size() - 1); // remove uri
         namespaces.remove(namespaces.size() - 1); // remove prefix
     }
@@ -291,14 +291,14 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     /**
      * @see org.xml.sax.ext.LexicalHandler#startEntity(java.lang.String)
      */
-    public void startEntity(String name) throws SAXException {
+    public void startEntity(String name) {
         // do nothing
     }
 
     /**
      * @see org.xml.sax.ext.LexicalHandler#endEntity(java.lang.String)
      */
-    public void endEntity(String name) throws SAXException {
+    public void endEntity(String name) {
         // do nothing
     }
 
