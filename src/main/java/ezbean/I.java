@@ -265,9 +265,6 @@ public class I implements ClassLoadListener<Extensible> {
      */
     private static final ThreadSpecific<Deque<List>> tracers = new ThreadSpecific(ArrayDeque.class);
 
-    /** The configuration assosiation manager. */
-    // private static final Map<Object, File> configurations = new WeakHashMap();
-
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
