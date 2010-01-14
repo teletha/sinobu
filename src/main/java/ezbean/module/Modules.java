@@ -36,7 +36,7 @@ import ezbean.model.Model;
  * @version 2009/08/01 16:56:11
  */
 @Manageable(lifestyle = Singleton.class)
-public final class ModuleRegistry implements ClassLoadListener {
+public final class Modules implements ClassLoadListener {
 
     /** The list of module aware maps. */
     private static final List<Reference<Map<Class, ?>>> awares = new CopyOnWriteArrayList();
@@ -53,7 +53,7 @@ public final class ModuleRegistry implements ClassLoadListener {
     /**
      * Avoid construction
      */
-    private ModuleRegistry() {
+    private Modules() {
         // built-in ClassLoadListener
         types.add(new Object[] {this, ClassLoadListener.class});
     }
@@ -83,7 +83,7 @@ public final class ModuleRegistry implements ClassLoadListener {
      * @see ezbean.ClassLoadListener#load(java.lang.Class)
      */
     public void load(Class clazz) {
-        if (clazz != ModuleRegistry.class && clazz != ModuleLoader.class) {
+        if (clazz != Modules.class && clazz != ModuleLoader.class) {
             Object[] types = {I.make(clazz), Object.class};
             Class[] params = ClassUtil.getParameter(clazz, ClassLoadListener.class);
 

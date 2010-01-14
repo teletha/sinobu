@@ -80,7 +80,7 @@ public class ModuleLoader extends URLClassLoader {
         }
 
         // this is root, we must find the named class from children class loaders.
-        for (Module module : I.make(ModuleRegistry.class).modules) {
+        for (Module module : I.make(Modules.class).modules) {
             ModuleLoader moduleLoader = module.moduleLoader;
 
             if (moduleLoader == root) {
