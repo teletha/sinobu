@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-import ezbean.module.ModuleRegistry;
+import ezbean.module.Modules;
 
 /**
  * <p>
@@ -85,7 +85,7 @@ import ezbean.module.ModuleRegistry;
 public class XMLScanner extends XMLFilterImpl {
 
     /** The rule set cache. */
-    private static final Map<Class, Object[]> caches = ModuleRegistry.aware(new HashMap());
+    private static final Map<Class, Object[]> caches = Modules.aware(new HashMap());
 
     /** The all compiled rule methods that are defined in the rule class. */
     private final RuleMethod[] methods;

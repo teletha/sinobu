@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import ezbean.Accessible;
 import ezbean.I;
 import ezbean.module.ModuleLoader;
-import ezbean.module.ModuleRegistry;
+import ezbean.module.Modules;
 
 /**
  * <p>
@@ -66,7 +66,7 @@ import ezbean.module.ModuleRegistry;
 public class Model<M> {
 
     /** The model repository. */
-    static final Map<Class, Model> models = ModuleRegistry.aware(new ConcurrentHashMap());
+    static final Map<Class, Model> models = Modules.aware(new ConcurrentHashMap());
 
     /** The repository of built-in codecs. */
     private static final ArrayList<Class> codecs = new ArrayList();

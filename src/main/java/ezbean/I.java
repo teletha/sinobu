@@ -68,7 +68,7 @@ import ezbean.model.Codec;
 import ezbean.model.Model;
 import ezbean.model.Property;
 import ezbean.module.ModuleLoader;
-import ezbean.module.ModuleRegistry;
+import ezbean.module.Modules;
 import ezbean.xml.XMLFormatter;
 
 /**
@@ -247,7 +247,7 @@ public class I implements ClassLoadListener<Extensible> {
     static final String URI = "http://ez.bean/";
 
     /** The cache between Model and Lifestyle. */
-    private static final Map<Class, Lifestyle> lifestyles = ModuleRegistry.aware(new ConcurrentHashMap());
+    private static final Map<Class, Lifestyle> lifestyles = Modules.aware(new ConcurrentHashMap());
 
     /** The circularity dependencies context per thread. */
     private static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
@@ -683,7 +683,7 @@ public class I implements ClassLoadListener<Extensible> {
         if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
             // TODO service provider finding strategy
             // This strategy is decided at execution phase.
-            providerClass = make(ModuleRegistry.class).find(modelClass);
+            providerClass = make(Modules.class).find(modelClass);
 
             // updata to the provider's modifier
             modifier = providerClass.getModifiers();
@@ -1134,7 +1134,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static void load(File classPath) {
-        make(ModuleRegistry.class).load(classPath);
+        make(Modules.class).load(classPath);
 
         // clear chache
         keys.clear();
@@ -1168,7 +1168,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static void unload(File classPath) {
-        make(ModuleRegistry.class).unload(classPath);
+        make(Modules.class).unload(classPath);
 
         // clear chache
         keys.clear();

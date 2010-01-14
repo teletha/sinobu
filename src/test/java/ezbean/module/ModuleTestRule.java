@@ -58,7 +58,7 @@ public class ModuleTestRule extends EzRule {
     private static final File checksum = I.locate(classes, "checksum");
 
     /** The module registry for reuse. */
-    private static final ModuleRegistry registry = I.make(ModuleRegistry.class);
+    private static final Modules registry = I.make(Modules.class);
 
     /** The pseudo external module. */
     private static final File DIR = I.locate(classes, "module");
@@ -97,7 +97,7 @@ public class ModuleTestRule extends EzRule {
 
     /**
      * @param clazz
-     * @see ezbean.module.ModuleRegistry#load(java.lang.Class)
+     * @see ezbean.module.Modules#load(java.lang.Class)
      */
     public void load(Class clazz) {
         registry.load(clazz);
@@ -105,7 +105,7 @@ public class ModuleTestRule extends EzRule {
 
     /**
      * @param moduleFile
-     * @see ezbean.module.ModuleRegistry#load(java.io.File)
+     * @see ezbean.module.Modules#load(java.io.File)
      */
     public void load(File moduleFile) {
         registry.load(moduleFile);
@@ -113,7 +113,7 @@ public class ModuleTestRule extends EzRule {
 
     /**
      * @param clazz
-     * @see ezbean.module.ModuleRegistry#unload(java.lang.Class)
+     * @see ezbean.module.Modules#unload(java.lang.Class)
      */
     public void unload(Class clazz) {
         registry.unload(clazz);
@@ -121,7 +121,7 @@ public class ModuleTestRule extends EzRule {
 
     /**
      * @param moduleFile
-     * @see ezbean.module.ModuleRegistry#unload(java.io.File)
+     * @see ezbean.module.Modules#unload(java.io.File)
      */
     public void unload(File moduleFile) {
         registry.unload(moduleFile);

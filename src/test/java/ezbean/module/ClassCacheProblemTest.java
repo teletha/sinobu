@@ -142,7 +142,7 @@ public class ClassCacheProblemTest {
         assertNotNull(clazz);
 
         // create module aware map
-        Map<Class, Object> cache = ModuleRegistry.aware(new HashMap());
+        Map<Class, Object> cache = Modules.aware(new HashMap());
         cache.put(clazz, "1");
         assertTrue(cache.containsKey(clazz));
 

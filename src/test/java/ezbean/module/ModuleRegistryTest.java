@@ -34,7 +34,7 @@ public class ModuleRegistryTest {
     public static ModuleTestRule registry = new ModuleTestRule();
 
     /**
-     * Test method for {@link ezbean.module.ModuleRegistry#load(java.io.File, boolean)}.
+     * Test method for {@link ezbean.module.Modules#load(java.io.File, boolean)}.
      */
     @Test
     public void testLoad1() {
