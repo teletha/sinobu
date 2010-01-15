@@ -327,44 +327,6 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Annotate the specified class with the specified annotations from external. This method can
-     * execute only against a class which is not yet loaded by <em>Ezbean (not JVM)</em>. Once this
-     * method is executed, Ezbean loads a class immediately . Consequently, you can annotate only
-     * once per a class.
-     * </p>
-     * <p>
-     * Usually you can retrieve annotations by using the method {@link Class#getAnnotation(Class)}.
-     * But annotations which is annotated by this method are not retrieved by it. Though
-     * {@link Model#getAnnotation(Class)} will provide the way to retrieve annotations to you, a
-     * user of Ezbean has no need to use it normally.
-     * </p>
-     * <p>
-     * The major goal of this method is to annotate the class that user can not annotate freely
-     * (e.g. javax.servlet.http.HttpServletRequest). The following code is image:
-     * </p>
-     * 
-     * <pre>
-     * // core package doesn't have user defined annotation
-     * assertNull(String.class.getAnnotaion(Manageable.class));
-     * 
-     * // annotate externally
-     * I.annotate(String.class, new ManageableMock());
-     * 
-     * // retrieve user defined annotation from core package
-     * assertNotNull(Model.getModel(String.class).getAnnotaion(Manageable.class));
-     * </pre>
-     * 
-     * @deprecated
-     * @param modelClass
-     * @param annotations
-     * @param values
-     */
-    public static void annotate(Class modelClass, Annotation... annotations) {
-        Model.load(modelClass, annotations);
-    }
-
-    /**
-     * <p>
      * Bind between two properties. You can specify the binding type (one-way and two-way). This
      * binding supports the following binding types :
      * </p>
@@ -1216,48 +1178,31 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     /**
-     * @deprecated
-     * @param <M>
-     * @param modelClass
-     * @param lifestyle
-     */
-    public static <M> void define(Class<M> modelClass, Lifestyle<M> lifestyle) {
-        if (modelClass != null && lifestyle != null && !lifestyles.containsKey(modelClass)) {
-            lifestyles.put(modelClass, lifestyle);
-        }
-    }
-
-    /**
-     * @deprecated
-     * @param <M>
-     * @param modelClass
-     */
-    public static <M> void undefine(Class<M> modelClass) {
-        // check nulll
-        if (modelClass == null) {
-            return;
-        }
-        lifestyles.remove(modelClass);
-    }
-
-    /**
      * @see ezbean.ClassLoadListener#load(java.lang.Class)
      */
     public final void load(Class extension) {
         // search and collect information for all extension points
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
-                List list = extensions.get(extensionPoint);
+                Class[] params = ClassUtil.getParameter(extension, extensionPoint);
 
-                if (list == null) {
-                    list = new CopyOnWriteArrayList();
+                if (params.length == 0 || params[0] != Object.class) {
+                    List list = extensions.get(extensionPoint);
 
-                    // register new extension point
-                    extensions.put(extensionPoint, list);
+                    if (list == null) {
+                        list = new CopyOnWriteArrayList();
+
+                        // register new extension point
+                        extensions.put(extensionPoint, list);
+                    }
+
+                    // register new extension
+                    list.add(extension);
+
+                    if (extensionPoint == Lifestyle.class) {
+                        lifestyles.put(params[0], (Lifestyle) make(extension));
+                    }
                 }
-
-                // register new extension
-                list.add(extension);
             }
         }
     }
