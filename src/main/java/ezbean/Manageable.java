@@ -41,9 +41,4 @@ public @interface Manageable {
      * @see Prototype
      */
     Class<? extends Lifestyle> lifestyle() default Prototype.class;
-
-    // /**
-    // * Configure the generic purpose type of the annotated class. The default value is empty.
-    // */
-    // String[] type() default {};
 }
