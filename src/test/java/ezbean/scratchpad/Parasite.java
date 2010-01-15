@@ -15,13 +15,10 @@
  */
 package ezbean.scratchpad;
 
-
 import java.lang.reflect.Field;
 
 import ezbean.I;
 import ezbean.Prototype;
-
-
 
 /**
  * Problem : The service provider class should know the detail of host class implementation. This
