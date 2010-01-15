@@ -18,7 +18,6 @@ package ezbean.model;
 import static java.lang.reflect.Modifier.*;
 
 import java.beans.Introspector;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -61,7 +60,7 @@ import ezbean.module.Modules;
  * which is neither Immutable nor Collection are Basic.</dd>
  * </dl>
  * 
- * @version 2009/12/30 22:38:20
+ * @version 2010/01/15 18:21:38
  */
 public class Model<M> {
 
@@ -103,9 +102,6 @@ public class Model<M> {
     /** The unmodifiable properties list of this object model. */
     public final List<Property> properties;
 
-    /** The external annotatons repository. */
-    private final Map<Class, Annotation> annotations;
-
     /** The built-in codec. */
     private Codec codec = null;
 
@@ -115,22 +111,14 @@ public class Model<M> {
      * Create Model instance.
      * 
      * @param type A target class to analyze as model.
-     * @param annotations A list of additional annotations.
      * @throws NullPointerException If the specified model class is <code>null</code>.
      */
-    protected Model(Class<M> type, Annotation... annotations) {
+    protected Model(Class<M> type) {
         // Skip null check because this method can throw NullPointerException.
         // if (model == null) throw new NullPointerException("Model class shouldn't be null.");
 
         this.type = type;
         this.name = type.getSimpleName();
-
-        // retrieve all annotations
-        this.annotations = (annotations.length == 0) ? Collections.EMPTY_MAP : new HashMap(annotations.length);
-
-        for (Annotation annotation : annotations) {
-            this.annotations.put(annotation.annotationType(), annotation);
-        }
 
         // To avoid StackOverFlowException caused by circular reference of Model, you must define
         // this model in here.
@@ -229,29 +217,6 @@ public class Model<M> {
 
         // exposed property list must be unmodifiable
         this.properties = Collections.unmodifiableList(properties);
-    }
-
-    /**
-     * <p>
-     * Returns this model's annotation for the specified type if such an annotation is present, else
-     * <code>null</code>.
-     * </p>
-     * 
-     * @param <A>
-     * @param annotationClass A {@link Class} object corresponding to the annotation type.
-     * @return This model's annotation for the specified annotation type if present on this model,
-     *         else <code>null</code>.
-     * @throws NullPointerException If the specified annotation class is <code>null</code>.
-     */
-    public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
-        A annotation = (A) annotations.get(annotationClass);
-
-        if (annotation == null) {
-            annotation = type.getAnnotation(annotationClass);
-        }
-
-        // API definition
-        return annotation;
     }
 
     /**
@@ -402,12 +367,11 @@ public class Model<M> {
      * 
      * @param <M> A type of model class.
      * @param modelClass A model class.
-     * @param annotations An additional annotation to enhance the specified model class.
      * @return The information about the given model class.
      * @throws NullPointerException If the given model class is null.
      * @throws IllegalArgumentException If the given model class is not found.
      */
-    public static <M> Model<M> load(Class<M> modelClass, Annotation... annotations) {
+    public static <M> Model<M> load(Class<M> modelClass) {
         // check whether the specified model class is enhanced or not
         if (Accessible.class.isAssignableFrom(modelClass)) {
             modelClass = (Class<M>) modelClass.getSuperclass();
@@ -418,7 +382,7 @@ public class Model<M> {
 
         if (model == null) {
             // create new model
-            model = new Model(modelClass, annotations);
+            model = new Model(modelClass);
 
             // store it
             models.put(modelClass, model);

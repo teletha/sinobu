@@ -16,12 +16,12 @@
 package ezbean.module;
 
 import java.io.File;
-import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import ezbean.ClassLoadListener;
@@ -39,7 +39,7 @@ import ezbean.model.Model;
 public final class Modules implements ClassLoadListener {
 
     /** The list of module aware maps. */
-    private static final List<Reference<Map<Class, ?>>> awares = new CopyOnWriteArrayList();
+    private static final List<WeakReference<Map>> awares = new CopyOnWriteArrayList();
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -174,16 +174,29 @@ public final class Modules implements ClassLoadListener {
                     }
 
                     // unload class key from module aware map
-                    for (Reference<Map<Class, ?>> reference : awares) {
-                        Map<Class, ?> aware = reference.get();
+                    for (WeakReference<Map> reference : awares) {
+                        Map aware = reference.get();
 
                         if (aware == null) {
                             awares.remove(reference);
                         } else {
-                            Iterator<Class> iterator = aware.keySet().iterator();
+                            Iterator<Entry> iterator = aware.entrySet().iterator();
 
                             while (iterator.hasNext()) {
-                                if (module.moduleLoader.equals(iterator.next().getClassLoader())) {
+                                Entry entry = iterator.next();
+                                Object object = entry.getKey();
+                                Class clazz = object == null || object instanceof Class ? (Class) object
+                                        : object.getClass();
+
+                                if (module.find(clazz, true).size() == 1) {
+                                    iterator.remove();
+                                    continue;
+                                }
+
+                                object = entry.getValue();
+                                clazz = object == null || object instanceof Class ? (Class) object : object.getClass();
+
+                                if (module.find(clazz, true).size() == 1) {
                                     iterator.remove();
                                 }
                             }
@@ -200,27 +213,21 @@ public final class Modules implements ClassLoadListener {
 
     /**
      * <p>
-     * Make the {@link Map} which has {@link Class} as a key be recognized to the module unloading
-     * event and disposes the key which is associated with the module automatically.
+     * Make the {@link Map} which has any key be recognized to the module unloading event and
+     * disposes the key which is associated with the module automatically.
      * </p>
      * <p>
      * This method has same syntax of {@link Collections#synchronizedMap(Map)}.
      * </p>
      * 
-     * @param <T> A value type.
      * @param map A target {@link Map} object to be aware of module unloading event.
      * @return The given {@link Map} object.
      */
-    public static <T> Map<Class, T> aware(Map<Class, T> map) {
-        if (map != null) {
-            for (Reference<Map<Class, ?>> reference : awares) {
-                if (reference.get() == map) {
-                    return map;
-                }
-            }
-
-            awares.add(new WeakReference(map));
-        }
+    public static final Map aware(Map map) {
+        // We don't need to check whether the given map is already passed or not.
+        // Because this method will be not called so frequently and duplicated item
+        // will rise no problem except for memory.
+        awares.add(new WeakReference(map));
 
         // API definition
         return map;
