@@ -36,9 +36,9 @@ package ezbean;
  * @see Singleton
  * @see ThreadSpecific
  * @see Manageable#lifestyle()
- * @version 2007/06/13 16:07:21
+ * @version 2010/01/15 18:24:19
  */
-public interface Lifestyle<M> {
+public interface Lifestyle<M> extends Extensible {
 
     /**
      * <p>
