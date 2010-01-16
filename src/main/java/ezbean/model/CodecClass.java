@@ -15,16 +15,20 @@
  */
 package ezbean.model;
 
+import java.util.Locale;
+
+import ezbean.Lifestyle;
 import ezbean.module.ModuleLoader;
 
 /**
  * <p>
- * Codec for {@link Class}.
+ * This is dual-purpose implementation class. One is codec for {@link Class}. The other is lifestyle
+ * for {@link Locale}.
  * </p>
  * 
- * @version 2009/12/30 22:09:42
+ * @version 2010/01/16 19:33:09
  */
-class CodecClass extends Codec<Class> {
+class CodecClass extends Codec<Class> implements Lifestyle<Locale> {
 
     /**
      * @see ezbean.model.Codec#decode(java.lang.String)
@@ -42,5 +46,12 @@ class CodecClass extends Codec<Class> {
      */
     public String encode(Class value) {
         return value.getName();
+    }
+
+    /**
+     * @see ezbean.Lifestyle#resolve()
+     */
+    public Locale resolve() {
+        return Locale.getDefault();
     }
 }

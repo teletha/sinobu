@@ -1308,8 +1308,16 @@ public class I implements ClassLoadListener<Extensible> {
         // search and collect information for all extension points
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
-                // unregister this extension
-                extensions.get(extensionPoint).remove(extension);
+                Class[] params = ClassUtil.getParameter(extension, extensionPoint);
+
+                if (params.length == 0 || params[0] != Object.class) {
+                    // unregister this extension
+                    extensions.get(extensionPoint).remove(extension);
+
+                    if (extensionPoint == Lifestyle.class) {
+                        lifestyles.remove(params[0]);
+                    }
+                }
             }
         }
     }
