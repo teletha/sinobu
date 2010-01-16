@@ -48,7 +48,7 @@ public class I18NTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void WithNull() {
+    public void withNull() {
         I.i18n(null);
     }
 
@@ -56,7 +56,7 @@ public class I18NTest {
      * @version 2010/01/15 18:30:11
      */
     @SuppressWarnings("unused")
-    private static class Default implements Lifestyle<Locale> {
+    private static class OverrideDefaultLocale implements Lifestyle<Locale> {
 
         /**
          * @see ezbean.Lifestyle#resolve()

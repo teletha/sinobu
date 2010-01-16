@@ -183,20 +183,7 @@ public final class Modules implements ClassLoadListener {
                             Iterator<Entry> iterator = aware.entrySet().iterator();
 
                             while (iterator.hasNext()) {
-                                Entry entry = iterator.next();
-                                Object object = entry.getKey();
-                                Class clazz = object == null || object instanceof Class ? (Class) object
-                                        : object.getClass();
-
-                                if (module.find(clazz, true).size() == 1) {
-                                    iterator.remove();
-                                    continue;
-                                }
-
-                                object = entry.getValue();
-                                clazz = object == null || object instanceof Class ? (Class) object : object.getClass();
-
-                                if (module.find(clazz, true).size() == 1) {
+                                if (module.find((Class) iterator.next().getKey(), true).size() == 1) {
                                     iterator.remove();
                                 }
                             }
@@ -223,7 +210,7 @@ public final class Modules implements ClassLoadListener {
      * @param map A target {@link Map} object to be aware of module unloading event.
      * @return The given {@link Map} object.
      */
-    public static final Map aware(Map map) {
+    public static final Map aware(Map<Class, ?> map) {
         // We don't need to check whether the given map is already passed or not.
         // Because this method will be not called so frequently and duplicated item
         // will rise no problem except for amount of memory usage.
