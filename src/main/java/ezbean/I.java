@@ -43,7 +43,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 import java.util.ResourceBundle.Control;
 import java.util.concurrent.ConcurrentHashMap;
@@ -516,8 +515,8 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Gets a <em>type-safe and refactoring-safe</em> resource bundle class (<em>not</em>
-     * {@link ResourceBundle}) corresponding to the specified class.
+     * Gets a <em>type-safe and refactoring-safe</em> resource bundle (<em>not</em>
+     * {@link java.util.ResourceBundle}) corresponding to the specified resource bundle class.
      * </p>
      * <p>
      * Conceptually, i18n method uses the following strategy for locating and instantiating resource
