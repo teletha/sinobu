@@ -21,14 +21,31 @@ package ezbean;
  * lifestyles ({@link Prototype}, {@link Singleton} and {@link ThreadSpecific}).
  * </p>
  * <p>
- * {@link Manageable} annotation is used to specify the lifestyle for class. If the lifestyle is not
- * speceified, Ezbean uses {@link Prototype} lifestyle as default.The following is example.
+ * There are two ways to specify {@link Lifestyle} for the class.
+ * </p>
+ * <p>
+ * The one is {@link Manageable} annotation. This way is useful if the target class is under your
+ * control. If the lifestyle is not specified, Ezbean uses {@link Prototype} lifestyle as default.
+ * The following is example.
  * </p>
  * 
  * <pre>
  * &#064;Manageable(lifestyle = Singleton.class)
  * public class TargetClass {
- *   ...
+ * }
+ * </pre>
+ * <p>
+ * The other is defining custom {@link Lifestyle}. Ezbean recognizes it automatically if your custom
+ * lifestyle class is loaded or unloaded by {@link I#load(java.io.File)} and
+ * {@link I#unload(java.io.File)} methods. The following is example.
+ * </p>
+ * 
+ * <pre>
+ * public class CustomLifestyle implements Lifestyle&lt;ClassNotUnderYourControl&gt; {
+ * 
+ *     public ClassNotUnderYourControl resolve() {
+ *         return new ClassNotUnderYourControl();
+ *     }
  * }
  * </pre>
  * 

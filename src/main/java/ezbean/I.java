@@ -378,14 +378,21 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Find all extensions which are specified by the given extension point.
+     * Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
+     * <a href="Extensible#ExtensionPoint">Extension Point</a>.
+     * </p>
+     * <p>
+     * The returned list will be "safe" in that no references to it are maintained by Ezbean. (In
+     * other words, this method must allocate a new list). The caller is thus free to modify the
+     * returned list.
      * </p>
      * 
-     * @param <E> An extension point.
-     * @param extensionPoint An extension point class. (The direct subclass of {@link Extensible} is
-     *            recommended)
-     * @return All extensions of the given extension point or empty list.
-     * @throws NullPointerException If the extension point is <code>null</code>.
+     * @param <E> An Extension Point.
+     * @param extensionPoint An extension point class. The <a
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return empty list.
+     * @return All Extensions of the given Extension Point or empty list.
+     * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
         // Skip null check because this method can throw NullPointerException.
@@ -407,16 +414,19 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Find the extension which are specified by the given extension point and the given key.
+     * Find the <a href="Extensible.html#Extension">Extension</a> which are specified by the given
+     * <a href="Extensible#ExtensionPoint">Extension Point</a> and the given key.
      * </p>
      * 
-     * @param <E> An extension point.
-     * @param extensionPoint An extension point class. (The direct subclass of {@link Extensible} is
-     *            recommended)
-     * @param key
-     * @return A associated extension of the given extension point and the given key or
+     * @param <E> An Extension Point.
+     * @param extensionPoint An Extension Point class. The <a
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return <code>null</code>.
+     * @param key An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.
+     *            <code>null</code> will throw {@link NullPointerException}.
+     * @return A associated Extension of the given Extension Point and the given Extension Key or
      *         <code>null</code>.
-     * @throws NullPointerException If the extension point or key is <code>null</code>.
+     * @throws NullPointerException If the Extension Point or Extension Key is <code>null</code>.
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
         // Skip null check because this method can throw NullPointerException.
