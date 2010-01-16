@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.scratchpad;
+package ezbean;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle.Control;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.Extensible;
-import ezbean.I;
-import ezbean.Manageable;
-import ezbean.Singleton;
 import ezbean.unit.ClassModule;
 
 /**
@@ -40,34 +34,36 @@ public class I18NTest {
 
     @Test
     public void i18n() throws Exception {
-        assertEquals("message1", i18n(MessageBundle.class).message());
+        assertEquals("メッセージ", I.i18n(MessageBundle.class).message());
     }
 
-    /** The locale name resolver. */
-    private static final Control control = Control.getControl(Control.FORMAT_CLASS);
+    @Test
+    public void param() throws Exception {
+        assertEquals("メッセージ10", I.i18n(MessageBundle.class).messageWithParam(10));
+    }
+
+    @Test
+    public void override() throws Exception {
+        assertEquals("message", I.i18n(MessageBundle.class).dontOverride());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void WithNull() {
+        I.i18n(null);
+    }
 
     /**
-     * <p>
-     * </p>
-     * 
-     * @param <M>
-     * @param bundleClass
-     * @return
+     * @version 2010/01/15 18:30:11
      */
-    public static <M extends Extensible> M i18n(Class<M> bundleClass) {
-        List<Locale> locales = control.getCandidateLocales("", I.make(Locale.class));
-        List<M> bundles = I.find(bundleClass);
+    @SuppressWarnings("unused")
+    private static class Default implements Lifestyle<Locale> {
 
-        for (int i = 0; i < locales.size() - 1; i++) {
-            String name = control.toBundleName(bundleClass.getSimpleName(), locales.get(i));
-
-            for (int j = 0; j < bundles.size(); j++) {
-                if (bundles.get(j).getClass().getSimpleName().equals(name)) {
-                    return bundles.get(j);
-                }
-            }
+        /**
+         * @see ezbean.Lifestyle#resolve()
+         */
+        public Locale resolve() {
+            return Locale.JAPAN;
         }
-        return bundles.get(0);
     }
 
     /**
@@ -77,21 +73,26 @@ public class I18NTest {
     private static class MessageBundle implements Extensible {
 
         public String message() {
-            return "message1";
+            return "message";
         }
 
         public String messageWithParam(int number) {
             return "message" + number;
+        }
+
+        public final String dontOverride() {
+            return "message";
         }
     }
 
     /**
      * @version 2010/01/05 19:55:37
      */
+    @SuppressWarnings("unused")
     private static class MessageBundle_ja extends MessageBundle {
 
         public String message() {
-            return "メッセージ1";
+            return "メッセージ";
         }
 
         public String messageWithParam(int number) {

@@ -51,7 +51,7 @@ public class ExtensibleTest {
 
     @Test(expected = NullPointerException.class)
     public void listByNull() {
-        assertEquals(0, I.find(null).size());
+        I.find(null);
     }
 
     @Test
