@@ -226,7 +226,7 @@ public final class Modules implements ClassLoadListener {
     public static final Map aware(Map map) {
         // We don't need to check whether the given map is already passed or not.
         // Because this method will be not called so frequently and duplicated item
-        // will rise no problem except for memory.
+        // will rise no problem except for amount of memory usage.
         awares.add(new WeakReference(map));
 
         // API definition
