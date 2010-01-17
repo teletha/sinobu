@@ -41,7 +41,7 @@ public final class Context {
      */
     public void addListener(String propertyName, PropertyListener listener) {
         // check null
-        if (listener != null) {
+        if (propertyName != null && listener != null) {
             Set<PropertyListener> set = listeners.get(propertyName);
 
             if (set == null) {
@@ -76,26 +76,19 @@ public final class Context {
     }
 
     /**
-     * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String,
-     *      java.lang.Object, java.lang.Object)
+     * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
+     *      java.lang.Object)
      */
     public void propertyChange(Object bean, String propertyName, Object oldValue, Object newValue) {
         // check diff
         if ((oldValue != null || newValue != null) && (oldValue == null || !oldValue.equals(newValue))) {
-            // collect listeners
-            Set<PropertyListener> set = new HashSet(4);
-
-            if (listeners.containsKey(null)) {
-                set.addAll(listeners.get(null));
-            }
-
-            if (listeners.containsKey(propertyName)) {
-                set.addAll(listeners.get(propertyName));
-            }
+            Set<PropertyListener> set = listeners.get(propertyName);
 
             // fire event
-            for (PropertyListener listener : set) {
-                listener.change(bean, propertyName, oldValue, newValue);
+            if (set != null) {
+                for (PropertyListener listener : set) {
+                    listener.change(bean, propertyName, oldValue, newValue);
+                }
             }
         }
     }

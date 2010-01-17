@@ -15,91 +15,54 @@
  */
 package ezbean;
 
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-
-import junit.framework.TestCase;
-
-
 import org.junit.Test;
 
-import ezbean.Context;
-import ezbean.PropertyListener;
-
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/13 22:42:20
+ * @version 2010/01/17 9:33:47
  */
-public class PropertyContextTest extends TestCase {
+public class PropertyContextTest {
 
-    /**
-     * Test <code>null</code> arguments.
-     */
     @Test
-    public void testAddListener01() {
+    public void addListenerNull1() {
         Context context = new Context();
         context.addListener(null, null);
-        context.addListener("some", null);
-        // no error (e.g. NullPointerException)
     }
 
-    /**
-     * Test <code>null</code> arguments.
-     */
     @Test
-    public void testRemoveListener01() {
+    public void addListenerNull2() {
         Context context = new Context();
-        context.removeListener(null, null);
-        context.removeListener("some", null);
-        // no error (e.g. NullPointerException)
+        context.addListener("test", null);
     }
 
-    /**
-     * Test remove listener at first.
-     */
     @Test
-    public void testRemoveListener02() {
-        Listener listener = new Listener();
+    public void addListenerNull3() {
         Context context = new Context();
-        context.removeListener(null, listener);
-        // no error (e.g. NullPointerException)
+        context.addListener(null, new Listener());
     }
 
-    /**
-     * Test <code>null</code> property name.
-     */
     @Test
-    public void testListener01() {
+    public void addListenerWithoutPropertyName() {
         Listener listener = new Listener();
         Context context = new Context();
         context.addListener(null, listener);
 
         // emulate property change event
-        context.propertyChange("bean", "name", "old", "new");
+        context.propertyChange("bean", null, "old", "new");
 
-        assertEquals("bean", listener.source);
-        assertEquals("name", listener.propertyName);
-        assertEquals("old", listener.oldObject);
-        assertEquals("new", listener.newValue);
-
-        // emulate property change event
-        context.propertyChange("bean", "any", "foo", "bar");
-
-        assertEquals("bean", listener.source);
-        assertEquals("any", listener.propertyName);
-        assertEquals("foo", listener.oldObject);
-        assertEquals("bar", listener.newValue);
+        assertEquals(null, listener.source);
+        assertEquals(null, listener.propertyName);
+        assertEquals(null, listener.oldObject);
+        assertEquals(null, listener.newValue);
     }
 
-    /**
-     * Test specified property name.
-     */
     @Test
-    public void testListener02() {
+    public void addListenerWithPropertyName() {
         Listener listener = new Listener();
         Context context = new Context();
         context.addListener("name", listener);
@@ -125,15 +88,13 @@ public class PropertyContextTest extends TestCase {
      * Test multiple listeners registration.
      */
     @Test
-    public void testListener03() {
+    public void addListenerMultiple() {
         Listener listener1 = new Listener();
         Listener listener2 = new Listener();
-        Listener listener3 = new Listener();
 
         Context context = new Context();
         context.addListener("one", listener1);
         context.addListener("two", listener2);
-        context.addListener(null, listener3);
 
         // emulate property change event
         context.propertyChange("bean", "one", "foo", "bar");
@@ -148,11 +109,6 @@ public class PropertyContextTest extends TestCase {
         assertEquals(null, listener2.oldObject);
         assertEquals(null, listener2.newValue);
 
-        assertEquals("bean", listener3.source);
-        assertEquals("one", listener3.propertyName);
-        assertEquals("foo", listener3.oldObject);
-        assertEquals("bar", listener3.newValue);
-
         // emulate property change event
         context.propertyChange("bean", "two", "bar", "baz");
 
@@ -165,21 +121,34 @@ public class PropertyContextTest extends TestCase {
         assertEquals("two", listener2.propertyName);
         assertEquals("bar", listener2.oldObject);
         assertEquals("baz", listener2.newValue);
+    }
 
-        assertEquals("bean", listener3.source);
-        assertEquals("two", listener3.propertyName);
-        assertEquals("bar", listener3.oldObject);
-        assertEquals("baz", listener3.newValue);
+    @Test
+    public void removeListenerNull1() {
+        Context context = new Context();
+        context.removeListener(null, null);
+    }
+
+    @Test
+    public void removeListenerNull2() {
+        Context context = new Context();
+        context.removeListener("test", null);
+    }
+
+    @Test
+    public void removeListenerNull3() {
+        Context context = new Context();
+        context.removeListener(null, new Listener());
     }
 
     /**
      * Test listener removing with <code>null</code> property name.
      */
     @Test
-    public void testListener04() {
+    public void removeListenerWithoutPropertyName() {
         Listener listener = new Listener();
         Context context = new Context();
-        context.addListener(null, listener);
+        context.addListener("name", listener);
 
         // emulate property change event
         context.propertyChange("bean", "name", "old", "new");
@@ -193,19 +162,19 @@ public class PropertyContextTest extends TestCase {
         context.removeListener(null, listener);
 
         // emulate property change event
-        context.propertyChange("bean", "any", "foo", "bar");
+        context.propertyChange("bean", "name", "foo", "bar");
 
         assertEquals("bean", listener.source);
         assertEquals("name", listener.propertyName);
-        assertEquals("old", listener.oldObject);
-        assertEquals("new", listener.newValue);
+        assertEquals("foo", listener.oldObject);
+        assertEquals("bar", listener.newValue);
     }
 
     /**
      * Test listener removing with specified property name.
      */
     @Test
-    public void testListener05() {
+    public void removeListenerWithPropertyName() {
         Listener listener = new Listener();
         Context context = new Context();
         context.addListener("name", listener);
@@ -222,7 +191,7 @@ public class PropertyContextTest extends TestCase {
         context.removeListener("name", listener);
 
         // emulate property change event
-        context.propertyChange("bean", "any", "foo", "bar");
+        context.propertyChange("bean", "name", "foo", "bar");
 
         assertEquals("bean", listener.source);
         assertEquals("name", listener.propertyName);
@@ -234,15 +203,13 @@ public class PropertyContextTest extends TestCase {
      * Test multiple listeners unregistration.
      */
     @Test
-    public void testListener06() {
+    public void removeListenerMultiple() {
         Listener listener1 = new Listener();
         Listener listener2 = new Listener();
-        Listener listener3 = new Listener();
 
         Context context = new Context();
         context.addListener("one", listener1);
         context.addListener("one", listener2);
-        context.addListener(null, listener3);
 
         // emulate property change event
         context.propertyChange("bean", "one", "foo", "bar");
@@ -257,14 +224,8 @@ public class PropertyContextTest extends TestCase {
         assertEquals("foo", listener2.oldObject);
         assertEquals("bar", listener2.newValue);
 
-        assertEquals("bean", listener3.source);
-        assertEquals("one", listener3.propertyName);
-        assertEquals("foo", listener3.oldObject);
-        assertEquals("bar", listener3.newValue);
-
         // remove listener
         context.removeListener("one", listener1);
-        context.removeListener(null, listener3);
 
         // emulate property change event
         context.propertyChange("bean", "one", "bar", "baz");
@@ -278,18 +239,10 @@ public class PropertyContextTest extends TestCase {
         assertEquals("one", listener2.propertyName);
         assertEquals("bar", listener2.oldObject);
         assertEquals("baz", listener2.newValue);
-
-        assertEquals("bean", listener3.source);
-        assertEquals("one", listener3.propertyName);
-        assertEquals("foo", listener3.oldObject);
-        assertEquals("bar", listener3.newValue);
     }
 
-    /**
-     * Don't call twice same listener.
-     */
     @Test
-    public void testListener07() {
+    public void dontCallTwiceSameListener() {
         final List<String> counter = new ArrayList();
 
         PropertyListener listener = new PropertyListener() {
@@ -304,7 +257,7 @@ public class PropertyContextTest extends TestCase {
         };
 
         Context context = new Context();
-        context.addListener(null, listener);
+        context.addListener("name", listener);
         context.addListener("name", listener);
 
         // emulate property change event
@@ -316,7 +269,7 @@ public class PropertyContextTest extends TestCase {
      * Use snapshot style pool for listeners. (Don't throw {@link ConcurrentModificationException} )
      */
     @Test
-    public void testListener08() {
+    public void listenerIsSnapshotStyle() {
         final List<PropertyListener> counter = new ArrayList();
         final Context context = new Context();
         final PropertyListener listener1 = new PropertyListener() {
@@ -327,13 +280,13 @@ public class PropertyContextTest extends TestCase {
              */
             public void change(Object bean, String propertyName, Object oldValue, Object newValue) {
                 if (counter.contains(this)) {
-                    context.removeListener(null, this);
+                    context.removeListener("name", this);
                 }
                 counter.add(this);
             }
         };
 
-        context.addListener(null, listener1);
+        context.addListener("name", listener1);
 
         // emulate property change event
         context.propertyChange("bean", "name", "old", "new");
@@ -352,17 +305,17 @@ public class PropertyContextTest extends TestCase {
      * Test the propagation condition of changeProperty.
      */
     @Test
-    public void testPropertyChangePropagation01() {
+    public void changeProperty() {
         // initialize listener
         Listener listener = new Listener();
         listener.newValue = 0;
 
         // register listener
         Context context = new Context();
-        context.addListener(null, listener);
+        context.addListener("test", listener);
 
         // emulate property change event
-        context.propertyChange(null, null, null, null);
+        context.propertyChange("some", "test", null, null);
 
         // assert
         assertEquals(0, listener.newValue); // change was not propagated
@@ -379,10 +332,10 @@ public class PropertyContextTest extends TestCase {
 
         // register listener
         Context context = new Context();
-        context.addListener(null, listener);
+        context.addListener("test", listener);
 
         // emulate property change event
-        context.propertyChange(null, null, null, 1);
+        context.propertyChange("some", "test", null, 1);
 
         // assert
         assertEquals(1, listener.newValue); // change was propagated
@@ -399,10 +352,10 @@ public class PropertyContextTest extends TestCase {
 
         // register listener
         Context context = new Context();
-        context.addListener(null, listener);
+        context.addListener("test", listener);
 
         // emulate property change event
-        context.propertyChange(null, null, 1, null);
+        context.propertyChange("some", "test", 1, null);
 
         // assert
         assertEquals(null, listener.newValue); // change was propagated
@@ -419,19 +372,17 @@ public class PropertyContextTest extends TestCase {
 
         // register listener
         Context context = new Context();
-        context.addListener(null, listener);
+        context.addListener("test", listener);
 
         // emulate property change event
-        context.propertyChange(null, null, 1, 1);
+        context.propertyChange("some", "test", 1, 1);
 
         // assert
         assertEquals(0, listener.newValue); // change was not propagated
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/13 22:42:11
+     * @version 2010/01/17 9:49:27
      */
     private static final class Listener implements PropertyListener {
 
@@ -445,8 +396,8 @@ public class PropertyContextTest extends TestCase {
         private Object newValue = null;
 
         /**
-         * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String,
-         *      java.lang.Object, java.lang.Object)
+         * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
+         *      java.lang.Object)
          */
         public void change(Object bean, String propertyName, Object oldValue, Object newValue) {
             this.source = bean;
