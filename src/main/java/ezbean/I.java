@@ -1246,23 +1246,22 @@ public class I implements ClassLoadListener<Extensible> {
         // search and collect information for all extension points
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
+                // register new extension
+                extensions.put(extensionPoint, extension);
+
+                // register extension key
                 Class[] params = ClassUtil.getParameter(extension, extensionPoint);
 
-                if (params.length == 0 || params[0] != Object.class) {
-                    // register new extension
-                    extensions.put(extensionPoint, extension);
+                if (params.length != 0 && params[0] != Object.class) {
+                    Map<Class, Class> map = keys.get(extensionPoint);
 
-                    if (params.length != 0) {
-                        Map<Class, Class> map = keys.get(extensionPoint);
-
-                        if (map == null) {
-                            map = new ConcurrentHashMap();
-                            keys.put(extensionPoint, map);
-                        }
-
-                        map.put(params[0], extension);
+                    if (map == null) {
+                        map = new ConcurrentHashMap();
+                        keys.put(extensionPoint, map);
                     }
+                    map.put(params[0], extension);
 
+                    // custom lifestyle
                     if (extensionPoint == Lifestyle.class) {
                         lifestyles.put(params[0], (Lifestyle) make(extension));
                     }
@@ -1278,24 +1277,24 @@ public class I implements ClassLoadListener<Extensible> {
         // search and collect information for all extension points
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
+                // unregister extension
+                extensions.remove(extensionPoint, extension);
+
+                // unregister extension key
                 Class[] params = ClassUtil.getParameter(extension, extensionPoint);
 
-                if (params.length == 0 || params[0] != Object.class) {
-                    // unregister this extension
-                    extensions.remove(extensionPoint, extension);
+                if (params.length != 0 && params[0] != Object.class) {
+                    Map<Class, Class> map = keys.get(extensionPoint);
 
-                    if (params.length != 0) {
-                        Map<Class, Class> map = keys.get(extensionPoint);
+                    if (map != null) {
+                        map.remove(params[0]);
 
-                        if (map != null) {
-                            map.remove(params[0]);
-
-                            if (map.size() == 0) {
-                                keys.remove(extensionPoint);
-                            }
+                        if (map.size() == 0) {
+                            keys.remove(extensionPoint);
                         }
                     }
 
+                    // custom lifestyle
                     if (extensionPoint == Lifestyle.class) {
                         for (Lifestyle lifestyle : lifestyles.get(params[0])) {
                             if (lifestyle.getClass() == extension) {

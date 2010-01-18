@@ -28,9 +28,10 @@ import ezbean.I;
 import ezbean.Listeners;
 
 /**
- * DOCUMENT.
+ * Implement {@link Accessible} interface to delegate {@link ezbean.model.Model} load process to
+ * {@link java.io.File}.
  * 
- * @version 2008/08/23 19:56:04
+ * @version 2010/01/19 1:47:55
  */
 @SuppressWarnings("serial")
 class File extends java.io.File implements Accessible {
@@ -313,21 +314,21 @@ class File extends java.io.File implements Accessible {
      * @see ezbean.Accessible#ezAccess(int, java.lang.Object)
      */
     public Object ezAccess(int id, Object params) {
-        return null;
+        return null; // do nothing
     }
 
     /**
      * @see ezbean.Accessible#ezCall(int, java.lang.Object[])
      */
     public Object ezCall(int id, Object... params) {
-        return null;
+        return null; // do nothing
     }
 
     /**
      * @see ezbean.Accessible#ezContext()
      */
     public Listeners ezContext() {
-        return null;
+        return null; // do nothing
     }
 
 }
