@@ -27,11 +27,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version 2010/01/18 17:49:36
  */
 @SuppressWarnings("serial")
-public class Line<K, V> extends ConcurrentHashMap<K, List<V>> {
+public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
 
     /**
      */
-    public Line() {
+    public Listeners() {
         super(4);
     }
 

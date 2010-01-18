@@ -51,5 +51,5 @@ public interface Accessible {
      * 
      * @return An assosiated context.
      */
-    Line ezContext();
+    Listeners ezContext();
 }

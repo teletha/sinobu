@@ -30,30 +30,30 @@ public class PropertyContextTest {
 
     @Test
     public void addListenerNull1() {
-        Line<String, PropertyListener> line = new Line();
-        line.put(null, (PropertyListener) null);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put(null, (PropertyListener) null);
     }
 
     @Test
     public void addListenerNull2() {
-        Line<String, PropertyListener> line = new Line();
-        line.put("test", (PropertyListener) null);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("test", (PropertyListener) null);
     }
 
     @Test
     public void addListenerNull3() {
-        Line<String, PropertyListener> line = new Line();
-        line.put(null, new Listener());
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put(null, new Listener());
     }
 
     @Test
     public void addListenerWithoutPropertyName() {
         Listener listener = new Listener();
-        Line<String, PropertyListener> line = new Line();
-        line.put(null, listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put(null, listener);
 
         // emulate property change event
-        line.notify("bean", null, "old", "new");
+        listeners.notify("bean", null, "old", "new");
 
         assertEquals(null, listener.source);
         assertEquals(null, listener.propertyName);
@@ -64,11 +64,11 @@ public class PropertyContextTest {
     @Test
     public void addListenerWithPropertyName() {
         Listener listener = new Listener();
-        Line<String, PropertyListener> line = new Line();
-        line.put("name", listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("name", listener);
 
         // emulate property change event
-        line.notify("bean", "name", "old", "new");
+        listeners.notify("bean", "name", "old", "new");
 
         assertEquals("bean", listener.source);
         assertEquals("name", listener.propertyName);
@@ -76,7 +76,7 @@ public class PropertyContextTest {
         assertEquals("new", listener.newValue);
 
         // emulate property change event (this invocation makes no change)
-        line.notify("bean", "any", "foo", "bar");
+        listeners.notify("bean", "any", "foo", "bar");
 
         assertEquals("bean", listener.source);
         assertEquals("name", listener.propertyName);
@@ -92,12 +92,12 @@ public class PropertyContextTest {
         Listener listener1 = new Listener();
         Listener listener2 = new Listener();
 
-        Line<String, PropertyListener> line = new Line();
-        line.put("one", listener1);
-        line.put("two", listener2);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("one", listener1);
+        listeners.put("two", listener2);
 
         // emulate property change event
-        line.notify("bean", "one", "foo", "bar");
+        listeners.notify("bean", "one", "foo", "bar");
 
         assertEquals("bean", listener1.source);
         assertEquals("one", listener1.propertyName);
@@ -110,7 +110,7 @@ public class PropertyContextTest {
         assertEquals(null, listener2.newValue);
 
         // emulate property change event
-        line.notify("bean", "two", "bar", "baz");
+        listeners.notify("bean", "two", "bar", "baz");
 
         assertEquals("bean", listener1.source);
         assertEquals("one", listener1.propertyName);
@@ -125,20 +125,20 @@ public class PropertyContextTest {
 
     @Test
     public void removeListenerNull1() {
-        Line<String, PropertyListener> line = new Line();
-        line.remove(null, null);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.remove(null, null);
     }
 
     @Test
     public void removeListenerNull2() {
-        Line<String, PropertyListener> line = new Line();
-        line.remove("test", null);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.remove("test", null);
     }
 
     @Test
     public void removeListenerNull3() {
-        Line<String, PropertyListener> line = new Line();
-        line.remove(null, new Listener());
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.remove(null, new Listener());
     }
 
     /**
@@ -147,11 +147,11 @@ public class PropertyContextTest {
     @Test
     public void removeListenerWithoutPropertyName() {
         Listener listener = new Listener();
-        Line<String, PropertyListener> line = new Line();
-        line.put("name", listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("name", listener);
 
         // emulate property change event
-        line.notify("bean", "name", "old", "new");
+        listeners.notify("bean", "name", "old", "new");
 
         assertEquals("bean", listener.source);
         assertEquals("name", listener.propertyName);
@@ -159,10 +159,10 @@ public class PropertyContextTest {
         assertEquals("new", listener.newValue);
 
         // remove listener
-        line.remove(null, listener);
+        listeners.remove(null, listener);
 
         // emulate property change event
-        line.notify("bean", "name", "foo", "bar");
+        listeners.notify("bean", "name", "foo", "bar");
 
         assertEquals("bean", listener.source);
         assertEquals("name", listener.propertyName);
@@ -176,11 +176,11 @@ public class PropertyContextTest {
     @Test
     public void removeListenerWithPropertyName() {
         Listener listener = new Listener();
-        Line<String, PropertyListener> line = new Line();
-        line.put("name", listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("name", listener);
 
         // emulate property change event
-        line.notify("bean", "name", "old", "new");
+        listeners.notify("bean", "name", "old", "new");
 
         assertEquals("bean", listener.source);
         assertEquals("name", listener.propertyName);
@@ -188,10 +188,10 @@ public class PropertyContextTest {
         assertEquals("new", listener.newValue);
 
         // remove listener
-        line.remove("name", listener);
+        listeners.remove("name", listener);
 
         // emulate property change event
-        line.notify("bean", "name", "foo", "bar");
+        listeners.notify("bean", "name", "foo", "bar");
 
         assertEquals("bean", listener.source);
         assertEquals("name", listener.propertyName);
@@ -207,12 +207,12 @@ public class PropertyContextTest {
         Listener listener1 = new Listener();
         Listener listener2 = new Listener();
 
-        Line<String, PropertyListener> line = new Line();
-        line.put("one", listener1);
-        line.put("one", listener2);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("one", listener1);
+        listeners.put("one", listener2);
 
         // emulate property change event
-        line.notify("bean", "one", "foo", "bar");
+        listeners.notify("bean", "one", "foo", "bar");
 
         assertEquals("bean", listener1.source);
         assertEquals("one", listener1.propertyName);
@@ -225,10 +225,10 @@ public class PropertyContextTest {
         assertEquals("bar", listener2.newValue);
 
         // remove listener
-        line.remove("one", listener1);
+        listeners.remove("one", listener1);
 
         // emulate property change event
-        line.notify("bean", "one", "bar", "baz");
+        listeners.notify("bean", "one", "bar", "baz");
 
         assertEquals("bean", listener1.source);
         assertEquals("one", listener1.propertyName);
@@ -256,12 +256,12 @@ public class PropertyContextTest {
             }
         };
 
-        Line<String, PropertyListener> line = new Line();
-        line.put("name", listener);
-        line.put("name", listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("name", listener);
+        listeners.put("name", listener);
 
         // emulate property change event
-        line.notify("bean", "name", "old", "new");
+        listeners.notify("bean", "name", "old", "new");
         assertEquals(1, counter.size());
     }
 
@@ -271,7 +271,7 @@ public class PropertyContextTest {
     @Test
     public void listenerIsSnapshotStyle() {
         final List<PropertyListener> counter = new ArrayList();
-        final Line<String, PropertyListener> line = new Line();
+        final Listeners<String, PropertyListener> listeners = new Listeners();
         final PropertyListener listener1 = new PropertyListener() {
 
             /**
@@ -280,24 +280,24 @@ public class PropertyContextTest {
              */
             public void change(Object bean, String propertyName, Object oldValue, Object newValue) {
                 if (counter.contains(this)) {
-                    line.remove("name", this);
+                    listeners.remove("name", this);
                 }
                 counter.add(this);
             }
         };
 
-        line.put("name", listener1);
+        listeners.put("name", listener1);
 
         // emulate property change event
-        line.notify("bean", "name", "old", "new");
+        listeners.notify("bean", "name", "old", "new");
         assertEquals(1, counter.size());
 
         // emulate property change event (listener will remove itself)
-        line.notify("bean", "name", "foo", "bar");
+        listeners.notify("bean", "name", "foo", "bar");
         assertEquals(2, counter.size());
 
         // emulate property change event (context has no listener)
-        line.notify("bean", "name", "bar", "baz");
+        listeners.notify("bean", "name", "bar", "baz");
         assertEquals(2, counter.size());
     }
 
@@ -311,11 +311,11 @@ public class PropertyContextTest {
         listener.newValue = 0;
 
         // register listener
-        Line<String, PropertyListener> line = new Line();
-        line.put("test", listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("test", listener);
 
         // emulate property change event
-        line.notify("some", "test", null, null);
+        listeners.notify("some", "test", null, null);
 
         // assert
         assertEquals(0, listener.newValue); // change was not propagated
@@ -331,11 +331,11 @@ public class PropertyContextTest {
         listener.newValue = 0;
 
         // register listener
-        Line<String, PropertyListener> line = new Line();
-        line.put("test", listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("test", listener);
 
         // emulate property change event
-        line.notify("some", "test", null, 1);
+        listeners.notify("some", "test", null, 1);
 
         // assert
         assertEquals(1, listener.newValue); // change was propagated
@@ -351,11 +351,11 @@ public class PropertyContextTest {
         listener.newValue = 0;
 
         // register listener
-        Line<String, PropertyListener> line = new Line();
-        line.put("test", listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("test", listener);
 
         // emulate property change event
-        line.notify("some", "test", 1, null);
+        listeners.notify("some", "test", 1, null);
 
         // assert
         assertEquals(null, listener.newValue); // change was propagated
@@ -371,11 +371,11 @@ public class PropertyContextTest {
         listener.newValue = 0;
 
         // register listener
-        Line<String, PropertyListener> line = new Line();
-        line.put("test", listener);
+        Listeners<String, PropertyListener> listeners = new Listeners();
+        listeners.put("test", listener);
 
         // emulate property change event
-        line.notify("some", "test", 1, 1);
+        listeners.notify("some", "test", 1, 1);
 
         // assert
         assertEquals(0, listener.newValue); // change was not propagated
