@@ -15,38 +15,29 @@
  */
 package ezbean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Date;
 
-
-
 import org.junit.Test;
 
-import ezbean.I;
 import ezbean.sample.bean.ArrayBean;
 import ezbean.sample.bean.BuiltinBean;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.SchoolEnum;
 
-
 /**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: BeanInstantiateTest.java,v 1.0 2006/12/08 15:17:22 Teletha Exp $
+ * @version 2010/01/18 22:50:16
  */
 public class BeanInstantiateTest {
 
     /**
-     * Bean.
+     * Public accessor.
      */
     @Test
-    public void testCreate() {
+    public void beanPublic() {
         Person person = I.make(Person.class);
         assertNotNull(person);
         assertEquals(null, person.getFirstName());
@@ -101,28 +92,28 @@ public class BeanInstantiateTest {
         assertEquals(3, bean.getPrimitives().length);
     }
 
-// /**
-// * No property class.
-// */
-// @Test
-// public void testGetterOnly() {
-// OnlyGetter getter = I.create(OnlyGetter.class);
-// assertNotNull(getter);
-// }
-//
-// /**
-// * Abstract Bean.
-// */
-// @Test
-// public void testAbstract() throws Exception {
-// AbstractBean bean = I.create(AbstractBean.class);
-// assertNotNull(bean);
-// assertEquals(0, bean.getFoo());
-//
-// // setFoo(1);
-// bean.concreateMethod();
-// assertEquals(1, bean.getFoo());
-// }
+    // /**
+    // * No property class.
+    // */
+    // @Test
+    // public void testGetterOnly() {
+    // OnlyGetter getter = I.create(OnlyGetter.class);
+    // assertNotNull(getter);
+    // }
+    //
+    // /**
+    // * Abstract Bean.
+    // */
+    // @Test
+    // public void testAbstract() throws Exception {
+    // AbstractBean bean = I.create(AbstractBean.class);
+    // assertNotNull(bean);
+    // assertEquals(0, bean.getFoo());
+    //
+    // // setFoo(1);
+    // bean.concreateMethod();
+    // assertEquals(1, bean.getFoo());
+    // }
 
     /**
      * Bean with {@link Enum}.
