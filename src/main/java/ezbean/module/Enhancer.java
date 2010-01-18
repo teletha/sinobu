@@ -27,7 +27,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 import ezbean.Extensible;
-import ezbean.Line;
+import ezbean.Listeners;
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 import ezbean.model.Property;
@@ -49,8 +49,8 @@ import ezbean.model.Property;
  */
 public class Enhancer extends ClassAdapter implements Extensible {
 
-    /** The type for {@link Line}. */
-    private static final Type CONTEXT = Type.getType(Line.class);
+    /** The type for {@link Listeners}. */
+    private static final Type CONTEXT = Type.getType(Listeners.class);
 
     /**
      * The class name for the implemented class. This name conforms to not Fully Qualified Class

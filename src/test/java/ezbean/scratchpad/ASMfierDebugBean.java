@@ -16,7 +16,7 @@
 package ezbean.scratchpad;
 
 import ezbean.Accessible;
-import ezbean.Line;
+import ezbean.Listeners;
 import ezbean.module.Interceptor;
 
 /**
@@ -130,7 +130,7 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
     /**
      * @see ezbean.Accessible#ezContext()
      */
-    public Line ezContext() {
+    public Listeners ezContext() {
         return null;
     }
 }
