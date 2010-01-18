@@ -17,6 +17,8 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
+import java.util.Locale;
+
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -32,8 +34,20 @@ public class LifestyleTest {
     public static final ClassModule module = new ClassModule();
 
     @Test
-    public void customLifestyle() {
+    public void custom() {
         assertSame(WithoutLifestyle.object, I.make(Without.class));
+    }
+
+    @Test
+    public void override() {
+        With object = I.make(With.class);
+        assertNotSame(object, I.make(With.class));
+
+        // unload module
+        I.unload(module.moduleFile);
+
+        object = I.make(With.class);
+        assertSame(object, I.make(With.class));
     }
 
     @Test
@@ -50,15 +64,13 @@ public class LifestyleTest {
     }
 
     @Test
-    public void override() {
-        With object = I.make(With.class);
-        assertNotSame(object, I.make(With.class));
+    public void unloadOverridden() {
+        assertEquals(Locale.ROOT, I.make(Locale.class));
 
-        // unload module
-        I.unload(module.moduleFile);
+        // unload lifestyle definition
+        I.make(I.class).unload(LocalLifestyle.class);
 
-        object = I.make(With.class);
-        assertSame(object, I.make(With.class));
+        assertEquals(Locale.getDefault(), I.make(Locale.class));
     }
 
     @Test
@@ -111,7 +123,23 @@ public class LifestyleTest {
      * @version 2010/01/15 18:54:13
      */
     @SuppressWarnings("unused")
-    private static class WithLifestyle implements Lifestyle<With> {
+    private static class WithLifestyle1 implements Lifestyle<With> {
+
+        /**
+         * @see ezbean.Lifestyle#resolve()
+         */
+        public With resolve() {
+            return new With();
+        }
+    }
+
+    /**
+     * Custom lifestyle.
+     * 
+     * @version 2010/01/15 18:54:13
+     */
+    @SuppressWarnings("unused")
+    private static class WithLifestyle2 implements Lifestyle<With> {
 
         /**
          * @see ezbean.Lifestyle#resolve()
@@ -142,5 +170,19 @@ public class LifestyleTest {
 
             return person;
         }
+    }
+
+    /**
+     * @version 2010/01/18 18:25:34
+     */
+    private static class LocalLifestyle implements Lifestyle<Locale> {
+
+        /**
+         * @see ezbean.Lifestyle#resolve()
+         */
+        public Locale resolve() {
+            return Locale.ROOT;
+        }
+
     }
 }

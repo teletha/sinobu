@@ -26,8 +26,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import ezbean.Context;
 import ezbean.Extensible;
+import ezbean.Line;
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 import ezbean.model.Property;
@@ -49,8 +49,8 @@ import ezbean.model.Property;
  */
 public class Enhancer extends ClassAdapter implements Extensible {
 
-    /** The type for {@link Context}. */
-    private static final Type CONTEXT = Type.getType(Context.class);
+    /** The type for {@link Line}. */
+    private static final Type CONTEXT = Type.getType(Line.class);
 
     /**
      * The class name for the implemented class. This name conforms to not Fully Qualified Class
@@ -232,7 +232,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * super.setProperty(newValue);
              * 
              * if (context != null) {
-             *     context.propertyChange(this, &quot;propertyName&quot;, oldValue, super.getProperty());
+             *     context.notify(this, &quot;propertyName&quot;, oldValue, super.getProperty());
              * }
              * </pre>
              * 
@@ -252,7 +252,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
                 mv.visitVarInsn(type.getOpcode(ILOAD), 1);
                 mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[2], infos[3]);
 
-                // invoke propertyChange method if the Context is not null
+                // invoke notify method if the Context is not null
                 field(GETFIELD, CONTEXT, "ezContext");
                 Label branch = new Label();
                 mv.visitJumpInsn(IFNULL, branch);
@@ -264,7 +264,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
                 mv.visitVarInsn(ALOAD, 0); // 4th newValue
                 mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[0], infos[1]);
                 wrap(property.model.type); // warp to none-primitive type
-                mv.visitMethodInsn(INVOKEVIRTUAL, CONTEXT.getInternalName(), "propertyChange", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
+                mv.visitMethodInsn(INVOKEVIRTUAL, CONTEXT.getInternalName(), "notify", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
                 mv.visitLabel(branch);
 
                 // end methods

@@ -47,9 +47,9 @@ public interface Accessible {
     Object ezCall(int id, Object... params);
 
     /**
-     * Retrieve the assosiated {@link Context} with this accessible object.
+     * Retrieve the assosiated context with this accessible object.
      * 
-     * @return An assosiated {@link Context}.
+     * @return An assosiated context.
      */
-    Context ezContext();
+    Line ezContext();
 }
