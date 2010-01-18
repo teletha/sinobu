@@ -23,7 +23,9 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import ezbean.Accessible;
 import ezbean.I;
+import ezbean.Listeners;
 
 /**
  * DOCUMENT.
@@ -31,7 +33,7 @@ import ezbean.I;
  * @version 2008/08/23 19:56:04
  */
 @SuppressWarnings("serial")
-class File extends java.io.File {
+class File extends java.io.File implements Accessible {
 
     /** The digest algorithm instance. */
     private static final MessageDigest digest;
@@ -306,4 +308,26 @@ class File extends java.io.File {
         }
         return filePath.replace(separatorChar, FileSystem.SEPARATOR);
     }
+
+    /**
+     * @see ezbean.Accessible#ezAccess(int, java.lang.Object)
+     */
+    public Object ezAccess(int id, Object params) {
+        return null;
+    }
+
+    /**
+     * @see ezbean.Accessible#ezCall(int, java.lang.Object[])
+     */
+    public Object ezCall(int id, Object... params) {
+        return null;
+    }
+
+    /**
+     * @see ezbean.Accessible#ezContext()
+     */
+    public Listeners ezContext() {
+        return null;
+    }
+
 }
