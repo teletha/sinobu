@@ -73,10 +73,8 @@ public class ExtensibleTest {
     }
 
     @Test
-    public void keyBySubtype() throws Exception {
-        KEPClass extension = I.find(KEPClass.class, Student.class);
-        assertNotNull(extension);
-        assertEquals(KEPClassExtension1.class, extension.getClass());
+    public void keyBySubclass() throws Exception {
+        assertNull(I.find(KEPClass.class, Student.class));
     }
 
     @Test

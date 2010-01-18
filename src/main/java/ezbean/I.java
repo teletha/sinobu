@@ -437,44 +437,15 @@ public class I implements ClassLoadListener<Extensible> {
         Map<Class, Class> map = keys.get(extensionPoint);
 
         if (map == null) {
-            // This is cache with idempotence, so it doesn't need thread-safety.
-            map = new HashMap();
-
-            keys.put(extensionPoint, map);
+            return null;
         }
 
-        Class clazz = map.get(key);
+        Class<E> clazz = map.get(key);
 
         if (clazz == null) {
-            // Search suitable extension for this key.
-            Class current = key;
-            clazz = Object.class;
-
-            do {
-                List<Class> list = extensions.get(extensionPoint);
-
-                if (list != null) {
-                    for (Class extension : extensions.get(extensionPoint)) {
-                        Class[] params = ClassUtil.getParameter(extension, extensionPoint);
-
-                        if (params.length != 0 && params[0] == current) {
-                            clazz = extension;
-                            break;
-                        }
-                    }
-                }
-            } while (clazz == Object.class && (current = current.getSuperclass()) != null);
-
-            // cache
-            map.put(key, clazz);
+            return null;
         }
-
-        if (clazz != Object.class) {
-            return (E) make(clazz);
-        }
-
-        // we can not find suitable extension
-        return null;
+        return make(clazz);
     }
 
     /**
@@ -1194,9 +1165,6 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static void load(File classPath) {
         make(Modules.class).load(classPath);
-
-        // clear chache
-        keys.clear();
     }
 
     /**
@@ -1228,9 +1196,6 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static void unload(File classPath) {
         make(Modules.class).unload(classPath);
-
-        // clear chache
-        keys.clear();
     }
 
     /**
@@ -1287,6 +1252,17 @@ public class I implements ClassLoadListener<Extensible> {
                     // register new extension
                     extensions.put(extensionPoint, extension);
 
+                    if (params.length != 0) {
+                        Map<Class, Class> map = keys.get(extensionPoint);
+
+                        if (map == null) {
+                            map = new ConcurrentHashMap();
+                            keys.put(extensionPoint, map);
+                        }
+
+                        map.put(params[0], extension);
+                    }
+
                     if (extensionPoint == Lifestyle.class) {
                         lifestyles.put(params[0], (Lifestyle) make(extension));
                     }
@@ -1307,6 +1283,18 @@ public class I implements ClassLoadListener<Extensible> {
                 if (params.length == 0 || params[0] != Object.class) {
                     // unregister this extension
                     extensions.remove(extensionPoint, extension);
+
+                    if (params.length != 0) {
+                        Map<Class, Class> map = keys.get(extensionPoint);
+
+                        if (map != null) {
+                            map.remove(params[0]);
+
+                            if (map.size() == 0) {
+                                keys.remove(extensionPoint);
+                            }
+                        }
+                    }
 
                     if (extensionPoint == Lifestyle.class) {
                         for (Lifestyle lifestyle : lifestyles.get(params[0])) {
