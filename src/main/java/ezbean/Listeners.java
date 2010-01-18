@@ -35,6 +35,12 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
         super(4);
     }
 
+    public V find(K key) {
+        List<V> list = get(key);
+
+        return list == null ? null : list.get(0);
+    }
+
     /**
      * Register the given {@link PropertyListener} to this context.
      * 
@@ -54,7 +60,7 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
 
             // register if not duplicated
             if (!list.contains(value)) {
-                list.add(value);
+                list.add(0, value);
             }
         }
     }

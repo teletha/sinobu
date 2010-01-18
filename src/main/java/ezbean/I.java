@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.ResourceBundle.Control;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.script.ScriptEngine;
@@ -249,13 +248,13 @@ public class I implements ClassLoadListener<Extensible> {
     static final String URI = "http://ez.bean/";
 
     /** The cache between Model and Lifestyle. */
-    private static final Map<Class, Lifestyle> lifestyles = Modules.aware(new ConcurrentHashMap());
+    private static final Listeners<Class, Lifestyle> lifestyles = (Listeners) Modules.aware(new Listeners());
 
     /** The circularity dependencies context per thread. */
     private static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
     /** The mapping from extension point to extensions. */
-    private static final Map<Class, List<Class>> extensions = new ConcurrentHashMap();
+    private static final Listeners<Class, Class> extensions = new Listeners();
 
     /** The mapping from extension point to assosiated extension mapping. */
     private static final Map<Class, Map<Class, Class>> keys = new ConcurrentHashMap();
@@ -452,12 +451,16 @@ public class I implements ClassLoadListener<Extensible> {
             clazz = Object.class;
 
             do {
-                for (Class extension : extensions.get(extensionPoint)) {
-                    Class[] params = ClassUtil.getParameter(extension, extensionPoint);
+                List<Class> list = extensions.get(extensionPoint);
 
-                    if (params.length != 0 && params[0] == current) {
-                        clazz = extension;
-                        break;
+                if (list != null) {
+                    for (Class extension : extensions.get(extensionPoint)) {
+                        Class[] params = ClassUtil.getParameter(extension, extensionPoint);
+
+                        if (params.length != 0 && params[0] == current) {
+                            clazz = extension;
+                            break;
+                        }
                     }
                 }
             } while (clazz == Object.class && (current = current.getSuperclass()) != null);
@@ -717,7 +720,7 @@ public class I implements ClassLoadListener<Extensible> {
     public static <M> M make(Class<M> modelClass) {
         // At first, we must confirm the cached lifestyle associated with the service class. If
         // there is no such cache, we will try to create it.
-        Lifestyle<M> lifestyle = lifestyles.get(modelClass);
+        Lifestyle<M> lifestyle = lifestyles.find(modelClass);
 
         if (lifestyle != null) return lifestyle.resolve(); // use cache
 
@@ -1281,17 +1284,8 @@ public class I implements ClassLoadListener<Extensible> {
                 Class[] params = ClassUtil.getParameter(extension, extensionPoint);
 
                 if (params.length == 0 || params[0] != Object.class) {
-                    List list = extensions.get(extensionPoint);
-
-                    if (list == null) {
-                        list = new CopyOnWriteArrayList();
-
-                        // register new extension point
-                        extensions.put(extensionPoint, list);
-                    }
-
                     // register new extension
-                    list.add(extension);
+                    extensions.put(extensionPoint, extension);
 
                     if (extensionPoint == Lifestyle.class) {
                         lifestyles.put(params[0], (Lifestyle) make(extension));
@@ -1312,10 +1306,15 @@ public class I implements ClassLoadListener<Extensible> {
 
                 if (params.length == 0 || params[0] != Object.class) {
                     // unregister this extension
-                    extensions.get(extensionPoint).remove(extension);
+                    extensions.remove(extensionPoint, extension);
 
                     if (extensionPoint == Lifestyle.class) {
-                        lifestyles.remove(params[0]);
+                        for (Lifestyle lifestyle : lifestyles.get(params[0])) {
+                            if (lifestyle.getClass() == extension) {
+                                lifestyles.remove(params[0], lifestyle);
+                                break;
+                            }
+                        }
                     }
                 }
             }
