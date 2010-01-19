@@ -210,7 +210,7 @@ public final class Modules implements ClassLoadListener {
      * @param map A target {@link Map} object to be aware of module unloading event.
      * @return The given {@link Map} object.
      */
-    public static final Map aware(Map<Class, ?> map) {
+    public static final <M extends Map<Class, ?>> M aware(M map) {
         // We don't need to check whether the given map is already passed or not.
         // Because this method will be not called so frequently and duplicated item
         // will rise no problem except for amount of memory usage.
