@@ -248,7 +248,7 @@ public class I implements ClassLoadListener<Extensible> {
     static final String URI = "http://ez.bean/";
 
     /** The cache between Model and Lifestyle. */
-    private static final Listeners<Class, Lifestyle> lifestyles = (Listeners) Modules.aware(new Listeners());
+    private static final Listeners<Class, Lifestyle> lifestyles = Modules.aware(new Listeners<Class, Lifestyle>());
 
     /** The circularity dependencies context per thread. */
     private static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
