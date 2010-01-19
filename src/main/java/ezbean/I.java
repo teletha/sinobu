@@ -436,16 +436,16 @@ public class I implements ClassLoadListener<Extensible> {
         // Skip null check because this method can throw NullPointerException.
         Map<Class, Class> map = keys.get(extensionPoint);
 
-        if (map == null) {
-            return null;
+        if (map != null) {
+            Class<E> clazz = map.get(key);
+
+            if (clazz != null) {
+                return make(clazz);
+            }
         }
 
-        Class<E> clazz = map.get(key);
-
-        if (clazz == null) {
-            return null;
-        }
-        return make(clazz);
+        // API definition
+        return null;
     }
 
     /**
@@ -555,11 +555,14 @@ public class I implements ClassLoadListener<Extensible> {
     public static <B extends Extensible> B i18n(Class<B> bundleClass) {
         root: for (Locale locale : control.getCandidateLocales("", I.make(Locale.class))) {
             String name = control.toBundleName(bundleClass.getSimpleName(), locale);
+            List<Class> list = extensions.get(bundleClass);
 
-            for (Class clazz : extensions.get(bundleClass)) {
-                if (clazz.getSimpleName().equals(name)) {
-                    bundleClass = clazz;
-                    break root;
+            if (list != null) {
+                for (Class clazz : list) {
+                    if (clazz.getSimpleName().equals(name)) {
+                        bundleClass = clazz;
+                        break root;
+                    }
                 }
             }
         }
