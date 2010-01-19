@@ -52,6 +52,13 @@ public class I18NTest {
         I.i18n(null);
     }
 
+    @Test
+    public void useNotLoadedBundleClass() {
+        I.unload(module.moduleFile);
+
+        I.i18n(MessageBundle.class);
+    }
+
     /**
      * @version 2010/01/15 18:30:11
      */
