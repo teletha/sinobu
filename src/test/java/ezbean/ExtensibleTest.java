@@ -82,18 +82,18 @@ public class ExtensibleTest {
         assertNull(I.find(KEPClass.class, School.class));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void keyByNull1() throws Exception {
+    @Test
+    public void keyByNull() throws Exception {
         assertNull(I.find(null, null));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void keyByNull2() throws Exception {
+    @Test
+    public void keyByNullKey() throws Exception {
         assertNull(I.find(KEPClass.class, null));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void keyByNull3() throws Exception {
+    @Test
+    public void keyByNullExtensionPoint() throws Exception {
         assertNull(I.find(null, Person.class));
     }
 
@@ -105,6 +105,21 @@ public class ExtensibleTest {
 
         I.unload(module.moduleFile);
         assertNull(I.find(KEPClass.class, Person.class));
+    }
+
+    @Test
+    public void unSameKey() throws Exception {
+        KEPClass extension = I.find(KEPClass.class, Integer.class);
+        assertNotNull(extension);
+        assertEquals(SameKEP2.class, extension.getClass());
+
+        I.make(I.class).unload(SameKEP2.class);
+        extension = I.find(KEPClass.class, Integer.class);
+        assertNotNull(extension);
+        assertEquals(SameKEP1.class, extension.getClass());
+
+        I.make(I.class).unload(SameKEP1.class);
+        assertNull(I.find(KEPClass.class, Integer.class));
     }
 
     /**
@@ -202,5 +217,17 @@ public class ExtensibleTest {
      * @version 2009/12/30 15:40:55
      */
     private static class KEPClassExtension2 extends KEPClass<String> {
+    }
+
+    /**
+     * @version 2009/12/30 15:40:55
+     */
+    private static class SameKEP1 extends KEPClass<Integer> {
+    }
+
+    /**
+     * @version 2009/12/30 15:40:55
+     */
+    private static class SameKEP2 extends KEPClass<Integer> {
     }
 }

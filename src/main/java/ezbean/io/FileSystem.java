@@ -25,12 +25,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.activation.FileTypeMap;
 
 import ezbean.ClassLoadListener;
+import ezbean.Listeners;
 import ezbean.Manageable;
 import ezbean.Singleton;
 
@@ -39,7 +38,7 @@ import ezbean.Singleton;
  * Utility class to provide methods to manipulate {@link File}.
  * </p>
  * 
- * @version 2009/06/17 15:19:33
+ * @version 2010/01/21 0:23:58
  */
 @Manageable(lifestyle = Singleton.class)
 public final class FileSystem implements ClassLoadListener<Archiver> {
@@ -51,7 +50,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
     private static File temporary;
 
     /** The repository for archiver. */
-    private static final Map<String, Class<? extends Archiver>> archivers = new ConcurrentHashMap();
+    private static final Listeners<String, Class<Archiver>> archivers = new Listeners();
 
     /** The root temporary directory for Ezbean. */
     static File temporaries = new File(System.getProperty("java.io.tmpdir"), "Ezbean").getAbsoluteFile();
@@ -64,8 +63,8 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      * @param name A file name. The <code>null</code> is not accepted.
      * @return An archiver class or <code>null</code>.
      */
-    static Class<? extends Archiver> findArchiver(String name) {
-        return archivers.get(FileTypeMap.getDefaultFileTypeMap().getContentType(name));
+    static Class<Archiver> findArchiver(String name) {
+        return archivers.find(FileTypeMap.getDefaultFileTypeMap().getContentType(name));
     }
 
     // initialize
@@ -135,7 +134,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      * @see ezbean.ClassLoadListener#unload(java.lang.Class)
      */
     public void unload(Class clazz) {
-        archivers.remove("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'));
+        archivers.remove("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
     }
 
     /**

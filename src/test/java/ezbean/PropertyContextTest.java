@@ -28,41 +28,44 @@ import org.junit.Test;
  */
 public class PropertyContextTest {
 
-    @Test
-    public void addListenerNull1() {
-        Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put(null, (PropertyListener) null);
+    @Test(expected = NullPointerException.class)
+    public void putNull() {
+        Listeners<String, String> listeners = new Listeners();
+        listeners.put(null, (String) null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void putNullKey() {
+        Listeners<String, String> listeners = new Listeners();
+        listeners.put(null, "test");
     }
 
     @Test
-    public void addListenerNull2() {
-        Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("test", (PropertyListener) null);
+    public void putNullValue() {
+        Listeners<String, String> listeners = new Listeners();
+        listeners.put("test", (String) null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void removeNull() {
+        Listeners<String, String> listeners = new Listeners();
+        listeners.remove(null, null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void removeNullKey() {
+        Listeners<String, String> listeners = new Listeners();
+        listeners.remove(null, "test");
     }
 
     @Test
-    public void addListenerNull3() {
-        Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put(null, new Listener());
+    public void removeNullValue() {
+        Listeners<String, String> listeners = new Listeners();
+        listeners.remove("test", null);
     }
 
     @Test
-    public void addListenerWithoutPropertyName() {
-        Listener listener = new Listener();
-        Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put(null, listener);
-
-        // emulate property change event
-        listeners.notify("bean", null, "old", "new");
-
-        assertEquals(null, listener.source);
-        assertEquals(null, listener.propertyName);
-        assertEquals(null, listener.oldObject);
-        assertEquals(null, listener.newValue);
-    }
-
-    @Test
-    public void addListenerWithPropertyName() {
+    public void notifySingle() {
         Listener listener = new Listener();
         Listeners<String, PropertyListener> listeners = new Listeners();
         listeners.put("name", listener);
@@ -88,7 +91,7 @@ public class PropertyContextTest {
      * Test multiple listeners registration.
      */
     @Test
-    public void addListenerMultiple() {
+    public void notifyMultiple() {
         Listener listener1 = new Listener();
         Listener listener2 = new Listener();
 
@@ -123,58 +126,11 @@ public class PropertyContextTest {
         assertEquals("baz", listener2.newValue);
     }
 
-    @Test
-    public void removeListenerNull1() {
-        Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.remove(null, null);
-    }
-
-    @Test
-    public void removeListenerNull2() {
-        Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.remove("test", null);
-    }
-
-    @Test
-    public void removeListenerNull3() {
-        Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.remove(null, new Listener());
-    }
-
-    /**
-     * Test listener removing with <code>null</code> property name.
-     */
-    @Test
-    public void removeListenerWithoutPropertyName() {
-        Listener listener = new Listener();
-        Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("name", listener);
-
-        // emulate property change event
-        listeners.notify("bean", "name", "old", "new");
-
-        assertEquals("bean", listener.source);
-        assertEquals("name", listener.propertyName);
-        assertEquals("old", listener.oldObject);
-        assertEquals("new", listener.newValue);
-
-        // remove listener
-        listeners.remove(null, listener);
-
-        // emulate property change event
-        listeners.notify("bean", "name", "foo", "bar");
-
-        assertEquals("bean", listener.source);
-        assertEquals("name", listener.propertyName);
-        assertEquals("foo", listener.oldObject);
-        assertEquals("bar", listener.newValue);
-    }
-
     /**
      * Test listener removing with specified property name.
      */
     @Test
-    public void removeListenerWithPropertyName() {
+    public void notifySingleWithRemove() {
         Listener listener = new Listener();
         Listeners<String, PropertyListener> listeners = new Listeners();
         listeners.put("name", listener);
@@ -203,7 +159,7 @@ public class PropertyContextTest {
      * Test multiple listeners unregistration.
      */
     @Test
-    public void removeListenerMultiple() {
+    public void notifyMultipleWithRemove() {
         Listener listener1 = new Listener();
         Listener listener2 = new Listener();
 
@@ -301,11 +257,26 @@ public class PropertyContextTest {
         assertEquals(2, counter.size());
     }
 
+    public void notifyNullSource() {
+        Listeners<String, PropertyListener> listeners = new Listeners();
+
+        // emulate property change event
+        listeners.notify(null, "test", "old", "new");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void notifyNullName() {
+        Listeners<String, PropertyListener> listeners = new Listeners();
+
+        // emulate property change event
+        listeners.notify("bean", null, "old", "new");
+    }
+
     /**
      * Test the propagation condition of changeProperty.
      */
     @Test
-    public void changeProperty() {
+    public void notifyNullValues() {
         // initialize listener
         Listener listener = new Listener();
         listener.newValue = 0;
@@ -325,7 +296,7 @@ public class PropertyContextTest {
      * Test the propagation condition of changeProperty.
      */
     @Test
-    public void testPropertyChangePropagation02() {
+    public void notifyNullOldValue() {
         // initialize listener
         Listener listener = new Listener();
         listener.newValue = 0;
@@ -345,7 +316,7 @@ public class PropertyContextTest {
      * Test the propagation condition of changeProperty.
      */
     @Test
-    public void testPropertyChangePropagation03() {
+    public void notifyNullNewValue() {
         // initialize listener
         Listener listener = new Listener();
         listener.newValue = 0;
@@ -365,7 +336,7 @@ public class PropertyContextTest {
      * Test the propagation condition of changeProperty.
      */
     @Test
-    public void testPropertyChangePropagation04() {
+    public void notifyNotNullValues() {
         // initialize listener
         Listener listener = new Listener();
         listener.newValue = 0;
