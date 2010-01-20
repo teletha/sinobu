@@ -15,21 +15,20 @@
  */
 package ezbean;
 
-
 /**
- * DOCUMENT.
- * 
  * @version 2008/06/05 4:54:16
  */
 public interface PropertyListener<M> {
 
     /**
-     * This method is invoked whenever a bean's property has changed
+     * <p>
+     * This method is invoked whenever a bean's property has changed.
+     * </p>
      * 
-     * @param bean An event source.
-     * @param propertyName A name of chenged property.
-     * @param oldValue The old value.
-     * @param newValue The new value.
+     * @param bean An event source. (not be <code>null</code>)
+     * @param name A name of chenged property. (not be <code>null</code>)
+     * @param oldValue The old value. (may be <code>null</code>)
+     * @param newValue The new value. (may be <code>null</code>)
      */
-    void change(Object bean, String propertyName, M oldValue, M newValue);
+    void change(Object bean, String name, M oldValue, M newValue);
 }

@@ -31,7 +31,7 @@ import ezbean.Listeners;
  * Implement {@link Accessible} interface to delegate {@link ezbean.model.Model} load process to
  * {@link java.io.File}.
  * 
- * @version 2010/01/19 1:47:55
+ * @version 2010/01/21 0:24:06
  */
 @SuppressWarnings("serial")
 class File extends java.io.File implements Accessible {
@@ -52,7 +52,7 @@ class File extends java.io.File implements Accessible {
     private final File archive;
 
     /** The archiver for the affiliated archive. */
-    private final Class<? extends Archiver> archiver;
+    private final Class<Archiver> archiver;
 
     /** The junction file for the archive. */
     private java.io.File junction;
