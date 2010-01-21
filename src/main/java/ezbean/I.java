@@ -173,7 +173,7 @@ import ezbean.xml.XMLFormatter;
  * </pre>
  * 
  * @see ServiceLoader
- * @version 2010/01/13 20:57:32
+ * @version 2010/01/22 1:53:29
  */
 public class I implements ClassLoadListener<Extensible> {
 
@@ -249,7 +249,7 @@ public class I implements ClassLoadListener<Extensible> {
     /** The cache between Model and Lifestyle. */
     private static final Listeners<Class, Lifestyle> lifestyles = Modules.aware(new Listeners<Class, Lifestyle>());
 
-    /** The circularity dependencies context per thread. */
+    /** The circularity dependency graph per thread. */
     private static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
     /** The mapping from extension point to extensions. */
@@ -291,9 +291,10 @@ public class I implements ClassLoadListener<Extensible> {
             // itself in it's constructor, so we do nothing here.
         }
 
-        // built-in collection lifestyle
+        // built-in lifestyles
         lifestyles.put(List.class, new Prototype(ArrayList.class));
         lifestyles.put(Map.class, new Prototype(HashMap.class));
+        lifestyles.put(Prototype.class, new Prototype(Prototype.class));
 
         try {
             // Instantiates a class by using reflection to make a call to private method
@@ -702,7 +703,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws ClassCircularityError If the model has circular dependency.
      */
     public static <M> M make(Class<M> modelClass) {
-        // At first, we must confirm the cached lifestyle associated with the service class. If
+        // At first, we must confirm the cached lifestyle associated with the model class. If
         // there is no such cache, we will try to create it.
         Lifestyle<M> lifestyle = lifestyles.find(modelClass);
 
@@ -711,20 +712,33 @@ public class I implements ClassLoadListener<Extensible> {
         // Skip null check because this method can throw NullPointerException.
         // if (modelClass == null) throw new NullPointerException("NPE");
 
-        // The service class have some preconditions to have to meet.
+        // Retrieve the circularity dependency graph for the current processing thread.
+        Deque<Class> graph = dependencies.resolve();
+
+        // The Class model is special.
+        if (modelClass == Class.class) {
+            modelClass = graph.pollLast();
+
+            if (!Prototype.class.isAssignableFrom(modelClass)) {
+                graph.add(modelClass);
+            }
+            return (M) modelClass;
+        }
+
+        // The model class have some preconditions to have to meet.
         if (modelClass.isLocalClass() || modelClass.isAnonymousClass()) {
             throw new UnsupportedOperationException(modelClass + " is  inner class.");
         }
 
         int modifier = modelClass.getModifiers();
 
-        // In the second place, we must find the service provider class which is associated with the
-        // service povider interface. If the service provider interface is a concreate class, we can
+        // In the second place, we must find the model provider class which is associated with the
+        // model povider interface. If the model provider interface is a concreate class, we can
         // use it as a provider.
         Class<M> providerClass = modelClass;
 
         if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
-            // TODO service provider finding strategy
+            // TODO model provider finding strategy
             // This strategy is decided at execution phase.
             providerClass = make(Modules.class).find(modelClass);
 
@@ -732,11 +746,11 @@ public class I implements ClassLoadListener<Extensible> {
             modifier = providerClass.getModifiers();
         }
 
-        // We can obtain the model about the service provider class.
+        // We can obtain the model about the model provider class.
         Model<?> model = Model.load(providerClass);
         boolean shouldEnhance = model.properties.size() != 0;
 
-        // If this service is non-accessible or final class, we can not extend it for bean
+        // If this model is non-accessible or final class, we can not extend it for bean
         // enhancement. So we must throw some exception.
         if (shouldEnhance && ((Modifier.PUBLIC | Modifier.PROTECTED) & modifier) == 0) {
             throw new IllegalArgumentException(providerClass + " is not declared as public or protected.");
@@ -746,7 +760,7 @@ public class I implements ClassLoadListener<Extensible> {
             throw new IllegalArgumentException(providerClass + " is declared as final.");
         }
 
-        // Decide the lifestyle of this service provider class. If this provider doesn't provide its
+        // Decide the lifestyle of this model provider class. If this provider doesn't provide its
         // lifestyle explicitly, we use Prototype lifestyle which is default lifestyle in Ezbean.
         Class<? extends Lifestyle> lifestyleClass;
         Manageable manageable = model.type.getAnnotation(Manageable.class);
@@ -757,36 +771,26 @@ public class I implements ClassLoadListener<Extensible> {
             lifestyleClass = manageable.lifestyle();
         }
 
-        // Retrieve the circularity context for the current processing thread. If it is null, we
-        // must initialize it.
-        Deque<Class> context = dependencies.resolve();
-
         // Don't use 'contains method' check here to resolve singleton based circular reference. So
         // we must judge it from the size of context. If the context contains too many classes, it
         // has a circular reference independencies.
-        if (context.size() > 64) {
+        if (graph.size() > 64) {
             // Deque will be contain repeated Classes so we must shrink it with
             // maintaining its class order.
-            throw new ClassCircularityError(new LinkedHashSet(context).toString());
+            throw new ClassCircularityError(new LinkedHashSet(graph).toString());
         }
-        context.add(modelClass);
 
-        // create new life style for the service class
+        // Enhance this model class if needed.
+        if (shouldEnhance) {
+            providerClass = ModuleLoader.getModuleLoader(providerClass).loadClass(model, 0);
+        }
+
+        // Add this model from the circularity dependency graph.
+        graph.add(providerClass);
+
         try {
-            if (shouldEnhance) {
-                providerClass = ModuleLoader.getModuleLoader(providerClass).loadClass(model, 0);
-            }
-
-            // create new lifestyle for this model class
-            try {
-                lifestyle = (Lifestyle) (Prototype.class.isAssignableFrom(lifestyleClass) ? lifestyleClass.getConstructor(Class.class)
-                        .newInstance(providerClass)
-                        : make(lifestyleClass));
-            } catch (Exception e) {
-                // If this exception will be thrown, it is bug of this program. So we must
-                // rethrow the wrapped error in here.
-                throw new Error(e);
-            }
+            // Create new lifestyle for this model class
+            lifestyle = make(lifestyleClass);
 
             // At first, we must try to resolve instantiation.
             M m = lifestyle.resolve();
@@ -805,8 +809,8 @@ public class I implements ClassLoadListener<Extensible> {
             // API definition
             return m;
         } finally {
-            // remove this model from the circularity context
-            context.pollLast();
+            // Remove this model from the circularity dependency graph.
+            graph.pollLast();
         }
     }
 
@@ -1270,6 +1274,10 @@ public class I implements ClassLoadListener<Extensible> {
 
                     // custom lifestyle
                     if (extensionPoint == Lifestyle.class) {
+                        // add Class resolver
+                        dependencies.resolve().add(params[0]);
+
+                        // register lifestyle
                         lifestyles.put(params[0], (Lifestyle) make(extension));
                     }
                 }
