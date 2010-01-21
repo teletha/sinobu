@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import ezbean.ClassLoadListener;
@@ -180,10 +179,13 @@ public final class Modules implements ClassLoadListener {
                         if (aware == null) {
                             awares.remove(reference);
                         } else {
-                            Iterator<Entry> iterator = aware.entrySet().iterator();
+                            Iterator<Class> iterator = aware.keySet().iterator();
 
                             while (iterator.hasNext()) {
-                                if (module.find((Class) iterator.next().getKey(), true).size() == 1) {
+                                if (I.locate(moduleFile, iterator.next()
+                                        .getName()
+                                        .replace('.', FileSystem.SEPARATOR)
+                                        .concat(".class")).exists()) {
                                     iterator.remove();
                                 }
                             }
