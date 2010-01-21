@@ -17,26 +17,24 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.sample.bean.Person;
+import ezbean.sample.bean.Student;
 import ezbean.unit.ClassModule;
 
 /**
- * @version 2010/01/15 18:51:51
+ * @version 2010/01/22 1:53:15
  */
 public class LifestyleTest {
 
     @Rule
     public static final ClassModule module = new ClassModule();
-
-    @Test
-    public void custom() {
-        assertSame(WithoutLifestyle.object, I.make(Without.class));
-    }
 
     @Test
     public void override() {
@@ -77,6 +75,23 @@ public class LifestyleTest {
     public void extendPrototype() {
         Person person = I.make(Person.class);
         assertEquals("default", person.getFirstName());
+    }
+
+    @Test
+    public void extendPrototypeWithClassParameter() {
+        Student person = I.make(Student.class);
+        assertEquals("default", person.getFirstName());
+    }
+
+    @Test
+    public void customLifestyle() {
+        assertSame(WithoutLifestyle.object, I.make(Without.class));
+    }
+
+    @Test
+    public void customPrototype() {
+        CustomClass instance = I.make(CustomClass.class);
+        assertTrue(CustomLifestyle.set.contains(instance));
     }
 
     /**
@@ -173,6 +188,30 @@ public class LifestyleTest {
     }
 
     /**
+     * @version 2010/01/16 13:10:29
+     */
+    @SuppressWarnings("unused")
+    private static class StudentLifestyle extends Prototype<Student> {
+
+        public StudentLifestyle(Class modelClass) {
+            super(modelClass);
+            assertEquals(Student.class, modelClass);
+        }
+
+        /**
+         * @see ezbean.Prototype#resolve()
+         */
+        @Override
+        public Student resolve() {
+            Student person = super.resolve();
+
+            person.setFirstName("default");
+
+            return person;
+        }
+    }
+
+    /**
      * @version 2010/01/18 18:25:34
      */
     private static class LocalLifestyle implements Lifestyle<Locale> {
@@ -183,6 +222,35 @@ public class LifestyleTest {
         public Locale resolve() {
             return Locale.ROOT;
         }
+    }
+
+    /**
+     * @version 2010/01/22 1:20:16
+     */
+    private static class CustomLifestyle<M> extends Prototype<M> {
+
+        private static Set set = new HashSet();
+
+        public CustomLifestyle(Class<M> modelClass) {
+            super(modelClass);
+            assertEquals(CustomClass.class, modelClass);
+        }
+
+        /**
+         * @see ezbean.Prototype#resolve()
+         */
+        @Override
+        public M resolve() {
+            M m = super.resolve();
+
+            set.add(m);
+
+            return m;
+        }
+    }
+
+    @Manageable(lifestyle = CustomLifestyle.class)
+    private static class CustomClass {
 
     }
 }
