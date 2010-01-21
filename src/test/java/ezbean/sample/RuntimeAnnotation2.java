@@ -18,10 +18,9 @@ package ezbean.sample;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-
 /**
  * DOCUMENT.
- *
+ * 
  * @version 2007/11/27 22:52:16
  */
 @Retention(RetentionPolicy.RUNTIME)

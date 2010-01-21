@@ -17,10 +17,7 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
-
 import org.junit.Test;
-
-import ezbean.I;
 
 /**
  * DOCUMENT.

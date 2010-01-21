@@ -17,26 +17,20 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
-
 import java.lang.reflect.Field;
 import java.util.Deque;
 import java.util.List;
-
-
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.ThreadSpecific;
 import ezbean.sample.bean.ArrayBean;
 import ezbean.sample.bean.GenericBean;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.Student;
 import ezbean.sample.dependency.DependenciedBean;
-
 
 /**
  * @version 2009/05/18 12:14:06

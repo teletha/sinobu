@@ -23,15 +23,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-import ezbean.I;
-import ezbean.Manageable;
-import ezbean.Singleton;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.modifier.Abstract;
 import ezbean.sample.modifier.Public;

@@ -17,17 +17,13 @@ package ezbean.model;
 
 import static org.junit.Assert.*;
 
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.util.Locale;
 
-
 import org.junit.Test;
-
-import ezbean.model.Codec;
 
 /**
  * DOCUMENT.

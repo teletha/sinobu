@@ -16,10 +16,7 @@
 package ezbean.sample.modifier;
 
 /**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.NPC@gmail.com">Teletha Testarossa</a>
- * @version $ Id: Inner.java,v 1.0 2007/05/10 18:47:24 Teletha Exp $
+ * @version 2010/01/21 11:17:44
  */
 public class Nested {
 
