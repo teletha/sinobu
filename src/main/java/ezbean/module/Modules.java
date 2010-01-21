@@ -32,7 +32,8 @@ import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 
 /**
- * @version 2009/08/01 16:56:11
+ * 
+ * @version 2010/01/21 20:28:27
  */
 @Manageable(lifestyle = Singleton.class)
 public final class Modules implements ClassLoadListener {
