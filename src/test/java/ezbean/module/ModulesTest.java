@@ -28,7 +28,7 @@ import ezbean.sample.MarkerInterface1;
 /**
  * @version 2009/12/23 13:20:51
  */
-public class ModuleRegistryTest {
+public class ModulesTest {
 
     @Rule
     public static ModuleTestRule registry = new ModuleTestRule();
