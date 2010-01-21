@@ -123,7 +123,6 @@ public class LifestyleTest {
      * @version 2010/01/15 18:54:13
      */
     @SuppressWarnings("unused")
-    @Manageable(lifestyle = Singleton.class)
     private static class WithLifestyle1 implements Lifestyle<With> {
 
         /**
@@ -140,7 +139,6 @@ public class LifestyleTest {
      * @version 2010/01/15 18:54:13
      */
     @SuppressWarnings("unused")
-    @Manageable(lifestyle = Singleton.class)
     private static class WithLifestyle2 implements Lifestyle<With> {
 
         /**
@@ -177,7 +175,6 @@ public class LifestyleTest {
     /**
      * @version 2010/01/18 18:25:34
      */
-    @Manageable(lifestyle = Singleton.class)
     private static class LocalLifestyle implements Lifestyle<Locale> {
 
         /**

@@ -15,12 +15,8 @@
  */
 package ezbean.sample.modifier;
 
-
 /**
- * DOCUMENT.
- *
- * @author <a href="mailto:Teletha.NPC@gmail.com">Teletha Testarossa</a>
- * @version $ Id: Final.java,v 1.0 2007/05/10 18:52:38 Teletha Exp $
+ * @version 2010/01/21 11:17:35
  */
 public final class Final {
 }

@@ -15,14 +15,11 @@
  */
 package ezbean;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import javax.annotation.Resource;
 
-
 import org.junit.Test;
-
-import ezbean.I;
 
 /**
  * DOCUMENT.

@@ -15,12 +15,8 @@
  */
 package ezbean.sample.modifier;
 
-
 /**
- * DOCUMENT.
- *
- * @author <a href="mailto:Teletha.NPC@gmail.com">Teletha Testarossa</a>
- * @version $ Id: Abstract.java,v 1.0 2007/05/11 20:38:29 Teletha Exp $
+ * @version 2010/01/21 11:17:28
  */
 public abstract class Abstract {
 }

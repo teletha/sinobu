@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.model;
 
 import static junit.framework.Assert.*;
 
-
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-
-
 
 import org.junit.Test;
 
@@ -29,31 +26,32 @@ import ezbean.sample.bean.GenericStringBean;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.PrimitiveWrapper;
 
-
 /**
+ * {@link PropertyDescriptor} is pathetic.
+ * 
  * @version 2009/07/16 20:53:45
  */
-public class PropertyDescriptorTest {
+public class PropertyDescriptorIsPatheticTest {
 
     @Test
-    public void test() throws Exception {
+    public void primitive() throws Exception {
         PropertyDescriptor descriptor = new PropertyDescriptor("boolean", Primitive.class);
         Method method = descriptor.getReadMethod();
         assertEquals("isBoolean", method.getName());
     }
 
     @Test
-    public void testWrapper() throws Exception {
+    public void wrapper() throws Exception {
         PropertyDescriptor descriptor = new PropertyDescriptor("boolean", PrimitiveWrapper.class);
         Method method = descriptor.getReadMethod();
         assertEquals("isBoolean", method.getName());
     }
 
     @Test
-    public void testGeneric() throws Exception {
+    public void generic() throws Exception {
         PropertyDescriptor descriptor = new PropertyDescriptor("generic", GenericStringBean.class);
         Method method = descriptor.getReadMethod();
         assertEquals("getGeneric", method.getName());
-        assertEquals(Object.class, method.getReturnType());
+        assertEquals(Object.class, method.getReturnType()); // lol
     }
 }

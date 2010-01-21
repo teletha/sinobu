@@ -17,16 +17,10 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
-
-
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.Manageable;
-import ezbean.Singleton;
 import ezbean.sample.dependency.CircularA;
 import ezbean.sample.dependency.CircularB;
-
 
 /**
  * DOCUMENT.

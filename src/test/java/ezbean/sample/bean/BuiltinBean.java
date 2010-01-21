@@ -21,10 +21,7 @@ import java.math.BigInteger;
 import java.util.Date;
 
 /**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: BuiltinBean.java,v 1.0 2007/03/18 19:16:05 Teletha Exp $
+ * @version 2010/01/21 11:20:17
  */
 public class BuiltinBean {
 

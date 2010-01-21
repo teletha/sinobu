@@ -17,21 +17,14 @@ package ezbean.io;
 
 import static org.junit.Assert.*;
 
-
 import java.io.File;
-
-
 
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.io.FileSystem;
 
 /**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: FileSystemTest.java,v 1.0 2007/03/03 0:55:40 Teletha Exp $
+ * @version 2010/01/21 11:19:13
  */
 public class FileSystemTest extends FileSystemTestCase {
 
