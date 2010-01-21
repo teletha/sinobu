@@ -52,7 +52,6 @@ public class ModulesAwareTest {
     /**
      * @version 2010/01/21 19:50:48
      */
-    @SuppressWarnings("unused")
     private static class ThisClassWillBeUnloaded extends Person {
     }
 }
