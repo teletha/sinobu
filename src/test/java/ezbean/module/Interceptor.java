@@ -17,10 +17,10 @@ package ezbean.module;
 
 import java.lang.annotation.Annotation;
 
-import ezbean.Accessible;
 import ezbean.Extensible;
 import ezbean.I;
 import ezbean.model.Model;
+import ezbean.module.InterceptorTest.SuperCallable;
 
 /**
  * @version 2009/12/30 0:21:52
@@ -44,7 +44,8 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * @return
      */
     protected Object invoke(Object that, Object[] params, P annotation) {
-        return parent != null ? parent.invoke(that, params, parent.annotation) : ((Accessible) that).ezCall(id, params);
+        return parent != null ? parent.invoke(that, params, parent.annotation)
+                : ((SuperCallable) that).ezCall(id, params);
     }
 
     /**
