@@ -259,9 +259,40 @@ public class InterceptorTest {
     }
 
     /**
+     * @version 2010/01/24 13:00:32
+     */
+    public static interface SuperCallable {
+
+        /**
+         * Call the specified method through by-path.
+         * 
+         * @param id A method identifier.
+         * @param params A list of parameters.
+         * @return A result object or {@link Void#TYPE}.
+         */
+        Object ezCall(int id, Object... params);
+    }
+
+    /**
      * @version 2010/01/02 20:05:34
      */
     public static class InterceptorEnhancer extends Enhancer {
+
+        /**
+         * @see org.objectweb.asm.ClassAdapter#visit(int, int, java.lang.String, java.lang.String,
+         *      java.lang.String, java.lang.String[])
+         */
+        @Override
+        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            String[] dist = new String[interfaces.length + 1];
+
+            for (int i = 0; i < interfaces.length; i++) {
+                dist[i] = interfaces[i];
+            }
+            dist[interfaces.length] = SuperCallable.class.getName().replace('.', '/');
+
+            super.visit(version, access, name, signature, superName, dist);
+        }
 
         /**
          * @see org.objectweb.asm.ClassAdapter#visitEnd()

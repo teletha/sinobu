@@ -38,15 +38,6 @@ public interface Accessible {
     Object ezAccess(int id, Object params);
 
     /**
-     * Call the specified method through by-path.
-     * 
-     * @param id A method identifier.
-     * @param params A list of parameters.
-     * @return A result object or {@link Void#TYPE}.
-     */
-    Object ezCall(int id, Object... params);
-
-    /**
      * Retrieve the assosiated context with this accessible object.
      * 
      * @return An assosiated context.
