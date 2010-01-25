@@ -318,13 +318,6 @@ class File extends java.io.File implements Accessible {
     }
 
     /**
-     * @see ezbean.Accessible#ezCall(int, java.lang.Object[])
-     */
-    public Object ezCall(int id, Object... params) {
-        return null; // do nothing
-    }
-
-    /**
      * @see ezbean.Accessible#ezContext()
      */
     public Listeners ezContext() {
