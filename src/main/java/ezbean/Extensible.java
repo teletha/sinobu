@@ -75,7 +75,7 @@ package ezbean;
  * <h2 id="ExtensionKey">What is Extension Key?</h2>
  * <p>
  * You can provide <em>Extension Key</em> for each Extensions by using parameter. The key makes easy
- * finding an Extension Point you need (see also {@link I#find(Class, Class)}).
+ * finding an Extension you need (see also {@link I#find(Class, Class)}).
  * </p>
  * 
  * <pre>
@@ -87,8 +87,7 @@ package ezbean;
  * }
  * 
  * class ExtensionWithAnotherKey implements ExtensionPointWithKey&lt;List&gt; {
- *     // Associate this Extension with List interface or classes
- *     // which implements List interface.
+ *     // Associate this Extension with List interface.
  * }
  * </pre>
  * 
