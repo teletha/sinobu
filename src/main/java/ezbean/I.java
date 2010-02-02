@@ -28,10 +28,7 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -1213,47 +1210,6 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static void unload(File classPath) {
         make(Modules.class).unload(classPath);
-    }
-
-    /**
-     * Helper method to load additional classpath at runtime.
-     * 
-     * @deprecated
-     * @param classPaths A list of classpaths to load.
-     * @throws SecurityException
-     * @throws {@link UnsupportedOperationException} If the SystemClassLoader is not URLClassLoader.
-     */
-    public static void loadAsSystem(File classPath) {
-        // check null
-        if (classPath == null) {
-            return;
-        }
-
-        // system class loader
-        ClassLoader system = ClassLoader.getSystemClassLoader();
-
-        if (!(system instanceof URLClassLoader)) {
-            throw new UnsupportedOperationException("SystemClassLoader is not URLClassLoader.");
-        }
-
-        // start loading
-        Method method = null;
-
-        try {
-            method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            method.setAccessible(true);
-            method.invoke(system, classPath.toURI().toURL());
-        } catch (SecurityException e) {
-            throw e; // rethrow
-        } catch (Exception e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
-        } finally {
-            if (method != null) {
-                method.setAccessible(false);
-            }
-        }
     }
 
     /**
