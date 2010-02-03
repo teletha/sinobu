@@ -31,6 +31,7 @@ import org.objectweb.asm.MethodVisitor;
 import ezbean.I;
 import ezbean.io.FileSystem;
 import ezbean.model.ClassUtil;
+import ezbean.module.ModuleLoader;
 
 /**
  * @version 2010/02/03 23:12:40
@@ -85,13 +86,27 @@ public class PrivateModule extends EzRule {
     }
 
     /**
+     * <p>
+     * Helper method to load class in this module by simple name.
+     * </p>
+     * 
+     * @param name A simple class name.
+     * @return A class in this module.
+     * @throws ClassNotFoundException
+     */
+    public Class forName(String name) throws ClassNotFoundException {
+        return ModuleLoader.getModuleLoader(null)
+                .loadClass(overriddenPackage + "." + testcase.getSimpleName() + "$" + name);
+    }
+
+    /**
      * @see ezbean.unit.EzRule#beforeClass()
      */
     @Override
     protected void beforeClass() throws Exception {
         originalPackage = testcase.getPackage().getName().replace('.', '/');
         overriddenPackage = overriddenPackage.replace('.', '/');
-        System.out.println(module);
+
         // create package directory
         File dest = I.locate(module, overriddenPackage);
         dest.mkdirs();
@@ -212,6 +227,15 @@ public class PrivateModule extends EzRule {
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
             super.visitMethodInsn(opcode, convert(owner), convert(name), convert(desc));
+        }
+
+        /**
+         * @see org.objectweb.asm.MethodAdapter#visitFieldInsn(int, java.lang.String,
+         *      java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+            super.visitFieldInsn(opcode, convert(owner), convert(name), convert(desc));
         }
     }
 }
