@@ -28,7 +28,7 @@ import ezbean.I;
 /**
  * @version 2010/01/08 2:19:31
  */
-public class EzRule implements MethodRule {
+public abstract class EzRule implements MethodRule {
 
     /** The testcase class. */
     protected final Class testcase = getCaller();
@@ -179,7 +179,7 @@ public class EzRule implements MethodRule {
 
         // If this exception will be thrown, it is bug of this program. So we must rethrow the
         // wrapped error in here.
-        throw new Error("Testcas is not found.");
+        throw new Error("Testcase is not found.");
     }
 
     /**

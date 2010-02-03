@@ -22,7 +22,7 @@ import java.util.Locale;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.unit.ClassModule;
+import ezbean.unit.PrivateModule;
 
 /**
  * @version 2010/01/05 19:51:10
@@ -30,7 +30,7 @@ import ezbean.unit.ClassModule;
 public class I18NTest {
 
     @Rule
-    public static final ClassModule module = new ClassModule();
+    public static final PrivateModule module = new PrivateModule();
 
     @Test
     public void i18n() throws Exception {
@@ -54,7 +54,7 @@ public class I18NTest {
 
     @Test
     public void useNotLoadedBundleClass() {
-        I.unload(module.moduleFile);
+        module.unload();
 
         I.i18n(MessageBundle.class);
     }

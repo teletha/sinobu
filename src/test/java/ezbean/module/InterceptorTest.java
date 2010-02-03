@@ -32,7 +32,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
 import ezbean.I;
-import ezbean.unit.ClassModule;
+import ezbean.unit.PrivateModule;
 
 /**
  * @version 2009/07/10 13:08:34
@@ -40,7 +40,7 @@ import ezbean.unit.ClassModule;
 public class InterceptorTest {
 
     @Rule
-    public static ClassModule module = new ClassModule();
+    public static PrivateModule module = new PrivateModule();
 
     @Test
     public void intercept() {

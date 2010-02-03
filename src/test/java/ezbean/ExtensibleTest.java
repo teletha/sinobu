@@ -24,7 +24,7 @@ import org.junit.Test;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
 import ezbean.sample.bean.Student;
-import ezbean.unit.ClassModule;
+import ezbean.unit.PrivateModule;
 
 /**
  * @version 2009/12/30 15:38:41
@@ -32,7 +32,7 @@ import ezbean.unit.ClassModule;
 public class ExtensibleTest {
 
     @Rule
-    public static ClassModule module = new ClassModule();
+    public static PrivateModule module = new PrivateModule();
 
     @Test
     public void listByClass() {
@@ -57,7 +57,7 @@ public class ExtensibleTest {
     @Test
     public void unlist() throws Exception {
         assertEquals(5, I.find(EPClass.class).size());
-        I.unload(module.moduleFile);
+        module.unload();
         assertEquals(0, I.find(EPClass.class).size());
     }
 
@@ -103,7 +103,7 @@ public class ExtensibleTest {
         assertNotNull(extension);
         assertEquals(KEPClassExtension1.class, extension.getClass());
 
-        I.unload(module.moduleFile);
+        module.unload();
         assertNull(I.find(KEPClass.class, Person.class));
     }
 

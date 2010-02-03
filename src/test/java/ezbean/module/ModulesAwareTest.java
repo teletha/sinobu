@@ -23,9 +23,8 @@ import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.I;
 import ezbean.sample.bean.Person;
-import ezbean.unit.ClassModule;
+import ezbean.unit.PrivateModule;
 
 /**
  * @version 2010/01/21 19:48:01
@@ -40,12 +39,12 @@ public class ModulesAwareTest {
     }
 
     @Rule
-    public static final ClassModule module = new ClassModule();
+    public static final PrivateModule module = new PrivateModule();
 
     @Test
     public void unloadCorrectly() throws Exception {
         assertEquals(2, map.size());
-        I.unload(module.moduleFile);
+        module.unload();
         assertEquals(1, map.size());
     }
 

@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Student;
-import ezbean.unit.ClassModule;
+import ezbean.unit.PrivateModule;
 
 /**
  * @version 2010/01/22 1:53:15
@@ -34,7 +34,7 @@ import ezbean.unit.ClassModule;
 public class LifestyleTest {
 
     @Rule
-    public static final ClassModule module = new ClassModule();
+    public static final PrivateModule module = new PrivateModule();
 
     @Test
     public void override() {
@@ -42,7 +42,7 @@ public class LifestyleTest {
         assertNotSame(object, I.make(With.class));
 
         // unload module
-        I.unload(module.moduleFile);
+        module.unload();
 
         object = I.make(With.class);
         assertSame(object, I.make(With.class));
@@ -54,7 +54,7 @@ public class LifestyleTest {
         assertSame(WithoutLifestyle.object, I.make(Without.class));
 
         // unload module
-        I.unload(module.moduleFile);
+        module.unload();
 
         Without object = I.make(Without.class);
         assertNotSame(WithoutLifestyle.object, object);
