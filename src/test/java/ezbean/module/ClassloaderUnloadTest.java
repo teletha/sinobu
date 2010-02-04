@@ -72,8 +72,9 @@ public class ClassloaderUnloadTest {
         // create snapshot
         int lastLoaded = classLoading.getLoadedClassCount();
         long lastUnloaded = classLoading.getUnloadedClassCount();
-        assertEquals(-2, lastLoaded - loaded);
-        assertEquals(2, lastUnloaded - unloaded);
+        assertTrue(lastLoaded - loaded <= -2);
+        assertTrue(2 <= lastUnloaded - unloaded);
+        assertEquals(loaded - lastLoaded, lastUnloaded - unloaded);
     }
 
     /**
