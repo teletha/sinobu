@@ -20,15 +20,15 @@ import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.module.ModuleTestRule;
+import ezbean.unit.PrivateModule;
 
 /**
- * @version 2010/01/14 12:41:37
+ * @version 2010/02/04 10:29:49
  */
 public class CodecClassTest {
 
     @Rule
-    public static final ModuleTestRule module = new ModuleTestRule();
+    public static final PrivateModule module = new PrivateModule("test");
 
     @Test
     public void systemClass() throws Exception {
@@ -40,11 +40,17 @@ public class CodecClassTest {
 
     @Test
     public void moduleClass() throws Exception {
-        module.load(module.dir);
+        String fqcn = module.forName(Private.class);
 
         CodecClass codec = new CodecClass();
-        Class clazz = codec.decode("external.Class1");
+        Class clazz = codec.decode(fqcn);
         assertNotNull(clazz);
-        assertEquals("external.Class1", codec.encode(clazz));
+        assertEquals(fqcn, codec.encode(clazz));
+    }
+
+    /**
+     * @version 2010/02/04 9:43:23
+     */
+    private static class Private {
     }
 }

@@ -16,6 +16,7 @@
 package ezbean.unit;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,13 +48,16 @@ public class PrivateModule extends EzRule {
     /** The overridden package name. */
     private String overriddenPackage;
 
+    /** The private class filter. */
+    private final PrivateClassStrategy strategy;
+
     /**
      * <p>
      * Create private module with package name which is related to test class name.
      * </p>
      */
     public PrivateModule() {
-        this(null);
+        this((String) null);
     }
 
     /**
@@ -64,7 +68,52 @@ public class PrivateModule extends EzRule {
      * @param packageName
      */
     public PrivateModule(String packageName) {
+        originalPackage = testcase.getPackage().getName();
         overriddenPackage = packageName != null ? packageName : testcase.getPackage().getName();
+        strategy = new PrivateClassStrategy() {
+
+            /**
+             * @see java.io.FileFilter#accept(java.io.File)
+             */
+            public boolean accept(File file) {
+                return file.isFile() && file.getName().startsWith(testcase.getSimpleName() + "$");
+            }
+
+            /**
+             * @see ezbean.unit.PrivateModule.PrivateClassStrategy#compute(java.lang.String)
+             */
+            public String compute(String name) {
+                return overriddenPackage + "." + testcase.getSimpleName() + "$" + name;
+            }
+        };
+    }
+
+    /**
+     * <p>
+     * Make the specified package as private module.
+     * </p>
+     * 
+     * @param packageClass
+     */
+    public PrivateModule(Class packageClass) {
+        originalPackage = packageClass.getPackage().getName();
+        overriddenPackage = originalPackage.substring(originalPackage.lastIndexOf('.') + 1);
+        strategy = new PrivateClassStrategy() {
+
+            /**
+             * @see java.io.FileFilter#accept(java.io.File)
+             */
+            public boolean accept(File file) {
+                return true;
+            }
+
+            /**
+             * @see ezbean.unit.PrivateModule.PrivateClassStrategy#compute(java.lang.String)
+             */
+            public String compute(String name) {
+                return overriddenPackage + "." + name;
+            }
+        };
     }
 
     /**
@@ -92,11 +141,45 @@ public class PrivateModule extends EzRule {
      * 
      * @param name A simple class name.
      * @return A class in this module.
-     * @throws ClassNotFoundException
+     * @throws ClassNotFoundException If the class name is invalid.
      */
-    public Class forName(String name) throws ClassNotFoundException {
-        return ModuleLoader.getModuleLoader(null)
-                .loadClass(overriddenPackage + "." + testcase.getSimpleName() + "$" + name);
+    public Class forName(String name) {
+        try {
+            return ModuleLoader.getModuleLoader(null).loadClass(compute(name));
+        } catch (ClassNotFoundException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Helper method to load class in this module by simple name.
+     * </p>
+     * 
+     * @param name A simple class name.
+     * @return A class in this module.
+     * @throws IllegalArgumentException If the class is <code>null</code>.
+     */
+    public String forName(Class clazz) {
+        if (clazz == null) {
+            throw new IllegalArgumentException("The given class is null.");
+        }
+        return compute(clazz.getSimpleName());
+    }
+
+    /**
+     * <p>
+     * Helper method to compute the class name in this private module.
+     * </p>
+     * 
+     * @param name A simple name.
+     * @return A fully qualified class name.
+     */
+    private String compute(String name) {
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("The given name is null.");
+        }
+        return strategy.compute(name);
     }
 
     /**
@@ -104,18 +187,31 @@ public class PrivateModule extends EzRule {
      */
     @Override
     protected void beforeClass() throws Exception {
-        originalPackage = testcase.getPackage().getName().replace('.', '/');
+        originalPackage = originalPackage.replace('.', '/');
         overriddenPackage = overriddenPackage.replace('.', '/');
 
-        // create package directory
-        File dest = I.locate(module, overriddenPackage);
-        dest.mkdirs();
-
-        // copy class files
+        // copy class file with type conversion
         File source = I.locate(ClassUtil.getArchive(testcase), originalPackage);
+        File target = I.locate(module, overriddenPackage);
 
-        for (File file : source.listFiles()) {
-            if (file.isFile() && file.getName().startsWith(testcase.getSimpleName() + "$")) {
+        copy(source, target);
+    }
+
+    /**
+     * <p>
+     * Copy class file with type conversion.
+     * </p>
+     * 
+     * @param source A source directory.
+     * @param target A target directory.
+     */
+    private void copy(File source, File target) {
+        target.mkdirs();
+
+        for (File file : source.listFiles(strategy)) {
+            if (file.isDirectory()) {
+                copy(file, new File(target, file.getName()));
+            } else {
                 try {
                     // setup
                     ClassWriter writer = new ClassWriter(0);
@@ -124,7 +220,7 @@ public class PrivateModule extends EzRule {
                     new ClassReader(new FileInputStream(file)).accept(new ClassConverter(writer), 0);
 
                     // write new class file
-                    FileOutputStream stream = new FileOutputStream(I.locate(dest, file.getName()));
+                    FileOutputStream stream = new FileOutputStream(I.locate(target, file.getName()));
                     stream.write(writer.toByteArray());
                     stream.close();
                 } catch (IOException e) {
@@ -157,7 +253,7 @@ public class PrivateModule extends EzRule {
      * @return
      */
     private String convert(String name) {
-        return name.replace(originalPackage + "/" + testcase.getSimpleName(), overriddenPackage + "/" + testcase.getSimpleName());
+        return name.replace(originalPackage.concat("/"), overriddenPackage.concat("/"));
     }
 
     /**
@@ -205,7 +301,6 @@ public class PrivateModule extends EzRule {
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
             return new MethodConverter(super.visitMethod(access, convert(name), convert(desc), signature, convert(exceptions)));
         }
-
     }
 
     /**
@@ -237,5 +332,19 @@ public class PrivateModule extends EzRule {
         public void visitFieldInsn(int opcode, String owner, String name, String desc) {
             super.visitFieldInsn(opcode, convert(owner), convert(name), convert(desc));
         }
+    }
+
+    /**
+     * @version 2010/02/04 12:44:12
+     */
+    private static interface PrivateClassStrategy extends FileFilter {
+
+        /**
+         * Compute fully qualified class name.
+         * 
+         * @param name A simple class name.
+         * @return A fully qualified class name.
+         */
+        String compute(String name);
     }
 }

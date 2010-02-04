@@ -17,7 +17,6 @@ package ezbean.module;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,25 +25,23 @@ import org.junit.Test;
 
 import ezbean.I;
 import ezbean.model.Model;
+import ezbean.module.external.SingletonClass;
+import ezbean.unit.PrivateModule;
 
 /**
- * @version 2009/12/23 13:21:17
+ * @version 2010/02/04 12:40:34
  */
 public class ClassCacheProblemTest {
 
     @Rule
-    public static ModuleTestRule registry = new ModuleTestRule();
+    public static PrivateModule module = new PrivateModule(SingletonClass.class);
 
     /**
      * Cached prototype class's identity check.
      */
     @Test
-    public void testClassCacheForPrototype() {
-        File moduleFile = registry.dir;
-
-        registry.load(moduleFile);
-
-        Model<?> model1 = Model.load("external.Class1");
+    public void testClassCacheForPrototype() throws Exception {
+        Model model1 = Model.load("external.Class1");
         assertNotNull(model1);
 
         Class class1 = model1.type;
@@ -57,9 +54,9 @@ public class ClassCacheProblemTest {
         assertNotNull(object1);
 
         // reload
-        registry.load(moduleFile);
+        module.load();
 
-        Model<?> model2 = Model.load("external.Class1");
+        Model model2 = Model.load("external.Class1");
         assertNotNull(model2);
 
         Class class2 = model2.type;
@@ -83,11 +80,7 @@ public class ClassCacheProblemTest {
      */
     @Test
     public void testClassCacheForSingleton() {
-        File moduleFile = registry.dir;
-
-        registry.load(moduleFile);
-
-        Model<?> model1 = Model.load("external.SingletonClass");
+        Model model1 = Model.load("external.SingletonClass");
         assertNotNull(model1);
 
         Class class1 = model1.type;
@@ -103,9 +96,9 @@ public class ClassCacheProblemTest {
         assertEquals(object1a, object1b);
 
         // reload
-        registry.load(moduleFile);
+        module.load();
 
-        Model<?> model2 = Model.load("external.SingletonClass");
+        Model model2 = Model.load("external.SingletonClass");
         assertNotNull(model2);
 
         Class class2 = model2.type;
@@ -131,11 +124,7 @@ public class ClassCacheProblemTest {
      */
     @Test
     public void testClassCacheInMapKeyReference() {
-        File moduleFile = registry.dir;
-
-        registry.load(moduleFile);
-
-        Model<?> model = Model.load("external.Class1");
+        Model model = Model.load("external.Class1");
         assertNotNull(model);
 
         Class clazz = model.type;
@@ -147,7 +136,7 @@ public class ClassCacheProblemTest {
         assertTrue(cache.containsKey(clazz));
 
         // unload module
-        registry.unload(moduleFile);
+        module.unload();
         assertFalse(cache.containsKey(clazz));
     }
 }
