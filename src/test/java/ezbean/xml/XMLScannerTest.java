@@ -17,10 +17,7 @@ package ezbean.xml;
 
 import static ezbean.unit.Ezunit.*;
 
-
 import java.io.IOException;
-
-
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -32,12 +29,9 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.I;
-import ezbean.xml.XMLScanner;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/12/08 19:13:00
+ * @version 2010/02/05 1:31:37
  */
 public class XMLScannerTest {
 
@@ -366,57 +360,6 @@ public class XMLScannerTest {
     public void testResolveEntityWithAdditionalResolving() throws Exception {
         assertXMLIdentical("scanner/expected007.xml", "scanner/test007.xml", new EntityResolvableBuilder());
     }
-
-// /**
-// * Test include.
-// */
-// @Test
-// public void testInclude01() throws Exception {
-// SAXBuilder builder = new SAXBuilder();
-// builder.startDocument();
-// builder.startElement("", "root", "root", EMPTY_ATTR);
-// builder.include(XMLUtil.getInputSource(resolveFile("scanner/include00.xml")));
-// builder.endElement("", "root", "root");
-// builder.endDocument();
-//
-// // assert
-// Document document = builder.getDocument();
-// assertXMLIdentical(build("scanner/expected40.xml"), document);
-// }
-//
-// /**
-// * Test include.
-// */
-// @Test
-// public void testInclude02() throws Exception {
-// SAXBuilder builder = new SAXBuilder();
-// builder.startDocument();
-// builder.startElement("root");
-// builder.include(XMLUtil.getInputSource(resolveFile("scanner/include00.xml")));
-// builder.endElement("root");
-// builder.endDocument();
-//
-// // assert
-// Document document = builder.getDocument();
-// assertXMLIdentical(build("scanner/expected40.xml"), document);
-// }
-//
-// /**
-// * Test include with filter.
-// */
-// @Test
-// public void testInclude03() throws Exception {
-// SAXBuilder builder = new SAXBuilder();
-// builder.startDocument();
-// builder.startElement("root");
-// builder.include(XMLUtil.getInputSource(resolveFile("scanner/include01.xml")), new RootStriper());
-// builder.endElement("root");
-// builder.endDocument();
-//
-// // assert
-// Document document = builder.getDocument();
-// assertXMLIdentical(build("scanner/expected41.xml"), document);
-// }
 
     /**
      * DOCUMENT.

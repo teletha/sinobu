@@ -36,7 +36,7 @@ import ezbean.I;
  * @see ContentHandler
  * @see LexicalHandler
  * @see Attributes
- * @version 2010/01/08 13:39:08
+ * @version 2010/02/05 2:02:40
  */
 public class XMLFormatter extends XMLScanner implements LexicalHandler {
 
@@ -272,6 +272,21 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     public void startDTD(String name, String publicId, String systemId) throws SAXException {
         try {
             checkEvent(OTHER);
+            out.append(EOL);
+            writeIndent();
+            out.append("<!DOCTYPE ").append(name);
+
+            // write publicId
+            if (publicId == null) {
+                out.append(" SYSTEM");
+            } else {
+                out.append(" PUBLIC \"").append(publicId).append('"');
+            }
+
+            // write systemId
+            if (systemId != null) {
+                out.append(" \"").append(systemId).append('"');
+            }
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -283,6 +298,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     public void endDTD() throws SAXException {
         try {
             checkEvent(OTHER);
+            out.append('>');
         } catch (IOException e) {
             throw new SAXException(e);
         }

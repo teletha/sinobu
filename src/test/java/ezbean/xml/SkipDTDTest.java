@@ -23,10 +23,10 @@ import ezbean.unit.Ezunit;
 /**
  * @version 2010/02/04 23:09:21
  */
-public class ExternalPerameterEntityTest {
+public class SkipDTDTest {
 
     @Test
-    public void resolveExternalEntity() {
-        I.parse(Ezunit.locateSource("scanner/externalEntity.html"), new XMLScanner());
+    public void skipDTD() {
+        I.parse(Ezunit.locateSource("scanner/skipDTD.html"), new XMLScanner());
     }
 }
