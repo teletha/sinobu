@@ -297,17 +297,19 @@ public class I implements ClassLoadListener<Extensible> {
             // Instantiates a class by using reflection to make a call to private method
             // ObjectStreamClass.newInstance, present in many JVM implementations.
             instantiator = Object.class.getConstructor();
+
+            // configure sax parser
+            sax.setNamespaceAware(true);
+            sax.setXIncludeAware(true);
+            // sax.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            sax.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            // sax.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+            // sax.setFeature("http://xml.org/sax/features/xmlns-uris", true);
         } catch (Exception e) {
             // If this exception will be thrown, it is bug of this program. So we must rethrow the
             // wrapped error in here.
             throw new Error(e);
         }
-
-        // configure sax parser
-        sax.setNamespaceAware(true);
-        sax.setXIncludeAware(true);
-        // sax.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-        // sax.setFeature("http://xml.org/sax/features/xmlns-uris", true);
 
         // configure javascript engine
         script = new ScriptEngineManager(parentClassLoader).getEngineByName("js");
