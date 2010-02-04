@@ -32,9 +32,7 @@ import ezbean.I;
 import ezbean.io.FileSystem;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/09/01 1:40:25
+ * @version 2010/02/05 1:31:48
  */
 public class XMLFormatterTest {
 
@@ -180,6 +178,16 @@ public class XMLFormatterTest {
     @Test
     public void testProcessingInstruction() {
         assertBinaryXML("format/expected20.xml", "format/test20.xml");
+    }
+
+    @Test
+    public void publicDTD() {
+        assertBinaryXML("format/expectedPublicDTD.xml", "format/testPublicDTD.xml");
+    }
+
+    @Test
+    public void systemDTD() {
+        assertBinaryXML("format/expectedSystemDTD.xml", "format/testSYstemDTD.xml");
     }
 
     /**

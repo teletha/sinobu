@@ -170,7 +170,7 @@ import ezbean.xml.XMLFormatter;
  * </pre>
  * 
  * @see ServiceLoader
- * @version 2010/01/22 1:53:29
+ * @version 2010/02/05 1:53:29
  */
 public class I implements ClassLoadListener<Extensible> {
 
@@ -301,8 +301,9 @@ public class I implements ClassLoadListener<Extensible> {
             // configure sax parser
             sax.setNamespaceAware(true);
             sax.setXIncludeAware(true);
+            sax.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             // sax.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            sax.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            // sax.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             // sax.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             // sax.setFeature("http://xml.org/sax/features/xmlns-uris", true);
         } catch (Exception e) {
@@ -903,6 +904,17 @@ public class I implements ClassLoadListener<Extensible> {
      * . The application can use this method to instruct the XML reader to begin parsing an XML
      * document from any valid input source (a character stream, a byte stream, or a URI).
      * </p>
+     * <p>
+     * Ezbean use the {@link XMLReader} which has the following features.
+     * </p>
+     * <ul>
+     * <li>Support XML namespaces.</li>
+     * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude) Version
+     * 1.0</a>.</li>
+     * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
+     * <li><em>Not</em> support external DTD completely (parser doesn't even access DTD, using
+     * "http://apache.org/xml/features/nonvalidating/load-external-dtd" feature).</li>
+     * </ul>
      * 
      * @param source A xml source.
      * @param filters A list of filters to parse a sax event. This may be <code>null</code>.
