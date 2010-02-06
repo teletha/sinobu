@@ -29,6 +29,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -659,6 +661,24 @@ public class I implements ClassLoadListener<Extensible> {
 
         // API definition
         return java;
+    }
+
+    /**
+     * <p>
+     * Locate the specified file URL and return the plain {@link File} object.
+     * </p>
+     * 
+     * @param filePath A location path.
+     * @return A located {@link File}.
+     * @throws NullPointerException If the given file path is null.
+     */
+    public static File locate(URL filePath) {
+        try {
+            // Use File constructor with URI to resolve escaped character.
+            return locate(new File(filePath.toURI()).getPath());
+        } catch (URISyntaxException e) {
+            return locate(filePath.getPath());
+        }
     }
 
     /**

@@ -161,7 +161,7 @@ public class Ezunit {
         }
 
         // resolve file location
-        return I.locate(url.toExternalForm());
+        return I.locate(url);
     }
 
     /**

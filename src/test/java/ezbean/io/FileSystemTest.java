@@ -33,7 +33,7 @@ public class FileSystemTest extends FileSystemTestCase {
      */
     @Test(expected = NullPointerException.class)
     public void testLocate01() {
-        I.locate(null);
+        I.locate((String) null);
     }
 
     /**
@@ -140,7 +140,7 @@ public class FileSystemTest extends FileSystemTestCase {
         assertFilePathEquals(expected, file);
     }
 
-    private static final String PREFIX = new File("").toURI().toASCIIString() + "/src/test/resources/io/";
+    private static final String PREFIX = new File(new File("").toURI()).getPath() + "/src/test/resources/io/";
 
     /**
      * File protocol.
@@ -148,6 +148,7 @@ public class FileSystemTest extends FileSystemTestCase {
     @Test
     public void testProtocol01() {
         File file = I.locate(PREFIX + "test001/1.txt");
+
         assertFile(file, "1.txt");
     }
 

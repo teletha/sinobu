@@ -213,16 +213,22 @@ public class PrivateModule extends EzRule {
                 copy(file, new File(target, file.getName()));
             } else {
                 try {
-                    // setup
-                    ClassWriter writer = new ClassWriter(0);
+                    if (!FileSystem.getExtension(file).equals("class")) {
+                        FileSystem.copy(source, I.locate(target, file.getName()));
+                    } else {
 
-                    // convert class file
-                    new ClassReader(new FileInputStream(file)).accept(new ClassConverter(writer), 0);
+                        // setup
+                        ClassWriter writer = new ClassWriter(0);
 
-                    // write new class file
-                    FileOutputStream stream = new FileOutputStream(I.locate(target, file.getName()));
-                    stream.write(writer.toByteArray());
-                    stream.close();
+                        // convert class file
+                        new ClassReader(new FileInputStream(file)).accept(new ClassConverter(writer), 0);
+
+                        // write new class file
+                        FileOutputStream stream = new FileOutputStream(I.locate(target, file.getName()));
+                        stream.write(writer.toByteArray());
+                        stream.close();
+
+                    }
                 } catch (IOException e) {
                     I.quiet(e);
                 }
