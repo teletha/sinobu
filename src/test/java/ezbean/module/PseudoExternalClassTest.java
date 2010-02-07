@@ -21,19 +21,19 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.model.Model;
+import ezbean.module.external.SingletonClass;
+import ezbean.unit.PrivateModule;
 
 /**
- * @version 2009/12/22 19:19:13
+ * @version 2010/02/06 12:15:34
  */
 public class PseudoExternalClassTest {
 
     @Rule
-    public static ModuleTestRule registry = new ModuleTestRule();
+    public static PrivateModule module = new PrivateModule(SingletonClass.class);
 
     @Test
     public void resolveClass() {
-        registry.load(registry.dir);
-
         assertNotNull(Model.load("external.Class1"));
     }
 }
