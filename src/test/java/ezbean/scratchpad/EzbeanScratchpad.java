@@ -18,6 +18,8 @@ package ezbean.scratchpad;
 import ezbean.I;
 import ezbean.Manageable;
 import ezbean.Singleton;
+import ezbean.scratchpad.ExtensionKeyTest.Extension;
+import ezbean.scratchpad.ExtensionKeyTest.ExtensionKeyProvider;
 
 /**
  * @version 2008/06/18 8:42:37
@@ -40,6 +42,26 @@ public class EzbeanScratchpad {
      */
     public static <M> M create(M... m) {
         return (M) I.make(m.getClass().getComponentType());
+    }
+
+    /**
+     * @param <E>
+     * @param extensionPoint
+     * @param key
+     * @return
+     */
+    public static <E extends Extension> E find(Class<E> extensionPoint, Class<?> key) {
+        return null;
+    }
+
+    /**
+     * @param <E>
+     * @param extensionPoint
+     * @param key
+     * @return
+     */
+    public static <E extends Extension<? extends ExtensionKeyProvider<? super K>>, K> E find(Class<E> extensionPoint, K key) {
+        return null;
     }
 
     /**
