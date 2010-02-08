@@ -359,9 +359,7 @@ public class FileTest extends FileSystemTestCase {
             writer = new FileWriter(file);
             writer.append("write");
         } finally {
-            if (writer != null) {
-                writer.close();
-            }
+            FileSystem.close(writer);
         }
     }
 

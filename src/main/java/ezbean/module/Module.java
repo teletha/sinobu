@@ -41,7 +41,6 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
 import ezbean.I;
-import ezbean.io.FileSystem;
 import ezbean.model.ClassUtil;
 
 /**
@@ -287,7 +286,7 @@ class Module implements ClassVisitor {
             // this.fqcn = name;
             //
             // compute fully qualified class name
-            this.fqcn = name.substring(0, name.length() - 6).replace(FileSystem.SEPARATOR, '.');
+            this.fqcn = name.substring(0, name.length() - 6).replace('/', '.');
 
             // try to read class file and check it
             try {
