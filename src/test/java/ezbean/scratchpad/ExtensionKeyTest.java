@@ -15,6 +15,10 @@
  */
 package ezbean.scratchpad;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 /**
  * @version 2010/02/08 23:39:34
  */
@@ -100,11 +104,17 @@ public class ExtensionKeyTest {
         }
     }
 
-    private static void user() {
+    @Test
+    public void user() {
         AExtensionPoint extensionA1 = EzbeanScratchpad.find(AExtensionPoint.class, "test");
         BExtensionPoint extensionB1 = EzbeanScratchpad.find(BExtensionPoint.class, String.class);
         CExtensionPoint extensionC1 = EzbeanScratchpad.find(CExtensionPoint.class, String.class);
         DExtensionPoint extensionD1 = EzbeanScratchpad.find(DExtensionPoint.class, int.class);
+
+        assertNull(extensionA1);
+        assertNull(extensionB1);
+        assertNull(extensionC1);
+        assertNull(extensionD1);
 
         // compile error
         // AExtensionPoint extensionA2 = EzbeanScratchpad.find(AExtensionPoint.class, 1);
