@@ -213,7 +213,7 @@ public class PrivateModule extends EzRule {
                 copy(file, new File(target, file.getName()));
             } else {
                 try {
-                    if (!FileSystem.getExtension(file).equals("class")) {
+                    if (!file.getName().endsWith("class")) {
                         FileSystem.copy(source, I.locate(target, file.getName()));
                     } else {
 

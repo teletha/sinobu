@@ -15,6 +15,7 @@
  */
 package ezbean.io;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -29,6 +30,7 @@ import java.nio.channels.FileChannel;
 import javax.activation.FileTypeMap;
 
 import ezbean.ClassLoadListener;
+import ezbean.I;
 import ezbean.Listeners;
 import ezbean.Manageable;
 import ezbean.Singleton;
@@ -198,7 +200,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static void copy(File input, File output) throws IOException, FileNotFoundException {
+    public static void copy(File input, File output) {
         copy(input, output, null);
     }
 
@@ -217,7 +219,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static void copy(File input, File output, FileFilter filter) throws IOException, FileNotFoundException {
+    public static void copy(File input, File output, FileFilter filter) {
         // uncast
         input = new File(input.getPath());
         output = new File(output.getPath());
@@ -246,7 +248,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    private static void copyD2D(File input, File output, FileFilter filter) throws IOException {
+    private static void copyD2D(File input, File output, FileFilter filter) {
         // copy
         File dirctory = new File(output, input.getName());
         dirctory.mkdir();
@@ -274,23 +276,28 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    private static void copyF2F(File input, File output) throws IOException {
+    private static void copyF2F(File input, File output) {
         // assure that the parent directories exist
         output.getParentFile().mkdirs();
 
         // copy
-        FileChannel in = new FileInputStream(input).getChannel();
-        FileChannel out = new FileOutputStream(output).getChannel();
+        FileChannel in = null;
+        FileChannel out = null;
 
         try {
-            in.transferTo(0, in.size(), out);
-        } finally {
-            in.close();
-            out.close();
-        }
+            in = new FileInputStream(input).getChannel();
+            out = new FileOutputStream(output).getChannel();
 
-        // copy last modified date
-        output.setLastModified(input.lastModified());
+            in.transferTo(0, in.size(), out);
+
+            // copy last modified date if success
+            output.setLastModified(input.lastModified());
+        } catch (IOException e) {
+            throw I.quiet(e);
+        } finally {
+            close(in);
+            close(out);
+        }
     }
 
     /**
@@ -310,7 +317,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static void copy(InputStream input, OutputStream output) throws IOException {
+    public static void copy(InputStream input, OutputStream output) {
         int size = 0;
         byte[] buffer = new byte[8192];
 
@@ -318,21 +325,44 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
             while ((size = input.read(buffer)) != -1) {
                 output.write(buffer, 0, size);
             }
+        } catch (IOException e) {
+            throw I.quiet(e);
         } finally {
-            input.close();
-            output.close();
+            close(input);
+            close(output);
         }
     }
 
-    // public static void close(Object closeable) {
-    // if (closeable instanceof Closeable) {
-    // try {
-    // ((Closeable) closeable).close();
-    // } catch (IOException e) {
-    // throw I.quiet(e);
-    // }
-    // }
-    // }
+    /**
+     * <p>
+     * Close the specified object quietly if it is {@link Closeable}. Equivalent to
+     * {@link Closeable#close()}, except any exceptions will be ignored. This is typically used in
+     * finally block like the following.
+     * </p>
+     * 
+     * <pre>
+     * Closeable input = null;
+     * 
+     * try {
+     *     // some IO action
+     * } catch (IOException e) {
+     * 
+     * } finally {
+     *     FileSystem.close(input);
+     * }
+     * </pre>
+     * 
+     * @param closeable Any object you want to close. <code>null</code> is acceptable.
+     */
+    public static void close(Object closeable) {
+        if (closeable instanceof Closeable) {
+            try {
+                ((Closeable) closeable).close();
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
+        }
+    }
 
     // /**
     // * <p>
@@ -473,30 +503,24 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         return result;
     }
 
-    /**
-     * <p>
-     * Tests the equality with the target files. Though the method {@link File#equals(Object)} tests
-     * the equality which is based on the abstract pathname, this method does that which is based on
-     * the absolute path location.
-     * </p>
-     * 
-     * @param one The one.
-     * @param other The other.
-     * @return A result.
-     */
-    public static boolean equals(File one, File other) {
-        // check null
-        if (one == null || other == null) {
-            return one == other;
-        }
-
-        // normalize
-        try {
-            return one.getCanonicalFile().equals(other.getCanonicalFile());
-        } catch (IOException e) {
-            return false;
-        }
-    }
+    // public static String[] construe(File file) {
+    // String[] values = {"", ""};
+    //
+    // if (file == null) {
+    // return values;
+    // }
+    //
+    // String name = file.getName();
+    // int index = name.lastIndexOf('.');
+    //
+    // if (index == -1) {
+    // values[0] = name;
+    // } else {
+    // values[0] = name.substring(0, index);
+    // values[1] = name.substring(index + 1);
+    // }
+    // return values;
+    // }
 
     /**
      * Helper method to retrieve a file base name of the file.

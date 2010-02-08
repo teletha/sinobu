@@ -186,7 +186,7 @@ public class ModuleTestRule extends EzRule {
                     // create output directory
                     output.getParentFile().mkdirs();
 
-                    if (!FileSystem.getExtension(file).equals("class")) {
+                    if (!file.getName().endsWith("class")) {
                         FileSystem.copy(file, output);
                     } else {
                         // setup

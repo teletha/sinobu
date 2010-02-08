@@ -289,12 +289,7 @@ class File extends java.io.File implements Accessible {
      */
     @Override
     public URL toURL() throws MalformedURLException {
-        if (archiver == null) {
-            return super.toURI().toURL();
-        } else {
-            String url = super.toURI().toURL().toString();
-            return new URL(url.substring(0, url.length() - 1));
-        }
+        return toURI().toURL();
     }
 
     /**

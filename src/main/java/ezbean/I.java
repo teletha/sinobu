@@ -1128,13 +1128,7 @@ public class I implements ClassLoadListener<Extensible> {
                 // unlock
                 lock.writeLock().unlock();
 
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                } catch (IOException e) {
-                    throw quiet(e);
-                }
+                FileSystem.close(writer);
             }
         }
     }
@@ -1170,13 +1164,7 @@ public class I implements ClassLoadListener<Extensible> {
                 // unlock
                 lock.readLock().unlock();
 
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    throw quiet(e);
-                }
+                FileSystem.close(reader);
             }
         }
 
