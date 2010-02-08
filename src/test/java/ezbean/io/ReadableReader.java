@@ -15,7 +15,6 @@
  */
 package ezbean.io;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.CharBuffer;
@@ -40,9 +39,7 @@ public class ReadableReader extends Reader {
      */
     @Override
     public void close() throws IOException {
-        if (readable instanceof Closeable) {
-            ((Closeable) readable).close();
-        }
+        FileSystem.close(readable);
     }
 
     /**

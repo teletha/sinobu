@@ -27,7 +27,6 @@ import ezbean.ClassLoadListener;
 import ezbean.I;
 import ezbean.Manageable;
 import ezbean.Singleton;
-import ezbean.io.FileSystem;
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 
@@ -182,10 +181,8 @@ public final class Modules implements ClassLoadListener {
                             Iterator<Class> iterator = aware.keySet().iterator();
 
                             while (iterator.hasNext()) {
-                                if (I.locate(moduleFile, iterator.next()
-                                        .getName()
-                                        .replace('.', FileSystem.SEPARATOR)
-                                        .concat(".class")).exists()) {
+                                if (I.locate(moduleFile, iterator.next().getName().replace('.', '/').concat(".class"))
+                                        .exists()) {
                                     iterator.remove();
                                 }
                             }

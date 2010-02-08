@@ -15,7 +15,6 @@
  */
 package ezbean.io;
 
-import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.Writer;
@@ -40,9 +39,7 @@ public class AppendableWriter extends Writer {
      */
     @Override
     public void close() throws IOException {
-        if (appendable instanceof Closeable) {
-            ((Closeable) appendable).close();
-        }
+        FileSystem.close(appendable);
     }
 
     /**

@@ -120,13 +120,13 @@ public class FileSystemTest extends FileSystemTestCase {
      */
     @Test
     public void testLocate09() {
-        String absolutePath = FileSystem.temporaries.getAbsolutePath() + FileSystem.SEPARATOR + "test.txt";
+        String absolutePath = FileSystem.temporaries.getAbsolutePath() + "/test.txt";
 
         File file = I.locate(absolutePath);
         File expected = new File(absolutePath);
 
         assertFilePathEquals(expected, file);
-        assertEquals(expected.toString(), file.toString().replace(FileSystem.SEPARATOR, File.separatorChar));
+        assertEquals(expected.toString(), file.toString().replace('/', File.separatorChar));
     }
 
     /**

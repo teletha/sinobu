@@ -302,7 +302,7 @@ class File extends java.io.File implements Accessible {
         if (archive != null) {
             filePath = archive + filePath.substring(archive.getJunction().getPath().length());
         }
-        return filePath.replace(separatorChar, FileSystem.SEPARATOR);
+        return filePath.replace(separatorChar, '/');
     }
 
     /**

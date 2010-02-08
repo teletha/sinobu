@@ -701,7 +701,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws NullPointerException If the given file path is null.
      */
     public static File locate(File base, String filePath) {
-        return locate(base.toString() + FileSystem.SEPARATOR + filePath);
+        return locate(base.toString() + '/' + filePath);
     }
 
     /**

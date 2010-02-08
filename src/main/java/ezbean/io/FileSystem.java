@@ -45,9 +45,6 @@ import ezbean.Singleton;
 @Manageable(lifestyle = Singleton.class)
 public final class FileSystem implements ClassLoadListener<Archiver> {
 
-    /** The separator for the uniform path. "/" */
-    public static final char SEPARATOR = '/';
-
     /** The temporary directory for the current processing JVM. */
     private static File temporary;
 
@@ -157,8 +154,8 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         }
 
         // normalize separator
-        if (File.separatorChar != SEPARATOR) {
-            filePath = filePath.replace(File.separatorChar, SEPARATOR);
+        if (File.separatorChar != '/') {
+            filePath = filePath.replace(File.separatorChar, '/');
         }
 
         String[] paths = filePath.split("/");
@@ -280,7 +277,6 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         // assure that the parent directories exist
         output.getParentFile().mkdirs();
 
-        // copy
         FileChannel in = null;
         FileChannel out = null;
 
@@ -288,6 +284,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
             in = new FileInputStream(input).getChannel();
             out = new FileOutputStream(output).getChannel();
 
+            // copy data actually
             in.transferTo(0, in.size(), out);
 
             // copy last modified date if success
@@ -346,7 +343,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      * try {
      *     // some IO action
      * } catch (IOException e) {
-     * 
+     *     throw e;
      * } finally {
      *     FileSystem.close(input);
      * }

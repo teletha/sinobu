@@ -216,7 +216,6 @@ public class PrivateModule extends EzRule {
                     if (!file.getName().endsWith("class")) {
                         FileSystem.copy(source, I.locate(target, file.getName()));
                     } else {
-
                         // setup
                         ClassWriter writer = new ClassWriter(0);
 
@@ -227,7 +226,6 @@ public class PrivateModule extends EzRule {
                         FileOutputStream stream = new FileOutputStream(I.locate(target, file.getName()));
                         stream.write(writer.toByteArray());
                         stream.close();
-
                     }
                 } catch (IOException e) {
                     I.quiet(e);
