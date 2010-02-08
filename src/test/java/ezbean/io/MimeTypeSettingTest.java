@@ -22,9 +22,7 @@ import javax.activation.FileTypeMap;
 import org.junit.Test;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/12/05 4:46:22
+ * @version 2010/02/08 12:41:50
  */
 public class MimeTypeSettingTest {
 
@@ -52,5 +50,22 @@ public class MimeTypeSettingTest {
 
         assertEquals("image/jpeg", map.getContentType("test.jpeg"));
         assertEquals("image/jpeg", map.getContentType("test.jpg"));
+    }
+
+    @Test
+    public void unknown() {
+        FileTypeMap map = FileTypeMap.getDefaultFileTypeMap();
+
+        assertEquals("application/octet-stream", map.getContentType("test.unknown"));
+        assertEquals("application/octet-stream", map.getContentType("test.a-b-c-d"));
+    }
+
+    @Test
+    public void withoutExtension() {
+        FileTypeMap map = FileTypeMap.getDefaultFileTypeMap();
+
+        assertEquals("application/octet-stream", map.getContentType("test"));
+        assertEquals("application/octet-stream", map.getContentType("zip"));
+        assertEquals("application/octet-stream", map.getContentType("html"));
     }
 }
