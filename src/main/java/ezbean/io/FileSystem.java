@@ -53,7 +53,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
     private static final Listeners<String, Class<Archiver>> archivers = new Listeners();
 
     /** The root temporary directory for Ezbean. */
-    static File temporaries = new File(System.getProperty("java.io.tmpdir"), "Ezbean").getAbsoluteFile();
+    static File temporaries;
 
     /**
      * Helper method to find the suitable {@link Archiver} for the given file name. This method is
@@ -70,6 +70,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
     // initialize
     static {
         try {
+            temporaries = new File(System.getProperty("java.io.tmpdir"), "Ezbean").getCanonicalFile();
             temporaries.mkdirs();
 
             // Clean up any old temporary directories by listing all of the files, using a prefix
