@@ -32,7 +32,6 @@ import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 
 /**
- * 
  * @version 2010/01/21 20:28:27
  */
 @Manageable(lifestyle = Singleton.class)
@@ -165,7 +164,7 @@ public final class Modules implements ClassLoadListener {
         // check module file
         if (moduleFile != null && moduleFile.exists()) {
             for (Module module : modules) {
-                if (FileSystem.equals(moduleFile, module.moduleFile)) {
+                if (module.moduleFile.getAbsolutePath().equals(moduleFile.getAbsolutePath())) {
                     // fire event
                     for (Object[] types : this.types) {
                         for (Class provider : module.find((Class<?>) types[1], false)) {

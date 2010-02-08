@@ -334,75 +334,75 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         assertFalse(FileSystem.delete(null)); // no error
     }
 
-    /**
-     * Test null and null.
-     */
-    @Test
-    public void testEquals1() throws Exception {
-        File one = null;
-        File other = null;
-
-        assertTrue(FileSystem.equals(one, other));
-    }
-
-    /**
-     * Test null and A.
-     */
-    @Test
-    public void testEquals2() throws Exception {
-        File one = null;
-        File other = new File("");
-
-        assertFalse(FileSystem.equals(one, other));
-        assertFalse(FileSystem.equals(other, one));
-    }
-
-    /**
-     * Test A and A.
-     */
-    @Test
-    public void testEquals4() throws Exception {
-        File one = new File("");
-        File other = new File("");
-
-        assertTrue(FileSystem.equals(one, other));
-    }
-
-    /**
-     * Test A and B.
-     */
-    @Test
-    public void testEquals5() throws Exception {
-        File one = new File("a");
-        File other = new File("b");
-
-        assertFalse(FileSystem.equals(one, other));
-        assertFalse(FileSystem.equals(other, one));
-    }
-
-    /**
-     * Test A and A.
-     */
-    @Test
-    public void testEquals6() throws Exception {
-        File one = new File("a");
-        File other = new File("a").getAbsoluteFile();
-
-        assertTrue(FileSystem.equals(one, other));
-        assertTrue(FileSystem.equals(other, one));
-    }
-
-    /**
-     * Test A and A.
-     */
-    @Test
-    public void testEquals7() throws Exception {
-        File one = new File("a");
-        File other = new File("a/../a");
-
-        assertTrue(FileSystem.equals(one, other));
-        assertTrue(FileSystem.equals(other, one));
-    }
+    // /**
+    // * Test null and null.
+    // */
+    // @Test
+    // public void testEquals1() throws Exception {
+    // File one = null;
+    // File other = null;
+    //
+    // assertTrue(FileSystem.equals(one, other));
+    // }
+    //
+    // /**
+    // * Test null and A.
+    // */
+    // @Test
+    // public void testEquals2() throws Exception {
+    // File one = null;
+    // File other = new File("");
+    //
+    // assertFalse(FileSystem.equals(one, other));
+    // assertFalse(FileSystem.equals(other, one));
+    // }
+    //
+    // /**
+    // * Test A and A.
+    // */
+    // @Test
+    // public void testEquals4() throws Exception {
+    // File one = new File("");
+    // File other = new File("");
+    //
+    // assertTrue(FileSystem.equals(one, other));
+    // }
+    //
+    // /**
+    // * Test A and B.
+    // */
+    // @Test
+    // public void testEquals5() throws Exception {
+    // File one = new File("a");
+    // File other = new File("b");
+    //
+    // assertFalse(FileSystem.equals(one, other));
+    // assertFalse(FileSystem.equals(other, one));
+    // }
+    //
+    // /**
+    // * Test A and A.
+    // */
+    // @Test
+    // public void testEquals6() throws Exception {
+    // File one = new File("a");
+    // File other = new File("a").getAbsoluteFile();
+    //
+    // assertTrue(FileSystem.equals(one, other));
+    // assertTrue(FileSystem.equals(other, one));
+    // }
+    //
+    // /**
+    // * Test A and A.
+    // */
+    // @Test
+    // public void testEquals7() throws Exception {
+    // File one = new File("a");
+    // File other = new File("a/../a");
+    //
+    // assertTrue(FileSystem.equals(one, other));
+    // assertTrue(FileSystem.equals(other, one));
+    // }
 
     /**
      * Test A and A.
