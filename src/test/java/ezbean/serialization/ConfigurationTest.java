@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.serialization;
 
 import static ezbean.unit.Ezunit.*;
 import static org.junit.Assert.*;
@@ -29,6 +29,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import ezbean.EzbeanTest;
+import ezbean.I;
 import ezbean.io.FileSystem;
 import ezbean.sample.bean.BuiltinBean;
 import ezbean.sample.bean.CompatibleKeyMap;

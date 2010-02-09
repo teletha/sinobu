@@ -37,7 +37,7 @@ import ezbean.module.ModuleLoader;
 /**
  * @version 2010/02/09 18:01:58
  */
-public class BypassConstructorTest {
+public class ConstructorBypassTest {
 
     private static int call = 0;
 
@@ -153,7 +153,7 @@ public class BypassConstructorTest {
         }
 
         /**
-         * Get the value property of this {@link BypassConstructorTest.Parent}.
+         * Get the value property of this {@link ConstructorBypassTest.Parent}.
          * 
          * @return The value property.
          */
@@ -162,7 +162,7 @@ public class BypassConstructorTest {
         }
 
         /**
-         * Set the value property of this {@link BypassConstructorTest.Parent}.
+         * Set the value property of this {@link ConstructorBypassTest.Parent}.
          * 
          * @param value The value value to set.
          */

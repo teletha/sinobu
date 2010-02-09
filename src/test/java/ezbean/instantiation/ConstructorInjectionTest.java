@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.instantiation;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import ezbean.I;
+import ezbean.Manageable;
+import ezbean.Singleton;
 import ezbean.sample.dependency.CircularA;
 import ezbean.sample.dependency.CircularB;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/10 10:19:49
+ * @version 2010/02/09 20:39:23
  */
 public class ConstructorInjectionTest {
 
@@ -33,7 +34,7 @@ public class ConstructorInjectionTest {
      * Test constructor injection.
      */
     @Test
-    public void testConstructorInjection() {
+    public void constructorInjection() {
         ConstructorInjection test = I.make(ConstructorInjection.class);
         assertNotNull(test);
         assertNotNull(test.injected);
@@ -43,7 +44,7 @@ public class ConstructorInjectionTest {
      * Test singleton injection.
      */
     @Test
-    public void testSingletonInjetion() {
+    public void singletonInjetion() {
         ConstructorSingletonInjection test1 = I.make(ConstructorSingletonInjection.class);
         assertNotNull(test1);
         assertNotNull(test1.injected);
@@ -60,17 +61,14 @@ public class ConstructorInjectionTest {
      * Test too many constructors.
      */
     @Test
-    public void testTooManyConstructors() {
+    public void tooManyConstructors() {
         TooManyConstructors test = I.make(TooManyConstructors.class);
         assertNotNull(test);
         assertNull(test.injected);
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
-     * @version $ Id: ConstructorInjection.java,v 1.0 2007/01/23 17:51:31 Teletha Exp $
+     * @version 2010/02/09 20:38:46
      */
     public static class ConstructorInjection {
 
@@ -88,10 +86,7 @@ public class ConstructorInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
-     * @version $ Id: ConstructorSingletonInjection.java,v 1.0 2007/01/23 17:51:31 Teletha Exp $
+     * @version 2010/02/09 20:38:50
      */
     public static class ConstructorSingletonInjection {
 
@@ -109,10 +104,7 @@ public class ConstructorInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
-     * @version $ Id: TooManyConstructors.java,v 1.0 2007/01/23 19:29:51 Teletha Exp $
+     * @version 2010/02/09 20:38:53
      */
     public static class TooManyConstructors {
 
@@ -138,19 +130,13 @@ public class ConstructorInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
-     * @version $ Id: Injected.java,v 1.0 2007/01/23 19:23:40 Teletha Exp $
+     * @version 2010/02/09 20:38:57
      */
     public static class Injected {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
-     * @version $ Id: SingletonInjected.java,v 1.0 2007/01/23 19:23:40 Teletha Exp $
+     * @version 2010/02/09 20:39:04
      */
     @Manageable(lifestyle = Singleton.class)
     public static class SingletonInjected {
@@ -160,7 +146,7 @@ public class ConstructorInjectionTest {
      * Circular dependency.
      */
     @Test(expected = ClassCircularityError.class)
-    public void testCircularDependency01() {
+    public void circularDependency01() {
         I.make(CircularA.class);
     }
 
@@ -168,7 +154,7 @@ public class ConstructorInjectionTest {
      * Circular dependency.
      */
     @Test(expected = ClassCircularityError.class)
-    public void testCircularDependency02() {
+    public void circularDependency02() {
         I.make(CircularB.class);
     }
 }
