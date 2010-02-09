@@ -193,15 +193,19 @@ public class Model<M> {
 
             if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
                 // create model for the property
-                Model model = load(methods[0].getGenericReturnType(), type);
+                try {
+                    Model model = load(methods[0].getGenericReturnType(), type);
 
-                if (model.type == load(methods[1].getGenericParameterTypes()[0], type).type) {
-                    // this property is valid
-                    Property property = new Property(model, entry.getKey());
-                    property.accessors = methods;
+                    if (model.type == load(methods[1].getGenericParameterTypes()[0], type).type) {
+                        // this property is valid
+                        Property property = new Property(model, entry.getKey());
+                        property.accessors = methods;
 
-                    // register it
-                    properties.add(property);
+                        // register it
+                        properties.add(property);
+                    }
+                } catch (SecurityException e) {
+                    // for GAE environment
                 }
             }
         }
