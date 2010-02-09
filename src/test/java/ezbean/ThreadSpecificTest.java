@@ -28,6 +28,7 @@ import org.junit.Test;
 import ezbean.I;
 import ezbean.Manageable;
 import ezbean.ThreadSpecific;
+import ezbean.unit.MultiThreadTestCase;
 
 /**
  * DOCUMENT.

@@ -18,7 +18,6 @@ package ezbean.unit;
 import java.io.File;
 import java.security.AccessControlException;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -33,11 +32,5 @@ public class GAESandboxTest {
     @Test(expected = AccessControlException.class)
     public void list() throws Exception {
         new File("").list();
-    }
-
-    @Ignore
-    @Test(expected = AccessControlException.class)
-    public void restricted() throws Exception {
-        Class.forName("sun.reflect.ReflectionFactory");
     }
 }

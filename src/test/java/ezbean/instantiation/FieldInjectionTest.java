@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.instantiation;
 
 import static org.junit.Assert.*;
 
@@ -21,10 +21,10 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 
+import ezbean.I;
+
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/03 5:17:16
+ * @version 2010/02/09 20:39:41
  */
 public class FieldInjectionTest {
 
@@ -32,7 +32,7 @@ public class FieldInjectionTest {
      * Public field injection.
      */
     @Test
-    public void testPublicFieldInjection() {
+    public void publicField() {
         PublicFieldInjection clazz = I.make(PublicFieldInjection.class);
         assertNotNull(clazz);
         assertNotNull(clazz.injectedClass);
@@ -42,7 +42,7 @@ public class FieldInjectionTest {
      * Protected field injection.
      */
     @Test
-    public void testProtectedFieldInjection() {
+    public void protectedField() {
         ProtectedFieldInjection clazz = I.make(ProtectedFieldInjection.class);
         assertNotNull(clazz);
         assertNotNull(clazz.injectedClass);
@@ -52,7 +52,7 @@ public class FieldInjectionTest {
      * Package private field injection.
      */
     @Test
-    public void testPackagePrivateFieldInjection() {
+    public void packagePrivateField() {
         PackagePrivateFieldInjection clazz = I.make(PackagePrivateFieldInjection.class);
         assertNotNull(clazz);
         assertNotNull(clazz.injectedClass);
@@ -62,7 +62,7 @@ public class FieldInjectionTest {
      * Private field injection.
      */
     @Test
-    public void testPrivateFieldInjection() {
+    public void privateField() {
         PrivateFieldInjection clazz = I.make(PrivateFieldInjection.class);
         assertNotNull(clazz);
         assertNotNull(clazz.injectedClass);
@@ -72,7 +72,7 @@ public class FieldInjectionTest {
      * Private field injection.
      */
     @Test
-    public void testFinalFieldInjection() {
+    public void finalField() {
         FinalFieldInjection clazz = I.make(FinalFieldInjection.class);
         assertNotNull(clazz);
         assertNotNull(clazz.injectedClass);
@@ -82,14 +82,12 @@ public class FieldInjectionTest {
      * Test field injection with circular dependencies.
      */
     @Test(expected = ClassCircularityError.class)
-    public void testCircularDependencies() {
+    public void circularDependencies() {
         I.make(CircularDependencyA.class);
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/03 5:18:46
+     * @version 2010/02/09 20:39:47
      */
     private static class PublicFieldInjection {
 
@@ -99,9 +97,7 @@ public class FieldInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/03 5:18:46
+     * @version 2010/02/09 20:39:51
      */
     private static class ProtectedFieldInjection {
 
@@ -111,8 +107,6 @@ public class FieldInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
      * @version 2008/06/03 5:18:46
      */
     private static class PackagePrivateFieldInjection {
@@ -123,8 +117,6 @@ public class FieldInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
      * @version 2008/06/03 5:18:46
      */
     private static class PrivateFieldInjection {
@@ -135,8 +127,6 @@ public class FieldInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
      * @version 2008/06/03 5:18:46
      */
     private static class FinalFieldInjection {
@@ -147,16 +137,12 @@ public class FieldInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
      * @version 2008/06/03 5:18:30
      */
     private static class InjectedClass {
     }
 
     /**
-     * DOCUMENT.
-     * 
      * @version 2008/06/03 8:40:07
      */
     private static class CircularDependencyA {
@@ -167,8 +153,6 @@ public class FieldInjectionTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
      * @version 2008/06/03 8:40:11
      */
     private static class CircularDependencyB {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.serialization;
 
 import static org.junit.Assert.*;
 
@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ezbean.I;
 import ezbean.io.FileSystem;
 import ezbean.sample.bean.StringList;
 
@@ -37,7 +38,7 @@ import ezbean.sample.bean.StringList;
  * 
  * @version 2007/07/14 19:19:53
  */
-public class MultiThreadConfigurationTest {
+public class ConfigurationMultiThreadTest {
 
     /** The test file. */
     private static File testFile = new File(I.getWorkingDirectory(), "configurationMultiThreadTest.xml");

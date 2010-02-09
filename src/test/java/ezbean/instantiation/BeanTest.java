@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.instantiation;
 
 import static org.junit.Assert.*;
 
@@ -22,6 +22,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import ezbean.I;
 import ezbean.sample.bean.ArrayBean;
 import ezbean.sample.bean.BuiltinBean;
 import ezbean.sample.bean.Person;
@@ -29,9 +30,9 @@ import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.SchoolEnum;
 
 /**
- * @version 2010/01/18 22:50:16
+ * @version 2010/02/09 20:39:33
  */
-public class BeanInstantiateTest {
+public class BeanTest {
 
     /**
      * Public accessor.
@@ -51,7 +52,7 @@ public class BeanInstantiateTest {
      * Bean with primitive property.
      */
     @Test
-    public void testCreatePrimitive() {
+    public void primitive() {
         Primitive primitive = I.make(Primitive.class);
         assertNotNull(primitive);
 
@@ -81,7 +82,7 @@ public class BeanInstantiateTest {
     }
 
     @Test
-    public void testCreateArray() {
+    public void array() {
         ArrayBean bean = I.make(ArrayBean.class);
         bean.setObjects(new String[] {"first", "second"});
         assertEquals(2, bean.getObjects().length);
@@ -92,34 +93,11 @@ public class BeanInstantiateTest {
         assertEquals(3, bean.getPrimitives().length);
     }
 
-    // /**
-    // * No property class.
-    // */
-    // @Test
-    // public void testGetterOnly() {
-    // OnlyGetter getter = I.create(OnlyGetter.class);
-    // assertNotNull(getter);
-    // }
-    //
-    // /**
-    // * Abstract Bean.
-    // */
-    // @Test
-    // public void testAbstract() throws Exception {
-    // AbstractBean bean = I.create(AbstractBean.class);
-    // assertNotNull(bean);
-    // assertEquals(0, bean.getFoo());
-    //
-    // // setFoo(1);
-    // bean.concreateMethod();
-    // assertEquals(1, bean.getFoo());
-    // }
-
     /**
      * Bean with {@link Enum}.
      */
     @Test
-    public void testEnum() {
+    public void enumeration() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         assertNotNull(bean);
 
@@ -132,7 +110,7 @@ public class BeanInstantiateTest {
      * Bean with {@link Date}.
      */
     @Test
-    public void testDate() {
+    public void date() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         assertNotNull(bean);
 
@@ -145,7 +123,7 @@ public class BeanInstantiateTest {
      * Bean with {@link File}.
      */
     @Test
-    public void testFile() {
+    public void file() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         assertNotNull(bean);
 
@@ -160,12 +138,12 @@ public class BeanInstantiateTest {
      * Bean with {@link Class}.
      */
     @Test
-    public void testClass() {
+    public void clazz() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         assertNotNull(bean);
 
         assertEquals(null, bean.getSomeClass());
-        bean.setSomeClass(BeanInstantiateTest.class);
-        assertEquals(BeanInstantiateTest.class, bean.getSomeClass());
+        bean.setSomeClass(BeanTest.class);
+        assertEquals(BeanTest.class, bean.getSomeClass());
     }
 }

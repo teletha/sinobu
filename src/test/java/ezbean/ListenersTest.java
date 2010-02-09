@@ -26,7 +26,7 @@ import org.junit.Test;
 /**
  * @version 2010/01/17 9:33:47
  */
-public class PropertyContextTest {
+public class ListenersTest {
 
     @Test(expected = NullPointerException.class)
     public void putNull() {
