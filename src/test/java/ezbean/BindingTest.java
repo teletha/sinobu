@@ -445,7 +445,7 @@ public class BindingTest {
     /**
      * @version 2009/07/17 16:48:16
      */
-    protected class GenericNest extends GenericBean<Person> {
+    protected static class GenericNest extends GenericBean<Person> {
     }
 
     @Test

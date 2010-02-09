@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.ResourceBundle.Control;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.script.ScriptEngine;
@@ -274,7 +273,7 @@ public class I implements ClassLoadListener<Extensible> {
     private static final ScriptEngine script;
 
     /** The locale name resolver. */
-    private static final Control control = Control.getControl(Control.FORMAT_CLASS);
+    // private static final Control control = Control.getControl(Control.FORMAT_CLASS);
 
     /**
      * This instantiator instantiates an object with out any side effects caused by the constructor.
@@ -296,8 +295,8 @@ public class I implements ClassLoadListener<Extensible> {
         lifestyles.put(Prototype.class, new Prototype(Prototype.class));
 
         try {
-            // Instantiates a class by using reflection to make a call to private method
-            // ObjectStreamClass.newInstance, present in many JVM implementations.
+            // This instantiator instantiates an object with out any side effects caused by the
+            // constructor.
             instantiator = Object.class.getConstructor();
 
             // configure sax parser
@@ -566,21 +565,35 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws NullPointerException If the bundle class is <code>null</code>.
      */
     public static <B extends Extensible> B i18n(Class<B> bundleClass) {
-        root: for (Locale locale : control.getCandidateLocales("", I.make(Locale.class))) {
-            String name = control.toBundleName(bundleClass.getSimpleName(), locale);
-            List<Class> list = extensions.get(bundleClass);
+        String name = bundleClass.getSimpleName() + '_' + make(Locale.class).getLanguage();
+        List<Class> list = extensions.get(bundleClass);
 
-            if (list != null) {
-                for (Class clazz : list) {
-                    if (clazz.getSimpleName().equals(name)) {
-                        bundleClass = clazz;
-                        break root;
-                    }
+        if (list != null) {
+            for (Class clazz : list) {
+                if (clazz.getSimpleName().equals(name)) {
+                    bundleClass = clazz;
                 }
             }
         }
         return make(bundleClass);
     }
+
+    // public static <B extends Extensible> B i18n(Class<B> bundleClass) {
+    // root: for (Locale locale : control.getCandidateLocales("", I.make(Locale.class))) {
+    // String name = control.toBundleName(bundleClass.getSimpleName(), locale);
+    // List<Class> list = extensions.get(bundleClass);
+    //
+    // if (list != null) {
+    // for (Class clazz : list) {
+    // if (clazz.getSimpleName().equals(name)) {
+    // bundleClass = clazz;
+    // break root;
+    // }
+    // }
+    // }
+    // }
+    // return make(bundleClass);
+    // }
 
     /**
      * <p>
@@ -882,8 +895,12 @@ public class I implements ClassLoadListener<Extensible> {
         }
 
         try {
-            // ObjectStreamClass.lookup method will cache the instance of ObjectStreamClass (at
-            // least Sun's implementation), so we don't.
+            /*
+             * The ReflectionFactory instantiates an object with out any side effects caused by the
+             * constructor. In GAE environment, we can't use ReflectionFactory but it is no problem.
+             * Because the way to type-safe property access is not used usually in servlet
+             * environment. If you need another way, see {@link BypassConstructorTest}.
+             */
             return (M) ReflectionFactory.getReflectionFactory()
                     .newConstructorForSerialization(ModuleLoader.getModuleLoader(modelClass)
                             .loadClass(Model.load(modelClass), 1), instantiator)
