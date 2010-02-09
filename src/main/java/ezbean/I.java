@@ -272,7 +272,7 @@ public class I implements ClassLoadListener<Extensible> {
     /** The javascript engine for reuse. */
     private static final ScriptEngine script;
 
-    /** The locale name resolver. */
+    // /** The locale name resolver. */
     // private static final Control control = Control.getControl(Control.FORMAT_CLASS);
 
     /**
@@ -565,12 +565,13 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws NullPointerException If the bundle class is <code>null</code>.
      */
     public static <B extends Extensible> B i18n(Class<B> bundleClass) {
-        String name = bundleClass.getSimpleName() + '_' + make(Locale.class).getLanguage();
         List<Class> list = extensions.get(bundleClass);
 
         if (list != null) {
+            String lang = "_".concat(make(Locale.class).getLanguage());
+
             for (Class clazz : list) {
-                if (clazz.getSimpleName().equals(name)) {
+                if (clazz.getName().endsWith(lang)) {
                     bundleClass = clazz;
                 }
             }
@@ -578,14 +579,15 @@ public class I implements ClassLoadListener<Extensible> {
         return make(bundleClass);
     }
 
+    // GAE doesn't allow ResourceBundle.Control.
+    // 
     // public static <B extends Extensible> B i18n(Class<B> bundleClass) {
     // root: for (Locale locale : control.getCandidateLocales("", I.make(Locale.class))) {
-    // String name = control.toBundleName(bundleClass.getSimpleName(), locale);
     // List<Class> list = extensions.get(bundleClass);
     //
     // if (list != null) {
     // for (Class clazz : list) {
-    // if (clazz.getSimpleName().equals(name)) {
+    // if (clazz.getName().endsWith(locale.getLanguage())) {
     // bundleClass = clazz;
     // break root;
     // }
