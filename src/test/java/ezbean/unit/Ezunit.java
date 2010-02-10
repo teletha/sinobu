@@ -17,7 +17,11 @@ package ezbean.unit;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +49,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.I;
+import ezbean.io.FileSystem;
 import ezbean.xml.SAXBuilder;
 import ezbean.xml.XMLFormatter;
 
@@ -57,6 +62,106 @@ public class Ezunit {
 
     /** The empty attribute for reuse. */
     public static final Attributes EMPTY_ATTR = new AttributesImpl();
+
+    /**
+     * <p>
+     * Assert that the specified abstract file is file (not directory), presence and has the given
+     * file name.
+     * </p>
+     * 
+     * @param file A file to test.
+     * @param expectedName File name.
+     */
+    public static void assertFile(File file, String expectedName) {
+        assertFile(file, expectedName, null);
+    }
+
+    /**
+     * <p>
+     * Assert that the specified abstract file is file (not directory), presence and has the given
+     * file name and contents.
+     * </p>
+     * 
+     * @param file A file to test.
+     * @param expectedName File name.
+     * @param expectedContent File content, <code>null</code> is acceptable.
+     */
+    public static void assertFile(File file, String expectedName, String expectedContent) {
+        assertNotNull(file);
+        assertTrue(file.exists());
+        assertTrue(file.isFile());
+        assertFalse(file.isDirectory());
+        assertEquals(expectedName, file.getName());
+
+        // assert content
+        if (expectedContent != null) {
+            if (expectedContent.length() == 0) {
+                assertEquals(0, file.length());
+            } else {
+                BufferedReader reader = null;
+
+                try {
+                    reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "JISAutoDetect"));
+
+                    assertEquals(expectedContent, reader.readLine());
+                } catch (IOException e) {
+                    fail(e.getMessage());
+                } finally {
+                    FileSystem.close(reader);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param file
+     * @param expectedName
+     */
+    public static void assertDirectory(File file, String expectedName) {
+        assertNotNull(file);
+        assertTrue(file.isDirectory());
+        assertFalse(file.isFile());
+        assertTrue(file.exists());
+        assertEquals(expectedName, file.getName());
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param file
+     * @param expectedName
+     */
+    public static void assertArchive(File file, String expectedName) {
+        assertNotNull(file);
+        assertTrue(file.isDirectory());
+        assertTrue(file.isFile());
+        assertTrue(file.exists());
+        assertEquals(expectedName, file.getName());
+    }
+
+    /**
+     * Assert file path's equivalence.
+     * 
+     * @param expected
+     * @param test
+     */
+    public static void assertFilePathEquals(File expected, File test) {
+        assertNotNull(test);
+        assertNotNull(expected);
+
+        assertEquals(expected.getPath(), test.getPath());
+        assertEquals(expected.getAbsolutePath(), test.getAbsolutePath());
+        assertEquals(expected.getAbsoluteFile(), test.getAbsoluteFile());
+
+        try {
+            assertEquals(expected.getCanonicalPath(), test.getCanonicalPath());
+            assertEquals(expected.getCanonicalFile(), test.getCanonicalFile());
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
 
     /**
      * <p>

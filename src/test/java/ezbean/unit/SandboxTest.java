@@ -15,12 +15,18 @@
  */
 package ezbean.unit;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.security.AccessControlException;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import ezbean.io.FileSystem;
 
 /**
  * @version 2010/02/09 11:23:23
@@ -31,14 +37,72 @@ public class SandboxTest {
     public static Sandbox sandbox = new Sandbox(Sandbox.READ);
 
     @Test
-    public void write1() throws Exception {
+    public void read1() throws Exception {
         sandbox.readable(true);
 
         new FileReader(new File("pom.xml"));
     }
 
     @Test(expected = AccessControlException.class)
-    public void write2() throws Exception {
+    public void read2() throws Exception {
         new FileReader(new File("pom.xml"));
+    }
+
+    @Test
+    public void writableFile() throws Exception {
+        File file = FileSystem.createTemporary();
+
+        sandbox.writable(false, file);
+
+        // try to write
+        FileWriter writer = null;
+
+        try {
+            writer = new FileWriter(file);
+
+            fail("This is writable file.");
+        } catch (AccessControlException e) {
+            // success
+        }
+
+        // make writable
+        sandbox.writable(true, file);
+
+        try {
+            writer = new FileWriter(file);
+        } catch (AccessControlException e) {
+            fail("This is unwritable file.");
+        } finally {
+            FileSystem.close(writer);
+        }
+    }
+
+    @Test(expected = FileNotFoundException.class)
+    public void writableDirectory() throws Exception {
+        File file = FileSystem.createTemporary();
+
+        sandbox.writable(false, file);
+
+        // try to write
+        FileWriter writer = null;
+
+        try {
+            writer = new FileWriter(new File(file, "file"));
+
+            fail("This is writable file.");
+        } catch (AccessControlException e) {
+            // success
+        }
+
+        // make writable
+        sandbox.writable(true, file);
+
+        try {
+            writer = new FileWriter(new File(file, "file"));
+        } catch (AccessControlException e) {
+            fail("This is unwritable file.");
+        } finally {
+            FileSystem.close(writer);
+        }
     }
 }

@@ -15,16 +15,26 @@
  */
 package ezbean.unit;
 
+import java.io.File;
 import java.io.FileDescriptor;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.security.AccessControlException;
 import java.security.Permission;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 import ezbean.I;
 
 /**
+ * <p>
+ * Super flexible security manager for test environment. You can safely change settings at runtime
+ * and settings are restorable for each test.
+ * </p>
+ * 
  * @version 2010/02/09 13:13:43
  */
 public class Sandbox extends EzRule {
@@ -48,10 +58,13 @@ public class Sandbox extends EzRule {
     public static final int CLASSLOADER = 1 << classloader;
 
     /** The top level security manager for this sandbox. */
-    private final Security security;
+    protected final Security security;
 
-    /** The original security manager. */
-    private SecurityManager original;
+    /** The platform original security manager. */
+    protected final SecurityManager platform = System.getSecurityManager();
+
+    /** The flag whether test is running or not. */
+    private boolean whileTest = false;
 
     /**
      * <p>
@@ -90,7 +103,7 @@ public class Sandbox extends EzRule {
      * @param manager
      * @param permissions
      */
-    private Sandbox(Class<? extends SecurityManager> manager, int permissions) {
+    protected Sandbox(Class<? extends SecurityManager> manager, int permissions) {
         this.security = new Security(manager == null ? System.getSecurityManager() : I.make(manager), permissions);
     }
 
@@ -99,7 +112,6 @@ public class Sandbox extends EzRule {
      */
     @Override
     protected void beforeClass() throws Exception {
-        original = System.getSecurityManager();
     }
 
     /**
@@ -108,6 +120,7 @@ public class Sandbox extends EzRule {
     @Override
     protected void before(Method method) throws Exception {
         security.reset();
+        whileTest = true;
 
         System.setSecurityManager(security);
     }
@@ -117,7 +130,9 @@ public class Sandbox extends EzRule {
      */
     @Override
     protected void after(Method method) {
-        System.setSecurityManager(original);
+        whileTest = false;
+
+        System.setSecurityManager(platform);
     }
 
     /**
@@ -125,7 +140,7 @@ public class Sandbox extends EzRule {
      */
     @Override
     protected void afterClass() {
-        System.setSecurityManager(original);
+        System.setSecurityManager(platform);
     }
 
     /**
@@ -151,16 +166,94 @@ public class Sandbox extends EzRule {
      * Set permission whether you can write file or not.
      * </p>
      * <p>
-     * This permission is effective only in the test method by which this method is called.
+     * This permission is effective only in the test method by which this method is called in test
+     * method.
      * </p>
      * 
      * @param allow <code>true</code> if you allow to write.
      */
+    public void readable(boolean allow, String... paths) {
+        File[] files = new File[paths.length];
+
+        for (int i = 0; i < paths.length; i++) {
+            files[i] = new File(paths[i]);
+        }
+        writable(allow, files);
+    }
+
+    /**
+     * <p>
+     * Set permission whether you can write file or not.
+     * </p>
+     * <p>
+     * This permission is effective only in the test method by which this method is called in test
+     * method.
+     * </p>
+     * 
+     * @param allow <code>true</code> if you allow to write.
+     */
+    public void readable(boolean allow, File... files) {
+        for (File file : files) {
+            if (file != null) {
+                security.readables.add(file.getAbsolutePath(), allow, whileTest);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Set permission whether you can read file or not.
+     * </p>
+     * <p>
+     * This permission is effective only in the test method by which this method is called.
+     * </p>
+     * 
+     * @param allow <code>true</code> if you allow to read.
+     */
     public void writable(boolean allow) {
-        if (allow) {
-            security.runtime.clear(write);
-        } else {
+        if (whileTest) {
             security.runtime.set(write);
+        } else {
+            security.permissions.set(write);
+        }
+    }
+
+    /**
+     * <p>
+     * Set permission whether you can write file or not.
+     * </p>
+     * <p>
+     * This permission is effective only in the test method by which this method is called in test
+     * method.
+     * </p>
+     * 
+     * @param allow <code>true</code> if you allow to write.
+     */
+    public void writable(boolean allow, String... paths) {
+        File[] files = new File[paths.length];
+
+        for (int i = 0; i < paths.length; i++) {
+            files[i] = new File(paths[i]);
+        }
+        writable(allow, files);
+    }
+
+    /**
+     * <p>
+     * Set permission whether you can write file or not.
+     * </p>
+     * <p>
+     * This permission is effective only in the test method by which this method is called in test
+     * method.
+     * </p>
+     * 
+     * @param allow <code>true</code> if you allow to write.
+     */
+    public void writable(boolean allow, File... files) {
+        for (File file : files) {
+            if (file != null) {
+                security.writables.add(file.getAbsolutePath(), allow, whileTest);
+            }
         }
     }
 
@@ -178,10 +271,16 @@ public class Sandbox extends EzRule {
         /** The parent security manager. */
         private final SecurityManager manager;
 
+        /** The file permissions. */
+        private final Warranties readables = new Warranties();
+
+        /** The file permissions. */
+        private final Warranties writables = new Warranties();
+
         /**
          * @param permissions
          */
-        public Security(SecurityManager manager, int permissions) {
+        private Security(SecurityManager manager, int permissions) {
             this.manager = manager;
 
             if ((permissions & READ) != 0) {
@@ -196,8 +295,35 @@ public class Sandbox extends EzRule {
                 this.permissions.set(classloader);
             }
 
+            RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+            readClassPath(runtime.getBootClassPath());
+            readClassPath(runtime.getClassPath());
+            readClassPath(runtime.getLibraryPath());
+
             // initialize
             reset();
+        }
+
+        /**
+         * Helper method to make classpath readable.
+         * 
+         * @param classPaths
+         */
+        private void readClassPath(String classPaths) {
+            for (String classPath : classPaths.split(File.pathSeparator)) {
+                // clean head
+                if (classPath.charAt(0) == '/') {
+                    classPath = classPath.substring(1);
+                }
+
+                // clean tail
+                if (classPath.charAt(classPath.length() - 1) == '/') {
+                    classPath = classPath.substring(0, classPath.length() - 2);
+                }
+
+                // Change to platform native separator.
+                readables.add(classPath.replace('/', File.separatorChar), true, false);
+            }
         }
 
         /**
@@ -206,6 +332,9 @@ public class Sandbox extends EzRule {
         private void reset() {
             runtime.clear();
             runtime.or(permissions);
+
+            readables.clear();
+            writables.clear();
         }
 
         /**
@@ -273,8 +402,8 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkDelete(String file) {
-            if (runtime.get(write)) {
-                throw new AccessControlException("Disallow to write file. " + file);
+            if (writables.reject(file, runtime.get(write))) {
+                throw new AccessControlException("Disallow to delete file. " + file);
             }
 
             if (manager != null) manager.checkDelete(file);
@@ -390,9 +519,10 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkRead(FileDescriptor fd) {
-            if (runtime.get(read)) {
+            if (readables.reject(fd.toString(), runtime.get(read))) {
                 throw new AccessControlException("Disallow to read file. " + fd);
             }
+
             manager.checkRead(fd);
         }
 
@@ -401,7 +531,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkRead(String file, Object context) {
-            if (runtime.get(read)) {
+            if (readables.reject(file, runtime.get(read))) {
                 throw new AccessControlException("Disallow to read file. " + file);
             }
 
@@ -413,7 +543,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkRead(String file) {
-            if (runtime.get(read)) {
+            if (readables.reject(file, runtime.get(read))) {
                 throw new AccessControlException("Disallow to read file. " + file);
             }
 
@@ -461,7 +591,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkWrite(FileDescriptor fd) {
-            if (runtime.get(write)) {
+            if (writables.reject(fd.toString(), runtime.get(write))) {
                 throw new AccessControlException("Disallow to write file. " + fd);
             }
 
@@ -473,7 +603,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkWrite(String file) {
-            if (runtime.get(write)) {
+            if (writables.reject(file, runtime.get(write))) {
                 throw new AccessControlException("Disallow to write file. " + file);
             }
 
@@ -510,6 +640,94 @@ public class Sandbox extends EzRule {
             } else {
                 return super.getThreadGroup();
             }
+        }
+    }
+
+    /**
+     * @version 2010/02/10 22:53:41
+     */
+    private static class Warranties {
+
+        /** The base permissions. */
+        private List<Warranty> permissions = new ArrayList();
+
+        /** The runtime permissions. */
+        private List<Warranty> runtime = new ArrayList();
+
+        /**
+         * Register permmision.
+         * 
+         * @param path
+         * @param accessible
+         * @param isRuntime
+         */
+        private void add(String path, boolean accessible, boolean isRuntime) {
+            Warranty warranty = new Warranty(path, accessible);
+
+            if (isRuntime) {
+                runtime.add(warranty);
+            } else {
+                permissions.add(warranty);
+            }
+        }
+
+        /**
+         * Check whether the specified path is acceptable or not.
+         * 
+         * @param path
+         * @return A result.
+         */
+        private boolean reject(String path, boolean defaultValue) {
+            path = new File(path).getAbsolutePath();
+
+            // runtime
+            for (int i = runtime.size() - 1; 0 <= i; i--) {
+                Warranty warranty = runtime.get(i);
+
+                if (path.startsWith(warranty.path)) {
+                    return !warranty.accessible;
+                }
+            }
+
+            // base
+            for (int i = permissions.size() - 1; 0 <= i; i--) {
+                Warranty warranty = permissions.get(i);
+
+                if (path.startsWith(warranty.path)) {
+                    return !warranty.accessible;
+                }
+            }
+
+            // API definition
+            return defaultValue;
+        }
+
+        /**
+         * Clear runtime permissions.
+         */
+        private void clear() {
+            runtime.clear();
+        }
+    }
+
+    /**
+     * @version 2010/02/10 22:53:39
+     */
+    private static class Warranty {
+
+        /** The location path. */
+        private final String path;
+
+        /** The permission. */
+        private final boolean accessible;
+
+        /**
+         * @param path
+         * @param accessible
+         */
+        private Warranty(String path, boolean accessible) {
+            this.path = new File(path).getAbsolutePath();
+            this.accessible = accessible;
         }
     }
 }

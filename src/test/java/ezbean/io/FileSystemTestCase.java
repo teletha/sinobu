@@ -17,11 +17,8 @@ package ezbean.io;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -225,81 +222,6 @@ public abstract class FileSystemTestCase {
     /**
      * Helper method to assert file.
      * 
-     * @param file
-     * @param expectedName
-     */
-    protected static void assertFile(File file, String expectedName) {
-        assertFile(file, expectedName, null);
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param file
-     * @param expectedName
-     */
-    protected static void assertFile(File file, String expectedName, String expectedContent) {
-        assertNotNull(file);
-        assertTrue(file.exists());
-        assertTrue(file.isFile());
-        assertFalse(file.isDirectory());
-        assertEquals(expectedName, file.getName());
-
-        if (expectedContent == null) {
-            return;
-        }
-
-        // assert content
-        BufferedReader reader = null;
-
-        try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "JISAutoDetect"));
-
-            assertEquals(expectedContent, reader.readLine());
-        } catch (IOException e) {
-            fail(e.getMessage());
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    fail(e.getMessage());
-                }
-            }
-        }
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param file
-     * @param expectedName
-     */
-    protected static void assertDirectory(File file, String expectedName) {
-        assertNotNull(file);
-        assertTrue(file.isDirectory());
-        assertFalse(file.isFile());
-        assertTrue(file.exists());
-        assertEquals(expectedName, file.getName());
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param file
-     * @param expectedName
-     */
-    protected static void assertArchive(File file, String expectedName) {
-        assertNotNull(file);
-        assertTrue(file.isDirectory());
-        assertTrue(file.isFile());
-        assertTrue(file.exists());
-        assertEquals(expectedName, file.getName());
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
      * @param children
      * @param expectedSize
      * @param expectedNames
@@ -345,28 +267,6 @@ public abstract class FileSystemTestCase {
             assertTrue(list.remove(file.getName()));
         }
         assertEquals(0, list.size());
-    }
-
-    /**
-     * Helper method to assert file path's equivalence.
-     * 
-     * @param expected
-     * @param test
-     */
-    protected static void assertFilePathEquals(File expected, File test) {
-        assertNotNull(test);
-        assertNotNull(expected);
-
-        assertEquals(expected.getPath(), test.getPath());
-        assertEquals(expected.getAbsolutePath(), test.getAbsolutePath());
-        assertEquals(expected.getAbsoluteFile(), test.getAbsoluteFile());
-
-        try {
-            assertEquals(expected.getCanonicalPath(), test.getCanonicalPath());
-            assertEquals(expected.getCanonicalFile(), test.getCanonicalFile());
-        } catch (IOException e) {
-            fail(e.getMessage());
-        }
     }
 
     /**

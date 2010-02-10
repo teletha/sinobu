@@ -15,6 +15,7 @@
  */
 package ezbean.io;
 
+import static ezbean.unit.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
