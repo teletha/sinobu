@@ -395,10 +395,13 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
 
     /**
      * <p>
-     * Create an abstract file in the default temporary-file directory.
+     * Creates a new abstract file somewhere beneath the system's temporary directory (as defined by
+     * the <code>java.io.tmpdir</code> system property).
+     * </p>
+     * <p>
      * </p>
      * 
-     * @return A created temporary file which is not exist yet.
+     * @return A newly created temporary file which is not exist yet.
      * @throws SecurityException If a security manager exists and its
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.

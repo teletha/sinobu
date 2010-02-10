@@ -15,6 +15,7 @@
  */
 package ezbean.io;
 
+import static ezbean.unit.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -24,89 +25,65 @@ import org.junit.Test;
 import ezbean.I;
 
 /**
- * @version 2010/01/21 11:19:13
+ * @version 2010/02/10 19:44:08
  */
-public class FileSystemTest extends FileSystemTestCase {
+public class FileSystemTest {
 
-    /**
-     * Test method for {@link ezbean.io.FileSystem#link(java.lang.String)}.
-     */
     @Test(expected = NullPointerException.class)
-    public void testLocate01() {
+    public void locateNull() {
         I.locate((String) null);
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate02() {
+    public void locateEmpty() {
         File file = I.locate("");
         File expected = new File("");
 
         assertFilePathEquals(expected, file);
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate03() {
+    public void locate() {
         File file = I.locate("foo");
         File expected = new File("foo");
 
         assertFilePathEquals(expected, file);
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate04() {
+    public void locateSlash() {
         File file = I.locate("foo/bar");
         File expected = new File("foo/bar");
 
         assertFilePathEquals(expected, file);
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate05() {
+    public void locateFile() {
         File file = I.locate("foo/bar.txt");
         File expected = new File("foo/bar.txt");
 
         assertFilePathEquals(expected, file);
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate06() {
+    public void locateArchive() {
         File file = I.locate("foo.zip");
         File expected = new File("foo.zip");
 
         assertFilePathEquals(expected, file);
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate07() {
+    public void locateArchiveInDirectory() {
         File file = I.locate("foo/bar.zip");
         File expected = new File("foo/bar.zip");
 
         assertFilePathEquals(expected, file);
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate08() {
+    public void locateAbsoluteArchive() {
         String absolutePath = new File("").getAbsolutePath() + "/";
 
         File file = I.locate(absolutePath + "foo/bar.zip");
@@ -115,12 +92,9 @@ public class FileSystemTest extends FileSystemTestCase {
         assertFilePathEquals(expected, file);
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate09() {
-        String absolutePath = FileSystem.temporaries.getAbsolutePath() + "/test.txt";
+    public void locateTemporary() {
+        String absolutePath = System.getProperty("java.io.tmpdir") + "test";
 
         File file = I.locate(absolutePath);
         File expected = new File(absolutePath);
@@ -129,53 +103,38 @@ public class FileSystemTest extends FileSystemTestCase {
         assertEquals(expected.toString(), file.toString().replace('/', File.separatorChar));
     }
 
-    /**
-     * Test method for {@resolve ezbean.io.FileSystem#locate(java.lang.String)}.
-     */
     @Test
-    public void testLocate10() {
+    public void locateRelative() {
         File file = I.locate("root/../file");
         File expected = new File("root/../file");
 
         assertFilePathEquals(expected, file);
     }
 
-    private static final String PREFIX = new File(new File("").toURI()).getPath() + "/src/test/resources/io/";
+    /** file protocol. */
+    private static final String FILE_PROTOCOL = new File(new File("").toURI()).getPath() + "/src/test/resources/io/";
 
-    /**
-     * File protocol.
-     */
     @Test
-    public void testProtocol01() {
-        File file = I.locate(PREFIX + "test001/1.txt");
-
+    public void withProtocol1() {
+        File file = I.locate(FILE_PROTOCOL + "test001/1.txt");
         assertFile(file, "1.txt");
     }
 
-    /**
-     * File protocol.
-     */
     @Test
-    public void testProtocol02() {
-        File file = I.locate(PREFIX + "test002/test");
+    public void withProtocol2() {
+        File file = I.locate(FILE_PROTOCOL + "test002/test");
         assertDirectory(file, "test");
     }
 
-    /**
-     * File protocol.
-     */
     @Test
-    public void testProtocol03() {
-        File file = I.locate(PREFIX + "test003/test.zip/1.txt");
+    public void withProtocol3() {
+        File file = I.locate(FILE_PROTOCOL + "test003/test.zip/1.txt");
         assertFile(file, "1.txt");
     }
 
-    /**
-     * File protocol.
-     */
     @Test
-    public void testProtocol04() {
-        File file = I.locate(PREFIX + "test003/test.zip/test");
+    public void withProtocol4() {
+        File file = I.locate(FILE_PROTOCOL + "test003/test.zip/test");
         assertDirectory(file, "test");
     }
 }

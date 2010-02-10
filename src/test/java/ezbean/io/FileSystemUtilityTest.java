@@ -15,6 +15,7 @@
  */
 package ezbean.io;
 
+import static ezbean.unit.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -22,7 +23,10 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.junit.Rule;
 import org.junit.Test;
+
+import ezbean.unit.CleanRoom;
 
 /**
  * DOCUMENT.
@@ -31,13 +35,16 @@ import org.junit.Test;
  */
 public class FileSystemUtilityTest extends FileSystemTestCase {
 
-    /**
-     * File copy to present file.
-     */
+    @Rule
+    public static final CleanRoom room = new CleanRoom("src/test/resources/ezbean/io");
+
     @Test
-    public void testCopy01() throws Exception {
-        File input = createResourceFile("file");
-        File output = createPresentTestFile("file");
+    public void copyToPresentFile() throws Exception {
+        File input = room.locateFile("file");
+        File output = room.newPresentFile("file");
+
+        // empty file
+        assertFile(output, "file", "");
 
         // copy
         FileSystem.copy(input, output);
@@ -46,13 +53,10 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         assertFile(output, "file", "some contents");
     }
 
-    /**
-     * File copy to non-present file.
-     */
     @Test
-    public void testCopy02() throws Exception {
-        File input = createResourceFile("file");
-        File output = createAbsentTestFile("file");
+    public void copyToAbsentFile() throws Exception {
+        File input = room.locateFile("file");
+        File output = room.newAbsentFile("file");
 
         // copy
         FileSystem.copy(input, output);
@@ -461,5 +465,12 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         File file = FileSystem.createTemporary();
         assertFalse(file.exists());
         assertTrue(file.mkdir());
+    }
+
+    @Test
+    public void dontCreateDuplicatedName() {
+        File file1 = FileSystem.createTemporary();
+        File file2 = FileSystem.createTemporary();
+        assertNotSame(file1.getName(), file2.getName());
     }
 }
