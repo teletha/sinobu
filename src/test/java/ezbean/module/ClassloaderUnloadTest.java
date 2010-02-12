@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.unit.PrivateModule;
+import ezunit.PrivateModule;
 
 /**
  * @version 2010/02/03 21:01:59

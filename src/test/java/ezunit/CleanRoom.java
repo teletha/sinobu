@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.unit;
+package ezunit;
 
 import static org.junit.Assert.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.security.AccessControlException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
 import ezbean.io.FileSystem;
 
 /**
+ * <p>
+ * The environmental rule for test that depends on file system. All location method of this class
+ * adopt the strategy of copy-on-locate-once.
+ * </p>
+ * 
  * @version 2010/02/10 18:46:50
  */
 public class CleanRoom extends Sandbox {
@@ -44,7 +50,7 @@ public class CleanRoom extends Sandbox {
      * Create a clean room for the current directory.
      */
     public CleanRoom() {
-        this(new File(""));
+        this(Ezunit.locate(UnsafeUtility.speculateInstantiator()));
     }
 
     /**
@@ -76,20 +82,76 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * Create resource file which is assured that the file exists.
+     * <p>
+     * Locate a present resource file which is assured that the spcified file exists.
+     * </p>
+     * 
+     * @param name A file name.
+     * @return A located present file.
+     */
+    public File locateFile(String name) {
+        return locate(name, true, true);
+    }
+
+    /**
+     * <p>
+     * Locate a present resource directory which is assured that the specified directory exists.
+     * </p>
+     * 
+     * @param name A directory name.
+     * @return A located present directory.
+     */
+    public File locateDirectory(String name) {
+        return locate(name, true, false);
+    }
+
+    /**
+     * <p>
+     * Locate an absent resource which is assured that the specified resource doesn't exists.
+     * </p>
+     * 
+     * @param name A resource name.
+     * @return A located absent file system resource.
+     */
+    public File locateAbsent(String name) {
+        return locate(name, false, false);
+    }
+
+    /**
+     * Helper method to locate file in clean room.
      * 
      * @param name
      * @return
      */
-    public File locateFile(String name) {
-        File file = I.locate(host, name);
+    private synchronized File locate(String name, boolean isPresent, boolean isFile) {
+        File copy = I.locate(clean, name);
 
-        // assert
-        assertTrue(file.exists());
-        assertTrue(file.isFile());
+        if (copy.exists()) {
+            return copy;
+        }
+
+        File source;
+
+        try {
+            source = I.locate(host, name);
+
+            // copy it if needed
+            if (source.exists()) {
+                FileSystem.copy(source, copy);
+            }
+        } catch (AccessControlException e) {
+            return copy; // this source file has already red
+        }
+
+        // initial reading
+        assertEquals(source.exists(), isPresent);
+        assertEquals(source.isFile(), isFile);
+
+        // access control for the current processing test method
+        readable(false, source);
 
         // API definition
-        return file;
+        return copy;
     }
 
     /**
@@ -138,7 +200,7 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see ezbean.unit.EzRule#before(java.lang.reflect.Method)
+     * @see ezunit.EzRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -150,7 +212,7 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see ezbean.unit.EzRule#after(java.lang.reflect.Method)
+     * @see ezunit.EzRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {
@@ -161,7 +223,7 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see ezbean.unit.EzRule#afterClass()
+     * @see ezunit.EzRule#afterClass()
      */
     @Override
     protected void afterClass() {
@@ -183,4 +245,5 @@ public class CleanRoom extends Sandbox {
         }
         file.delete();
     }
+
 }

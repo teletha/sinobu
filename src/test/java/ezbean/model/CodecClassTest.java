@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.unit.PrivateModule;
+import ezunit.PrivateModule;
 
 /**
  * @version 2010/02/04 10:29:49

@@ -15,7 +15,7 @@
  */
 package ezbean.xml;
 
-import static ezbean.unit.Ezunit.*;
+import static ezunit.Ezunit.*;
 
 import java.io.IOException;
 

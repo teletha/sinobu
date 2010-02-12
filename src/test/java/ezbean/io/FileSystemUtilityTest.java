@@ -15,7 +15,7 @@
  */
 package ezbean.io;
 
-import static ezbean.unit.Ezunit.*;
+import static ezunit.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -26,7 +26,7 @@ import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.unit.CleanRoom;
+import ezunit.CleanRoom;
 
 /**
  * DOCUMENT.
@@ -36,33 +36,37 @@ import ezbean.unit.CleanRoom;
 public class FileSystemUtilityTest extends FileSystemTestCase {
 
     @Rule
-    public static final CleanRoom room = new CleanRoom("src/test/resources/ezbean/io");
+    public static final CleanRoom room = new CleanRoom();
 
     @Test
     public void copyToPresentFile() throws Exception {
         File input = room.locateFile("file");
-        File output = room.newPresentFile("file");
+        File output = room.locateAbsent("output");
+        output.createNewFile();
 
         // empty file
-        assertFile(output, "file", "");
+        assertFile(input, "file", "some contents");
+        assertFile(output, "output", "");
 
         // copy
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(output, "file", "some contents");
+        assertFile(input, "file", "some contents");
+        assertFile(output, "output", "some contents");
     }
 
     @Test
     public void copyToAbsentFile() throws Exception {
         File input = room.locateFile("file");
-        File output = room.newAbsentFile("file");
+        File output = room.locateAbsent("output");
 
         // copy
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(output, "file", "some contents");
+        assertFile(input, "file", "some contents");
+        assertFile(output, "output", "some contents");
     }
 
     /**

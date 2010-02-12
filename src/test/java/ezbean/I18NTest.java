@@ -22,7 +22,7 @@ import java.util.Locale;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.unit.PrivateModule;
+import ezunit.PrivateModule;
 
 /**
  * @version 2010/01/05 19:51:10

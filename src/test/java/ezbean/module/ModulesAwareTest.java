@@ -24,7 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.sample.bean.Person;
-import ezbean.unit.PrivateModule;
+import ezunit.PrivateModule;
 
 /**
  * @version 2010/01/21 19:48:01

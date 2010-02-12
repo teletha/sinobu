@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.unit;
+package ezunit;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -108,14 +108,14 @@ public class Sandbox extends EzRule {
     }
 
     /**
-     * @see ezbean.unit.EzRule#beforeClass()
+     * @see ezunit.EzRule#beforeClass()
      */
     @Override
     protected void beforeClass() throws Exception {
     }
 
     /**
-     * @see ezbean.unit.EzRule#before(java.lang.reflect.Method)
+     * @see ezunit.EzRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -126,7 +126,7 @@ public class Sandbox extends EzRule {
     }
 
     /**
-     * @see ezbean.unit.EzRule#after(java.lang.reflect.Method)
+     * @see ezunit.EzRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {
@@ -136,7 +136,7 @@ public class Sandbox extends EzRule {
     }
 
     /**
-     * @see ezbean.unit.EzRule#afterClass()
+     * @see ezunit.EzRule#afterClass()
      */
     @Override
     protected void afterClass() {

@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.xml;
+package ezunit;
 
-import org.junit.Test;
-
-import ezbean.I;
-import ezunit.Ezunit;
 
 /**
- * @version 2010/02/04 23:09:21
+ * @version 2010/02/09 13:15:52
  */
-public class SkipDTDTest {
+public class GAESandbox extends Sandbox {
 
-    @Test
-    public void skipDTD() {
-        I.parse(Ezunit.locateSource("scanner/skipDTD.html"), new XMLScanner());
+    /**
+     * 
+     */
+    public GAESandbox() {
+        super(READ | WRITE);
     }
 }
