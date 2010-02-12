@@ -38,7 +38,7 @@ import org.objectweb.asm.MethodVisitor;
 import ezbean.I;
 import ezbean.io.FileSystem;
 import ezbean.module.external.SingletonClass;
-import ezbean.unit.EzRule;
+import ezunit.EzRule;
 
 /**
  * @version 2010/01/08 1:56:27
@@ -128,7 +128,7 @@ public class ModuleTestRule extends EzRule {
     }
 
     /**
-     * @see ezbean.unit.EzRule#before(java.lang.reflect.Method)
+     * @see ezunit.EzRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -140,7 +140,7 @@ public class ModuleTestRule extends EzRule {
     }
 
     /**
-     * @see ezbean.unit.EzRule#after(java.lang.reflect.Method)
+     * @see ezunit.EzRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {

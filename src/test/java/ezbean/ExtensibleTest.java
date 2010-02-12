@@ -24,7 +24,7 @@ import org.junit.Test;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
 import ezbean.sample.bean.Student;
-import ezbean.unit.PrivateModule;
+import ezunit.PrivateModule;
 
 /**
  * @version 2009/12/30 15:38:41

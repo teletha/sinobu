@@ -26,13 +26,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import sun.reflect.ReflectionFactory;
 import ezbean.I;
 import ezbean.module.ModuleLoader;
+import ezunit.UnsafeUtility;
 
 /**
  * @version 2010/02/09 18:01:58
@@ -54,9 +55,7 @@ public class ConstructorBypassTest {
         assertEquals(2, call);
 
         // bypass
-        child = (Child) ReflectionFactory.getReflectionFactory()
-                .newConstructorForSerialization(Child.class, Object.class.getConstructor())
-                .newInstance();
+        child = UnsafeUtility.newInstance(Child.class);
         assertTrue(child instanceof Child);
         assertEquals(2, call); // Cool!!!
     }
@@ -96,10 +95,13 @@ public class ConstructorBypassTest {
     private static class Mock extends ObjectInputStream {
 
         /** The heading data for serializaed object. */
-        private static final byte[] head = {-84, -19, 0, 5, 115, 114};
+        // private static final byte[] head = {-84, -19, 0, 5, 115, 114};
 
-        /** The tailing data for serializaed object. */
-        private static final byte[] tail = {2, 0, 0, 120, 112, 115, 113, 0, 126, 0, 0};
+        /**
+         * The tailing data for serializaed object. Actual byte array should be {2, 0, 0, 120, 112,
+         * 115, 113, 0, 126, 0, 0}, but it seems to be able to shrink it.
+         */
+        // private static final byte[] tail = {2, 0, 0, 120, 112};
 
         /**
          * @param clazz
@@ -120,13 +122,14 @@ public class ConstructorBypassTest {
             writer.writeLong(ObjectStreamClass.lookup(clazz).getSerialVersionUID());
 
             byte[] data = output.toByteArray();
-            byte[] bytes = new byte[16 + data.length];
-            System.arraycopy(head, 0, bytes, 0, 6);
-            System.arraycopy(data, 0, bytes, 6, data.length);
-            System.arraycopy(tail, 0, bytes, 6 + data.length, 6);
+            // byte[] bytes = new byte[11 + data.length];
+            // System.arraycopy(head, 0, bytes, 0, 6);
+            // System.arraycopy(data, 0, bytes, 6, data.length);
+            // System.arraycopy(tail, 0, bytes, 6 + data.length, 5);
 
             // API definition
-            return new ByteArrayInputStream(bytes);
+            return new ByteArrayInputStream(ByteBuffer.allocate(11 + data.length).put(new byte[] {-84, -19, 0, 5, 115,
+                    114}).put(data).put(new byte[] {2, 0, 0, 120, 112}).array());
         }
 
         /**

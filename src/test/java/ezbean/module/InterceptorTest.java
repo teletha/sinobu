@@ -32,7 +32,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
 import ezbean.I;
-import ezbean.unit.PrivateModule;
+import ezunit.PrivateModule;
 
 /**
  * @version 2009/07/10 13:08:34

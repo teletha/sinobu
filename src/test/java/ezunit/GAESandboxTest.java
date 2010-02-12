@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.unit;
+package ezunit;
+
+import java.io.File;
+import java.security.AccessControlException;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
- * @version 2010/02/09 13:15:52
+ * @version 2010/02/09 13:17:15
  */
-public class GAESandbox extends Sandbox {
+public class GAESandboxTest {
 
-    /**
-     * 
-     */
-    public GAESandbox() {
-        super(READ | WRITE);
+    @Rule
+    public static GAESandbox sandbox = new GAESandbox();
+
+    @Test(expected = AccessControlException.class)
+    public void list() throws Exception {
+        new File("").list();
     }
 }

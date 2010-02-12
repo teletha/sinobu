@@ -13,24 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.unit;
+package ezunit;
+
+import static org.junit.Assert.*;
 
 import java.io.File;
-import java.security.AccessControlException;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * @version 2010/02/09 13:17:15
+ * @version 2010/02/11 13:15:37
  */
-public class GAESandboxTest {
+public class CleanRoomTest {
 
     @Rule
-    public static GAESandbox sandbox = new GAESandbox();
+    public static final CleanRoom room = new CleanRoom();
 
-    @Test(expected = AccessControlException.class)
-    public void list() throws Exception {
-        new File("").list();
+    @Test
+    public void locateFile() {
+        File text = room.locateFile("empty");
+
+        assertTrue(text.exists());
+        assertTrue(text.isFile());
+    }
+
+    @Test
+    public void locatedFileCanDelete() {
+        File text = room.locateFile("empty");
+
+        assertTrue(text.exists());
+        assertTrue(text.delete());
+        assertFalse(text.exists());
     }
 }

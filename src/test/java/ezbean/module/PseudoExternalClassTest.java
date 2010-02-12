@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import ezbean.model.Model;
 import ezbean.module.external.SingletonClass;
-import ezbean.unit.PrivateModule;
+import ezunit.PrivateModule;
 
 /**
  * @version 2010/02/06 12:15:34

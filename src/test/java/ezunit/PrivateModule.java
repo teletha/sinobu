@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.unit;
+package ezunit;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -80,7 +80,7 @@ public class PrivateModule extends EzRule {
             }
 
             /**
-             * @see ezbean.unit.PrivateModule.PrivateClassStrategy#compute(java.lang.String)
+             * @see ezunit.PrivateModule.PrivateClassStrategy#compute(java.lang.String)
              */
             public String compute(String name) {
                 return overriddenPackage + "." + testcase.getSimpleName() + "$" + name;
@@ -108,7 +108,7 @@ public class PrivateModule extends EzRule {
             }
 
             /**
-             * @see ezbean.unit.PrivateModule.PrivateClassStrategy#compute(java.lang.String)
+             * @see ezunit.PrivateModule.PrivateClassStrategy#compute(java.lang.String)
              */
             public String compute(String name) {
                 return overriddenPackage + "." + name;
@@ -183,7 +183,7 @@ public class PrivateModule extends EzRule {
     }
 
     /**
-     * @see ezbean.unit.EzRule#beforeClass()
+     * @see ezunit.EzRule#beforeClass()
      */
     @Override
     protected void beforeClass() throws Exception {
@@ -235,7 +235,7 @@ public class PrivateModule extends EzRule {
     }
 
     /**
-     * @see ezbean.unit.EzRule#before(java.lang.reflect.Method)
+     * @see ezunit.EzRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -243,7 +243,7 @@ public class PrivateModule extends EzRule {
     }
 
     /**
-     * @see ezbean.unit.EzRule#after(java.lang.reflect.Method)
+     * @see ezunit.EzRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {

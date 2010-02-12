@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.unit;
+package ezunit;
 
 import static org.junit.Assert.*;
 
@@ -62,6 +62,23 @@ public class Ezunit {
 
     /** The empty attribute for reuse. */
     public static final Attributes EMPTY_ATTR = new AttributesImpl();
+
+    /**
+     * <p>
+     * Locate the directory that the specified class exists.
+     * </p>
+     * 
+     * @param clazz A class to resolve location.
+     * @return A located directory.
+     * @throws NullPointerException If the class is <code>null</code>.
+     */
+    public static File locate(Class clazz) {
+        return I.locate(clazz.getResource(""));
+    }
+
+    // ==================================================================== //
+    // Informal Methods
+    // ==================================================================== //
 
     /**
      * <p>
