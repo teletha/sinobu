@@ -21,6 +21,7 @@ import static org.junit.Assume.*;
 
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileFilter;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 
@@ -29,8 +30,7 @@ import ezbean.io.FileSystem;
 
 /**
  * <p>
- * The environmental rule for test that depends on file system. All location method of this class
- * adopt the strategy of copy-on-locate-once.
+ * The environmental rule for test that depends on file system.
  * </p>
  * 
  * @version 2010/02/10 18:46:50
@@ -178,8 +178,8 @@ public class CleanRoom extends Sandbox {
             FileSystem.clear(clean);
 
             // copy all resources newly
-            for (File file : host.listFiles()) {
-                FileSystem.copy(file, clean);
+            for (File file : host.listFiles(monitor)) {
+                FileSystem.copy(file, clean, monitor);
             }
 
             // reset
@@ -215,7 +215,7 @@ public class CleanRoom extends Sandbox {
     /**
      * @version 2010/02/13 13:23:22
      */
-    private class Monitor extends Security {
+    private class Monitor extends Security implements FileFilter {
 
         /** The flag for file resource modification. */
         private boolean modified = true;
@@ -248,6 +248,15 @@ public class CleanRoom extends Sandbox {
             if (!modified && file.startsWith(clean.getPath())) {
                 modified = true;
             }
+        }
+
+        /**
+         * @see java.io.FileFilter#accept(java.io.File)
+         */
+        public boolean accept(File file) {
+            String name = file.getName();
+
+            return !name.equals("package-info.html") && !name.endsWith(".class");
         }
     }
 }
