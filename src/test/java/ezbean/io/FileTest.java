@@ -43,7 +43,7 @@ public class FileTest {
      */
     @Test
     public void file() throws Exception {
-        File file = room.locateFile("parent/1.txt");
+        File file = room.locateFile("directory/1");
         assertFile(file, "1");
     }
 
@@ -52,10 +52,10 @@ public class FileTest {
      */
     @Test
     public void fileCanGetParentFile() throws Exception {
-        File file = room.locateFile("parent/1.txt");
+        File file = room.locateFile("directory/1");
         File parent = file.getParentFile();
 
-        assertDirectory(parent, "parent");
+        assertDirectory(parent);
     }
 
     /**
@@ -63,11 +63,11 @@ public class FileTest {
      */
     @Test
     public void fileCanGetParentPath() throws Exception {
-        File file = room.locateFile("parent/1.txt");
+        File file = room.locateFile("directory/1");
         String parentPath = file.getParent();
 
         File parent = I.locate(parentPath);
-        assertDirectory(parent, "parent");
+        assertDirectory(parent);
     }
 
     /**
@@ -75,7 +75,7 @@ public class FileTest {
      */
     @Test
     public void fileCantListupChildren() throws Exception {
-        File file = room.locateFile("parent/1.txt");
+        File file = room.locateFile("directory/1");
 
         assertNull(file.list());
     }
@@ -85,7 +85,7 @@ public class FileTest {
      */
     @Test
     public void fileCantListupChildrenFiles() throws Exception {
-        File file = room.locateFile("parent/1.txt");
+        File file = room.locateFile("directory/1");
         File[] list = file.listFiles();
 
         assertNull(list);
@@ -96,10 +96,10 @@ public class FileTest {
      */
     @Test
     public void createAndDeleteFile() throws Exception {
-        File file = room.locateAbsent("parent/create.txt");
+        File file = room.locateAbsent("directory/create");
 
         assertNotNull(file);
-        assertEquals("create.txt", file.getName());
+        assertEquals("create", file.getName());
         assertFalse(file.exists());
 
         // create
@@ -116,8 +116,8 @@ public class FileTest {
      */
     @Test
     public void directory() throws Exception {
-        File file = room.locateDirectory("parent/test");
-        assertDirectory(file, "test");
+        File file = room.locateDirectory("directory/child");
+        assertDirectory(file);
     }
 
     /**
@@ -125,10 +125,10 @@ public class FileTest {
      */
     @Test
     public void directoryCanGetParentFile() throws Exception {
-        File file = room.locateDirectory("parent/test");
+        File file = room.locateDirectory("directory/child");
         File parent = file.getParentFile();
 
-        assertDirectory(parent, "parent");
+        assertDirectory(parent);
     }
 
     /**
@@ -136,11 +136,11 @@ public class FileTest {
      */
     @Test
     public void directoryCanGetParentPath() throws Exception {
-        File file = room.locateDirectory("parent/test");
+        File file = room.locateDirectory("directory/child");
         String parentPath = file.getParent();
 
         File parent = I.locate(parentPath);
-        assertDirectory(parent, "parent");
+        assertDirectory(parent);
     }
 
     /**
@@ -148,10 +148,10 @@ public class FileTest {
      */
     @Test
     public void directoryCanListupChildrenPaths() throws Exception {
-        File file = room.locateDirectory("parent/test");
+        File file = room.locateDirectory("directory/child");
         String[] list = file.list();
 
-        assertChildren(list, 3, "a.txt", "b.txt", "c.txt");
+        assertChildren(list, 3, "a", "b", "c");
     }
 
     /**
@@ -159,10 +159,10 @@ public class FileTest {
      */
     @Test
     public void directoryCanListupChildrenFiles() throws Exception {
-        File file = room.locateDirectory("parent/test");
+        File file = room.locateDirectory("directory/child");
         File[] list = file.listFiles();
 
-        assertChildren(list, 3, "a.txt", "b.txt", "c.txt");
+        assertChildren(list, 3, "a", "b", "c");
     }
 
     /**
@@ -184,7 +184,7 @@ public class FileTest {
      */
     @Test
     public void createAndDeleteDirectory() throws Exception {
-        File file = room.locateAbsent("parent/make");
+        File file = room.locateAbsent("directory/make");
 
         assertNotNull(file);
         assertEquals("make", file.getName());
@@ -205,7 +205,7 @@ public class FileTest {
      */
     @Test
     public void createAndDeleteNestedDirectory() throws Exception {
-        File file = room.locateAbsent("parent/make/dir/dir");
+        File file = room.locateAbsent("directory/make/dir/dir");
 
         assertFalse(file.exists());
         assertFalse(file.getParentFile().exists());
@@ -217,7 +217,7 @@ public class FileTest {
         assertTrue(file.exists());
 
         // delete
-        File make = room.locateDirectory("parent/make");
+        File make = room.locateDirectory("directory/make");
         assertTrue(FileSystem.delete(make));
         assertFalse(file.exists());
         assertFalse(make.exists());
@@ -239,11 +239,11 @@ public class FileTest {
     public void fileInArchiveCanGetParentFile() throws Exception {
         File file = room.locateFile("archive/test.zip/1.txt");
         File parent = file.getParentFile();
-        assertArchive(parent, "test.zip");
+        assertArchive(parent);
 
         parent = parent.getParentFile();
 
-        assertDirectory(parent, "archive");
+        assertDirectory(parent);
     }
 
     /**
@@ -256,12 +256,12 @@ public class FileTest {
         String parentPath = file.getParent();
         File parent = I.locate(parentPath);
 
-        assertArchive(parent, "test.zip");
+        assertArchive(parent);
 
         parentPath = parent.getParent();
         parent = I.locate(parentPath);
 
-        assertDirectory(parent, "archive");
+        assertDirectory(parent);
     }
 
     /**
@@ -358,7 +358,7 @@ public class FileTest {
     @Test
     public void directoryInArchive() throws Exception {
         File file = room.locateDirectory("archive/test.zip/test");
-        assertDirectory(file, "test");
+        assertDirectory(file);
     }
 
     /**
@@ -369,11 +369,11 @@ public class FileTest {
         File file = room.locateDirectory("archive/test.zip/test");
         File parent = file.getParentFile();
 
-        assertArchive(parent, "test.zip");
+        assertArchive(parent);
 
         parent = parent.getParentFile();
 
-        assertDirectory(parent, "archive");
+        assertDirectory(parent);
     }
 
     /**
@@ -386,12 +386,12 @@ public class FileTest {
         String parentPath = file.getParent();
         File parent = I.locate(parentPath);
 
-        assertArchive(parent, "test.zip");
+        assertArchive(parent);
 
         parentPath = parent.getParent();
         parent = I.locate(parentPath);
 
-        assertDirectory(parent, "archive");
+        assertDirectory(parent);
     }
 
     /**
@@ -462,7 +462,7 @@ public class FileTest {
     @Test
     public void archive() throws Exception {
         File file = room.locateFile("archive/test.zip");
-        assertArchive(file, "test.zip");
+        assertArchive(file);
     }
 
     /**
@@ -473,7 +473,7 @@ public class FileTest {
         File file = room.locateFile("archive/test.zip");
         File parent = file.getParentFile();
 
-        assertDirectory(parent, "archive");
+        assertDirectory(parent);
     }
 
     /**
@@ -486,7 +486,7 @@ public class FileTest {
         String parentPath = file.getParent();
         File parent = I.locate(parentPath);
 
-        assertDirectory(parent, "archive");
+        assertDirectory(parent);
     }
 
     /**
@@ -517,7 +517,7 @@ public class FileTest {
     @Test
     public void archiveCanRestoreItsLastModifiedData() throws Exception {
         File file = room.locateFile("archive/test.zip");
-        assertArchive(file, "test.zip");
+        assertArchive(file);
         assertTrue(file instanceof ezbean.io.File);
 
         ezbean.io.File archive = (ezbean.io.File) file;
@@ -552,12 +552,12 @@ public class FileTest {
     @Test
     public void archiveWithoutCompression() throws Exception {
         File file = room.locateDirectory("archive");
-        assertDirectory(file, "archive");
+        assertDirectory(file);
 
         File[] files = file.listFiles();
 
         File zip = getFile(files, "test.zip");
-        assertArchive(zip, "test.zip");
+        assertArchive(zip);
 
         files = zip.listFiles();
         assertChildren(files, 3, "test", "1.txt", "2.txt");
@@ -575,11 +575,11 @@ public class FileTest {
     @Test
     public void archiveWithCompression() throws Exception {
         File file = room.locateDirectory("archive");
-        assertDirectory(file, "archive");
+        assertDirectory(file);
 
         File[] files = file.listFiles();
         File zip = getFile(files, "compressed.zip");
-        assertArchive(zip, "compressed.zip");
+        assertArchive(zip);
 
         files = zip.listFiles();
         assertChildren(files, 3, "test", "1.txt", "2.txt");
@@ -600,16 +600,16 @@ public class FileTest {
         assertFile(file, "a");
 
         File parent = file.getParentFile();
-        assertDirectory(parent, "test");
+        assertDirectory(parent);
 
         parent = parent.getParentFile();
-        assertArchive(parent, "nest.zip");
+        assertArchive(parent);
 
         parent = parent.getParentFile();
-        assertArchive(parent, "nest.zip");
+        assertArchive(parent);
 
         parent = parent.getParentFile();
-        assertDirectory(parent, "archive");
+        assertDirectory(parent);
     }
 
     /**
@@ -621,25 +621,25 @@ public class FileTest {
         assertFile(file, "b");
 
         File parent = file.getParentFile();
-        assertDirectory(parent, "test");
+        assertDirectory(parent);
 
         parent = parent.getParentFile();
-        assertArchive(parent, "nest2.zip");
+        assertArchive(parent);
 
         parent = parent.getParentFile();
-        assertDirectory(parent, "nest2");
+        assertDirectory(parent);
 
         parent = parent.getParentFile();
-        assertArchive(parent, "nest1.zip");
+        assertArchive(parent);
 
         parent = parent.getParentFile();
-        assertDirectory(parent, "nest1");
+        assertDirectory(parent);
 
         parent = parent.getParentFile();
-        assertArchive(parent, "deepNest.zip");
+        assertArchive(parent);
 
         parent = parent.getParentFile();
-        assertDirectory(parent, "archive");
+        assertDirectory(parent);
     }
 
     /**
@@ -648,7 +648,7 @@ public class FileTest {
     @Test
     public void nonASCIIArchive() throws Exception {
         File file = room.locateFile("archive/nonASCII.zip");
-        assertArchive(file, "nonASCII.zip");
+        assertArchive(file);
     }
 
     /**
@@ -670,7 +670,7 @@ public class FileTest {
     @Test
     public void archiveFileOutputsUserFriendlyPath() throws Exception {
         File file = I.locate(PREFIX + "archive/test.zip");
-        assertArchive(file, "test.zip");
+        assertArchive(file);
 
         assertEquals(PREFIX + "archive/test.zip", file.toString());
     }
@@ -692,7 +692,7 @@ public class FileTest {
     @Test
     public void archiveFileOutputsUserFriendlyURL() throws Exception {
         File file = I.locate(PREFIX + "archive/test.zip");
-        assertArchive(file, "test.zip");
+        assertArchive(file);
 
         File expected = new File(PREFIX + "archive/test.zip");
         assertEquals(expected.toURI().toURL(), file.toURI().toURL());
@@ -704,7 +704,7 @@ public class FileTest {
     @Test
     public void fileInArchiveFileOutputsUserFriendlyURL() throws Exception {
         File file = I.locate(PREFIX + "archive/test.zip");
-        assertArchive(file, "test.zip");
+        assertArchive(file);
 
         File expected = new File(PREFIX + "archive/test.zip");
         assertEquals(expected.toURI(), file.toURI());

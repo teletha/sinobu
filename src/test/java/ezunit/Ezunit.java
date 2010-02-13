@@ -193,18 +193,6 @@ public class Ezunit {
     // Informal Methods
     // ==================================================================== //
 
-    // /**
-    // * <p>
-    // * Assert that the specified abstract file is file (not directory), presence and has the given
-    // * file name.
-    // * </p>
-    // *
-    // * @param file A file to test.
-    // */
-    // public static void assertFile(File file) {
-    // assertFile(file, null);
-    // }
-
     /**
      * <p>
      * Assert that the specified abstract file is file (not directory), present and has the given
@@ -231,28 +219,24 @@ public class Ezunit {
      * Helper method to assert file.
      * 
      * @param file
-     * @param expectedName
      */
-    public static void assertDirectory(File file, String expectedName) {
+    public static void assertDirectory(File file) {
         assertNotNull(file);
         assertTrue(file.isDirectory());
         assertFalse(file.isFile());
         assertTrue(file.exists());
-        assertEquals(expectedName, file.getName());
     }
 
     /**
      * Helper method to assert file.
      * 
      * @param file
-     * @param expectedName
      */
-    public static void assertArchive(File file, String expectedName) {
+    public static void assertArchive(File file) {
         assertNotNull(file);
         assertTrue(file.isDirectory());
         assertTrue(file.isFile());
         assertTrue(file.exists());
-        assertEquals(expectedName, file.getName());
     }
 
     /**
@@ -311,7 +295,7 @@ public class Ezunit {
      * @param expected
      * @param test
      */
-    public static void assertFilePathEquals(File expected, File test) {
+    public static void assertFileEquals(File expected, File test) {
         assertNotNull(test);
         assertNotNull(expected);
 

@@ -21,7 +21,6 @@ import static org.junit.Assume.*;
 
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 
@@ -39,16 +38,13 @@ import ezbean.io.FileSystem;
 public class CleanRoom extends Sandbox {
 
     /** The root bioclean room for tests which are related with file system. */
-    private static final File cleans = new File(I.getWorkingDirectory(), "clean-room");
+    private static final File clean = new File(I.getWorkingDirectory(), "clean-room");
 
     /** The host directory for test. */
     private final File host;
 
     /** The clean room monitor. */
     private final Monitor monitor = new Monitor();
-
-    /** The temporary directory for this testcase. */
-    private final File temporary = FileSystem.createTemporary();
 
     /**
      * Create a clean room for the current directory.
@@ -80,7 +76,6 @@ public class CleanRoom extends Sandbox {
             directory = directory.getParentFile();
         }
         this.host = directory;
-        this.temporary.mkdirs();
 
         // access control
         writable(false, host);
@@ -160,91 +155,12 @@ public class CleanRoom extends Sandbox {
         path = path.replace(File.separatorChar, '/');
 
         // locate virtual file in the clean room
-        File virtual = I.locate(cleans, path);
+        File virtual = I.locate(clean, path);
 
         assertEquals(virtual.exists(), isPresent);
         assertEquals(virtual.isFile(), isFile);
 
         return virtual;
-    }
-
-    /**
-     * Create temporary present file for the current processing test.
-     * 
-     * @return
-     */
-    public File createTemporaryFile() {
-        try {
-            File file = new File(temporary, String.valueOf(System.nanoTime()));
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-
-            assertTrue(file.exists());
-
-            return file;
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * Create temporary present file for the current processing test.
-     * 
-     * @param name
-     * @return
-     */
-    public File createTemporaryDirectory(String name) {
-        File file = new File(temporary, name);
-        file.mkdirs();
-
-        assertTrue(file.exists());
-
-        return file;
-    }
-
-    /**
-     * Create test file which is assured that the file exists.
-     * 
-     * @param name
-     * @return
-     */
-    public File newPresentFile(String name) {
-        File file = I.locate(cleans, name);
-
-        try {
-            if (!file.createNewFile()) {
-                throw new AssertionError("Can't create new file.");
-            }
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-
-        // assert
-        assertTrue(file.exists());
-        assertTrue(file.isFile());
-
-        // API definition
-        return file;
-    }
-
-    /**
-     * Create test file which is not assured that the file exists.
-     * 
-     * @param name
-     * @return
-     */
-    public File newAbsentFile(String name) {
-        File file = I.locate(cleans, name);
-
-        if (file.exists()) {
-            throw new AssertionError("The file is aleady existed.");
-        }
-
-        // assert
-        assertFalse(file.exists());
-
-        // API definition
-        return file;
     }
 
     /**
@@ -259,14 +175,14 @@ public class CleanRoom extends Sandbox {
 
         // renew clean room for this test if needed
         if (monitor.modified) {
-            cleans.mkdirs();
+            clean.mkdirs();
 
             // clean up all resources
-            FileSystem.clear(cleans);
+            FileSystem.clear(clean);
 
             // copy all resources newly
             for (File file : host.listFiles()) {
-                FileSystem.copy(file, cleans);
+                FileSystem.copy(file, clean);
             }
 
             // reset
@@ -275,22 +191,12 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see ezunit.Sandbox#after(java.lang.reflect.Method)
-     */
-    @Override
-    protected void after(Method method) {
-        FileSystem.clear(temporary);
-
-        super.after(method);
-    }
-
-    /**
      * @see ezunit.EzRule#afterClass()
      */
     @Override
     protected void afterClass() {
         // dispose clean room actually
-        delete(cleans);
+        delete(clean);
 
         super.afterClass();
     }
@@ -322,7 +228,7 @@ public class CleanRoom extends Sandbox {
          */
         @Override
         public void checkDelete(String file) {
-            if (!modified && file.startsWith(cleans.getPath())) {
+            if (!modified && file.startsWith(clean.getPath())) {
                 modified = true;
             }
         }
@@ -332,7 +238,7 @@ public class CleanRoom extends Sandbox {
          */
         @Override
         public void checkWrite(FileDescriptor fd) {
-            if (!modified && fd.toString().startsWith(cleans.getPath())) {
+            if (!modified && fd.toString().startsWith(clean.getPath())) {
                 modified = true;
             }
         }
@@ -342,7 +248,7 @@ public class CleanRoom extends Sandbox {
          */
         @Override
         public void checkWrite(String file) {
-            if (!modified && file.startsWith(cleans.getPath())) {
+            if (!modified && file.startsWith(clean.getPath())) {
                 modified = true;
             }
         }

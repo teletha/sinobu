@@ -90,9 +90,9 @@ public class FileSystemUtilityTest {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "some contents");
-        assertDirectory(new File(output, "directory/child"), "child");
-        assertFile(new File(output, "directory/child/file"), "some contents");
+        assertFile(new File(output, "directory/1"), "1");
+        assertDirectory(new File(output, "directory/child"));
+        assertFile(new File(output, "directory/child/a"), "a");
     }
 
     /**
@@ -130,9 +130,9 @@ public class FileSystemUtilityTest {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "some contents");
-        assertDirectory(new File(output, "directory/child"), "child");
-        assertFile(new File(output, "directory/child/file"), "some contents");
+        assertFile(new File(output, "directory/2"), "2");
+        assertDirectory(new File(output, "directory/child"));
+        assertFile(new File(output, "directory/child/b"), "b");
     }
 
     /**
@@ -193,8 +193,8 @@ public class FileSystemUtilityTest {
 
         // assert contents
         assertFile(new File(file, "file"), "some contents");
-        assertDirectory(new File(file, "child"), "child");
-        assertFile(new File(file, "child/file"), "some contents");
+        assertDirectory(new File(file, "child"));
+        assertFile(new File(file, "child/c"), "c");
 
         // clear
         FileSystem.clear(file);
@@ -243,8 +243,8 @@ public class FileSystemUtilityTest {
 
         // assert contents
         assertFile(new File(file, "file"), "some contents");
-        assertDirectory(new File(file, "child"), "child");
-        assertFile(new File(file, "child/file"), "some contents");
+        assertDirectory(new File(file, "child"));
+        assertFile(new File(file, "child/a"), "a");
 
         // delete
         FileSystem.delete(file);
@@ -258,7 +258,7 @@ public class FileSystemUtilityTest {
 
     @Test
     public void deleteArchive() throws Exception {
-        File file = room.locateFile("archive.zip");
+        File file = room.locateFile("archive/test.zip");
 
         assertTrue(file instanceof ezbean.io.File);
         ezbean.io.File archive = (ezbean.io.File) file;
