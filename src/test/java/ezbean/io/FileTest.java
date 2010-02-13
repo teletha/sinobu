@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,9 +31,7 @@ import ezbean.I;
 import ezunit.CleanRoom;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/18 9:17:52
+ * @version 2010/02/13 14:52:46
  */
 public class FileTest {
 
@@ -346,7 +345,7 @@ public class FileTest {
      */
     @Test
     public void fileInArchiveCantCreate() throws Exception {
-        File file = I.locate(PREFIX + "test003/test.zip/create.txt");
+        File file = room.locateAbsent("test003/test.zip/create.txt");
 
         assertNotNull(file);
         assertEquals("create.txt", file.getName());
@@ -535,10 +534,18 @@ public class FileTest {
         File file = room.locateFile("test003/test.zip/1.txt");
         assertFile(file);
 
-        File zipFile = room.locateFile("test003/test.zip");
-        ZipEntry entry = new java.util.zip.ZipFile(zipFile).getEntry("1.txt");
-        assertNotNull(entry);
-        assertEquals(entry.getTime(), file.lastModified());
+        ZipFile zip = null;
+
+        try {
+            zip = new ZipFile(room.locateFile("test003/test.zip"));
+            ZipEntry entry = zip.getEntry("1.txt");
+            assertNotNull(entry);
+            assertEquals(entry.getTime(), file.lastModified());
+        } finally {
+            if (zip != null) {
+                zip.close();
+            }
+        }
     }
 
     /**
@@ -615,7 +622,7 @@ public class FileTest {
      */
     @Test
     public void moreNestedArchive() throws Exception {
-        File file = I.locate(PREFIX + "test005/test.zip/nest1/nest1.zip/nest2/nest2.zip/test/b.txt");
+        File file = room.locateFile("test005/test.zip/nest1/nest1.zip/nest2/nest2.zip/test/b.txt");
         assertFile(file, "b");
 
         File parent = file.getParentFile();

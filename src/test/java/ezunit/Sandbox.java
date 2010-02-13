@@ -57,11 +57,11 @@ public class Sandbox extends EzRule {
     /** The external value. */
     public static final int CLASSLOADER = 1 << classloader;
 
+    /** The platform original security manager. */
+    protected static final SecurityManager platform = System.getSecurityManager();
+
     /** The top level security manager for this sandbox. */
     protected final Security security;
-
-    /** The platform original security manager. */
-    protected final SecurityManager platform = System.getSecurityManager();
 
     /** The flag whether test is running or not. */
     private boolean whileTest = false;
@@ -104,7 +104,7 @@ public class Sandbox extends EzRule {
      * @param permissions
      */
     protected Sandbox(Class<? extends SecurityManager> manager, int permissions) {
-        this.security = new Security(manager == null ? System.getSecurityManager() : I.make(manager), permissions);
+        this.security = new Security(manager == null ? platform : I.make(manager), permissions);
     }
 
     /**
@@ -145,6 +145,22 @@ public class Sandbox extends EzRule {
 
     /**
      * <p>
+     * Set security manager.
+     * </p>
+     * <p>
+     * This permission is effective only in the test method by which this method is called.
+     * </p>
+     * 
+     * @param allow <code>true</code> if you allow to read.
+     */
+    public void use(SecurityManager manager) {
+        if (manager != null) {
+            security.runtimeManager = manager;
+        }
+    }
+
+    /**
+     * <p>
      * Set permission whether you can read file or not.
      * </p>
      * <p>
@@ -155,9 +171,9 @@ public class Sandbox extends EzRule {
      */
     public void readable(boolean allow) {
         if (allow) {
-            security.runtime.clear(read);
+            security.runtimePermissions.clear(read);
         } else {
-            security.runtime.set(read);
+            security.runtimePermissions.set(read);
         }
     }
 
@@ -212,7 +228,7 @@ public class Sandbox extends EzRule {
      */
     public void writable(boolean allow) {
         if (whileTest) {
-            security.runtime.set(write);
+            security.runtimePermissions.set(write);
         } else {
             security.permissions.set(write);
         }
@@ -260,22 +276,34 @@ public class Sandbox extends EzRule {
     /**
      * @version 2010/02/09 10:26:03
      */
-    private static class Security extends SecurityManager {
+    protected static class Security extends SecurityManager {
 
         /** The base permission state. */
         private final BitSet permissions = new BitSet();
 
         /** The runtime permission state. */
-        private final BitSet runtime = new BitSet();
+        private final BitSet runtimePermissions = new BitSet();
 
-        /** The parent security manager. */
+        /** The base parent security manager. */
         private final SecurityManager manager;
 
-        /** The file permissions. */
-        private final Warranties readables = new Warranties();
+        /** The runtime parent security manager. */
+        private SecurityManager runtimeManager;
 
         /** The file permissions. */
-        private final Warranties writables = new Warranties();
+        private Warranties readables = new Warranties();
+
+        /** The file permissions. */
+        private Warranties writables = new Warranties();
+
+        /**
+         * The Security constructor for subclass, the parent is platform's one.
+         * 
+         * @param permissions
+         */
+        protected Security() {
+            this(platform, 0);
+        }
 
         /**
          * @param permissions
@@ -330,11 +358,23 @@ public class Sandbox extends EzRule {
          * Reset permission state.
          */
         private void reset() {
-            runtime.clear();
-            runtime.or(permissions);
+            runtimeManager = manager;
+            runtimePermissions.clear();
+            runtimePermissions.or(permissions);
 
             readables.clear();
             writables.clear();
+        }
+
+        /**
+         * Switch backend security manager at runtime.
+         * 
+         * @param manager
+         */
+        protected void setParent(Security manager) {
+            if (manager != null) {
+                this.runtimeManager = manager;
+            }
         }
 
         /**
@@ -342,7 +382,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkAccept(String host, int port) {
-            if (manager != null) manager.checkAccept(host, port);
+            if (runtimeManager != null) runtimeManager.checkAccept(host, port);
         }
 
         /**
@@ -350,7 +390,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkAccess(Thread t) {
-            if (manager != null) manager.checkAccess(t);
+            if (runtimeManager != null) runtimeManager.checkAccess(t);
         }
 
         /**
@@ -358,7 +398,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkAccess(ThreadGroup g) {
-            if (manager != null) manager.checkAccess(g);
+            if (runtimeManager != null) runtimeManager.checkAccess(g);
         }
 
         /**
@@ -366,7 +406,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkAwtEventQueueAccess() {
-            if (manager != null) manager.checkAwtEventQueueAccess();
+            if (runtimeManager != null) runtimeManager.checkAwtEventQueueAccess();
         }
 
         /**
@@ -374,7 +414,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkConnect(String host, int port, Object context) {
-            if (manager != null) manager.checkConnect(host, port, context);
+            if (runtimeManager != null) runtimeManager.checkConnect(host, port, context);
         }
 
         /**
@@ -382,7 +422,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkConnect(String host, int port) {
-            if (manager != null) manager.checkConnect(host, port);
+            if (runtimeManager != null) runtimeManager.checkConnect(host, port);
         }
 
         /**
@@ -390,11 +430,11 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkCreateClassLoader() {
-            if (runtime.get(classloader)) {
+            if (runtimePermissions.get(classloader)) {
                 throw new AccessControlException("Disallow to create new class loader.");
             }
 
-            if (manager != null) manager.checkCreateClassLoader();
+            if (runtimeManager != null) runtimeManager.checkCreateClassLoader();
         }
 
         /**
@@ -402,11 +442,11 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkDelete(String file) {
-            if (writables.reject(file, runtime.get(write))) {
+            if (writables.reject(file, runtimePermissions.get(write))) {
                 throw new AccessControlException("Disallow to delete file. " + file);
             }
 
-            if (manager != null) manager.checkDelete(file);
+            if (runtimeManager != null) runtimeManager.checkDelete(file);
         }
 
         /**
@@ -414,7 +454,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkExec(String cmd) {
-            if (manager != null) manager.checkExec(cmd);
+            if (runtimeManager != null) runtimeManager.checkExec(cmd);
         }
 
         /**
@@ -422,7 +462,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkExit(int status) {
-            if (manager != null) manager.checkExit(status);
+            if (runtimeManager != null) runtimeManager.checkExit(status);
         }
 
         /**
@@ -430,7 +470,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkLink(String lib) {
-            if (manager != null) manager.checkLink(lib);
+            if (runtimeManager != null) runtimeManager.checkLink(lib);
         }
 
         /**
@@ -438,7 +478,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkListen(int port) {
-            if (manager != null) manager.checkListen(port);
+            if (runtimeManager != null) runtimeManager.checkListen(port);
         }
 
         /**
@@ -446,7 +486,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkMemberAccess(Class<?> clazz, int which) {
-            if (manager != null) manager.checkMemberAccess(clazz, which);
+            if (runtimeManager != null) runtimeManager.checkMemberAccess(clazz, which);
         }
 
         /**
@@ -454,7 +494,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkMulticast(InetAddress maddr) {
-            if (manager != null) manager.checkMulticast(maddr);
+            if (runtimeManager != null) runtimeManager.checkMulticast(maddr);
         }
 
         /**
@@ -462,7 +502,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkPackageAccess(String pkg) {
-            if (manager != null) manager.checkPackageAccess(pkg);
+            if (runtimeManager != null) runtimeManager.checkPackageAccess(pkg);
         }
 
         /**
@@ -470,7 +510,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkPackageDefinition(String pkg) {
-            if (manager != null) manager.checkPackageDefinition(pkg);
+            if (runtimeManager != null) runtimeManager.checkPackageDefinition(pkg);
         }
 
         /**
@@ -479,7 +519,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkPermission(Permission perm, Object context) {
-            if (manager != null) manager.checkPermission(perm, context);
+            if (runtimeManager != null) runtimeManager.checkPermission(perm, context);
         }
 
         /**
@@ -487,7 +527,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkPermission(Permission perm) {
-            if (manager != null) manager.checkPermission(perm);
+            if (runtimeManager != null) runtimeManager.checkPermission(perm);
         }
 
         /**
@@ -495,7 +535,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkPrintJobAccess() {
-            if (manager != null) manager.checkPrintJobAccess();
+            if (runtimeManager != null) runtimeManager.checkPrintJobAccess();
         }
 
         /**
@@ -503,7 +543,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkPropertiesAccess() {
-            if (manager != null) manager.checkPropertiesAccess();
+            if (runtimeManager != null) runtimeManager.checkPropertiesAccess();
         }
 
         /**
@@ -511,7 +551,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkPropertyAccess(String key) {
-            if (manager != null) manager.checkPropertyAccess(key);
+            if (runtimeManager != null) runtimeManager.checkPropertyAccess(key);
         }
 
         /**
@@ -519,11 +559,11 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkRead(FileDescriptor fd) {
-            if (readables.reject(fd.toString(), runtime.get(read))) {
+            if (readables.reject(fd.toString(), runtimePermissions.get(read))) {
                 throw new AccessControlException("Disallow to read file. " + fd);
             }
 
-            manager.checkRead(fd);
+            runtimeManager.checkRead(fd);
         }
 
         /**
@@ -531,11 +571,11 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkRead(String file, Object context) {
-            if (readables.reject(file, runtime.get(read))) {
+            if (readables.reject(file, runtimePermissions.get(read))) {
                 throw new AccessControlException("Disallow to read file. " + file);
             }
 
-            if (manager != null) manager.checkRead(file, context);
+            if (runtimeManager != null) runtimeManager.checkRead(file, context);
         }
 
         /**
@@ -543,11 +583,11 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkRead(String file) {
-            if (readables.reject(file, runtime.get(read))) {
+            if (readables.reject(file, runtimePermissions.get(read))) {
                 throw new AccessControlException("Disallow to read file. " + file);
             }
 
-            if (manager != null) manager.checkRead(file);
+            if (runtimeManager != null) runtimeManager.checkRead(file);
         }
 
         /**
@@ -555,7 +595,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkSecurityAccess(String target) {
-            if (manager != null) manager.checkSecurityAccess(target);
+            if (runtimeManager != null) runtimeManager.checkSecurityAccess(target);
         }
 
         /**
@@ -563,7 +603,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkSetFactory() {
-            if (manager != null) manager.checkSetFactory();
+            if (runtimeManager != null) runtimeManager.checkSetFactory();
         }
 
         /**
@@ -571,7 +611,7 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkSystemClipboardAccess() {
-            if (manager != null) manager.checkSystemClipboardAccess();
+            if (runtimeManager != null) runtimeManager.checkSystemClipboardAccess();
         }
 
         /**
@@ -579,8 +619,8 @@ public class Sandbox extends EzRule {
          */
         @Override
         public boolean checkTopLevelWindow(Object window) {
-            if (manager != null) {
-                return manager.checkTopLevelWindow(window);
+            if (runtimeManager != null) {
+                return runtimeManager.checkTopLevelWindow(window);
             } else {
                 return super.checkTopLevelWindow(window);
             }
@@ -591,11 +631,11 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkWrite(FileDescriptor fd) {
-            if (writables.reject(fd.toString(), runtime.get(write))) {
+            if (writables.reject(fd.toString(), runtimePermissions.get(write))) {
                 throw new AccessControlException("Disallow to write file. " + fd);
             }
 
-            if (manager != null) manager.checkWrite(fd);
+            if (runtimeManager != null) runtimeManager.checkWrite(fd);
         }
 
         /**
@@ -603,11 +643,11 @@ public class Sandbox extends EzRule {
          */
         @Override
         public void checkWrite(String file) {
-            if (writables.reject(file, runtime.get(write))) {
+            if (writables.reject(file, runtimePermissions.get(write))) {
                 throw new AccessControlException("Disallow to write file. " + file);
             }
 
-            if (manager != null) manager.checkWrite(file);
+            if (runtimeManager != null) runtimeManager.checkWrite(file);
         }
 
         /**
@@ -623,8 +663,8 @@ public class Sandbox extends EzRule {
          */
         @Override
         public Object getSecurityContext() {
-            if (manager != null) {
-                return manager.getSecurityContext();
+            if (runtimeManager != null) {
+                return runtimeManager.getSecurityContext();
             } else {
                 return super.getSecurityContext();
             }
@@ -635,8 +675,8 @@ public class Sandbox extends EzRule {
          */
         @Override
         public ThreadGroup getThreadGroup() {
-            if (manager != null) {
-                return manager.getThreadGroup();
+            if (runtimeManager != null) {
+                return runtimeManager.getThreadGroup();
             } else {
                 return super.getThreadGroup();
             }

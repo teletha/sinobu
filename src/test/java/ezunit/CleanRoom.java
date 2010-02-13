@@ -20,10 +20,9 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
-import java.security.AccessControlException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
 import ezbean.io.FileSystem;
@@ -38,16 +37,14 @@ import ezbean.io.FileSystem;
  */
 public class CleanRoom extends Sandbox {
 
-    /** The global counter for clean rooms. */
-    private static final AtomicInteger counter = new AtomicInteger();
-
     /** The root bioclean room for tests which are related with file system. */
     private static final File cleans = new File(I.getWorkingDirectory(), "clean-room");
 
     /** The host directory for test. */
     private final File host;
 
-    // private File clean;
+    /** The file system monitor. */
+    private final Monitor monitor;
 
     /**
      * Create a clean room for the current directory.
@@ -79,6 +76,7 @@ public class CleanRoom extends Sandbox {
             directory = directory.getParentFile();
         }
         this.host = directory;
+        this.monitor = new Monitor();
 
         // access control
         writable(false, host);
@@ -148,7 +146,7 @@ public class CleanRoom extends Sandbox {
      * @param path
      * @return
      */
-    private synchronized File locate(String path, boolean isPresent, boolean isFile) {
+    private File locate(String path, boolean isPresent, boolean isFile) {
         // null check
         if (path == null) {
             path = "";
@@ -163,49 +161,7 @@ public class CleanRoom extends Sandbox {
         assertEquals(virtual.exists(), isPresent);
         assertEquals(virtual.isFile(), isFile);
 
-        if (true) {
-            return virtual;
-        }
-
-        if (true) {
-            throw new Error();
-        }
-
-        try {
-            // locate source file in the host directory
-            File source = I.locate(host, path);
-            System.out.println(source.getAbsolutePath() + " source");
-            System.out.println(virtual.getAbsolutePath() + " virtual");
-            // create the nearest present directory of the source if any
-            File virtualDirectory = virtual.getParentFile();
-            File sourceDirectory = source.getParentFile();
-
-            for (int i = path.split("/").length; 1 < i; i--) {
-                if (sourceDirectory.exists()) {
-                    virtualDirectory.mkdirs();
-                    break;
-                }
-                virtualDirectory = virtualDirectory.getParentFile();
-                sourceDirectory = sourceDirectory.getParentFile();
-            }
-
-            // copy it if needed
-            if (source.exists()) {
-                FileSystem.copy(source, virtual.getParentFile());
-            }
-
-            // initial reading
-            assertEquals(source.exists(), isPresent);
-            assertEquals(source.isFile(), isFile);
-
-            // access control for the current processing test method
-            readable(false, source);
-
-            // API definition
-            return virtual;
-        } catch (AccessControlException e) {
-            return virtual; // this source file has already red
-        }
+        return virtual;
     }
 
     /**
@@ -271,11 +227,20 @@ public class CleanRoom extends Sandbox {
     protected void before(Method method) throws Exception {
         super.before(method);
 
-        // create clean room for this test
-        FileSystem.clear(cleans);
+        use(monitor);
 
-        for (File file : host.listFiles()) {
-            FileSystem.copy(file, cleans);
+        // create clean room for this test
+        if (monitor.modified) {
+            // clean up all resources
+            FileSystem.clear(cleans);
+
+            // copy all resources newly
+            for (File file : host.listFiles()) {
+                FileSystem.copy(file, cleans);
+            }
+
+            // reset
+            monitor.modified = false;
         }
     }
 
@@ -284,9 +249,6 @@ public class CleanRoom extends Sandbox {
      */
     @Override
     protected void after(Method method) {
-        // delete clean room for this test
-        // delete(clean);
-
         super.after(method);
     }
 
@@ -315,11 +277,41 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see java.lang.Object#toString()
+     * @version 2010/02/13 13:23:22
      */
-    @Override
-    public String toString() {
-        return cleans.toString().replace(File.separatorChar, '/');
-    }
+    private class Monitor extends Security {
 
+        /** The flag for file resource modification. */
+        private boolean modified = true;
+
+        /**
+         * @see ezunit.Sandbox.Security#checkDelete(java.lang.String)
+         */
+        @Override
+        public void checkDelete(String file) {
+            if (!modified && file.startsWith(cleans.getPath())) {
+                modified = true;
+            }
+        }
+
+        /**
+         * @see ezunit.Sandbox.Security#checkWrite(java.io.FileDescriptor)
+         */
+        @Override
+        public void checkWrite(FileDescriptor fd) {
+            if (!modified && fd.toString().startsWith(cleans.getPath())) {
+                modified = true;
+            }
+        }
+
+        /**
+         * @see ezunit.Sandbox.Security#checkWrite(java.lang.String)
+         */
+        @Override
+        public void checkWrite(String file) {
+            if (!modified && file.startsWith(cleans.getPath())) {
+                modified = true;
+            }
+        }
+    }
 }
