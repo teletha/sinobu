@@ -112,29 +112,29 @@ public class FileSystemTest {
     }
 
     /** file protocol. */
-    private static final String FILE_PROTOCOL = new File(new File("").toURI()).getPath() + "/src/test/resources/io/";
+    private static final String FILE_PROTOCOL = new File(new File("").toURI()).getPath() + "/src/test/resources/ezbean/io/";
 
     @Test
     public void withProtocol1() {
-        File file = I.locate(FILE_PROTOCOL + "test001/1.txt");
+        File file = I.locate(FILE_PROTOCOL + "parent/1.txt");
         assertFile(file);
     }
 
     @Test
     public void withProtocol2() {
-        File file = I.locate(FILE_PROTOCOL + "test002/test");
+        File file = I.locate(FILE_PROTOCOL + "parent/test");
         assertDirectory(file, "test");
     }
 
     @Test
     public void withProtocol3() {
-        File file = I.locate(FILE_PROTOCOL + "test003/test.zip/1.txt");
+        File file = I.locate(FILE_PROTOCOL + "archive/test.zip/1.txt");
         assertFile(file);
     }
 
     @Test
     public void withProtocol4() {
-        File file = I.locate(FILE_PROTOCOL + "test003/test.zip/test");
+        File file = I.locate(FILE_PROTOCOL + "archive/test.zip/test");
         assertDirectory(file, "test");
     }
 }
