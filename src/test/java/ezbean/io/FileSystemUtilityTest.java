@@ -56,12 +56,14 @@ public class FileSystemUtilityTest {
 
         // assert contents
         assertFile(output, "");
+        assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
         FileSystem.copy(input, output);
 
         // assert contents
         assertFile(output, read(input));
+        assertEquals(input.lastModified(), output.lastModified());
     }
 
     @Test
@@ -81,11 +83,14 @@ public class FileSystemUtilityTest {
         File input = room.locateFile("file");
         File output = room.locateAbsent("absent/out");
 
+        assertNotSame(input.lastModified(), output.lastModified());
+
         // copy
         FileSystem.copy(input, output);
 
         // assert contents
         assertFile(output, read(input));
+        assertEquals(input.lastModified(), output.lastModified());
     }
 
     /**
@@ -103,6 +108,7 @@ public class FileSystemUtilityTest {
         assertFile(new File(output, "directory/1"), "1");
         assertDirectory(new File(output, "directory/child"));
         assertFile(new File(output, "directory/child/a"), "a");
+        assertEquals(input.lastModified(), new File(output, "directory").lastModified());
     }
 
     /**
@@ -127,6 +133,7 @@ public class FileSystemUtilityTest {
         // assert contents
         assertFile(new File(output, "directory/file"), "some contents");
         assertFalse(new File(output, "directory/child").exists());
+        assertEquals(input.lastModified(), new File(output, "directory").lastModified());
     }
 
     /**
@@ -143,6 +150,7 @@ public class FileSystemUtilityTest {
         assertFile(new File(output, "directory/2"), "2");
         assertDirectory(new File(output, "directory/child"));
         assertFile(new File(output, "directory/child/b"), "b");
+        assertEquals(input.lastModified(), new File(output, "directory").lastModified());
     }
 
     /**
