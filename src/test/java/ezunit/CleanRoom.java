@@ -21,6 +21,7 @@ import static org.junit.Assume.*;
 
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 
@@ -43,8 +44,11 @@ public class CleanRoom extends Sandbox {
     /** The host directory for test. */
     private final File host;
 
-    /** The file system monitor. */
-    private final Monitor monitor;
+    /** The clean room monitor. */
+    private final Monitor monitor = new Monitor();
+
+    /** The temporary directory for this testcase. */
+    private final File temporary = FileSystem.createTemporary();
 
     /**
      * Create a clean room for the current directory.
@@ -76,7 +80,7 @@ public class CleanRoom extends Sandbox {
             directory = directory.getParentFile();
         }
         this.host = directory;
-        this.monitor = new Monitor();
+        this.temporary.mkdirs();
 
         // access control
         writable(false, host);
@@ -165,6 +169,40 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
+     * Create temporary present file for the current processing test.
+     * 
+     * @return
+     */
+    public File createTemporaryFile() {
+        try {
+            File file = new File(temporary, String.valueOf(System.nanoTime()));
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+
+            assertTrue(file.exists());
+
+            return file;
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * Create temporary present file for the current processing test.
+     * 
+     * @param name
+     * @return
+     */
+    public File createTemporaryDirectory(String name) {
+        File file = new File(temporary, name);
+        file.mkdirs();
+
+        assertTrue(file.exists());
+
+        return file;
+    }
+
+    /**
      * Create test file which is assured that the file exists.
      * 
      * @param name
@@ -210,27 +248,19 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see ezunit.Sandbox#beforeClass()
-     */
-    @Override
-    protected void beforeClass() throws Exception {
-        super.beforeClass();
-
-        // create clean room
-        cleans.mkdirs();
-    }
-
-    /**
      * @see ezunit.EzRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
         super.before(method);
 
+        // start monitoring clean room
         use(monitor);
 
-        // create clean room for this test
+        // renew clean room for this test if needed
         if (monitor.modified) {
+            cleans.mkdirs();
+
             // clean up all resources
             FileSystem.clear(cleans);
 
@@ -245,10 +275,12 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see ezunit.EzRule#after(java.lang.reflect.Method)
+     * @see ezunit.Sandbox#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {
+        FileSystem.clear(temporary);
+
         super.after(method);
     }
 
@@ -257,6 +289,7 @@ public class CleanRoom extends Sandbox {
      */
     @Override
     protected void afterClass() {
+        // dispose clean room actually
         delete(cleans);
 
         super.afterClass();
