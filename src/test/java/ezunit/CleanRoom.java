@@ -50,7 +50,7 @@ public class CleanRoom extends Sandbox {
      * Create a clean room for the current directory.
      */
     public CleanRoom() {
-        this(Ezunit.locatePackage(UnsafeUtility.speculateInstantiator()));
+        this((File) null);
     }
 
     /**
@@ -69,7 +69,7 @@ public class CleanRoom extends Sandbox {
      */
     public CleanRoom(File directory) {
         if (directory == null) {
-            directory = new File("");
+            directory = Ezunit.locatePackage(UnsafeUtility.speculateInstantiator());
         }
 
         if (!directory.isDirectory()) {
@@ -150,9 +150,6 @@ public class CleanRoom extends Sandbox {
         if (path == null) {
             path = "";
         }
-
-        // normalize file name
-        path = path.replace(File.separatorChar, '/');
 
         // locate virtual file in the clean room
         File virtual = I.locate(clean, path);

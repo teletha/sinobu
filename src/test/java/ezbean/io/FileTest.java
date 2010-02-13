@@ -21,6 +21,8 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -722,6 +724,56 @@ public class FileTest {
         file = I.locate("test");
         assertNotNull(file);
         assertNull(file.getParentFile());
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param children
+     * @param expectedSize
+     * @param expectedNames
+     */
+    private static void assertChildren(String[] children, int expectedSize, String... expectedNames) {
+        assertNotNull(children);
+        assertEquals(expectedSize, children.length);
+
+        // create name list
+        List<String> list = new ArrayList();
+
+        for (String name : expectedNames) {
+            list.add(name);
+        }
+
+        // assert children
+        for (String file : children) {
+            assertTrue(list.remove(file));
+        }
+        assertEquals(0, list.size());
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param children
+     * @param expectedSize
+     * @param expectedNames
+     */
+    private static void assertChildren(File[] children, int expectedSize, String... expectedNames) {
+        assertNotNull(children);
+        assertEquals(expectedSize, children.length);
+
+        // create name list
+        List<String> list = new ArrayList();
+
+        for (String name : expectedNames) {
+            list.add(name);
+        }
+
+        // assert children
+        for (File file : children) {
+            assertTrue(list.remove(file.getName()));
+        }
+        assertEquals(0, list.size());
     }
 
     /**

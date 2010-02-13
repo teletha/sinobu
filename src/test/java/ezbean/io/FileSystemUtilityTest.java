@@ -39,6 +39,16 @@ public class FileSystemUtilityTest {
     public static final CleanRoom room = new CleanRoom();
 
     @Test
+    public void closeNull() {
+        FileSystem.close(null);
+    }
+
+    @Test
+    public void closeUncloseable() {
+        FileSystem.close(Class.class);
+    }
+
+    @Test
     public void copyFileToPresentFile() throws Exception {
         File input = room.locateFile("file");
         File output = room.locateAbsent("out");
