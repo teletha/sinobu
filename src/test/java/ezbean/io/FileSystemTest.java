@@ -112,7 +112,7 @@ public class FileSystemTest {
     }
 
     /** file protocol. */
-    private static final String FILE_PROTOCOL = new File(new File("").toURI()).getPath() + "/src/test/resources/ezbean/io/";
+    private static final String FILE_PROTOCOL = locatePackage(FileSystemTest.class).toURI().toString();
 
     @Test
     public void withProtocol1() {

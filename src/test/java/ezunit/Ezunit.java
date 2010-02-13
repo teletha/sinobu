@@ -66,6 +66,74 @@ public class Ezunit {
 
     /**
      * <p>
+     * Assert that the specified abstract file is file (not directory), present and has the given
+     * file contents.
+     * </p>
+     * 
+     * @param file A file to test.
+     * @param contents File contents.
+     */
+    public static void assertFile(File file, String... contents) {
+        assertNotNull(file);
+        assertTrue(file.exists());
+        assertTrue(file.isFile());
+        assertFalse(file.isDirectory());
+
+        String expected = option(contents, null);
+
+        if (expected != null) {
+            assertEquals(expected, readLine(file));
+        }
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param file
+     */
+    public static void assertDirectory(File file) {
+        assertNotNull(file);
+        assertTrue(file.isDirectory());
+        assertFalse(file.isFile());
+        assertTrue(file.exists());
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param file
+     */
+    public static void assertArchive(File file) {
+        assertNotNull(file);
+        assertTrue(file.isDirectory());
+        assertTrue(file.isFile());
+        assertTrue(file.exists());
+    }
+
+    /**
+     * Assert file path's equivalence.
+     * 
+     * @param expected
+     * @param test
+     */
+    public static void assertFileEquals(File expected, File test) {
+        assertNotNull(test);
+        assertNotNull(expected);
+
+        assertEquals(expected.getPath(), test.getPath());
+        assertEquals(expected.getAbsolutePath(), test.getAbsolutePath());
+        assertEquals(expected.getAbsoluteFile(), test.getAbsoluteFile());
+
+        try {
+            assertEquals(expected.getCanonicalPath(), test.getCanonicalPath());
+            assertEquals(expected.getCanonicalFile(), test.getCanonicalFile());
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * <p>
      * Locate a class file of the specified class.
      * </p>
      * 
@@ -192,124 +260,6 @@ public class Ezunit {
     // ==================================================================== //
     // Informal Methods
     // ==================================================================== //
-
-    /**
-     * <p>
-     * Assert that the specified abstract file is file (not directory), present and has the given
-     * file contents.
-     * </p>
-     * 
-     * @param file A file to test.
-     * @param contents File contents.
-     */
-    public static void assertFile(File file, String... contents) {
-        assertNotNull(file);
-        assertTrue(file.exists());
-        assertTrue(file.isFile());
-        assertFalse(file.isDirectory());
-
-        String expected = option(contents, null);
-
-        if (expected != null) {
-            assertEquals(expected, readLine(file));
-        }
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param file
-     */
-    public static void assertDirectory(File file) {
-        assertNotNull(file);
-        assertTrue(file.isDirectory());
-        assertFalse(file.isFile());
-        assertTrue(file.exists());
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param file
-     */
-    public static void assertArchive(File file) {
-        assertNotNull(file);
-        assertTrue(file.isDirectory());
-        assertTrue(file.isFile());
-        assertTrue(file.exists());
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param children
-     * @param expectedSize
-     * @param expectedNames
-     */
-    public static void assertChildren(String[] children, int expectedSize, String... expectedNames) {
-        assertNotNull(children);
-        assertEquals(expectedSize, children.length);
-
-        // create name list
-        List<String> list = new ArrayList();
-
-        for (String name : expectedNames) {
-            list.add(name);
-        }
-
-        // assert children
-        for (String file : children) {
-            assertTrue(list.remove(file));
-        }
-        assertEquals(0, list.size());
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param children
-     * @param expectedSize
-     * @param expectedNames
-     */
-    public static void assertChildren(File[] children, int expectedSize, String... expectedNames) {
-        assertNotNull(children);
-        assertEquals(expectedSize, children.length);
-
-        // create name list
-        List<String> list = new ArrayList();
-
-        for (String name : expectedNames) {
-            list.add(name);
-        }
-
-        // assert children
-        for (File file : children) {
-            assertTrue(list.remove(file.getName()));
-        }
-        assertEquals(0, list.size());
-    }
-
-    /**
-     * Assert file path's equivalence.
-     * 
-     * @param expected
-     * @param test
-     */
-    public static void assertFileEquals(File expected, File test) {
-        assertNotNull(test);
-        assertNotNull(expected);
-
-        assertEquals(expected.getPath(), test.getPath());
-        assertEquals(expected.getAbsolutePath(), test.getAbsolutePath());
-        assertEquals(expected.getAbsoluteFile(), test.getAbsoluteFile());
-
-        try {
-            assertEquals(expected.getCanonicalPath(), test.getCanonicalPath());
-            assertEquals(expected.getCanonicalFile(), test.getCanonicalFile());
-        } catch (IOException e) {
-            fail(e.getMessage());
-        }
-    }
 
     /**
      * <p>
