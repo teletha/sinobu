@@ -117,7 +117,7 @@ public class FileSystemTest {
     @Test
     public void withProtocol1() {
         File file = I.locate(FILE_PROTOCOL + "test001/1.txt");
-        assertFile(file, "1.txt");
+        assertFile(file);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class FileSystemTest {
     @Test
     public void withProtocol3() {
         File file = I.locate(FILE_PROTOCOL + "test003/test.zip/1.txt");
-        assertFile(file, "1.txt");
+        assertFile(file);
     }
 
     @Test
