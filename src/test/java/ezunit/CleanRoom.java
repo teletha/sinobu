@@ -15,10 +15,13 @@
  */
 package ezunit;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.security.AccessControlException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,18 +42,18 @@ public class CleanRoom extends Sandbox {
     private static final AtomicInteger counter = new AtomicInteger();
 
     /** The root bioclean room for tests which are related with file system. */
-    private static final File cleans = FileSystem.createTemporary();
+    private static final File cleans = new File(I.getWorkingDirectory(), "clean-room");
 
     /** The host directory for test. */
     private final File host;
 
-    private File clean;
+    // private File clean;
 
     /**
      * Create a clean room for the current directory.
      */
     public CleanRoom() {
-        this(Ezunit.locate(UnsafeUtility.speculateInstantiator()));
+        this(Ezunit.locatePackage(UnsafeUtility.speculateInstantiator()));
     }
 
     /**
@@ -79,6 +82,28 @@ public class CleanRoom extends Sandbox {
 
         // access control
         writable(false, host);
+    }
+
+    /**
+     * <p>
+     * Assume platform encoding.
+     * </p>
+     * 
+     * @param charset Your exepcted charcter encoding.
+     */
+    public void assume(Charset charset) {
+        assumeThat(Charset.defaultCharset(), is(charset));
+    }
+
+    /**
+     * <p>
+     * Assume platform encoding.
+     * </p>
+     * 
+     * @param charset Your exepcted charcter encoding.
+     */
+    public void assume(String charset) {
+        assumeThat(Charset.defaultCharset(), is(Charset.forName(charset)));
     }
 
     /**
@@ -120,38 +145,67 @@ public class CleanRoom extends Sandbox {
     /**
      * Helper method to locate file in clean room.
      * 
-     * @param name
+     * @param path
      * @return
      */
-    private synchronized File locate(String name, boolean isPresent, boolean isFile) {
-        File copy = I.locate(clean, name);
-
-        if (copy.exists()) {
-            return copy;
+    private synchronized File locate(String path, boolean isPresent, boolean isFile) {
+        // null check
+        if (path == null) {
+            path = "";
         }
 
-        File source;
+        // normalize file name
+        path = path.replace(File.separatorChar, '/');
+
+        // locate virtual file in the clean room
+        File virtual = I.locate(cleans, path);
+
+        assertEquals(virtual.exists(), isPresent);
+        assertEquals(virtual.isFile(), isFile);
+
+        if (true) {
+            return virtual;
+        }
+
+        if (true) {
+            throw new Error();
+        }
 
         try {
-            source = I.locate(host, name);
+            // locate source file in the host directory
+            File source = I.locate(host, path);
+            System.out.println(source.getAbsolutePath() + " source");
+            System.out.println(virtual.getAbsolutePath() + " virtual");
+            // create the nearest present directory of the source if any
+            File virtualDirectory = virtual.getParentFile();
+            File sourceDirectory = source.getParentFile();
+
+            for (int i = path.split("/").length; 1 < i; i--) {
+                if (sourceDirectory.exists()) {
+                    virtualDirectory.mkdirs();
+                    break;
+                }
+                virtualDirectory = virtualDirectory.getParentFile();
+                sourceDirectory = sourceDirectory.getParentFile();
+            }
 
             // copy it if needed
             if (source.exists()) {
-                FileSystem.copy(source, copy);
+                FileSystem.copy(source, virtual.getParentFile());
             }
+
+            // initial reading
+            assertEquals(source.exists(), isPresent);
+            assertEquals(source.isFile(), isFile);
+
+            // access control for the current processing test method
+            readable(false, source);
+
+            // API definition
+            return virtual;
         } catch (AccessControlException e) {
-            return copy; // this source file has already red
+            return virtual; // this source file has already red
         }
-
-        // initial reading
-        assertEquals(source.exists(), isPresent);
-        assertEquals(source.isFile(), isFile);
-
-        // access control for the current processing test method
-        readable(false, source);
-
-        // API definition
-        return copy;
     }
 
     /**
@@ -161,7 +215,7 @@ public class CleanRoom extends Sandbox {
      * @return
      */
     public File newPresentFile(String name) {
-        File file = I.locate(clean, name);
+        File file = I.locate(cleans, name);
 
         try {
             if (!file.createNewFile()) {
@@ -186,7 +240,7 @@ public class CleanRoom extends Sandbox {
      * @return
      */
     public File newAbsentFile(String name) {
-        File file = I.locate(clean, name);
+        File file = I.locate(cleans, name);
 
         if (file.exists()) {
             throw new AssertionError("The file is aleady existed.");
@@ -200,6 +254,17 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
+     * @see ezunit.Sandbox#beforeClass()
+     */
+    @Override
+    protected void beforeClass() throws Exception {
+        super.beforeClass();
+
+        // create clean room
+        cleans.mkdirs();
+    }
+
+    /**
      * @see ezunit.EzRule#before(java.lang.reflect.Method)
      */
     @Override
@@ -207,8 +272,11 @@ public class CleanRoom extends Sandbox {
         super.before(method);
 
         // create clean room for this test
-        clean = new File(cleans, String.valueOf(counter.getAndIncrement()));
-        clean.mkdirs();
+        FileSystem.clear(cleans);
+
+        for (File file : host.listFiles()) {
+            FileSystem.copy(file, cleans);
+        }
     }
 
     /**
@@ -217,7 +285,7 @@ public class CleanRoom extends Sandbox {
     @Override
     protected void after(Method method) {
         // delete clean room for this test
-        delete(clean);
+        // delete(clean);
 
         super.after(method);
     }
@@ -244,6 +312,14 @@ public class CleanRoom extends Sandbox {
             }
         }
         file.delete();
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return cleans.toString().replace(File.separatorChar, '/');
     }
 
 }

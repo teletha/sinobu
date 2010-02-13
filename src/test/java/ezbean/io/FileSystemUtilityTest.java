@@ -45,15 +45,15 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         output.createNewFile();
 
         // empty file
-        assertFile(input, "file", "some contents");
-        assertFile(output, "output", "");
+        assertFile(input, "some contents");
+        assertFile(output, "");
 
         // copy
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(input, "file", "some contents");
-        assertFile(output, "output", "some contents");
+        assertFile(input, "some contents");
+        assertFile(output, "some contents");
     }
 
     @Test
@@ -65,8 +65,8 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(input, "file", "some contents");
-        assertFile(output, "output", "some contents");
+        assertFile(input, "some contents");
+        assertFile(output, "some contents");
     }
 
     /**
@@ -81,7 +81,7 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(output, "file", "some contents");
+        assertFile(output, "some contents");
     }
 
     /**
@@ -96,7 +96,7 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(output, "file", "some contents");
+        assertFile(output, "some contents");
     }
 
     /**
@@ -111,7 +111,7 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(output, "file", "some contents");
+        assertFile(output, "some contents");
     }
 
     /**
@@ -125,9 +125,9 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "file", "some contents");
+        assertFile(new File(output, "directory/file"), "some contents");
         assertDirectory(new File(output, "directory/child"), "child");
-        assertFile(new File(output, "directory/child/file"), "file", "some contents");
+        assertFile(new File(output, "directory/child/file"), "some contents");
     }
 
     /**
@@ -149,7 +149,7 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         });
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "file", "some contents");
+        assertFile(new File(output, "directory/file"), "some contents");
         assertFalse(new File(output, "directory/child").exists());
     }
 
@@ -164,9 +164,9 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "file", "some contents");
+        assertFile(new File(output, "directory/file"), "some contents");
         assertDirectory(new File(output, "directory/child"), "child");
-        assertFile(new File(output, "directory/child/file"), "file", "some contents");
+        assertFile(new File(output, "directory/child/file"), "some contents");
     }
 
     /**
@@ -224,13 +224,13 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(output, "file", "some contents");
+        assertFile(output, "some contents");
 
         // clear
         FileSystem.clear(output);
 
         // assert contents
-        assertFile(output, "file", null);
+        assertFile(output);
     }
 
     /**
@@ -245,9 +245,9 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "file", "some contents");
+        assertFile(new File(output, "directory/file"), "some contents");
         assertDirectory(new File(output, "directory/child"), "child");
-        assertFile(new File(output, "directory/child/file"), "file", "some contents");
+        assertFile(new File(output, "directory/child/file"), "some contents");
 
         // clear
         FileSystem.clear(output);
@@ -280,7 +280,7 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(output, "file", "some contents");
+        assertFile(output, "some contents");
 
         // delete
         FileSystem.delete(output);
@@ -301,9 +301,9 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "file", "some contents");
+        assertFile(new File(output, "directory/file"), "some contents");
         assertDirectory(new File(output, "directory/child"), "child");
-        assertFile(new File(output, "directory/child/file"), "file", "some contents");
+        assertFile(new File(output, "directory/child/file"), "some contents");
 
         // delete
         FileSystem.delete(output);

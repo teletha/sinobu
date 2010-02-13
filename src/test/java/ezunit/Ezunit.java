@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -65,68 +66,164 @@ public class Ezunit {
 
     /**
      * <p>
-     * Locate the directory that the specified class exists.
+     * Locate a class file of the specified class.
      * </p>
      * 
      * @param clazz A class to resolve location.
-     * @return A located directory.
+     * @return A located class file.
      * @throws NullPointerException If the class is <code>null</code>.
      */
     public static File locate(Class clazz) {
+        return I.locate(clazz.getResource(clazz.getSimpleName().concat(".class")));
+    }
+
+    /**
+     * <p>
+     * Locate a package directory that the specified class exists.
+     * </p>
+     * 
+     * @param clazz A class to resolve location.
+     * @return A located package directory.
+     * @throws NullPointerException If the class is <code>null</code>.
+     */
+    public static File locatePackage(Class clazz) {
         return I.locate(clazz.getResource(""));
+    }
+
+    /**
+     * <p>
+     * Reads all characters from a file into a {@link String}, using the given character set or
+     * {@link I#getEncoding()}.
+     * </p>
+     * 
+     * @param file A file to read from.
+     * @param charset A character set used when reading the file.
+     * @return A string containing all the characters from the file.
+     */
+    public static String read(File file, Charset... charset) {
+        StringBuilder builder = new StringBuilder();
+
+        for (String line : readLines(file, charset)) {
+            builder.append(line).append(File.separatorChar);
+        }
+
+        if (builder.length() != 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+
+        return builder.toString();
+    }
+
+    /**
+     * <p>
+     * Reads the first line from a file. The line does not include line-termination characters, but
+     * does include other leading and trailing whitespace.
+     * </p>
+     * 
+     * @param file A file to read from
+     * @param charset A character set used when writing the file. If you don't specify, Otherwise
+     *            {@link I#getEncoding()}.
+     * @return the first line, or null if the file is empty
+     * @throws IOException if an I/O error occurs
+     */
+    public static String readLine(File file, Charset... charset) {
+        List<String> lines = readLines(file, option(charset, I.getEncoding()), false);
+
+        return lines.size() == 0 ? "" : lines.get(0);
+    }
+
+    /**
+     * <p>
+     * Reads all of the lines from a file. The lines do not include line-termination characters, but
+     * do include other leading and trailing whitespace.
+     * </p>
+     * 
+     * @param file A file to read from
+     * @param charset A character set used when writing the file. If you don't specify, Otherwise
+     *            {@link I#getEncoding()}.
+     * @return the first line, or null if the file is empty
+     * @throws IOException if an I/O error occurs
+     */
+    public static List<String> readLines(File file, Charset... charset) {
+        return readLines(file, option(charset, I.getEncoding()), true);
+    }
+
+    /**
+     * Helper method to decide option.
+     * 
+     * @param <T>
+     * @param option
+     * @param defaultValue
+     * @return
+     */
+    private static <T> T option(T[] option, T defaultValue) {
+        return option != null && option.length != 0 && option[0] != null ? option[0] : defaultValue;
+    }
+
+    /**
+     * Read file contents actually.
+     * 
+     * @param file
+     * @param charset
+     * @param all
+     * @return
+     */
+    private static List<String> readLines(File file, Charset charset, boolean all) {
+        List<String> lines = new ArrayList();
+        BufferedReader reader = null;
+
+        try {
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+
+            for (int i = 0; reader.ready(); i++) {
+                if (!all && i == 1) {
+                    break;
+                }
+                lines.add(reader.readLine());
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        } finally {
+            FileSystem.close(reader);
+        }
+        return lines;
     }
 
     // ==================================================================== //
     // Informal Methods
     // ==================================================================== //
 
-    /**
-     * <p>
-     * Assert that the specified abstract file is file (not directory), presence and has the given
-     * file name.
-     * </p>
-     * 
-     * @param file A file to test.
-     * @param expectedName File name.
-     */
-    public static void assertFile(File file, String expectedName) {
-        assertFile(file, expectedName, null);
-    }
+    // /**
+    // * <p>
+    // * Assert that the specified abstract file is file (not directory), presence and has the given
+    // * file name.
+    // * </p>
+    // *
+    // * @param file A file to test.
+    // */
+    // public static void assertFile(File file) {
+    // assertFile(file, null);
+    // }
 
     /**
      * <p>
-     * Assert that the specified abstract file is file (not directory), presence and has the given
-     * file name and contents.
+     * Assert that the specified abstract file is file (not directory), present and has the given
+     * file contents.
      * </p>
      * 
      * @param file A file to test.
-     * @param expectedName File name.
-     * @param expectedContent File content, <code>null</code> is acceptable.
+     * @param contents File contents.
      */
-    public static void assertFile(File file, String expectedName, String expectedContent) {
+    public static void assertFile(File file, String... contents) {
         assertNotNull(file);
         assertTrue(file.exists());
         assertTrue(file.isFile());
         assertFalse(file.isDirectory());
-        assertEquals(expectedName, file.getName());
 
-        // assert content
-        if (expectedContent != null) {
-            if (expectedContent.length() == 0) {
-                assertEquals(0, file.length());
-            } else {
-                BufferedReader reader = null;
+        String expected = option(contents, null);
 
-                try {
-                    reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "JISAutoDetect"));
-
-                    assertEquals(expectedContent, reader.readLine());
-                } catch (IOException e) {
-                    fail(e.getMessage());
-                } finally {
-                    FileSystem.close(reader);
-                }
-            }
+        if (expected != null) {
+            assertEquals(expected, readLine(file));
         }
     }
 
@@ -156,6 +253,56 @@ public class Ezunit {
         assertTrue(file.isFile());
         assertTrue(file.exists());
         assertEquals(expectedName, file.getName());
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param children
+     * @param expectedSize
+     * @param expectedNames
+     */
+    public static void assertChildren(String[] children, int expectedSize, String... expectedNames) {
+        assertNotNull(children);
+        assertEquals(expectedSize, children.length);
+
+        // create name list
+        List<String> list = new ArrayList();
+
+        for (String name : expectedNames) {
+            list.add(name);
+        }
+
+        // assert children
+        for (String file : children) {
+            assertTrue(list.remove(file));
+        }
+        assertEquals(0, list.size());
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param children
+     * @param expectedSize
+     * @param expectedNames
+     */
+    public static void assertChildren(File[] children, int expectedSize, String... expectedNames) {
+        assertNotNull(children);
+        assertEquals(expectedSize, children.length);
+
+        // create name list
+        List<String> list = new ArrayList();
+
+        for (String name : expectedNames) {
+            list.add(name);
+        }
+
+        // assert children
+        for (File file : children) {
+            assertTrue(list.remove(file.getName()));
+        }
+        assertEquals(0, list.size());
     }
 
     /**

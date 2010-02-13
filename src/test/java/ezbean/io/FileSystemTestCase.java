@@ -19,8 +19,6 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -39,7 +37,7 @@ public abstract class FileSystemTestCase {
     private static File isolation = new File("target/isolation");
 
     /** The original location of temporary. */
-    private static File original;
+    // private static File original;
 
     /**
      * Delete isolation directory.
@@ -49,10 +47,10 @@ public abstract class FileSystemTestCase {
         isolation.mkdirs();
 
         // store original location
-        original = FileSystem.temporaries;
+        // original = FileSystem.temporaries;
 
         // move a temporary directory to the isolation directory for test
-        FileSystem.temporaries = isolation;
+        // FileSystem.temporaries = isolation;
     }
 
     /**
@@ -74,7 +72,7 @@ public abstract class FileSystemTestCase {
         delete(isolation);
 
         // restore original location
-        FileSystem.temporaries = original;
+        // FileSystem.temporaries = original;
     }
 
     /**
@@ -217,71 +215,5 @@ public abstract class FileSystemTestCase {
 
         // API definition
         return file;
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param children
-     * @param expectedSize
-     * @param expectedNames
-     */
-    protected static void assertChildren(String[] children, int expectedSize, String... expectedNames) {
-        assertNotNull(children);
-        assertEquals(expectedSize, children.length);
-
-        // create name list
-        List<String> list = new ArrayList();
-
-        for (String name : expectedNames) {
-            list.add(name);
-        }
-
-        // assert children
-        for (String file : children) {
-            assertTrue(list.remove(file));
-        }
-        assertEquals(0, list.size());
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param children
-     * @param expectedSize
-     * @param expectedNames
-     */
-    protected static void assertChildren(File[] children, int expectedSize, String... expectedNames) {
-        assertNotNull(children);
-        assertEquals(expectedSize, children.length);
-
-        // create name list
-        List<String> list = new ArrayList();
-
-        for (String name : expectedNames) {
-            list.add(name);
-        }
-
-        // assert children
-        for (File file : children) {
-            assertTrue(list.remove(file.getName()));
-        }
-        assertEquals(0, list.size());
-    }
-
-    /**
-     * Helper method to retrieve named file.
-     * 
-     * @param files
-     * @param name
-     * @return
-     */
-    protected static File getFile(File[] files, String name) {
-        for (File file : files) {
-            if (name.equals(file.getName())) {
-                return file;
-            }
-        }
-        return null;
     }
 }

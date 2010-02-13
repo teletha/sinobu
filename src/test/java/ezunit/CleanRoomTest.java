@@ -32,18 +32,63 @@ public class CleanRoomTest {
 
     @Test
     public void locateFile() {
-        File text = room.locateFile("empty");
+        File file = room.locateFile("empty");
 
-        assertTrue(text.exists());
-        assertTrue(text.isFile());
+        assertTrue(file.exists());
+        assertTrue(file.isFile());
+    }
+
+    @Test
+    public void locateArchive() {
+        File file = room.locateFile("archive.zip");
+
+        assertTrue(file.exists());
+        assertTrue(file.isFile());
+        assertTrue(file.isDirectory());
+    }
+
+    @Test
+    public void locateDirectory() {
+        File file = room.locateDirectory("dir");
+
+        assertTrue(file.exists());
+        assertTrue(file.isDirectory());
+    }
+
+    @Test
+    public void locateAbsentFile() {
+        File file = room.locateAbsent("absent.txt");
+
+        assertFalse(file.exists());
+        assertFalse(file.isFile());
+        assertFalse(file.isDirectory());
+    }
+
+    @Test
+    public void locateAbsentArchive() {
+        File file = room.locateAbsent("absent");
+
+        assertFalse(file.exists());
+        assertFalse(file.isFile());
+        assertFalse(file.isDirectory());
+    }
+
+    @Test
+    public void locateAbsentDirectory() {
+        File file = room.locateAbsent("absent.zip");
+
+        assertFalse(file.exists());
+        assertFalse(file.isFile());
+        assertFalse(file.isDirectory());
     }
 
     @Test
     public void locatedFileCanDelete() {
-        File text = room.locateFile("empty");
+        File file = room.locateFile("empty");
 
-        assertTrue(text.exists());
-        assertTrue(text.delete());
-        assertFalse(text.exists());
+        assertTrue(file.exists());
+        assertTrue(file.delete());
+        assertFalse(file.exists());
     }
+
 }
