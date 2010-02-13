@@ -39,7 +39,7 @@ public class FileSystemTest {
         File file = I.locate("");
         File expected = new File("");
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class FileSystemTest {
         File file = I.locate("foo");
         File expected = new File("foo");
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class FileSystemTest {
         File file = I.locate("foo/bar");
         File expected = new File("foo/bar");
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class FileSystemTest {
         File file = I.locate("foo/bar.txt");
         File expected = new File("foo/bar.txt");
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class FileSystemTest {
         File file = I.locate("foo.zip");
         File expected = new File("foo.zip");
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class FileSystemTest {
         File file = I.locate("foo/bar.zip");
         File expected = new File("foo/bar.zip");
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class FileSystemTest {
         File file = I.locate(absolutePath + "foo/bar.zip");
         File expected = new File(absolutePath + "foo/bar.zip");
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class FileSystemTest {
         File file = I.locate(absolutePath);
         File expected = new File(absolutePath);
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
         assertEquals(expected.toString(), file.toString().replace('/', File.separatorChar));
     }
 
@@ -108,7 +108,7 @@ public class FileSystemTest {
         File file = I.locate("root/../file");
         File expected = new File("root/../file");
 
-        assertFilePathEquals(expected, file);
+        assertFileEquals(expected, file);
     }
 
     /** file protocol. */
@@ -116,14 +116,14 @@ public class FileSystemTest {
 
     @Test
     public void withProtocol1() {
-        File file = I.locate(FILE_PROTOCOL + "parent/1.txt");
+        File file = I.locate(FILE_PROTOCOL + "directory/1");
         assertFile(file);
     }
 
     @Test
     public void withProtocol2() {
-        File file = I.locate(FILE_PROTOCOL + "parent/test");
-        assertDirectory(file, "test");
+        File file = I.locate(FILE_PROTOCOL + "directory/child");
+        assertDirectory(file);
     }
 
     @Test
@@ -135,6 +135,6 @@ public class FileSystemTest {
     @Test
     public void withProtocol4() {
         File file = I.locate(FILE_PROTOCOL + "archive/test.zip/test");
-        assertDirectory(file, "test");
+        assertDirectory(file);
     }
 }
