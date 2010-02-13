@@ -33,94 +33,59 @@ import ezunit.CleanRoom;
  * 
  * @version 2008/08/26 5:25:31
  */
-public class FileSystemUtilityTest extends FileSystemTestCase {
+public class FileSystemUtilityTest {
 
     @Rule
     public static final CleanRoom room = new CleanRoom();
 
     @Test
-    public void copyToPresentFile() throws Exception {
+    public void copyFileToPresentFile() throws Exception {
         File input = room.locateFile("file");
-        File output = room.locateAbsent("output");
+        File output = room.locateAbsent("out");
         output.createNewFile();
 
-        // empty file
-        assertFile(input, "some contents");
+        // assert contents
         assertFile(output, "");
 
         // copy
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(input, "some contents");
-        assertFile(output, "some contents");
+        assertFile(output, read(input));
     }
 
     @Test
-    public void copyToAbsentFile() throws Exception {
+    public void copyToAbsentFileInPresentDirectory() throws Exception {
         File input = room.locateFile("file");
-        File output = room.locateAbsent("output");
+        File output = room.locateAbsent("directory/out");
 
         // copy
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(input, "some contents");
-        assertFile(output, "some contents");
+        assertFile(output, read(input));
     }
 
-    /**
-     * File copy to present directory which has same name file.
-     */
     @Test
-    public void testCopy03() throws Exception {
-        File input = createResourceFile("file");
-        createPresentTestDirectory("test");
-        File output = createPresentTestFile("test/file");
+    public void copyFileToAbsentFileInAbsentDirectory() throws Exception {
+        File input = room.locateFile("file");
+        File output = room.locateAbsent("absent/out");
 
+        // copy
         FileSystem.copy(input, output);
 
         // assert contents
-        assertFile(output, "some contents");
-    }
-
-    /**
-     * File copy to present directory which is empty.
-     */
-    @Test
-    public void testCopy04() throws Exception {
-        File input = createResourceFile("file");
-        createPresentTestDirectory("test");
-        File output = createAbsentTestFile("test/file");
-
-        FileSystem.copy(input, output);
-
-        // assert contents
-        assertFile(output, "some contents");
-    }
-
-    /**
-     * File copy to non-present directory.
-     */
-    @Test
-    public void testCopy05() throws Exception {
-        File input = createResourceFile("file");
-        createAbsentTestDirectory("test");
-        File output = createAbsentTestFile("test/file");
-
-        FileSystem.copy(input, output);
-
-        // assert contents
-        assertFile(output, "some contents");
+        assertFile(output, read(input));
     }
 
     /**
      * Directory copy to present directory which is empty.
      */
     @Test
-    public void testCopy06() throws Exception {
-        File input = createResourceDirectory("directory");
-        File output = createPresentTestDirectory("test");
+    public void copyDirectoryToPresentDirectory() throws Exception {
+        File input = room.locateDirectory("directory");
+        File output = room.locateAbsent("out");
+        output.mkdirs();
 
         FileSystem.copy(input, output);
 
@@ -134,9 +99,10 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
      * Directory copy to present directory with filter.
      */
     @Test
-    public void testCopy07() throws Exception {
-        File input = createResourceDirectory("directory");
-        File output = createPresentTestDirectory("test");
+    public void copyDirectoryToPresentDirectoryWithFilter() throws Exception {
+        File input = room.locateDirectory("directory");
+        File output = room.locateAbsent("out");
+        output.mkdirs();
 
         FileSystem.copy(input, output, new FileFilter() {
 
@@ -157,9 +123,9 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
      * Directory copy to not-present directory.
      */
     @Test
-    public void testCopy08() throws Exception {
-        File input = createResourceDirectory("directory");
-        File output = createAbsentTestDirectory("test");
+    public void copyDirectoryToAbsentFile() throws Exception {
+        File input = room.locateDirectory("directory");
+        File output = room.locateAbsent("out");
 
         FileSystem.copy(input, output);
 
@@ -173,9 +139,9 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
      * Directory copy to file.
      */
     @Test(expected = FileNotFoundException.class)
-    public void testCopy09() throws Exception {
-        File input = createResourceDirectory("directory");
-        File output = createPresentTestFile("test");
+    public void copyDirectoryToPresentFile() throws Exception {
+        File input = room.locateDirectory("directory");
+        File output = room.locateFile("file");
 
         FileSystem.copy(input, output);
     }
@@ -184,239 +150,149 @@ public class FileSystemUtilityTest extends FileSystemTestCase {
      * Input source is <code>null</code>.
      */
     @Test(expected = NullPointerException.class)
-    public void testCopyNullInput() throws Exception {
-        FileSystem.copy(null, createAbsentTestFile("none"));
+    public void copyNullInput() throws Exception {
+        FileSystem.copy(null, room.locateAbsent("null"));
     }
 
     /**
      * Input source is <code>null</code>.
      */
     @Test(expected = NullPointerException.class)
-    public void testCopyNullOutput() throws Exception {
-        FileSystem.copy(createResourceFile("file"), null);
+    public void copyNullOutput() throws Exception {
+        FileSystem.copy(room.locateAbsent("null"), null);
     }
 
     /**
      * Input source is not found.
      */
     @Test(expected = FileNotFoundException.class)
-    public void testCopyNotPresentInput() throws Exception {
-        FileSystem.copy(createResourceFileWithNoAssert("not-found"), createPresentTestFile("found"));
+    public void copyAbsentInput() throws Exception {
+        FileSystem.copy(room.locateAbsent("absent"), room.locateFile("file"));
     }
 
-    /**
-     * Test method for {@link ezbean.io.FileSystem#copy(java.io.InputStream, java.io.OutputStream)}.
-     */
     @Test
-    public void testCopyInputStreamOutputStream() {
-
-    }
-
-    /**
-     * Clear file.
-     */
-    @Test
-    public void testClear01() throws Exception {
-        File input = createResourceFile("file");
-        File output = createPresentTestFile("file");
-
-        // copy
-        FileSystem.copy(input, output);
+    public void clearFile() throws Exception {
+        File file = room.locateFile("file");
 
         // assert contents
-        assertFile(output, "some contents");
+        assertFile(file, "some contents");
 
         // clear
-        FileSystem.clear(output);
+        FileSystem.clear(file);
 
         // assert contents
-        assertFile(output);
+        assertFile(file, "");
     }
 
     /**
      * Clear directory.
      */
     @Test
-    public void testClear02() throws Exception {
-        File input = createResourceDirectory("directory");
-        File output = createPresentTestDirectory("test");
-
-        // copy
-        FileSystem.copy(input, output);
+    public void clearDirectory() throws Exception {
+        File file = room.locateDirectory("directory");
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "some contents");
-        assertDirectory(new File(output, "directory/child"), "child");
-        assertFile(new File(output, "directory/child/file"), "some contents");
+        assertFile(new File(file, "file"), "some contents");
+        assertDirectory(new File(file, "child"), "child");
+        assertFile(new File(file, "child/file"), "some contents");
 
         // clear
-        FileSystem.clear(output);
+        FileSystem.clear(file);
 
         // assert contents
-        assertTrue(output.exists());
-        assertFalse(new File(output, "directory").exists());
-        assertFalse(new File(output, "directory/file").exists());
-        assertFalse(new File(output, "directory/child").exists());
-        assertFalse(new File(output, "directory/child/file").exists());
+        assertTrue(file.exists());
+        assertFalse(new File(file, "file").exists());
+        assertFalse(new File(file, "child").exists());
+        assertFalse(new File(file, "child/file").exists());
     }
 
-    /**
-     * Clear with <code>null</code> input.
-     */
     @Test
-    public void testClearNull() {
+    public void clearAbsent() throws Exception {
+        File file = room.locateAbsent("absent");
+
+        assertFalse(file.exists());
+
+        // clear
+        FileSystem.clear(file);
+
+        assertFalse(file.exists());
+    }
+
+    @Test
+    public void clearNull() {
         FileSystem.clear(null); // no error
     }
 
-    /**
-     * Delete file.
-     */
     @Test
-    public void testDeleteFile() throws Exception {
-        File input = createResourceFile("file");
-        File output = createPresentTestFile("file");
-
-        // copy
-        FileSystem.copy(input, output);
+    public void deleteFile() throws Exception {
+        File file = room.locateFile("file");
 
         // assert contents
-        assertFile(output, "some contents");
+        assertFile(file, "some contents");
 
         // delete
-        FileSystem.delete(output);
+        FileSystem.delete(file);
 
         // assert contents
-        assertFalse(output.exists());
+        assertFalse(file.exists());
     }
 
-    /**
-     * Delete directory.
-     */
     @Test
-    public void testDeleteDirectory() throws Exception {
-        File input = createResourceDirectory("directory");
-        File output = createPresentTestDirectory("test");
-
-        // copy
-        FileSystem.copy(input, output);
+    public void deleteDirectory() throws Exception {
+        File file = room.locateDirectory("directory");
 
         // assert contents
-        assertFile(new File(output, "directory/file"), "some contents");
-        assertDirectory(new File(output, "directory/child"), "child");
-        assertFile(new File(output, "directory/child/file"), "some contents");
+        assertFile(new File(file, "file"), "some contents");
+        assertDirectory(new File(file, "child"), "child");
+        assertFile(new File(file, "child/file"), "some contents");
 
         // delete
-        FileSystem.delete(output);
+        FileSystem.delete(file);
 
         // assert contents
-        assertFalse(output.exists());
-        assertFalse(new File(output, "directory").exists());
-        assertFalse(new File(output, "directory/file").exists());
-        assertFalse(new File(output, "directory/child").exists());
-        assertFalse(new File(output, "directory/child/file").exists());
+        assertFalse(file.exists());
+        assertFalse(new File(file, "file").exists());
+        assertFalse(new File(file, "child").exists());
+        assertFalse(new File(file, "child/file").exists());
     }
 
-    /**
-     * Delete archive.
-     */
     @Test
-    public void testDeleteArchive() throws Exception {
-        File input = createResourceFile("archive.zip");
-        File output = createPresentTestFile("archive.zip");
+    public void deleteArchive() throws Exception {
+        File file = room.locateFile("archive.zip");
 
-        // copy
-        FileSystem.copy(input, output);
+        assertTrue(file instanceof ezbean.io.File);
+        ezbean.io.File archive = (ezbean.io.File) file;
+        File junction = archive.getJunction();
+
+        // unpack
+        archive.list();
+        assertTrue(junction.exists());
 
         // delete
-        FileSystem.delete(output);
+        FileSystem.delete(file);
 
-        // assert contents
-        assertFalse(output.exists());
+        assertFalse(file.exists());
+        assertFalse(junction.exists());
     }
 
-    /**
-     * Delete with <code>null</code> input.
-     */
     @Test
-    public void testDeleteNull() {
+    public void deleteAbsent() throws Exception {
+        File file = room.locateAbsent("absent");
+
+        // delete
+        FileSystem.delete(file);
+
+        // assert contents
+        assertFalse(file.exists());
+    }
+
+    @Test
+    public void deleteNull() {
         assertFalse(FileSystem.delete(null)); // no error
     }
 
-    // /**
-    // * Test null and null.
-    // */
-    // @Test
-    // public void testEquals1() throws Exception {
-    // File one = null;
-    // File other = null;
-    //
-    // assertTrue(FileSystem.equals(one, other));
-    // }
-    //
-    // /**
-    // * Test null and A.
-    // */
-    // @Test
-    // public void testEquals2() throws Exception {
-    // File one = null;
-    // File other = new File("");
-    //
-    // assertFalse(FileSystem.equals(one, other));
-    // assertFalse(FileSystem.equals(other, one));
-    // }
-    //
-    // /**
-    // * Test A and A.
-    // */
-    // @Test
-    // public void testEquals4() throws Exception {
-    // File one = new File("");
-    // File other = new File("");
-    //
-    // assertTrue(FileSystem.equals(one, other));
-    // }
-    //
-    // /**
-    // * Test A and B.
-    // */
-    // @Test
-    // public void testEquals5() throws Exception {
-    // File one = new File("a");
-    // File other = new File("b");
-    //
-    // assertFalse(FileSystem.equals(one, other));
-    // assertFalse(FileSystem.equals(other, one));
-    // }
-    //
-    // /**
-    // * Test A and A.
-    // */
-    // @Test
-    // public void testEquals6() throws Exception {
-    // File one = new File("a");
-    // File other = new File("a").getAbsoluteFile();
-    //
-    // assertTrue(FileSystem.equals(one, other));
-    // assertTrue(FileSystem.equals(other, one));
-    // }
-    //
-    // /**
-    // * Test A and A.
-    // */
-    // @Test
-    // public void testEquals7() throws Exception {
-    // File one = new File("a");
-    // File other = new File("a/../a");
-    //
-    // assertTrue(FileSystem.equals(one, other));
-    // assertTrue(FileSystem.equals(other, one));
-    // }
-
-    /**
-     * Test A and A.
-     */
     @Test
-    public void testEquals8() throws Exception {
+    public void fileEquality() throws Exception {
         File one = new File("a");
         File other = new File("a/../a");
 
