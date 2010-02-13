@@ -250,9 +250,6 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         File dirctory = new File(output, input.getName());
         dirctory.mkdir();
 
-        // copy last modified date
-        dirctory.setLastModified(input.lastModified());
-
         for (File child : input.listFiles(filter)) {
             if (child.isDirectory()) {
                 copyD2D(child, dirctory, filter);
@@ -260,6 +257,9 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
                 copyF2F(child, new File(dirctory, child.getName()));
             }
         }
+
+        // We must copy last modified date at the end.
+        dirctory.setLastModified(input.lastModified());
     }
 
     /**
@@ -287,14 +287,15 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
             // copy data actually
             in.transferTo(0, in.size(), out);
 
-            // copy last modified date if success
-            output.setLastModified(input.lastModified());
         } catch (IOException e) {
             throw I.quiet(e);
         } finally {
             close(in);
             close(out);
         }
+
+        // We must copy last modified date at the end.
+        output.setLastModified(input.lastModified());
     }
 
     /**
