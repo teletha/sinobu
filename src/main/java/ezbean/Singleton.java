@@ -20,7 +20,7 @@ package ezbean;
  * 
  * @see Prototype
  * @see ThreadSpecific
- * @version 2007/06/13 14:20:36
+ * @version 2010/02/15 16:34:22
  */
 public class Singleton<M> extends Prototype<M> {
 
@@ -40,7 +40,7 @@ public class Singleton<M> extends Prototype<M> {
      * @see ezbean.Lifestyle#resolve()
      */
     @Override
-    public M resolve() {
+    public synchronized M resolve() {
         if (instance == null) {
             instance = super.resolve();
         }
