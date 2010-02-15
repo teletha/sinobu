@@ -18,6 +18,7 @@ package ezbean.model;
 import static java.lang.reflect.Modifier.*;
 
 import java.beans.Introspector;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -465,7 +466,12 @@ public class Model<M> {
             }
         }
 
-        // error
-        throw new IllegalArgumentException("Ezbean can't resolve the given model type. " + type);
+        // generic array type
+        if (type instanceof GenericArrayType) {
+            return load(((GenericArrayType) type).getGenericComponentType(), base);
+        }
+
+        // If this error will be thrown, it is bug of this program. Please send a bug report to us.
+        throw new Error();
     }
 }
