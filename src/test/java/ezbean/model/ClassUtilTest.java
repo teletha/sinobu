@@ -236,6 +236,20 @@ public class ClassUtilTest {
     }
 
     @Test
+    public void parameterIsArrayFromInterface() {
+        Type[] types = ClassUtil.getParameter(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
+        assertEquals(1, types.length);
+        assertEquals(String.class, types[0]);
+    }
+
+    @Test
+    public void parameterIsArrayFromClass() {
+        Type[] types = ClassUtil.getParameter(ParameterizedStringArrayByClass.class, ParameterClass.class);
+        assertEquals(1, types.length);
+        assertEquals(String.class, types[0]);
+    }
+
+    @Test
     public void methodGetPrameterAcceptsNullType() {
         Type[] types = ClassUtil.getParameter(null, ParameterClass.class);
         assertEquals(0, types.length);
@@ -268,6 +282,14 @@ public class ClassUtilTest {
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
         assertEquals(1, types.length);
         assertEquals(Integer.class, types[0]);
+    }
+
+    @Test
+    public void constructorHasArrayParameter() {
+        Constructor constructor = ClassUtil.getMiniConstructor(ArrayParameterConstructor.class);
+        Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        assertEquals(1, types.length);
+        assertEquals(String.class, types[0]);
     }
 
     @Test
@@ -373,6 +395,12 @@ public class ClassUtilTest {
     }
 
     /**
+     * @version 2010/02/15 15:34:39
+     */
+    private static class ParameterizedStringArrayByInterface implements ParameterInterface<String[]> {
+    }
+
+    /**
      * DOCUMENT.
      * 
      * @version 2008/06/20 12:57:04
@@ -402,6 +430,12 @@ public class ClassUtilTest {
      * @version 2008/06/20 12:57:04
      */
     private static class ParameterizedStringByClass extends ParameterClass<String> {
+    }
+
+    /**
+     * @version 2010/02/15 15:34:39
+     */
+    private static class ParameterizedStringArrayByClass extends ParameterClass<String[]> {
     }
 
     /**
@@ -518,6 +552,15 @@ public class ClassUtilTest {
     private static class ExtensibleByClassConstructor {
 
         private ExtensibleByClassConstructor(ExtensibleByClass<Integer> param) {
+        }
+    }
+
+    /**
+     * @version 2010/02/15 12:55:43
+     */
+    private static class ArrayParameterConstructor {
+
+        private ArrayParameterConstructor(ParameterClass<String[]> param) {
         }
     }
 
