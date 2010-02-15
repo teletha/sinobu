@@ -105,7 +105,11 @@ public class Prototype<M> implements Lifestyle<M> {
                 params = new Object[this.params.length];
 
                 for (int i = 0; i < params.length; i++) {
-                    params[i] = I.make(this.params[i]);
+                    if (this.params[i] == Lifestyle.class) {
+
+                    } else {
+                        params[i] = I.make(this.params[i]);
+                    }
                 }
             }
 

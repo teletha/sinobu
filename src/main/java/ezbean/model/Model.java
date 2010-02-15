@@ -407,7 +407,7 @@ public class Model<M> {
      * @return A cached model information.
      * @throws IllegalArgumentException If the given model type is null.
      */
-    static Model load(Type type, Class base) {
+    static Model load(Type type, Type base) {
         // class
         if (type instanceof Class) {
             return load((Class) type);

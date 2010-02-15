@@ -33,7 +33,7 @@ class ListModel extends Model<List> {
      * @param parameterizedType
      * @throws IllegalArgumentException If the list model has no parameter or invalid parameter.
      */
-    ListModel(ParameterizedType parameterizedType, Class base) {
+    ListModel(ParameterizedType parameterizedType, Type base) {
         super(List.class);
 
         // verify model

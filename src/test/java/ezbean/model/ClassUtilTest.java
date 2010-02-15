@@ -30,9 +30,7 @@ import javax.swing.JPanel;
 import org.junit.Test;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/20 12:55:31
+ * @version 2010/02/15 15:09:38
  */
 public class ClassUtilTest {
 
@@ -237,80 +235,48 @@ public class ClassUtilTest {
         assertEquals(Long.class, types[1]);
     }
 
-    /**
-     * Test null input.
-     */
     @Test
-    public void testGetParameterizedTypes13() {
-        Type[] types = ClassUtil.getParameter(null, null);
+    public void methodGetPrameterAcceptsNullType() {
+        Type[] types = ClassUtil.getParameter(null, ParameterClass.class);
         assertEquals(0, types.length);
     }
 
     @Test
-    public void subclassHasAnothorParameter() {
+    public void methodGetPrameterAcceptsNullTarget() {
+        Type[] types = ClassUtil.getParameter(ParameterizedStringByClass.class, null);
+        assertEquals(0, types.length);
+    }
+
+    @Test
+    public void subclassHasAnotherParameter() {
         Type[] types = ClassUtil.getParameter(TypedSubClass.class, ParameterClass.class);
         assertEquals(1, types.length);
         assertEquals(String.class, types[0]);
     }
 
     @Test
-    public void test() {
-        Type[] types = ClassUtil.getParameter(ConsolesUI.class, StackContainer.class);
-        assertEquals(2, types.length);
-        assertEquals(Shell.class, types[0]);
-        assertEquals(Console.class, types[1]);
-
+    public void constructorHasParameterClass() {
+        Constructor constructor = ClassUtil.getMiniConstructor(ParameterClassConstructor.class);
+        Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        assertEquals(1, types.length);
+        assertEquals(String.class, types[0]);
     }
 
     @Test
-    public void test2() {
-        Type[] types = ClassUtil.getParameter(ConsolesUI.class, SelectableUI.class);
-        assertEquals(3, types.length);
-        assertEquals(JPanel.class, types[0]);
-        assertEquals(Shell.class, types[1]);
-        assertEquals(Console.class, types[2]);
+    public void constructorHasExtendableByClass() {
+        Constructor constructor = ClassUtil.getMiniConstructor(ExtensibleByClassConstructor.class);
+        Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
+        assertEquals(1, types.length);
+        assertEquals(Integer.class, types[0]);
     }
 
     @Test
-    public void test3() {
-        Type[] types = ClassUtil.getParameter(ConsolesUI.class, UI.class);
+    public void constructorHasMultipleParameter() {
+        Constructor constructor = ClassUtil.getMiniConstructor(MultipleParameterConstructor.class);
+        Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
         assertEquals(2, types.length);
-        assertEquals(JPanel.class, types[0]);
-        assertEquals(Shell.class, types[1]);
-    }
-
-    private static interface Model {
-
-    }
-
-    private static class SingleSelectableMode<M extends Model> implements Model {
-
-    }
-
-    private static class Console implements Model {
-
-    }
-
-    private static class Shell extends SingleSelectableMode<Console> {
-
-    }
-
-    private static class UI<W extends JComponent, M extends Model> {
-
-    }
-
-    private static class SelectableUI<W extends JComponent, M extends SingleSelectableMode<R>, R extends Model>
-            extends UI<W, M> {
-
-    }
-
-    private static class StackContainer<M extends SingleSelectableMode<R>, R extends Model>
-            extends SelectableUI<JPanel, M, R> {
-
-    }
-
-    private static class ConsolesUI extends StackContainer<Shell, Console> {
-
+        assertEquals(Readable.class, types[0]);
+        assertEquals(Appendable.class, types[1]);
     }
 
     /**
@@ -479,11 +445,9 @@ public class ClassUtilTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 14:43:19
+     * @version 2010/02/15 15:04:45
      */
-    private static class ExtendableByInterface<T> implements ParameterInterface<T> {
+    private static class ExtensibleByInterface<T> implements ParameterInterface<T> {
     }
 
     /**
@@ -491,15 +455,13 @@ public class ClassUtilTest {
      * 
      * @version 2008/06/20 14:44:09
      */
-    private static class TypedExtendedFromInterface extends ExtendableByInterface<String> {
+    private static class TypedExtendedFromInterface extends ExtensibleByInterface<String> {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 14:43:19
+     * @version 2010/02/15 15:04:51
      */
-    private static class ExtendableByClass<T> extends ParameterClass<T> {
+    private static class ExtensibleByClass<T> extends ParameterClass<T> {
     }
 
     /**
@@ -507,7 +469,7 @@ public class ClassUtilTest {
      * 
      * @version 2008/06/20 14:44:09
      */
-    private static class TypedExtendedFromClass extends ExtendableByClass<String> {
+    private static class TypedExtendedFromClass extends ExtensibleByClass<String> {
     }
 
     /**
@@ -541,4 +503,106 @@ public class ClassUtilTest {
     private static class TypedSubClass<Boolean> extends ParameterClass<String> {
     }
 
+    /**
+     * @version 2010/02/15 12:55:43
+     */
+    private static class ParameterClassConstructor {
+
+        private ParameterClassConstructor(ParameterClass<String> param) {
+        }
+    }
+
+    /**
+     * @version 2010/02/15 12:55:43
+     */
+    private static class ExtensibleByClassConstructor {
+
+        private ExtensibleByClassConstructor(ExtensibleByClass<Integer> param) {
+        }
+    }
+
+    /**
+     * @version 2010/02/15 15:06:14
+     */
+    private static class MultipleParameterConstructor {
+
+        private MultipleParameterConstructor(MultipleParameter<Readable, Appendable> param) {
+        }
+    }
+
+    @Test
+    public void complexTypeHierarchy1() {
+        Type[] types = ClassUtil.getParameter(ConsolesUI.class, StackContainer.class);
+        assertEquals(2, types.length);
+        assertEquals(Shell.class, types[0]);
+        assertEquals(Console.class, types[1]);
+
+    }
+
+    @Test
+    public void complexTypeHierarchy2() {
+        Type[] types = ClassUtil.getParameter(ConsolesUI.class, SelectableUI.class);
+        assertEquals(3, types.length);
+        assertEquals(JPanel.class, types[0]);
+        assertEquals(Shell.class, types[1]);
+        assertEquals(Console.class, types[2]);
+    }
+
+    @Test
+    public void complexTypeHierarchy3() {
+        Type[] types = ClassUtil.getParameter(ConsolesUI.class, UI.class);
+        assertEquals(2, types.length);
+        assertEquals(JPanel.class, types[0]);
+        assertEquals(Shell.class, types[1]);
+    }
+
+    /**
+     * @version 2010/02/15 15:11:48
+     */
+    private static interface Model {
+    }
+
+    /**
+     * @version 2010/02/15 15:11:46
+     */
+    private static class SingleSelectableMode<M extends Model> implements Model {
+    }
+
+    /**
+     * @version 2010/02/15 15:11:44
+     */
+    private static class Console implements Model {
+    }
+
+    /**
+     * @version 2010/02/15 15:11:42
+     */
+    private static class Shell extends SingleSelectableMode<Console> {
+    }
+
+    /**
+     * @version 2010/02/15 15:11:40
+     */
+    private static class UI<W extends JComponent, M extends Model> {
+    }
+
+    /**
+     * @version 2010/02/15 15:11:38
+     */
+    private static class SelectableUI<W extends JComponent, M extends SingleSelectableMode<R>, R extends Model>
+            extends UI<W, M> {
+    }
+
+    /**
+     * @version 2010/02/15 15:11:36
+     */
+    private static class StackContainer<M extends SingleSelectableMode<R>, R extends Model>
+            extends SelectableUI<JPanel, M, R> {
+    }
+
+    /**
+     * @version 2010/02/15 15:11:33
+     */
+    private static class ConsolesUI extends StackContainer<Shell, Console> {
+    }
 }
