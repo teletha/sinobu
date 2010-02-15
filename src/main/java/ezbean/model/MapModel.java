@@ -40,7 +40,7 @@ class MapModel extends Model<Map> {
      * @param type
      * @throws IllegalArgumentException If the map model has no parameter or invalid parameter.
      */
-    MapModel(ParameterizedType parameterizedType, Class base) {
+    MapModel(ParameterizedType parameterizedType, Type base) {
         super(Map.class);
 
         // verify model

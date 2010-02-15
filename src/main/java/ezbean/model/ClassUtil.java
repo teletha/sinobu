@@ -129,38 +129,48 @@ public final class ClassUtil {
      * List up all target types which are implemented or extended by the specified class.
      * </p>
      * 
-     * @param clazz A class which implements(extends) the specified target interface(class).
+     * @param type A class type which implements(extends) the specified target interface(class).
      *            <code>null</code> will be return the zero-length array.
-     * @param target A target type to list up types.
+     * @param target A target type to list up types. <code>null</code> will be return the
+     *            zero-length array.
      * @return A list of actual types.
-     * @throws NullPointerException If the speficied target class is <code>null</code>.
      */
-    public static Class[] getParameter(Class clazz, Class target) {
-        return getParameter(clazz, target, clazz);
+    public static Class[] getParameter(Type type, Class target) {
+        return getParameter(type, target, type);
     }
 
     /**
      * <p>
-     * Helper method to collect information for parameter types.
+     * List up all target types which are implemented or extended by the specified class.
      * </p>
      * 
-     * @param clazz
-     * @param target
-     * @param base
-     * @return
+     * @param clazz A class type which implements(extends) the specified target interface(class).
+     *            <code>null</code> will be return the zero-length array.
+     * @param target A target type to list up types. <code>null</code> will be return the
+     *            zero-length array.
+     * @param base A base class type.
+     * @return A list of actual types.
      */
-    private static Class[] getParameter(Class clazz, Class target, Class base) {
+    private static Class[] getParameter(Type clazz, Class target, Type base) {
         // check null
         if (clazz == null) {
             return new Class[0];
         }
 
+        // compute actual class
+        Class raw = Model.load(clazz, base).type;
+
         // collect all types
         Set<Type> types = new HashSet();
-        types.add(clazz.getGenericSuperclass());
 
-        for (Type type : clazz.getGenericInterfaces()) {
-            types.add(type);
+        if (raw == clazz) {
+            types.add(raw.getGenericSuperclass());
+
+            for (Type type : raw.getGenericInterfaces()) {
+                types.add(type);
+            }
+        } else {
+            types.add(clazz);
         }
 
         // check them all
@@ -184,7 +194,7 @@ public final class ClassUtil {
         }
 
         // search from superclass
-        return getParameter(clazz.getSuperclass(), target, base);
+        return getParameter(raw.getSuperclass(), target, base);
     }
 
     /**
