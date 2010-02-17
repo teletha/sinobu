@@ -20,10 +20,9 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ezbean.I;
+import ezbean.Lifestyle;
 import ezbean.Manageable;
 import ezbean.Singleton;
-import ezbean.sample.dependency.CircularA;
-import ezbean.sample.dependency.CircularB;
 
 /**
  * @version 2010/02/09 20:39:23
@@ -44,7 +43,7 @@ public class ConstructorInjectionTest {
      * Test singleton injection.
      */
     @Test
-    public void singletonInjetion() {
+    public void singletonInjection() {
         ConstructorSingletonInjection test1 = I.make(ConstructorSingletonInjection.class);
         assertNotNull(test1);
         assertNotNull(test1.injected);
@@ -70,7 +69,7 @@ public class ConstructorInjectionTest {
     /**
      * @version 2010/02/09 20:38:46
      */
-    public static class ConstructorInjection {
+    private static class ConstructorInjection {
 
         /** The dependency, */
         private Injected injected;
@@ -80,7 +79,7 @@ public class ConstructorInjectionTest {
          * 
          * @param injected
          */
-        public ConstructorInjection(Injected injected) {
+        private ConstructorInjection(Injected injected) {
             this.injected = injected;
         }
     }
@@ -88,7 +87,7 @@ public class ConstructorInjectionTest {
     /**
      * @version 2010/02/09 20:38:50
      */
-    public static class ConstructorSingletonInjection {
+    private static class ConstructorSingletonInjection {
 
         /** The dependency, */
         private SingletonInjected injected;
@@ -98,7 +97,7 @@ public class ConstructorInjectionTest {
          * 
          * @param injected
          */
-        public ConstructorSingletonInjection(SingletonInjected injected) {
+        private ConstructorSingletonInjection(SingletonInjected injected) {
             this.injected = injected;
         }
     }
@@ -106,7 +105,7 @@ public class ConstructorInjectionTest {
     /**
      * @version 2010/02/09 20:38:53
      */
-    public static class TooManyConstructors {
+    private static class TooManyConstructors {
 
         /** The dependency, */
         private Injected injected;
@@ -116,7 +115,7 @@ public class ConstructorInjectionTest {
          * 
          * @param invalid
          */
-        public TooManyConstructors() {
+        private TooManyConstructors() {
         }
 
         /**
@@ -124,7 +123,7 @@ public class ConstructorInjectionTest {
          * 
          * @param injected
          */
-        public TooManyConstructors(Injected injected) {
+        private TooManyConstructors(Injected injected) {
             this.injected = injected;
         }
     }
@@ -132,21 +131,21 @@ public class ConstructorInjectionTest {
     /**
      * @version 2010/02/09 20:38:57
      */
-    public static class Injected {
+    private static class Injected {
     }
 
     /**
      * @version 2010/02/09 20:39:04
      */
     @Manageable(lifestyle = Singleton.class)
-    public static class SingletonInjected {
+    private static class SingletonInjected {
     }
 
     /**
      * Circular dependency.
      */
     @Test(expected = ClassCircularityError.class)
-    public void circularDependency01() {
+    public void circularReferenceFromA() {
         I.make(CircularA.class);
     }
 
@@ -154,7 +153,97 @@ public class ConstructorInjectionTest {
      * Circular dependency.
      */
     @Test(expected = ClassCircularityError.class)
-    public void circularDependency02() {
+    public void circularReferenceFromB() {
         I.make(CircularB.class);
+    }
+
+    /**
+     * Circular dependency.
+     */
+    @Test
+    public void circularReferenceWithProvider() {
+        CircularLifestyleA circularA = I.make(CircularLifestyleA.class);
+        assertNotNull(circularA.other);
+
+        CircularLifestyleB circularB = I.make(CircularLifestyleB.class);
+        assertNotNull(circularB.other);
+    }
+
+    /**
+     * Circular dependency.
+     */
+    @Test
+    public void circularReferenceWithProviderMix() {
+        CircularMixA circularA = I.make(CircularMixA.class);
+        assertNotNull(circularA.other);
+
+        CircularMixB circularB = I.make(CircularMixB.class);
+        assertNotNull(circularB.other);
+    }
+
+    /**
+     * @version 2010/02/17 15:55:29
+     */
+    private static class CircularA {
+
+        private CircularA(CircularB circularB) {
+        }
+    }
+
+    /**
+     * @version 2010/02/17 15:55:17
+     */
+    private static class CircularB {
+
+        private CircularB(CircularA circularA) {
+        }
+    }
+
+    /**
+     * @version 2010/02/17 13:53:13
+     */
+    private static class CircularLifestyleA {
+
+        private Lifestyle<CircularLifestyleB> other;
+
+        private CircularLifestyleA(Lifestyle<CircularLifestyleB> other) {
+            this.other = other;
+        }
+    }
+
+    /**
+     * @version 2010/02/17 13:53:26
+     */
+    private static class CircularLifestyleB {
+
+        private Lifestyle<CircularLifestyleA> other;
+
+        private CircularLifestyleB(Lifestyle<CircularLifestyleA> other) {
+            this.other = other;
+        }
+    }
+
+    /**
+     * @version 2010/02/17 14:05:28
+     */
+    private static class CircularMixA {
+
+        private CircularMixB other;
+
+        private CircularMixA(CircularMixB other) {
+            this.other = other;
+        }
+    }
+
+    /**
+     * @version 2010/02/17 14:05:39
+     */
+    private static class CircularMixB {
+
+        private Lifestyle<CircularMixA> other;
+
+        private CircularMixB(Lifestyle<CircularMixA> other) {
+            this.other = other;
+        }
     }
 }
