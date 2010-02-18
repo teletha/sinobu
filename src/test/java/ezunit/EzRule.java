@@ -24,6 +24,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
 import ezbean.I;
+import ezbean.scratchpad.Solution;
 
 /**
  * @version 2010/01/08 2:19:31
@@ -41,6 +42,9 @@ public abstract class EzRule implements MethodRule {
 
     /** The initialization error holder. */
     private Throwable initializationError;
+
+    /** The execution error holder. */
+    private Throwable executionError;
 
     /** The shutdown hook to invoke afterClass method when only selected test method is executed. */
     private final AfterClassInvoker invoker = new AfterClassInvoker();
@@ -93,11 +97,13 @@ public abstract class EzRule implements MethodRule {
                         // invoke test method
                         base.evaluate();
                     } catch (Exception e) {
-                        throw I.quiet(e);
+                        throw Solution.quiet(executionError = e);
                     } finally {
                         // invoke after
                         after(method.getMethod());
                     }
+                } catch (Exception e) {
+                    throw Solution.quiet(e);
                 } finally {
                     // call before class
                     if (executed == tests) {
@@ -195,4 +201,5 @@ public abstract class EzRule implements MethodRule {
             afterClass();
         }
     }
+
 }
