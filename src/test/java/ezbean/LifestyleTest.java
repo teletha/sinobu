@@ -80,6 +80,7 @@ public class LifestyleTest {
     @Test
     public void extendPrototypeWithClassParameter() {
         Student person = I.make(Student.class);
+        assertTrue(person instanceof Student);
         assertEquals("default", person.getFirstName());
     }
 
@@ -195,7 +196,8 @@ public class LifestyleTest {
 
         public StudentLifestyle(Class modelClass) {
             super(modelClass);
-            assertEquals(Student.class, modelClass);
+            assertNotSame(Student.class, modelClass);
+            assertTrue(Student.class.isAssignableFrom(modelClass));
         }
 
         /**

@@ -25,7 +25,7 @@ import ezbean.Manageable;
 import ezbean.Singleton;
 
 /**
- * @version 2010/02/09 20:39:23
+ * @version 2010/02/18 9:35:35
  */
 public class ConstructorInjectionTest {
 
@@ -145,7 +145,7 @@ public class ConstructorInjectionTest {
      * Circular dependency.
      */
     @Test(expected = ClassCircularityError.class)
-    public void circularReferenceFromA() {
+    public void circularDependenciesFromA() {
         I.make(CircularA.class);
     }
 
@@ -153,7 +153,7 @@ public class ConstructorInjectionTest {
      * Circular dependency.
      */
     @Test(expected = ClassCircularityError.class)
-    public void circularReferenceFromB() {
+    public void circularDependenciesFromB() {
         I.make(CircularB.class);
     }
 
@@ -161,7 +161,7 @@ public class ConstructorInjectionTest {
      * Circular dependency.
      */
     @Test
-    public void circularReferenceWithProvider() {
+    public void circularDependenciesWithProvider() {
         CircularLifestyleA circularA = I.make(CircularLifestyleA.class);
         assertNotNull(circularA.other);
 
@@ -173,7 +173,7 @@ public class ConstructorInjectionTest {
      * Circular dependency.
      */
     @Test
-    public void circularReferenceWithProviderMix() {
+    public void circularDependenciesWithProviderMix() {
         CircularMixA circularA = I.make(CircularMixA.class);
         assertNotNull(circularA.other);
 
