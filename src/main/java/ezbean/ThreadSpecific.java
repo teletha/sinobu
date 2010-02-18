@@ -46,7 +46,7 @@ package ezbean;
 public class ThreadSpecific<M> extends Prototype<M> {
 
     /** The actual storage. */
-    protected ThreadLocal<M> local = new ThreadLocal();
+    protected final ThreadLocal<M> local = new ThreadLocal();
 
     /**
      * Create ThreadSpecific instance.

@@ -42,7 +42,11 @@ public class Singleton<M> extends Prototype<M> {
     @Override
     public synchronized M resolve() {
         if (instance == null) {
-            instance = super.resolve();
+            M m = super.resolve();
+
+            if (instance == null) {
+                instance = m;
+            }
         }
         return instance;
     }

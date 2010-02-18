@@ -15,11 +15,15 @@
  */
 package ezbean;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * <p>
+ * This class is designed specifically for the holder of listeners.
+ * </p>
  * <p>
  * A multi hash table supporting full concurrency of retrievals and adjustable expected concurrency
  * for updates. This class obeys the same functional specification as {@link java.util.Hashtable},
@@ -40,26 +44,43 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * only one thread at a time.
  * </p>
  * <p>
- * Implementation of MultiMap that uses an {@link java.util.List} to store the values for a given
- * key. A {@link ConcurrentHashMap} associates each key with an {@link CopyOnWriteArrayList} of
- * values.
+ * Implementation of {@link Listeners} that uses an {@link java.util.List} to store the values for a
+ * given key. A {@link ConcurrentHashMap} associates each key with an {@link CopyOnWriteArrayList}
+ * of values.
  * </p>
  * <p>
  * When iterating through the collections supplied by this class, the ordering of values for a given
  * key agrees with the order in which the values were added.
  *</p>
  *<p>
- * The MultiMap does not store duplicate key-value pairs. Adding a new key-value pair equal to an
+ * The listeners does not store duplicate key-value pairs. Adding a new key-value pair equal to an
  * existing key-value pair has no effect.
  *</p>
  *<p>
  * This class does not allow <code>null</code> to be used as a key.
  *</p>
  * 
- * @version 2010/01/18 17:49:36
+ * @version 2010/02/19 2:30:56
  */
 @SuppressWarnings("serial")
 public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V>> {
+
+    /**
+     * <p>
+     * Returns a {@link List} view of all values associated with a key. If no mappings in the
+     * multimap have the provided key, an empty list is returned.
+     * </p>
+     * <p>
+     * Changes to the returned list will update the underlying map, and vice versa.
+     * </p>
+     * 
+     * @see java.util.concurrent.ConcurrentHashMap#get(java.lang.Object)
+     */
+    public List<V> get(K key) {
+        List<V> list = super.get(key);
+
+        return list == null ? Collections.EMPTY_LIST : list;
+    }
 
     /**
      * <p>
@@ -79,16 +100,14 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
     public V find(K key) {
         List<V> list = get(key);
 
-        if (list != null) {
-            int size = list.size();
+        int size = list.size();
 
-            if (size != 0) {
-                try {
-                    return list.get(size - 1);
-                } catch (IndexOutOfBoundsException e) {
-                    // list elements were removed just after executing size method
-                    return find(key);
-                }
+        if (size != 0) {
+            try {
+                return list.get(size - 1);
+            } catch (IndexOutOfBoundsException e) {
+                // list elements were removed just after executing size method
+                return find(key);
             }
         }
 
@@ -116,7 +135,7 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
         putIfAbsent(key, new CopyOnWriteArrayList());
 
         // register value if absent
-        get(key).addIfAbsent(value);
+        get((Object) key).addIfAbsent(value);
     }
 
     // /**
@@ -152,13 +171,11 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
         List list = get(key);
 
         // unregister
-        if (list != null) {
-            list.remove(value);
+        list.remove(value);
 
-            // remove if the specified property's pool is empty
-            if (list.size() == 0) {
-                remove(key, list);
-            }
+        // remove if the specified property's pool is empty
+        if (list.size() == 0) {
+            remove(key, list);
         }
     }
 
@@ -196,14 +213,10 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
     public void notify(Object object, String name, Object oldValue, Object newValue) {
         // check diff
         if (object != null && oldValue != newValue) {
-            List list = get(name);
-
             // fire event
-            if (list != null) {
-                for (Object listener : list) {
-                    if (listener instanceof PropertyListener) {
-                        ((PropertyListener) listener).change(object, name, oldValue, newValue);
-                    }
+            for (Object listener : get((K) name)) {
+                if (listener instanceof PropertyListener) {
+                    ((PropertyListener) listener).change(object, name, oldValue, newValue);
                 }
             }
         }

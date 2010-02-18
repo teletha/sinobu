@@ -35,7 +35,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -43,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.script.ScriptEngine;
@@ -244,11 +244,11 @@ public class I implements ClassLoadListener<Extensible> {
     /** The namespace uri of Ezbean. */
     static final String URI = "http://ez.bean/";
 
-    /** The cache between Model and Lifestyle. */
-    private static final Listeners<Class, Lifestyle> lifestyles = Modules.aware(new Listeners<Class, Lifestyle>());
-
     /** The circularity dependency graph per thread. */
-    private static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
+    static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
+
+    /** The cache between Model and Lifestyle. */
+    private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = Modules.aware(new ConcurrentHashMap<Class, Lifestyle>());
 
     /** The mapping from extension point to extensions. */
     private static final Listeners<Class, Class> extensions = new Listeners();
@@ -403,18 +403,13 @@ public class I implements ClassLoadListener<Extensible> {
         // Skip null check because this method can throw NullPointerException.
         List<Class> classes = extensions.get(extensionPoint);
 
-        if (classes != null) {
-            // instantiate all found extesions
-            List list = new ArrayList(classes.size());
+        // instantiate all found extesions
+        List list = new ArrayList(classes.size());
 
-            for (Class extension : classes) {
-                list.add(make(extension));
-            }
-            return list;
+        for (Class extension : classes) {
+            list.add(make(extension));
         }
-
-        // we can not find suitable extensions
-        return Collections.EMPTY_LIST;
+        return list;
     }
 
     /**
@@ -565,17 +560,14 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws NullPointerException If the bundle class is <code>null</code>.
      */
     public static <B extends Extensible> B i18n(Class<B> bundleClass) {
-        List<Class> list = extensions.get(bundleClass);
+        String lang = "_".concat(make(Locale.class).getLanguage());
 
-        if (list != null) {
-            String lang = "_".concat(make(Locale.class).getLanguage());
-
-            for (Class clazz : list) {
-                if (clazz.getName().endsWith(lang)) {
-                    bundleClass = clazz;
-                }
+        for (Class clazz : extensions.get(bundleClass)) {
+            if (clazz.getName().endsWith(lang)) {
+                bundleClass = clazz;
             }
         }
+
         return make(bundleClass);
     }
 
@@ -738,27 +730,36 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws ClassCircularityError If the model has circular dependency.
      */
     public static <M> M make(Class<M> modelClass) {
-        // At first, we must confirm the cached lifestyle associated with the model class. If
-        // there is no such cache, we will try to create it.
-        Lifestyle<M> lifestyle = lifestyles.find(modelClass);
+        return makeLifestyle(modelClass).resolve();
+    }
 
-        if (lifestyle != null) return lifestyle.resolve(); // use cache
+    /**
+     * <p>
+     * Returns a new or cached instance of the model class.
+     * </p>
+     * <p>
+     * This method supports the top-level class and the member type. If the local class or the
+     * anonymous class is passed to this argument, {@link UnsupportedOperationException} will be
+     * thrown. There is a possibility that a part of this limitation will be removed in the future.
+     * </p>
+     * 
+     * @param <M>
+     * @param modelClass
+     * @return A instance of the specified model class. This instance is managed by Ezbean.
+     * @throws NullPointerException If the model class is <code>null</code>.
+     * @throws IllegalArgumentException If the model class is non-accessible or final class.
+     * @throws UnsupportedOperationException If the model class is inner-class.
+     * @throws ClassCircularityError If the model has circular dependency.
+     */
+    static <M> Lifestyle<M> makeLifestyle(Class<M> modelClass) {
+        // At first, we must confirm the cached lifestyle associated with the model class. If
+        // there is no such cache, we will try to create newly lifestyle.
+        Lifestyle<M> lifestyle = lifestyles.get(modelClass);
+
+        if (lifestyle != null) return lifestyle; // use cache
 
         // Skip null check because this method can throw NullPointerException.
         // if (modelClass == null) throw new NullPointerException("NPE");
-
-        // Retrieve the circularity dependency graph for the current processing thread.
-        Deque<Class> graph = dependencies.resolve();
-
-        // The Class model is special.
-        if (modelClass == Class.class) {
-            modelClass = graph.pollLast();
-
-            if (!Prototype.class.isAssignableFrom(modelClass)) {
-                graph.add(modelClass);
-            }
-            return (M) modelClass;
-        }
 
         // The model class have some preconditions to have to meet.
         if (modelClass.isLocalClass() || modelClass.isAnonymousClass()) {
@@ -767,85 +768,84 @@ public class I implements ClassLoadListener<Extensible> {
 
         int modifier = modelClass.getModifiers();
 
-        // In the second place, we must find the model provider class which is associated with the
-        // model povider interface. If the model provider interface is a concreate class, we can
-        // use it as a provider.
-        Class<M> providerClass = modelClass;
+        // In the second place, we must find the actual model class which is associated with this
+        // model class. If the actual model class is a concreate, we can use it directly.
+        Class<M> actualClass = modelClass;
 
         if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
             // TODO model provider finding strategy
             // This strategy is decided at execution phase.
-            providerClass = make(Modules.class).find(modelClass);
+            actualClass = make(Modules.class).find(modelClass);
 
-            // updata to the provider's modifier
-            modifier = providerClass.getModifiers();
+            // updata to the actual model class's modifier
+            modifier = actualClass.getModifiers();
         }
 
-        // We can obtain the model about the model provider class.
-        Model<?> model = Model.load(providerClass);
+        // We can obtain the model about the actual model class.
+        Model<M> model = Model.load(actualClass);
+
+        // We need to enhance this class?
         boolean shouldEnhance = model.properties.size() != 0;
 
         // If this model is non-accessible or final class, we can not extend it for bean
         // enhancement. So we must throw some exception.
-        if (shouldEnhance && ((Modifier.PUBLIC | Modifier.PROTECTED) & modifier) == 0) {
-            throw new IllegalArgumentException(providerClass + " is not declared as public or protected.");
-        }
-
-        if (shouldEnhance && (Modifier.FINAL & modifier) != 0) {
-            throw new IllegalArgumentException(providerClass + " is declared as final.");
-        }
-
-        // Decide the lifestyle of this model provider class. If this provider doesn't provide its
-        // lifestyle explicitly, we use Prototype lifestyle which is default lifestyle in Ezbean.
-        Class<? extends Lifestyle> lifestyleClass;
-        Manageable manageable = model.type.getAnnotation(Manageable.class);
-
-        if (manageable == null) {
-            lifestyleClass = Prototype.class;
-        } else {
-            lifestyleClass = manageable.lifestyle();
-        }
-
-        // Don't use 'contains method' check here to resolve singleton based circular reference. So
-        // we must judge it from the size of context. If the context contains too many classes, it
-        // has a circular reference independencies.
-        if (graph.size() > 64) {
-            // Deque will be contain repeated Classes so we must shrink it with
-            // maintaining its class order.
-            throw new ClassCircularityError(new LinkedHashSet(graph).toString());
-        }
-
-        // Enhance this model class if needed.
         if (shouldEnhance) {
-            providerClass = ModuleLoader.getModuleLoader(providerClass).loadClass(model, 0);
-        }
-
-        // Add this model from the circularity dependency graph.
-        graph.add(providerClass);
-
-        try {
-            // Create new lifestyle for this model class
-            lifestyle = make(lifestyleClass);
-
-            // At first, we must try to resolve instantiation.
-            M m = lifestyle.resolve();
-
-            // If the specified model class is instantiated in static initializer for some reasons
-            // (e.g. ClassLoasdListener may automatically instantiate class), we shuold avoid to
-            // duplicate instance.
-            if (lifestyles.containsKey(modelClass)) {
-                return make(modelClass);
+            if (((Modifier.PUBLIC | Modifier.PROTECTED) & modifier) == 0) {
+                throw new IllegalArgumentException(actualClass + " is not declared as public or protected.");
             }
 
-            // Then, if the instantiation was success(any exception won't be thrown), we can
-            // recognize that the lifestyle is valid and cache it.
+            if ((Modifier.FINAL & modifier) != 0) {
+                throw new IllegalArgumentException(actualClass + " is declared as final.");
+            }
+
+            // Enhance the actual model class if needed.
+            actualClass = ModuleLoader.getModuleLoader(actualClass).loadClass(model, 0);
+        }
+
+        // Construct dependency graph for the current thred.
+        Deque<Class> dependency = dependencies.resolve();
+        dependency.add(actualClass);
+
+        // Don't use 'contains' method check here to resolve singleton based
+        // circular reference. So we must judge it from the size of context. If the
+        // context contains too many classes, it has a circular reference
+        // independencies.
+        if (16 < dependency.size()) {
+            // Deque will be contain repeated Classes so we must shrink it with
+            // maintaining its class order.
+            throw new ClassCircularityError(new LinkedHashSet(dependency).toString());
+        }
+
+        try {
+            // At first, we should search the associated lifestyle from extension points.
+            lifestyle = find(Lifestyle.class, modelClass);
+
+            // Then, check its Manageable annotation.
+            if (lifestyle == null) {
+                // If the actual model class doesn't provide its lifestyle explicitly, we use
+                // Prototype lifestyle which is default lifestyle in Ezbean.
+                Manageable manageable = model.type.getAnnotation(Manageable.class);
+
+                // Create new lifestyle for the actual model class
+                lifestyle = make(manageable == null ? Prototype.class : manageable.lifestyle());
+            }
+
+            // Trace dependency graph to detect circular dependencies.
+            Constructor constructor = ClassUtil.getMiniConstructor(actualClass);
+
+            for (Class param : constructor.getParameterTypes()) {
+                if (param != Lifestyle.class && param != Class.class) {
+                    makeLifestyle(param);
+                }
+            }
+
+            // This lifestyle is safe and has no circular dependencies.
             lifestyles.put(modelClass, lifestyle);
 
             // API definition
-            return m;
+            return lifestyle;
         } finally {
-            // Remove this model from the circularity dependency graph.
-            graph.pollLast();
+            dependency.pollLast();
         }
     }
 
@@ -1269,13 +1269,16 @@ public class I implements ClassLoadListener<Extensible> {
                 if (params.length != 0 && params[0] != Object.class) {
                     keys.put(hash(extensionPoint, params[0]), extension);
 
-                    // custom lifestyle
+                    // The user has registered a newly custom lifestyle, so we should update
+                    // lifestyle for this extension key class. Normally, when we update some data,
+                    // it is desirable to store the previous data to be able to restore it later.
+                    // But, in this case, the contextual sensitive instance that the lifestyle emits
+                    // changes twice on "load" and "unload" event from the point of view of the
+                    // user. So the previous data becomes all but meaningless for a cacheable
+                    // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
+                    // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
-                        // add Class resolver
-                        dependencies.resolve().add(params[0]);
-
-                        // register lifestyle
-                        lifestyles.put(params[0], (Lifestyle) make(extension));
+                        lifestyles.remove(params[0]);
                     }
                 }
             }
@@ -1298,14 +1301,16 @@ public class I implements ClassLoadListener<Extensible> {
                 if (params.length != 0 && params[0] != Object.class) {
                     keys.remove(hash(extensionPoint, params[0]), extension);
 
-                    // custom lifestyle
+                    // The user has registered a newly custom lifestyle, so we should update
+                    // lifestyle for this extension key class. Normally, when we update some data,
+                    // it is desirable to store the previous data to be able to restore it later.
+                    // But, in this case, the contextual sensitive instance that the lifestyle emits
+                    // changes twice on "load" and "unload" event from the point of view of the
+                    // user. So the previous data becomes all but meaningless for a cacheable
+                    // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
+                    // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
-                        for (Lifestyle lifestyle : lifestyles.get(params[0])) {
-                            if (lifestyle.getClass() == extension) {
-                                lifestyles.remove(params[0], lifestyle);
-                                break;
-                            }
-                        }
+                        lifestyles.remove(params[0]);
                     }
                 }
             }

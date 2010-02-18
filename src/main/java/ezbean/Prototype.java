@@ -16,10 +16,6 @@
 package ezbean;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import javax.annotation.Resource;
 
 import ezbean.model.ClassUtil;
 
@@ -42,45 +38,20 @@ public class Prototype<M> implements Lifestyle<M> {
     /** The cache for instantiator's parameters. */
     protected final Class[] params;
 
-    /** The cache for dependency fields. */
-    protected final Field[] fields;
-
     /**
      * Create Prototype instance.
      * 
      * @param modelClass
      */
     public Prototype(Class<M> modelClass) {
-        try {
-            // find default constructor as instantiator
-            instantiator = ClassUtil.getMiniConstructor(modelClass);
-            params = instantiator.getParameterTypes();
+        // find default constructor as instantiator
+        instantiator = ClassUtil.getMiniConstructor(modelClass);
+        params = instantiator.getParameterTypes();
 
-            // We can safely call the method 'newInstance()' because the generated class has
-            // only one public constructor without arguments. But we shoud make this
-            // instantiator accessible because it makes the creation speed faster.
-            instantiator.setAccessible(true);
-
-            // find all dependency fields
-            ArrayList fields = new ArrayList();
-
-            for (Field field : modelClass.getDeclaredFields()) {
-                if (field.isAnnotationPresent(Resource.class)) {
-                    fields.add(field);
-
-                    // We can safely access to the field by the following process. And we should
-                    // make this field accessible because it makes the access speed faster.
-                    field.setAccessible(true);
-                }
-            }
-
-            // array iteration is very faster than list iteration
-            this.fields = (Field[]) fields.toArray(new Field[fields.size()]);
-        } catch (Exception e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
-        }
+        // We can safely call the method 'newInstance()' because the generated class has
+        // only one public constructor without arguments. But we shoud make this
+        // instantiator accessible because it makes the creation speed faster.
+        instantiator.setAccessible(true);
     }
 
     /**
@@ -97,31 +68,27 @@ public class Prototype<M> implements Lifestyle<M> {
      * @see ezbean.Lifestyle#resolve()
      */
     public M resolve() {
-        try {
-            // constructor injection
-            Object[] params = null;
+        // constructor injection
+        Object[] params = null;
 
-            if (this.params.length != 0) {
-                params = new Object[this.params.length];
+        if (this.params.length != 0) {
+            params = new Object[this.params.length];
 
-                for (int i = 0; i < params.length; i++) {
+            for (int i = 0; i < params.length; i++) {
+                if (this.params[i] == Lifestyle.class) {
+                    params[i] = I.makeLifestyle(ClassUtil.getParameter(instantiator.getGenericParameterTypes()[i], Lifestyle.class)[0]);
+                } else if (this.params[i] == Class.class) {
+                    params[i] = I.dependencies.resolve().peekLast();
+                } else {
                     params[i] = I.make(this.params[i]);
                 }
             }
+        }
 
+        try {
             // create new instance
-            M instance = instantiator.newInstance(params);
-
-            // field injection
-            for (Field field : fields) {
-                field.set(instance, I.make(field.getType()));
-            }
-
-            // API definition
-            return instance;
+            return instantiator.newInstance(params);
         } catch (Exception e) {
-            // We must throw the checked exception quietly and pass the original exception instead
-            // of wrapped exception.
             throw I.quiet(e);
         }
     }

@@ -43,9 +43,6 @@ public abstract class EzRule implements MethodRule {
     /** The initialization error holder. */
     private Throwable initializationError;
 
-    /** The execution error holder. */
-    private Throwable executionError;
-
     /** The shutdown hook to invoke afterClass method when only selected test method is executed. */
     private final AfterClassInvoker invoker = new AfterClassInvoker();
 
@@ -97,7 +94,7 @@ public abstract class EzRule implements MethodRule {
                         // invoke test method
                         base.evaluate();
                     } catch (Exception e) {
-                        throw Solution.quiet(executionError = e);
+                        throw Solution.quiet(e);
                     } finally {
                         // invoke after
                         after(method.getMethod());
