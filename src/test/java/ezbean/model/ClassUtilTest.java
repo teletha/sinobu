@@ -17,6 +17,7 @@ package ezbean.model;
 
 import static org.junit.Assert.*;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,6 +29,10 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.junit.Test;
+
+import ezbean.I;
+import ezbean.sample.bean.GenericBoundedBean;
+import ezbean.sample.bean.Student;
 
 /**
  * @version 2010/02/15 15:09:38
@@ -141,12 +146,16 @@ public class ClassUtilTest {
         assertEquals(String.class, types[0]);
     }
 
-    /**
-     * Test parent variable parameter with interface.
-     */
     @Test
-    public void testGetParameterizedTypes05() {
+    public void parameterFromOverriddenInterface() {
         Type[] types = ClassUtil.getParameter(TypedExtendedFromInterface.class, ParameterInterface.class);
+        assertEquals(1, types.length);
+        assertEquals(String.class, types[0]);
+    }
+
+    @Test
+    public void parameterFromOverrideInterface() {
+        Type[] types = ClassUtil.getParameter(TypedExtendedFromInterface.class, ExtensibleByInterface.class);
         assertEquals(1, types.length);
         assertEquals(String.class, types[0]);
     }
@@ -301,6 +310,43 @@ public class ClassUtilTest {
         assertEquals(Appendable.class, types[1]);
     }
 
+    @Test
+    public void constructorHasOverlapParameter() {
+        Constructor constructor = ClassUtil.getMiniConstructor(ImplicitParameterConstructor.class);
+        Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
+        assertEquals(1, types.length);
+        assertEquals(Map.class, types[0]);
+    }
+
+    @Test
+    public void constructorHasOverlappedParameter() {
+        Constructor constructor = ClassUtil.getMiniConstructor(ImplicitParameterConstructor.class);
+        Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        assertEquals(1, types.length);
+        assertEquals(String.class, types[0]);
+    }
+
+    @Test
+    public void parameterVariableFromInterface() {
+        Type[] types = ClassUtil.getParameter(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
+        assertEquals(1, types.length);
+        assertEquals(String.class, types[0]);
+    }
+
+    @Test
+    public void parameterVariableFromClass() {
+        Type[] types = ClassUtil.getParameter(ParameterVariableStringByClass.class, ParameterVariableClass.class);
+        assertEquals(1, types.length);
+        assertEquals(String.class, types[0]);
+    }
+
+    @Test
+    public void bundedBean() {
+        Type[] types = ClassUtil.getParameter(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
+        assertEquals(1, types.length);
+        assertEquals(Student.class, types[0]);
+    }
+
     /**
      * Wrap class.
      */
@@ -371,27 +417,45 @@ public class ClassUtilTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:56:26
+     * @version 2010/02/19 22:37:01
      */
     private static interface ParameterInterface<T> {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:56:26
+     * @version 2010/02/19 22:37:01
+     */
+    private static interface ParameterVariableInterface<T extends Serializable> {
+    }
+
+    /**
+     * @version 2010/02/19 22:50:39
      */
     private static class ParameterClass<T> {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
+     * @version 2010/02/19 22:50:39
+     */
+    private static class ParameterVariableClass<T extends Serializable> {
+    }
+
+    /**
+     * @version 2010/02/20 0:10:12
+     */
+    private static class ParameterOverlapClass<S> extends ParameterClass<String> {
+    }
+
+    /**
+     * @version 2010/02/19 22:46:18
      */
     private static class ParameterizedStringByInterface implements ParameterInterface<String> {
+    }
+
+    /**
+     * @version 2010/02/19 22:46:18
+     */
+    private static class ParameterVariableStringByInterface implements ParameterVariableInterface<String> {
     }
 
     /**
@@ -425,11 +489,15 @@ public class ClassUtilTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
+     * @version 2010/02/19 22:54:31
      */
     private static class ParameterizedStringByClass extends ParameterClass<String> {
+    }
+
+    /**
+     * @version 2010/02/19 22:54:31
+     */
+    private static class ParameterVariableStringByClass extends ParameterVariableClass<String> {
     }
 
     /**
@@ -571,6 +639,21 @@ public class ClassUtilTest {
 
         private MultipleParameterConstructor(MultipleParameter<Readable, Appendable> param) {
         }
+    }
+
+    /**
+     * @version 2010/02/20 0:05:01
+     */
+    private static class ImplicitParameterConstructor {
+
+        private ImplicitParameterConstructor(ParameterOverlapClass<Map> param) {
+        }
+    }
+
+    /**
+     * @version 2010/02/19 23:43:53
+     */
+    protected static class BoundedBean extends GenericBoundedBean<Student> {
     }
 
     @Test
