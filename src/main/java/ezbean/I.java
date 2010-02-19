@@ -784,12 +784,9 @@ public class I implements ClassLoadListener<Extensible> {
         // We can obtain the model about the actual model class.
         Model<M> model = Model.load(actualClass);
 
-        // We need to enhance this class?
-        boolean shouldEnhance = model.properties.size() != 0;
-
         // If this model is non-accessible or final class, we can not extend it for bean
         // enhancement. So we must throw some exception.
-        if (shouldEnhance) {
+        if (model.properties.size() != 0) {
             if (((Modifier.PUBLIC | Modifier.PROTECTED) & modifier) == 0) {
                 throw new IllegalArgumentException(actualClass + " is not declared as public or protected.");
             }
@@ -840,10 +837,10 @@ public class I implements ClassLoadListener<Extensible> {
             }
 
             // This lifestyle is safe and has no circular dependencies.
-            lifestyles.put(modelClass, lifestyle);
+            lifestyles.putIfAbsent(modelClass, lifestyle);
 
             // API definition
-            return lifestyle;
+            return lifestyles.get(modelClass);
         } finally {
             dependency.pollLast();
         }

@@ -28,7 +28,7 @@ import ezbean.model.ClassUtil;
  * 
  * @see Singleton
  * @see ThreadSpecific
- * @version 2010/01/05 22:45:49
+ * @version 2010/02/19 18:06:21
  */
 public class Prototype<M> implements Lifestyle<M> {
 
@@ -71,6 +71,8 @@ public class Prototype<M> implements Lifestyle<M> {
         // constructor injection
         Object[] params = null;
 
+        // We should use lazy initialization of parameter array to avoid that the constructor
+        // without parameters doesn't create futile array instance.
         if (this.params.length != 0) {
             params = new Object[this.params.length];
 

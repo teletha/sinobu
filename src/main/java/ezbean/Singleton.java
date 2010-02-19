@@ -16,16 +16,18 @@
 package ezbean;
 
 /**
- * This lifestyle guarantees that only one instance of the specific class exists in JVM.
+ * <p>
+ * This lifestyle guarantees that only one instance of the specific class exists in Ezbean.
+ * </p>
  * 
  * @see Prototype
  * @see ThreadSpecific
- * @version 2010/02/15 16:34:22
+ * @version 2010/02/19 17:49:22
  */
 public class Singleton<M> extends Prototype<M> {
 
     /** The singleton instance. */
-    protected M instance;
+    protected final M instance;
 
     /**
      * Create Singleton instance.
@@ -34,20 +36,15 @@ public class Singleton<M> extends Prototype<M> {
      */
     public Singleton(Class<M> modelClass) {
         super(modelClass);
+
+        instance = super.resolve();
     }
 
     /**
      * @see ezbean.Lifestyle#resolve()
      */
     @Override
-    public synchronized M resolve() {
-        if (instance == null) {
-            M m = super.resolve();
-
-            if (instance == null) {
-                instance = m;
-            }
-        }
+    public M resolve() {
         return instance;
     }
 }
