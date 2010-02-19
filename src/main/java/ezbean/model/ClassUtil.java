@@ -158,19 +158,15 @@ public final class ClassUtil {
         }
 
         // compute actual class
-        Class raw = Model.load(clazz, base).type;
+        Class raw = clazz instanceof Class ? (Class) clazz : Model.load(clazz, base).type;
 
         // collect all types
         Set<Type> types = new HashSet();
+        types.add(clazz);
+        types.add(raw.getGenericSuperclass());
 
-        if (raw == clazz) {
-            types.add(raw.getGenericSuperclass());
-
-            for (Type type : raw.getGenericInterfaces()) {
-                types.add(type);
-            }
-        } else {
-            types.add(clazz);
+        for (Type type : raw.getGenericInterfaces()) {
+            types.add(type);
         }
 
         // check them all
@@ -194,7 +190,7 @@ public final class ClassUtil {
         }
 
         // search from superclass
-        return getParameter(raw.getSuperclass(), target, base);
+        return getParameter(raw.getGenericSuperclass(), target, base);
     }
 
     /**
