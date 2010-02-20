@@ -112,7 +112,7 @@ public class FileSystemTest {
     }
 
     /** file protocol. */
-    private static final String FILE_PROTOCOL = locatePackage(FileSystemTest.class).toURI().toString();
+    private static final String FILE_PROTOCOL ="file://" + locatePackage(FileSystemTest.class).getAbsolutePath().replace(File.separatorChar, '/') + "/";
 
     @Test
     public void withProtocol1() {
