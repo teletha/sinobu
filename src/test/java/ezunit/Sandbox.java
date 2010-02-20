@@ -339,18 +339,21 @@ public class Sandbox extends EzRule {
          */
         private void readClassPath(String classPaths) {
             for (String classPath : classPaths.split(File.pathSeparator)) {
-                // clean head
-                if (classPath.charAt(0) == '/') {
-                    classPath = classPath.substring(1);
+                if (classPath.length() != 0) {
+                    // clean head
+                    if (classPath.charAt(0) == '/') {
+                        classPath = classPath.substring(1);
+                    }
+
+                    // clean tail
+                    if (classPath.charAt(classPath.length() - 1) == '/') {
+                        classPath = classPath.substring(0, classPath.length() - 2);
+                    }
+
+                    // Change to platform native separator.
+                    readables.add(classPath.replace('/', File.separatorChar), true, false);
                 }
 
-                // clean tail
-                if (classPath.charAt(classPath.length() - 1) == '/') {
-                    classPath = classPath.substring(0, classPath.length() - 2);
-                }
-
-                // Change to platform native separator.
-                readables.add(classPath.replace('/', File.separatorChar), true, false);
             }
         }
 
