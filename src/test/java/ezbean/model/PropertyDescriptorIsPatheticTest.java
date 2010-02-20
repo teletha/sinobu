@@ -17,19 +17,20 @@ package ezbean.model;
 
 import static junit.framework.Assert.*;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
 import org.junit.Test;
 
-import ezbean.sample.bean.GenericStringBean;
+import ezbean.sample.bean.GenericGetterBean;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.PrimitiveWrapper;
 
 /**
  * {@link PropertyDescriptor} is pathetic.
  * 
- * @version 2009/07/16 20:53:45
+ * @version 2010/02/20 9:35:44
  */
 public class PropertyDescriptorIsPatheticTest {
 
@@ -47,11 +48,11 @@ public class PropertyDescriptorIsPatheticTest {
         assertEquals("isBoolean", method.getName());
     }
 
-    @Test
+    /**
+     * lolol
+     */
+    @Test(expected = IntrospectionException.class)
     public void generic() throws Exception {
-        PropertyDescriptor descriptor = new PropertyDescriptor("generic", GenericStringBean.class);
-        Method method = descriptor.getReadMethod();
-        assertEquals("getGeneric", method.getName());
-        assertEquals(Object.class, method.getReturnType()); // lol
+        new PropertyDescriptor("generic", GenericGetterBean.class);
     }
 }
