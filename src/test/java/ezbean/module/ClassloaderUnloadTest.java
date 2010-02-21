@@ -18,8 +18,10 @@ package ezbean.module;
 import static org.junit.Assert.*;
 
 import java.lang.management.ClassLoadingMXBean;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +43,9 @@ public class ClassloaderUnloadTest {
     /** The class monitor. */
     private static ClassLoadingMXBean classLoading = ManagementFactory.getClassLoadingMXBean();
 
+    /** The system garbage collectors. */
+    private static List<GarbageCollectorMXBean> gcs = ManagementFactory.getGarbageCollectorMXBeans();
+
     @Test
     public void count() throws Exception {
         // use module class
@@ -48,8 +53,7 @@ public class ClassloaderUnloadTest {
 
         // reload module and execute gc if possible
         module.load();
-        memory.gc();
-        Thread.sleep(1000);
+        tryGC();
 
         // create snapshot
         int initialLoaded = classLoading.getLoadedClassCount();
@@ -66,8 +70,7 @@ public class ClassloaderUnloadTest {
 
         // reload module and execute gc if possible
         module.load();
-        memory.gc();
-        Thread.sleep(1000);
+        tryGC();
 
         // create snapshot
         int lastLoaded = classLoading.getLoadedClassCount();
@@ -75,6 +78,54 @@ public class ClassloaderUnloadTest {
         assertTrue(lastLoaded - loaded <= -2);
         assertTrue(2 <= lastUnloaded - unloaded);
         assertEquals(loaded - lastLoaded, lastUnloaded - unloaded);
+    }
+
+    /**
+     * <p>
+     * Helper method to count a number of garbage collection since JVM was started.
+     * </p>
+     * 
+     * @return A count of garbage collection.
+     */
+    private long countGC() {
+        long count = 0;
+
+        for (GarbageCollectorMXBean gc : gcs) {
+            count = +gc.getCollectionCount();
+        }
+
+        // API definition
+        return count;
+    }
+
+    /**
+     * <p>
+     * Try to execute Garbage Collection if possible.
+     * </p>
+     */
+    private void tryGC() {
+        tryGC(500);
+    }
+
+    /**
+     * Try to execute Garbage colletion if possible.
+     * 
+     * @param threshold
+     */
+    private void tryGC(long threshold) {
+        long previous = countGC();
+        long data = System.currentTimeMillis();
+
+        // try GC if possioble
+        memory.gc();
+
+        while (countGC() == previous && System.currentTimeMillis() - data < threshold) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
     }
 
     /**
