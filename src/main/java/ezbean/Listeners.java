@@ -51,19 +51,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * <p>
  * When iterating through the collections supplied by this class, the ordering of values for a given
  * key agrees with the order in which the values were added.
- *</p>
- *<p>
+ * </p>
+ * <p>
  * The listeners does not store duplicate key-value pairs. Adding a new key-value pair equal to an
  * existing key-value pair has no effect.
- *</p>
- *<p>
+ * </p>
+ * <p>
  * This class does not allow <code>null</code> to be used as a key.
- *</p>
+ * </p>
  * 
  * @version 2010/02/19 2:30:56
  */
 @SuppressWarnings("serial")
-public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V>> {
+public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
 
     /**
      * <p>
@@ -76,7 +76,7 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
      * 
      * @see java.util.concurrent.ConcurrentHashMap#get(java.lang.Object)
      */
-    public List<V> get(K key) {
+    public List<V> finds(K key) {
         List<V> list = super.get(key);
 
         return list == null ? Collections.EMPTY_LIST : list;
@@ -98,7 +98,7 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
      * @throws NullPointerException If the specified key is <code>null</code>.
      */
     public V find(K key) {
-        List<V> list = get(key);
+        List<V> list = finds(key);
 
         int size = list.size();
 
@@ -129,13 +129,13 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
      * @param value A value to store in the multimap.
      * @throws NullPointerException If the specified key is <code>null</code>.
      */
-    public void put(K key, V value) {
+    public void push(K key, V value) {
         // The cost of creating new CopyOnWriteArrayList instance is pretty low, so we may
         // create it each time.
         putIfAbsent(key, new CopyOnWriteArrayList());
 
         // register value if absent
-        get((Object) key).addIfAbsent(value);
+        ((CopyOnWriteArrayList) get(key)).addIfAbsent(value);
     }
 
     // /**
@@ -167,8 +167,8 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
      * @param key A key of entry to remove from the multimap.
      * @param value A value of entry to remove the multimap
      */
-    public void remove(K key, V value) {
-        List list = get(key);
+    public void poll(K key, V value) {
+        List list = finds(key);
 
         // unregister
         list.remove(value);
@@ -214,7 +214,7 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, CopyOnWriteArrayList<V
         // check diff
         if (object != null && oldValue != newValue) {
             // fire event
-            for (Object listener : get((K) name)) {
+            for (Object listener : finds((K) name)) {
                 if (listener instanceof PropertyListener) {
                     ((PropertyListener) listener).change(object, name, oldValue, newValue);
                 }
