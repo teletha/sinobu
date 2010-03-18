@@ -29,46 +29,46 @@ import org.junit.Test;
 public class ListenersTest {
 
     @Test(expected = NullPointerException.class)
-    public void putNull() {
+    public void pushNull() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.put(null, (String) null);
+        listeners.push(null, (String) null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void putNullKey() {
+    public void pushNullKey() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.put(null, "test");
+        listeners.push(null, "test");
     }
 
     @Test
-    public void putNullValue() {
+    public void pushNullValue() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.put("test", (String) null);
+        listeners.push("test", (String) null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void removeNull() {
+    public void pollNull() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.remove(null, null);
+        listeners.poll(null, null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void removeNullKey() {
+    public void pollNullKey() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.remove(null, "test");
+        listeners.poll(null, "test");
     }
 
     @Test
-    public void removeNullValue() {
+    public void pollNullValue() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.remove("test", null);
+        listeners.poll("test", null);
     }
 
     @Test
     public void notifySingle() {
         Listener listener = new Listener();
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("name", listener);
+        listeners.push("name", listener);
 
         // emulate property change event
         listeners.notify("bean", "name", "old", "new");
@@ -96,8 +96,8 @@ public class ListenersTest {
         Listener listener2 = new Listener();
 
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("one", listener1);
-        listeners.put("two", listener2);
+        listeners.push("one", listener1);
+        listeners.push("two", listener2);
 
         // emulate property change event
         listeners.notify("bean", "one", "foo", "bar");
@@ -130,10 +130,10 @@ public class ListenersTest {
      * Test listener removing with specified property name.
      */
     @Test
-    public void notifySingleWithRemove() {
+    public void notifySingleWithpoll() {
         Listener listener = new Listener();
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("name", listener);
+        listeners.push("name", listener);
 
         // emulate property change event
         listeners.notify("bean", "name", "old", "new");
@@ -143,8 +143,8 @@ public class ListenersTest {
         assertEquals("old", listener.oldObject);
         assertEquals("new", listener.newValue);
 
-        // remove listener
-        listeners.remove("name", listener);
+        // poll listener
+        listeners.poll("name", listener);
 
         // emulate property change event
         listeners.notify("bean", "name", "foo", "bar");
@@ -159,13 +159,13 @@ public class ListenersTest {
      * Test multiple listeners unregistration.
      */
     @Test
-    public void notifyMultipleWithRemove() {
+    public void notifyMultipleWithpoll() {
         Listener listener1 = new Listener();
         Listener listener2 = new Listener();
 
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("one", listener1);
-        listeners.put("one", listener2);
+        listeners.push("one", listener1);
+        listeners.push("one", listener2);
 
         // emulate property change event
         listeners.notify("bean", "one", "foo", "bar");
@@ -180,8 +180,8 @@ public class ListenersTest {
         assertEquals("foo", listener2.oldObject);
         assertEquals("bar", listener2.newValue);
 
-        // remove listener
-        listeners.remove("one", listener1);
+        // poll listener
+        listeners.poll("one", listener1);
 
         // emulate property change event
         listeners.notify("bean", "one", "bar", "baz");
@@ -213,8 +213,8 @@ public class ListenersTest {
         };
 
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("name", listener);
-        listeners.put("name", listener);
+        listeners.push("name", listener);
+        listeners.push("name", listener);
 
         // emulate property change event
         listeners.notify("bean", "name", "old", "new");
@@ -236,13 +236,13 @@ public class ListenersTest {
              */
             public void change(Object bean, String propertyName, Object oldValue, Object newValue) {
                 if (counter.contains(this)) {
-                    listeners.remove("name", this);
+                    listeners.poll("name", this);
                 }
                 counter.add(this);
             }
         };
 
-        listeners.put("name", listener1);
+        listeners.push("name", listener1);
 
         // emulate property change event
         listeners.notify("bean", "name", "old", "new");
@@ -283,7 +283,7 @@ public class ListenersTest {
 
         // register listener
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("test", listener);
+        listeners.push("test", listener);
 
         // emulate property change event
         listeners.notify("some", "test", null, null);
@@ -303,7 +303,7 @@ public class ListenersTest {
 
         // register listener
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("test", listener);
+        listeners.push("test", listener);
 
         // emulate property change event
         listeners.notify("some", "test", null, 1);
@@ -323,7 +323,7 @@ public class ListenersTest {
 
         // register listener
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("test", listener);
+        listeners.push("test", listener);
 
         // emulate property change event
         listeners.notify("some", "test", 1, null);
@@ -343,7 +343,7 @@ public class ListenersTest {
 
         // register listener
         Listeners<String, PropertyListener> listeners = new Listeners();
-        listeners.put("test", listener);
+        listeners.push("test", listener);
 
         // emulate property change event
         listeners.notify("some", "test", 1, 1);

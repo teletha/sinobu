@@ -127,14 +127,14 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      * @see ezbean.ClassLoadListener#load(java.lang.Class)
      */
     public void load(Class clazz) {
-        archivers.put("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
+        archivers.push("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
     }
 
     /**
      * @see ezbean.ClassLoadListener#unload(java.lang.Class)
      */
     public void unload(Class clazz) {
-        archivers.remove("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
+        archivers.poll("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
     }
 
     /**

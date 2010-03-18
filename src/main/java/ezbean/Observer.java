@@ -95,7 +95,7 @@ class Observer extends ModelWalker implements PropertyListener, Disposable {
                 mode = 3; // move into remove mode
 
                 // Remove actually
-                // 
+                //
                 // Only if we remove listeners, we can do like the following
                 // walker.traverse(path.subList(index, length - 1));
                 // But, in the greed, we need the actual old value which is indicated by the
@@ -114,11 +114,11 @@ class Observer extends ModelWalker implements PropertyListener, Disposable {
                 Listeners<String, PropertyListener> line = ((Accessible) node).ezContext();
 
                 if (mode == 2) {
-                    line.put(path.get(index), this);
+                    line.push(path.get(index), this);
 
                     info[0] = node;
                 } else {
-                    line.remove(path.get(index), this);
+                    line.poll(path.get(index), this);
                 }
             }
             break;
