@@ -181,14 +181,14 @@ public class I implements ClassLoadListener<Extensible> {
     // bind
     // create class copy
     // delete define
-    // edit
+    // edit error
     // find
     // get
     // hash have
     // i18n include
     // json
     // k
-    // locate load
+    // locate load log
     // make mock
     // n
     // observe
@@ -199,7 +199,7 @@ public class I implements ClassLoadListener<Extensible> {
     // transform
     // unload use
     // v
-    // write weave
+    // write weave warn
     // xml xerox
     // yield
     // zip
@@ -401,7 +401,7 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
         // Skip null check because this method can throw NullPointerException.
-        List<Class> classes = extensions.finds(extensionPoint);
+        List<Class> classes = extensions.get(extensionPoint);
 
         // instantiate all found extesions
         List list = new ArrayList(classes.size());
@@ -562,7 +562,7 @@ public class I implements ClassLoadListener<Extensible> {
     public static <B extends Extensible> B i18n(Class<B> bundleClass) {
         String lang = "_".concat(make(Locale.class).getLanguage());
 
-        for (Class clazz : extensions.finds(bundleClass)) {
+        for (Class clazz : extensions.get(bundleClass)) {
             if (clazz.getName().endsWith(lang)) {
                 bundleClass = clazz;
             }
@@ -1290,13 +1290,13 @@ public class I implements ClassLoadListener<Extensible> {
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // unregister extension
-                extensions.poll(extensionPoint, extension);
+                extensions.pull(extensionPoint, extension);
 
                 // unregister extension key
                 Class[] params = ClassUtil.getParameter(extension, extensionPoint);
 
                 if (params.length != 0 && params[0] != Object.class) {
-                    keys.poll(hash(extensionPoint, params[0]), extension);
+                    keys.pull(hash(extensionPoint, params[0]), extension);
 
                     // The user has registered a newly custom lifestyle, so we should update
                     // lifestyle for this extension key class. Normally, when we update some data,

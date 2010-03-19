@@ -118,7 +118,7 @@ class Observer extends ModelWalker implements PropertyListener, Disposable {
 
                     info[0] = node;
                 } else {
-                    line.poll(path.get(index), this);
+                    line.pull(path.get(index), this);
                 }
             }
             break;

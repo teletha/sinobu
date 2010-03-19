@@ -49,19 +49,19 @@ public class ListenersTest {
     @Test(expected = NullPointerException.class)
     public void pollNull() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.poll(null, null);
+        listeners.pull(null, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void pollNullKey() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.poll(null, "test");
+        listeners.pull(null, "test");
     }
 
     @Test
     public void pollNullValue() {
         Listeners<String, String> listeners = new Listeners();
-        listeners.poll("test", null);
+        listeners.pull("test", null);
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ListenersTest {
         assertEquals("new", listener.newValue);
 
         // poll listener
-        listeners.poll("name", listener);
+        listeners.pull("name", listener);
 
         // emulate property change event
         listeners.notify("bean", "name", "foo", "bar");
@@ -181,7 +181,7 @@ public class ListenersTest {
         assertEquals("bar", listener2.newValue);
 
         // poll listener
-        listeners.poll("one", listener1);
+        listeners.pull("one", listener1);
 
         // emulate property change event
         listeners.notify("bean", "one", "bar", "baz");
@@ -236,7 +236,7 @@ public class ListenersTest {
              */
             public void change(Object bean, String propertyName, Object oldValue, Object newValue) {
                 if (counter.contains(this)) {
-                    listeners.poll("name", this);
+                    listeners.pull("name", this);
                 }
                 counter.add(this);
             }

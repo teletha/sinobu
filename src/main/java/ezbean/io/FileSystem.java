@@ -134,7 +134,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      * @see ezbean.ClassLoadListener#unload(java.lang.Class)
      */
     public void unload(Class clazz) {
-        archivers.poll("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
+        archivers.pull("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
     }
 
     /**

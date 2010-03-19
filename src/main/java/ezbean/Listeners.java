@@ -76,9 +76,11 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
      * 
      * @see java.util.concurrent.ConcurrentHashMap#get(java.lang.Object)
      */
-    public List<V> finds(K key) {
+    @Override
+    public List<V> get(Object key) {
         List<V> list = super.get(key);
 
+        // API definition
         return list == null ? Collections.EMPTY_LIST : list;
     }
 
@@ -98,7 +100,7 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
      * @throws NullPointerException If the specified key is <code>null</code>.
      */
     public V find(K key) {
-        List<V> list = finds(key);
+        List<V> list = get(key);
 
         int size = list.size();
 
@@ -167,8 +169,8 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
      * @param key A key of entry to remove from the multimap.
      * @param value A value of entry to remove the multimap
      */
-    public void poll(K key, V value) {
-        List list = finds(key);
+    public void pull(K key, V value) {
+        List list = get(key);
 
         // unregister
         list.remove(value);
@@ -214,7 +216,7 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
         // check diff
         if (object != null && oldValue != newValue) {
             // fire event
-            for (Object listener : finds((K) name)) {
+            for (Object listener : get((K) name)) {
                 if (listener instanceof PropertyListener) {
                     ((PropertyListener) listener).change(object, name, oldValue, newValue);
                 }
