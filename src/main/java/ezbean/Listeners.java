@@ -216,7 +216,7 @@ public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
         // check diff
         if (object != null && oldValue != newValue) {
             // fire event
-            for (Object listener : get((K) name)) {
+            for (Object listener : get(name)) {
                 if (listener instanceof PropertyListener) {
                     ((PropertyListener) listener).change(object, name, oldValue, newValue);
                 }

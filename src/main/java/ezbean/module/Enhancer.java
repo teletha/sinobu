@@ -397,11 +397,21 @@ public class Enhancer extends ClassAdapter implements Extensible {
         visitEnd();
     }
 
+    /**
+     * <p>
+     * Helper method to write method invocation code for property accessor.
+     * </p>
+     * 
+     * @param method A target property accessor.
+     * @param type A invocation type.
+     */
     protected final void write(Method method, int type) {
         Class[] params = method.getParameterTypes();
         Class returnType = method.getReturnType();
 
         mv.visitVarInsn(ALOAD, 0);
+
+        // Write method invocation.
         for (int i = 0; i < params.length; i++) {
             mv.visitVarInsn(ALOAD, 2);
 
@@ -412,6 +422,8 @@ public class Enhancer extends ClassAdapter implements Extensible {
             cast(params[i]);
         }
         mv.visitMethodInsn(type, type == INVOKESPECIAL ? modelType.getInternalName() : className, method.getName(), Type.getMethodDescriptor(method));
+
+        // write return type.
         wrap(returnType);
         if (returnType == Void.TYPE) mv.visitInsn(ACONST_NULL);
         mv.visitInsn(ARETURN);
