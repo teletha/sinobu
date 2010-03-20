@@ -219,10 +219,15 @@ public class ObserverTest {
         assertEquals("miku", listener.newValue);
     }
 
+    @Test
+    public void compileError() throws Exception {
+        Person person = I.make(Person.class);
+
+        Disposable dis = I.bind(I.mock(person).getAge(), I.mock(person).getFirstName(), true);
+    }
+
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/11 18:40:03
+     * @version 2010/03/19 10:40:34
      */
     private static class Listener implements PropertyListener {
 
