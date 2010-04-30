@@ -161,7 +161,7 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see ezunit.EzRule#before(java.lang.reflect.Method)
+     * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -188,7 +188,7 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @see ezunit.EzRule#afterClass()
+     * @see ezunit.ReusableRule#afterClass()
      */
     @Override
     protected void afterClass() {
