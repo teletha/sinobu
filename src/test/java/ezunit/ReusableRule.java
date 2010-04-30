@@ -29,7 +29,7 @@ import ezbean.scratchpad.Solution;
 /**
  * @version 2010/01/08 2:19:31
  */
-public abstract class EzRule implements MethodRule {
+public abstract class ReusableRule implements MethodRule {
 
     /** The testcase class. */
     protected final Class testcase = getCaller();
@@ -49,7 +49,7 @@ public abstract class EzRule implements MethodRule {
     /**
      * 
      */
-    protected EzRule() {
+    protected ReusableRule() {
         for (Method method : testcase.getMethods()) {
             if (method.isAnnotationPresent(Test.class) && !method.isAnnotationPresent(Ignore.class)) {
                 tests++;

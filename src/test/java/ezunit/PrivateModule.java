@@ -37,7 +37,7 @@ import ezbean.module.ModuleLoader;
 /**
  * @version 2010/02/03 23:12:40
  */
-public class PrivateModule extends EzRule {
+public class PrivateModule extends ReusableRule {
 
     /** The actual private module. */
     private final File module = FileSystem.createTemporary();
@@ -183,7 +183,7 @@ public class PrivateModule extends EzRule {
     }
 
     /**
-     * @see ezunit.EzRule#beforeClass()
+     * @see ezunit.ReusableRule#beforeClass()
      */
     @Override
     protected void beforeClass() throws Exception {
@@ -235,7 +235,7 @@ public class PrivateModule extends EzRule {
     }
 
     /**
-     * @see ezunit.EzRule#before(java.lang.reflect.Method)
+     * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -243,7 +243,7 @@ public class PrivateModule extends EzRule {
     }
 
     /**
-     * @see ezunit.EzRule#after(java.lang.reflect.Method)
+     * @see ezunit.ReusableRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {

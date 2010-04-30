@@ -37,7 +37,7 @@ import ezbean.I;
  * 
  * @version 2010/02/09 13:13:43
  */
-public class Sandbox extends EzRule {
+public class Sandbox extends ReusableRule {
 
     /** The internal value. */
     private static final int read = 0;
@@ -108,14 +108,14 @@ public class Sandbox extends EzRule {
     }
 
     /**
-     * @see ezunit.EzRule#beforeClass()
+     * @see ezunit.ReusableRule#beforeClass()
      */
     @Override
     protected void beforeClass() throws Exception {
     }
 
     /**
-     * @see ezunit.EzRule#before(java.lang.reflect.Method)
+     * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -126,7 +126,7 @@ public class Sandbox extends EzRule {
     }
 
     /**
-     * @see ezunit.EzRule#after(java.lang.reflect.Method)
+     * @see ezunit.ReusableRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {
@@ -136,7 +136,7 @@ public class Sandbox extends EzRule {
     }
 
     /**
-     * @see ezunit.EzRule#afterClass()
+     * @see ezunit.ReusableRule#afterClass()
      */
     @Override
     protected void afterClass() {
