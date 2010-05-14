@@ -23,7 +23,6 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-import ezbean.I;
 import ezbean.scratchpad.Solution;
 
 /**
@@ -78,13 +77,13 @@ public abstract class ReusableRule implements MethodRule {
                             // invoke beforeClass
                             beforeClass();
                         } catch (Exception e) {
-                            throw I.quiet(initializationError = e);
+                            throw Solution.quiet(initializationError = e);
                         }
                     }
 
                     // check initialization error
                     if (initializationError != null) {
-                        throw I.quiet(initializationError);
+                        throw Solution.quiet(initializationError);
                     }
 
                     try {
@@ -102,13 +101,17 @@ public abstract class ReusableRule implements MethodRule {
                 } catch (Exception e) {
                     throw Solution.quiet(e);
                 } finally {
-                    // call before class
+                    // call after class
                     if (executed == tests) {
                         // unregister
                         Runtime.getRuntime().removeShutdownHook(invoker);
 
                         // invoke afterClass
-                        afterClass();
+                        try {
+                            afterClass();
+                        } catch (Exception e) {
+                            throw Solution.quiet(e);
+                        }
                     }
                 }
             }

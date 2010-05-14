@@ -34,7 +34,7 @@ import ezbean.io.FileSystem;
 /**
  * @version 2010/02/05 1:31:48
  */
-public class XMLFormatterTest {
+public class XMLWriterTest {
 
     /**
      * Empty element.
@@ -234,8 +234,7 @@ public class XMLFormatterTest {
     public void testXMLWriter() throws SAXException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-        XMLFormatter writer = new XMLFormatter(new OutputStreamWriter(output));
-        writer.setContentHandler(writer);
+        XMLWriter writer = new XMLWriter(new OutputStreamWriter(output));
         writer.startDocument();
         writer.startElement("root");
         writer.endElement("root");
@@ -251,7 +250,7 @@ public class XMLFormatterTest {
      * @param testedXMLFilePath
      */
     private void assertBinaryXML(String expectedXMLFilePath, String testedXMLFilePath) {
-        assertBinaryXML(expectedXMLFilePath, testedXMLFilePath, XMLFormatter.class);
+        assertBinaryXML(expectedXMLFilePath, testedXMLFilePath, XMLWriter.class);
     }
 
     /**
@@ -261,7 +260,7 @@ public class XMLFormatterTest {
      * @param testedXMLFilePath
      */
     private void assertBinaryXML(String expectedXMLFilePath, String testedXMLFilePath, XMLFilter... filters) {
-        assertBinaryXML(expectedXMLFilePath, testedXMLFilePath, XMLFormatter.class, filters);
+        assertBinaryXML(expectedXMLFilePath, testedXMLFilePath, XMLWriter.class, filters);
     }
 
     /**
@@ -270,11 +269,11 @@ public class XMLFormatterTest {
      * @param expectedXMLFilePath
      * @param testedXMLFilePath
      */
-    private void assertBinaryXML(String expectedXMLFilePath, String testedXMLFilePath, Class<? extends XMLFormatter> clazz) {
+    private void assertBinaryXML(String expectedXMLFilePath, String testedXMLFilePath, Class<? extends XMLWriter> clazz) {
         try {
             // tested
             StringBuilder testedOutput = new StringBuilder();
-            XMLFormatter formatter = clazz.getConstructor(Appendable.class).newInstance(testedOutput);
+            XMLWriter formatter = clazz.getConstructor(Appendable.class).newInstance(testedOutput);
             I.parse(locateSource(testedXMLFilePath), formatter);
             String[] testedResult = line(testedOutput);
 
@@ -320,7 +319,7 @@ public class XMLFormatterTest {
      * @param expectedXMLFilePath
      * @param testedXMLFilePath
      */
-    private void assertBinaryXML(String expectedXMLFilePath, String testedXMLFilePath, Class<? extends XMLFormatter> clazz, XMLFilter... filters) {
+    private void assertBinaryXML(String expectedXMLFilePath, String testedXMLFilePath, Class<? extends XMLWriter> clazz, XMLFilter... filters) {
         try {
             // tested
             StringBuilder testedOutput = new StringBuilder();
@@ -398,7 +397,7 @@ public class XMLFormatterTest {
      * 
      * @version 2008/08/31 20:14:16
      */
-    private static class EM extends XMLFormatter {
+    private static class EM extends XMLWriter {
 
         /**
          * Create EM instance.
@@ -410,7 +409,7 @@ public class XMLFormatterTest {
         }
 
         /**
-         * @see ezbean.xml.XMLFormatter#asCharacter(java.lang.String, java.lang.String)
+         * @see ezbean.xml.XMLWriter#asCharacter(java.lang.String, java.lang.String)
          */
         @Override
         protected boolean asCharacter(String uri, String local) {
@@ -424,7 +423,7 @@ public class XMLFormatterTest {
      * 
      * @version 2008/08/31 19:51:39
      */
-    private static class AsCharacter extends XMLFormatter {
+    private static class AsCharacter extends XMLWriter {
 
         private String[] characters = new String[] {"a", "img"};
 
@@ -438,7 +437,7 @@ public class XMLFormatterTest {
         }
 
         /**
-         * @see ezbean.xml2.XMLFormatter#asCharacter(java.lang.String, java.lang.String)
+         * @see ezbean.XMLOut.XMLFormatter#asCharacter(java.lang.String, java.lang.String)
          */
         @Override
         protected boolean asCharacter(String namespaceURI, String localName) {

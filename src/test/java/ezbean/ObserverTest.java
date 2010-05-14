@@ -219,13 +219,6 @@ public class ObserverTest {
         assertEquals("miku", listener.newValue);
     }
 
-    @Test
-    public void compileError() throws Exception {
-        Person person = I.make(Person.class);
-
-        Disposable dis = I.bind(I.mock(person).getAge(), I.mock(person).getFirstName(), true);
-    }
-
     /**
      * @version 2010/03/19 10:40:34
      */

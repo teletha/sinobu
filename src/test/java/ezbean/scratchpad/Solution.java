@@ -17,7 +17,6 @@ package ezbean.scratchpad;
 
 import java.util.ArrayList;
 
-import ezbean.Extensible;
 import ezbean.I;
 import ezbean.Manageable;
 import ezbean.ThreadSpecific;
@@ -27,7 +26,7 @@ import ezbean.ThreadSpecific;
  */
 @SuppressWarnings("serial")
 @Manageable(lifestyle = ThreadSpecific.class)
-public class Solution extends Error implements Extensible {
+public class Solution extends Error {
 
     /** The solutions. */
     private ArrayList<String> solutions = new ArrayList();
@@ -39,20 +38,29 @@ public class Solution extends Error implements Extensible {
      */
     @Override
     public String getMessage() {
-        StringBuilder builder = new StringBuilder("\r\n");
+        StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < solutions.size(); i++) {
-            builder.append(i + 1).append(")\r\n").append(solutions.get(i)).append("\r\n\r\n");
+            builder.append("\r\n\u25E6").append(solutions.get(i));
         }
 
         // clear
         empty = true;
         solutions.clear();
+        // setStackTrace(new StackTraceElement[0]);
 
         return builder.toString();
     }
 
-    public static Solution quiet(Object solution, Object... params) {
+    public static Error quiet2(Object solution, Object... params) {
+        if (solution instanceof Throwable) {
+            return new Error(String.format(((Throwable) solution).getMessage(), params), (Throwable) solution);
+        } else {
+            return new Error(String.format(solution.toString(), params));
+        }
+    }
+
+    public static Error quiet(Object solution, Object... params) {
         Solution solver = I.make(Solution.class);
 
         if (solver.empty && solution instanceof Throwable) {

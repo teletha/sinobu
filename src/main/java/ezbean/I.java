@@ -67,7 +67,7 @@ import ezbean.model.Model;
 import ezbean.model.Property;
 import ezbean.module.ModuleLoader;
 import ezbean.module.Modules;
-import ezbean.xml.XMLFormatter;
+import ezbean.xml.XMLWriter;
 
 /**
  * <p>
@@ -1127,14 +1127,14 @@ public class I implements ClassLoadListener<Extensible> {
             try {
                 // prepare stream
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output), encoding));
-                XMLFormatter xml = new XMLFormatter(writer);
+                XMLWriter xml = new XMLWriter(writer);
 
                 // xml start
                 xml.startDocument();
                 xml.startPrefixMapping("ez", URI);
 
                 // traverse configuration
-                new XMLWriter(xml).traverse(model);
+                new XMLOut(xml).traverse(model);
 
                 xml.endDocument();
                 // xml end
@@ -1173,7 +1173,7 @@ public class I implements ClassLoadListener<Extensible> {
                 // prepare stream
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(input), encoding));
 
-                parse(new InputSource(reader), new ezbean.XMLReader(model));
+                parse(new InputSource(reader), new XMLIn(model));
             } catch (IOException e) {
                 throw quiet(e);
             } finally {
