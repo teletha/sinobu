@@ -194,10 +194,8 @@ public class LifestyleTest {
     @SuppressWarnings("unused")
     private static class StudentLifestyle extends Prototype<Student> {
 
-        public StudentLifestyle(Class modelClass) {
-            super(modelClass);
-            assertNotSame(Student.class, modelClass);
-            assertTrue(Student.class.isAssignableFrom(modelClass));
+        public StudentLifestyle() {
+            super(Student.class);
         }
 
         /**

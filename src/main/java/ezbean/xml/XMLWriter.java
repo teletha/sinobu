@@ -38,7 +38,7 @@ import ezbean.I;
  * @see Attributes
  * @version 2010/02/05 2:02:40
  */
-public class XMLFormatter extends XMLScanner implements LexicalHandler {
+public class XMLWriter extends XMLScanner implements LexicalHandler {
 
     /** The line separator character */
     private static final String EOL = System.getProperty("line.separator");
@@ -79,7 +79,7 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
     /**
      * Create XMLFormatter instance.
      */
-    public XMLFormatter(Appendable out) {
+    public XMLWriter(Appendable out) {
         this.out = out;
     }
 
@@ -91,6 +91,10 @@ public class XMLFormatter extends XMLScanner implements LexicalHandler {
      * @see org.xml.sax.ContentHandler#startDocument()
      */
     public void startDocument() throws SAXException {
+        if (getParent() == null) {
+            setContentHandler(this);
+        }
+
         try {
             // write xml declaration
             out.append("<?xml version=\"1.0\" encoding=\"").append(I.getEncoding().name()).append("\"?>");

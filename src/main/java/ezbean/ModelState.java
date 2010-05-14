@@ -35,10 +35,10 @@ final class ModelState implements PropertyWalker {
     /** The curret object. */
     Object object;
 
-    /** The property for {@link XMLReader} process. */
+    /** The property for {@link XMLIn} process. */
     Property property;
 
-    /** The current location for {@link XMLReader} process. */
+    /** The current location for {@link XMLIn} process. */
     int i = 0;
 
     /**

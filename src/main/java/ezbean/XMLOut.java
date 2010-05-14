@@ -40,7 +40,7 @@ import ezbean.model.Property;
  * 
  * @version 2010/01/12 22:54:06
  */
-class XMLWriter extends ModelWalker {
+class XMLOut extends ModelWalker {
 
     /** The content handler. */
     private final ContentHandler handler;
@@ -62,7 +62,7 @@ class XMLWriter extends ModelWalker {
      * 
      * @param handler
      */
-    XMLWriter(ContentHandler handler) {
+    XMLOut(ContentHandler handler) {
         this.handler = handler;
     }
 

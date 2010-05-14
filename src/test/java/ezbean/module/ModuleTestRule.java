@@ -38,12 +38,12 @@ import org.objectweb.asm.MethodVisitor;
 import ezbean.I;
 import ezbean.io.FileSystem;
 import ezbean.module.external.SingletonClass;
-import ezunit.EzRule;
+import ezunit.ReusableRule;
 
 /**
  * @version 2010/01/08 1:56:27
  */
-public class ModuleTestRule extends EzRule {
+public class ModuleTestRule extends ReusableRule {
 
     /** The full path for external package. */
     private static final String externalPath = SingletonClass.class.getPackage().getName().replace('.', '/');
@@ -128,7 +128,7 @@ public class ModuleTestRule extends EzRule {
     }
 
     /**
-     * @see ezunit.EzRule#before(java.lang.reflect.Method)
+     * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -140,7 +140,7 @@ public class ModuleTestRule extends EzRule {
     }
 
     /**
-     * @see ezunit.EzRule#after(java.lang.reflect.Method)
+     * @see ezunit.ReusableRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {

@@ -39,7 +39,7 @@ import ezbean.model.Property;
  * 
  * @version 2010/01/12 22:54:15
  */
-class XMLReader extends XMLFilterImpl {
+class XMLIn extends XMLFilterImpl {
 
     /** The root object. */
     private final Object root;
@@ -55,7 +55,7 @@ class XMLReader extends XMLFilterImpl {
      * 
      * @param root
      */
-    XMLReader(Object root) {
+    XMLIn(Object root) {
         this.root = root;
     }
 

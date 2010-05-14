@@ -52,7 +52,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import ezbean.I;
 import ezbean.io.FileSystem;
 import ezbean.xml.SAXBuilder;
-import ezbean.xml.XMLFormatter;
+import ezbean.xml.XMLWriter;
 
 /**
  * DOCUMENT.
@@ -501,7 +501,7 @@ public class Ezunit {
      */
     public static final void dumpXML(Document document) {
         try {
-            XMLFormatter formatter = new XMLFormatter(System.out);
+            XMLWriter formatter = new XMLWriter(System.out);
             // create SAX result
             SAXResult result = new SAXResult(formatter);
             result.setLexicalHandler(formatter);
