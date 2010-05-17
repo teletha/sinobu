@@ -102,8 +102,8 @@ public class XMLScannerTest {
 
         // write xml
         writer.startDocument();
-        writer.startElement("root");
-        writer.endElement("root");
+        writer.start("root");
+        writer.end();
         writer.endDocument();
 
         // assert
@@ -121,9 +121,9 @@ public class XMLScannerTest {
 
         // write xml
         writer.startDocument();
-        writer.startElement("root", "name1", "value1", "name2", "value2");
-        writer.characters("test");
-        writer.endElement("root");
+        writer.start("root", "name1", "value1", "name2", "value2");
+        writer.text("test");
+        writer.end();
         writer.endDocument();
 
         // assert
@@ -142,8 +142,8 @@ public class XMLScannerTest {
         // write xml
         writer.startDocument();
         writer.startPrefixMapping("", "default");
-        writer.startElement("root");
-        writer.endElement("root");
+        writer.start("root");
+        writer.end();
         writer.endPrefixMapping("");
         writer.endDocument();
 
@@ -163,14 +163,14 @@ public class XMLScannerTest {
         // write xml
         writer.startDocument();
         writer.startPrefixMapping("test", "first");
-        writer.startElement("test:root");
+        writer.start("test:root");
         writer.startPrefixMapping("test", "second");
-        writer.startElement("test:in");
-        writer.endElement("test:in");
+        writer.start("test:in");
+        writer.end();
         writer.endPrefixMapping("test");
-        writer.startElement("test:in");
-        writer.endElement("test:in");
-        writer.endElement("test:root");
+        writer.start("test:in");
+        writer.end();
+        writer.end();
         writer.endPrefixMapping("test");
         writer.endDocument();
 
@@ -191,9 +191,9 @@ public class XMLScannerTest {
         // write xml
         writer.startDocument();
         writer.startPrefixMapping("test", "first");
-        writer.startElement("root", "test:name1", "value1");
-        writer.characters("test");
-        writer.endElement("root");
+        writer.start("root", "test:name1", "value1");
+        writer.text("test");
+        writer.end();
         writer.endPrefixMapping("test");
         writer.endDocument();
 
@@ -213,15 +213,15 @@ public class XMLScannerTest {
         // write xml
         writer.startDocument();
         writer.startPrefixMapping("test", "ns");
-        writer.startElement("root");
+        writer.start("root");
 
         for (int i = 0; i < 3; i++) {
-            writer.startElement("test:item");
-            writer.characters(String.valueOf(i));
-            writer.endElement("test:item");
+            writer.start("test:item");
+            writer.text(String.valueOf(i));
+            writer.end();
         }
 
-        writer.endElement("root");
+        writer.end();
         writer.endPrefixMapping("test");
         writer.endDocument();
 
@@ -240,9 +240,9 @@ public class XMLScannerTest {
 
         // write xml
         writer.startDocument();
-        writer.startElement("root");
+        writer.start("root");
         I.parse(locateSource("scanner/include00.xml"), new DocumentStriper(), writer);
-        writer.endElement("root");
+        writer.end();
         writer.endDocument();
 
         // assert
@@ -264,8 +264,8 @@ public class XMLScannerTest {
             @Override
             public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
                 super.startElement(uri, localName, name, atts);
-                startElement("add");
-                endElement("add");
+                start("add");
+                end();
             }
         };
         writer.setContentHandler(builder);
@@ -295,8 +295,8 @@ public class XMLScannerTest {
              */
             @Override
             public void endElement(String uri, String localName, String name) throws SAXException {
-                startElement("add");
-                endElement("add");
+                start("add");
+                end();
                 super.endElement(uri, localName, name);
             }
         };
@@ -326,9 +326,9 @@ public class XMLScannerTest {
              */
             @Override
             public void characters(char[] ch, int start, int length) throws SAXException {
-                characters("@");
+                text("@");
                 super.characters(ch, start, length);
-                characters("@");
+                text("@");
             }
         };
         writer.setContentHandler(builder);

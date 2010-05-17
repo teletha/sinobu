@@ -71,15 +71,15 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "child")
             public void child1(Attributes atts) throws SAXException {
-                startElement("default", atts);
-                endElement("default");
+                start("default", atts);
+                end();
             }
 
             @SuppressWarnings("unused")
             @Rule(match = "test:child")
             public void child2(Attributes atts) throws SAXException {
-                startElement("test:test", atts);
-                endElement("test:test");
+                start("test:test", atts);
+                end();
             }
         };
 
@@ -99,8 +99,8 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "child")
             public void child1(Attributes atts) throws SAXException {
-                startElement("new:child", atts);
-                endElement("new:child");
+                start("new:child", atts);
+                end();
             }
         };
 
@@ -243,22 +243,22 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "test", priority = 10)
             public void middle() throws SAXException {
-                startElement("middle", new AttributesImpl());
-                endElement("middle");
+                start("middle", new AttributesImpl());
+                end();
             }
 
             @SuppressWarnings("unused")
             @Rule(match = "test", priority = 1)
             public void low() throws SAXException {
-                startElement("low", new AttributesImpl());
-                endElement("low");
+                start("low", new AttributesImpl());
+                end();
             }
 
             @SuppressWarnings("unused")
             @Rule(match = "test", priority = 100)
             public void high() throws SAXException {
-                startElement("high", new AttributesImpl());
-                endElement("high");
+                start("high", new AttributesImpl());
+                end();
             }
         };
 
@@ -275,15 +275,15 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "test")
             public void high() throws SAXException {
-                startElement("high", new AttributesImpl());
-                endElement("high");
+                start("high", new AttributesImpl());
+                end();
             }
 
             @SuppressWarnings("unused")
             @Rule(match = "test", priority = -1)
             public void low() throws SAXException {
-                startElement("low", new AttributesImpl());
-                endElement("low");
+                start("low", new AttributesImpl());
+                end();
             }
         };
 
@@ -308,8 +308,8 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "test")
             public void test() throws SAXException {
-                startElement("new", "title", "test");
-                endElement("new");
+                start("new", "title", "test");
+                end();
             }
         };
 
@@ -326,8 +326,8 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "test")
             public void test() throws SAXException {
-                startElement("new");
-                endElement("new");
+                start("new");
+                end();
             }
         };
 
@@ -344,8 +344,8 @@ public class XMLScannerWithRuleTest {
 
             @Rule(match = "test")
             public void test() throws SAXException {
-                startElement("new", "ignored");
-                endElement("new");
+                start("new", "ignored");
+                end();
             }
         };
 
@@ -430,8 +430,8 @@ public class XMLScannerWithRuleTest {
 
             @Rule(match = "test")
             public void test() throws SAXException {
-                startElement("new");
-                endElement("new");
+                start("new");
+                end();
             }
         };
 
@@ -498,8 +498,8 @@ public class XMLScannerWithRuleTest {
 
             @Rule(match = "item")
             public void test() throws SAXException {
-                startElement("ns:item");
-                endElement("ns:item");
+                start("ns:item");
+                end();
             }
         };
         assertXMLIdentical("rule/expected20.xml", "rule/test20.xml", scanner);
@@ -519,8 +519,8 @@ public class XMLScannerWithRuleTest {
             @Rule(match = "item")
             public void test() throws SAXException {
                 startPrefixMapping("ns", "override");
-                startElement("ns:item");
-                endElement("ns:item");
+                start("ns:item");
+                end();
                 endPrefixMapping("ns");
             }
         };
@@ -553,25 +553,25 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root(Attributes atts) throws SAXException {
-                startElement("root-change", atts);
+                start("root-change", atts);
                 proceed();
-                endElement("root-change");
+                end();
             }
 
             @SuppressWarnings("unused")
             @Rule(match = "child")
             public void child(Attributes atts) throws SAXException {
-                startElement("child-change", atts);
+                start("child-change", atts);
                 proceed();
-                endElement("child-change");
+                end();
             }
 
             @SuppressWarnings("unused")
             @Rule(match = "item")
             public void item(Attributes atts) throws SAXException {
-                startElement("item-change", atts);
+                start("item-change", atts);
                 proceed();
-                endElement("item-change");
+                end();
             }
         };
 
@@ -612,17 +612,17 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root(Attributes atts) throws SAXException {
-                startElement("root-change", atts);
+                start("root-change", atts);
                 proceed();
-                endElement("root-change");
+                end();
             }
 
             @SuppressWarnings("unused")
             @Rule(match = "child")
             public void child(Attributes atts) throws SAXException {
-                startElement("child-change", atts);
+                start("child-change", atts);
                 proceed();
-                endElement("child-change");
+                end();
             }
         };
 
@@ -639,17 +639,17 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root(Attributes atts) throws SAXException {
-                startElement("root-change", atts);
+                start("root-change", atts);
                 proceed();
-                endElement("root-change");
+                end();
             }
 
             @SuppressWarnings("unused")
             @Rule(match = "child")
             public void child(Attributes atts) throws SAXException {
-                startElement("child-change", atts);
+                start("child-change", atts);
                 proceed();
-                endElement("child-change");
+                end();
             }
         };
 
@@ -666,9 +666,9 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root(Attributes atts) throws SAXException {
-                startElement("root-change", atts);
+                start("root-change", atts);
                 proceed();
-                endElement("root-change");
+                end();
             }
 
             @SuppressWarnings("unused")
@@ -676,9 +676,9 @@ public class XMLScannerWithRuleTest {
             public void child(String contents, AttributesImpl atts) throws SAXException {
                 atts.addAttribute("", "contents", "contents", "CDATA", contents);
 
-                startElement("child-change", atts);
+                start("child-change", atts);
                 proceed();
-                endElement("child-change");
+                end();
             }
         };
 
@@ -712,7 +712,7 @@ public class XMLScannerWithRuleTest {
             @SuppressWarnings("unused")
             @Rule(match = "text")
             public void text() throws SAXException {
-                characters("text");
+                text("text");
             }
         };
 
@@ -877,8 +877,8 @@ public class XMLScannerWithRuleTest {
         @Rule(match = "root")
         @SuppressWarnings("unused")
         public void root(Attributes atts) throws Exception {
-            startElement("added", atts);
-            endElement("added");
+            start("added", atts);
+            end();
         }
     }
 
@@ -892,9 +892,9 @@ public class XMLScannerWithRuleTest {
         @Rule(match = "root")
         @SuppressWarnings("unused")
         public void root(Attributes atts) throws Exception {
-            startElement("added", atts);
+            start("added", atts);
             proceed();
-            endElement("added");
+            end();
         }
     }
 
@@ -908,8 +908,8 @@ public class XMLScannerWithRuleTest {
         @Rule(match = "root")
         @SuppressWarnings("unused")
         public void root(String contents, Attributes atts) throws Exception {
-            startElement(contents, atts);
-            endElement(contents);
+            start(contents, atts);
+            end();
         }
     }
 
@@ -925,9 +925,9 @@ public class XMLScannerWithRuleTest {
         public void root(String contents, AttributesImpl atts) throws Exception {
             atts.addAttribute("", "title", "title", "CDATA", contents);
 
-            startElement("root", atts);
+            start("root", atts);
             proceed();
-            endElement("root");
+            end();
         }
     }
 
@@ -944,8 +944,8 @@ public class XMLScannerWithRuleTest {
         @Rule(match = "excluded:item")
         @SuppressWarnings("unused")
         public void item() throws SAXException {
-            startElement("item", new AttributesImpl());
-            endElement("item");
+            start("item", new AttributesImpl());
+            end();
         }
     }
 

@@ -30,13 +30,13 @@ import ezbean.I;
 
 /**
  * <p>
- * This is the greatest beautiful XML formatter for SAX.
+ * This is the greatest beautiful XML writer/formatter for SAX.
  * </p>
  * 
  * @see ContentHandler
  * @see LexicalHandler
  * @see Attributes
- * @version 2010/02/05 2:02:40
+ * @version 2010/05/17 19:08:03
  */
 public class XMLWriter extends XMLScanner implements LexicalHandler {
 
@@ -91,6 +91,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
      * @see org.xml.sax.ContentHandler#startDocument()
      */
     public void startDocument() throws SAXException {
+        // use myself as xml output if needed
         if (getParent() == null) {
             setContentHandler(this);
         }
