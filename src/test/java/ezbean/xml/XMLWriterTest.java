@@ -203,8 +203,8 @@ public class XMLWriterTest {
             @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root() throws SAXException {
-                startElement("ns:root");
-                endElement("ns:root");
+                start("ns:root");
+                end();
             }
         };
         assertBinaryXML("format/expected21.xml", "format/test21.xml", scanner);
@@ -223,8 +223,8 @@ public class XMLWriterTest {
             @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root() throws SAXException {
-                startElement("item", "name", "value");
-                endElement("item");
+                start("item", "name", "value");
+                end();
             }
         };
         assertBinaryXML("format/expected22.xml", "format/test22.xml", scanner);
@@ -236,8 +236,8 @@ public class XMLWriterTest {
 
         XMLWriter writer = new XMLWriter(new OutputStreamWriter(output));
         writer.startDocument();
-        writer.startElement("root");
-        writer.endElement("root");
+        writer.start("root");
+        writer.end();
         writer.endDocument();
 
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root/>", new String(output.toByteArray()).replaceAll("\\r\\n", ""));

@@ -35,27 +35,27 @@ import ezbean.module.Modules;
 
 /**
  * <p>
- * This class provides high usability API and high performance which is based on SAX.
+ * This class provides high usability XML manipulating API and high performance which is based on
+ * SAX.
  * </p>
  * <p>
  * The following helper method release you from the melancholy which have roots in troublesome
  * arguments of SAX. All of these methods can resolve namespace prefix gracefully.
  * </p>
  * <ul>
- * <li>{@link #startElement(String, String...)}</li>
- * <li>{@link #startElement(String, Attributes)}</li>
- * <li>{@link #endElement(String)}</li>
- * <li>{@link #characters(String)}</li>
+ * <li>{@link #start(String, String...)}</li>
+ * <li>{@link #start(String, Attributes)}</li>
+ * <li>{@link #end()}</li>
+ * <li>{@link #text(String)}</li>
  * </ul>
  * <p>
  * if you want to the root element matching pattern (e.g. "/" in XSLT). you should use methods
  * {@link #startDocument()} and {@link #endDocument()}.
  * </p>
  * <p>
- * The following methods ({@link #startElement(String, Attributes)},
- * {@link #startElement(String, String...)}, {@link #endElement(String)},
- * {@link #characters(String)}) are shorthand of the same name methods to omit namespace uri and
- * local name of element. You can declare namespaces by using
+ * The following methods ({@link #start(String, Attributes)}, {@link #start(String, String...)},
+ * {@link #end()}, {@link #text(String)}) are shorthand of the same effect methods to omit namespace
+ * uri and local name of element. You can declare namespaces by using
  * <code>public static final {@link String} field</code> which is prefixed by the value
  * '<dfn>XMLNS</dfn>'. If you want to declare two namespaces (e.g. xmlns="http://namespace/",
  * xmlns:prefix="http://namespace/with/prefix/"), you must define the following fields.
@@ -77,7 +77,7 @@ import ezbean.module.Modules;
  * </pre>
  * 
  * @see Rule
- * @version 2008/11/30 18:24:14
+ * @version 2010/05/17 19:07:50
  */
 public class XMLScanner extends XMLFilterImpl {
 
@@ -105,11 +105,11 @@ public class XMLScanner extends XMLFilterImpl {
     /** The context queue. */
     private final ArrayDeque<RuleContext> contexts = new ArrayDeque();
 
-    /** The namespace parts. */
-    private final String[] parts = new String[2];
-
     /** The cursor for element location. */
     private final ArrayList<int[]> paths = new ArrayList();
+
+    /** The element name stack. */
+    private final ArrayDeque<String> names = new ArrayDeque();
 
     /**
      * Create XMLScanner instance.
@@ -371,7 +371,7 @@ public class XMLScanner extends XMLFilterImpl {
      * </p>
      * <p>
      * This is shorthand for the method {@link #startElement(String, String, String, Attributes)},
-     * so you can't use this method in the overrode method of the sub class. If you do so, it will
+     * so you can't use this method in the overirde method of the sub class. If you do so, it will
      * cause {@link StackOverflowError}. You must equate calling this method with calling the method
      * {@link #startElement(String, String, String, Attributes)}.
      * </p>
@@ -379,11 +379,12 @@ public class XMLScanner extends XMLFilterImpl {
      * @param name A qualified name (with prefix).
      * @param atts An attribute.
      * @throws SAXException Any SAX exception, possibly wrapping another exception.
-     * @throws StackOverflowError If you use this method in the overrode method
+     * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #startElement(String, String, String, Attributes)} of sub class.
      */
-    public final void startElement(String name, Attributes atts) throws SAXException {
+    public final void start(String name, Attributes atts) throws SAXException {
         String[] resolved = resolve(name);
+        names.add(name);
 
         if (latest == null) {
             super.startElement(resolved[0], resolved[1], name, atts);
@@ -398,7 +399,7 @@ public class XMLScanner extends XMLFilterImpl {
      * </p>
      * <p>
      * This is shorthand for the method {@link #startElement(String, String, String, Attributes)},
-     * so you can't use this method in the overrode method of the sub class. If you do so, it will
+     * so you can't use this method in the overirde method of the sub class. If you do so, it will
      * cause {@link StackOverflowError}. You must equate calling this method with calling the method
      * {@link #startElement(String, String, String, Attributes)}.
      * </p>
@@ -406,10 +407,10 @@ public class XMLScanner extends XMLFilterImpl {
      * @param name A qualified name (with prefix).
      * @param atts A list of name and value pairs.
      * @throws SAXException Any SAX exception, possibly wrapping another exception.
-     * @throws StackOverflowError If you use this method in the overrode method
+     * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #startElement(String, String, String, Attributes)} of sub class.
      */
-    public final void startElement(String name, String... atts) throws SAXException {
+    public final void start(String name, String... atts) throws SAXException {
         // create attributes
         AttributesImpl impl = new AttributesImpl();
 
@@ -420,7 +421,7 @@ public class XMLScanner extends XMLFilterImpl {
         }
 
         // delegation
-        startElement(name, impl);
+        start(name, impl);
     }
 
     /**
@@ -429,17 +430,17 @@ public class XMLScanner extends XMLFilterImpl {
      * </p>
      * <p>
      * This is shorthand for the method {@link #endElement(String, String, String)}, so you can't
-     * use this method in the overrode method of the sub class. If you do so, it will cause
+     * use this method in the overirde method of the sub class. If you do so, it will cause
      * {@link StackOverflowError}. You must equate calling this method with calling the method
      * {@link #endElement(String, String, String)}.
      * </p>
      * 
-     * @param name A qualified name (with prefix).
      * @throws SAXException Any SAX exception, possibly wrapping another exception.
-     * @throws StackOverflowError If you use this method in the overrode method
+     * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #endElement(String, String, String)} of sub class.
      */
-    public final void endElement(String name) throws SAXException {
+    public final void end() throws SAXException {
+        String name = names.pollLast();
         String[] resolved = resolve(name);
 
         if (latest == null) {
@@ -456,17 +457,17 @@ public class XMLScanner extends XMLFilterImpl {
      * </p>
      * <p>
      * This is shorthand for the method {@link #characters(char[], int, int)}, so you can't use this
-     * method in the overrode method of the sub class. If you do so, it will cause
+     * method in the overirde method of the sub class. If you do so, it will cause
      * {@link StackOverflowError}. You must equate calling this method with calling the method
      * {@link #characters(char[], int, int)}.
      * </p>
      * 
      * @param ch A characters.
      * @throws SAXException Any SAX exception, possibly wrapping another exception.
-     * @throws StackOverflowError If you use this method in the overrode method
+     * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #characters(char[], int, int)} of sub class.
      */
-    public final void characters(String ch) throws SAXException {
+    public final void text(String ch) throws SAXException {
         if (latest == null) {
             super.characters(ch.toCharArray(), 0, ch.length());
         } else {
@@ -481,7 +482,7 @@ public class XMLScanner extends XMLFilterImpl {
      * <p>
      * This is shorthand for the method {@link #startElement(String, String, String, Attributes)},
      * {@link #characters(char[], int, int)} and {@link #endElement(String, String, String)}, so you
-     * can't use this method in the overrode method of the sub class. If you do so, it will cause
+     * can't use this method in the overirde method of the sub class. If you do so, it will cause
      * {@link StackOverflowError}. You must equate calling this method with methods
      * {@link #startElement(String, String, String, Attributes)},
      * {@link #characters(char[], int, int)} and {@link #endElement(String, String, String)}.
@@ -490,7 +491,7 @@ public class XMLScanner extends XMLFilterImpl {
      * @param name A qualified name (with prefix).
      * @param atts A list of attributes (name and value pair) and text contents.
      * @throws SAXException Any SAX exception, possibly wrapping another exception.
-     * @throws StackOverflowError If you use this method in the overrode method
+     * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #startElement(String, String, String, Attributes)},
      *             {@link #characters(char[], int, int)} and
      *             {@link #endElement(String, String, String)} of sub class.
@@ -500,9 +501,9 @@ public class XMLScanner extends XMLFilterImpl {
         String[] dist = (i & 1) == 0 ? Arrays.copyOf(atts, i) : atts;
 
         // delegation
-        startElement(name, dist);
-        if ((i & 1) == 0) characters(atts[i]);
-        endElement(name);
+        start(name, dist);
+        if ((i & 1) == 0) text(atts[i]);
+        end();
     }
 
     /**
@@ -514,6 +515,7 @@ public class XMLScanner extends XMLFilterImpl {
     String[] resolve(String name) {
         int i = name.indexOf(':');
 
+        String[] parts = new String[2];
         parts[0] = (i == -1) ? "" : name.substring(0, i);
         parts[1] = name.substring(i + 1);
 

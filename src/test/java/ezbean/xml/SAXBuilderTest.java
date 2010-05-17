@@ -86,16 +86,16 @@ public class SAXBuilderTest {
         // write xml
         writer.startDocument();
         writer.startPrefixMapping("o", "s");
-        writer.startElement("o:test");
-        writer.startElement("o:child");
-        writer.endElement("o:child");
+        writer.start("o:test");
+        writer.start("o:child");
+        writer.end();
         writer.startPrefixMapping("o", "change");
-        writer.startElement("o:child");
-        writer.endElement("o:child");
+        writer.start("o:child");
+        writer.end();
         writer.endPrefixMapping("o");
-        writer.startElement("o:child");
-        writer.endElement("o:child");
-        writer.endElement("o:test");
+        writer.start("o:child");
+        writer.end();
+        writer.end();
         writer.endPrefixMapping("o");
         writer.endDocument();
 
