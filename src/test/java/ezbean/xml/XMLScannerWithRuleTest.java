@@ -16,12 +16,9 @@
 package ezbean.xml;
 
 import static ezunit.Ezunit.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import javax.xml.parsers.FactoryConfigurationError;
-
-
 
 import org.junit.Test;
 import org.xml.sax.Attributes;
@@ -29,8 +26,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 import ezbean.I;
-import ezbean.xml.Rule;
-import ezbean.xml.XMLScanner;
 
 /**
  * DOCUMENT.
@@ -362,6 +357,48 @@ public class XMLScannerWithRuleTest {
 
             @Rule(match = "test")
             public void test() throws SAXException {
+                element("new");
+            }
+        };
+
+        assertXMLIdentical("rule/expected17.xml", "rule/test17.xml", scanner);
+    }
+
+    @Test
+    public void protectedRuleMethod() throws Exception {
+        @SuppressWarnings("unused")
+        XMLScanner scanner = new XMLScanner() {
+
+            @Rule(match = "test")
+            protected void test() throws SAXException {
+                element("new");
+            }
+        };
+
+        assertXMLIdentical("rule/expected17.xml", "rule/test17.xml", scanner);
+    }
+
+    @Test
+    public void packagePrivateRuleMethod() throws Exception {
+        @SuppressWarnings("unused")
+        XMLScanner scanner = new XMLScanner() {
+
+            @Rule(match = "test")
+            void test() throws SAXException {
+                element("new");
+            }
+        };
+
+        assertXMLIdentical("rule/expected17.xml", "rule/test17.xml", scanner);
+    }
+    
+    @Test
+    public void privateRuleMethod() throws Exception {
+        @SuppressWarnings("unused")
+        XMLScanner scanner = new XMLScanner() {
+
+            @Rule(match = "test")
+            private void test() throws SAXException {
                 element("new");
             }
         };
