@@ -151,7 +151,7 @@ public class Sandbox extends ReusableRule {
      * This permission is effective only in the test method by which this method is called.
      * </p>
      * 
-     * @param allow <code>true</code> if you allow to read.
+     * @param manager A {@link SecurityManager} which you want to use.
      */
     public void use(SecurityManager manager) {
         if (manager != null) {
@@ -566,7 +566,7 @@ public class Sandbox extends ReusableRule {
                 throw new AccessControlException("Disallow to read file. " + fd);
             }
 
-            runtimeManager.checkRead(fd);
+            if (runtimeManager != null) runtimeManager.checkRead(fd);
         }
 
         /**
