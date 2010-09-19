@@ -83,6 +83,22 @@ public class CleanRoomTest {
     }
 
     @Test
+    public void locatePresentFile() {
+        File file = room.locateAbsent("present.txt");
+
+        // the specified file doesn't exist yet
+        assertFalse(file.exists());
+
+        // create file
+        file = room.locateFile("present.txt");
+        assertTrue(file.exists());
+
+        // the file has already existed
+        file = room.locateFile("present.txt");
+        assertTrue(file.exists());
+    }
+
+    @Test
     public void locatedFileCanDelete() {
         File file = room.locateFile("empty");
 
