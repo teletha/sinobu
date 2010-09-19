@@ -22,6 +22,7 @@ import static org.junit.Assume.*;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 
@@ -33,7 +34,7 @@ import ezbean.io.FileSystem;
  * The environmental rule for test that depends on file system.
  * </p>
  * 
- * @version 2010/02/10 18:46:50
+ * @version 2010/09/19 15:25:27
  */
 public class CleanRoom extends Sandbox {
 
@@ -154,9 +155,24 @@ public class CleanRoom extends Sandbox {
         // locate virtual file in the clean room
         File virtual = I.locate(clean, path);
 
+        // create virtual file if needed
+        if (isPresent) {
+            if (isFile) {
+                try {
+                    virtual.createNewFile();
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
+            } else {
+                virtual.mkdirs();
+            }
+        }
+
+        // validate file state
         assertEquals(virtual.exists(), isPresent);
         assertEquals(virtual.isFile(), isFile);
 
+        // API definition
         return virtual;
     }
 
