@@ -25,9 +25,33 @@ import java.util.concurrent.Callable;
 import ezbean.I;
 
 /**
- * DOCUMENT.
+ * <p>
+ * Micro benchmark test on Junit4.
+ * </p>
+ * <p>
+ * When writing a microbenchmark to measure the performance of a language primitive like
+ * synchronization, you're grappling with the Heisenberg principle. You want to measure how fast
+ * operation X is, so you don't want to do anything else besides X. But often, the result is a
+ * do-nothing benchmark, which the compiler can optimize away partially or completely without you
+ * realizing it, making the test run faster than expected. If you put extraneous code Y into your
+ * benchmark, you're now measuring the performance of X+Y, introducing noise into your measurement
+ * of X, and worse, the presence of Y changes how the JIT will optimize X. Writing a good
+ * microbenchmark means finding that elusive balance between not enough filler and dataflow
+ * dependency to prevent the compiler from optimizing away your entire program, and so much filler
+ * that what you're trying to measure gets lost in the noise.
+ * </p>
+ * <p>
+ * Because runtime compilation uses profiling data to guide its optimization, the JIT may well
+ * optimize the test code differently than it would real code. As with all benchmarks, there is a
+ * significant risk that the compiler will be able to optimize away the whole thing, because it will
+ * (correctly) realize that the benchmark code doesn't actually do anything or produce a result that
+ * is used for anything. Writing effective benchmarks requires that we "fool" the compiler into not
+ * pruning away code as dead, even though it really is. The use of the counter variables in the
+ * Incrementer classes is a failed attempt to fool the compiler, but compilers are often smarter
+ * than we give them credit for when it comes to eliminating dead code.
+ * </p>
  * 
- * @version 2008/11/04 20:53:30
+ * @version 2010/09/30 11:26:39
  */
 public final class MicroBenchmark<T> {
 
