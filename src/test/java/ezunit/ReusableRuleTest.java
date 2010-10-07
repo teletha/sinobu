@@ -94,6 +94,7 @@ public class ReusableRuleTest {
         @Override
         protected void beforeClass() throws Exception {
             beforeClassInvoked++;
+            assertEquals(ReusableRuleTest.class, testcase);
         }
 
         /**
@@ -102,6 +103,7 @@ public class ReusableRuleTest {
         @Override
         protected void before(Method method) throws Exception {
             counter++;
+            assertTrue(method.getName().startsWith("invokeSubRules"));
         }
     }
 }
