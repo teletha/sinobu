@@ -17,6 +17,9 @@ package ezunit;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Method;
+
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -28,11 +31,30 @@ public class ReusableRuleTest {
     @Rule
     public static final TopRule rule = new TopRule();
 
+    /** The counter of method invocation. */
+    private static int counter = 0;
+
+    @Before
+    public void before() {
+        counter++;
+    }
+
     @Test
-    public void invokeSubRules() throws Exception {
+    public void invokeSubRules1() throws Exception {
         assertTrue(rule.beforeClassInvoked);
-        assertTrue(TopRule.sub1.beforeClassInvoked);
-        assertTrue(TopRule.sub2.beforeClassInvoked);
+        assertEquals(1, TopRule.sub1.beforeClassInvoked);
+        assertEquals(1, TopRule.sub2.beforeClassInvoked);
+        assertEquals(counter, TopRule.sub1.counter);
+        assertEquals(counter, TopRule.sub2.counter);
+    }
+
+    @Test
+    public void invokeSubRules2() throws Exception {
+        assertTrue(rule.beforeClassInvoked);
+        assertEquals(1, TopRule.sub1.beforeClassInvoked);
+        assertEquals(1, TopRule.sub2.beforeClassInvoked);
+        assertEquals(counter, TopRule.sub1.counter);
+        assertEquals(counter, TopRule.sub2.counter);
     }
 
     /**
@@ -46,7 +68,6 @@ public class ReusableRuleTest {
         @Rule
         public static final SubRule sub2 = new SubRule();
 
-        /** flag */
         private boolean beforeClassInvoked = false;
 
         /**
@@ -63,15 +84,24 @@ public class ReusableRuleTest {
      */
     private static class SubRule extends ReusableRule {
 
-        /** flag */
-        private boolean beforeClassInvoked = false;
+        private int beforeClassInvoked = 0;
+
+        private int counter = 0;
 
         /**
          * @see ezunit.ReusableRule#beforeClass()
          */
         @Override
         protected void beforeClass() throws Exception {
-            beforeClassInvoked = true;
+            beforeClassInvoked++;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void before(Method method) throws Exception {
+            counter++;
         }
     }
 }
