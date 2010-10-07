@@ -15,9 +15,14 @@
  */
 package ezunit;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
@@ -32,6 +37,9 @@ public abstract class ReusableRule implements MethodRule {
 
     /** The testcase class. */
     protected final Class testcase = getCaller();
+
+    /** The sub rules. */
+    private List<MethodRule> rules = new ArrayList();
 
     /** The nunber of test methods. */
     private int tests = 0;
@@ -49,6 +57,22 @@ public abstract class ReusableRule implements MethodRule {
      * 
      */
     protected ReusableRule() {
+        for (Field field : getClass().getFields()) {
+            if (field.isAnnotationPresent(Rule.class) && Modifier.isPublic(field.getModifiers())) {
+                try {
+                    Object value = field.get(this);
+
+                    if (value instanceof MethodRule) {
+                        rules.add((MethodRule) value);
+                    }
+                } catch (IllegalAccessException e) {
+                    // If this exception will be thrown, it is bug of this program. So we must
+                    // rethrow the wrapped error in here.
+                    throw new Error(e);
+                }
+            }
+        }
+
         for (Method method : testcase.getMethods()) {
             if (method.isAnnotationPresent(Test.class) && !method.isAnnotationPresent(Ignore.class)) {
                 tests++;
@@ -90,8 +114,15 @@ public abstract class ReusableRule implements MethodRule {
                         // invoke before
                         before(method.getMethod());
 
+                        // make chain of method rules
+                        Statement statement = base;
+
+                        for (MethodRule rule : rules) {
+                            statement = rule.apply(statement, method, target);
+                        }
+
                         // invoke test method
-                        base.evaluate();
+                        statement.evaluate();
                     } catch (Exception e) {
                         throw Solution.quiet(e);
                     } finally {
