@@ -88,7 +88,7 @@ public abstract class ReusableRule implements MethodRule {
     private final AfterClassInvoker invoker = new AfterClassInvoker();
 
     /**
-     * Only subclass can instantiate
+     * Subclass only can instantiate.
      */
     protected ReusableRule() {
         for (Field field : getClass().getFields()) {
