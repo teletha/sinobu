@@ -31,7 +31,41 @@ import org.junit.runners.model.Statement;
 import ezbean.scratchpad.Solution;
 
 /**
- * @version 2010/01/08 2:19:31
+ * <p>
+ * {@link ReusableRule} is replacement of the old-school super testcase class for JUnit. User can
+ * override methods to intercept test method invocation.
+ * </p>
+ * <ul>
+ * <li>{@link ReusableRule#beforeClass()}</li>
+ * <li>{@link ReusableRule#before(Method)}</li>
+ * <li>{@link ReusableRule#after(Method)}</li>
+ * <li>{@link ReusableRule#afterClass()}</li>
+ * </ul>
+ * <p>
+ * Testcase must define {@link ReusableRule} as static field because JUnit instantiates testcase
+ * class each test method invocation. The example is following:
+ * </p>
+ * 
+ * <pre>
+ * public class SomeTest {
+ * 
+ *     &#064;Rule
+ *     public static YourReusableRule rule = new YourReusable();
+ * }
+ * </pre>
+ * <p>
+ * The implementation of {@link ReusableRule} can contains sub rules like the following:
+ * </p>
+ * 
+ * <pre>
+ * public class YourRule extends ReusableRule {
+ * 
+ *     &#064;Rule
+ *     public static SubRule sub = new SubRule();
+ * }
+ * </pre>
+ * 
+ * @version 2010/10/07 21:37:38
  */
 public abstract class ReusableRule implements MethodRule {
 
@@ -54,7 +88,7 @@ public abstract class ReusableRule implements MethodRule {
     private final AfterClassInvoker invoker = new AfterClassInvoker();
 
     /**
-     * 
+     * Only subclass can instantiate
      */
     protected ReusableRule() {
         for (Field field : getClass().getFields()) {
@@ -154,7 +188,7 @@ public abstract class ReusableRule implements MethodRule {
      * This method is invoked once before all test methods.
      * </p>
      * 
-     * @throws Exception
+     * @throws Exception Test will be stop.
      */
     protected void beforeClass() throws Exception {
     }
@@ -165,7 +199,7 @@ public abstract class ReusableRule implements MethodRule {
      * </p>
      * 
      * @param method A current processing test method.
-     * @throws Exception
+     * @throws Exception Test will be stop.
      */
     protected void before(Method method) throws Exception {
     }
