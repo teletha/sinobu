@@ -18,8 +18,12 @@ package ezunit;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -33,6 +37,22 @@ public class ReusableRuleTest {
 
     /** The counter of method invocation. */
     private static int counter = 0;
+
+    @Rule
+    public static final LifecycleMethodValidator checker = new LifecycleMethodValidator();
+
+    /** The container for lifecycle methods. */
+    private static List<String> invocations = new ArrayList();
+
+    @BeforeClass
+    public static void beforeClass() {
+        assertEquals(0, invocations.size());
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        assertEquals(2, invocations.size());
+    }
 
     @Before
     public void before() {
@@ -105,5 +125,30 @@ public class ReusableRuleTest {
             counter++;
             assertTrue(method.getName().startsWith("invokeSubRules"));
         }
+    }
+
+    /**
+     * @version 2010/10/11 0:59:19
+     */
+    private static class LifecycleMethodValidator extends ReusableRule {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void beforeClass() throws Exception {
+            invocations.add("beforeClass from Sub");
+            assertEquals(1, invocations.size());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void afterClass() {
+            assertEquals(1, invocations.size());
+            invocations.add("afterClass from Sub");
+        }
+
     }
 }

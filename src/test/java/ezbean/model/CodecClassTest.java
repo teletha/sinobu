@@ -28,7 +28,7 @@ import ezunit.PrivateModule;
 public class CodecClassTest {
 
     @Rule
-    public static final PrivateModule module = new PrivateModule("test");
+    public static final PrivateModule module = new PrivateModule(true, false);
 
     @Test
     public void systemClass() throws Exception {
@@ -41,10 +41,12 @@ public class CodecClassTest {
     @Test
     public void moduleClass() throws Exception {
         String fqcn = module.forName(Private.class);
+        assertNotSame(Private.class.getName(), fqcn);
 
         CodecClass codec = new CodecClass();
         Class clazz = codec.decode(fqcn);
         assertNotNull(clazz);
+        assertNotSame(Private.class, clazz);
         assertEquals(fqcn, codec.encode(clazz));
     }
 

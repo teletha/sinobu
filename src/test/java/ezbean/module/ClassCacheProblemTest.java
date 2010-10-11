@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import ezbean.I;
 import ezbean.model.Model;
-import ezbean.module.external.SingletonClass;
 import ezunit.PrivateModule;
 
 /**
@@ -34,7 +33,7 @@ import ezunit.PrivateModule;
 public class ClassCacheProblemTest {
 
     @Rule
-    public static PrivateModule module = new PrivateModule(SingletonClass.class);
+    public static PrivateModule module = new PrivateModule("external", true, false);
 
     /**
      * Cached prototype class's identity check.
