@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.model.Model;
-import ezbean.module.external.SingletonClass;
 import ezunit.PrivateModule;
 
 /**
@@ -30,7 +29,7 @@ import ezunit.PrivateModule;
 public class PseudoExternalClassTest {
 
     @Rule
-    public static PrivateModule module = new PrivateModule(SingletonClass.class);
+    public static PrivateModule module = new PrivateModule("external", true, false);
 
     @Test
     public void resolveClass() {

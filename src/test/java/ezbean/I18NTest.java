@@ -38,6 +38,13 @@ public class I18NTest {
     }
 
     @Test
+    public void useNotLoadedBundleClass() {
+        module.unload();
+
+        assertEquals("message", I.i18n(MessageBundle.class).message());
+    }
+
+    @Test
     public void param() throws Exception {
         assertEquals("メッセージ10", I.i18n(MessageBundle.class).messageWithParam(10));
     }
@@ -50,13 +57,6 @@ public class I18NTest {
     @Test(expected = NullPointerException.class)
     public void withNull() {
         I.i18n(null);
-    }
-
-    @Test
-    public void useNotLoadedBundleClass() {
-        module.unload();
-
-        I.i18n(MessageBundle.class);
     }
 
     /**

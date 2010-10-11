@@ -35,7 +35,7 @@ import ezunit.PrivateModule;
 public class ClassloaderUnloadTest {
 
     @Rule
-    public static PrivateModule module = new PrivateModule("monitoring");
+    public static PrivateModule module = new PrivateModule(true, false);
 
     /** The memory monitor. */
     private static MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
