@@ -15,6 +15,7 @@
  */
 package ezunit;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -28,6 +29,7 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
+import ezbean.model.ClassUtil;
 import ezbean.scratchpad.Solution;
 
 /**
@@ -71,6 +73,12 @@ public abstract class ReusableRule implements MethodRule {
 
     /** The testcase class. */
     protected final Class testcase = getCaller();
+
+    /** The root directory of testcases. */
+    protected final File testcaseRoot = ClassUtil.getArchive(testcase);
+
+    /** The parent directory of testcase class. */
+    protected final File testcaseDirectory = new File(testcaseRoot, testcase.getPackage().getName().replace('.', '/'));
 
     /** The sub rules. */
     private List<MethodRule> rules = new ArrayList();
