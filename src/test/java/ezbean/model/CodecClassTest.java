@@ -40,14 +40,13 @@ public class CodecClassTest {
 
     @Test
     public void moduleClass() throws Exception {
-        String fqcn = module.forName(Private.class);
-        assertNotSame(Private.class.getName(), fqcn);
+        Class clazz = module.convert(Private.class);
+        assertNotSame(Private.class, clazz);
 
         CodecClass codec = new CodecClass();
-        Class clazz = codec.decode(fqcn);
-        assertNotNull(clazz);
-        assertNotSame(Private.class, clazz);
-        assertEquals(fqcn, codec.encode(clazz));
+        String fqcn = codec.encode(clazz);
+        assertNotSame(Private.class.getName(), fqcn);
+        assertEquals(clazz, codec.decode(fqcn));
     }
 
     /**
