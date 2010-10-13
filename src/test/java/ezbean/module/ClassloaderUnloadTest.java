@@ -49,7 +49,7 @@ public class ClassloaderUnloadTest {
     @Test
     public void count() throws Exception {
         // use module class
-        assertNotNull(I.make(module.forName("Single")));
+        assertNotNull(I.make(module.convert(Single.class)));
 
         // reload module and execute gc if possible
         module.load();
@@ -60,7 +60,7 @@ public class ClassloaderUnloadTest {
         long initialUnloaded = classLoading.getUnloadedClassCount();
 
         // use module class
-        assertNotNull(I.make(module.forName("Single")));
+        assertNotNull(I.make(module.convert(Single.class)));
 
         // create snapshot
         int loaded = classLoading.getLoadedClassCount();

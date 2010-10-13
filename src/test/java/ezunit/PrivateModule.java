@@ -31,32 +31,26 @@ import org.objectweb.asm.MethodVisitor;
 
 import ezbean.I;
 import ezbean.io.FileSystem;
-import ezbean.model.ClassUtil;
 import ezbean.module.ModuleLoader;
 
 /**
- * @version 2010/02/03 23:12:40
+ * @version 2010/10/14 1:35:08
  */
 public class PrivateModule extends ReusableRule {
-
-    /** The index. */
-    private static int index = 0;
 
     /** The actual private module. */
     private final File module = FileSystem.createTemporary();
 
     /** The original package name. */
-    private String originalPackage;
+    private final String originalPackage;
 
     /** The overridden package name. */
-    private String overriddenPackage;
+    private final String overriddenPackage;
 
     /** The private class filter. */
     private final PrivateClassStrategy strategy;
 
     private boolean createJar;
-
-    private boolean renamePackage;
 
     /**
      * <p>
@@ -73,43 +67,28 @@ public class PrivateModule extends ReusableRule {
      * </p>
      */
     public PrivateModule(boolean renamePackage, boolean createJar) {
-        this.renamePackage = renamePackage;
         this.createJar = createJar;
 
-        originalPackage = testcase.getPackage().getName();
-        overriddenPackage = renamePackage ? "private" + index++ : originalPackage;
+        // compute packaging structure
+        originalPackage = testcase.getPackage().getName().replace('.', '/');
+        overriddenPackage = renamePackage ? testcase.getSimpleName().toLowerCase() : originalPackage;
+
         strategy = new PrivateClassStrategy() {
-
-            /**
-             * @see java.io.FileFilter#accept(java.io.File)
-             */
-            public boolean accept(File file) {
-                return file.isFile() && file.getName().startsWith(testcase.getSimpleName() + "$");
-            }
-
-            /**
-             * @see ezunit.PrivateModule.PrivateClassStrategy#compute(java.lang.String)
-             */
-            public String compute(String name) {
-                return overriddenPackage + "." + testcase.getSimpleName() + "$" + name;
-            }
 
             /**
              * {@inheritDoc}
              */
-            public boolean match(String fqcn) {
+            @Override
+            protected boolean accept(String fqcn) {
                 return fqcn.startsWith(testcase.getName().replace('.', '/').concat("$"));
             }
-
         };
     }
 
     /**
      * <p>
-     * Make the specified package as private module.
+     * Create private module with package name which is related to test class name.
      * </p>
-     * 
-     * @param packageClass
      */
     public PrivateModule(String relativePath) {
         this(relativePath, false, false);
@@ -117,38 +96,26 @@ public class PrivateModule extends ReusableRule {
 
     /**
      * <p>
-     * Make the specified package as private module.
+     * Create private module with package name which is related to test class name.
      * </p>
-     * 
-     * @param packageClass
      */
     public PrivateModule(String relativePath, boolean renamePackage, boolean createJar) {
-        this.renamePackage = renamePackage;
         this.createJar = createJar;
 
-        originalPackage = testcase.getPackage().getName() + "." + relativePath.replace('/', '.');
-        overriddenPackage = renamePackage ? originalPackage.substring(originalPackage.lastIndexOf('.') + 1)
-                : originalPackage;
+        // normalize
+        relativePath = relativePath.replace(File.separatorChar, '/');
+
+        // compute packaging structure
+        originalPackage = testcase.getPackage().getName().replace('.', '/') + "/" + relativePath;
+        overriddenPackage = renamePackage ? relativePath : originalPackage;
+
         strategy = new PrivateClassStrategy() {
-
-            /**
-             * @see java.io.FileFilter#accept(java.io.File)
-             */
-            public boolean accept(File file) {
-                return true;
-            }
-
-            /**
-             * @see ezunit.PrivateModule.PrivateClassStrategy#compute(java.lang.String)
-             */
-            public String compute(String name) {
-                return overriddenPackage + "." + name;
-            }
 
             /**
              * {@inheritDoc}
              */
-            public boolean match(String fqcn) {
+            @Override
+            protected boolean accept(String fqcn) {
                 return fqcn.startsWith(originalPackage);
             }
         };
@@ -172,53 +139,15 @@ public class PrivateModule extends ReusableRule {
         I.unload(module);
     }
 
-    /**
-     * <p>
-     * Helper method to load class in this module by simple name.
-     * </p>
-     * 
-     * @param name A simple class name.
-     * @return A class in this module.
-     * @throws ClassNotFoundException If the class name is invalid.
-     */
-    public Class forName(String name) {
-        System.out.println(compute(name));
+    public Class convert(Class clazz) {
         try {
-            return ModuleLoader.getModuleLoader(null).loadClass(compute(name));
+            return ModuleLoader.getModuleLoader(null).loadClass(clazz.getName()
+                    .replace(originalPackage.replace('/', '.'), overriddenPackage.replace('/', '.')));
         } catch (ClassNotFoundException e) {
-            throw I.quiet(e);
+            // If this exception will be thrown, it is bug of this program. So we must rethrow the
+            // wrapped error in here.
+            throw new Error(e);
         }
-    }
-
-    /**
-     * <p>
-     * Helper method to load class in this module by simple name.
-     * </p>
-     * 
-     * @param name A simple class name.
-     * @return A class in this module.
-     * @throws IllegalArgumentException If the class is <code>null</code>.
-     */
-    public String forName(Class clazz) {
-        if (clazz == null) {
-            throw new IllegalArgumentException("The given class is null.");
-        }
-        return compute(clazz.getSimpleName());
-    }
-
-    /**
-     * <p>
-     * Helper method to compute the class name in this private module.
-     * </p>
-     * 
-     * @param name A simple name.
-     * @return A fully qualified class name.
-     */
-    private String compute(String name) {
-        if (name == null || name.length() == 0) {
-            throw new IllegalArgumentException("The given name is null.");
-        }
-        return strategy.compute(name);
     }
 
     /**
@@ -226,14 +155,8 @@ public class PrivateModule extends ReusableRule {
      */
     @Override
     protected void beforeClass() throws Exception {
-        originalPackage = originalPackage.replace('.', '/');
-        overriddenPackage = overriddenPackage.replace('.', '/');
-
         // copy class file with type conversion
-        File source = I.locate(ClassUtil.getArchive(testcase), originalPackage);
-        File target = I.locate(module, overriddenPackage);
-
-        copy(source, target);
+        copy(new File(testcaseRoot, originalPackage), I.locate(module, overriddenPackage));
     }
 
     /**
@@ -248,12 +171,14 @@ public class PrivateModule extends ReusableRule {
         target.mkdirs();
 
         for (File file : source.listFiles(strategy)) {
+            File dist = I.locate(target, file.getName());
+
             if (file.isDirectory()) {
-                copy(file, new File(target, file.getName()));
+                copy(file, dist);
             } else {
                 try {
                     if (!file.getName().endsWith("class")) {
-                        FileSystem.copy(source, I.locate(target, file.getName()));
+                        FileSystem.copy(source, dist);
                     } else {
                         // setup
                         ClassWriter writer = new ClassWriter(0);
@@ -262,7 +187,7 @@ public class PrivateModule extends ReusableRule {
                         new ClassReader(new FileInputStream(file)).accept(new ClassConverter(writer), 0);
 
                         // write new class file
-                        FileOutputStream stream = new FileOutputStream(I.locate(target, file.getName()));
+                        FileOutputStream stream = new FileOutputStream(dist);
                         stream.write(writer.toByteArray());
                         stream.close();
                     }
@@ -290,25 +215,24 @@ public class PrivateModule extends ReusableRule {
     }
 
     /**
+     * <p>
      * Helper method to conver package name.
+     * </p>
      * 
-     * @param name
-     * @return
+     * @param name A class name.
+     * @return A converted name.
      */
     private String convert(String name) {
-        if (strategy.match(name)) {
-            return name.replace(originalPackage.concat("/"), overriddenPackage.concat("/"));
-        } else {
-            return name;
-        }
-
+        return strategy.accept(name) ? name.replace(originalPackage, overriddenPackage) : name;
     }
 
     /**
+     * <p>
      * Helper method to conver package name.
+     * </p>
      * 
-     * @param names
-     * @return
+     * @param name A class name.
+     * @return A converted name.
      */
     private String[] convert(String[] names) {
         if (names != null) {
@@ -383,18 +307,28 @@ public class PrivateModule extends ReusableRule {
     }
 
     /**
-     * @version 2010/02/04 12:44:12
+     * @version 2010/10/14 1:16:59
      */
-    private static interface PrivateClassStrategy extends FileFilter {
+    private abstract class PrivateClassStrategy implements FileFilter {
 
-        boolean match(String fqcn);
+        /** The pre-conputed path length. */
+        private int prefix = testcaseRoot.getAbsolutePath().length() + 1;
 
         /**
-         * Compute fully qualified class name.
-         * 
-         * @param name A simple class name.
-         * @return A fully qualified class name.
+         * {@inheritDoc}
          */
-        String compute(String name);
+        public final boolean accept(File file) {
+            return accept(file.getAbsolutePath().substring(prefix).replace(File.separatorChar, '/'));
+        }
+
+        /**
+         * <p>
+         * Determinate whether the given class name or path is acceptable or not.
+         * </p>
+         * 
+         * @param fqcn Internal Form of Fully Qualified Class Name (JVMS 4.2).
+         * @return A result.
+         */
+        protected abstract boolean accept(String fqcn);
     }
 }
