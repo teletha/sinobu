@@ -139,6 +139,14 @@ public class PrivateModule extends ReusableRule {
         I.unload(module);
     }
 
+    /**
+     * <p>
+     * Convert to the class associated with this private module.
+     * </p>
+     * 
+     * @param clazz
+     * @return
+     */
     public Class convert(Class clazz) {
         try {
             return ModuleLoader.getModuleLoader(null).loadClass(clazz.getName()
@@ -157,6 +165,22 @@ public class PrivateModule extends ReusableRule {
     protected void beforeClass() throws Exception {
         // copy class file with type conversion
         copy(new File(testcaseRoot, originalPackage), I.locate(module, overriddenPackage));
+    }
+
+    /**
+     * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
+     */
+    @Override
+    protected void before(Method method) throws Exception {
+        load();
+    }
+
+    /**
+     * @see ezunit.ReusableRule#after(java.lang.reflect.Method)
+     */
+    @Override
+    protected void after(Method method) {
+        unload();
     }
 
     /**
@@ -196,22 +220,6 @@ public class PrivateModule extends ReusableRule {
                 }
             }
         }
-    }
-
-    /**
-     * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
-     */
-    @Override
-    protected void before(Method method) throws Exception {
-        load();
-    }
-
-    /**
-     * @see ezunit.ReusableRule#after(java.lang.reflect.Method)
-     */
-    @Override
-    protected void after(Method method) {
-        unload();
     }
 
     /**
