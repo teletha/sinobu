@@ -248,14 +248,14 @@ public class ClassUtilTest {
     public void parameterIsArrayFromInterface() {
         Type[] types = ClassUtil.getParameter(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
         assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assertEquals(String[].class, types[0]);
     }
 
     @Test
     public void parameterIsArrayFromClass() {
         Type[] types = ClassUtil.getParameter(ParameterizedStringArrayByClass.class, ParameterClass.class);
         assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assertEquals(String[].class, types[0]);
     }
 
     @Test
@@ -298,7 +298,7 @@ public class ClassUtilTest {
         Constructor constructor = ClassUtil.getMiniConstructor(ArrayParameterConstructor.class);
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assertEquals(String[].class, types[0]);
     }
 
     @Test
