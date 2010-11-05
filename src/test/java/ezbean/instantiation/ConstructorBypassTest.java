@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.module.ModuleLoader;
+import ezbean.Modules;
 import ezunit.UnsafeUtility;
 
 /**
@@ -128,8 +128,11 @@ public class ConstructorBypassTest {
             // System.arraycopy(tail, 0, bytes, 6 + data.length, 5);
 
             // API definition
-            return new ByteArrayInputStream(ByteBuffer.allocate(11 + data.length).put(new byte[] {-84, -19, 0, 5, 115,
-                    114}).put(data).put(new byte[] {2, 0, 0, 120, 112}).array());
+            return new ByteArrayInputStream(ByteBuffer.allocate(11 + data.length)
+                    .put(new byte[] {-84, -19, 0, 5, 115, 114})
+                    .put(data)
+                    .put(new byte[] {2, 0, 0, 120, 112})
+                    .array());
         }
 
         /**
@@ -137,7 +140,7 @@ public class ConstructorBypassTest {
          */
         @Override
         protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-            return ModuleLoader.getModuleLoader(null).loadClass(desc.getName());
+            return Modules.load(desc.getName());
         }
     }
 

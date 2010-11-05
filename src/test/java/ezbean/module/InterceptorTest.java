@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
+import ezbean.Enhancer;
 import ezbean.I;
 import ezunit.PrivateModule;
 

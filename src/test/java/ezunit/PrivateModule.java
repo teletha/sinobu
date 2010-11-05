@@ -30,8 +30,8 @@ import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 
 import ezbean.I;
+import ezbean.Modules;
 import ezbean.io.FileSystem;
-import ezbean.module.ModuleLoader;
 
 /**
  * @version 2010/10/14 1:35:08
@@ -148,14 +148,8 @@ public class PrivateModule extends ReusableRule {
      * @return
      */
     public Class convert(Class clazz) {
-        try {
-            return ModuleLoader.getModuleLoader(null).loadClass(clazz.getName()
-                    .replace(originalPackage.replace('/', '.'), overriddenPackage.replace('/', '.')));
-        } catch (ClassNotFoundException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
-        }
+        return Modules.load(clazz.getName()
+                .replace(originalPackage.replace('/', '.'), overriddenPackage.replace('/', '.')));
     }
 
     /**

@@ -1,38 +1,32 @@
 /*
  * Copyright (C) 2010 Nameless Production Committee.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *         http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module;
+package ezbean;
 
-import static junit.framework.Assert.*;
-
-import org.junit.Rule;
-import org.junit.Test;
-
-import ezbean.Exposure;
-import ezunit.PrivateModule;
+import ezbean.model.Model;
 
 /**
- * @version 2010/02/06 12:15:34
+ * <p>
+ * Expose non-accessible methods and fields to test easily.
+ * </p>
+ * 
+ * @version 2010/11/05 18:25:00
  */
-public class PseudoExternalClassTest {
+public class Exposure {
 
-    @Rule
-    public static PrivateModule module = new PrivateModule("external", true, false);
-
-    @Test
-    public void resolveClass() {
-        assertNotNull(Exposure.loadModel("external.Class1"));
+    public static Model loadModel(String fqcn) {
+        return Model.load(Modules.load(fqcn));
     }
 }
