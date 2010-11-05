@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 
 import ezbean.model.ClassUtil;
 
+
 /**
  * <p>
  * This lifestyle creates a new instance every time demanded. This is default lifestyle in Ezbean.

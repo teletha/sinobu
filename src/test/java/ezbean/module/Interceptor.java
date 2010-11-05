@@ -15,6 +15,9 @@
  */
 package ezbean.module;
 
+import java.dyn.MethodHandle;
+import java.dyn.MethodHandles;
+import java.dyn.MethodType;
 import java.lang.annotation.Annotation;
 
 import ezbean.Extensible;
@@ -75,5 +78,13 @@ public class Interceptor<P extends Annotation> implements Extensible {
         }
 
         return current.invoke(that, params, current.annotation);
+    }
+
+    public static MethodHandle invoke(Class<?> callerClass, String methodName, MethodType methodType) {
+        MethodType argumentType = methodType.dropParameterTypes(0, 1);
+        MethodHandle method = MethodHandles.lookup()
+                .findSpecial(methodType.parameterType(0).getSuperclass(), methodName, argumentType, methodType.parameterType(0));
+
+        return method;
     }
 }

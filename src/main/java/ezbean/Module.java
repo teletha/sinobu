@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module;
+package ezbean;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -23,6 +23,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,13 +40,15 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-import ezbean.I;
 import ezbean.model.ClassUtil;
+import ezbean.model.Model;
 
 /**
+ * <h2>Module System</h2>
  * <p>
  * Module is a kind of classpath. It can be dynamically unloaded and knows much about information of
  * all classes which is managed by this.
@@ -56,10 +61,22 @@ import ezbean.model.ClassUtil;
  * <li>Module Loading Order</li>
  * <li>Dependency Graph Management</li>
  * </ul>
+ * <h2>Generated Class Naming Strategy</h2>
+ * <p>
+ * We adopted Suffix Naming Strategy of an automatically generated class at first (e.g. SomeClass+,
+ * AnotherClass-). But this strategy has problem against to core package classes (e.g.
+ * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
+ * </p>
  * 
- * @version 2009/06/17 13:08:57
+ * @version 2010/10/27 9:41:14
  */
-class Module implements ClassVisitor {
+class Module extends URLClassLoader implements ClassVisitor {
+
+    /**
+     * The root class loader in EasyBena environment. This {@link Module} can access all classes
+     * which are managed and enhanced by Ezbean.
+     */
+    static final Module root = new Module(null);
 
     /** The dirty process management. */
     private static final IllegalStateException STOP = new IllegalStateException();
@@ -67,14 +84,8 @@ class Module implements ClassVisitor {
     /** The root of this module. */
     final File moduleFile;
 
-    /** The class loader for this module. */
-    final ModuleLoader moduleLoader;
-
     /** The list of service provider classes (by class and interface). [java.lang.String, int[]] */
     private final List<Object[]> infos = new CopyOnWriteArrayList();
-
-    /** The flag whether this module is loaded by {@link ClassLoader#getSystemClassLoader()} or not. */
-    private boolean ez;
 
     /** The expected internal form fully qualified class name. */
     private String fqcn;
@@ -89,9 +100,16 @@ class Module implements ClassVisitor {
      *            be unloaded or reloaded.
      */
     Module(File moduleFile) {
+        super(convert(moduleFile), I.loader);
+
         // we don't need to check null because this is internal class
         // if (moduleFile == null) {
         // }
+
+        if (moduleFile == null) {
+            this.moduleFile = null;
+            return;
+        }
 
         // cast to ezbean.io.File if the specified module file is java.io.File
         this.moduleFile = I.locate(moduleFile.getPath());
@@ -122,27 +140,59 @@ class Module implements ClassVisitor {
                     }
                 }
             }
-
-            // After digging directory, fqnc means some class name in this module.
-            // So we can distinguish the system module from the module by checking it.
-            try {
-                ez = Class.forName(fqcn).getClassLoader() instanceof ModuleLoader;
-            } catch (Exception e) { // accept ClassNotFoundException and NullPointerException
-                ez = true;
-            }
-
-            if (!ez) {
-                // load as system module
-                this.moduleLoader = ModuleLoader.getModuleLoader(null);
-            } else {
-                // load as Ezbean module
-                this.moduleLoader = new ModuleLoader(ModuleLoader.getModuleLoader(null), moduleFile.toURI().toURL());
-            }
         } catch (IOException e) {
             // If this exception will be thrown, it is bug of this program. So we must rethrow
             // the wrapped error in here.
             throw new Error(e);
         }
+    }
+
+    /**
+     * Returns the automatic generated class which implements or extends the given model.
+     * 
+     * @param model A class information of the model.
+     * @param trace If trace is <code>1</code>, the generated code will be traceable code for mock
+     *            object, otherwise for normal bean object.
+     * @return A generated {@link Class} object.
+     */
+    synchronized Class define(Model model, char trace) {
+        // Compute fully qualified class name for the generated class.
+        // The coder class name is prefix to distinguish enhancer type by a name and make core
+        // package classes (e.g. swing components) enhance.
+        // The statement "String name = coder.getName() + model.type.getName();" produces larger
+        // byte code and more objects. To reduce them, we should use the method "concat".
+        String name = model.type.getName().concat(String.valueOf(trace));
+
+        if (name.startsWith("java.")) {
+            name = "$".concat(name);
+        }
+
+        // find class from cache of class loader
+        Class clazz = findLoadedClass(name);
+
+        if (clazz == null) {
+            // start writing byte code
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+
+            // build interceptor chain
+            ClassVisitor current = writer;
+
+            for (Enhancer enhancer : I.find(Enhancer.class)) {
+                current = enhancer.chain(current, model, name);
+            }
+
+            // write code actually
+            ((Enhancer) current).write(trace);
+
+            // retrieve byte code
+            byte[] bytes = writer.toByteArray();
+
+            // define class
+            clazz = defineClass(name, bytes, 0, bytes.length, model.type.getProtectionDomain());
+        }
+
+        // API definition
+        return clazz;
     }
 
     /**
@@ -170,18 +220,14 @@ class Module implements ClassVisitor {
         for (Object[] info : infos) {
             if (test(hash, info)) {
                 try {
-                    Class c = moduleLoader.loadClass((String) info[0]);
+                    Class c = loadClass((String) info[0]);
 
-                    // If the module's loader is equivalent to the class's loader, it means that
-                    // this class is loaded for the first time. Otherwise, the class which has same
-                    // name of this class is already loaded by other module.
-                    if (!ez || moduleLoader == c.getClassLoader()) {
-                        list.add(c);
+                    list.add(c);
 
-                        if (single) {
-                            return list;
-                        }
+                    if (single) {
+                        return list;
                     }
+
                 } catch (ClassNotFoundException e) {
                     // If this exception will be thrown, it is bug of this program. So we must
                     // rethrow the wrapped error in here.
@@ -210,7 +256,7 @@ class Module implements ClassVisitor {
 
         // lazy evaluation
         try {
-            Class<?> clazz = moduleLoader.loadClass((String) info[0]);
+            Class<?> clazz = loadClass((String) info[0]);
 
             // stealth class must be hidden from module
             if (ClassUtil.getMiniConstructor(clazz) == null) {
@@ -422,7 +468,7 @@ class Module implements ClassVisitor {
      * @param className A class name.
      * @return A result.
      */
-    private boolean verify(String className) {
+    private static final boolean verify(String className) {
         if (className.startsWith("java")) {
             char c = className.charAt(4);
             return c != '/' && (c != 'x' || className.charAt(5) != '/');
@@ -432,5 +478,23 @@ class Module implements ClassVisitor {
             return false;
         }
         return true;
+    }
+
+    /**
+     * <p>
+     * Helper method to convert File to array of URL.
+     * </p>
+     * 
+     * @param file
+     * @return
+     */
+    private static final URL[] convert(File file) {
+        try {
+            return file == null ? new URL[0] : new URL[] {file.toURI().toURL()};
+        } catch (MalformedURLException e) {
+            // If this exception will be thrown, it is bug of this program. So we must rethrow the
+            // wrapped error in here.
+            throw new Error(e);
+        }
     }
 }

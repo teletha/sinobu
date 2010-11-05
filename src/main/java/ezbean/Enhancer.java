@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module;
+package ezbean;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -26,8 +26,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import ezbean.Extensible;
-import ezbean.Listeners;
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 import ezbean.model.Property;
@@ -104,7 +102,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
      * @param trace If trace is <code>true</code>, this class generate the byte code for mock
      *            object. Otherwise for bean object.
      */
-    final void write(int trace) {
+    final void write(char trace) {
         // ================================================
         // START CODING
         // ================================================
@@ -194,7 +192,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * 
              * @see ezbean.graph.Coder#getter(ezbean.model.Property, org.objectweb.asm.Type)
              */
-            if (trace != 0) {
+            if (trace != '+') {
                 mv = visitMethod(ACC_PUBLIC, infos[0], infos[1], null, null);
                 mv.visitCode();
                 // invoke Ezbean mock method with property name
@@ -238,7 +236,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * 
              * @see ezbean.module.Coder#setter()
              */
-            if (trace == 0) {
+            if (trace == '+') {
                 mv = visitMethod(ACC_PUBLIC, infos[2], infos[3], null, null);
                 mv.visitCode();
 
@@ -277,7 +275,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
         // -----------------------------------------------------------------------------------
         // Implement Accessible Interfaces
         // -----------------------------------------------------------------------------------
-        if (trace == 0) {
+        if (trace == '+') {
             /**
              * <p>
              * Implement the method {@link Accessible#ezContext()}.

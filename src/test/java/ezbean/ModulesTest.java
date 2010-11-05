@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module;
+package ezbean;
 
 import static org.junit.Assert.*;
 
@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.Module;
 import ezbean.sample.MarkerInterface1;
 
 /**
@@ -34,7 +35,7 @@ public class ModulesTest {
     public static ModuleTestRule registry = new ModuleTestRule();
 
     /**
-     * Test method for {@link ezbean.module.Modules#load(java.io.File, boolean)}.
+     * Test method for {@link ezbean.Modules#load(java.io.File, boolean)}.
      */
     @Test
     public void testLoad1() {
@@ -244,7 +245,7 @@ public class ModulesTest {
     }
 
     /**
-     * Test method for {@link ezbean.module.Module#findAll(java.lang.Class)}.
+     * Test method for {@link ezbean.Module#findAll(java.lang.Class)}.
      */
     @Test
     public void testDupulicateClassLoading() {
@@ -257,7 +258,7 @@ public class ModulesTest {
         // assert class loader
         // all service providers should been loaded by first module
         for (Class provider : providers1) {
-            assertEquals(module1.moduleLoader, provider.getClassLoader());
+            assertEquals(module1, provider.getClassLoader());
         }
 
         // load another module which content is same
@@ -270,7 +271,7 @@ public class ModulesTest {
         // assert class loader
         // all service providers should been loaded by first module
         for (Class provider : providers2) {
-            assertEquals(module1.moduleLoader, provider.getClassLoader());
+            assertEquals(module1, provider.getClassLoader());
         }
 
         // unload first module
@@ -280,7 +281,7 @@ public class ModulesTest {
         // assert class loader
         // all service providers should been loaded by second module
         for (Class provider : providers3) {
-            assertEquals(module2.moduleLoader, provider.getClassLoader());
+            assertEquals(module2, provider.getClassLoader());
         }
     }
 }

@@ -23,6 +23,7 @@ import org.junit.Test;
 import ezbean.ClassLoadListener;
 import ezbean.I;
 import ezbean.Manageable;
+import ezbean.ModuleTestRule;
 import ezbean.Singleton;
 
 /**

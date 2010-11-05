@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.Modules;
 import ezbean.sample.bean.Person;
 import ezunit.PrivateModule;
 

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module;
+package ezbean;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Iterator;
@@ -23,10 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import ezbean.ClassLoadListener;
-import ezbean.I;
-import ezbean.Manageable;
-import ezbean.Singleton;
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 
@@ -81,7 +78,7 @@ public final class Modules implements ClassLoadListener {
      * @see ezbean.ClassLoadListener#load(java.lang.Class)
      */
     public void load(Class clazz) {
-        if (clazz != Modules.class && clazz != ModuleLoader.class) {
+        if (clazz != Modules.class && clazz != Module.class) {
             Object[] types = {I.make(clazz), Object.class};
             Class[] params = ClassUtil.getParameter(clazz, ClassLoadListener.class);
 
@@ -191,10 +188,36 @@ public final class Modules implements ClassLoadListener {
 
                     // unload
                     modules.remove(module);
+
+                    try {
+                        module.close();
+                    } catch (IOException e) {
+                        // If this exception will be thrown, it is bug of this program. So we must
+                        // rethrow the wrapped error in here.
+                        throw new Error(e);
+                    }
                     break;
                 }
             }
         }
+    }
+
+    /**
+     * <p>
+     * </p>
+     * 
+     * @param fqcn
+     * @return
+     */
+    public static final Class load(String fqcn) {
+        for (Module module : I.make(Modules.class).modules) {
+            try {
+                return module.loadClass(fqcn);
+            } catch (ClassNotFoundException e) {
+                // continue
+            }
+        }
+        throw I.quiet(new ClassNotFoundException());
     }
 
     /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module;
+package ezbean;
 
 import static org.junit.Assert.*;
 
@@ -25,8 +25,7 @@ import java.util.Set;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.model.ClassUtil;
+import ezbean.Module;
 import ezbean.sample.ClassAnnotation;
 import ezbean.sample.MarkerInterface1;
 import ezbean.sample.MarkerInterface2;
@@ -45,7 +44,7 @@ public class ModuleTest {
     public static ModuleTestRule registry = new ModuleTestRule();
 
     /**
-     * Test method for {@link ezbean.module.Module#getModuleFile()}.
+     * Test method for {@link ezbean.Module#getModuleFile()}.
      */
     @Test
     public void testGetModuleFile() {
@@ -53,12 +52,11 @@ public class ModuleTest {
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
-        assertNotNull(module.moduleLoader);
         assertEquals(moduleFile, module.moduleFile);
     }
 
     /**
-     * Ezbean module has a {@link ModuleLoader}.
+     * Ezbean module has a {@link Module}.
      */
     @Test
     public void testEzbeanModuleLoader() {
@@ -66,23 +64,11 @@ public class ModuleTest {
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
-        assertNotNull(module.moduleLoader);
-        assertNotSame(ModuleLoader.getModuleLoader(null), module.moduleLoader);
+        assertNotSame(Module.root, module);
     }
 
     /**
-     * System module has a {@link ClassLoader#getSystemClassLoader()}.
-     */
-    @Test
-    public void testSystemModuleClassLoader() {
-        Module module = new Module(ClassUtil.getArchive(I.class));
-        assertNotNull(module);
-        assertNotNull(module.moduleLoader);
-        assertSame(ModuleLoader.getModuleLoader(null), module.moduleLoader);
-    }
-
-    /**
-     * Test method for {@link ezbean.module.Module#findAll(java.lang.Class)}.
+     * Test method for {@link ezbean.Module#findAll(java.lang.Class)}.
      */
     @Test
     public void testFindProviders1() throws Exception {
@@ -91,7 +77,7 @@ public class ModuleTest {
         Module module = new Module(moduleFile);
         assertNotNull(module);
 
-        Class interface1 = module.moduleLoader.loadClass("external.Interface1");
+        Class interface1 = module.loadClass("external.Interface1");
 
         List<Class<? extends MarkerInterface1>> providers = module.find(interface1, false);
         assertNotNull(providers);
@@ -109,7 +95,7 @@ public class ModuleTest {
     }
 
     /**
-     * Test method for {@link ezbean.module.Module#findAll(java.lang.Class)}.
+     * Test method for {@link ezbean.Module#findAll(java.lang.Class)}.
      */
     @Test
     public void testFindProviders2() throws Exception {

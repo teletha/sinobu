@@ -65,8 +65,6 @@ import ezbean.model.ClassUtil;
 import ezbean.model.Codec;
 import ezbean.model.Model;
 import ezbean.model.Property;
-import ezbean.module.ModuleLoader;
-import ezbean.module.Modules;
 import ezbean.xml.XMLWriter;
 
 /**
@@ -223,11 +221,11 @@ public class I implements ClassLoadListener<Extensible> {
      * <code><em>I.class.getClassLoader()</em></code>.
      * </p>
      * <p>
-     * You can retrieve this value by using the method {@link #getParentClassLoader()}. You can
+     * You can retrieve this value by using the method {@link #getClassLoader()}. You can
      * configure this value by using <a href="#ConfigurationService">Configuration Service</a>.
      * </p>
      */
-    protected static ClassLoader parentClassLoader = I.class.getClassLoader();
+    protected static ClassLoader loader = I.class.getClassLoader();
 
     /**
      * <p>
@@ -314,7 +312,7 @@ public class I implements ClassLoadListener<Extensible> {
         }
 
         // configure javascript engine
-        script = new ScriptEngineManager(parentClassLoader).getEngineByName("js");
+        script = new ScriptEngineManager(loader).getEngineByName("js");
 
         // Load myself as module. All built-in classload listeners and extension points will be
         // loaded and activated.
@@ -452,10 +450,10 @@ public class I implements ClassLoadListener<Extensible> {
      * </p>
      * 
      * @return A parent class loader.
-     * @see #parentClassLoader
+     * @see #loader
      */
-    public static ClassLoader getParentClassLoader() {
-        return parentClassLoader;
+    public static ClassLoader getClassLoader() {
+        return Module.root;
     }
 
     /**
@@ -796,7 +794,7 @@ public class I implements ClassLoadListener<Extensible> {
             }
 
             // Enhance the actual model class if needed.
-            actualClass = ModuleLoader.getModuleLoader(actualClass).loadClass(model, 0);
+            actualClass = make(model, '+');
         }
 
         // Construct dependency graph for the current thred.
@@ -901,14 +899,32 @@ public class I implements ClassLoadListener<Extensible> {
              * environment. If you need another way, see {@link BypassConstructorTest}.
              */
             return (M) ReflectionFactory.getReflectionFactory()
-                    .newConstructorForSerialization(ModuleLoader.getModuleLoader(modelClass)
-                            .loadClass(Model.load(modelClass), 1), instantiator)
+                    .newConstructorForSerialization(make(Model.load(modelClass), '-'), instantiator)
                     .newInstance();
         } catch (Exception e) {
             // If this exception will be thrown, it is bug of this program. So we must rethrow the
             // wrapped error in here.
             throw new Error(e);
         }
+    }
+
+    /**
+     * <p>
+     * Make enhanced class in the suitable classloader of the specified {@link Model}.
+     * </p>
+     * 
+     * @param model A target model class.
+     * @param trace A optional marker.
+     * @return A enhanced class.
+     */
+    private static Class make(Model model, char trace) {
+        Module module = Module.root;
+        ClassLoader loader = model.type.getClassLoader();
+
+        if (loader instanceof Module) {
+            module = (Module) loader;
+        }
+        return module.define(model, trace);
     }
 
     /**

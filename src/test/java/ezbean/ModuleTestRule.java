@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module;
+package ezbean;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -35,7 +35,6 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 
-import ezbean.I;
 import ezbean.io.FileSystem;
 import ezbean.module.external.SingletonClass;
 import ezunit.ReusableRule;
@@ -97,7 +96,7 @@ public class ModuleTestRule extends ReusableRule {
 
     /**
      * @param clazz
-     * @see ezbean.module.Modules#load(java.lang.Class)
+     * @see ezbean.Modules#load(java.lang.Class)
      */
     public void load(Class clazz) {
         registry.load(clazz);
@@ -105,7 +104,7 @@ public class ModuleTestRule extends ReusableRule {
 
     /**
      * @param moduleFile
-     * @see ezbean.module.Modules#load(java.io.File)
+     * @see ezbean.Modules#load(java.io.File)
      */
     public void load(File moduleFile) {
         registry.load(moduleFile);
@@ -113,7 +112,7 @@ public class ModuleTestRule extends ReusableRule {
 
     /**
      * @param clazz
-     * @see ezbean.module.Modules#unload(java.lang.Class)
+     * @see ezbean.Modules#unload(java.lang.Class)
      */
     public void unload(Class clazz) {
         registry.unload(clazz);
@@ -121,7 +120,7 @@ public class ModuleTestRule extends ReusableRule {
 
     /**
      * @param moduleFile
-     * @see ezbean.module.Modules#unload(java.io.File)
+     * @see ezbean.Modules#unload(java.io.File)
      */
     public void unload(File moduleFile) {
         registry.unload(moduleFile);

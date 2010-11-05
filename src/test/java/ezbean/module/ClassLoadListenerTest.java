@@ -28,6 +28,7 @@ import org.junit.Test;
 import ezbean.ClassLoadListener;
 import ezbean.I;
 import ezbean.Manageable;
+import ezbean.ModuleTestRule;
 import ezbean.Singleton;
 import ezbean.sample.MarkerInterface1;
 import ezbean.sample.MarkerInterface2;
