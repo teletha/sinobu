@@ -68,7 +68,7 @@ import ezbean.model.Model;
  * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
  * </p>
  * 
- * @version 2010/10/27 9:41:14
+ * @version 2010/11/07 0:20:52
  */
 class Module extends URLClassLoader implements ClassVisitor {
 
@@ -220,14 +220,11 @@ class Module extends URLClassLoader implements ClassVisitor {
         for (Object[] info : infos) {
             if (test(hash, info)) {
                 try {
-                    Class c = loadClass((String) info[0]);
-
-                    list.add(c);
+                    list.add(loadClass((String) info[0]));
 
                     if (single) {
                         return list;
                     }
-
                 } catch (ClassNotFoundException e) {
                     // If this exception will be thrown, it is bug of this program. So we must
                     // rethrow the wrapped error in here.
