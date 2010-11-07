@@ -178,8 +178,7 @@ public final class Modules implements ClassLoadListener {
                             Iterator<Class> iterator = aware.keySet().iterator();
 
                             while (iterator.hasNext()) {
-                                if (I.locate(moduleFile, iterator.next().getName().replace('.', '/').concat(".class"))
-                                        .exists()) {
+                                if (iterator.next().getClassLoader() == module) {
                                     iterator.remove();
                                 }
                             }

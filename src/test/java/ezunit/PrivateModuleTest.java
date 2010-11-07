@@ -13,43 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module;
+package ezunit;
 
 import static org.junit.Assert.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.Modules;
-import ezbean.sample.bean.Person;
-import ezunit.PrivateModule;
-
 /**
- * @version 2010/01/21 19:48:01
+ * @version 2010/11/07 22:52:43
  */
-public class ModulesAwareTest {
+public class PrivateModuleTest {
 
     @Rule
     public static final PrivateModule module = new PrivateModule(true, false);
 
-    private final Map<Class, String> map = Modules.aware(new HashMap());
-
     @Test
-    public void unloadCorrectly() throws Exception {
-        map.put(Person.class, "This entry will not be unloaded.");
-        map.put(module.convert(ThisClassWillBeUnloaded.class), "This entry will be unloaded.");
-
-        assertEquals(2, map.size());
-        module.unload();
-        assertEquals(1, map.size());
+    public void convert() throws Exception {
+        assertNotSame(Clazz.class, module.convert(Clazz.class));
     }
 
     /**
-     * @version 2010/01/21 19:50:48
+     * @version 2010/11/07 22:53:30
      */
-    private static class ThisClassWillBeUnloaded extends Person {
+    private static class Clazz {
     }
 }

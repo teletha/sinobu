@@ -15,14 +15,10 @@
  */
 package ezbean.module;
 
-import java.dyn.MethodHandle;
-import java.dyn.MethodHandles;
-import java.dyn.MethodType;
 import java.lang.annotation.Annotation;
 
 import ezbean.Extensible;
 import ezbean.I;
-import ezbean.model.Model;
 import ezbean.module.InterceptorTest.SuperCallable;
 
 /**
@@ -31,7 +27,7 @@ import ezbean.module.InterceptorTest.SuperCallable;
 public class Interceptor<P extends Annotation> implements Extensible {
 
     /** The method identifier of original. */
-    private int id;
+    int id;
 
     /** The parent interceptor to chain. */
     private Interceptor parent;
@@ -64,7 +60,7 @@ public class Interceptor<P extends Annotation> implements Extensible {
         Interceptor current = new Interceptor();
         current.id = id;
 
-        Annotation[] annotations = InterceptorTest.find(Model.load(that.getClass()).type).get(id).getAnnotations();
+        Annotation[] annotations = InterceptorTest.InterceptorEnhancer.cache.get(that.getClass().getSuperclass())[id];
 
         for (int i = annotations.length - 1; 0 <= i; i--) {
             Interceptor interceptor = I.find(Interceptor.class, annotations[i].annotationType());
@@ -78,13 +74,5 @@ public class Interceptor<P extends Annotation> implements Extensible {
         }
 
         return current.invoke(that, params, current.annotation);
-    }
-
-    public static MethodHandle invoke(Class<?> callerClass, String methodName, MethodType methodType) {
-        MethodType argumentType = methodType.dropParameterTypes(0, 1);
-        MethodHandle method = MethodHandles.lookup()
-                .findSpecial(methodType.parameterType(0).getSuperclass(), methodName, argumentType, methodType.parameterType(0));
-
-        return method;
     }
 }

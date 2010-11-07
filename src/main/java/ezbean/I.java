@@ -238,7 +238,7 @@ public class I implements ClassLoadListener<Extensible> {
      * configure this value by using <a href="#ConfigurationService">Configuration Service</a>.
      * </p>
      */
-    protected static File workingDirectory = new File("").getAbsoluteFile();
+    protected static File working = new File("").getAbsoluteFile(); // Poplar Taneshima
 
     /** The namespace uri of Ezbean. */
     static final String URI = "http://ez.bean/";
@@ -464,10 +464,10 @@ public class I implements ClassLoadListener<Extensible> {
      * </p>
      * 
      * @return A working directory.
-     * @see #workingDirectory
+     * @see #working
      */
     public static File getWorkingDirectory() {
-        return workingDirectory;
+        return working;
     }
 
     /**

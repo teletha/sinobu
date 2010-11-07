@@ -18,21 +18,28 @@ package ezbean.module;
 import static org.junit.Assert.*;
 import static org.objectweb.asm.Opcodes.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
+import ezbean.Accessible;
 import ezbean.Enhancer;
 import ezbean.I;
+import ezbean.Listeners;
+import ezbean.Modules;
 import ezunit.PrivateModule;
 
 /**
@@ -260,6 +267,32 @@ public class InterceptorTest {
     }
 
     /**
+     * @version 2010/11/05 22:55:19
+     */
+    public static class BindingIntercepter extends Interceptor {
+
+        /**
+         * @see ezbean.module.Interceptor#invoke(java.lang.Object, java.lang.Object[],
+         *      java.lang.annotation.Annotation)
+         */
+        @Override
+        protected Object invoke(Object that, Object[] params, Annotation annotation) {
+            Accessible accessible = (Accessible) that;
+            Object old = accessible.ezAccess(id - 1, null);
+
+            ((SuperCallable) that).ezCall(id, params);
+
+            Listeners listeners = accessible.ezContext();
+
+            if (listeners != null) {
+                listeners.notify(that, "", old, accessible.ezAccess(id - 1, null));
+            }
+
+            return null;
+        }
+    }
+
+    /**
      * @version 2010/01/24 13:00:32
      */
     public static interface SuperCallable {
@@ -278,6 +311,8 @@ public class InterceptorTest {
      * @version 2010/01/02 20:05:34
      */
     public static class InterceptorEnhancer extends Enhancer {
+
+        static final Map<Class, Annotation[][]> cache = Modules.aware(new ConcurrentHashMap());
 
         /**
          * @see org.objectweb.asm.ClassAdapter#visit(int, int, java.lang.String, java.lang.String,
@@ -333,6 +368,13 @@ public class InterceptorTest {
              */
             List<Method> intercepts = find(model.type);
 
+            Annotation[][] annotations = new Annotation[intercepts.size()][];
+
+            for (int i = 0; i < annotations.length; i++) {
+                annotations[i] = intercepts.get(i).getAnnotations();
+            }
+            cache.put(model.type, annotations);
+
             // create label for each methods
             int size = intercepts.size();
 
@@ -372,6 +414,20 @@ public class InterceptorTest {
                 mv.visitMaxs(0, 0); // compute by ASM
                 mv.visitEnd();
             }
+        }
+
+        public List<Method> getMethods(Class clazz) {
+            ArrayList list = new ArrayList();
+
+            while (clazz != Object.class) {
+                for (Method method : clazz.getDeclaredMethods()) {
+                    if (!Modifier.isPrivate(method.getModifiers())) {
+                        list.add(method);
+                    }
+                }
+                clazz = clazz.getSuperclass();
+            }
+            return list;
         }
 
         /**
@@ -416,7 +472,7 @@ public class InterceptorTest {
         }
     }
 
-    static final List<Method> find(Class clazz) {
+    private static final List<Method> find(Class clazz) {
         List<Method> methods = new ArrayList();
 
         for (Method method : clazz.getMethods()) {
