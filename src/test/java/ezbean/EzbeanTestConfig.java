@@ -28,6 +28,6 @@ public class EzbeanTestConfig extends I {
      * Create EzbeanTestConfig instance.
      */
     public EzbeanTestConfig() {
-        workingDirectory = new File(workingDirectory, "target");
+        working = new File(working, "target");
     }
 }
