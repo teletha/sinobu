@@ -18,6 +18,7 @@ package ezbean;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -124,25 +125,34 @@ public final class Modules implements ClassLoadListener {
      *            managed by Ezbean (e.g. {@link ClassLoader#getSystemClassLoader()}), and it never
      *            be unloaded or reloaded.
      */
-    public void load(File moduleFile) {
+    public ClassLoader load(File moduleFile) {
         // check module file
         if (moduleFile != null && moduleFile.exists()) {
             // If the given module file has been already loaded, we must unload it on ahead.
             unload(moduleFile);
 
             // build module
-            Module module = new Module(moduleFile);
+            try {
+                Module module = new Module(moduleFile);
 
-            // Load module for the specified directory. The new module has high priority than
-            // previous.
-            modules.add(0, module);
+                // Load module for the specified directory. The new module has high priority than
+                // previous.
+                modules.add(0, module);
 
-            // fire event
-            for (Object[] types : this.types) {
-                for (Class provider : module.find((Class<?>) types[1], false)) {
-                    ((ClassLoadListener) types[0]).load(provider);
+                // fire event
+                for (Object[] types : this.types) {
+                    for (Class provider : module.find((Class<?>) types[1], false)) {
+                        ((ClassLoadListener) types[0]).load(provider);
+                    }
                 }
+                return module;
+            } catch (MalformedURLException e) {
+                // If this exception will be thrown, it is bug of this program. So we must rethrow
+                // the wrapped error in here.
+                throw new Error(e);
             }
+        } else {
+            return null;
         }
     }
 

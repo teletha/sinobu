@@ -317,7 +317,7 @@ public class I implements ClassLoadListener<Extensible> {
 
         // Load myself as module. All built-in classload listeners and extension points will be
         // loaded and activated.
-        load(ClassUtil.getArchive(I.class));
+        loader = load(ClassUtil.getArchive(I.class));
     }
 
     /**
@@ -454,7 +454,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @see #loader
      */
     public static ClassLoader getClassLoader() {
-        return Module.root;
+        return loader;
     }
 
     /**
@@ -896,13 +896,12 @@ public class I implements ClassLoadListener<Extensible> {
      * @return A enhanced class.
      */
     private static Class make(Model model, char trace) {
-        Module module = Module.root;
         ClassLoader loader = model.type.getClassLoader();
 
-        if (loader instanceof Module) {
-            module = (Module) loader;
+        if (!(loader instanceof Module)) {
+            loader = I.loader;
         }
-        return module.define(model, trace);
+        return ((Module) loader).define(model, trace);
     }
 
     /**
@@ -1209,8 +1208,8 @@ public class I implements ClassLoadListener<Extensible> {
      * @see ezbean.ClassLoadListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static void load(File classPath) {
-        make(Modules.class).load(classPath);
+    public static ClassLoader load(File classPath) {
+        return make(Modules.class).load(classPath);
     }
 
     /**
