@@ -72,12 +72,6 @@ import ezbean.model.Model;
  */
 class Module extends URLClassLoader implements ClassVisitor {
 
-    /**
-     * The root class loader in EasyBena environment. This {@link Module} can access all classes
-     * which are managed and enhanced by Ezbean.
-     */
-    static final Module root = new Module(null);
-
     /** The dirty process management. */
     private static final IllegalStateException STOP = new IllegalStateException();
 
@@ -99,17 +93,12 @@ class Module extends URLClassLoader implements ClassVisitor {
      *            managed by Ezbean (e.g. {@link ClassLoader#getSystemClassLoader()}), and it never
      *            be unloaded or reloaded.
      */
-    Module(File moduleFile) {
-        super(convert(moduleFile), I.loader);
+    Module(File moduleFile) throws MalformedURLException {
+        super(new URL[] {moduleFile.toURI().toURL()}, I.loader);
 
         // we don't need to check null because this is internal class
         // if (moduleFile == null) {
         // }
-
-        if (moduleFile == null) {
-            this.moduleFile = null;
-            return;
-        }
 
         // cast to ezbean.io.File if the specified module file is java.io.File
         this.moduleFile = I.locate(moduleFile.getPath());
@@ -469,23 +458,5 @@ class Module extends URLClassLoader implements ClassVisitor {
             return false;
         }
         return true;
-    }
-
-    /**
-     * <p>
-     * Helper method to convert File to array of URL.
-     * </p>
-     * 
-     * @param file
-     * @return
-     */
-    private static final URL[] convert(File file) {
-        try {
-            return file == null ? new URL[0] : new URL[] {file.toURI().toURL()};
-        } catch (MalformedURLException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
-        }
     }
 }

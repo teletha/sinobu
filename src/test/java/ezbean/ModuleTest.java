@@ -25,7 +25,6 @@ import java.util.Set;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.Module;
 import ezbean.sample.ClassAnnotation;
 import ezbean.sample.MarkerInterface1;
 import ezbean.sample.MarkerInterface2;
@@ -47,7 +46,7 @@ public class ModuleTest {
      * Test method for {@link ezbean.Module#getModuleFile()}.
      */
     @Test
-    public void testGetModuleFile() {
+    public void testGetModuleFile() throws Exception {
         File moduleFile = registry.dir;
 
         Module module = new Module(moduleFile);
@@ -59,12 +58,12 @@ public class ModuleTest {
      * Ezbean module has a {@link Module}.
      */
     @Test
-    public void testEzbeanModuleLoader() {
+    public void testEzbeanModuleLoader() throws Exception {
         File moduleFile = registry.dir;
 
         Module module = new Module(moduleFile);
         assertNotNull(module);
-        assertNotSame(Module.root, module);
+        assertNotSame(I.loader, module);
     }
 
     /**
@@ -123,7 +122,7 @@ public class ModuleTest {
      * classes.
      */
     @Test
-    public void testFindProviders3() {
+    public void testFindProviders3() throws Exception {
         File moduleFile = registry.zip;
 
         Module module = new Module(moduleFile);
