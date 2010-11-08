@@ -218,18 +218,18 @@ class Module extends URLClassLoader implements ClassVisitor {
 
         // try to find all service providers
         for (Object[] info : infos) {
-            if (test(hash, info)) {
-                try {
+            try {
+                if (test(hash, info)) {
                     list.add(loadClass((String) info[0]));
 
                     if (single) {
                         return list;
                     }
-                } catch (ClassNotFoundException e) {
-                    // If this exception will be thrown, it is bug of this program. So we must
-                    // rethrow the wrapped error in here.
-                    throw new Error(e);
                 }
+            } catch (ClassNotFoundException e) {
+                // If this exception will be thrown, it is bug of this program. So we must
+                // rethrow the wrapped error in here.
+                throw new Error(e);
             }
         }
 
@@ -244,7 +244,7 @@ class Module extends URLClassLoader implements ClassVisitor {
      * @param info A class information.
      * @return A result.
      */
-    private boolean test(int hash, Object[] info) {
+    private boolean test(int hash, Object[] info) throws ClassNotFoundException {
         int[] hashs = (int[]) info[1];
 
         if (hashs != null) {
@@ -252,42 +252,36 @@ class Module extends URLClassLoader implements ClassVisitor {
         }
 
         // lazy evaluation
-        try {
-            Class<?> clazz = loadClass((String) info[0]);
+        Class<?> clazz = loadClass((String) info[0]);
 
-            // stealth class must be hidden from module
-            if (ClassUtil.getMiniConstructor(clazz) == null) {
-                return !infos.remove(info); // test method requires false for stealth classs
-            }
-
-            Set<Class> set = ClassUtil.getTypes(clazz);
-            Annotation[] annotations = clazz.getAnnotations();
-
-            // compute hash
-            int i = 0;
-            hashs = new int[set.size() + annotations.length];
-
-            for (Class c : set) {
-                hashs[i++] = c.getName().hashCode();
-            }
-
-            for (Annotation a : annotations) {
-                hashs[i++] = a.annotationType().getName().hashCode();
-            }
-
-            // sort for search
-            Arrays.sort(hashs);
-
-            // register information of the service provider class
-            info[1] = hashs;
-
-            // API definition
-            return test(hash, info);
-        } catch (ClassNotFoundException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
+        // stealth class must be hidden from module
+        if (ClassUtil.getMiniConstructor(clazz) == null) {
+            return !infos.remove(info); // test method requires false for stealth classs
         }
+
+        Set<Class> set = ClassUtil.getTypes(clazz);
+        Annotation[] annotations = clazz.getAnnotations();
+
+        // compute hash
+        int i = 0;
+        hashs = new int[set.size() + annotations.length];
+
+        for (Class c : set) {
+            hashs[i++] = c.getName().hashCode();
+        }
+
+        for (Annotation a : annotations) {
+            hashs[i++] = a.annotationType().getName().hashCode();
+        }
+
+        // sort for search
+        Arrays.sort(hashs);
+
+        // register information of the service provider class
+        info[1] = hashs;
+
+        // API definition
+        return test(hash, info);
     }
 
     /**
