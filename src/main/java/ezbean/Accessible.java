@@ -35,12 +35,12 @@ public interface Accessible {
      * @param value A new value.
      * @return A property.
      */
-    Object ezAccess(int id, Object params);
+    Object access(int id, Object params);
 
     /**
      * Retrieve the assosiated context with this accessible object.
      * 
      * @return An assosiated context.
      */
-    Listeners ezContext();
+    Listeners context();
 }

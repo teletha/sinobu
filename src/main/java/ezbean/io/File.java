@@ -306,16 +306,16 @@ class File extends java.io.File implements Accessible {
     }
 
     /**
-     * @see ezbean.Accessible#ezAccess(int, java.lang.Object)
+     * @see ezbean.Accessible#access(int, java.lang.Object)
      */
-    public Object ezAccess(int id, Object params) {
+    public Object access(int id, Object params) {
         return null; // do nothing
     }
 
     /**
-     * @see ezbean.Accessible#ezContext()
+     * @see ezbean.Accessible#context()
      */
-    public Listeners ezContext() {
+    public Listeners context() {
         return null; // do nothing
     }
 
