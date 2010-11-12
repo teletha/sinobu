@@ -39,6 +39,13 @@ public class Interceptor<P extends Annotation> implements Extensible {
     /** The parent interceptor to chain. */
     private Interceptor parent;
 
+    /**
+     * <p>
+     * Intercept property access.
+     * </p>
+     * 
+     * @param param A new value.
+     */
     protected void invoke(Object param) {
         if (parent != null) {
             parent.invoke(param);
@@ -76,11 +83,9 @@ public class Interceptor<P extends Annotation> implements Extensible {
             Interceptor interceptor = I.find(Interceptor.class, annotations[i].annotationType());
 
             if (interceptor != null) {
-                interceptor.annotation = annotations[i];
-                interceptor.id = id;
-                interceptor.name = name;
                 interceptor.that = that;
                 interceptor.parent = current;
+                interceptor.annotation = annotations[i];
 
                 current = interceptor;
             }

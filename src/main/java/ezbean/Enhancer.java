@@ -47,9 +47,6 @@ import ezbean.model.Property;
  */
 public class Enhancer extends ClassAdapter implements Extensible {
 
-    /** The type for {@link Listeners}. */
-    private static final Type CONTEXT = Type.getType(Listeners.class);
-
     /**
      * The class name for the implemented class. This name conforms to not Fully Qualified Class
      * Name (JVMS 2.7) but Internal Form of Fully Qualified Class Name (JVMS 4.2).
@@ -103,6 +100,8 @@ public class Enhancer extends ClassAdapter implements Extensible {
      *            object. Otherwise for bean object.
      */
     final void write(char trace) {
+        Type context = Type.getType(Listeners.class);
+
         // ================================================
         // START CODING
         // ================================================
@@ -245,7 +244,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
 
                 if (may) {
                     // if (ezContext == null) {
-                    field(GETFIELD, CONTEXT, "ezContext");
+                    field(GETFIELD, context, "ezContext");
                     mv.visitJumpInsn(IFNONNULL, invoke);
 
                     // super.setter(param);
@@ -298,22 +297,22 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * </pre>
              */
             // make field
-            field(NEW, CONTEXT, "ezContext");
+            field(NEW, context, "ezContext");
 
             // make method
-            mv = visitMethod(ACC_PUBLIC | ACC_TRANSIENT, "ezContext", "()" + CONTEXT.getDescriptor(), null, null);
+            mv = visitMethod(ACC_PUBLIC | ACC_TRANSIENT, "ezContext", "()" + context.getDescriptor(), null, null);
             mv.visitCode();
-            field(GETFIELD, CONTEXT, "ezContext");
+            field(GETFIELD, context, "ezContext");
             Label branch = new Label();
             mv.visitJumpInsn(IFNONNULL, branch);
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitTypeInsn(NEW, CONTEXT.getInternalName());
+            mv.visitTypeInsn(NEW, context.getInternalName());
             mv.visitInsn(DUP);
 
-            mv.visitMethodInsn(INVOKESPECIAL, CONTEXT.getInternalName(), "<init>", "()V");
-            field(PUTFIELD, CONTEXT, "ezContext");
+            mv.visitMethodInsn(INVOKESPECIAL, context.getInternalName(), "<init>", "()V");
+            field(PUTFIELD, context, "ezContext");
             mv.visitLabel(branch);
-            field(GETFIELD, CONTEXT, "ezContext");
+            field(GETFIELD, context, "ezContext");
             mv.visitInsn(ARETURN);
             mv.visitMaxs(3, 1);
             mv.visitEnd();

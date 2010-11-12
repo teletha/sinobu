@@ -73,6 +73,14 @@ public class InterceptorTest {
         assertEquals(22, bean.order.get(3).intValue());
     }
 
+    @Test
+    public void accessAnnotationValueAndModifyParameter() throws Exception {
+        InterceptedBean bean = I.make(InterceptedBean.class);
+        bean.setValue(1);
+
+        assertEquals(5, bean.getValue());
+    }
+
     /**
      * @version 2010/11/12 11:49:31
      */
@@ -83,6 +91,8 @@ public class InterceptorTest {
         private String sequence;
 
         private String reverse;
+
+        private int value;
 
         private List<Integer> order = new ArrayList();
 
@@ -143,6 +153,26 @@ public class InterceptorTest {
         @First
         public void setReverse(String reverse) {
             this.reverse = reverse;
+        }
+
+        /**
+         * Get the value property of this {@link InterceptorTest.InterceptedBean}.
+         * 
+         * @return The value property.
+         */
+        public int getValue() {
+            return value;
+        }
+
+        /**
+         * Set the value property of this {@link InterceptorTest.InterceptedBean}.
+         * 
+         * @param value The value value to set.
+         */
+        @Value(number = 5)
+        public void setValue(int value) {
+            this.value = value;
+
         }
     }
 
@@ -217,6 +247,29 @@ public class InterceptorTest {
             bean.order.add(21);
             super.invoke(param);
             bean.order.add(22);
+        }
+    }
+
+    /**
+     * @version 2010/11/12 11:45:50
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    private static @interface Value {
+
+        int number();
+    }
+
+    /**
+     * @version 2010/11/12 11:46:52
+     */
+    protected static class ValueInterceptor extends Interceptor<Value> {
+
+        /**
+         * @see ezbean.Interceptor#invoke(java.lang.Object)
+         */
+        @Override
+        protected void invoke(Object param) {
+            super.invoke(annotation.number());
         }
     }
 }
