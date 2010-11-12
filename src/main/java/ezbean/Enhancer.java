@@ -47,6 +47,9 @@ import ezbean.model.Property;
  */
 public class Enhancer extends ClassAdapter implements Extensible {
 
+    /** The type for {@link Listeners}. */
+    private static final Type CONTEXT = Type.getType(Listeners.class);
+
     /**
      * The class name for the implemented class. This name conforms to not Fully Qualified Class
      * Name (JVMS 2.7) but Internal Form of Fully Qualified Class Name (JVMS 4.2).
@@ -100,8 +103,6 @@ public class Enhancer extends ClassAdapter implements Extensible {
      *            object. Otherwise for bean object.
      */
     final void write(char trace) {
-        Type context = Type.getType(Listeners.class);
-
         // ================================================
         // START CODING
         // ================================================
@@ -153,7 +154,8 @@ public class Enhancer extends ClassAdapter implements Extensible {
         // -----------------------------------------------------------------------------------
         // Define Properties
         // -----------------------------------------------------------------------------------
-        for (Property property : this.model.properties) {
+        for (int i = 0; i < model.properties.size(); i++) {
+            Property property = model.properties.get(i);
             Type type = Type.getType(property.model.type);
 
             // The current processing accesser information (name and descriptor).
@@ -224,12 +226,10 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * Define setter method.
              * 
              * <pre>
-             * Object oldValue = super.getProperty();
-             * 
-             * super.setProperty(newValue);
-             * 
-             * if (context != null) {
-             *     context.notify(this, &quot;propertyName&quot;, oldValue, super.getProperty());
+             * if (context == null) {
+             *     super.setProperty(newValue);
+             * } else {
+             *     Interceptor.invoke(this, propertyID, &quot;propertyName&quot;, newValue);
              * }
              * </pre>
              * 
@@ -239,32 +239,35 @@ public class Enhancer extends ClassAdapter implements Extensible {
                 mv = visitMethod(ACC_PUBLIC, infos[2], infos[3], null, null);
                 mv.visitCode();
 
-                // call super getter method and store the returned value
-                mv.visitVarInsn(ALOAD, 0);
-                mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[0], infos[1]);
-                mv.visitVarInsn(type.getOpcode(ISTORE), type.getSize() + 1);
+                Label invoke = new Label();
+                Label end = new Label();
+                boolean may = property.getAccessor(true).getAnnotations().length == 0;
 
-                // call super setter method
-                mv.visitVarInsn(ALOAD, 0);
-                mv.visitVarInsn(type.getOpcode(ILOAD), 1);
-                mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[2], infos[3]);
+                if (may) {
+                    // if (ezContext == null) {
+                    field(GETFIELD, CONTEXT, "ezContext");
+                    mv.visitJumpInsn(IFNONNULL, invoke);
 
-                // invoke notify method if the Context is not null
-                field(GETFIELD, context, "ezContext");
-                Label branch = new Label();
-                mv.visitJumpInsn(IFNULL, branch);
-                field(GETFIELD, context, "ezContext");
-                mv.visitVarInsn(ALOAD, 0); // 1st this
-                mv.visitLdcInsn(property.name); // 2nd "propertyName"
-                mv.visitVarInsn(type.getOpcode(ILOAD), type.getSize() + 1); // 3rd old
+                    // super.setter(param);
+                    mv.visitVarInsn(ALOAD, 0);
+                    mv.visitVarInsn(type.getOpcode(ILOAD), 1);
+                    mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[2], infos[3]);
+
+                    // } else {
+                    mv.visitJumpInsn(GOTO, end);
+                    mv.visitLabel(invoke);
+                }
+
+                // Interceptor.invoke(this, propertyID, "propertyName", param);
+                mv.visitVarInsn(ALOAD, 0); // this
+                mv.visitIntInsn(BIPUSH, i * 3); // property id
+                mv.visitLdcInsn(property.name); // property name
+                mv.visitVarInsn(type.getOpcode(ILOAD), 1); // new value
                 wrap(property.model.type); // warp to none-primitive type
-                mv.visitVarInsn(ALOAD, 0); // 4th newValue
-                mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[0], infos[1]);
-                wrap(property.model.type); // warp to none-primitive type
-                mv.visitMethodInsn(INVOKEVIRTUAL, context.getInternalName(), "notify", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
-                mv.visitLabel(branch);
+                mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Lezbean/Accessible;ILjava/lang/String;Ljava/lang/Object;)V");
 
-                // end methods
+                // }
+                if (may) mv.visitLabel(end);
                 mv.visitInsn(RETURN);
                 mv.visitMaxs(0, 0); // compute by ASM
                 mv.visitEnd();
@@ -295,22 +298,22 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * </pre>
              */
             // make field
-            field(NEW, context, "ezContext");
+            field(NEW, CONTEXT, "ezContext");
 
             // make method
-            mv = visitMethod(ACC_PUBLIC | ACC_TRANSIENT, "ezContext", "()" + context.getDescriptor(), null, null);
+            mv = visitMethod(ACC_PUBLIC | ACC_TRANSIENT, "ezContext", "()" + CONTEXT.getDescriptor(), null, null);
             mv.visitCode();
-            field(GETFIELD, context, "ezContext");
+            field(GETFIELD, CONTEXT, "ezContext");
             Label branch = new Label();
             mv.visitJumpInsn(IFNONNULL, branch);
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitTypeInsn(NEW, context.getInternalName());
+            mv.visitTypeInsn(NEW, CONTEXT.getInternalName());
             mv.visitInsn(DUP);
 
-            mv.visitMethodInsn(INVOKESPECIAL, context.getInternalName(), "<init>", "()V");
-            field(PUTFIELD, context, "ezContext");
+            mv.visitMethodInsn(INVOKESPECIAL, CONTEXT.getInternalName(), "<init>", "()V");
+            field(PUTFIELD, CONTEXT, "ezContext");
             mv.visitLabel(branch);
-            field(GETFIELD, context, "ezContext");
+            field(GETFIELD, CONTEXT, "ezContext");
             mv.visitInsn(ARETURN);
             mv.visitMaxs(3, 1);
             mv.visitEnd();
@@ -333,12 +336,20 @@ public class Enhancer extends ClassAdapter implements Extensible {
              *     case 1: // identifier of the property &quot;property1&quot;
              *         setProperty1((String) value);
              *         return null;
-             * 
-             *     case 2: // identifier of the property &quot;property2&quot;
-             *         return Integer.valueOf(getProperty2()); // dynamic cast for primitive type
+             *         
+             *     case 2: // identifier of the property &quot;property1&quot;
+             *         super.setProperty1((String) value);
+             *         return null;
              * 
              *     case 3: // identifier of the property &quot;property2&quot;
+             *         return Integer.valueOf(getProperty2()); // dynamic cast for primitive type
+             * 
+             *     case 4: // identifier of the property &quot;property2&quot;
              *         setProperty2(((Integer) value).intValue()); // dynamic cast for primitive type
+             *         return null;
+             *         
+             *     case 5: // identifier of the property &quot;property2&quot;
+             *         super.setProperty2(((Integer) value).intValue()); // dynamic cast for primitive type
              *         return null;
              *     }
              * }
@@ -347,7 +358,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
             mv = visitMethod(ACC_PUBLIC, "ezAccess", "(ILjava/lang/Object;)Ljava/lang/Object;", null, null);
 
             // create label for each methods
-            int size = model.properties.size() * 2;
+            int size = model.properties.size() * 3;
 
             // create label for each property
             Label[] labels = new Label[size];
@@ -372,8 +383,8 @@ public class Enhancer extends ClassAdapter implements Extensible {
             mv.visitInsn(ATHROW);
 
             // Then, we should define property accessors.
-            for (int i = 0; i < size; i += 2) {
-                Property property = model.properties.get(i / 2);
+            for (int i = 0; i < size; i += 3) {
+                Property property = model.properties.get(i / 3);
 
                 // write code for getter
                 mv.visitLabel(labels[i]);
@@ -382,6 +393,10 @@ public class Enhancer extends ClassAdapter implements Extensible {
                 // write code for setter
                 mv.visitLabel(labels[i + 1]);
                 write(property.getAccessor(true), INVOKEVIRTUAL);
+
+                // write code for super setter
+                mv.visitLabel(labels[i + 2]);
+                write(property.getAccessor(true), INVOKESPECIAL);
             }
 
             mv.visitMaxs(0, 0); // compute by ASM
@@ -411,11 +426,6 @@ public class Enhancer extends ClassAdapter implements Extensible {
         // Write method invocation.
         for (int i = 0; i < params.length; i++) {
             mv.visitVarInsn(ALOAD, 2);
-
-            if (type == INVOKESPECIAL) {
-                mv.visitIntInsn(BIPUSH, i);
-                mv.visitInsn(AALOAD);
-            }
             cast(params[i]);
         }
         mv.visitMethodInsn(type, type == INVOKESPECIAL ? modelType.getInternalName() : className, method.getName(), Type.getMethodDescriptor(method));
@@ -474,6 +484,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
      * 
      * @param type A property type.
      * @param name A property name. The first character should be upper case.
+     * @deprecated
      */
     protected final void accessor(String name, Type type) {
         // make field
