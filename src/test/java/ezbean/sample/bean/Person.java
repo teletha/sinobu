@@ -79,47 +79,4 @@ public class Person {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-//
-//
-//
-// /**
-// * Get age.
-// */
-// int getAge();
-//
-// /**
-// * Set age.
-// */
-// void setAge(int age);
-//
-// /**
-// * Get first name.
-// */
-// String getFirstName();
-//
-// /**
-// * Set first name.
-// */
-// void setFirstName(String name);
-//
-// /**
-// * Get last name.
-// */
-// String getLastName();
-//
-// /**
-// * Set last name.
-// */
-// void setLastName(String name);
-//
-// /**
-// * Get {@link Dress}.
-// */
-// Dress getDress();
-//
-// /**
-// * Set {@link Dress}.
-// */
-// void setDress(Dress dress);
 }

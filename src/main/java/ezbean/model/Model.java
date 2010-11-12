@@ -216,7 +216,7 @@ public class Model<M> {
 
         // reorder property index
         for (int i = 0; i < properties.size(); i++) {
-            ((Property) properties.get(i)).id = i * 2;
+            ((Property) properties.get(i)).id = i * 3;
         }
 
         // exposed property list must be unmodifiable

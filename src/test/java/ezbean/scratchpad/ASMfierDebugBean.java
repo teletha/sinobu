@@ -16,13 +16,16 @@
 package ezbean.scratchpad;
 
 import ezbean.Accessible;
+import ezbean.Interceptor;
 import ezbean.Listeners;
-import ezbean.module.Interceptor;
 
 /**
  * @version 2009/12/27 17:21:35
  */
 public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
+
+    @SuppressWarnings("unused")
+    private Listeners ezContext;
 
     /**
      * @see ezbean.scratchpad.ASMfierDebugBase#getAge()
@@ -53,23 +56,11 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
      */
     @Override
     public void setName(String name) {
-        super.setName(name);
-    }
-
-    /**
-     * @see ezbean.scratchpad.ASMfierDebugBase#isHungry()
-     */
-    @Override
-    public boolean isHungry() {
-        return (Boolean) Interceptor.invoke(this, 0, new Object[] {});
-    }
-
-    /**
-     * @see ezbean.scratchpad.ASMfierDebugBase#talk(java.lang.String)
-     */
-    @Override
-    public void talk(String message, int count) {
-        Interceptor.invoke(this, 0, new Object[] {message, count});
+        if (ezContext == null) {
+            super.setName(name);
+        } else {
+            Interceptor.invoke(this, 11, "name", name);
+        }
     }
 
     /**
@@ -92,6 +83,11 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
 
         case 3:
             setName((String) params);
+            return null;
+
+        case 4:
+            System.out.println("super");
+            super.setName((String) params);
             return null;
         }
     }
