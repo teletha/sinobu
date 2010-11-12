@@ -51,13 +51,13 @@ public class Interceptor<P extends Annotation> implements Extensible {
             parent.invoke(param);
         } else {
             // Retrieve old value.
-            Object old = that.ezAccess(id, null);
+            Object old = that.access(id, null);
 
             // Apply new value.
-            that.ezAccess(id + 2, param);
+            that.access(id + 2, param);
 
             // Notify to all listeners.
-            that.ezContext().notify(that, name, old, param);
+            that.context().notify(that, name, old, param);
         }
     }
 

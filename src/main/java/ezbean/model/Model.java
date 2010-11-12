@@ -274,7 +274,7 @@ public class Model<M> {
      */
     public Object get(M object, Property property) {
         if (object instanceof Accessible) {
-            return ((Accessible) object).ezAccess(property.id, null);
+            return ((Accessible) object).access(property.id, null);
         }
 
         try {
@@ -297,7 +297,7 @@ public class Model<M> {
      */
     public void set(M object, Property property, Object propertyValue) {
         if (object instanceof Accessible) {
-            ((Accessible) object).ezAccess(property.id + 1, propertyValue);
+            ((Accessible) object).access(property.id + 1, propertyValue);
         } else {
             try {
                 property.accessors[1].invoke(object, propertyValue);

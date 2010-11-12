@@ -64,9 +64,9 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
     }
 
     /**
-     * @see ezbean.Accessible#ezAccess(int, java.lang.Object)
+     * @see ezbean.Accessible#access(int, java.lang.Object)
      */
-    public Object ezAccess(int id, Object params) {
+    public Object access(int id, Object params) {
         switch (id) {
         default:
             throw new IllegalArgumentException();
@@ -124,9 +124,9 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
     }
 
     /**
-     * @see ezbean.Accessible#ezContext()
+     * @see ezbean.Accessible#context()
      */
-    public Listeners ezContext() {
+    public Listeners context() {
         return null;
     }
 }

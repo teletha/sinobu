@@ -111,7 +111,7 @@ class Observer extends ModelWalker implements PropertyListener, Disposable {
             // The location (index == length) indicates the last property path. It is no need to be
             // aware of property change event.
             if (index < length && node instanceof Accessible) {
-                Listeners<String, PropertyListener> line = ((Accessible) node).ezContext();
+                Listeners<String, PropertyListener> line = ((Accessible) node).context();
 
                 if (mode == 2) {
                     line.push(path.get(index), this);

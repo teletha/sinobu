@@ -51,14 +51,14 @@ public class AccessibleTest {
 
         Accessible accessible = (Accessible) person;
 
-        assertEquals(null, accessible.ezAccess(first.id, null));
-        assertEquals(null, accessible.ezAccess(last.id, null));
+        assertEquals(null, accessible.access(first.id, null));
+        assertEquals(null, accessible.access(last.id, null));
 
         person.setFirstName("first");
         person.setLastName("last");
 
-        assertEquals("first", accessible.ezAccess(first.id, null));
-        assertEquals("last", accessible.ezAccess(last.id, null));
+        assertEquals("first", accessible.access(first.id, null));
+        assertEquals("last", accessible.access(last.id, null));
     }
 
     /**
@@ -72,11 +72,11 @@ public class AccessibleTest {
         assertTrue(person instanceof Accessible);
 
         Accessible accessible = (Accessible) person;
-        assertEquals(null, accessible.ezAccess(1000, null));
+        assertEquals(null, accessible.access(1000, null));
     }
 
     /**
-     * Test method for {@link ezbean.Accessible#ezAccess(java.lang.String, java.lang.Object)}.
+     * Test method for {@link ezbean.Accessible#access(java.lang.String, java.lang.Object)}.
      */
     @Test
     public void testSetAccessibleProperty() {
@@ -97,8 +97,8 @@ public class AccessibleTest {
         Property first = model.getProperty("firstName");
         Property last = model.getProperty("lastName");
 
-        accessible.ezAccess(first.id + 1, "first");
-        accessible.ezAccess(last.id + 1, "last");
+        accessible.access(first.id + 1, "first");
+        accessible.access(last.id + 1, "last");
 
         assertEquals("first", person.getFirstName());
         assertEquals("last", person.getLastName());
@@ -106,7 +106,7 @@ public class AccessibleTest {
     }
 
     /**
-     * Test method for {@link ezbean.Accessible#ezAccess(java.lang.String, java.lang.Object)}.
+     * Test method for {@link ezbean.Accessible#access(java.lang.String, java.lang.Object)}.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testSetAccessibleNoProperty() {
@@ -116,7 +116,7 @@ public class AccessibleTest {
         assertTrue(person instanceof Accessible);
 
         Accessible accessible = (Accessible) person;
-        accessible.ezAccess(1000, "first");
+        accessible.access(1000, "first");
     }
 
     /**
@@ -144,13 +144,13 @@ public class AccessibleTest {
         group.setMembers(members);
 
         // members
-        members = (List<Person>) ((Accessible) group).ezAccess(property.id, null);
+        members = (List<Person>) ((Accessible) group).access(property.id, null);
         assertNotNull(members);
         assertEquals(2, members.size());
     }
 
     /**
-     * Test method for {@link ezbean.Accessible#ezContext()}.
+     * Test method for {@link ezbean.Accessible#context()}.
      */
     @Test
     public void testPropertyContext() throws Exception {
@@ -159,7 +159,7 @@ public class AccessibleTest {
         assertTrue(person instanceof Accessible);
 
         Accessible accessible = (Accessible) person;
-        assertNotNull(accessible.ezContext());
+        assertNotNull(accessible.context());
     }
 
     /**

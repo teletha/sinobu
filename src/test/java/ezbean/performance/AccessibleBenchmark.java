@@ -72,7 +72,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
              * @see java.util.concurrent.Callable#call()
              */
             public Object call() {
-                person.ezAccess(name, value);
+                person.access(name, value);
                 return person;
             }
         });

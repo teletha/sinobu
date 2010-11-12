@@ -243,8 +243,8 @@ public class Enhancer extends ClassAdapter implements Extensible {
                 boolean may = property.getAccessor(true).getAnnotations().length == 0;
 
                 if (may) {
-                    // if (ezContext == null) {
-                    field(GETFIELD, context, "ezContext");
+                    // if (context == null) {
+                    field(GETFIELD, context, "context");
                     mv.visitJumpInsn(IFNONNULL, invoke);
 
                     // super.setter(param);
@@ -279,7 +279,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
         if (trace == '+') {
             /**
              * <p>
-             * Implement the method {@link Accessible#ezContext()}.
+             * Implement the method {@link Accessible#context()}.
              * </p>
              * <p>
              * Make field and method.
@@ -288,7 +288,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * <pre>
              * private transient Context context;
              * 
-             * public Context ezContext() {
+             * public Context context() {
              *     if (context == null) {
              *         context = new Context();
              *     }
@@ -297,12 +297,12 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * </pre>
              */
             // make field
-            field(NEW, context, "ezContext");
+            field(NEW, context, "context");
 
             // make method
-            mv = visitMethod(ACC_PUBLIC | ACC_TRANSIENT, "ezContext", "()" + context.getDescriptor(), null, null);
+            mv = visitMethod(ACC_PUBLIC | ACC_TRANSIENT, "context", "()" + context.getDescriptor(), null, null);
             mv.visitCode();
-            field(GETFIELD, context, "ezContext");
+            field(GETFIELD, context, "context");
             Label branch = new Label();
             mv.visitJumpInsn(IFNONNULL, branch);
             mv.visitVarInsn(ALOAD, 0);
@@ -310,21 +310,21 @@ public class Enhancer extends ClassAdapter implements Extensible {
             mv.visitInsn(DUP);
 
             mv.visitMethodInsn(INVOKESPECIAL, context.getInternalName(), "<init>", "()V");
-            field(PUTFIELD, context, "ezContext");
+            field(PUTFIELD, context, "context");
             mv.visitLabel(branch);
-            field(GETFIELD, context, "ezContext");
+            field(GETFIELD, context, "context");
             mv.visitInsn(ARETURN);
             mv.visitMaxs(3, 1);
             mv.visitEnd();
 
             /**
              * <p>
-             * Implement the method {@link Accessible#ezAccess(int, Object)}. Getter and setter
+             * Implement the method {@link Accessible#access(int, Object)}. Getter and setter
              * methods have very similar code structure, so we can write that code in one method.
              * </p>
              * 
              * <pre>
-             * public void ezAccess(int methodId, Object value) {
+             * public void access(int methodId, Object value) {
              *     switch (methodId) {
              *     default: // no such property
              *         throw new IllegalArgumentException(propertyName);
@@ -354,7 +354,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
              * }
              * </pre>
              */
-            mv = visitMethod(ACC_PUBLIC, "ezAccess", "(ILjava/lang/Object;)Ljava/lang/Object;", null, null);
+            mv = visitMethod(ACC_PUBLIC, "access", "(ILjava/lang/Object;)Ljava/lang/Object;", null, null);
 
             // create label for each methods
             int size = model.properties.size() * 3;
