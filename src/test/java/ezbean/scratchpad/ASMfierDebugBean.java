@@ -24,7 +24,6 @@ import ezbean.Listeners;
  */
 public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
 
-    @SuppressWarnings("unused")
     private Listeners ezContext;
 
     /**

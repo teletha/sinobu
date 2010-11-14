@@ -49,7 +49,7 @@ public final class Modules implements ClassLoadListener {
     /**
      * Avoid construction
      */
-    private Modules() {
+    Modules() {
         // built-in ClassLoadListener
         types.add(new Object[] {this, ClassLoadListener.class});
     }
