@@ -212,7 +212,7 @@ public class ModuleTest {
      */
     @Test
     public void testModuleInModule() throws Exception {
-        Module module = new Module(new File("src/test/modules/inline.zip"));
+        Module module = new Module(new File("src/test/resources/ezbean/inline.zip"));
         assertNotNull(module);
 
         List<Class<Object>> providers = module.find(Object.class, false);
