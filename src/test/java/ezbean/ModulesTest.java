@@ -20,268 +20,161 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.Module;
+import ezbean.io.FileSystem;
 import ezbean.sample.MarkerInterface1;
+import ezunit.PrivateModule;
 
 /**
- * @version 2009/12/23 13:20:51
+ * @version 2010/11/14 21:42:48
  */
 public class ModulesTest {
 
     @Rule
-    public static ModuleTestRule registry = new ModuleTestRule();
+    public static final PrivateModule module1 = new PrivateModule("module/external");
 
-    /**
-     * Test method for {@link ezbean.Modules#load(java.io.File, boolean)}.
-     */
-    @Test
-    public void testLoad1() {
-        assertEquals(0, registry.modules.size());
-        registry.load(registry.dir);
-        assertEquals(1, registry.modules.size());
+    @Rule
+    public static final PrivateModule module2 = new PrivateModule("module/external", true, false);
+
+    @Rule
+    public static final PrivateModule module3 = new PrivateModule("module/external", true, false);
+
+    /** The clean and empty module repository for test. */
+    private Modules modules;
+
+    @Before
+    public void before() {
+        modules = new Modules();
+        modules.modules.clear();
+        modules.types.clear();
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
     @Test
-    public void testLoad2() {
-        assertEquals(0, registry.modules.size());
-        registry.load(registry.jar);
-        assertEquals(1, registry.modules.size());
+    public void loadModule() {
+        assertEquals(0, modules.modules.size());
+        modules.load(module1.module);
+        assertEquals(1, modules.modules.size());
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
     @Test
-    public void testLoad3() {
-        assertEquals(0, registry.modules.size());
-        registry.load(registry.zip);
-        assertEquals(1, registry.modules.size());
+    public void loadMultipleModules() {
+        assertEquals(0, modules.modules.size());
+        modules.load(module1.module);
+        assertEquals(1, modules.modules.size());
+        modules.load(module2.module);
+        assertEquals(2, modules.modules.size());
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
     @Test
-    public void testLoad4() {
-        assertEquals(0, registry.modules.size());
-        registry.load(registry.dir);
-        assertEquals(1, registry.modules.size());
-
-        registry.load(registry.jar);
-        assertEquals(2, registry.modules.size());
-
-        registry.load(registry.zip);
-        assertEquals(3, registry.modules.size());
+    public void loadNull() {
+        assertEquals(0, modules.modules.size());
+        modules.load((File) null);
+        assertEquals(0, modules.modules.size());
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
     @Test
-    public void testLoad5() {
-        assertEquals(0, registry.modules.size());
-        registry.load((File) null);
-        assertEquals(0, registry.modules.size());
+    public void loadNotExistModule() {
+        assertEquals(0, modules.modules.size());
+        modules.load(new File("not-exist"));
+        assertEquals(0, modules.modules.size());
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
     @Test
-    public void testLoad6() {
-        assertEquals(0, registry.modules.size());
-        registry.load(new File("not-exist"));
-        assertEquals(0, registry.modules.size());
+    public void reload() {
+        assertEquals(0, modules.modules.size());
+        modules.load(module1.module);
+        assertEquals(1, modules.modules.size());
+        modules.load(module1.module);
+        assertEquals(1, modules.modules.size());
+        modules.load(module1.module);
+        assertEquals(1, modules.modules.size());
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
+    private File relativeModule = new File("target/module");
+
     @Test
-    public void testReload1() {
-        assertEquals(0, registry.modules.size());
-        registry.load(registry.dir);
-        assertEquals(1, registry.modules.size());
+    public void reloadRelativePathAndAbsolutePath() {
+        FileSystem.copy(module1.module, relativeModule);
 
-        registry.load(registry.dir);
-        assertEquals(1, registry.modules.size());
+        try {
+            assertFalse(relativeModule.isAbsolute());
+            assertEquals(0, modules.modules.size());
 
-        registry.load(registry.dir);
-        assertEquals(1, registry.modules.size());
+            // as relative
+            modules.load(relativeModule);
+            assertEquals(1, modules.modules.size());
+
+            // as absolute
+            modules.load(relativeModule.getAbsoluteFile());
+            assertEquals(1, modules.modules.size());
+        } finally {
+            FileSystem.delete(relativeModule);
+        }
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
     @Test
-    public void testReload2() {
-        assertEquals(0, registry.modules.size());
-        registry.load(registry.jar);
-        assertEquals(1, registry.modules.size());
-
-        registry.load(registry.jar);
-        assertEquals(1, registry.modules.size());
-
-        registry.load(registry.jar);
-        assertEquals(1, registry.modules.size());
+    public void unloadModule() {
+        assertEquals(0, modules.modules.size());
+        modules.load(module1.module);
+        assertEquals(1, modules.modules.size());
+        modules.unload(module1.module);
+        assertEquals(0, modules.modules.size());
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
     @Test
-    public void testReload3() {
-        assertEquals(0, registry.modules.size());
-        registry.load(registry.zip);
-        assertEquals(1, registry.modules.size());
-
-        registry.load(registry.zip);
-        assertEquals(1, registry.modules.size());
-
-        registry.load(registry.zip);
-        assertEquals(1, registry.modules.size());
+    public void unloadNull() {
+        assertEquals(0, modules.modules.size());
+        modules.unload(module1.module);
+        assertEquals(0, modules.modules.size());
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#load(java.io.File, boolean)}.
-     */
     @Test
-    public void testReload4() {
-        // as relative
-        File moduleFileRelative = registry.dir;
-        assertFalse(moduleFileRelative.isAbsolute());
-
-        assertEquals(0, registry.modules.size());
-        registry.load(moduleFileRelative);
-        assertEquals(1, registry.modules.size());
-
-        // as absolute
-        File moduleFileAbsolute = moduleFileRelative.getAbsoluteFile();
-        assertTrue(moduleFileAbsolute.isAbsolute());
-
-        assertEquals(1, registry.modules.size());
-        registry.load(moduleFileAbsolute);
-        assertEquals(1, registry.modules.size());
+    public void unloadNotExistModule() {
+        assertEquals(0, modules.modules.size());
+        modules.unload(new File("not-exist"));
+        assertEquals(0, modules.modules.size());
     }
 
-    /**
-     * Test method for {@link ezbean.module.registry#unload(java.io.File)}.
-     */
     @Test
-    public void testUnload1() {
-        assertEquals(0, registry.modules.size());
+    public void loadDuplicateClass() {
+        assertEquals(0, modules.modules.size());
+        modules.load(module2.module);
+        assertEquals(1, modules.modules.size());
 
-        File moduleFile = registry.dir;
-        registry.load(moduleFile);
-
-        List<Module> modules = registry.modules;
-        assertEquals(1, modules.size());
-        assertEquals(moduleFile, modules.get(0).moduleFile);
-
-        registry.unload(moduleFile);
-        assertEquals(0, registry.modules.size());
-    }
-
-    /**
-     * Test method for {@link ezbean.module.registry#unload(java.io.File)}.
-     */
-    @Test
-    public void testUnload2() {
-        assertEquals(0, registry.modules.size());
-
-        File moduleFile = registry.jar;
-        registry.load(moduleFile);
-
-        List<Module> modules = registry.modules;
-        assertEquals(1, modules.size());
-        assertEquals(moduleFile, modules.get(0).moduleFile);
-
-        registry.unload(moduleFile);
-        assertEquals(0, registry.modules.size());
-    }
-
-    /**
-     * Test method for {@link ezbean.module.registry#unload(java.io.File)}.
-     */
-    @Test
-    public void testUnload3() {
-        assertEquals(0, registry.modules.size());
-
-        File moduleFile = registry.zip;
-        registry.load(moduleFile);
-
-        List<Module> modules = registry.modules;
-        assertEquals(1, modules.size());
-        assertEquals(moduleFile, modules.get(0).moduleFile);
-
-        registry.unload(moduleFile);
-        assertEquals(0, registry.modules.size());
-    }
-
-    /**
-     * Test method for {@link ezbean.module.registry#unload(java.io.File)}.
-     */
-    @Test
-    public void testUnload4() {
-        assertEquals(0, registry.modules.size());
-        registry.unload((File) null);
-        assertEquals(0, registry.modules.size());
-    }
-
-    /**
-     * Test method for {@link ezbean.module.registry#unload(java.io.File)}.
-     */
-    @Test
-    public void testUnload5() {
-        assertEquals(0, registry.modules.size());
-        registry.unload(new File("not-exist"));
-        assertEquals(0, registry.modules.size());
-    }
-
-    /**
-     * Test method for {@link ezbean.Module#findAll(java.lang.Class)}.
-     */
-    @Test
-    public void testDupulicateClassLoading() {
-        File moduleFile1 = registry.dir;
-
-        registry.load(moduleFile1);
-        Module module1 = registry.modules.get(0);
-        List<Class<MarkerInterface1>> providers1 = module1.find(MarkerInterface1.class, false);
+        Module first = modules.modules.get(0);
+        List<Class<MarkerInterface1>> providers1 = first.find(MarkerInterface1.class, false);
+        assertEquals(3, providers1.size());
 
         // assert class loader
         // all service providers should been loaded by first module
         for (Class provider : providers1) {
-            assertEquals(module1, provider.getClassLoader());
+            assertEquals(first, provider.getClassLoader());
         }
 
         // load another module which content is same
-        File moduleFile2 = registry.jar;
-
-        registry.load(moduleFile2);
-        Module module2 = registry.modules.get(1);
-        List<Class<MarkerInterface1>> providers2 = module2.find(MarkerInterface1.class, false);
+        modules.load(module3.module);
+        Module second = modules.modules.get(1);
+        List<Class<MarkerInterface1>> providers2 = second.find(MarkerInterface1.class, false);
+        assertEquals(3, providers2.size());
 
         // assert class loader
         // all service providers should been loaded by first module
         for (Class provider : providers2) {
-            assertEquals(module1, provider.getClassLoader());
+            assertEquals(first, provider.getClassLoader());
         }
 
         // unload first module
-        registry.unload(moduleFile1);
-        List<Class<MarkerInterface1>> providers3 = module2.find(MarkerInterface1.class, false);
+        modules.unload(module2.module);
+        List<Class<MarkerInterface1>> providers3 = second.find(MarkerInterface1.class, false);
+        assertEquals(3, providers3.size());
 
         // assert class loader
         // all service providers should been loaded by second module
         for (Class provider : providers3) {
-            assertEquals(module2, provider.getClassLoader());
+            assertEquals(second, provider.getClassLoader());
         }
     }
 }

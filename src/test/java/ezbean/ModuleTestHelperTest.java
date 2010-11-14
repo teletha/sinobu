@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.module.external.extend;
+package ezbean;
 
-import ezbean.sample.ClassAnnotation;
-import ezbean.sample.RuntimeAnnotation1;
+import static junit.framework.Assert.*;
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import ezunit.PrivateModule;
 
 /**
- * @version 2009/12/22 21:26:19
+ * @version 2010/11/15 0:28:38
  */
-@RuntimeAnnotation1
-@ClassAnnotation
-public class AnnotatedClass6 {
+public class ModuleTestHelperTest {
 
+    @Rule
+    public static PrivateModule module = new PrivateModule("module/external", true, false);
+
+    @Test
+    public void resolveClass() {
+        assertNotNull(ModuleTestHelper.loadModel("external.ExtendedClass1"));
+    }
 }

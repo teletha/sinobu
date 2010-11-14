@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.module.external;
 
-import ezbean.model.Model;
+import ezbean.sample.MarkerInterface1;
 
 /**
- * <p>
- * Expose non-accessible methods and fields to test easily.
- * </p>
- * 
- * @version 2010/11/05 18:25:00
+ * @version 2010/11/14 20:34:48
  */
-public class Exposure {
-
-    public static Model loadModel(String fqcn) {
-        return Model.load(Modules.load(fqcn));
-    }
+public interface ExtendedInterface1 extends MarkerInterface1 {
 }

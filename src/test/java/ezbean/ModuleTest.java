@@ -31,37 +31,32 @@ import ezbean.sample.MarkerInterface2;
 import ezbean.sample.RuntimeAnnotation1;
 import ezbean.sample.RuntimeAnnotation2;
 import ezbean.sample.SourceAnnotation;
+import ezunit.PrivateModule;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/22 17:28:56
+ * @version 2010/11/14 21:36:46
  */
 public class ModuleTest {
 
     @Rule
-    public static ModuleTestRule registry = new ModuleTestRule();
+    public static PrivateModule external = new PrivateModule("module/external", true, false);
 
     /**
      * Test method for {@link ezbean.Module#getModuleFile()}.
      */
     @Test
     public void testGetModuleFile() throws Exception {
-        File moduleFile = registry.dir;
-
-        Module module = new Module(moduleFile);
+        Module module = new Module(external.module);
         assertNotNull(module);
-        assertEquals(moduleFile, module.moduleFile);
+        assertEquals(external.module, module.moduleFile);
     }
 
     /**
      * Ezbean module has a {@link Module}.
      */
     @Test
-    public void testEzbeanModuleLoader() throws Exception {
-        File moduleFile = registry.dir;
-
-        Module module = new Module(moduleFile);
+    public void testModuleClassLoader() throws Exception {
+        Module module = new Module(external.module);
         assertNotNull(module);
         assertNotSame(I.loader, module);
     }
@@ -71,14 +66,10 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders1() throws Exception {
-        File moduleFile = registry.zip;
-
-        Module module = new Module(moduleFile);
+        Module module = new Module(external.module);
         assertNotNull(module);
 
-        Class interface1 = module.loadClass("external.Interface1");
-
-        List<Class<? extends MarkerInterface1>> providers = module.find(interface1, false);
+        List<Class<MarkerInterface1>> providers = module.find(MarkerInterface1.class, false);
         assertNotNull(providers);
         assertEquals(3, providers.size());
 
@@ -88,9 +79,9 @@ public class ModuleTest {
         for (Class provider : providers) {
             names.add(provider.getName());
         }
-        assertTrue(names.contains("external.extend.AnnotatedExtendedClass1"));
-        assertTrue(names.contains("external.extend.ExtendedClass4"));
-        assertTrue(names.contains("external.extend.ExtendedClass6"));
+        assertTrue(names.contains("external.AnnotatedExtendedClass1"));
+        assertTrue(names.contains("external.ExtendedClass3"));
+        assertTrue(names.contains("external.ExtendedClass5"));
     }
 
     /**
@@ -98,14 +89,12 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders2() throws Exception {
-        File moduleFile = registry.jar;
-
-        Module module = new Module(moduleFile);
+        Module module = new Module(external.module);
         assertNotNull(module);
 
         List<Class<MarkerInterface2>> providers = module.find(MarkerInterface2.class, false);
         assertNotNull(providers);
-        assertEquals(2, providers.size());
+        assertEquals(1, providers.size());
 
         // collect names to assert
         Set names = new HashSet();
@@ -113,8 +102,7 @@ public class ModuleTest {
         for (Class provider : providers) {
             names.add(provider.getName());
         }
-        assertTrue(names.contains("external.extend.ExtendedClass5"));
-        assertTrue(names.contains("external.extend.ExtendedClass6"));
+        assertTrue(names.contains("external.ExtendedClass4"));
     }
 
     /**
@@ -123,14 +111,12 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders3() throws Exception {
-        File moduleFile = registry.zip;
-
-        Module module = new Module(moduleFile);
+        Module module = new Module(external.module);
         assertNotNull(module);
 
         List<Class<Object>> providers = module.find(Object.class, false);
         assertNotNull(providers);
-        assertEquals(12, providers.size());
+        assertEquals(10, providers.size());
 
         // collect names to assert
         Set names = new HashSet();
@@ -138,17 +124,15 @@ public class ModuleTest {
         for (Class provider : providers) {
             names.add(provider.getName());
         }
-        assertTrue(names.contains("external.extend.AnnotatedClass1"));
-        assertTrue(names.contains("external.extend.AnnotatedClass2"));
-        assertTrue(names.contains("external.extend.AnnotatedClass5"));
-        assertTrue(names.contains("external.extend.AnnotatedClass6"));
-        assertTrue(names.contains("external.extend.AnnotatedExtendedClass1"));
-        assertTrue(names.contains("external.extend.ExtendedClass1"));
-        assertTrue(names.contains("external.extend.ExtendedClass2"));
-        assertTrue(names.contains("external.extend.ExtendedClass3"));
-        assertTrue(names.contains("external.extend.ExtendedClass4"));
-        assertTrue(names.contains("external.extend.ExtendedClass5"));
-        assertTrue(names.contains("external.extend.ExtendedClass6"));
+        assertTrue(names.contains("external.AnnotatedClass1"));
+        assertTrue(names.contains("external.AnnotatedClass2"));
+        assertTrue(names.contains("external.AnnotatedClass3"));
+        assertTrue(names.contains("external.AnnotatedExtendedClass1"));
+        assertTrue(names.contains("external.ExtendedClass1"));
+        assertTrue(names.contains("external.ExtendedClass2"));
+        assertTrue(names.contains("external.ExtendedClass3"));
+        assertTrue(names.contains("external.ExtendedClass4"));
+        assertTrue(names.contains("external.ExtendedClass5"));
         assertTrue(names.contains("external.SingletonClass"));
     }
 
@@ -157,18 +141,12 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders4() throws Exception {
-        File moduleFile = registry.zip;
-
-        Module module = new Module(moduleFile);
+        Module module = new Module(external.module);
         assertNotNull(module);
 
-        // load service proider interface
-        Class annotationClass = RuntimeAnnotation1.class;
-        assertNotNull(annotationClass);
-
-        List<Class<?>> providers = module.find(annotationClass, false);
+        List<Class<RuntimeAnnotation1>> providers = module.find(RuntimeAnnotation1.class, false);
         assertNotNull(providers);
-        assertEquals(4, providers.size());
+        assertEquals(3, providers.size());
 
         // collect names to assert
         Set names = new HashSet();
@@ -176,10 +154,9 @@ public class ModuleTest {
         for (Class provider : providers) {
             names.add(provider.getName());
         }
-        assertTrue(names.contains("external.extend.AnnotatedClass1"));
-        assertTrue(names.contains("external.extend.AnnotatedClass5"));
-        assertTrue(names.contains("external.extend.AnnotatedClass6"));
-        assertTrue(names.contains("external.extend.AnnotatedExtendedClass1"));
+        assertTrue(names.contains("external.AnnotatedClass1"));
+        assertTrue(names.contains("external.AnnotatedClass3"));
+        assertTrue(names.contains("external.AnnotatedExtendedClass1"));
     }
 
     /**
@@ -187,16 +164,10 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders5() throws Exception {
-        File moduleFile = registry.zip;
-
-        Module module = new Module(moduleFile);
+        Module module = new Module(external.module);
         assertNotNull(module);
 
-        // load service proider interface
-        Class annotationClass = RuntimeAnnotation2.class;
-        assertNotNull(annotationClass);
-
-        List<Class<?>> providers = module.find(annotationClass, false);
+        List<Class<RuntimeAnnotation2>> providers = module.find(RuntimeAnnotation2.class, false);
         assertNotNull(providers);
         assertEquals(2, providers.size());
 
@@ -206,8 +177,8 @@ public class ModuleTest {
         for (Class provider : providers) {
             names.add(provider.getName());
         }
-        assertTrue(names.contains("external.extend.AnnotatedClass2"));
-        assertTrue(names.contains("external.extend.AnnotatedClass5"));
+        assertTrue(names.contains("external.AnnotatedClass2"));
+        assertTrue(names.contains("external.AnnotatedClass3"));
     }
 
     /**
@@ -215,16 +186,10 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders6() throws Exception {
-        File moduleFile = registry.zip;
-
-        Module module = new Module(moduleFile);
+        Module module = new Module(external.module);
         assertNotNull(module);
 
-        // load service proider interface
-        Class annotationClass = ClassAnnotation.class;
-        assertNotNull(annotationClass);
-
-        List<Class<?>> providers = module.find(annotationClass, false);
+        List<Class<SourceAnnotation>> providers = module.find(SourceAnnotation.class, false);
         assertNotNull(providers);
         assertEquals(0, providers.size());
     }
@@ -234,16 +199,10 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders7() throws Exception {
-        File moduleFile = registry.zip;
-
-        Module module = new Module(moduleFile);
+        Module module = new Module(external.module);
         assertNotNull(module);
 
-        // load service proider interface
-        Class annotationClass = SourceAnnotation.class;
-        assertNotNull(annotationClass);
-
-        List<Class<?>> providers = module.find(annotationClass, false);
+        List<Class<ClassAnnotation>> providers = module.find(ClassAnnotation.class, false);
         assertNotNull(providers);
         assertEquals(0, providers.size());
     }
@@ -253,8 +212,7 @@ public class ModuleTest {
      */
     @Test
     public void testModuleInModule() throws Exception {
-        File moduleFile = registry.nest;
-        Module module = new Module(moduleFile);
+        Module module = new Module(new File("src/test/modules/inline.zip"));
         assertNotNull(module);
 
         List<Class<Object>> providers = module.find(Object.class, false);

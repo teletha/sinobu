@@ -24,8 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
+import ezbean.ModuleTestHelper;
 import ezbean.Modules;
-import ezbean.Exposure;
 import ezbean.model.Model;
 import ezunit.PrivateModule;
 
@@ -42,7 +42,7 @@ public class ClassCacheProblemTest {
      */
     @Test
     public void testClassCacheForPrototype() throws Exception {
-        Model model1 = Exposure.loadModel("external.Class1");
+        Model model1 = ModuleTestHelper.loadModel("external.ExtendedClass1");
         assertNotNull(model1);
 
         Class class1 = model1.type;
@@ -57,7 +57,7 @@ public class ClassCacheProblemTest {
         // reload
         module.load();
 
-        Model model2 = Exposure.loadModel("external.Class1");
+        Model model2 = ModuleTestHelper.loadModel("external.ExtendedClass1");
         assertNotNull(model2);
 
         Class class2 = model2.type;
@@ -81,7 +81,7 @@ public class ClassCacheProblemTest {
      */
     @Test
     public void testClassCacheForSingleton() {
-        Model model1 = Exposure.loadModel("external.SingletonClass");
+        Model model1 = ModuleTestHelper.loadModel("external.SingletonClass");
         assertNotNull(model1);
 
         Class class1 = model1.type;
@@ -99,7 +99,7 @@ public class ClassCacheProblemTest {
         // reload
         module.load();
 
-        Model model2 = Exposure.loadModel("external.SingletonClass");
+        Model model2 = ModuleTestHelper.loadModel("external.SingletonClass");
         assertNotNull(model2);
 
         Class class2 = model2.type;
@@ -125,7 +125,7 @@ public class ClassCacheProblemTest {
      */
     @Test
     public void testClassCacheInMapKeyReference() {
-        Model model = Exposure.loadModel("external.Class1");
+        Model model = ModuleTestHelper.loadModel("external.ExtendedClass1");
         assertNotNull(model);
 
         Class clazz = model.type;

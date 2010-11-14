@@ -34,12 +34,12 @@ import ezbean.Modules;
 import ezbean.io.FileSystem;
 
 /**
- * @version 2010/10/14 1:35:08
+ * @version 2010/11/15 0:00:48
  */
 public class PrivateModule extends ReusableRule {
 
     /** The actual private module. */
-    private final File module = FileSystem.createTemporary();
+    public final File module = FileSystem.createTemporary();
 
     /** The original package name. */
     private final String originalPackage;
@@ -106,8 +106,10 @@ public class PrivateModule extends ReusableRule {
         relativePath = relativePath.replace(File.separatorChar, '/');
 
         // compute packaging structure
+        int index = relativePath.lastIndexOf('/');
         originalPackage = testcase.getPackage().getName().replace('.', '/') + "/" + relativePath;
-        overriddenPackage = renamePackage ? relativePath : originalPackage;
+        overriddenPackage = renamePackage ? index == -1 ? relativePath : relativePath.substring(index + 1)
+                : originalPackage;
 
         strategy = new PrivateClassStrategy() {
 
