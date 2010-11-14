@@ -25,6 +25,16 @@ import java.util.Set;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.module.external.AnnotatedClass1;
+import ezbean.module.external.AnnotatedClass2;
+import ezbean.module.external.AnnotatedClass3;
+import ezbean.module.external.AnnotatedExtendedClass1;
+import ezbean.module.external.ExtendedClass1;
+import ezbean.module.external.ExtendedClass2;
+import ezbean.module.external.ExtendedClass3;
+import ezbean.module.external.ExtendedClass4;
+import ezbean.module.external.ExtendedClass5;
+import ezbean.module.external.SingletonClass;
 import ezbean.sample.ClassAnnotation;
 import ezbean.sample.MarkerInterface1;
 import ezbean.sample.MarkerInterface2;
@@ -74,14 +84,7 @@ public class ModuleTest {
         assertEquals(3, providers.size());
 
         // collect names to assert
-        Set names = new HashSet();
-
-        for (Class provider : providers) {
-            names.add(provider.getName());
-        }
-        assertTrue(names.contains("external.AnnotatedExtendedClass1"));
-        assertTrue(names.contains("external.ExtendedClass3"));
-        assertTrue(names.contains("external.ExtendedClass5"));
+        check(providers, AnnotatedExtendedClass1.class, ExtendedClass3.class, ExtendedClass5.class);
     }
 
     /**
@@ -97,12 +100,7 @@ public class ModuleTest {
         assertEquals(1, providers.size());
 
         // collect names to assert
-        Set names = new HashSet();
-
-        for (Class provider : providers) {
-            names.add(provider.getName());
-        }
-        assertTrue(names.contains("external.ExtendedClass4"));
+        check(providers, ExtendedClass4.class);
     }
 
     /**
@@ -119,21 +117,7 @@ public class ModuleTest {
         assertEquals(10, providers.size());
 
         // collect names to assert
-        Set names = new HashSet();
-
-        for (Class provider : providers) {
-            names.add(provider.getName());
-        }
-        assertTrue(names.contains("external.AnnotatedClass1"));
-        assertTrue(names.contains("external.AnnotatedClass2"));
-        assertTrue(names.contains("external.AnnotatedClass3"));
-        assertTrue(names.contains("external.AnnotatedExtendedClass1"));
-        assertTrue(names.contains("external.ExtendedClass1"));
-        assertTrue(names.contains("external.ExtendedClass2"));
-        assertTrue(names.contains("external.ExtendedClass3"));
-        assertTrue(names.contains("external.ExtendedClass4"));
-        assertTrue(names.contains("external.ExtendedClass5"));
-        assertTrue(names.contains("external.SingletonClass"));
+        check(providers, AnnotatedClass1.class, AnnotatedClass2.class, AnnotatedClass3.class, AnnotatedExtendedClass1.class, ExtendedClass1.class, ExtendedClass2.class, ExtendedClass3.class, ExtendedClass4.class, ExtendedClass5.class, SingletonClass.class);
     }
 
     /**
@@ -149,14 +133,7 @@ public class ModuleTest {
         assertEquals(3, providers.size());
 
         // collect names to assert
-        Set names = new HashSet();
-
-        for (Class provider : providers) {
-            names.add(provider.getName());
-        }
-        assertTrue(names.contains("external.AnnotatedClass1"));
-        assertTrue(names.contains("external.AnnotatedClass3"));
-        assertTrue(names.contains("external.AnnotatedExtendedClass1"));
+        check(providers, AnnotatedClass1.class, AnnotatedClass3.class, AnnotatedExtendedClass1.class);
     }
 
     /**
@@ -172,13 +149,7 @@ public class ModuleTest {
         assertEquals(2, providers.size());
 
         // collect names to assert
-        Set names = new HashSet();
-
-        for (Class provider : providers) {
-            names.add(provider.getName());
-        }
-        assertTrue(names.contains("external.AnnotatedClass2"));
-        assertTrue(names.contains("external.AnnotatedClass3"));
+        check(providers, AnnotatedClass2.class, AnnotatedClass3.class);
     }
 
     /**
@@ -218,5 +189,24 @@ public class ModuleTest {
         List<Class<Object>> providers = module.find(Object.class, false);
         assertNotNull(providers);
         assertEquals(0, providers.size());
+    }
+
+    /**
+     * Helper method to assert classes.
+     * 
+     * @param providers
+     * @param classes
+     */
+    private void check(List providers, Class... classes) {
+        // collect names to assert
+        Set names = new HashSet();
+
+        for (Object provider : providers) {
+            names.add(((Class) provider).getName());
+        }
+
+        for (Class clazz : classes) {
+            assertTrue(names.contains(external.convert(clazz).getName()));
+        }
     }
 }
