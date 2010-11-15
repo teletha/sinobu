@@ -18,14 +18,18 @@ package ezbean;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.io.FileSystem;
+import ezbean.module.external.ExtendedClass1;
 import ezbean.sample.MarkerInterface1;
+import ezbean.sample.bean.Person;
 import ezunit.PrivateModule;
 
 /**
@@ -80,6 +84,46 @@ public class ModulesTest {
         assertEquals(0, modules.modules.size());
         modules.load(new File("not-exist"));
         assertEquals(0, modules.modules.size());
+    }
+
+    @Test
+    public void loadDuplicateClass() {
+        assertEquals(0, modules.modules.size());
+        modules.load(module2.module);
+        assertEquals(1, modules.modules.size());
+
+        Module first = modules.modules.get(0);
+        List<Class<MarkerInterface1>> providers1 = first.find(MarkerInterface1.class, false);
+        assertEquals(3, providers1.size());
+
+        // assert class loader
+        // all service providers should been loaded by first module
+        for (Class provider : providers1) {
+            assertEquals(first, provider.getClassLoader());
+        }
+
+        // load another module which content is same
+        modules.load(module3.module);
+        Module second = modules.modules.get(1);
+        List<Class<MarkerInterface1>> providers2 = second.find(MarkerInterface1.class, false);
+        assertEquals(3, providers2.size());
+
+        // assert class loader
+        // all service providers should been loaded by first module
+        for (Class provider : providers2) {
+            assertEquals(first, provider.getClassLoader());
+        }
+
+        // unload first module
+        modules.unload(module2.module);
+        List<Class<MarkerInterface1>> providers3 = second.find(MarkerInterface1.class, false);
+        assertEquals(3, providers3.size());
+
+        // assert class loader
+        // all service providers should been loaded by second module
+        for (Class provider : providers3) {
+            assertEquals(second, provider.getClassLoader());
+        }
     }
 
     @Test
@@ -139,42 +183,13 @@ public class ModulesTest {
     }
 
     @Test
-    public void loadDuplicateClass() {
-        assertEquals(0, modules.modules.size());
-        modules.load(module2.module);
-        assertEquals(1, modules.modules.size());
+    public void unloadAwaredClassCorrectly() throws Exception {
+        Map<Class, String> map = Modules.aware(new HashMap());
+        map.put(Person.class, "This entry will not be unloaded.");
+        map.put(module2.convert(ExtendedClass1.class), "This entry will be unloaded.");
 
-        Module first = modules.modules.get(0);
-        List<Class<MarkerInterface1>> providers1 = first.find(MarkerInterface1.class, false);
-        assertEquals(3, providers1.size());
-
-        // assert class loader
-        // all service providers should been loaded by first module
-        for (Class provider : providers1) {
-            assertEquals(first, provider.getClassLoader());
-        }
-
-        // load another module which content is same
-        modules.load(module3.module);
-        Module second = modules.modules.get(1);
-        List<Class<MarkerInterface1>> providers2 = second.find(MarkerInterface1.class, false);
-        assertEquals(3, providers2.size());
-
-        // assert class loader
-        // all service providers should been loaded by first module
-        for (Class provider : providers2) {
-            assertEquals(first, provider.getClassLoader());
-        }
-
-        // unload first module
-        modules.unload(module2.module);
-        List<Class<MarkerInterface1>> providers3 = second.find(MarkerInterface1.class, false);
-        assertEquals(3, providers3.size());
-
-        // assert class loader
-        // all service providers should been loaded by second module
-        for (Class provider : providers3) {
-            assertEquals(second, provider.getClassLoader());
-        }
+        assertEquals(2, map.size());
+        module2.unload();
+        assertEquals(1, map.size());
     }
 }
