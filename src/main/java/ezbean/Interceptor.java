@@ -66,10 +66,10 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * NOTE : This is internal method. A user of Ezbean <em>does not have to use</em> this method.
      * </p>
      * 
-     * @param that
-     * @param id
-     * @param name
-     * @param param
+     * @param that A current processing object.
+     * @param id A property id.
+     * @param name A property name.
+     * @param param A new value.
      */
     public static final void invoke(Accessible that, int id, String name, Object param) {
         Interceptor current = new Interceptor();
