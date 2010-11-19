@@ -28,7 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * @version 2010/10/07 15:50:26
+ * @version 2010/11/19 17:41:56
  */
 public class ReusableRuleTest {
 
@@ -63,30 +63,32 @@ public class ReusableRuleTest {
     public void invokeSubRules1() throws Exception {
         assertTrue(rule.beforeClassInvoked);
         assertEquals(1, TopRule.sub1.beforeClassInvoked);
-        assertEquals(1, TopRule.sub2.beforeClassInvoked);
+        assertEquals(1, rule.sub2.beforeClassInvoked);
         assertEquals(counter, TopRule.sub1.counter);
-        assertEquals(counter, TopRule.sub2.counter);
+        assertEquals(counter, rule.sub2.counter);
     }
 
     @Test
     public void invokeSubRules2() throws Exception {
         assertTrue(rule.beforeClassInvoked);
         assertEquals(1, TopRule.sub1.beforeClassInvoked);
-        assertEquals(1, TopRule.sub2.beforeClassInvoked);
+        assertEquals(1, rule.sub2.beforeClassInvoked);
         assertEquals(counter, TopRule.sub1.counter);
-        assertEquals(counter, TopRule.sub2.counter);
+        assertEquals(counter, rule.sub2.counter);
     }
 
     /**
-     * @version 2010/10/07 15:55:57
+     * @version 2010/11/19 17:41:52
      */
     private static class TopRule extends ReusableRule {
 
+        // static sub rule
         @Rule
         public static final SubRule sub1 = new SubRule();
 
+        // non-static sub rule
         @Rule
-        public static final SubRule sub2 = new SubRule();
+        public final SubRule sub2 = new SubRule();
 
         private boolean beforeClassInvoked = false;
 

@@ -81,7 +81,7 @@ public abstract class ReusableRule implements MethodRule {
     protected final File testcaseDirectory = new File(testcaseRoot, testcase.getPackage().getName().replace('.', '/'));
 
     /** The sub rules. */
-    private List<MethodRule> rules = new ArrayList();
+    private List<Field> rules = new ArrayList();
 
     /** The nunber of test methods. */
     private int tests = 0;
@@ -101,16 +101,8 @@ public abstract class ReusableRule implements MethodRule {
     protected ReusableRule() {
         for (Field field : getClass().getFields()) {
             if (field.isAnnotationPresent(Rule.class) && Modifier.isPublic(field.getModifiers())) {
-                try {
-                    Object value = field.get(this);
-
-                    if (value instanceof MethodRule) {
-                        rules.add((MethodRule) value);
-                    }
-                } catch (IllegalAccessException e) {
-                    // If this exception will be thrown, it is bug of this program. So we must
-                    // rethrow the wrapped error in here.
-                    throw new Error(e);
+                if (MethodRule.class.isAssignableFrom(field.getType())) {
+                    rules.add(field);
                 }
             }
         }
@@ -159,8 +151,8 @@ public abstract class ReusableRule implements MethodRule {
                         // make chain of method rules
                         Statement statement = base;
 
-                        for (MethodRule rule : rules) {
-                            statement = rule.apply(statement, method, target);
+                        for (Field rule : rules) {
+                            statement = ((MethodRule) rule.get(ReusableRule.this)).apply(statement, method, target);
                         }
 
                         // invoke test method
