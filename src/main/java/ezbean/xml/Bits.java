@@ -18,7 +18,6 @@ package ezbean.xml;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
@@ -28,7 +27,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * This class is a buffer of SAX events.
  * </p>
  * 
- * @version 2008/08/31 11:14:45
+ * @version 2010/12/13 8:11:39
  */
 class Bits extends XMLFilterImpl {
 
@@ -42,25 +41,21 @@ class Bits extends XMLFilterImpl {
      * @param context A context object.
      * @throws SAXException If the sax event is failed.
      */
-    void send(ContentHandler handler) throws SAXException {
-        if (handler instanceof Bits) {
-            bits.addAll(((Bits) handler).bits);
-        } else {
-            for (int i = 0; i < bits.size(); i++) {
-                Object[] bit = bits.get(i);
+    void send(XMLScanner handler) throws SAXException {
+        for (int i = 0; i < bits.size(); i++) {
+            Object[] bit = bits.get(i);
 
-                switch (bit.length) {
-                case 1:
-                    handler.characters(((String) bit[0]).toCharArray(), 0, ((String) bit[0]).length());
-                    break;
+            switch (bit.length) {
+            case 1:
+                handler.text((String) bit[0]);
+                break;
 
-                case 3:
-                    handler.endElement((String) bit[0], (String) bit[1], (String) bit[2]);
-                    break;
+            case 2:
+                handler.start((String) bit[0], (Attributes) bit[1]);
 
-                default:
-                    handler.startElement((String) bit[0], (String) bit[1], (String) bit[2], (Attributes) bit[3]);
-                }
+            default:
+                handler.endElement((String) bit[0], (String) bit[1], (String) bit[2]);
+                break;
             }
         }
     }
@@ -69,7 +64,7 @@ class Bits extends XMLFilterImpl {
      * @see org.xml.sax.helpers.XMLFilterImpl#characters(char[], int, int)
      */
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length) {
         bits.add(new Object[] {new String(ch, start, length)});
     }
 
@@ -78,8 +73,8 @@ class Bits extends XMLFilterImpl {
      *      java.lang.String, org.xml.sax.Attributes)
      */
     @Override
-    public void startElement(String uri, String local, String name, Attributes atts) throws SAXException {
-        bits.add(new Object[] {uri, local, name, new AttributesImpl(atts)});
+    public void startElement(String uri, String local, String name, Attributes atts) {
+        bits.add(new Object[] {name, new AttributesImpl(atts)});
     }
 
     /**
@@ -87,7 +82,7 @@ class Bits extends XMLFilterImpl {
      *      java.lang.String)
      */
     @Override
-    public void endElement(String uri, String local, String name) throws SAXException {
+    public void endElement(String uri, String local, String name) {
         bits.add(new Object[] {uri, local, name});
     }
 }
