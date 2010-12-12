@@ -59,7 +59,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     protected final Appendable out;
 
     /** The previous sax event state. */
-    private int state = 0;
+    private int state = CHARACTER;
 
     /** The number of node depth. */
     private int depth = 0;
@@ -98,7 +98,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
 
         try {
             // write xml declaration
-            out.append("<?xml version=\"1.0\" encoding=\"").append(I.getEncoding().name()).append("\"?>");
+            out.append("<?xml version=\"1.0\" encoding=\"").append(I.getEncoding().name()).append("\"?>").append(EOL);
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -186,6 +186,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
 
                     // start writing namespace declaration
                     out.append(" xmlns");
+
                     if (name.length() != 0) {
                         out.append(':').append(name);
                     }
