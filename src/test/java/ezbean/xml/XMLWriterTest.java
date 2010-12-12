@@ -243,6 +243,21 @@ public class XMLWriterTest {
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root/>", new String(output.toByteArray()).replaceAll("\\r\\n", ""));
     }
 
+    @Test
+    public void omitXMLDeclaration() throws SAXException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        XMLWriter writer = new OmitXMLDeclaration(new OutputStreamWriter(output));
+        writer.setContentHandler(writer);
+
+        writer.startDocument();
+        writer.start("root");
+        writer.end();
+        writer.endDocument();
+
+        assertEquals("<root/>", new String(output.toByteArray()));
+    }
+
     /**
      * Helper method to assert the given xmls in binary level.
      * 
@@ -393,9 +408,7 @@ public class XMLWriterTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/08/31 20:14:16
+     * @version 2010/12/12 9:10:56
      */
     private static class EM extends XMLWriter {
 
@@ -419,9 +432,7 @@ public class XMLWriterTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/08/31 19:51:39
+     * @version 2010/12/12 9:10:52
      */
     private static class AsCharacter extends XMLWriter {
 
@@ -447,6 +458,27 @@ public class XMLWriterTest {
                 }
             }
             return false;
+        }
+    }
+
+    /**
+     * @version 2010/12/12 9:11:28
+     */
+    private static class OmitXMLDeclaration extends XMLWriter {
+
+        /**
+         * @param out
+         */
+        public OmitXMLDeclaration(Appendable out) {
+            super(out);
+        }
+
+        /**
+         * @see ezbean.xml.XMLWriter#startDocument()
+         */
+        @Override
+        public void startDocument() throws SAXException {
+            // omit
         }
     }
 }
