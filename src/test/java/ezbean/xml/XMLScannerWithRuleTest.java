@@ -828,9 +828,7 @@ public class XMLScannerWithRuleTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/11/26 16:03:00
+     * @version 2010/12/13 23:04:36
      */
     private static class PrivateRuleScanner extends XMLScanner {
 
@@ -921,9 +919,7 @@ public class XMLScannerWithRuleTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/06/25 18:19:36
+     * @version 2010/12/13 23:04:30
      */
     private static class WithoutPursue extends XMLScanner {
 
@@ -936,9 +932,7 @@ public class XMLScannerWithRuleTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/06/25 18:19:36
+     * @version 2010/12/13 23:04:06
      */
     private static class WithPursue extends XMLScanner {
 
@@ -952,9 +946,7 @@ public class XMLScannerWithRuleTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/06/25 18:19:36
+     * @version 2010/12/13 23:04:10
      */
     private static class UseContents extends XMLScanner {
 
@@ -967,9 +959,7 @@ public class XMLScannerWithRuleTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/06/27 14:37:18
+     * @version 2010/12/13 23:04:15
      */
     private static class UseContentsWithPursue extends XMLScanner {
 
@@ -985,9 +975,7 @@ public class XMLScannerWithRuleTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/07/12 17:08:22
+     * @version 2010/12/13 23:04:20
      */
     private static class ExcludeResultPrefixes extends XMLScanner {
 
@@ -1003,9 +991,7 @@ public class XMLScannerWithRuleTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/09/27 6:02:52
+     * @version 2010/12/13 23:04:24
      */
     private class Terminator extends XMLScanner {
 
