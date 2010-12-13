@@ -108,9 +108,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         } catch (SecurityException e) {
             temporary = null;
         } catch (IOException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
+            throw I.quiet(e);
         }
     }
 
@@ -418,9 +416,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
             // API definition
             return file;
         } catch (IOException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
+            throw I.quiet(e);
         }
     }
 
@@ -458,9 +454,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
                     // maintain modified time
                     target.setLastModified(modified);
                 } catch (IOException e) {
-                    // If this exception will be thrown, it is bug of this program. So we must
-                    // rethrow the wrapped error in here.
-                    throw new Error(e);
+                    throw I.quiet(e);
                 }
             }
         }

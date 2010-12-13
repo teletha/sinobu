@@ -135,9 +135,7 @@ class XMLOut extends ModelWalker {
                 try {
                     handler.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
                 } catch (SAXException e) {
-                    // If this exception will be thrown, it is bug of this program. So we must
-                    // rethrow the wrapped error in here.
-                    throw new Error(e);
+                    throw I.quiet(e);
                 }
             }
         }
@@ -157,9 +155,7 @@ class XMLOut extends ModelWalker {
                 name = null;
                 attributes.clear();
             } catch (SAXException e) {
-                // If this exception will be thrown, it is bug of this program. So we must rethrow
-                // the wrapped error in here.
-                throw new Error(e);
+                throw I.quiet(e);
             }
         }
     }

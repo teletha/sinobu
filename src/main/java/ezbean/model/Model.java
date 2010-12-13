@@ -280,9 +280,7 @@ public class Model<M> {
         try {
             return property.accessors[0].invoke(object);
         } catch (Exception e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
+            throw I.quiet(e);
         }
     }
 
@@ -302,9 +300,7 @@ public class Model<M> {
             try {
                 property.accessors[1].invoke(object, propertyValue);
             } catch (Exception e) {
-                // If this exception will be thrown, it is bug of this program. So we must rethrow
-                // the wrapped error in here.
-                throw new Error(e);
+                throw I.quiet(e);
             }
         }
     }

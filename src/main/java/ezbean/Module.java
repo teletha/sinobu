@@ -130,9 +130,7 @@ class Module extends URLClassLoader implements ClassVisitor {
                 }
             }
         } catch (IOException e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow
-            // the wrapped error in here.
-            throw new Error(e);
+            throw I.quiet(e);
         }
     }
 
@@ -216,9 +214,7 @@ class Module extends URLClassLoader implements ClassVisitor {
                     }
                 }
             } catch (ClassNotFoundException e) {
-                // If this exception will be thrown, it is bug of this program. So we must
-                // rethrow the wrapped error in here.
-                throw new Error(e);
+                throw I.quiet(e);
             }
         }
 

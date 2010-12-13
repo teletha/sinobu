@@ -44,7 +44,7 @@ class File extends java.io.File implements Accessible {
         try {
             digest = MessageDigest.getInstance("SHA1");
         } catch (NoSuchAlgorithmException e) {
-            throw new AssertionError(e);
+            throw I.quiet(e);
         }
     }
 
@@ -277,9 +277,7 @@ class File extends java.io.File implements Accessible {
             try {
                 return new URI(uri.substring(0, uri.length() - 1));
             } catch (URISyntaxException e) {
-                // If this exception will be thrown, it is bug of this program. So we must rethrow
-                // the wrapped error in here.
-                throw new Error(e);
+                throw I.quiet(e);
             }
         }
     }

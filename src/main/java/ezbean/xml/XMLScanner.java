@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+import ezbean.I;
 import ezbean.Modules;
 
 /**
@@ -141,9 +142,7 @@ public class XMLScanner extends XMLFilterImpl {
                     }
                 }
             } catch (Exception e) {
-                // If this exception will be thrown, it is bug of this program. So we must rethrow
-                // the wrapped error in here.
-                throw new Error(e);
+                throw I.quiet(e);
             }
 
             // resolve rule methods
@@ -359,7 +358,7 @@ public class XMLScanner extends XMLFilterImpl {
      * 
      * @throws SAXException
      */
-    protected final void proceed() throws SAXException {
+    protected final void proceed() {
         if (!aware) {
             latest.proceed();
         }
@@ -382,14 +381,18 @@ public class XMLScanner extends XMLFilterImpl {
      * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #startElement(String, String, String, Attributes)} of sub class.
      */
-    public final void start(String name, Attributes atts) throws SAXException {
+    public final void start(String name, Attributes atts) {
         String[] resolved = resolve(name);
         names.add(name);
 
-        if (latest == null) {
-            super.startElement(resolved[0], resolved[1], name, atts);
-        } else {
-            latest.startElement(resolved[0], resolved[1], name, atts);
+        try {
+            if (latest == null) {
+                super.startElement(resolved[0], resolved[1], name, atts);
+            } else {
+                latest.startElement(resolved[0], resolved[1], name, atts);
+            }
+        } catch (SAXException e) {
+            throw I.quiet(e);
         }
     }
 
@@ -410,7 +413,7 @@ public class XMLScanner extends XMLFilterImpl {
      * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #startElement(String, String, String, Attributes)} of sub class.
      */
-    public final void start(String name, String... atts) throws SAXException {
+    public final void start(String name, String... atts) {
         // create attributes
         AttributesImpl impl = new AttributesImpl();
 
@@ -439,16 +442,19 @@ public class XMLScanner extends XMLFilterImpl {
      * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #endElement(String, String, String)} of sub class.
      */
-    public final void end() throws SAXException {
+    public final void end() {
         String name = names.pollLast();
         String[] resolved = resolve(name);
 
-        if (latest == null) {
-            super.endElement(resolved[0], resolved[1], name);
-        } else {
-            latest.endElement(resolved[0], resolved[1], name);
+        try {
+            if (latest == null) {
+                super.endElement(resolved[0], resolved[1], name);
+            } else {
+                latest.endElement(resolved[0], resolved[1], name);
+            }
+        } catch (SAXException e) {
+            throw I.quiet(e);
         }
-
     }
 
     /**
@@ -467,11 +473,15 @@ public class XMLScanner extends XMLFilterImpl {
      * @throws StackOverflowError If you use this method in the overirde method
      *             {@link #characters(char[], int, int)} of sub class.
      */
-    public final void text(String ch) throws SAXException {
-        if (latest == null) {
-            super.characters(ch.toCharArray(), 0, ch.length());
-        } else {
-            latest.characters(ch.toCharArray(), 0, ch.length());
+    public final void text(String ch) {
+        try {
+            if (latest == null) {
+                super.characters(ch.toCharArray(), 0, ch.length());
+            } else {
+                latest.characters(ch.toCharArray(), 0, ch.length());
+            }
+        } catch (SAXException e) {
+            throw I.quiet(e);
         }
     }
 
@@ -496,7 +506,7 @@ public class XMLScanner extends XMLFilterImpl {
      *             {@link #characters(char[], int, int)} and
      *             {@link #endElement(String, String, String)} of sub class.
      */
-    public final void element(String name, String... atts) throws SAXException {
+    public final void element(String name, String... atts) {
         int i = atts.length - 1;
         String[] dist = (i & 1) == 0 ? Arrays.copyOf(atts, i) : atts;
 

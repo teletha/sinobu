@@ -23,7 +23,6 @@ import javax.xml.XMLConstants;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 import ezbean.I;
@@ -90,7 +89,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
      * 
      * @see org.xml.sax.ContentHandler#startDocument()
      */
-    public void startDocument() throws SAXException {
+    public void startDocument() {
         // use myself as xml output if needed
         if (getParent() == null) {
             setContentHandler(this);
@@ -100,19 +99,19 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
             // write xml declaration
             out.append("<?xml version=\"1.0\" encoding=\"").append(I.getEncoding().name()).append("\"?>").append(EOL);
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
     /**
      * @see org.xml.sax.ContentHandler#endDocument()
      */
-    public void endDocument() throws SAXException {
+    public void endDocument() {
         if (out instanceof Flushable) {
             try {
                 ((Flushable) out).flush();
             } catch (IOException e) {
-                throw new SAXException(e);
+                throw I.quiet(e);
             }
         }
     }
@@ -138,7 +137,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
      * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String,
      *      java.lang.String, org.xml.sax.Attributes)
      */
-    public void startElement(String uri, String local, String name, Attributes atts) throws SAXException {
+    public void startElement(String uri, String local, String name, Attributes atts) {
         try {
             int prev = checkEvent(START);
 
@@ -197,7 +196,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
                 count = 0;
             }
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
         depth++;
     }
@@ -206,7 +205,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
      * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String,
      *      java.lang.String)
      */
-    public void endElement(String uri, String local, String name) throws SAXException {
+    public void endElement(String uri, String local, String name) {
         depth--;
 
         try {
@@ -227,14 +226,14 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
             // start output
             out.append('<').append('/').append(name).append('>');
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
     /**
      * @see org.xml.sax.ContentHandler#characters(char[], int, int)
      */
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length) {
         try {
             int prev = checkEvent(CHARACTER);
 
@@ -247,14 +246,14 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
                 write(ch, start, length);
             }
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
     /**
      * @see org.xml.sax.ContentHandler#processingInstruction(java.lang.String, java.lang.String)
      */
-    public void processingInstruction(String target, String data) throws SAXException {
+    public void processingInstruction(String target, String data) {
         try {
             checkEvent(OTHER);
             out.append(EOL);
@@ -267,7 +266,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
             }
             out.append("?>");
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
@@ -275,7 +274,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
      * @see org.xml.sax.ext.LexicalHandler#startDTD(java.lang.String, java.lang.String,
      *      java.lang.String)
      */
-    public void startDTD(String name, String publicId, String systemId) throws SAXException {
+    public void startDTD(String name, String publicId, String systemId) {
         try {
             checkEvent(OTHER);
             out.append(EOL);
@@ -294,19 +293,19 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
                 out.append(" \"").append(systemId).append('"');
             }
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
     /**
      * @see org.xml.sax.ext.LexicalHandler#endDTD()
      */
-    public void endDTD() throws SAXException {
+    public void endDTD() {
         try {
             checkEvent(OTHER);
             out.append('>');
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
@@ -327,31 +326,31 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     /**
      * @see org.xml.sax.ext.LexicalHandler#startCDATA()
      */
-    public void startCDATA() throws SAXException {
+    public void startCDATA() {
         try {
             checkEvent(CHARACTER);
             out.append("<[CDATA[");
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
     /**
      * @see org.xml.sax.ext.LexicalHandler#endCDATA()
      */
-    public void endCDATA() throws SAXException {
+    public void endCDATA() {
         try {
             checkEvent(CHARACTER);
             out.append("]]>");
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
     /**
      * @see org.xml.sax.ext.LexicalHandler#comment(char[], int, int)
      */
-    public void comment(char[] ch, int start, int length) throws SAXException {
+    public void comment(char[] ch, int start, int length) {
         try {
             int prev = checkEvent(OTHER);
 
@@ -372,7 +371,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
             }
             out.append("-->");
         } catch (IOException e) {
-            throw new SAXException(e);
+            throw I.quiet(e);
         }
     }
 
