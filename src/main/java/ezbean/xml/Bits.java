@@ -52,10 +52,10 @@ class Bits extends XMLFilterImpl {
 
             case 2:
                 handler.start((String) bit[0], (Attributes) bit[1]);
+                break;
 
             default:
                 handler.endElement((String) bit[0], (String) bit[1], (String) bit[2]);
-                break;
             }
         }
     }
