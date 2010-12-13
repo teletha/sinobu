@@ -20,13 +20,12 @@ import static ezbean.I.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 import ezbean.model.Model;
 import ezbean.model.ModelWalker;
 import ezbean.model.Property;
+import ezbean.xml.XMLWriter;
 
 /**
  * <p>
@@ -38,12 +37,12 @@ import ezbean.model.Property;
  * which provides constant-time performance for seaching element.
  * </p>
  * 
- * @version 2010/01/12 22:54:06
+ * @version 2010/12/14 0:23:59
  */
 class XMLOut extends ModelWalker {
 
     /** The content handler. */
-    private final ContentHandler handler;
+    private final XMLWriter writer;
 
     /** The object and id mapping. */
     private ConcurrentHashMap<Object, Integer> objects = new ConcurrentHashMap();
@@ -60,10 +59,10 @@ class XMLOut extends ModelWalker {
     /**
      * Create ConfigurationWriter instance.
      * 
-     * @param handler
+     * @param writer An actual XML writer.
      */
-    XMLOut(ContentHandler handler) {
-        this.handler = handler;
+    XMLOut(XMLWriter writer) {
+        this.writer = writer;
     }
 
     /**
@@ -132,11 +131,7 @@ class XMLOut extends ModelWalker {
             if (model.isCollection() || !property.isAttribute()) {
                 write();
 
-                try {
-                    handler.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
-                } catch (SAXException e) {
-                    throw I.quiet(e);
-                }
+                writer.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
             }
         }
     }
@@ -147,16 +142,12 @@ class XMLOut extends ModelWalker {
     private void write() {
         // check node name
         if (name != null) {
-            try {
-                // write start element
-                handler.startElement(null, null, name, attributes);
+            // write start element
+            writer.startElement(null, null, name, attributes);
 
-                // clear current state
-                name = null;
-                attributes.clear();
-            } catch (SAXException e) {
-                throw I.quiet(e);
-            }
+            // clear current state
+            name = null;
+            attributes.clear();
         }
     }
 }

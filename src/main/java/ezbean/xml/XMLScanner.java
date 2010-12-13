@@ -188,14 +188,18 @@ public class XMLScanner extends XMLFilterImpl {
      * @see org.xml.sax.helpers.XMLFilterImpl#startDocument()
      */
     @Override
-    public void startDocument() throws SAXException {
-        // delegation
-        super.startDocument();
+    public void startDocument() {
+        try {
+            // delegation
+            super.startDocument();
 
-        // Start initial namespace mapping.
-        // This loop executes form tail to avoid infinite loop at startPrefixMapping method.
-        for (int i = prefixes.size() - 1; -1 < i; i--) {
-            startPrefixMapping(prefixes.remove(i), uris.remove(i));
+            // Start initial namespace mapping.
+            // This loop executes form tail to avoid infinite loop at startPrefixMapping method.
+            for (int i = prefixes.size() - 1; -1 < i; i--) {
+                startPrefixMapping(prefixes.remove(i), uris.remove(i));
+            }
+        } catch (SAXException e) {
+            throw I.quiet(e);
         }
     }
 
@@ -203,14 +207,18 @@ public class XMLScanner extends XMLFilterImpl {
      * @see org.xml.sax.helpers.XMLFilterImpl#endDocument()
      */
     @Override
-    public void endDocument() throws SAXException {
-        // End initial namespace mapping.
-        for (int i = prefixes.size() - 1; -1 < i; i--) {
-            endPrefixMapping(prefixes.get(i));
-        }
+    public void endDocument() {
+        try {
+            // End initial namespace mapping.
+            for (int i = prefixes.size() - 1; -1 < i; i--) {
+                endPrefixMapping(prefixes.get(i));
+            }
 
-        // delegation
-        super.endDocument();
+            // delegation
+            super.endDocument();
+        } catch (SAXException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
