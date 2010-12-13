@@ -307,9 +307,7 @@ public class I implements ClassLoadListener<Extensible> {
             // sax.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             // sax.setFeature("http://xml.org/sax/features/xmlns-uris", true);
         } catch (Exception e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
+            throw I.quiet(e);
         }
 
         // configure javascript engine
@@ -880,9 +878,7 @@ public class I implements ClassLoadListener<Extensible> {
                     .newConstructorForSerialization(make(Model.load(modelClass), '-'), instantiator)
                     .newInstance();
         } catch (Exception e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
+            throw I.quiet(e);
         }
     }
 

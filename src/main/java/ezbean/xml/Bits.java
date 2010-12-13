@@ -22,6 +22,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+import ezbean.I;
+
 /**
  * <p>
  * This class is a buffer of SAX events.
@@ -39,9 +41,8 @@ class Bits extends XMLFilterImpl {
      * 
      * @param handler A target content handler.
      * @param context A context object.
-     * @throws SAXException If the sax event is failed.
      */
-    void send(XMLScanner handler) throws SAXException {
+    void send(XMLScanner handler) {
         for (int i = 0; i < bits.size(); i++) {
             Object[] bit = bits.get(i);
 
@@ -55,7 +56,11 @@ class Bits extends XMLFilterImpl {
                 break;
 
             default:
-                handler.endElement((String) bit[0], (String) bit[1], (String) bit[2]);
+                try {
+                    handler.endElement((String) bit[0], (String) bit[1], (String) bit[2]);
+                } catch (SAXException e) {
+                    throw I.quiet(e);
+                }
             }
         }
     }

@@ -477,7 +477,7 @@ public class XMLWriterTest {
          * @see ezbean.xml.XMLWriter#startDocument()
          */
         @Override
-        public void startDocument() throws SAXException {
+        public void startDocument() {
             // omit
         }
     }

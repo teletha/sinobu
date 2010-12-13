@@ -15,11 +15,8 @@
  */
 package ezbean.xml;
 
-
-
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
@@ -31,7 +28,7 @@ import ezbean.I;
  * footprint.
  * </p>
  * 
- * @version 2007/12/04 06:58:32
+ * @version 2010/12/13 23:59:01
  */
 class RuleContext extends XMLFilterImpl {
 
@@ -80,7 +77,7 @@ class RuleContext extends XMLFilterImpl {
     /**
      * Proceed SAX parser's processing.
      */
-    void proceed() throws SAXException {
+    void proceed() {
         if (rule.lazy) {
             // lazy context
             bits.send(scanner);

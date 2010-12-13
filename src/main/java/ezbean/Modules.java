@@ -147,9 +147,7 @@ public final class Modules implements ClassLoadListener {
                 }
                 return module;
             } catch (MalformedURLException e) {
-                // If this exception will be thrown, it is bug of this program. So we must rethrow
-                // the wrapped error in here.
-                throw new Error(e);
+                throw I.quiet(e);
             }
         } else {
             return null;
@@ -201,9 +199,7 @@ public final class Modules implements ClassLoadListener {
                     try {
                         module.close();
                     } catch (IOException e) {
-                        // If this exception will be thrown, it is bug of this program. So we must
-                        // rethrow the wrapped error in here.
-                        throw new Error(e);
+                        throw I.quiet(e);
                     }
                     break;
                 }
