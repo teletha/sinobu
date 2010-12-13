@@ -391,7 +391,7 @@ public class XMLScannerWithRuleTest {
 
         assertXMLIdentical("rule/expected17.xml", "rule/test17.xml", scanner);
     }
-    
+
     @Test
     public void privateRuleMethod() throws Exception {
         @SuppressWarnings("unused")
@@ -800,6 +800,22 @@ public class XMLScannerWithRuleTest {
         };
 
         assertXMLIdentical("rule/expected68.xml", "rule/test68.xml", scanner);
+    }
+
+    @Test
+    public void nestWithContent() throws Exception {
+        XMLScanner scanner = new XMLScanner() {
+
+            @SuppressWarnings("unused")
+            @Rule(match = "root")
+            public void root(String text) throws SAXException {
+                start(text);
+                proceed();
+                end();
+            }
+        };
+
+        assertXMLIdentical("rule/expected69.xml", "rule/test69.xml", scanner);
     }
 
     /**
