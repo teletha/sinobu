@@ -22,10 +22,10 @@ import org.junit.Test;
 
 import ezbean.Accessible;
 import ezbean.I;
-import ezbean.benchmark.AbstractMicroBenchmarkTest;
 import ezbean.model.Model;
 import ezbean.model.Property;
 import ezbean.sample.bean.Person;
+import ezunit.AbstractMicroBenchmarkTest;
 
 /**
  * DOCUMENT.
