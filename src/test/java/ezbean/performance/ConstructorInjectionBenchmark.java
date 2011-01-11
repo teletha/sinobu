@@ -21,8 +21,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.benchmark.AbstractMicroBenchmarkTest;
 import ezbean.model.ClassUtil;
+import ezunit.AbstractMicroBenchmarkTest;
 
 /**
  * DOCUMENT.

@@ -20,8 +20,8 @@ import java.util.concurrent.Callable;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.benchmark.AbstractMicroBenchmarkTest;
 import ezbean.sample.bean.Person;
+import ezunit.AbstractMicroBenchmarkTest;
 
 /**
  * DOCUMENT.
