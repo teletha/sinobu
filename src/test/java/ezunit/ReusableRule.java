@@ -144,24 +144,26 @@ public abstract class ReusableRule implements MethodRule {
                         throw Solution.quiet(initializationError);
                     }
 
-                    try {
-                        // invoke before
-                        before(method.getMethod());
+                    if (!skip(method.getMethod())) {
+                        try {
+                            // invoke before
+                            before(method.getMethod());
 
-                        // make chain of method rules
-                        Statement statement = base;
+                            // make chain of method rules
+                            Statement statement = base;
 
-                        for (Field rule : rules) {
-                            statement = ((MethodRule) rule.get(ReusableRule.this)).apply(statement, method, target);
+                            for (Field rule : rules) {
+                                statement = ((MethodRule) rule.get(ReusableRule.this)).apply(statement, method, target);
+                            }
+
+                            // invoke test method
+                            statement.evaluate();
+                        } catch (Exception e) {
+                            throw Solution.quiet(e);
+                        } finally {
+                            // invoke after
+                            after(method.getMethod());
                         }
-
-                        // invoke test method
-                        statement.evaluate();
-                    } catch (Exception e) {
-                        throw Solution.quiet(e);
-                    } finally {
-                        // invoke after
-                        after(method.getMethod());
                     }
                 } catch (Exception e) {
                     throw Solution.quiet(e);
@@ -202,6 +204,10 @@ public abstract class ReusableRule implements MethodRule {
      * @throws Exception Test will be stop.
      */
     protected void before(Method method) throws Exception {
+    }
+
+    protected boolean skip(Method method) {
+        return false;
     }
 
     /**
