@@ -35,6 +35,9 @@ public class ReusableRuleTest {
     @Rule
     public static final TopRule rule = new TopRule();
 
+    @Rule
+    public static final SkipRule skip = new SkipRule();
+
     /** The counter of method invocation. */
     private static int counter = 0;
 
@@ -75,6 +78,16 @@ public class ReusableRuleTest {
         assertEquals(1, rule.sub2.beforeClassInvoked);
         assertEquals(counter, TopRule.sub1.counter);
         assertEquals(counter, rule.sub2.counter);
+    }
+
+    @Test
+    public void dontInvoke() throws Exception {
+        fail("don't be invoked");
+    }
+
+    @Test
+    public void doesntInvoke() throws Exception {
+        fail("don't be invoked");
     }
 
     /**
@@ -125,7 +138,7 @@ public class ReusableRuleTest {
         @Override
         protected void before(Method method) throws Exception {
             counter++;
-            assertTrue(method.getName().startsWith("invokeSubRules"));
+            assertTrue(method.getName().contains("nvoke"));
         }
     }
 
@@ -151,6 +164,36 @@ public class ReusableRuleTest {
             assertEquals(1, invocations.size());
             invocations.add("afterClass from Sub");
         }
+    }
 
+    /**
+     * @version 2011/01/12 14:13:24
+     */
+    private static class SkipRule extends ReusableRule {
+
+        @Rule
+        public static final SkipInSubRule skip = new SkipInSubRule();
+
+        /**
+         * @see ezunit.ReusableRule#skip(java.lang.reflect.Method)
+         */
+        @Override
+        protected boolean skip(Method method) {
+            return method.getName().contains("dont");
+        }
+    }
+
+    /**
+     * @version 2011/01/12 14:13:24
+     */
+    private static class SkipInSubRule extends ReusableRule {
+
+        /**
+         * @see ezunit.ReusableRule#skip(java.lang.reflect.Method)
+         */
+        @Override
+        protected boolean skip(Method method) {
+            return method.getName().contains("doesnt");
+        }
     }
 }
