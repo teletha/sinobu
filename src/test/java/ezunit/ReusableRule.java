@@ -206,6 +206,14 @@ public abstract class ReusableRule implements MethodRule {
     protected void before(Method method) throws Exception {
     }
 
+    /**
+     * <p>
+     * Decide whether the specified method is invoked or not.
+     * </p>
+     * 
+     * @param method A target test method.
+     * @return A result.
+     */
     protected boolean skip(Method method) {
         return false;
     }
