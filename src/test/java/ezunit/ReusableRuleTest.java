@@ -172,6 +172,7 @@ public class ReusableRuleTest {
     private static class SkipRule extends ReusableRule {
 
         @Rule
+        @SuppressWarnings("unused")
         public static final SkipInSubRule skip = new SkipInSubRule();
 
         /**
