@@ -103,7 +103,7 @@
         <artifactId>maven-license-plugin</artifactId>
         <version>1.9.0</version>
         <configuration>
-          <header>src/etc/header.txt</header>
+          <header>license.txt</header>
           <encoding>UTF-8</encoding>
           <excludes>
             <exclude>**/*.txt</exclude>
