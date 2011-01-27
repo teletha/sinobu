@@ -108,6 +108,11 @@
           <excludes>
             <exclude>**/*.txt</exclude>
           </excludes>
+          <mapping>
+            <java>SLASHSTAR_STYLE</java>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+          <strictCheck>true</strictCheck>
         </configuration>
       </plugin>
     </plugins>
