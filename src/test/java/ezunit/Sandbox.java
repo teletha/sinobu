@@ -21,6 +21,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AccessControlException;
 import java.security.Permission;
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ import ezbean.I;
  * and settings are restorable for each test.
  * </p>
  * 
- * @version 2010/02/09 13:13:43
+ * @version 2011/02/16 13:24:42
  */
 public class Sandbox extends ReusableRule {
 
@@ -189,12 +191,12 @@ public class Sandbox extends ReusableRule {
      * @param allow <code>true</code> if you allow to write.
      */
     public void readable(boolean allow, String... paths) {
-        File[] files = new File[paths.length];
+        Path[] locations = new Path[paths.length];
 
         for (int i = 0; i < paths.length; i++) {
-            files[i] = new File(paths[i]);
+            locations[i] = Paths.get(paths[i]);
         }
-        writable(allow, files);
+        writable(allow, locations);
     }
 
     /**
@@ -209,9 +211,29 @@ public class Sandbox extends ReusableRule {
      * @param allow <code>true</code> if you allow to write.
      */
     public void readable(boolean allow, File... files) {
-        for (File file : files) {
-            if (file != null) {
-                security.readables.add(file.getAbsolutePath(), allow, whileTest);
+        Path[] locations = new Path[files.length];
+
+        for (int i = 0; i < locations.length; i++) {
+            locations[i] = files[i].toPath();
+        }
+        readable(allow, locations);
+    }
+
+    /**
+     * <p>
+     * Set permission whether you can write file or not.
+     * </p>
+     * <p>
+     * This permission is effective only in the test method by which this method is called in test
+     * method.
+     * </p>
+     * 
+     * @param allow <code>true</code> if you allow to write.
+     */
+    public void readable(boolean allow, Path... paths) {
+        for (Path path : paths) {
+            if (path != null) {
+                security.readables.add(path.toAbsolutePath().toString(), allow, whileTest);
             }
         }
     }
@@ -246,12 +268,12 @@ public class Sandbox extends ReusableRule {
      * @param allow <code>true</code> if you allow to write.
      */
     public void writable(boolean allow, String... paths) {
-        File[] files = new File[paths.length];
+        Path[] locations = new Path[paths.length];
 
         for (int i = 0; i < paths.length; i++) {
-            files[i] = new File(paths[i]);
+            locations[i] = Paths.get(paths[i]);
         }
-        writable(allow, files);
+        writable(allow, locations);
     }
 
     /**
@@ -266,9 +288,29 @@ public class Sandbox extends ReusableRule {
      * @param allow <code>true</code> if you allow to write.
      */
     public void writable(boolean allow, File... files) {
-        for (File file : files) {
-            if (file != null) {
-                security.writables.add(file.getAbsolutePath(), allow, whileTest);
+        Path[] locations = new Path[files.length];
+
+        for (int i = 0; i < locations.length; i++) {
+            locations[i] = files[i].toPath();
+        }
+        writable(allow, locations);
+    }
+
+    /**
+     * <p>
+     * Set permission whether you can write file or not.
+     * </p>
+     * <p>
+     * This permission is effective only in the test method by which this method is called in test
+     * method.
+     * </p>
+     * 
+     * @param allow <code>true</code> if you allow to write.
+     */
+    public void writable(boolean allow, Path... paths) {
+        for (Path path : paths) {
+            if (path != null) {
+                security.writables.add(path.toAbsolutePath().toString(), allow, whileTest);
             }
         }
     }
