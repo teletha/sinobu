@@ -25,6 +25,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
 import ezbean.io.FileSystem;
@@ -34,12 +35,18 @@ import ezbean.io.FileSystem;
  * The environmental rule for test that depends on file system.
  * </p>
  * 
- * @version 2010/09/19 15:25:27
+ * @version 2011/02/17 11:42:24
  */
 public class CleanRoom extends Sandbox {
 
+    /** The counter for instances. */
+    private static final AtomicInteger counter = new AtomicInteger();
+
     /** The root bioclean room for tests which are related with file system. */
     private static final File clean = new File(I.getWorkingDirectory(), "clean-room");
+
+    /** The temporary bioclean room for this instance which are related with file system. */
+    public final File root = new File(clean, String.valueOf(counter.incrementAndGet()));
 
     /** The host directory for test. */
     private final File host;
@@ -153,7 +160,7 @@ public class CleanRoom extends Sandbox {
         }
 
         // locate virtual file in the clean room
-        File virtual = I.locate(clean, path);
+        File virtual = I.locate(root, path);
 
         // create virtual file if needed
         if (isPresent) {
@@ -188,14 +195,14 @@ public class CleanRoom extends Sandbox {
 
         // renew clean room for this test if needed
         if (monitor.modified) {
-            clean.mkdirs();
+            root.mkdirs();
 
             // clean up all resources
-            FileSystem.clear(clean);
+            FileSystem.clear(root);
 
             // copy all resources newly
             for (File file : host.listFiles(monitor)) {
-                FileSystem.copy(file, clean, monitor);
+                FileSystem.copy(file, root, monitor);
             }
 
             // reset
@@ -209,7 +216,7 @@ public class CleanRoom extends Sandbox {
     @Override
     protected void afterClass() {
         // dispose clean room actually
-        delete(clean);
+        delete(root);
 
         super.afterClass();
     }
@@ -241,7 +248,7 @@ public class CleanRoom extends Sandbox {
          */
         @Override
         public void checkDelete(String file) {
-            if (!modified && file.startsWith(clean.getPath())) {
+            if (!modified && file.startsWith(root.getPath())) {
                 modified = true;
             }
         }
@@ -251,7 +258,7 @@ public class CleanRoom extends Sandbox {
          */
         @Override
         public void checkWrite(FileDescriptor fd) {
-            if (!modified && fd.toString().startsWith(clean.getPath())) {
+            if (!modified && fd.toString().startsWith(root.getPath())) {
                 modified = true;
             }
         }
@@ -261,7 +268,7 @@ public class CleanRoom extends Sandbox {
          */
         @Override
         public void checkWrite(String file) {
-            if (!modified && file.startsWith(clean.getPath())) {
+            if (!modified && file.startsWith(root.getPath())) {
                 modified = true;
             }
         }
