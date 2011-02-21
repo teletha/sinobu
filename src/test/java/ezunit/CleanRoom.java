@@ -218,6 +218,10 @@ public class CleanRoom extends Sandbox {
         // dispose clean room actually
         delete(root);
 
+        // dispose root of all clean rooms
+        clean.delete();
+
+        // delegate
         super.afterClass();
     }
 
@@ -280,6 +284,25 @@ public class CleanRoom extends Sandbox {
             String name = file.getName();
 
             return !name.equals("package-info.html") && !name.endsWith(".class");
+        }
+    }
+
+    /**
+     * @version 2011/02/17 15:34:28
+     */
+    public static class VirtualFile {
+
+        /**
+         * <p>
+         * Assert
+         * </p>
+         * 
+         * @return
+         */
+        public VirtualFile willBeDeleted() {
+
+            // API chain
+            return this;
         }
     }
 }
