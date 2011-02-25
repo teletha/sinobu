@@ -278,8 +278,8 @@ public class FileSystemUtilityTest {
     public void deleteArchive() throws Exception {
         File file = room.locateFile("archive/test.zip");
 
-        assertTrue(file instanceof ezbean.io.File);
-        ezbean.io.File archive = (ezbean.io.File) file;
+        assertTrue(file instanceof ezbean.io.Files);
+        ezbean.io.Files archive = (ezbean.io.Files) file;
         File junction = archive.getJunction();
 
         // unpack

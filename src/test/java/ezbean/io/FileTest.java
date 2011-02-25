@@ -520,9 +520,9 @@ public class FileTest {
     public void archiveCanRestoreItsLastModifiedData() throws Exception {
         File file = room.locateFile("archive/test.zip");
         assertArchive(file);
-        assertTrue(file instanceof ezbean.io.File);
+        assertTrue(file instanceof ezbean.io.Files);
 
-        ezbean.io.File archive = (ezbean.io.File) file;
+        ezbean.io.Files archive = (ezbean.io.Files) file;
         assertEquals(file.lastModified(), archive.getJunction().lastModified());
     }
 
