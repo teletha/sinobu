@@ -158,7 +158,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
 
         String[] paths = filePath.split("/");
         StringBuilder path = new StringBuilder();
-        ezbean.io.File archive = null;
+        ezbean.io.Files archive = null;
 
         for (int i = 0; i < paths.length - 1; i++) {
             // add the current path
@@ -167,7 +167,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
             // find archiver
             if (findArchiver(paths[i]) != null) {
                 // create archive
-                archive = new ezbean.io.File(path.toString(), archive);
+                archive = new ezbean.io.Files(path.toString(), archive);
                 archive.list(); // force to unpack the archive
 
                 // rebuild actual path
@@ -179,7 +179,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         }
 
         // build File from the current path
-        return new ezbean.io.File(path.append(paths[paths.length - 1]).toString(), archive);
+        return new ezbean.io.Files(path.append(paths[paths.length - 1]).toString(), archive);
     }
 
     /**

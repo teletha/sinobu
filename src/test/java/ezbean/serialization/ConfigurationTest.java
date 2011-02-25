@@ -380,7 +380,7 @@ public class ConfigurationTest {
     }
 
     /**
-     * Test {@link ezbean.io.File}.
+     * Test {@link ezbean.io.Files}.
      */
     @Test
     public void ezbeanFile() throws Exception {
