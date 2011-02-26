@@ -15,11 +15,8 @@
  */
 package ezbean.io;
 
-import static ezunit.Ezunit.*;
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.FileVisitResult;
@@ -33,105 +30,13 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.I;
 import ezunit.CleanRoom;
 import ezunit.Ezunit;
 
 /**
  * @version 2011/02/15 15:48:47
  */
-public class FilesTest {
-
-    @Rule
-    public static final CleanRoom room = new CleanRoom();
-
-    @Test
-    public void copyFileToPresentFile() throws Exception {
-        FilePath input = room.locateFile("file");
-        FilePath output = room.locateAbsent("out");
-        output.createNewFile();
-
-        // assert contents
-        assertFile(output, "");
-        assertNotSame(input.lastModified(), output.lastModified());
-
-        // copy
-        ((FilePath) input).copyTo(output);
-
-        // assert contents
-        assertFile(output, read(input));
-        assertEquals(input.lastModified(), output.lastModified());
-    }
-
-    @Test
-    public void copyToAbsentFileInPresentDirectory() throws Exception {
-        FilePath input = room.locateFile("file");
-        FilePath output = room.locateAbsent("directory/out");
-
-        // copy
-        ((FilePath) input).copyTo(output);
-
-        // assert contents
-        assertFile(output, read(input));
-    }
-
-    @Test
-    public void copyFileToAbsentFileInAbsentDirectory() throws Exception {
-        FilePath input = room.locateFile("file");
-        FilePath output = room.locateAbsent("absent/out");
-
-        assertNotSame(input.lastModified(), output.lastModified());
-
-        // copy
-        ((FilePath) input).copyTo(output);
-
-        // assert contents
-        assertFile(output, read(input));
-        assertEquals(input.lastModified(), output.lastModified());
-    }
-
-    /**
-     * Directory copy to present directory which is empty.
-     */
-    @Test
-    public void copyDirectoryToPresentDirectory() throws Exception {
-        FilePath input = room.locateDirectory("directory");
-        FilePath output = room.locateAbsent("out");
-        output.mkdirs();
-
-        ((FilePath) input).copyTo(output);
-
-        // assert contents
-        assertFile(I.locate(output, "directory/1"), "1");
-        assertDirectory(I.locate(output, "directory/child"));
-        assertFile(I.locate(output, "directory/child/a"), "a");
-        assertEquals(input.lastModified(), new File(output, "directory").lastModified());
-    }
-
-    /**
-     * Directory copy to present directory with filter.
-     */
-    @Test
-    public void copyDirectoryToPresentDirectoryWithFilter() throws Exception {
-        FilePath input = room.locateDirectory("directory");
-        FilePath output = room.locateAbsent("out");
-        output.mkdirs();
-
-        FileSystem.copy(input, output, new FileFilter() {
-
-            /**
-             * @see java.io.FileFilter#accept(java.io.File)
-             */
-            public boolean accept(File file) {
-                return file.isFile();
-            }
-        });
-
-        // assert contents
-        assertFile(I.locate(output, "directory/file"), "some contents");
-        assertFalse(new File(output, "directory/child").exists());
-        assertEquals(input.lastModified(), new File(output, "directory").lastModified());
-    }
+public class FilePatternMatchingTest {
 
     @Rule
     public static final MatchSet set1 = new MatchSet("01");
@@ -233,10 +138,7 @@ public class FilesTest {
     private static final class MatchSet extends CleanRoom implements FileVisitor<Path> {
 
         /** The target file set. */
-        private final FilePath set;
-
-        /** The root directory. */
-        private final java.io.File root;
+        private final File set;
 
         /** The matching file counter. */
         private List<Integer> numbers = new ArrayList();
@@ -245,10 +147,9 @@ public class FilesTest {
          * 
          */
         private MatchSet(String path) {
-            super(Ezunit.locatePackage(FilesTest.class) + "/" + path);
+            super(Ezunit.locatePackage(FilePatternMatchingTest.class) + "/" + path);
 
-            root = locateDirectory("");
-            set = new FilePath(root.getAbsolutePath(), null);
+            set = locateDirectory("");
         }
 
         /**

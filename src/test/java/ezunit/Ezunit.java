@@ -2,7 +2,7 @@
  * Copyright (C) 2011 Nameless Production Committee.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this FilePath except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *         http://www.apache.org/licenses/LICENSE-2.0
@@ -50,6 +50,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.I;
+import ezbean.io.FilePath;
 import ezbean.io.FileSystem;
 import ezbean.xml.SAXBuilder;
 import ezbean.xml.XMLWriter;
@@ -66,12 +67,12 @@ public class Ezunit {
 
     /**
      * <p>
-     * Assert that the specified abstract file is file (not directory), present and has the given
-     * file contents.
+     * Assert that the specified abstract FilePath is FilePath (not directory), present and has the
+     * given FilePath contents.
      * </p>
      * 
-     * @param file A file to test.
-     * @param contents File contents.
+     * @param FilePath A FilePath to test.
+     * @param contents FilePath contents.
      */
     public static void assertFile(File file, String... contents) {
         assertNotNull(file);
@@ -111,7 +112,7 @@ public class Ezunit {
     }
 
     /**
-     * Assert file path's equivalence.
+     * Assert FilePath path's equivalence.
      * 
      * @param expected
      * @param test
@@ -134,14 +135,14 @@ public class Ezunit {
 
     /**
      * <p>
-     * Locate a class file of the specified class.
+     * Locate a class FilePath of the specified class.
      * </p>
      * 
      * @param clazz A class to resolve location.
      * @return A located class file.
      * @throws NullPointerException If the class is <code>null</code>.
      */
-    public static File locate(Class clazz) {
+    public static FilePath locate(Class clazz) {
         return I.locate(clazz.getResource(clazz.getSimpleName().concat(".class")));
     }
 
@@ -154,17 +155,17 @@ public class Ezunit {
      * @return A located package directory.
      * @throws NullPointerException If the class is <code>null</code>.
      */
-    public static File locatePackage(Class clazz) {
+    public static FilePath locatePackage(Class clazz) {
         return I.locate(clazz.getResource(""));
     }
 
     /**
      * <p>
-     * Reads all characters from a file into a {@link String}, using the given character set or
+     * Reads all characters from a FilePath into a {@link String}, using the given character set or
      * {@link I#getEncoding()}.
      * </p>
      * 
-     * @param file A file to read from.
+     * @param FilePath A FilePath to read from.
      * @param charset A character set used when reading the file.
      * @return A string containing all the characters from the file.
      */
@@ -188,10 +189,10 @@ public class Ezunit {
      * does include other leading and trailing whitespace.
      * </p>
      * 
-     * @param file A file to read from
+     * @param FilePath A FilePath to read from
      * @param charset A character set used when writing the file. If you don't specify, Otherwise
      *            {@link I#getEncoding()}.
-     * @return the first line, or null if the file is empty
+     * @return the first line, or null if the FilePath is empty
      * @throws IOException if an I/O error occurs
      */
     public static String readLine(File file, Charset... charset) {
@@ -206,10 +207,10 @@ public class Ezunit {
      * do include other leading and trailing whitespace.
      * </p>
      * 
-     * @param file A file to read from
+     * @param FilePath A FilePath to read from
      * @param charset A character set used when writing the file. If you don't specify, Otherwise
      *            {@link I#getEncoding()}.
-     * @return the first line, or null if the file is empty
+     * @return the first line, or null if the FilePath is empty
      * @throws IOException if an I/O error occurs
      */
     public static List<String> readLines(File file, Charset... charset) {
@@ -229,7 +230,7 @@ public class Ezunit {
     }
 
     /**
-     * Read file contents actually.
+     * Read FilePath contents actually.
      * 
      * @param file
      * @param charset
@@ -263,22 +264,22 @@ public class Ezunit {
 
     /**
      * <p>
-     * Locate the specified file name.
+     * Locate the specified FilePath name.
      * </p>
      * 
-     * @param filePath A file name to resolve location.
+     * @param filePath A FilePath name to resolve location.
      * @return A located {@link File}.
      */
-    public static final File locate(String filePath) {
+    public static final FilePath locate(String filePath) {
         return locateFileFromCaller(filePath);
     }
 
     /**
      * <p>
-     * Locate the specified file name as {@link InputSource}.
+     * Locate the specified FilePath name as {@link InputSource}.
      * </p>
      * 
-     * @param filePath A file name to resolve location.
+     * @param filePath A FilePath name to resolve location.
      * @return A located {@link InputSource}.
      */
     public static final InputSource locateSource(String filePath) {
@@ -288,10 +289,10 @@ public class Ezunit {
 
     /**
      * <p>
-     * Locate the specified file name as {@link InputSource}.
+     * Locate the specified FilePath name as {@link InputSource}.
      * </p>
      * 
-     * @param filePath A file name to resolve location.
+     * @param filePath A FilePath name to resolve location.
      * @return A located {@link InputSource}.
      */
     public static final InputSource locateSource(File file) {
@@ -305,10 +306,10 @@ public class Ezunit {
 
     /**
      * <p>
-     * Build a xml document form the specified file name.
+     * Build a xml document form the specified FilePath name.
      * </p>
      * 
-     * @param filePath A file name to resolve location.
+     * @param filePath A FilePath name to resolve location.
      * @param filters A list of filters to transform xml.
      * @return A created {@link Document}.
      */
@@ -318,10 +319,10 @@ public class Ezunit {
 
     /**
      * <p>
-     * Build a xml document form the specified file name.
+     * Build a xml document form the specified FilePath name.
      * </p>
      * 
-     * @param filePath A file name to resolve location.
+     * @param filePath A FilePath name to resolve location.
      * @param filters A list of filters to transform xml.
      * @return A created {@link Document}.
      */
@@ -349,13 +350,13 @@ public class Ezunit {
 
     /**
      * <p>
-     * Locate the specified file name with the context which is located by the caller class.
+     * Locate the specified FilePath name with the context which is located by the caller class.
      * </p>
      * 
-     * @param filePath A file name to resolve location.
+     * @param filePath A FilePath name to resolve location.
      * @return A located file.
      */
-    private static File locateFileFromCaller(String filePath) {
+    private static FilePath locateFileFromCaller(String filePath) {
         Class caller = getCaller();
         URL url = caller.getResource(filePath);
 
@@ -363,7 +364,7 @@ public class Ezunit {
             fail("The resource is not found. [" + filePath + "]");
         }
 
-        // resolve file location
+        // resolve FilePath location
         return I.locate(url);
     }
 

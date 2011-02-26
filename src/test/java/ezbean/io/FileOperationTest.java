@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,9 +19,7 @@ import static ezunit.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,24 +27,12 @@ import org.junit.Test;
 import ezunit.CleanRoom;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/08/26 5:25:31
+ * @version 2011/02/25 17:56:12
  */
-public class FileSystemUtilityTest {
+public class FileOperationTest {
 
     @Rule
     public static final CleanRoom room = new CleanRoom();
-
-    @Test
-    public void closeNull() {
-        FileSystem.close(null);
-    }
-
-    @Test
-    public void closeUncloseable() {
-        FileSystem.close(Class.class);
-    }
 
     @Test
     public void copyFileToPresentFile() throws Exception {
@@ -59,7 +45,7 @@ public class FileSystemUtilityTest {
         assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
-        FileSystem.copy(input, output);
+        ((ezbean.io.File) input).copyTo(output);
 
         // assert contents
         assertFile(output, read(input));
@@ -72,7 +58,7 @@ public class FileSystemUtilityTest {
         File output = room.locateAbsent("directory/out");
 
         // copy
-        FileSystem.copy(input, output);
+        ((ezbean.io.File) input).copyTo(output);
 
         // assert contents
         assertFile(output, read(input));
@@ -86,7 +72,7 @@ public class FileSystemUtilityTest {
         assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
-        FileSystem.copy(input, output);
+        ((ezbean.io.File) input).copyTo(output);
 
         // assert contents
         assertFile(output, read(input));
@@ -102,37 +88,12 @@ public class FileSystemUtilityTest {
         File output = room.locateAbsent("out");
         output.mkdirs();
 
-        FileSystem.copy(input, output);
+        ((ezbean.io.File) input).copyTo(output);
 
         // assert contents
         assertFile(new File(output, "directory/1"), "1");
         assertDirectory(new File(output, "directory/child"));
         assertFile(new File(output, "directory/child/a"), "a");
-        assertEquals(input.lastModified(), new File(output, "directory").lastModified());
-    }
-
-    /**
-     * Directory copy to present directory with filter.
-     */
-    @Test
-    public void copyDirectoryToPresentDirectoryWithFilter() throws Exception {
-        File input = room.locateDirectory("directory");
-        File output = room.locateAbsent("out");
-        output.mkdirs();
-
-        FileSystem.copy(input, output, new FileFilter() {
-
-            /**
-             * @see java.io.FileFilter#accept(java.io.File)
-             */
-            public boolean accept(File file) {
-                return file.isFile();
-            }
-        });
-
-        // assert contents
-        assertFile(new File(output, "directory/file"), "some contents");
-        assertFalse(new File(output, "directory/child").exists());
         assertEquals(input.lastModified(), new File(output, "directory").lastModified());
     }
 
@@ -144,7 +105,7 @@ public class FileSystemUtilityTest {
         File input = room.locateDirectory("directory");
         File output = room.locateAbsent("out");
 
-        FileSystem.copy(input, output);
+        ((ezbean.io.File) input).copyTo(output);
 
         // assert contents
         assertFile(new File(output, "directory/2"), "2");
@@ -156,20 +117,12 @@ public class FileSystemUtilityTest {
     /**
      * Directory copy to file.
      */
-    @Test(expected = FileNotFoundException.class)
+    @Test(expected = NoSuchFileException.class)
     public void copyDirectoryToPresentFile() throws Exception {
         File input = room.locateDirectory("directory");
         File output = room.locateFile("file");
 
-        FileSystem.copy(input, output);
-    }
-
-    /**
-     * Input source is <code>null</code>.
-     */
-    @Test(expected = NullPointerException.class)
-    public void copyNullInput() throws Exception {
-        FileSystem.copy(null, room.locateAbsent("null"));
+        ((ezbean.io.File) input).copyTo(output);
     }
 
     /**
@@ -177,15 +130,15 @@ public class FileSystemUtilityTest {
      */
     @Test(expected = NullPointerException.class)
     public void copyNullOutput() throws Exception {
-        FileSystem.copy(room.locateAbsent("null"), null);
+        ((ezbean.io.File) room.locateAbsent("null")).copyTo(null);
     }
 
     /**
      * Input source is not found.
      */
-    @Test(expected = FileNotFoundException.class)
+    @Test(expected = NoSuchFileException.class)
     public void copyAbsentInput() throws Exception {
-        FileSystem.copy(room.locateAbsent("absent"), room.locateFile("file"));
+        ((ezbean.io.File) room.locateAbsent("absent")).copyTo(room.locateFile("file"));
     }
 
     @Test
@@ -196,7 +149,7 @@ public class FileSystemUtilityTest {
         assertFile(file, "some contents");
 
         // clear
-        FileSystem.clear(file);
+        ((ezbean.io.File) file).clear();
 
         // assert contents
         assertFile(file, "");
@@ -215,7 +168,7 @@ public class FileSystemUtilityTest {
         assertFile(new File(file, "child/c"), "c");
 
         // clear
-        FileSystem.clear(file);
+        ((ezbean.io.File) file).clear();
 
         // assert contents
         assertTrue(file.exists());
@@ -231,14 +184,9 @@ public class FileSystemUtilityTest {
         assertFalse(file.exists());
 
         // clear
-        FileSystem.clear(file);
+        ((ezbean.io.File) file).clear();
 
         assertFalse(file.exists());
-    }
-
-    @Test
-    public void clearNull() {
-        FileSystem.clear(null); // no error
     }
 
     @Test
@@ -249,7 +197,7 @@ public class FileSystemUtilityTest {
         assertFile(file, "some contents");
 
         // delete
-        FileSystem.delete(file);
+        file.delete();
 
         // assert contents
         assertFalse(file.exists());
@@ -265,7 +213,7 @@ public class FileSystemUtilityTest {
         assertFile(new File(file, "child/a"), "a");
 
         // delete
-        FileSystem.delete(file);
+        file.delete();
 
         // assert contents
         assertFalse(file.exists());
@@ -278,8 +226,8 @@ public class FileSystemUtilityTest {
     public void deleteArchive() throws Exception {
         File file = room.locateFile("archive/test.zip");
 
-        assertTrue(file instanceof ezbean.io.FilePath);
-        ezbean.io.FilePath archive = (ezbean.io.FilePath) file;
+        assertTrue(file instanceof ezbean.io.File);
+        ezbean.io.File archive = (ezbean.io.File) file;
         File junction = archive.getJunction();
 
         // unpack
@@ -287,7 +235,7 @@ public class FileSystemUtilityTest {
         assertTrue(junction.exists());
 
         // delete
-        FileSystem.delete(file);
+        file.delete();
 
         assertFalse(file.exists());
         assertFalse(junction.exists());
@@ -298,77 +246,10 @@ public class FileSystemUtilityTest {
         File file = room.locateAbsent("absent");
 
         // delete
-        FileSystem.delete(file);
+        file.delete();
 
         // assert contents
         assertFalse(file.exists());
     }
 
-    @Test
-    public void deleteNull() {
-        assertFalse(FileSystem.delete(null)); // no error
-    }
-
-    @Test
-    public void fileEquality() throws Exception {
-        File one = new File("a");
-        File other = new File("a/../a");
-
-        assertFalse(one.equals(other));
-        assertFalse(other.equals(one));
-    }
-
-    /**
-     * Retrieve file name.
-     */
-    @Test
-    public void testGetFileName() {
-        assertEquals("", FileSystem.getName(null));
-        assertEquals("name", FileSystem.getName(new File("name")));
-        assertEquals("name", FileSystem.getName(new File("name.")));
-        assertEquals("name.and", FileSystem.getName(new File("name.and.extension")));
-        assertEquals("name", FileSystem.getName(new File("directory/name")));
-        assertEquals("name", FileSystem.getName(new File("directory/name.extension")));
-    }
-
-    /**
-     * Retrieve file extension.
-     */
-    @Test
-    public void testGetFileExtension() {
-        assertEquals("", FileSystem.getExtension(null));
-        assertEquals("", FileSystem.getExtension(new File("name")));
-        assertEquals("", FileSystem.getExtension(new File("name.")));
-        assertEquals("extension", FileSystem.getExtension(new File("name.extension")));
-        assertEquals("extension", FileSystem.getExtension(new File("name.dummy.extension")));
-        assertEquals("", FileSystem.getExtension(new File("directory/name")));
-        assertEquals("extension", FileSystem.getExtension(new File("directory/name.extension")));
-    }
-
-    /**
-     * Create temporary file.
-     */
-    @Test
-    public void testCreateTemporaryAsFile() throws IOException {
-        File file = FileSystem.createTemporary();
-        assertFalse(file.exists());
-        assertTrue(file.createNewFile());
-    }
-
-    /**
-     * Create temporary directory.
-     */
-    @Test
-    public void testCreateTemporaryAsDirectory() throws IOException {
-        File file = FileSystem.createTemporary();
-        assertFalse(file.exists());
-        assertTrue(file.mkdir());
-    }
-
-    @Test
-    public void dontCreateDuplicatedName() {
-        File file1 = FileSystem.createTemporary();
-        File file2 = FileSystem.createTemporary();
-        assertNotSame(file1.getName(), file2.getName());
-    }
 }
