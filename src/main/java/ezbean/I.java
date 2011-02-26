@@ -61,6 +61,7 @@ import sun.org.mozilla.javascript.internal.IdScriptableObject;
 import sun.org.mozilla.javascript.internal.NativeArray;
 import sun.org.mozilla.javascript.internal.NativeObject;
 import sun.reflect.ReflectionFactory;
+import ezbean.io.FilePath;
 import ezbean.io.FileSystem;
 import ezbean.model.ClassUtil;
 import ezbean.model.Codec;
@@ -653,7 +654,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @return A located {@link File}.
      * @throws NullPointerException If the given file path is null.
      */
-    public static File locate(URL filePath) {
+    public static FilePath locate(URL filePath) {
         try {
             // Use File constructor with URI to resolve escaped character.
             return locate(new File(filePath.toURI()).getPath());
@@ -669,7 +670,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @return A located {@link File}.
      * @throws NullPointerException If the given file path is null.
      */
-    public static File locate(String filePath) {
+    public static FilePath locate(String filePath) {
         return make(FileSystem.class).locate(filePath);
     }
 
@@ -681,7 +682,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @return A located {@link File}.
      * @throws NullPointerException If the given file path is null.
      */
-    public static File locate(File base, String filePath) {
+    public static FilePath locate(File base, String filePath) {
         return locate(base.toString() + '/' + filePath);
     }
 

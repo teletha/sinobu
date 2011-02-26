@@ -15,6 +15,8 @@
  */
 package ezunit;
 
+import static ezunit.Ezunit.*;
+import static ezunit.UnsafeUtility.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
@@ -28,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
+import ezbean.io.FilePath;
 import ezbean.io.FileSystem;
 
 /**
@@ -43,13 +46,13 @@ public class CleanRoom extends Sandbox {
     private static final AtomicInteger counter = new AtomicInteger();
 
     /** The root bioclean room for tests which are related with file system. */
-    private static final File clean = new File(I.getWorkingDirectory(), "clean-room");
+    private static final FilePath clean = I.locate(I.getWorkingDirectory(), "clean-room");
 
     /** The temporary bioclean room for this instance which are related with file system. */
-    public final File root = new File(clean, String.valueOf(counter.incrementAndGet()));
+    public final FilePath root = I.locate(clean, String.valueOf(counter.incrementAndGet()));
 
     /** The host directory for test. */
-    private final File host;
+    private final FilePath host;
 
     /** The clean room monitor. */
     private final Monitor monitor = new Monitor();
@@ -58,7 +61,7 @@ public class CleanRoom extends Sandbox {
      * Create a clean room for the current directory.
      */
     public CleanRoom() {
-        this((File) null);
+        this(null);
     }
 
     /**
@@ -67,18 +70,7 @@ public class CleanRoom extends Sandbox {
      * @param path A directory location you want to use.
      */
     public CleanRoom(String path) {
-        this(I.locate(path));
-    }
-
-    /**
-     * Create a clean room for the specified directory.
-     * 
-     * @param directory A directory location you want to use.
-     */
-    public CleanRoom(File directory) {
-        if (directory == null) {
-            directory = Ezunit.locatePackage(UnsafeUtility.speculateInstantiator());
-        }
+        FilePath directory = path == null ? locatePackage(speculateInstantiator()) : I.locate(path);
 
         if (!directory.isDirectory()) {
             directory = directory.getParentFile();
@@ -119,7 +111,7 @@ public class CleanRoom extends Sandbox {
      * @param name A file name.
      * @return A located present file.
      */
-    public File locateFile(String name) {
+    public FilePath locateFile(String name) {
         return locate(name, true, true);
     }
 
@@ -131,7 +123,7 @@ public class CleanRoom extends Sandbox {
      * @param name A directory name.
      * @return A located present directory.
      */
-    public File locateDirectory(String name) {
+    public FilePath locateDirectory(String name) {
         return locate(name, true, false);
     }
 
@@ -143,7 +135,7 @@ public class CleanRoom extends Sandbox {
      * @param name A resource name.
      * @return A located absent file system resource.
      */
-    public File locateAbsent(String name) {
+    public FilePath locateAbsent(String name) {
         return locate(name, false, false);
     }
 
@@ -153,14 +145,14 @@ public class CleanRoom extends Sandbox {
      * @param path
      * @return
      */
-    private File locate(String path, boolean isPresent, boolean isFile) {
+    private FilePath locate(String path, boolean isPresent, boolean isFile) {
         // null check
         if (path == null) {
             path = "";
         }
 
         // locate virtual file in the clean room
-        File virtual = I.locate(root, path);
+        FilePath virtual = I.locate(root, path);
 
         // create virtual file if needed
         if (isPresent) {

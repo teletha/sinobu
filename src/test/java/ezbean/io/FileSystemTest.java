@@ -44,7 +44,7 @@ public class FileSystemTest {
 
     @Test
     public void locate() {
-        File file = I.locate("foo");
+        FilePath file = I.locate("foo");
         File expected = new File("foo");
 
         assertFileEquals(expected, file);
@@ -112,7 +112,8 @@ public class FileSystemTest {
     }
 
     /** file protocol. */
-    private static final String FILE_PROTOCOL ="file://" + locatePackage(FileSystemTest.class).getAbsolutePath().replace(File.separatorChar, '/') + "/";
+    private static final String FILE_PROTOCOL = "file://" + locatePackage(FileSystemTest.class).getAbsolutePath()
+            .replace(File.separatorChar, '/') + "/";
 
     @Test
     public void withProtocol1() {

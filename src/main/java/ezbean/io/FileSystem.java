@@ -145,7 +145,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public File locate(String filePath) {
+    public FilePath locate(String filePath) {
         // remove file protocol prefix
         if (filePath.startsWith("file:")) {
             filePath = filePath.substring(5);
@@ -158,7 +158,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
 
         String[] paths = filePath.split("/");
         StringBuilder path = new StringBuilder();
-        ezbean.io.Files archive = null;
+        ezbean.io.FilePath archive = null;
 
         for (int i = 0; i < paths.length - 1; i++) {
             // add the current path
@@ -167,7 +167,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
             // find archiver
             if (findArchiver(paths[i]) != null) {
                 // create archive
-                archive = new ezbean.io.Files(path.toString(), archive);
+                archive = new FilePath(path.toString(), archive);
                 archive.list(); // force to unpack the archive
 
                 // rebuild actual path
@@ -179,7 +179,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         }
 
         // build File from the current path
-        return new ezbean.io.Files(path.append(paths[paths.length - 1]).toString(), archive);
+        return new FilePath(path.append(paths[paths.length - 1]).toString(), archive);
     }
 
     /**
@@ -467,6 +467,7 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      * directory is no need to be empty in order to be deleted.
      * </p>
      * 
+     * @deprecated
      * @param target A target file or directory.
      * @return <code>true</code> if and only if the file or directory is successfully deleted,
      *         <code>false</code> otherwise.
@@ -484,10 +485,14 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
 
         // use not isDirectory but !isFile
         if (!target.isFile()) {
-            for (File child : target.listFiles()) {
-                // recursively
-                if (!delete(child)) {
-                    result = false;
+            File[] children = target.listFiles();
+
+            if (children != null) {
+                for (File child : target.listFiles()) {
+                    // recursively
+                    if (!delete(child)) {
+                        result = false;
+                    }
                 }
             }
         }

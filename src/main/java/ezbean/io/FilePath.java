@@ -49,7 +49,7 @@ import ezbean.Listeners;
  * @version 2010/01/21 0:24:06
  */
 @SuppressWarnings("serial")
-public class Files extends java.io.File implements Accessible {
+public class FilePath extends java.io.File implements Accessible {
 
     /** The digest algorithm instance. */
     private static final MessageDigest digest;
@@ -64,13 +64,13 @@ public class Files extends java.io.File implements Accessible {
     }
 
     /** The affiliated archive for this file. */
-    private final Files archive;
+    private final FilePath archive;
 
     /** The archiver for the affiliated archive. */
     private final Class<Archiver> archiver;
 
     /** The junction file for the archive. */
-    private java.io.File junction;
+    private FilePath junction;
 
     /** The actual filter set for directory only matcher. */
     private Set<Wildcard> includeFile = new CopyOnWriteArraySet();
@@ -90,7 +90,7 @@ public class Files extends java.io.File implements Accessible {
      * @param path A path to this file. The <code>null</code> is not accepted.
      * @param archive An affiliated archive of this file. The <code>null</code> is accepted.
      */
-    Files(String path, Files archive) {
+    FilePath(String path, FilePath archive) {
         super(path);
 
         this.archive = archive;
@@ -120,7 +120,7 @@ public class Files extends java.io.File implements Accessible {
                 }
 
                 // store junction directory
-                junction = new java.io.File(FileSystem.temporaries, builder.toString());
+                junction = I.locate(FileSystem.temporaries, builder.toString());
             }
         }
 
@@ -214,13 +214,14 @@ public class Files extends java.io.File implements Accessible {
      * @see java.io.File#getParentFile()
      */
     @Override
-    public java.io.File getParentFile() {
+    public FilePath getParentFile() {
         String path = super.getParent();
 
         if (path == null) {
             return null;
         }
-        return (archive != null && archive.getJunction().getPath().equals(path)) ? archive : new Files(path, archive);
+        return (archive != null && archive.getJunction().getPath().equals(path)) ? archive
+                : new FilePath(path, archive);
     }
 
     /**
@@ -275,9 +276,9 @@ public class Files extends java.io.File implements Accessible {
 
         for (int i = 0; i < size; i++) {
             if (archiver == null) {
-                files[i] = new Files(getPath() + separator + names[i], archive);
+                files[i] = new FilePath(getPath() + separator + names[i], archive);
             } else {
-                files[i] = new Files(getJunction() + separator + names[i], this);
+                files[i] = new FilePath(getJunction() + separator + names[i], this);
             }
         }
         return files;
@@ -374,9 +375,9 @@ public class Files extends java.io.File implements Accessible {
      * </p>
      * 
      * @param patterns A include file patterns.
-     * @return {@link Files} instance to chain API.
+     * @return {@link FilePath} instance to chain API.
      */
-    public Files include(String... patterns) {
+    public FilePath include(String... patterns) {
         return parse(patterns, includeFile, includeDirectory);
     }
 
@@ -386,9 +387,9 @@ public class Files extends java.io.File implements Accessible {
      * </p>
      * 
      * @param patterns A exclude directory patterns.
-     * @return {@link Files} instance to chain API.
+     * @return {@link FilePath} instance to chain API.
      */
-    public Files exclude(String... patterns) {
+    public FilePath exclude(String... patterns) {
         return parse(patterns, excludeFile, excludeDirectory);
     }
 
@@ -397,9 +398,9 @@ public class Files extends java.io.File implements Accessible {
      * Exclude the default
      * </p>
      * 
-     * @return {@link Files} instance to chain API.
+     * @return {@link FilePath} instance to chain API.
      */
-    public Files excludeDefaults() {
+    public FilePath excludeDefaults() {
         return exclude("**/.*", ".*/**", "CVS/**", "SCCS/**");
     }
 
@@ -408,7 +409,7 @@ public class Files extends java.io.File implements Accessible {
      * Helper method to parse the specified patterns and store it for the suitable collection.
      * </p>
      */
-    private Files parse(String[] patterns, Set<Wildcard> forFile, Set<Wildcard> forDirectory) {
+    private FilePath parse(String[] patterns, Set<Wildcard> forFile, Set<Wildcard> forDirectory) {
         for (String pattern : patterns) {
             String[] parsed = pattern.replace(separatorChar, '/')
                     .replaceAll("\\*{3,}", "**")
@@ -441,7 +442,7 @@ public class Files extends java.io.File implements Accessible {
      * 
      * @return {@link PathSet} instance to chain API.
      */
-    public Files reset() {
+    public FilePath reset() {
         includeFile.clear();
         excludeFile.clear();
         includeDirectory.clear();
@@ -568,156 +569,6 @@ public class Files extends java.io.File implements Accessible {
 
             // API definition
             return CONTINUE;
-        }
-    }
-
-    /**
-     * @version 2011/02/15 15:49:01
-     */
-    private static final class Traveler implements FileVisitor<Path> {
-
-        /** The flag for includ patterns for files and directories. */
-        private final boolean hasInclude;
-
-        /** The simple file include patterns. */
-        private final Wildcard[] includeFile;
-
-        /** We should exclude something? */
-        private final int includeFileSize;
-
-        /** The simple directory include patterns. */
-        private final Wildcard[] includeDirectory;
-
-        /** We should exclude something? */
-        private final int includeDirectorySize;
-
-        /** The simple file exclude patterns. */
-        private final Wildcard[] excludeFile;
-
-        /** We should exclude something? */
-        private final int excludeFileSize;
-
-        /** The simple directory exclude patterns. */
-        private final Wildcard[] excludeDirectory;
-
-        /** We should exclude something? */
-        private final int excludeDirectorySize;
-
-        /** The actual file visitor. */
-        private final FileVisitor<Path> delegator;
-
-        /** The current depth of file system. */
-        private int depth = 0;
-
-        /** The last depth that we should include all files. */
-        private int depthForDirectoryIncluding = Integer.MAX_VALUE;
-
-        /**
-         * @param delegator
-         */
-        private Traveler(FileVisitor<Path> delegator, Set<Wildcard> excludeDirectory, Set<Wildcard> excludeFile, Set<Wildcard> includeFile, Set<Wildcard> includeDirectory) {
-            this.delegator = delegator;
-            this.includeFile = includeFile.toArray(new Wildcard[includeFile.size()]);
-            this.excludeFile = excludeFile.toArray(new Wildcard[excludeFile.size()]);
-            this.includeDirectory = includeDirectory.toArray(new Wildcard[includeDirectory.size()]);
-            this.excludeDirectory = excludeDirectory.toArray(new Wildcard[excludeDirectory.size()]);
-
-            includeFileSize = this.includeFile.length;
-            excludeFileSize = this.excludeFile.length;
-            includeDirectorySize = this.includeDirectory.length;
-            excludeDirectorySize = this.excludeDirectory.length;
-            hasInclude = includeFileSize + includeDirectorySize != 0;
-        }
-
-        /**
-         * @see java.nio.file.FileVisitor#visitFile(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
-         */
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            String name = file.getFileName().toString();
-
-            // Check excluding because of excluding pattern has high priority.
-            for (int i = 0; i < excludeFileSize; i++) {
-                if (excludeFile[i].match(name)) {
-                    return CONTINUE; // Discard the current file.
-                }
-            }
-
-            if (!hasInclude) {
-                // We must pick up all files.
-                return delegator.visitFile(file, attrs);
-            } else {
-                // We must pick up the specified files and the others are discarded.
-
-                // Chech whether the current directory is unconditional including or not.
-                if (depthForDirectoryIncluding <= depth) {
-                    return delegator.visitFile(file, attrs);
-                }
-
-                // Check file including because some files are discarded.
-                for (int i = 0; i < includeFileSize; i++) {
-                    if (includeFile[i].match(name)) {
-                        return delegator.visitFile(file, attrs);
-                    }
-                }
-
-                // Any pattern doesn't match the curretn file, so we must discard it.
-                return CONTINUE;
-            }
-        }
-
-        /**
-         * @see java.nio.file.FileVisitor#visitFileFailed(java.lang.Object, java.io.IOException)
-         */
-        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-            return CONTINUE;
-        }
-
-        /**
-         * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
-         */
-        public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attrs) throws IOException {
-            depth++;
-
-            // Root directory is unconditionaly included.
-            if (depth == 1) return delegator.preVisitDirectory(directory, attrs);
-
-            // Cache directory name for reuse.
-            String name = directory.getFileName().toString();
-
-            // Check excluding because of excluding pattern has high priority.
-            for (int i = 0; i < excludeDirectorySize; i++) {
-                if (excludeDirectory[i].match(name)) {
-                    return SKIP_SUBTREE; // Discard the current directory.
-                }
-            }
-
-            // Check directory including to reduce the evaluation on files.
-            for (int i = 0; i < includeDirectorySize; i++) {
-                if (includeDirectory[i].match(name)) {
-                    depthForDirectoryIncluding = depth; // record depth
-
-                    break;
-                }
-            }
-
-            // delegation
-            return delegator.preVisitDirectory(directory, attrs);
-        }
-
-        /**
-         * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
-         */
-        public FileVisitResult postVisitDirectory(Path directory, IOException exc) throws IOException {
-            if (depth == depthForDirectoryIncluding) {
-                depthForDirectoryIncluding = Integer.MAX_VALUE; // reset
-            }
-
-            depth--;
-
-            // delegation
-            return delegator.postVisitDirectory(directory, exc);
         }
     }
 }
