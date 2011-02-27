@@ -36,6 +36,7 @@ import ezbean.sample.bean.School;
 import ezbean.sample.bean.StringList;
 import ezbean.sample.bean.StringMap;
 import ezbean.sample.bean.Student;
+import ezbean.sample.bean.TransientBean;
 
 /**
  * @version 2009/04/11 18:50:31
@@ -256,5 +257,21 @@ public class JSONTest {
         chain.setNext(chain);
 
         assertEquals("{\"next\":{}}", I.json(chain));
+    }
+
+    @Test
+    public void transientProperty() {
+        TransientBean bean = I.make(TransientBean.class);
+        bean.setBoth(8);
+        bean.setNone(15);
+
+        // write
+        String json = I.json(bean);
+        assertEquals("{\"none\":\"15\"}", json);
+
+        // read
+        bean = I.json(TransientBean.class, json);
+        assertEquals(15, bean.getNone());
+        assertEquals(0, bean.getBoth());
     }
 }
