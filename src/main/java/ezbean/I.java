@@ -18,10 +18,14 @@ package ezbean;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
@@ -31,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -376,6 +381,185 @@ public class I implements ClassLoadListener<Extensible> {
 
         // API definition
         return subjectBind;
+    }
+
+    /**
+     * <p>
+     * Note : This method closes both input and output stream carefully.
+     * </p>
+     * <p>
+     * Copy bytes from a {@link InputStream} to an {@link OutputStream}. This method buffers the
+     * input internally, so there is no need to use a buffered stream.
+     * </p>
+     * 
+     * @param input A {@link InputStream} to read from.
+     * @param output An {@link OutputStream} to write to.
+     * @throws IOException If an I/O error occurs.
+     * @throws NullPointerException If the input or output is null.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static void copy(InputStream input, OutputStream output) {
+        int size = 0;
+        byte[] buffer = new byte[8192];
+
+        try {
+            while ((size = input.read(buffer)) != -1) {
+                output.write(buffer, 0, size);
+            }
+        } catch (IOException e) {
+            throw quiet(e);
+        } finally {
+            quiet(input);
+            quiet(output);
+        }
+    }
+
+    // /**
+    // * <p>
+    // * Note : This method closes both input and output stream carefully.
+    // * </p>
+    // * <p>
+    // * Copy bytes from a {@link InputStream} to an {@link OutputStream}. This method buffers the
+    // * input internally, so there is no need to use a buffered stream.
+    // * </p>
+    // *
+    // * @param input A {@link InputStream} to read from.
+    // * @param output An {@link OutputStream} to write to.
+    // * @throws IOException If an I/O error occurs.
+    // * @throws NullPointerException If the input or output is null.
+    // */
+    // public static void copy(ReadableByteChannel input, WritableByteChannel output) throws
+    // IOException {
+    // ByteBuffer buffer = ByteBuffer.allocateDirect(8192);
+    //
+    // try {
+    // while (input.read(buffer) != -1) {
+    // buffer.flip();
+    //
+    // output.write(buffer);
+    //
+    // buffer.clear();
+    // }
+    // } finally {
+    // input.close();
+    // output.close();
+    // }
+    // }
+
+    /**
+     * Generic method to copy a input {@link File} to an output {@link File}.
+     * 
+     * @param input A input {@link File} object which can be file or directory.
+     * @param output An outout {@link File} object which can be file or directory.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws IOException If an I/O error occurs.
+     * @throws FileNotFoundException If the specified input file is not found. If the input file is
+     *             directory and the output file is <em>not</em> directory.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static void copy(File input, File output) {
+        copy(input, output, null);
+    }
+
+    /**
+     * Generic method to copy a input {@link File} to an output {@link File}.
+     * 
+     * @param input A input {@link File} object which can be file or directory.
+     * @param output An outout {@link File} object which can be file or directory.
+     * @param filter A file filter to copy. If <code>null</code> is specified, all file will be
+     *            accepted. This filter is used only when the input is directory.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws IOException If an I/O error occurs.
+     * @throws FileNotFoundException If the specified input file is not found. If the input file is
+     *             directory and the output file is <em>not</em> directory.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static void copy(File input, File output, FileFilter filter) {
+        // uncast
+        input = new File(input.getPath());
+        output = new File(output.getPath());
+
+        if (input.isDirectory()) {
+            copyD2D(input, output, filter);
+        } else {
+            // If the input is file, output can accept file or directory.
+            if (output.isDirectory()) {
+                copyF2F(input, new File(output, input.getName()));
+            } else {
+                copyF2F(input, output);
+            }
+        }
+    }
+
+    /**
+     * Copies a directory to within another directory preserving the file dates. This method copies
+     * the source directory and all its contents to a directory of the same name in the specified
+     * destination directory.
+     * 
+     * @param input A source directory.
+     * @param output A destination directory.
+     * @throws IOException If an I/O error occurs.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    private static void copyD2D(File input, File output, FileFilter filter) {
+        // copy
+        File dirctory = new File(output, input.getName());
+        dirctory.mkdir();
+
+        for (File child : input.listFiles(filter)) {
+            if (child.isDirectory()) {
+                copyD2D(child, dirctory, filter);
+            } else {
+                copyF2F(child, new File(dirctory, child.getName()));
+            }
+        }
+
+        // We must copy last modified date at the end.
+        dirctory.setLastModified(input.lastModified());
+    }
+
+    /**
+     * Helper method to copy a file to a new location preserving the file date. This method copies
+     * the contents of the specified source file to the specified destination file.
+     * 
+     * @param input A source file.
+     * @param output A destination file.
+     * @throws IOException If an I/O error occurs.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    private static void copyF2F(File input, File output) {
+        // assure that the parent directories exist
+        output.getParentFile().mkdirs();
+
+        FileChannel in = null;
+        FileChannel out = null;
+
+        try {
+            in = new FileInputStream(input).getChannel();
+            out = new FileOutputStream(output).getChannel();
+
+            // copy data actually
+            in.transferTo(0, in.size(), out);
+
+        } catch (IOException e) {
+            throw I.quiet(e);
+        } finally {
+            I.quiet(in);
+            I.quiet(out);
+        }
+
+        // We must copy last modified date at the end.
+        output.setLastModified(input.lastModified());
     }
 
     /**

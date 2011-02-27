@@ -56,7 +56,7 @@ public class FilesTest {
         assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
-        ((FilePath) input).copyTo(output);
+        input.copyTo(output);
 
         // assert contents
         assertFile(output, read(input));
@@ -69,7 +69,7 @@ public class FilesTest {
         FilePath output = room.locateAbsent("directory/out");
 
         // copy
-        ((FilePath) input).copyTo(output);
+        input.copyTo(output);
 
         // assert contents
         assertFile(output, read(input));
@@ -83,7 +83,7 @@ public class FilesTest {
         assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
-        ((FilePath) input).copyTo(output);
+        input.copyTo(output);
 
         // assert contents
         assertFile(output, read(input));
@@ -99,7 +99,7 @@ public class FilesTest {
         FilePath output = room.locateAbsent("out");
         output.mkdirs();
 
-        ((FilePath) input).copyTo(output);
+        input.copyTo(output);
 
         // assert contents
         assertFile(I.locate(output, "directory/1"), "1");
@@ -117,7 +117,7 @@ public class FilesTest {
         FilePath output = room.locateAbsent("out");
         output.mkdirs();
 
-        FileSystem.copy(input, output, new FileFilter() {
+        I.copy(input, output, new FileFilter() {
 
             /**
              * @see java.io.FileFilter#accept(java.io.File)

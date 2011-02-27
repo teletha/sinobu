@@ -27,7 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.io.FileSystem;
+import ezbean.io.FilePath;
 
 /**
  * @version 2010/02/09 11:23:23
@@ -51,7 +51,7 @@ public class SandboxTest {
 
     @Test
     public void writableFile() throws Exception {
-        File file = FileSystem.createTemporary();
+        File file = FilePath.createTemporary();
 
         sandbox.writable(false, file);
 
@@ -80,7 +80,7 @@ public class SandboxTest {
 
     @Test(expected = FileNotFoundException.class)
     public void writableDirectory() throws Exception {
-        File file = FileSystem.createTemporary();
+        File file = FilePath.createTemporary();
 
         sandbox.writable(false, file);
 

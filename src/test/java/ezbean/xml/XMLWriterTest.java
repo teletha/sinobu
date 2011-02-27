@@ -29,7 +29,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 
 import ezbean.I;
-import ezbean.io.FileSystem;
 
 /**
  * @version 2010/02/05 1:31:48
@@ -295,7 +294,7 @@ public class XMLWriterTest {
             // expected
             ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
             FileInputStream expectedInput = new FileInputStream(locate(expectedXMLFilePath));
-            FileSystem.copy(expectedInput, expectedOutput);
+            I.copy(expectedInput, expectedOutput);
 
             String[] expectedResult = line(expectedOutput.toByteArray());
 
@@ -347,7 +346,7 @@ public class XMLWriterTest {
             // expected
             ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
             FileInputStream expectedInput = new FileInputStream(locate(expectedXMLFilePath));
-            FileSystem.copy(expectedInput, expectedOutput);
+            I.copy(expectedInput, expectedOutput);
             String[] expectedResult = line(expectedOutput.toByteArray());
 
             // assert

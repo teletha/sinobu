@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.io.FileSystem;
 import ezbean.module.external.ExtendedClass1;
 import ezbean.sample.MarkerInterface1;
 import ezbean.sample.bean.Person;
@@ -141,7 +140,7 @@ public class ModulesTest {
 
     @Test
     public void reloadRelativePathAndAbsolutePath() {
-        FileSystem.copy(module1.module, relativeModule);
+        I.copy(module1.module, relativeModule);
 
         try {
             assertFalse(relativeModule.isAbsolute());
@@ -155,7 +154,7 @@ public class ModulesTest {
             modules.load(relativeModule.getAbsoluteFile());
             assertEquals(1, modules.modules.size());
         } finally {
-            FileSystem.delete(relativeModule);
+            relativeModule.delete();
         }
     }
 

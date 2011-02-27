@@ -22,9 +22,11 @@ import static java.nio.file.StandardCopyOption.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -39,6 +41,58 @@ import ezbean.I;
  */
 @SuppressWarnings("serial")
 public class FilePath extends java.io.File {
+
+    /** The root temporary directory for Ezbean. */
+    private static FilePath temporaries;
+
+    /** The temporary directory for the current processing JVM. */
+    private static File temporary;
+
+    // initialize
+    static {
+        try {
+            temporaries = new FilePath(System.getProperty("java.io.tmpdir"), "Ezbean").getCanonicalFile();
+            temporaries.mkdirs();
+
+            // Clean up any old temporary directories by listing all of the files, using a prefix
+            // filter and that don't have a lock file.
+            for (FilePath file : temporaries.listFiles()) {
+                if (file.getName().startsWith("temporary")) {
+                    // create a file to represent the lock and test
+                    RandomAccessFile lock = new RandomAccessFile(new File(file, "lock"), "rw");
+
+                    // delete the contents of the temporary directory since it can retrieve a
+                    // exclusive lock
+                    if (lock.getChannel().tryLock() != null) {
+                        // release lock at first
+                        lock.close();
+
+                        // delete actually
+                        file.delete();
+                    }
+                }
+            }
+
+            // Create the temporary directory for the current processing JVM.
+            temporary = File.createTempFile("temporary", null, temporaries);
+
+            // Delete the file if one was automatically created by the JVM. We are going to use the
+            // name of the file as a directory name, so we do not want the file laying around.
+            temporary.delete();
+
+            // Create a temporary directory which will be used for all future temporary file
+            // requests.
+            temporary.mkdirs();
+
+            // Create a lock after creating the temporary directory so there is no race condition
+            // with another application trying to clean our temporary directory.
+            new RandomAccessFile(new File(temporary, "lock"), "rw").getChannel().tryLock();
+        } catch (SecurityException e) {
+            temporary = null;
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
 
     /** The actual filter set for directory only matcher. */
     private Set<Wildcard> includeFile = new CopyOnWriteArraySet();
@@ -62,6 +116,23 @@ public class FilePath extends java.io.File {
     }
 
     /**
+     * Create File instance.
+     * 
+     * @param path A path to this file. The <code>null</code> is not accepted.
+     */
+    public FilePath(String parent, String child) {
+        super(parent, child);
+    }
+
+    /**
+     * @param parent
+     * @param child
+     */
+    public FilePath(File parent, String child) {
+        super(parent, child);
+    }
+
+    /**
      * <p>
      * Reads a basic attributes associated with a file in a file system as a bulk operation.
      * </p>
@@ -73,6 +144,69 @@ public class FilePath extends java.io.File {
             return readAttributes(toPath(), BasicFileAttributes.class);
         } catch (IOException e) {
             return null;
+        }
+    }
+
+    /**
+     * <p>
+     * Delete the target file or directory. If the target is file, it's file will be deleted. If the
+     * target is directory, all files, all directories and itself will be recursively deleted. The
+     * directory is no need to be empty in order to be deleted.
+     * </p>
+     * 
+     * @return <code>true</code> if and only if the file or directory is successfully deleted,
+     *         <code>false</code> otherwise.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkDelete(String)} method denies delete access to the
+     *             target file and its contents.
+     */
+    @Override
+    public boolean delete() {
+        if (isFile()) {
+            return super.delete();
+        } else {
+            Delete operation = new Delete();
+
+            scan(operation);
+
+            return operation.success;
+        }
+    }
+
+    /**
+     * @version 2011/02/16 11:55:42
+     */
+    private static final class Delete extends SimpleFileVisitor<Path> {
+
+        /** The sccess flag. */
+        private boolean success = true;
+
+        /**
+         * @see java.nio.file.SimpleFileVisitor#postVisitDirectory(java.lang.Object,
+         *      java.io.IOException)
+         */
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            try {
+                Files.deleteIfExists(dir);
+            } catch (Exception e) {
+                success = false;
+            }
+            return CONTINUE;
+        }
+
+        /**
+         * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
+         *      java.nio.file.attribute.BasicFileAttributes)
+         */
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            try {
+                Files.deleteIfExists(file);
+            } catch (Exception e) {
+                success = false;
+            }
+            return CONTINUE;
         }
     }
 
@@ -262,7 +396,6 @@ public class FilePath extends java.io.File {
             return operation.success;
         } else {
             // If the input is file, output can accept file or directory.
-
             try {
                 Path out = output.toPath();
 
@@ -286,62 +419,30 @@ public class FilePath extends java.io.File {
     }
 
     /**
-     * @version 2011/02/16 12:19:34
+     * <p>
+     * Creates a new abstract file somewhere beneath the system's temporary directory (as defined by
+     * the <code>java.io.tmpdir</code> system property).
+     * </p>
+     * <p>
+     * </p>
+     * 
+     * @return A newly created temporary file which is not exist yet.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
-    private static final class Copy extends SimpleFileVisitor<Path> {
+    public static File createTemporary() {
+        try {
+            File file = File.createTempFile("temporary", null, temporary);
 
-        /** The source location. */
-        private final Path from;
-
-        /** The target location. */
-        private final Path to;
-
-        /** The sccess flag. */
-        private boolean success = true;
-
-        /**
-         * @param from
-         * @param to
-         */
-        private Copy(Path from, Path to) {
-            this.from = from.getParent();
-            this.to = to;
-        }
-
-        /**
-         * @see java.nio.file.SimpleFileVisitor#preVisitDirectory(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
-         */
-        @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            createDirectories(to.resolve(from.relativize(dir)));
+            // Delete the file if one was automatically created by the JVM. We may use the name of
+            // the file as a directory name, so we do not want the file laying around.
+            file.delete();
 
             // API definition
-            return CONTINUE;
-        }
-
-        /**
-         * @see java.nio.file.SimpleFileVisitor#postVisitDirectory(java.lang.Object,
-         *      java.io.IOException)
-         */
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            setLastModifiedTime(to.resolve(from.relativize(dir)), getLastModifiedTime(dir));
-
-            // API definition
-            return CONTINUE;
-        }
-
-        /**
-         * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
-         */
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            copy(file, to.resolve(from.relativize(file)), REPLACE_EXISTING, COPY_ATTRIBUTES);
-
-            // API definition
-            return CONTINUE;
+            return file;
+        } catch (IOException e) {
+            throw I.quiet(e);
         }
     }
 }
