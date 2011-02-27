@@ -248,7 +248,7 @@ public class FilesTest {
             super(Ezunit.locatePackage(FilesTest.class) + "/" + path);
 
             root = locateDirectory("");
-            set = new FilePath(root.getAbsolutePath(), null);
+            set = new FilePath(root.getAbsolutePath());
         }
 
         /**

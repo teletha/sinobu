@@ -22,55 +22,23 @@ import static java.nio.file.StandardCopyOption.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import ezbean.Accessible;
 import ezbean.I;
-import ezbean.Listeners;
 
 /**
- * Implement {@link Accessible} interface to delegate {@link ezbean.model.Model} load process to
- * {@link java.io.File}.
- * 
- * @version 2010/01/21 0:24:06
+ * @version 2011/02/27 19:03:08
  */
 @SuppressWarnings("serial")
-public class FilePath extends java.io.File implements Accessible {
-
-    /** The digest algorithm instance. */
-    private static final MessageDigest digest;
-
-    // initialization
-    static {
-        try {
-            digest = MessageDigest.getInstance("SHA1");
-        } catch (NoSuchAlgorithmException e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /** The affiliated archive for this file. */
-    private final FilePath archive;
-
-    /** The archiver for the affiliated archive. */
-    private final Class<Archiver> archiver;
-
-    /** The junction file for the archive. */
-    private FilePath junction;
+public class FilePath extends java.io.File {
 
     /** The actual filter set for directory only matcher. */
     private Set<Wildcard> includeFile = new CopyOnWriteArraySet();
@@ -88,44 +56,9 @@ public class FilePath extends java.io.File implements Accessible {
      * Create File instance.
      * 
      * @param path A path to this file. The <code>null</code> is not accepted.
-     * @param archive An affiliated archive of this file. The <code>null</code> is accepted.
      */
-    FilePath(String path, FilePath archive) {
+    public FilePath(String path) {
         super(path);
-
-        this.archive = archive;
-        this.archiver = FileSystem.findArchiver(getName());
-    }
-
-    /**
-     * Retrieve junction point for this archive file.
-     * 
-     * @return A junction directory.
-     */
-    java.io.File getJunction() {
-        // check cache
-        if (junction == null) {
-            // calculate digest
-            synchronized (digest) {
-                // Environment (not only OS but also Way of Execution) influences character equality
-                // of file path (e.g. "c:/test.txt" in one environment, "C:/Test.txt" in other
-                // environment). So we must normalize it.
-                digest.update(getAbsolutePath().toLowerCase().getBytes());
-
-                // dump byte array into hexadecimal digit sequence.
-                StringBuilder builder = new StringBuilder();
-
-                for (byte b : digest.digest()) {
-                    builder.append(Integer.toHexString(b & 0xff));
-                }
-
-                // store junction directory
-                junction = I.locate(FileSystem.temporaries, builder.toString());
-            }
-        }
-
-        // API definition
-        return junction;
     }
 
     /**
@@ -144,52 +77,10 @@ public class FilePath extends java.io.File implements Accessible {
     }
 
     /**
-     * @see java.io.File#createNewFile()
-     */
-    @Override
-    public boolean createNewFile() throws IOException {
-        return (archive == null) ? super.createNewFile() : false;
-    }
-
-    /**
-     * @see java.io.File#delete()
-     */
-    @Override
-    public boolean delete() {
-        if (archive == null) {
-            // delete a junction file if this file is archive and it has created a junction file
-            // already
-            FileSystem.delete(junction);
-
-            // delete this file
-            return super.delete();
-        }
-        return false;
-    }
-
-    /**
-     * @see java.io.File#deleteOnExit()
-     */
-    @Override
-    public void deleteOnExit() {
-        if (archive == null) {
-            super.deleteOnExit();
-        }
-    }
-
-    /**
-     * @see java.io.File#isDirectory()
-     */
-    @Override
-    public boolean isDirectory() {
-        return (archiver == null) ? super.isDirectory() : exists();
-    }
-
-    /**
      * @see java.io.File#getAbsoluteFile()
      */
     @Override
-    public java.io.File getAbsoluteFile() {
+    public FilePath getAbsoluteFile() {
         return I.locate(getAbsolutePath());
     }
 
@@ -197,17 +88,8 @@ public class FilePath extends java.io.File implements Accessible {
      * @see java.io.File#getCanonicalFile()
      */
     @Override
-    public java.io.File getCanonicalFile() throws IOException {
+    public FilePath getCanonicalFile() throws IOException {
         return I.locate(getCanonicalPath());
-    }
-
-    /**
-     * @see java.io.File#getParent()
-     */
-    @Override
-    public String getParent() {
-        String path = super.getParent();
-        return (archive == null || !archive.getJunction().getPath().equals(path)) ? path : archive.getPath();
     }
 
     /**
@@ -220,8 +102,7 @@ public class FilePath extends java.io.File implements Accessible {
         if (path == null) {
             return null;
         }
-        return (archive != null && archive.getJunction().getPath().equals(path)) ? archive
-                : new FilePath(path, archive);
+        return new FilePath(path);
     }
 
     /**
@@ -234,37 +115,10 @@ public class FilePath extends java.io.File implements Accessible {
     }
 
     /**
-     * @see java.io.File#list()
-     */
-    @Override
-    public synchronized String[] list() {
-        if (archiver == null) {
-            return super.list();
-        } else {
-            // check diff
-            long modified = lastModified();
-
-            if (getJunction().lastModified() != modified) {
-                FileSystem.delete(junction);
-
-                try {
-                    I.make(archiver).unpack(this, getJunction());
-
-                    // you must set last modified date at the last
-                    getJunction().setLastModified(modified);
-                } catch (IOException e) {
-                    return null; // API definition
-                }
-            }
-            return getJunction().list();
-        }
-    }
-
-    /**
      * @see java.io.File#listFiles()
      */
     @Override
-    public java.io.File[] listFiles() {
+    public FilePath[] listFiles() {
         String[] names = list();
 
         if (names == null) {
@@ -272,74 +126,12 @@ public class FilePath extends java.io.File implements Accessible {
         }
 
         int size = names.length;
-        java.io.File[] files = new java.io.File[size];
+        FilePath[] files = new FilePath[size];
 
         for (int i = 0; i < size; i++) {
-            if (archiver == null) {
-                files[i] = new FilePath(getPath() + separator + names[i], archive);
-            } else {
-                files[i] = new FilePath(getJunction() + separator + names[i], this);
-            }
+            files[i] = new FilePath(getPath() + separator + names[i]);
         }
         return files;
-    }
-
-    /**
-     * @see java.io.File#mkdir()
-     */
-    @Override
-    public boolean mkdir() {
-        return (archive == null) ? super.mkdir() : false;
-    }
-
-    /**
-     * @see java.io.File#mkdirs()
-     */
-    @Override
-    public boolean mkdirs() {
-        return (archive == null) ? super.mkdirs() : false;
-    }
-
-    /**
-     * @see java.io.File#renameTo(java.io.File)
-     */
-    @Override
-    public boolean renameTo(java.io.File dest) {
-        return (archive == null) ? super.renameTo(dest) : false;
-    }
-
-    /**
-     * @see java.io.File#setLastModified(long)
-     */
-    @Override
-    public boolean setLastModified(long time) {
-        return (archive == null) ? super.setLastModified(time) : false;
-    }
-
-    /**
-     * @see java.io.File#toURI()
-     */
-    @Override
-    public URI toURI() {
-        if (archiver == null) {
-            return super.toURI();
-        } else {
-            String uri = super.toURI().toString();
-
-            try {
-                return new URI(uri.substring(0, uri.length() - 1));
-            } catch (URISyntaxException e) {
-                throw I.quiet(e);
-            }
-        }
-    }
-
-    /**
-     * @see java.io.File#toURL()
-     */
-    @Override
-    public URL toURL() throws MalformedURLException {
-        return toURI().toURL();
     }
 
     /**
@@ -347,26 +139,7 @@ public class FilePath extends java.io.File implements Accessible {
      */
     @Override
     public String toString() {
-        String filePath = super.toString();
-
-        if (archive != null) {
-            filePath = archive + filePath.substring(archive.getJunction().getPath().length());
-        }
-        return filePath.replace(separatorChar, '/');
-    }
-
-    /**
-     * @see ezbean.Accessible#access(int, java.lang.Object)
-     */
-    public Object access(int id, Object params) {
-        return null; // do nothing
-    }
-
-    /**
-     * @see ezbean.Accessible#context()
-     */
-    public Listeners context() {
-        return null; // do nothing
+        return super.toString().replace(separatorChar, '/');
     }
 
     /**

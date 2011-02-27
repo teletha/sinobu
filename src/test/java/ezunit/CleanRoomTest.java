@@ -44,7 +44,7 @@ public class CleanRoomTest {
 
         assertTrue(file.exists());
         assertTrue(file.isFile());
-        assertTrue(file.isDirectory());
+        assertFalse(file.isDirectory());
     }
 
     @Test

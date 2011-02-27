@@ -26,6 +26,7 @@ import java.security.AccessControlException;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.I;
 import ezbean.io.FileSystem;
 
 /**
@@ -73,7 +74,7 @@ public class SandboxTest {
         } catch (AccessControlException e) {
             fail("This is unwritable file.");
         } finally {
-            FileSystem.close(writer);
+            I.quiet(writer);
         }
     }
 
@@ -102,7 +103,7 @@ public class SandboxTest {
         } catch (AccessControlException e) {
             fail("This is unwritable file.");
         } finally {
-            FileSystem.close(writer);
+            I.quiet(writer);
         }
     }
 }

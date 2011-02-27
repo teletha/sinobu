@@ -15,7 +15,6 @@
  */
 package ezbean.io;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -27,13 +26,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
-import javax.activation.FileTypeMap;
-
-import ezbean.ClassLoadListener;
 import ezbean.I;
-import ezbean.Listeners;
-import ezbean.Manageable;
-import ezbean.Singleton;
 
 /**
  * <p>
@@ -42,29 +35,13 @@ import ezbean.Singleton;
  * 
  * @version 2010/01/21 0:23:58
  */
-@Manageable(lifestyle = Singleton.class)
-public final class FileSystem implements ClassLoadListener<Archiver> {
+public final class FileSystem {
 
     /** The temporary directory for the current processing JVM. */
     private static File temporary;
 
-    /** The repository for archiver. */
-    private static final Listeners<String, Class<Archiver>> archivers = new Listeners();
-
     /** The root temporary directory for Ezbean. */
-    static File temporaries;
-
-    /**
-     * Helper method to find the suitable {@link Archiver} for the given file name. This method is
-     * specialized in file name. If the suitable one is not found, <code>null</code> will be
-     * returned.
-     * 
-     * @param name A file name. The <code>null</code> is not accepted.
-     * @return An archiver class or <code>null</code>.
-     */
-    static Class<Archiver> findArchiver(String name) {
-        return archivers.find(FileTypeMap.getDefaultFileTypeMap().getContentType(name));
-    }
+    private static File temporaries;
 
     // initialize
     static {
@@ -116,70 +93,6 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
      * Avoid construction.
      */
     private FileSystem() {
-        // Ezbean user always use ezbean.jar. If we don't register ZIP archiver at here, user
-        // can't decompress ezbean.jar to collect and retrieve information from its jar.
-        load(Zip.class);
-    }
-
-    /**
-     * @see ezbean.ClassLoadListener#load(java.lang.Class)
-     */
-    public void load(Class clazz) {
-        archivers.push("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
-    }
-
-    /**
-     * @see ezbean.ClassLoadListener#unload(java.lang.Class)
-     */
-    public void unload(Class clazz) {
-        archivers.pull("application/" + clazz.getSimpleName().toLowerCase().replace('_', '-'), clazz);
-    }
-
-    /**
-     * Locate the specified file path and return the plain {@link File} object.
-     * 
-     * @param filePath
-     * @return
-     * @throws NullPointerException If the given file path is null.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    public FilePath locate(String filePath) {
-        // remove file protocol prefix
-        if (filePath.startsWith("file:")) {
-            filePath = filePath.substring(5);
-        }
-
-        // normalize separator
-        if (File.separatorChar != '/') {
-            filePath = filePath.replace(File.separatorChar, '/');
-        }
-
-        String[] paths = filePath.split("/");
-        StringBuilder path = new StringBuilder();
-        ezbean.io.FilePath archive = null;
-
-        for (int i = 0; i < paths.length - 1; i++) {
-            // add the current path
-            path.append(paths[i]);
-
-            // find archiver
-            if (findArchiver(paths[i]) != null) {
-                // create archive
-                archive = new FilePath(path.toString(), archive);
-                archive.list(); // force to unpack the archive
-
-                // rebuild actual path
-                path = new StringBuilder(archive.getJunction().getPath());
-            }
-
-            // close the current path
-            path.append(File.separator);
-        }
-
-        // build File from the current path
-        return new FilePath(path.append(paths[paths.length - 1]).toString(), archive);
     }
 
     /**
@@ -288,8 +201,8 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         } catch (IOException e) {
             throw I.quiet(e);
         } finally {
-            close(in);
-            close(out);
+            I.quiet(in);
+            I.quiet(out);
         }
 
         // We must copy last modified date at the end.
@@ -324,39 +237,8 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
         } catch (IOException e) {
             throw I.quiet(e);
         } finally {
-            close(input);
-            close(output);
-        }
-    }
-
-    /**
-     * <p>
-     * Close the specified object quietly if it is {@link Closeable}. Equivalent to
-     * {@link Closeable#close()}, except any exceptions will be ignored. This is typically used in
-     * finally block like the following.
-     * </p>
-     * 
-     * <pre>
-     * Closeable input = null;
-     * 
-     * try {
-     *     // some IO action
-     * } catch (IOException e) {
-     *     throw e;
-     * } finally {
-     *     FileSystem.close(input);
-     * }
-     * </pre>
-     * 
-     * @param closeable Any object you want to close. <code>null</code> is acceptable.
-     */
-    public static void close(Object closeable) {
-        if (closeable instanceof Closeable) {
-            try {
-                ((Closeable) closeable).close();
-            } catch (IOException e) {
-                throw I.quiet(e);
-            }
+            I.quiet(input);
+            I.quiet(output);
         }
     }
 
@@ -521,40 +403,4 @@ public final class FileSystem implements ClassLoadListener<Archiver> {
     // }
     // return values;
     // }
-
-    /**
-     * Helper method to retrieve a file base name of the file.
-     * 
-     * @param file A target file.
-     * @return A filen base name.
-     */
-    public static String getName(File file) {
-        // check null
-        if (file == null) {
-            return "";
-        }
-
-        String name = file.getName();
-        int index = name.lastIndexOf('.');
-
-        return (index == -1) ? name : name.substring(0, index);
-    }
-
-    /**
-     * Helper method to retrieve a extension name of the file.
-     * 
-     * @param file A target file.
-     * @return A extension name.
-     */
-    public static String getExtension(File file) {
-        // check null
-        if (file == null) {
-            return "";
-        }
-
-        String name = file.getName();
-        int index = name.lastIndexOf('.');
-
-        return (index == -1) ? "" : name.substring(index + 1);
-    }
 }

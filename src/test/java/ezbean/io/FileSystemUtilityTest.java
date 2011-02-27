@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.I;
 import ezunit.CleanRoom;
 
 /**
@@ -40,12 +41,12 @@ public class FileSystemUtilityTest {
 
     @Test
     public void closeNull() {
-        FileSystem.close(null);
+        I.quiet(null);
     }
 
     @Test
     public void closeUncloseable() {
-        FileSystem.close(Class.class);
+        I.quiet(Class.class);
     }
 
     @Test
@@ -274,24 +275,24 @@ public class FileSystemUtilityTest {
         assertFalse(new File(file, "child/file").exists());
     }
 
-    @Test
-    public void deleteArchive() throws Exception {
-        File file = room.locateFile("archive/test.zip");
-
-        assertTrue(file instanceof ezbean.io.FilePath);
-        ezbean.io.FilePath archive = (ezbean.io.FilePath) file;
-        File junction = archive.getJunction();
-
-        // unpack
-        archive.list();
-        assertTrue(junction.exists());
-
-        // delete
-        FileSystem.delete(file);
-
-        assertFalse(file.exists());
-        assertFalse(junction.exists());
-    }
+    // @Test
+    // public void deleteArchive() throws Exception {
+    // File file = room.locateFile("archive/test.zip");
+    //
+    // assertTrue(file instanceof ezbean.io.FilePath);
+    // ezbean.io.FilePath archive = (ezbean.io.FilePath) file;
+    // File junction = archive.getJunction();
+    //
+    // // unpack
+    // archive.list();
+    // assertTrue(junction.exists());
+    //
+    // // delete
+    // FileSystem.delete(file);
+    //
+    // assertFalse(file.exists());
+    // assertFalse(junction.exists());
+    // }
 
     @Test
     public void deleteAbsent() throws Exception {
@@ -316,33 +317,6 @@ public class FileSystemUtilityTest {
 
         assertFalse(one.equals(other));
         assertFalse(other.equals(one));
-    }
-
-    /**
-     * Retrieve file name.
-     */
-    @Test
-    public void testGetFileName() {
-        assertEquals("", FileSystem.getName(null));
-        assertEquals("name", FileSystem.getName(new File("name")));
-        assertEquals("name", FileSystem.getName(new File("name.")));
-        assertEquals("name.and", FileSystem.getName(new File("name.and.extension")));
-        assertEquals("name", FileSystem.getName(new File("directory/name")));
-        assertEquals("name", FileSystem.getName(new File("directory/name.extension")));
-    }
-
-    /**
-     * Retrieve file extension.
-     */
-    @Test
-    public void testGetFileExtension() {
-        assertEquals("", FileSystem.getExtension(null));
-        assertEquals("", FileSystem.getExtension(new File("name")));
-        assertEquals("", FileSystem.getExtension(new File("name.")));
-        assertEquals("extension", FileSystem.getExtension(new File("name.extension")));
-        assertEquals("extension", FileSystem.getExtension(new File("name.dummy.extension")));
-        assertEquals("", FileSystem.getExtension(new File("directory/name")));
-        assertEquals("extension", FileSystem.getExtension(new File("directory/name.extension")));
     }
 
     /**

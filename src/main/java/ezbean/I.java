@@ -62,7 +62,6 @@ import sun.org.mozilla.javascript.internal.NativeArray;
 import sun.org.mozilla.javascript.internal.NativeObject;
 import sun.reflect.ReflectionFactory;
 import ezbean.io.FilePath;
-import ezbean.io.FileSystem;
 import ezbean.model.ClassUtil;
 import ezbean.model.Codec;
 import ezbean.model.Model;
@@ -653,6 +652,9 @@ public class I implements ClassLoadListener<Extensible> {
      * @param filePath A location path.
      * @return A located {@link File}.
      * @throws NullPointerException If the given file path is null.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static FilePath locate(URL filePath) {
         try {
@@ -664,23 +666,33 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     /**
+     * <p>
      * Locate the specified file path and return the plain {@link File} object.
+     * </p>
      * 
      * @param filePath A location path.
      * @return A located {@link File}.
      * @throws NullPointerException If the given file path is null.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static FilePath locate(String filePath) {
-        return make(FileSystem.class).locate(filePath);
+        return new FilePath(filePath);
     }
 
     /**
+     * <p>
      * Locate the specified file path and return the plain {@link File} object.
+     * </p>
      * 
      * @param base
      * @param filePath A location path.
      * @return A located {@link File}.
      * @throws NullPointerException If the given file path is null.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static FilePath locate(File base, String filePath) {
         return locate(base.toString() + '/' + filePath);
@@ -986,6 +998,23 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
+     * Close the specified object quietly if it is {@link AutoCloseable}. Equivalent to
+     * {@link AutoCloseable#close()}, except any exceptions will be ignored. This is typically used
+     * in finally block like the following.
+     * </p>
+     * 
+     * <pre>
+     * AutoCloseable input = null;
+     * 
+     * try {
+     *     // some IO action
+     * } catch (Exception e) {
+     *     throw e;
+     * } finally {
+     *     I.quiet(input);
+     * }
+     * </pre>
+     * <p>
      * Throw the specified checked exception quietly.
      * </p>
      * <p>
@@ -1021,12 +1050,27 @@ public class I implements ClassLoadListener<Extensible> {
      * @return A pseudo unchecked exception.
      * @throws NullPointerException If the specified exception is <code>null</code>.
      */
-    public static RuntimeException quiet(Throwable throwable) {
-        // retrieve original exception from the specified wrapped exception
-        if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
+    public static RuntimeException quiet(Object object) {
+        if (object instanceof Throwable) {
+            Throwable throwable = (Throwable) object;
 
-        // throw quietly
-        return I.<RuntimeException> quietly(throwable);
+            // retrieve original exception from the specified wrapped exception
+            if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
+
+            // throw quietly
+            return I.<RuntimeException> quietly(throwable);
+        }
+
+        if (object instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) object).close();
+            } catch (Exception e) {
+                throw quiet(e);
+            }
+        }
+
+        // API definition
+        return null;
     }
 
     /**
@@ -1134,7 +1178,7 @@ public class I implements ClassLoadListener<Extensible> {
                 // unlock
                 lock.writeLock().unlock();
 
-                FileSystem.close(writer);
+                quiet(writer);
             }
         }
     }
@@ -1170,7 +1214,7 @@ public class I implements ClassLoadListener<Extensible> {
                 // unlock
                 lock.readLock().unlock();
 
-                FileSystem.close(reader);
+                quiet(reader);
             }
         }
 
