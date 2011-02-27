@@ -162,7 +162,7 @@ public class FileSystemUtilityTest {
         File input = room.locateDirectory("directory");
         File output = room.locateFile("file");
 
-        I.copy(input, output);
+        I.copy(input, output, null);
     }
 
     /**
@@ -184,7 +184,7 @@ public class FileSystemUtilityTest {
     /**
      * Input source is not found.
      */
-    @Test(expected = FileNotFoundException.class)
+    @Test
     public void copyAbsentInput() throws Exception {
         I.copy(room.locateAbsent("absent"), room.locateFile("file"));
     }
