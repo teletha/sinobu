@@ -222,7 +222,7 @@ public class FileTest {
 
         // delete
         File make = room.locateDirectory("directory/make");
-        assertTrue(FileSystem.delete(make));
+        assertTrue(make.delete());
         assertFalse(file.exists());
         assertFalse(make.exists());
     }
@@ -534,20 +534,6 @@ public class FileTest {
         File[] list = file.listFiles();
 
         assertChildren(list, 3, "test", "1.txt", "2.txt");
-    }
-
-    /**
-     * Lastmodified time of Zip.
-     */
-    @Test
-    @Ignore
-    public void archiveCanRestoreItsLastModifiedData() throws Exception {
-        File file = room.locateFile("archive/test.zip");
-        assertArchive(file);
-        assertTrue(file instanceof ezbean.io.FilePath);
-
-        ezbean.io.FilePath archive = (ezbean.io.FilePath) file;
-        // assertEquals(file.lastModified(), archive.getJunction().lastModified());
     }
 
     /**

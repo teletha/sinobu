@@ -60,7 +60,7 @@ public class FileSystemUtilityTest {
         assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
-        FileSystem.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         assertFile(output, read(input));
@@ -73,7 +73,7 @@ public class FileSystemUtilityTest {
         File output = room.locateAbsent("directory/out");
 
         // copy
-        FileSystem.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         assertFile(output, read(input));
@@ -87,7 +87,7 @@ public class FileSystemUtilityTest {
         assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
-        FileSystem.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         assertFile(output, read(input));
@@ -103,7 +103,7 @@ public class FileSystemUtilityTest {
         File output = room.locateAbsent("out");
         output.mkdirs();
 
-        FileSystem.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         assertFile(new File(output, "directory/1"), "1");
@@ -121,7 +121,7 @@ public class FileSystemUtilityTest {
         File output = room.locateAbsent("out");
         output.mkdirs();
 
-        FileSystem.copy(input, output, new FileFilter() {
+        I.copy(input, output, new FileFilter() {
 
             /**
              * @see java.io.FileFilter#accept(java.io.File)
@@ -145,7 +145,7 @@ public class FileSystemUtilityTest {
         File input = room.locateDirectory("directory");
         File output = room.locateAbsent("out");
 
-        FileSystem.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         assertFile(new File(output, "directory/2"), "2");
@@ -162,7 +162,7 @@ public class FileSystemUtilityTest {
         File input = room.locateDirectory("directory");
         File output = room.locateFile("file");
 
-        FileSystem.copy(input, output);
+        I.copy(input, output);
     }
 
     /**
@@ -170,7 +170,7 @@ public class FileSystemUtilityTest {
      */
     @Test(expected = NullPointerException.class)
     public void copyNullInput() throws Exception {
-        FileSystem.copy(null, room.locateAbsent("null"));
+        I.copy(null, room.locateAbsent("null"));
     }
 
     /**
@@ -178,7 +178,7 @@ public class FileSystemUtilityTest {
      */
     @Test(expected = NullPointerException.class)
     public void copyNullOutput() throws Exception {
-        FileSystem.copy(room.locateAbsent("null"), null);
+        I.copy(room.locateAbsent("null"), null);
     }
 
     /**
@@ -186,60 +186,7 @@ public class FileSystemUtilityTest {
      */
     @Test(expected = FileNotFoundException.class)
     public void copyAbsentInput() throws Exception {
-        FileSystem.copy(room.locateAbsent("absent"), room.locateFile("file"));
-    }
-
-    @Test
-    public void clearFile() throws Exception {
-        File file = room.locateFile("file");
-
-        // assert contents
-        assertFile(file, "some contents");
-
-        // clear
-        FileSystem.clear(file);
-
-        // assert contents
-        assertFile(file, "");
-    }
-
-    /**
-     * Clear directory.
-     */
-    @Test
-    public void clearDirectory() throws Exception {
-        File file = room.locateDirectory("directory");
-
-        // assert contents
-        assertFile(new File(file, "file"), "some contents");
-        assertDirectory(new File(file, "child"));
-        assertFile(new File(file, "child/c"), "c");
-
-        // clear
-        FileSystem.clear(file);
-
-        // assert contents
-        assertTrue(file.exists());
-        assertFalse(new File(file, "file").exists());
-        assertFalse(new File(file, "child").exists());
-        assertFalse(new File(file, "child/file").exists());
-    }
-
-    @Test
-    public void clearAbsent() throws Exception {
-        File file = room.locateAbsent("absent");
-
-        assertFalse(file.exists());
-
-        // clear
-        FileSystem.clear(file);
-
-        assertFalse(file.exists());
-    }
-
-    @Test
-    public void clearNull() {
-        FileSystem.clear(null); // no error
+        I.copy(room.locateAbsent("absent"), room.locateFile("file"));
     }
 
     @Test
@@ -250,7 +197,7 @@ public class FileSystemUtilityTest {
         assertFile(file, "some contents");
 
         // delete
-        FileSystem.delete(file);
+        file.delete();
 
         // assert contents
         assertFalse(file.exists());
@@ -266,7 +213,7 @@ public class FileSystemUtilityTest {
         assertFile(new File(file, "child/a"), "a");
 
         // delete
-        FileSystem.delete(file);
+        file.delete();
 
         // assert contents
         assertFalse(file.exists());
@@ -288,7 +235,7 @@ public class FileSystemUtilityTest {
     // assertTrue(junction.exists());
     //
     // // delete
-    // FileSystem.delete(file);
+    // I.delete(file);
     //
     // assertFalse(file.exists());
     // assertFalse(junction.exists());
@@ -299,15 +246,10 @@ public class FileSystemUtilityTest {
         File file = room.locateAbsent("absent");
 
         // delete
-        FileSystem.delete(file);
+        file.delete();
 
         // assert contents
         assertFalse(file.exists());
-    }
-
-    @Test
-    public void deleteNull() {
-        assertFalse(FileSystem.delete(null)); // no error
     }
 
     @Test
@@ -324,7 +266,7 @@ public class FileSystemUtilityTest {
      */
     @Test
     public void testCreateTemporaryAsFile() throws IOException {
-        File file = FileSystem.createTemporary();
+        File file = FilePath.createTemporary();
         assertFalse(file.exists());
         assertTrue(file.createNewFile());
     }
@@ -334,15 +276,15 @@ public class FileSystemUtilityTest {
      */
     @Test
     public void testCreateTemporaryAsDirectory() throws IOException {
-        File file = FileSystem.createTemporary();
+        File file = FilePath.createTemporary();
         assertFalse(file.exists());
         assertTrue(file.mkdir());
     }
 
     @Test
     public void dontCreateDuplicatedName() {
-        File file1 = FileSystem.createTemporary();
-        File file2 = FileSystem.createTemporary();
+        File file1 = FilePath.createTemporary();
+        File file2 = FilePath.createTemporary();
         assertNotSame(file1.getName(), file2.getName());
     }
 }

@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
 import ezbean.io.FilePath;
-import ezbean.io.FileSystem;
 
 /**
  * <p>
@@ -190,11 +189,12 @@ public class CleanRoom extends Sandbox {
             root.mkdirs();
 
             // clean up all resources
-            FileSystem.clear(root);
+            root.delete();
+            root.mkdir();
 
             // copy all resources newly
             for (File file : host.listFiles(monitor)) {
-                FileSystem.copy(file, root, monitor);
+                I.copy(file, root, monitor);
             }
 
             // reset
