@@ -95,6 +95,9 @@ public abstract class ModelWalker implements PropertyWalker {
      * @param path A iterator of property names.
      */
     private Object traverse(Model model, Property property, Object node, Iterator<String> path) {
+        if (property.isTransient()) {
+            return node;
+        }
         // enter node
         enter(model, property, node);
 

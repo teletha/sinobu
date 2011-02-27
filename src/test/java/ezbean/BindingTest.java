@@ -27,6 +27,7 @@ import ezbean.sample.bean.GenericStringBean;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
 import ezbean.sample.bean.Student;
+import ezbean.sample.bean.TransientBean;
 
 /**
  * DOCUMENT.
@@ -440,6 +441,33 @@ public class BindingTest {
         // from source
         source.setGeneric(two);
         assertEquals("two", target.getFirstName());
+    }
+
+    @Test
+    public void bindTransientProperty() {
+        TransientBean source = I.make(TransientBean.class);
+        source.setBoth(5);
+        TransientBean target = I.make(TransientBean.class);
+        target.setBoth(10);
+
+        assertEquals(5, source.getBoth());
+        assertEquals(10, target.getBoth());
+
+        // bind
+        I.bind(I.mock(source).getBoth(), I.mock(target).getBoth(), true);
+
+        assertEquals(5, source.getBoth());
+        assertEquals(5, target.getBoth());
+
+        // from source
+        source.setBoth(1);
+        assertEquals(1, source.getBoth());
+        assertEquals(1, target.getBoth());
+
+        // from target
+        target.setBoth(4);
+        assertEquals(4, source.getBoth());
+        assertEquals(4, target.getBoth());
     }
 
     /**

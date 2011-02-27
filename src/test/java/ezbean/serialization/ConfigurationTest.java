@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import ezbean.EzbeanTest;
 import ezbean.I;
-import ezbean.io.FileSystem;
+import ezbean.io.FilePath;
 import ezbean.sample.bean.BuiltinBean;
 import ezbean.sample.bean.CompatibleKeyMap;
 import ezbean.sample.bean.GenericPersonBean;
@@ -45,6 +45,7 @@ import ezbean.sample.bean.SchoolEnum;
 import ezbean.sample.bean.StringList;
 import ezbean.sample.bean.StringMap;
 import ezbean.sample.bean.Student;
+import ezbean.sample.bean.TransientBean;
 
 /**
  * DOCUMENT.
@@ -394,6 +395,22 @@ public class ConfigurationTest {
         bean = I.xml(testFile, I.make(BuiltinBean.class));
         assertNotNull(bean);
         assertEquals(testFile, bean.getFile());
+    }
+
+    @Test
+    public void transientProperty() throws Exception {
+        TransientBean bean = I.make(TransientBean.class);
+        bean.setNone(10);
+        bean.setBoth(20);
+
+        // write
+        I.xml(bean, testFile);
+
+        // read
+        bean = I.xml(testFile, I.make(TransientBean.class));
+        assertNotNull(bean);
+        assertEquals(10, bean.getNone());
+        assertEquals(0, bean.getBoth());
     }
 
     @Test
@@ -807,9 +824,8 @@ public class ConfigurationTest {
      */
     @Test
     public void testWriteNotExistingFile2() throws Exception {
-        File root = new File(I.getWorkingDirectory(), "not-exist");
+        File root = new FilePath(I.getWorkingDirectory(), "not-exist");
         File notExist = new File(root, "not-exist/not-exist/not-exist");
-        FileSystem.delete(root);
         assertFalse(notExist.exists());
 
         Person person = I.make(Person.class);
@@ -822,7 +838,7 @@ public class ConfigurationTest {
         assertTrue(notExist.exists());
 
         // clean up
-        assertTrue(FileSystem.delete(root));
+        assertTrue(root.delete());
         assertFalse(root.exists());
         assertFalse(notExist.exists());
     }

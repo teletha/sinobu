@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.io.FileSystem;
 import ezbean.sample.bean.StringList;
 
 /**
@@ -64,7 +63,7 @@ public class ConfigurationMultiThreadTest {
         // shutdown all pooled threads
         pool.shutdownNow();
 
-        FileSystem.delete(testFile);
+        testFile.delete();
     }
 
     /**
