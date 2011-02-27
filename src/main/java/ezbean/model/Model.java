@@ -18,6 +18,7 @@ package ezbean.model;
 import static java.lang.reflect.Modifier.*;
 
 import java.beans.Introspector;
+import java.beans.Transient;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -204,6 +205,7 @@ public class Model<M> {
                         // this property is valid
                         Property property = new Property(model, entry.getKey());
                         property.accessors = methods;
+                        property.type = methods[0].getAnnotation(Transient.class) != null || methods[1].getAnnotation(Transient.class) != null;
 
                         // register it
                         properties.add(property);

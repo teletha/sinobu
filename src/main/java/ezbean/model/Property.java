@@ -44,6 +44,9 @@ public class Property implements Comparable<Property> {
     /** The actual accessor methods. */
     Method[] accessors;
 
+    /** The transient type of this property. */
+    boolean type;
+
     /**
      * Create a property.
      * 
@@ -67,11 +70,10 @@ public class Property implements Comparable<Property> {
     /**
      * Check whether this property is transient or not.
      * 
-     * @TODO Should we are aware of transient keyword?
      * @return A result.
      */
     public boolean isTransient() {
-        return false;
+        return type;
     }
 
     /**
