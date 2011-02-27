@@ -451,6 +451,7 @@ public class I implements ClassLoadListener<Extensible> {
     /**
      * Generic method to copy a input {@link File} to an output {@link File}.
      * 
+     * @deprecated
      * @param input A input {@link File} object which can be file or directory.
      * @param output An outout {@link File} object which can be file or directory.
      * @throws NullPointerException If the specified input or output file is <code>null</code>.
@@ -462,7 +463,7 @@ public class I implements ClassLoadListener<Extensible> {
      *             created.
      */
     public static void copy(File input, File output) {
-        copy(input, output, null);
+        new FilePath(input.getPath()).copyTo(output);
     }
 
     /**

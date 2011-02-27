@@ -389,6 +389,9 @@ public class FilePath extends java.io.File {
      */
     public boolean copyTo(File output) {
         if (isDirectory()) {
+            if (output.isFile()) {
+                throw I.quiet(new FileNotFoundException());
+            }
             Copy operation = new Copy(toPath(), output.toPath());
 
             scan(operation);

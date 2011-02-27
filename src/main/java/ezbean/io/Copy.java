@@ -30,11 +30,14 @@ import java.nio.file.attribute.BasicFileAttributes;
  */
 class Copy extends SimpleFileVisitor<Path> {
 
-    /** The source location. */
-    private final Path from;
-
     /** The target location. */
     private final Path to;
+
+    /** The start position. */
+    private final int position;
+
+    /** The operation mode. */
+    private final boolean copy = true;
 
     /** The sccess flag. */
     boolean success = true;
@@ -44,8 +47,8 @@ class Copy extends SimpleFileVisitor<Path> {
      * @param to
      */
     Copy(Path from, Path to) {
-        this.from = from.getParent();
         this.to = to;
+        this.position = from.getNameCount() - 1;
     }
 
     /**
@@ -53,8 +56,8 @@ class Copy extends SimpleFileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-        createDirectories(to.resolve(from.relativize(dir)));
+    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+        createDirectories(to.resolve(path.subpath(position, path.getNameCount())));
 
         // API definition
         return CONTINUE;
@@ -65,8 +68,8 @@ class Copy extends SimpleFileVisitor<Path> {
      *      java.io.IOException)
      */
     @Override
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        setLastModifiedTime(to.resolve(from.relativize(dir)), getLastModifiedTime(dir));
+    public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
+        setLastModifiedTime(to.resolve(path.subpath(position, path.getNameCount())), getLastModifiedTime(path));
 
         // API definition
         return CONTINUE;
@@ -77,8 +80,8 @@ class Copy extends SimpleFileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        copy(file, to.resolve(from.relativize(file)), REPLACE_EXISTING, COPY_ATTRIBUTES);
+    public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+        copy(path, to.resolve(path.subpath(position, path.getNameCount())), REPLACE_EXISTING, COPY_ATTRIBUTES);
 
         // API definition
         return CONTINUE;
