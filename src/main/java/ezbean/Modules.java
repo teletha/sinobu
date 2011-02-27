@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import ezbean.io.FileSystem;
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 
@@ -197,7 +196,7 @@ public final class Modules implements ClassLoadListener {
                     modules.remove(module);
 
                     // close classloader
-                    FileSystem.close(module);
+                    I.quiet(module);
                     break;
                 }
             }

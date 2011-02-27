@@ -30,8 +30,8 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.modifier.Abstract;
-import ezbean.sample.modifier.Public;
 import ezbean.sample.modifier.Nested.PublicStatic;
+import ezbean.sample.modifier.Public;
 import ezbean.xml.Encloser;
 
 /**
@@ -454,11 +454,10 @@ public class EzbeanTest {
     // ===============================================================
     // Test Quiet Method
     // ===============================================================
-
     /**
      * Quiet with <code>null</code> exception.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testQuietWithNull() {
         I.quiet(null);
     }

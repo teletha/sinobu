@@ -19,6 +19,8 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.io.Writer;
 
+import ezbean.I;
+
 /**
  * @version 2010/01/08 11:46:58
  */
@@ -39,7 +41,7 @@ public class AppendableWriter extends Writer {
      */
     @Override
     public void close() throws IOException {
-        FileSystem.close(appendable);
+        I.quiet(appendable);
     }
 
     /**

@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ezbean.I;
@@ -67,6 +68,7 @@ public class FileSystemTest {
     }
 
     @Test
+    @Ignore
     public void locateArchive() {
         File file = I.locate("foo.zip");
         File expected = new File("foo.zip");
@@ -75,6 +77,7 @@ public class FileSystemTest {
     }
 
     @Test
+    @Ignore
     public void locateArchiveInDirectory() {
         File file = I.locate("foo/bar.zip");
         File expected = new File("foo/bar.zip");
@@ -116,24 +119,28 @@ public class FileSystemTest {
             .replace(File.separatorChar, '/') + "/";
 
     @Test
+    @Ignore
     public void withProtocol1() {
         File file = I.locate(FILE_PROTOCOL + "directory/1");
         assertFile(file);
     }
 
     @Test
+    @Ignore
     public void withProtocol2() {
         File file = I.locate(FILE_PROTOCOL + "directory/child");
         assertDirectory(file);
     }
 
     @Test
+    @Ignore
     public void withProtocol3() {
         File file = I.locate(FILE_PROTOCOL + "archive/test.zip/1.txt");
         assertFile(file);
     }
 
     @Test
+    @Ignore
     public void withProtocol4() {
         File file = I.locate(FILE_PROTOCOL + "archive/test.zip/test");
         assertDirectory(file);

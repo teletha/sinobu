@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import ezbean.Accessible;
 import ezbean.I;
 import ezbean.Modules;
+import ezbean.io.FilePath;
 
 /**
  * <p>
@@ -91,6 +92,9 @@ public class Model<M> {
         // arbitrary-precision numeric numbers
         codecs.add(BigInteger.class);
         codecs.add(BigDecimal.class);
+
+        // io, nio
+        codecs.add(FilePath.class);
     }
 
     /** The {@link Class} which is represented by this {@link Model}. */

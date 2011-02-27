@@ -51,7 +51,6 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.I;
 import ezbean.io.FilePath;
-import ezbean.io.FileSystem;
 import ezbean.xml.SAXBuilder;
 import ezbean.xml.XMLWriter;
 
@@ -253,7 +252,7 @@ public class Ezunit {
         } catch (IOException e) {
             throw I.quiet(e);
         } finally {
-            FileSystem.close(reader);
+            I.quiet(reader);
         }
         return lines;
     }
