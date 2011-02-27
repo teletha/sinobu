@@ -16,7 +16,6 @@
 package ezbean;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.util.Collections;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import ezbean.io.FileSystem;
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 
@@ -196,11 +196,8 @@ public final class Modules implements ClassLoadListener {
                     // unload
                     modules.remove(module);
 
-                    try {
-                        module.close();
-                    } catch (IOException e) {
-                        throw I.quiet(e);
-                    }
+                    // close classloader
+                    FileSystem.close(module);
                     break;
                 }
             }

@@ -110,12 +110,9 @@ class Module extends URLClassLoader implements ClassVisitor {
             // file system. But, in some enviroment, SecurityManager doesn't allow a file to be
             // created. In that case, we switch to the alternative scanning method based on the
             // fault tolerant design.
-            try {
-                // don't write the following because we need ezbean.io.File
-                //
-                // dig(moduleFile, moduleFile.toString().length() + 1);
+            if (!moduleFile.isFile()) {
                 dig(this.moduleFile, this.moduleFile.toString().length() + 1);
-            } catch (SecurityException e) {
+            } else {
                 // The current environment doesn't allow a file to be created for transparent
                 // archive access. So we retry to scan a module file directly using ZipFIle.
                 ZipFile zip = new ZipFile(moduleFile);
