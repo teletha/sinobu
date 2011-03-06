@@ -449,7 +449,9 @@ public class I implements ClassLoadListener<Extensible> {
     // }
 
     /**
+     * <p>
      * Generic method to copy a input {@link File} to an output {@link File}.
+     * </p>
      * 
      * @deprecated
      * @param input A input {@link File} object which can be file or directory.
@@ -467,7 +469,9 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     /**
+     * <p>
      * Generic method to copy a input {@link File} to an output {@link File}.
+     * </p>
      * 
      * @param input A input {@link File} object which can be file or directory.
      * @param output An outout {@link File} object which can be file or directory.
@@ -499,9 +503,11 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     /**
+     * <p>
      * Copies a directory to within another directory preserving the file dates. This method copies
      * the source directory and all its contents to a directory of the same name in the specified
      * destination directory.
+     * </p>
      * 
      * @param input A source directory.
      * @param output A destination directory.
@@ -528,8 +534,10 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     /**
+     * <p>
      * Helper method to copy a file to a new location preserving the file date. This method copies
      * the contents of the specified source file to the specified destination file.
+     * </p>
      * 
      * @param input A source file.
      * @param output A destination file.
