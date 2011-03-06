@@ -35,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
@@ -765,13 +766,25 @@ public class I implements ClassLoadListener<Extensible> {
      *            nothing (don't throw {@link java.lang.NullPointerException}).
      */
     public static String json(Object model) {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder output = new StringBuilder();
 
         // jsonize
-        new JSON(builder).traverse(model);
+        new JSON(output).traverse(model);
 
         // API definition
-        return builder.toString();
+        return output.toString();
+    }
+
+    /**
+     * <p>
+     * Write out the given configuration object as JSON.
+     * </p>
+     * 
+     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
+     *            nothing (don't throw {@link java.lang.NullPointerException}).
+     */
+    public static void json(Object model, Appendable output) {
+        new JSON(output).traverse(model);
     }
 
     /**
@@ -790,7 +803,27 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws UnsupportedOperationException If the config class is inner-class.
      * @throws ClassCircularityError If the config class has circular dependency.
      */
-    public static <M> M json(Class<M> modelClass, String input) {
+    public static <M> M json(Class<M> modelClass, CharSequence input) {
+        return json(modelClass, (Readable) (input == null ? null : CharBuffer.wrap(input)));
+    }
+
+    /**
+     * <p>
+     * Read the given configuration as json and create the configuration object.
+     * </p>
+     * 
+     * @param modelClass A model class. <code>null</code> will throw
+     *            {@link java.lang.NullPointerException}.
+     * @param input A configuration as json to be red. If <code>null</code>, empty string or invalid
+     *            json string is passed, this method ignores this input and returns the default
+     *            object which equals to <code>I.create(configClass);</code>
+     * @return A configuration object to be created.
+     * @throws NullPointerException If the config class is null.
+     * @throws IllegalArgumentException If the config class is non-accessible or final class.
+     * @throws UnsupportedOperationException If the config class is inner-class.
+     * @throws ClassCircularityError If the config class has circular dependency.
+     */
+    public static <M> M json(Class<M> modelClass, Readable input) {
         try {
             return json(Model.load(modelClass), script.eval("a=" + input));
         } catch (ScriptException e) {

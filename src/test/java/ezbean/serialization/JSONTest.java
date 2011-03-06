@@ -232,8 +232,13 @@ public class JSONTest {
     }
 
     @Test
-    public void nullJSON() {
-        assertNotNull(I.json(Person.class, null));
+    public void nullJSON1() {
+        assertNotNull(I.json(Person.class, (CharSequence) null));
+    }
+
+    @Test
+    public void nullJSON2() {
+        assertNotNull(I.json(Person.class, (Readable) null));
     }
 
     @Test
