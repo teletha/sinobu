@@ -157,6 +157,7 @@ public class CleanRoom extends Sandbox {
         if (isPresent) {
             if (isFile) {
                 try {
+                    virtual.getParentFile().mkdirs();
                     virtual.createNewFile();
                 } catch (IOException e) {
                     throw I.quiet(e);
