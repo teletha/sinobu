@@ -15,11 +15,10 @@
  */
 package ezbean;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +29,7 @@ import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 
 /**
- * @version 2010/01/21 20:28:27
+ * @version 2011/03/07 16:03:02
  */
 @Manageable(lifestyle = Singleton.class)
 public final class Modules implements ClassLoadListener {
@@ -115,26 +114,22 @@ public final class Modules implements ClassLoadListener {
 
     /**
      * <p>
-     * Load the file as an additional classpath into JVM. If the file indicates the classpath which
+     * Load the path as an additional classpath into JVM. If the file indicates the classpath which
      * is already loaded, that will be reloaded. The classpath can accept directory or archive (like
      * Jar). If it is <code>null</code> or a file, this method does nothing.
      * </p>
      * 
-     * @param moduleFile A moduleFile to load. Directory or archive file (like Jar) can be accepted.
-     * @param core A flag whether the module should be loaded as <dfn>system module</dfn> or Ezbean
-     *            core module. The system module will be loaded by the class loader which isn't
-     *            managed by Ezbean (e.g. {@link ClassLoader#getSystemClassLoader()}), and it never
-     *            be unloaded or reloaded.
+     * @param path A module path to load. Directory or archive path (like Jar) can be accepted.
      */
-    public ClassLoader load(File moduleFile) {
+    public ClassLoader load(Path path) {
         // check module file
-        if (moduleFile != null && moduleFile.exists()) {
+        if (path != null && Files.exists(path)) {
             // If the given module file has been already loaded, we must unload it on ahead.
-            unload(moduleFile);
+            unload(path);
 
             // build module
             try {
-                Module module = new Module(moduleFile.toPath());
+                Module module = new Module(path);
 
                 // Load module for the specified directory. The new module has high priority than
                 // previous.
@@ -157,20 +152,19 @@ public final class Modules implements ClassLoadListener {
 
     /**
      * <p>
-     * Unload the file which is an additional classpath in JVM. If the file indicates the classpath
+     * Unload the path which is an additional classpath in JVM. If the file indicates the classpath
      * which is not loaded yet, that will be ignored. The classpath can accept directory or archive
      * (like Jar). If it is <code>null</code> or a file, this method does nothing.
      * </p>
      * 
-     * @param moduleFile A moduleFile to unload. Directory or archive file (like Jar) can be
-     *            accepted.
+     * @param path A module path to unload. Directory or archive path (like Jar) can be accepted.
      */
-    public void unload(File moduleFile) {
+    public void unload(Path path) {
         // check module file
-        if (moduleFile != null && moduleFile.exists()) {
+        if (path != null && Files.exists(path)) {
             for (Module module : modules) {
                 try {
-                    if (Files.isSameFile(moduleFile.toPath(), module.path)) {
+                    if (Files.isSameFile(path, module.path)) {
                         // fire event
                         for (Object[] types : this.types) {
                             for (Class provider : module.find((Class<?>) types[1], false)) {
@@ -202,7 +196,7 @@ public final class Modules implements ClassLoadListener {
                         I.quiet(module);
                         break;
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw I.quiet(e);
                 }
             }

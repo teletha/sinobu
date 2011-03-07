@@ -43,7 +43,7 @@ public class PrivateModule extends ReusableRule {
     public final File module = FilePath.createTemporary();
 
     /** The actual private module. */
-    public final Path modulePath = module.toPath();
+    public final Path path = module.toPath();
 
     /** The original package name. */
     private final String originalPackage;

@@ -1476,7 +1476,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static ClassLoader load(File classPath) {
-        return make(Modules.class).load(classPath);
+        return make(Modules.class).load(classPath.toPath());
     }
 
     /**
@@ -1507,7 +1507,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static void unload(File classPath) {
-        make(Modules.class).unload(classPath);
+        make(Modules.class).unload(classPath.toPath());
     }
 
     /**
