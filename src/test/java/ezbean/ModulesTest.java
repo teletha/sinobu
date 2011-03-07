@@ -155,7 +155,6 @@ public class ModulesTest {
             assertEquals(1, modules.modules.size());
         } finally {
             relativeModule.delete();
-            System.out.println("delete");
         }
     }
 
