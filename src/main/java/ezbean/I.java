@@ -38,6 +38,7 @@ import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -470,10 +471,28 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
+     * Generic method to copy a input {@link Path} to an output {@link Path}.
+     * </p>
+     * 
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An outout {@link Path} object which can be file or directory.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws IOException If an I/O error occurs.
+     * @throws FileNotFoundException If the specified input file is not found. If the input file is
+     *             directory and the output file is <em>not</em> directory.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static void copy(Path input, Path output) {
+        new FilePath(input.toString()).copyTo(output.toFile());
+    }
+
+    /**
+     * <p>
      * Generic method to copy a input {@link File} to an output {@link File}.
      * </p>
      * 
-     * @deprecated
      * @param input A input {@link File} object which can be file or directory.
      * @param output An outout {@link File} object which can be file or directory.
      * @param filter A file filter to copy. If <code>null</code> is specified, all file will be

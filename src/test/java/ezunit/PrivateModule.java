@@ -40,10 +40,7 @@ import ezbean.io.FilePath;
 public class PrivateModule extends ReusableRule {
 
     /** The actual private module. */
-    public final File module = FilePath.createTemporary();
-
-    /** The actual private module. */
-    public final Path path = module.toPath();
+    public final Path path = FilePath.createTemporary().toPath();
 
     /** The original package name. */
     private final String originalPackage;
@@ -133,7 +130,7 @@ public class PrivateModule extends ReusableRule {
      * </p>
      */
     public void load() {
-        I.load(module);
+        I.load(path.toFile());
     }
 
     /**
@@ -142,7 +139,7 @@ public class PrivateModule extends ReusableRule {
      * </p>
      */
     public void unload() {
-        I.unload(module);
+        I.unload(path.toFile());
     }
 
     /**
@@ -164,7 +161,7 @@ public class PrivateModule extends ReusableRule {
     @Override
     protected void beforeClass() throws Exception {
         // copy class file with type conversion
-        copy(new File(testcaseRoot, originalPackage), I.locate(module, overriddenPackage));
+        copy(new File(testcaseRoot, originalPackage), I.locate(path.toFile(), overriddenPackage));
     }
 
     /**

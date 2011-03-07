@@ -46,7 +46,9 @@ public class FileSystemTest {
         int count = 0;
 
         for (Path child : Files.newDirectoryStream(system.getPath("/"))) {
-            count++;
+            if (Files.exists(child)) {
+                count++;
+            }
         }
         assertEquals(3, count);
     }
