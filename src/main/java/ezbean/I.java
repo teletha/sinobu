@@ -83,7 +83,7 @@ import ezbean.xml.XMLWriter;
  * <dd>
  * <p>
  * The method {@link #make(Class)} offers general-purpose elucidation for generation and management
- * of the instance.
+ * of instances.
  * </p>
  * <p>
  * When many containers which manage objects provide the functionality like this, they use the
@@ -127,7 +127,7 @@ import ezbean.xml.XMLWriter;
  * </p>
  * <ul>
  * <li><a href="#encoding">Character Encoding</a></li>
- * <li><a href="#parentClassLoader">Parent Class Loader</a></li>
+ * <li><a href="#classloader">Parent Class Loader</a></li>
  * <li><a href="#workingDirectory">Working Directory</a></li>
  * </ul>
  * <p>
