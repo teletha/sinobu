@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import ezbean.EzbeanTest;
@@ -46,6 +45,7 @@ import ezbean.sample.bean.StringList;
 import ezbean.sample.bean.StringMap;
 import ezbean.sample.bean.Student;
 import ezbean.sample.bean.TransientBean;
+import ezunit.CleanRoom;
 
 /**
  * DOCUMENT.
@@ -54,16 +54,10 @@ import ezbean.sample.bean.TransientBean;
  */
 public class ConfigurationTest {
 
-    /** The test file. */
-    private File testFile = new File(I.getWorkingDirectory(), "configurationTest.xml");
+    /** The temporaries. */
+    private static final CleanRoom room = new CleanRoom();
 
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Before
-    public void tearDown() throws Exception {
-        testFile.delete();
-    }
+    private static final File testFile = room.locateFile("config.xml");
 
     /**
      * Test nesting List.
