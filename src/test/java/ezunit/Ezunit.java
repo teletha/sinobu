@@ -160,6 +160,19 @@ public class Ezunit {
 
     /**
      * <p>
+     * Locate a package directory that the specified class exists.
+     * </p>
+     * 
+     * @param clazz A class to resolve location.
+     * @return A located package directory.
+     * @throws NullPointerException If the class is <code>null</code>.
+     */
+    public static ezunit.io.File locatePackage2(Class clazz) {
+        return ezunit.io.File.locate(clazz.getResource(""));
+    }
+
+    /**
+     * <p>
      * Reads all characters from a FilePath into a {@link String}, using the given character set or
      * {@link I#getEncoding()}.
      * </p>

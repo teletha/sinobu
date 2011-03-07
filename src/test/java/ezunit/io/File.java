@@ -20,14 +20,20 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchEvent.Modifier;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Iterator;
+
+import ezbean.I;
 
 /**
  * @version 2011/03/07 22:31:59
@@ -52,7 +58,7 @@ public class File implements Path {
      * {@inheritDoc}
      */
     public FileSystem getFileSystem() {
-        return path.getFileSystem();
+        return FileSystems.getDefault();
     }
 
     /**
@@ -265,7 +271,7 @@ public class File implements Path {
      *         cannot be determined.
      */
     public boolean exists() {
-        return Files.exists(this);
+        return Files.exists(path);
     }
 
     /**
@@ -286,7 +292,7 @@ public class File implements Path {
      *         or its existence cannot be determined.
      */
     public boolean notExists() {
-        return Files.notExists(this);
+        return Files.notExists(path);
     }
 
     /**
@@ -299,7 +305,7 @@ public class File implements Path {
      *         not.
      */
     public boolean isDirectory() {
-        return Files.isDirectory(this);
+        return Files.isDirectory(path);
     }
 
     /**
@@ -312,7 +318,44 @@ public class File implements Path {
      *         regular file or not.
      */
     public boolean isFile() {
-        return Files.isRegularFile(this);
+        return Files.isRegularFile(path);
+    }
+
+    /**
+     * <p>
+     * Creates a directory by creating all nonexistent parent directories first.
+     * </p>
+     */
+    public void createDirectory() {
+        try {
+            BasicFileAttributes attribute = Files.getFileAttributeView(path, BasicFileAttributeView.class)
+                    .readAttributes();
+
+            if (!attribute.isDirectory()) {
+                System.out.println(attribute.isRegularFile());
+            }
+        } catch (NoSuchFileException e) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e1) {
+                throw I.quiet(e);
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Creates a new and empty file.
+     * </p>
+     */
+    public void createFile() {
+        try {
+            Files.createFile(path);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**

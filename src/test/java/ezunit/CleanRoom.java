@@ -53,6 +53,15 @@ public class CleanRoom extends Sandbox {
     /** The host directory for test. */
     private final FilePath host;
 
+    /** The root bioclean room for tests which are related with file system. */
+    private static final ezunit.io.File clean2 = ezunit.io.File.locate("target/clean-room");
+
+    /** The temporary bioclean room for this instance which are related with file system. */
+    public final ezunit.io.File root2 = clean2.resolve(String.valueOf(counter.incrementAndGet()));
+
+    /** The host directory for test. */
+    private final ezunit.io.File host2;
+
     /** The clean room monitor. */
     private final Monitor monitor = new Monitor();
 
@@ -78,6 +87,14 @@ public class CleanRoom extends Sandbox {
 
         // access control
         writable(false, host);
+
+        ezunit.io.File directory2 = path == null ? locatePackage2(speculateInstantiator())
+                : ezunit.io.File.locate(path);
+
+        if (!directory2.isDirectory()) {
+            directory2 = directory2.getParent();
+        }
+        this.host2 = directory2;
     }
 
     /**
@@ -110,6 +127,51 @@ public class CleanRoom extends Sandbox {
      * @param name A file name.
      * @return A located present file.
      */
+    public ezunit.io.File locateFile2(String name) {
+        return locate2(name, true, true);
+    }
+
+    /**
+     * Helper method to locate file in clean room.
+     * 
+     * @param path
+     * @return
+     */
+    private ezunit.io.File locate2(String path, boolean isPresent, boolean isFile) {
+        // null check
+        if (path == null) {
+            path = "";
+        }
+
+        // locate virtual file in the clean room
+        ezunit.io.File virtual = root2.resolve(path);
+
+        // create virtual file if needed
+        if (isPresent) {
+            if (isFile) {
+                virtual.getParent().createDirectory();
+                virtual.createFile();
+            } else {
+                virtual.createDirectory();
+            }
+        }
+
+        // validate file state
+        assertEquals(virtual.exists(), isPresent);
+        assertEquals(virtual.isFile(), isFile);
+
+        // API definition
+        return virtual;
+    }
+
+    /**
+     * <p>
+     * Locate a present resource file which is assured that the spcified file exists.
+     * </p>
+     * 
+     * @param name A file name.
+     * @return A located present file.
+     */
     public FilePath locateFile(String name) {
         return locate(name, true, true);
     }
@@ -124,6 +186,18 @@ public class CleanRoom extends Sandbox {
      */
     public FilePath locateDirectory(String name) {
         return locate(name, true, false);
+    }
+
+    /**
+     * <p>
+     * Locate a present resource directory which is assured that the specified directory exists.
+     * </p>
+     * 
+     * @param name A directory name.
+     * @return A located present directory.
+     */
+    public ezunit.io.File locateDirectory2(String name) {
+        return locate2(name, true, false);
     }
 
     /**
