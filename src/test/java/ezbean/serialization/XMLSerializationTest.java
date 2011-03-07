@@ -26,11 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.EzbeanTest;
 import ezbean.I;
-import ezbean.io.FilePath;
 import ezbean.sample.bean.BuiltinBean;
 import ezbean.sample.bean.CompatibleKeyMap;
 import ezbean.sample.bean.GenericPersonBean;
@@ -48,15 +48,15 @@ import ezbean.sample.bean.TransientBean;
 import ezunit.CleanRoom;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/02 21:33:41
+ * @version 2011/03/07 12:35:17
  */
-public class ConfigurationTest {
+public class XMLSerializationTest {
 
     /** The temporaries. */
-    private static final CleanRoom room = new CleanRoom();
+    @Rule
+    public static final CleanRoom room = new CleanRoom();
 
+    /** The serialization file. */
     private static final File testFile = room.locateFile("config.xml");
 
     /**
@@ -380,7 +380,7 @@ public class ConfigurationTest {
     @Test
     public void ezbeanFile() throws Exception {
         BuiltinBean bean = I.make(BuiltinBean.class);
-        bean.setFile(I.locate(testFile.getAbsolutePath()));
+        bean.setFile(testFile);
 
         // write
         I.xml(bean, testFile);
@@ -795,7 +795,7 @@ public class ConfigurationTest {
      */
     @Test
     public void testWriteNotExistingFile1() throws Exception {
-        File notExist = new File(I.getWorkingDirectory(), "not-exist-not-exist-not-exist");
+        File notExist = room.locateAbsent("file");
         notExist.delete();
         assertFalse(notExist.exists());
 
@@ -818,7 +818,7 @@ public class ConfigurationTest {
      */
     @Test
     public void testWriteNotExistingFile2() throws Exception {
-        File root = new FilePath(I.getWorkingDirectory(), "not-exist");
+        File root = room.locateAbsent("directory");
         File notExist = new File(root, "not-exist/not-exist/not-exist");
         assertFalse(notExist.exists());
 
