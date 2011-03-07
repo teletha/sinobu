@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -40,6 +41,9 @@ public class PrivateModule extends ReusableRule {
 
     /** The actual private module. */
     public final File module = FilePath.createTemporary();
+
+    /** The actual private module. */
+    public final Path modulePath = module.toPath();
 
     /** The original package name. */
     private final String originalPackage;

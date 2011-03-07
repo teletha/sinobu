@@ -15,10 +15,10 @@
  */
 package ezbean;
 
+import static java.nio.file.FileVisitResult.*;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,15 +26,18 @@ import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -70,13 +73,13 @@ import ezbean.model.Model;
  * 
  * @version 2010/11/07 0:20:52
  */
-class Module extends URLClassLoader implements ClassVisitor {
+class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
 
     /** The dirty process management. */
     private static final IllegalStateException STOP = new IllegalStateException();
 
     /** The root of this module. */
-    final File moduleFile;
+    final Path path;
 
     /** The list of service provider classes (by class and interface). [java.lang.String, int[]] */
     private final List<Object[]> infos = new CopyOnWriteArrayList();
@@ -87,48 +90,95 @@ class Module extends URLClassLoader implements ClassVisitor {
     /**
      * Module constructor should be package private.
      * 
-     * @param moduleFile A module file as classpath, A <code>null</code> is not accepted.
+     * @param path A module path as classpath, A <code>null</code> is not accepted.
      * @param core A flag whether the module should be loaded as <dfn>system module</dfn> or Ezbean
      *            core module. The system module will be loaded by the class loader which isn't
      *            managed by Ezbean (e.g. {@link ClassLoader#getSystemClassLoader()}), and it never
      *            be unloaded or reloaded.
      */
-    Module(File moduleFile) throws MalformedURLException {
-        super(new URL[] {moduleFile.toURI().toURL()}, I.loader);
+    Module(Path path) throws MalformedURLException {
+        super(new URL[] {path.toUri().toURL()}, I.loader);
 
         // we don't need to check null because this is internal class
         // if (moduleFile == null) {
         // }
 
-        // cast to ezbean.io.File if the specified module file is java.io.File
-        this.moduleFile = I.locate(moduleFile.getPath());
+        // Store original module path for unloading.
+        this.path = path;
 
         // start scanning class files
         try {
             // At first, we must scan the specified directory or archive. If the module file is
-            // archive, Ezbean automatically try to unpack it into the temporary region of the
-            // file system. But, in some enviroment, SecurityManager doesn't allow a file to be
-            // created. In that case, we switch to the alternative scanning method based on the
-            // fault tolerant design.
-            if (!moduleFile.isFile()) {
-                dig(this.moduleFile, this.moduleFile.toString().length() + 1);
-            } else {
-                // The current environment doesn't allow a file to be created for transparent
-                // archive access. So we retry to scan a module file directly using ZipFIle.
-                ZipFile zip = new ZipFile(moduleFile);
-                Enumeration<? extends ZipEntry> entries = zip.entries();
-
-                while (entries.hasMoreElements()) {
-                    ZipEntry file = entries.nextElement();
-
-                    if (!file.isDirectory()) {
-                        scan(file.getName(), zip.getInputStream(file));
-                    }
-                }
+            // archive, Ezbean automatically try to switch to other file system (e.g.
+            // ZipFileSystem).
+            if (Files.isRegularFile(path)) {
+                path = FileSystems.newFileSystem(path, this).getPath("/");
             }
+
+            // Then, we can scan module transparently.
+            Files.walkFileTree(path, this);
         } catch (IOException e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object,
+     *      java.nio.file.attribute.BasicFileAttributes)
+     */
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        return CONTINUE;
+    }
+
+    /**
+     * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
+     */
+    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        return CONTINUE;
+    }
+
+    /**
+     * @see java.nio.file.FileVisitor#visitFile(java.lang.Object,
+     *      java.nio.file.attribute.BasicFileAttributes)
+     */
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        // exclude non-class file
+        if (file.toString().endsWith(".class")) {
+            InputStream input = Files.newInputStream(file);
+            String name = path.relativize(file).toString();
+
+            // Don't write the following because "fqnc" field requires actual class name. If a
+            // module returns a non-class file (e.g. properties, xml, txt) at the end, there is
+            // a possibility that the module can't distinguish between system and Ezbean
+            // module correctly.
+            //
+            // this.fqcn = name;
+            //
+            // compute fully qualified class name
+            this.fqcn = name.substring(0, name.length() - 6).replace(File.separatorChar, '.');
+
+            // try to read class file and check it
+            try {
+                // static field reference will be inlined by compiler, so we should pass all
+                // flags to ClassReader (it doesn't increase byte code size)
+                new ClassReader(input).accept(this, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            } catch (FileNotFoundException e) {
+                // this exception means that the given class name may indicate some external
+                // extension class or interface, so we can ignore it
+            } catch (IllegalStateException e) {
+                // scanning was stoped normally
+            } finally {
+                input.close();
+            }
+        }
+        return CONTINUE;
+    }
+
+    /**
+     * @see java.nio.file.FileVisitor#visitFileFailed(java.lang.Object, java.io.IOException)
+     */
+    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+        return CONTINUE;
     }
 
     /**
@@ -264,63 +314,6 @@ class Module extends URLClassLoader implements ClassVisitor {
 
         // API definition
         return test(hash, info);
-    }
-
-    /**
-     * Helper method to dig the module structure.
-     * 
-     * @param directory A directory to search.
-     * @parma start A start position of the fully qualified class name.
-     * @throws IOException If the specified file can't read.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    private void dig(File directory, int start) throws IOException {
-        for (File file : directory.listFiles()) {
-            // recursive function call only for directory, not archive
-            if (file.isFile()) {
-                scan(file.toString().substring(start), new FileInputStream(file));
-            } else {
-                dig(file, start);
-            }
-        }
-    }
-
-    /**
-     * Helper method to scan class file.
-     * 
-     * @param name A file name.
-     * @param input A input stream for the specified file.
-     * @throws IOException If the class file can't open.
-     */
-    private void scan(String name, InputStream input) throws IOException {
-        // exclude non-class file
-        if (name.endsWith(".class")) {
-            // Don't write the following because "fqnc" field requires actual class name. If a
-            // module returns a non-class file (e.g. properties, xml, txt) at the end, there is
-            // a possibility that the module can't distinguish between system and Ezbean
-            // module correctly.
-            //
-            // this.fqcn = name;
-            //
-            // compute fully qualified class name
-            this.fqcn = name.substring(0, name.length() - 6).replace('/', '.');
-
-            // try to read class file and check it
-            try {
-                // static field reference will be inlined by compiler, so we should pass all
-                // flags to ClassReader (it doesn't increase byte code size)
-                new ClassReader(input).accept(this, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-            } catch (FileNotFoundException e) {
-                // this exception means that the given class name may indicate some external
-                // extension class or interface, so we can ignore it
-            } catch (IllegalStateException e) {
-                // scanning was stoped normally
-            } finally {
-                input.close();
-            }
-        }
     }
 
     /**
