@@ -1,1 +1,0 @@
-ezbean.EzbeanTestConfig

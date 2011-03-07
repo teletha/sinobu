@@ -136,7 +136,7 @@ public class ModulesTest {
         assertEquals(1, modules.modules.size());
     }
 
-    private File relativeModule = new File("target/module");
+    private File relativeModule = I.locate("target/module");
 
     @Test
     public void reloadRelativePathAndAbsolutePath() {
@@ -155,6 +155,7 @@ public class ModulesTest {
             assertEquals(1, modules.modules.size());
         } finally {
             relativeModule.delete();
+            System.out.println("delete");
         }
     }
 
