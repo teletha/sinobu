@@ -19,6 +19,7 @@ import static java.lang.reflect.Modifier.*;
 
 import java.beans.Introspector;
 import java.beans.Transient;
+import java.io.File;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -62,7 +63,7 @@ import ezbean.io.FilePath;
  * which is neither Immutable nor Collection are Basic.</dd>
  * </dl>
  * 
- * @version 2010/01/15 18:21:38
+ * @version 2011/03/07 22:16:00
  */
 public class Model<M> {
 
@@ -95,6 +96,7 @@ public class Model<M> {
         codecs.add(BigDecimal.class);
 
         // io, nio
+        codecs.add(File.class);
         codecs.add(FilePath.class);
     }
 

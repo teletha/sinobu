@@ -29,7 +29,7 @@ import ezunit.CleanRoom;
 /**
  * @version 2011/03/07 18:06:48
  */
-public class PathsTest {
+public class FilerTest {
 
     @Rule
     public static final CleanRoom room = new CleanRoom();
@@ -45,7 +45,7 @@ public class PathsTest {
         assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
-        Paths.copy(input.toPath(), output.toPath());
+        Filer.copy(input.toPath(), output.toPath());
 
         // assert contents
         assertFile(output, read(input));
@@ -58,7 +58,7 @@ public class PathsTest {
         FilePath output = room.locateAbsent("out");
 
         // copy
-        Paths.copy(input.toPath(), output.toPath());
+        Filer.copy(input.toPath(), output.toPath());
 
         // assert contents
         assertFile(output, read(input));
@@ -71,7 +71,7 @@ public class PathsTest {
         FilePath output = room.locateDirectory("directory/out");
 
         // copy
-        Paths.copy(input.toPath(), output.toPath());
+        Filer.copy(input.toPath(), output.toPath());
 
         // assert contents
         assertFile(new File(output, "file"), read(input));
@@ -83,7 +83,7 @@ public class PathsTest {
         FilePath output = room.locateAbsent("directory/out");
 
         // copy
-        Paths.copy(input.toPath(), output.toPath());
+        Filer.copy(input.toPath(), output.toPath());
 
         // assert contents
         assertFile(output, read(input));
@@ -97,7 +97,7 @@ public class PathsTest {
         assertNotSame(input.lastModified(), output.lastModified());
 
         // copy
-        Paths.copy(input.toPath(), output.toPath());
+        Filer.copy(input.toPath(), output.toPath());
 
         // assert contents
         assertFile(output, read(input));
@@ -114,7 +114,7 @@ public class PathsTest {
         output.mkdirs();
 
         // copy
-        Paths.copy(input.toPath(), output.toPath());
+        Filer.copy(input.toPath(), output.toPath());
 
         // assert contents
         assertFile(I.locate(output, "directory/1"), "1");
@@ -132,7 +132,7 @@ public class PathsTest {
         FilePath output = room.locateAbsent("out");
 
         // copy
-        Paths.copy(input.toPath(), output.toPath());
+        Filer.copy(input.toPath(), output.toPath());
 
         // assert contents
         assertFile(I.locate(output, "directory/1"), "1");
