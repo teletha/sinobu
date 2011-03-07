@@ -56,9 +56,9 @@ public class ModuleTest {
      */
     @Test
     public void testGetModuleFile() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
-        assertEquals(external.module, module.moduleFile);
+        assertEquals(external.modulePath, module.path);
     }
 
     /**
@@ -66,7 +66,7 @@ public class ModuleTest {
      */
     @Test
     public void testModuleClassLoader() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
         assertNotSame(I.loader, module);
     }
@@ -76,7 +76,7 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders1() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
 
         List<Class<MarkerInterface1>> providers = module.find(MarkerInterface1.class, false);
@@ -92,7 +92,7 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders2() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
 
         List<Class<MarkerInterface2>> providers = module.find(MarkerInterface2.class, false);
@@ -109,7 +109,7 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders3() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
 
         List<Class<Object>> providers = module.find(Object.class, false);
@@ -125,7 +125,7 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders4() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
 
         List<Class<RuntimeAnnotation1>> providers = module.find(RuntimeAnnotation1.class, false);
@@ -141,7 +141,7 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders5() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
 
         List<Class<RuntimeAnnotation2>> providers = module.find(RuntimeAnnotation2.class, false);
@@ -157,7 +157,7 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders6() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
 
         List<Class<SourceAnnotation>> providers = module.find(SourceAnnotation.class, false);
@@ -170,7 +170,7 @@ public class ModuleTest {
      */
     @Test
     public void testFindProviders7() throws Exception {
-        Module module = new Module(external.module);
+        Module module = new Module(external.modulePath);
         assertNotNull(module);
 
         List<Class<ClassAnnotation>> providers = module.find(ClassAnnotation.class, false);
@@ -183,7 +183,7 @@ public class ModuleTest {
      */
     @Test
     public void testModuleInModule() throws Exception {
-        Module module = new Module(new File("src/test/resources/ezbean/inline.zip"));
+        Module module = new Module(new File("src/test/resources/ezbean/inline.zip").toPath());
         assertNotNull(module);
 
         List<Class<Object>> providers = module.find(Object.class, false);

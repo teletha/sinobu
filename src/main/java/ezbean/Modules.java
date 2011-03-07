@@ -16,8 +16,10 @@
 package ezbean;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -132,7 +134,7 @@ public final class Modules implements ClassLoadListener {
 
             // build module
             try {
-                Module module = new Module(moduleFile);
+                Module module = new Module(moduleFile.toPath());
 
                 // Load module for the specified directory. The new module has high priority than
                 // previous.
@@ -167,37 +169,41 @@ public final class Modules implements ClassLoadListener {
         // check module file
         if (moduleFile != null && moduleFile.exists()) {
             for (Module module : modules) {
-                if (module.moduleFile.getAbsolutePath().equals(moduleFile.getAbsolutePath())) {
-                    // fire event
-                    for (Object[] types : this.types) {
-                        for (Class provider : module.find((Class<?>) types[1], false)) {
-                            ((ClassLoadListener) types[0]).unload(provider);
+                try {
+                    if (Files.isSameFile(moduleFile.toPath(), module.path)) {
+                        // fire event
+                        for (Object[] types : this.types) {
+                            for (Class provider : module.find((Class<?>) types[1], false)) {
+                                ((ClassLoadListener) types[0]).unload(provider);
+                            }
                         }
-                    }
 
-                    // unload class key from module aware map
-                    for (WeakReference<Map> reference : awares) {
-                        Map aware = reference.get();
+                        // unload class key from module aware map
+                        for (WeakReference<Map> reference : awares) {
+                            Map aware = reference.get();
 
-                        if (aware == null) {
-                            awares.remove(reference);
-                        } else {
-                            Iterator<Class> iterator = aware.keySet().iterator();
+                            if (aware == null) {
+                                awares.remove(reference);
+                            } else {
+                                Iterator<Class> iterator = aware.keySet().iterator();
 
-                            while (iterator.hasNext()) {
-                                if (iterator.next().getClassLoader() == module) {
-                                    iterator.remove();
+                                while (iterator.hasNext()) {
+                                    if (iterator.next().getClassLoader() == module) {
+                                        iterator.remove();
+                                    }
                                 }
                             }
                         }
+
+                        // unload
+                        modules.remove(module);
+
+                        // close classloader
+                        I.quiet(module);
+                        break;
                     }
-
-                    // unload
-                    modules.remove(module);
-
-                    // close classloader
-                    I.quiet(module);
-                    break;
+                } catch (IOException e) {
+                    throw I.quiet(e);
                 }
             }
         }
