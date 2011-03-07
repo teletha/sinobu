@@ -16,6 +16,7 @@
 package ezbean;
 
 import static java.nio.file.FileVisitResult.*;
+import static org.objectweb.asm.ClassReader.*;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.io.File;
@@ -71,7 +72,7 @@ import ezbean.model.Model;
  * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
  * </p>
  * 
- * @version 2010/11/07 0:20:52
+ * @version 2011/03/07 15:45:35
  */
 class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
 
@@ -88,13 +89,11 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
     private String fqcn;
 
     /**
+     * <p>
      * Module constructor should be package private.
+     * </p>
      * 
      * @param path A module path as classpath, A <code>null</code> is not accepted.
-     * @param core A flag whether the module should be loaded as <dfn>system module</dfn> or Ezbean
-     *            core module. The system module will be loaded by the class loader which isn't
-     *            managed by Ezbean (e.g. {@link ClassLoader#getSystemClassLoader()}), and it never
-     *            be unloaded or reloaded.
      */
     Module(Path path) throws MalformedURLException {
         super(new URL[] {path.toUri().toURL()}, I.loader);
@@ -161,7 +160,7 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
             try {
                 // static field reference will be inlined by compiler, so we should pass all
                 // flags to ClassReader (it doesn't increase byte code size)
-                new ClassReader(input).accept(this, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                new ClassReader(input).accept(this, SKIP_CODE | SKIP_DEBUG | SKIP_FRAMES);
             } catch (FileNotFoundException e) {
                 // this exception means that the given class name may indicate some external
                 // extension class or interface, so we can ignore it
