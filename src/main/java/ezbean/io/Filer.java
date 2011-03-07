@@ -34,7 +34,7 @@ import ezbean.I;
 /**
  * @version 2011/03/07 17:16:07
  */
-public final class Paths implements FileVisitor<Path> {
+public final class Filer implements FileVisitor<Path> {
 
     /** The base path. */
     private final Path base;
@@ -53,7 +53,7 @@ public final class Paths implements FileVisitor<Path> {
     /**
      * @param base
      */
-    private Paths(Path base, String[] patterns, FileVisitor<Path> visitor) throws IOException {
+    private Filer(Path base, String[] patterns, FileVisitor<Path> visitor) throws IOException {
         this.base = base;
         this.visitor = visitor;
         this.size = base.getNameCount();
@@ -118,7 +118,7 @@ public final class Paths implements FileVisitor<Path> {
 
     public static void walk(Path base, String[] patterns, FileVisitor<Path> visitor) {
         try {
-            Files.walkFileTree(base, new Paths(base, patterns, visitor));
+            Files.walkFileTree(base, new Filer(base, patterns, visitor));
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -147,7 +147,7 @@ public final class Paths implements FileVisitor<Path> {
                 // Copy file actually.
                 Files.copy(from, to, COPY_ATTRIBUTES, REPLACE_EXISTING);
             } else if (isDirectory(from) && !isFile(to)) {
-                new Paths(from, patterns, new Copy(from, to));
+                new Filer(from, patterns, new Copy(from, to));
             }
         } catch (IOException e) {
             throw I.quiet(e);
