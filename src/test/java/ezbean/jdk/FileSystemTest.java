@@ -28,10 +28,15 @@ import org.junit.Test;
 /**
  * @version 2011/03/07 14:37:56
  */
-public class ZipFSTest {
+public class FileSystemTest {
+
+    @Test(expected = NullPointerException.class)
+    public void existNull() throws Exception {
+        Files.exists(null); // lololol
+    }
 
     @Test
-    public void access() throws Exception {
+    public void zip() throws Exception {
         FileSystem system = FileSystems.newFileSystem(Paths.get("src/test/resources/ezbean/io/archive/test.zip"), null);
         assertNotNull(system);
 

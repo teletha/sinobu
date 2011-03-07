@@ -311,7 +311,7 @@ public class EzbeanTest {
     /**
      * Test method with invalid argument.
      */
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testLoadWithNull() {
         I.load((File) null);
     }
