@@ -32,7 +32,7 @@ public class CleanRoomTest {
 
     @Test
     public void locateFile() {
-        File file = room.locateFile("empty");
+        ezunit.io.File file = room.locateFile2("empty");
 
         assertTrue(file.exists());
         assertTrue(file.isFile());
@@ -40,7 +40,7 @@ public class CleanRoomTest {
 
     @Test
     public void locateArchive() {
-        File file = room.locateFile("archive.zip");
+        ezunit.io.File file = room.locateFile2("archive.zip");
 
         assertTrue(file.exists());
         assertTrue(file.isFile());
@@ -48,8 +48,16 @@ public class CleanRoomTest {
     }
 
     @Test
-    public void locateDirectory() {
-        File file = room.locateDirectory("dir");
+    public void locateDirectoryFromAbsent() {
+        ezunit.io.File file = room.locateDirectory2("absent");
+
+        assertTrue(file.exists());
+        assertTrue(file.isDirectory());
+    }
+
+    @Test
+    public void locateDirectoryFromPresent() {
+        ezunit.io.File file = room.locateDirectory2("dir");
 
         assertTrue(file.exists());
         assertTrue(file.isDirectory());
