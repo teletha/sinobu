@@ -140,7 +140,7 @@ public class ModulesTest {
     @Test
     public void reloadRelativePathAndAbsolutePath() {
         File relativeModule = I.locate("target/module");
-        I.copy(module1.module, relativeModule);
+        I.copy(module1.path.toFile(), relativeModule);
 
         try {
             assertFalse(relativeModule.isAbsolute());
