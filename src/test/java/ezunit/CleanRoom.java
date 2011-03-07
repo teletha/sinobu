@@ -37,7 +37,7 @@ import ezbean.io.FilePath;
  * The environmental rule for test that depends on file system.
  * </p>
  * 
- * @version 2011/02/17 11:42:24
+ * @version 2011/03/07 12:36:48
  */
 public class CleanRoom extends Sandbox {
 
@@ -45,7 +45,7 @@ public class CleanRoom extends Sandbox {
     private static final AtomicInteger counter = new AtomicInteger();
 
     /** The root bioclean room for tests which are related with file system. */
-    private static final FilePath clean = I.locate(I.getWorkingDirectory(), "clean-room");
+    private static final FilePath clean = I.locate("target/clean-room");
 
     /** The temporary bioclean room for this instance which are related with file system. */
     public final FilePath root = I.locate(clean, String.valueOf(counter.incrementAndGet()));
@@ -211,8 +211,10 @@ public class CleanRoom extends Sandbox {
         // dispose clean room actually
         delete(root);
 
-        // dispose root of all clean rooms
-        clean.delete();
+        // check clean room usage
+        if (clean.list().length == 0) {
+            clean.delete();
+        }
 
         // delegate
         super.afterClass();

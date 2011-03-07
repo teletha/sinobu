@@ -27,20 +27,24 @@ import java.util.concurrent.Future;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
 import ezbean.sample.bean.StringList;
+import ezunit.CleanRoom;
 
 /**
- * DOCUMENT.
- * 
- * @version 2007/07/14 19:19:53
+ * @version 2011/03/07 12:35:22
  */
-public class ConfigurationMultiThreadTest {
+public class XMLSerializationCuncurrentTest {
 
-    /** The test file. */
-    private static File testFile = new File(I.getWorkingDirectory(), "configurationMultiThreadTest.xml");
+    /** The temporaries. */
+    @Rule
+    public static final CleanRoom room = new CleanRoom();
+
+    /** The serialization file. */
+    private static final File testFile = room.locateFile("config.xml");
 
     /** Thread pool for this test. */
     private ExecutorService pool = Executors.newFixedThreadPool(2);
