@@ -59,7 +59,7 @@ public class FilesTest {
         input.copyTo(output);
 
         // assert contents
-        assertFile(output, read(input));
+        assertFile(output, read(input.toPath()));
         assertEquals(input.lastModified(), output.lastModified());
     }
 
@@ -72,7 +72,7 @@ public class FilesTest {
         input.copyTo(output);
 
         // assert contents
-        assertFile(output, read(input));
+        assertFile(output, read(input.toPath()));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class FilesTest {
         input.copyTo(output);
 
         // assert contents
-        assertFile(output, read(input));
+        assertFile(output, read(input.toPath()));
         assertEquals(input.lastModified(), output.lastModified());
     }
 

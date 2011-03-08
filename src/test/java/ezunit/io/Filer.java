@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.io;
+package ezunit.io;
 
 import static java.nio.file.FileVisitResult.*;
 import static java.nio.file.StandardCopyOption.*;
@@ -136,7 +136,9 @@ public final class Filer implements FileVisitor<Path> {
      */
     public static void copy(Path from, Path to, String... patterns) {
         try {
-            if (isFile(from)) {
+            if (isDirectory(from)) {
+                new Filer(from, patterns, new Copy(from, to));
+            } else {
                 if (isDirectory(to)) {
                     to = to.resolve(from.getFileName());
                 }
@@ -146,8 +148,6 @@ public final class Filer implements FileVisitor<Path> {
 
                 // Copy file actually.
                 Files.copy(from, to, COPY_ATTRIBUTES, REPLACE_EXISTING);
-            } else if (isDirectory(from) && !isFile(to)) {
-                new Filer(from, patterns, new Copy(from, to));
             }
         } catch (IOException e) {
             throw I.quiet(e);

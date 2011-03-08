@@ -63,7 +63,7 @@ public class FileSystemUtilityTest {
         I.copy(input, output);
 
         // assert contents
-        assertFile(output, read(input));
+        assertFile(output, read(input.toPath()));
         assertEquals(input.lastModified(), output.lastModified());
     }
 
@@ -76,7 +76,7 @@ public class FileSystemUtilityTest {
         I.copy(input, output);
 
         // assert contents
-        assertFile(output, read(input));
+        assertFile(output, read(input.toPath()));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class FileSystemUtilityTest {
         I.copy(input, output);
 
         // assert contents
-        assertFile(output, read(input));
+        assertFile(output, read(input.toPath()));
         assertEquals(input.lastModified(), output.lastModified());
     }
 
