@@ -130,59 +130,8 @@ public class CleanRoom extends Sandbox {
      * @param name A file name.
      * @return A located present file.
      */
-    public Path locateFile2(String name) {
-        return locate2(name, true, true);
-    }
-
-    /**
-     * Helper method to locate file in clean room.
-     * 
-     * @param path
-     * @return
-     */
-    private Path locate2(String path, boolean isPresent, boolean isFile) {
-        // null check
-        if (path == null) {
-            path = "";
-        }
-
-        // locate virtual file in the clean room
-        Path virtual = root2.resolve(path);
-
-        // create virtual file if needed
-        if (isPresent) {
-            if (isFile) {
-                // create parent directory
-                try {
-                    Files.createDirectories(virtual.getParent());
-                } catch (IOException e) {
-                    throw I.quiet(e);
-                }
-
-                // create requested file
-                try {
-                    Files.createFile(virtual);
-                } catch (FileAlreadyExistsException e) {
-                    // ignore
-                } catch (IOException e) {
-                    throw I.quiet(e);
-                }
-            } else {
-                // create requested directory
-                try {
-                    Files.createDirectories(virtual);
-                } catch (IOException e) {
-                    throw I.quiet(e);
-                }
-            }
-        }
-
-        // validate file state
-        assertEquals(Files.exists(virtual), isPresent);
-        assertEquals(Files.isRegularFile(virtual), isFile);
-
-        // API definition
-        return virtual;
+    public FilePath locateFile(String name) {
+        return locate(name, true, true);
     }
 
     /**
@@ -193,8 +142,8 @@ public class CleanRoom extends Sandbox {
      * @param name A file name.
      * @return A located present file.
      */
-    public FilePath locateFile(String name) {
-        return locate(name, true, true);
+    public Path locateFile2(String name) {
+        return locate2(name, true, true);
     }
 
     /**
@@ -277,6 +226,57 @@ public class CleanRoom extends Sandbox {
         // validate file state
         assertEquals(virtual.exists(), isPresent);
         assertEquals(virtual.isFile(), isFile);
+
+        // API definition
+        return virtual;
+    }
+
+    /**
+     * Helper method to locate file in clean room.
+     * 
+     * @param path
+     * @return
+     */
+    private Path locate2(String path, boolean isPresent, boolean isFile) {
+        // null check
+        if (path == null) {
+            path = "";
+        }
+
+        // locate virtual file in the clean room
+        Path virtual = root2.resolve(path);
+
+        // create virtual file if needed
+        if (isPresent) {
+            if (isFile) {
+                // create parent directory
+                try {
+                    Files.createDirectories(virtual.getParent());
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
+
+                // create requested file
+                try {
+                    Files.createFile(virtual);
+                } catch (FileAlreadyExistsException e) {
+                    // ignore
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
+            } else {
+                // create requested directory
+                try {
+                    Files.createDirectories(virtual);
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
+            }
+        }
+
+        // validate file state
+        assertEquals(Files.exists(virtual), isPresent);
+        assertEquals(Files.isRegularFile(virtual), isFile);
 
         // API definition
         return virtual;

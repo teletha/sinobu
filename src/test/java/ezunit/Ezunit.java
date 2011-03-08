@@ -98,7 +98,7 @@ public class Ezunit {
      * @param FilePath A FilePath to test.
      * @param contents FilePath contents.
      */
-    public static void assertPath(Path path, String... contents) {
+    public static void assertFilePath(Path path, String... contents) {
         assertNotNull(path);
 
         // convert to native Path
@@ -125,6 +125,18 @@ public class Ezunit {
         assertTrue(file.isDirectory());
         assertFalse(file.isFile());
         assertTrue(file.exists());
+    }
+
+    /**
+     * Helper method to assert file.
+     * 
+     * @param path
+     */
+    public static void assertDirectoryPath(Path path) {
+        assertNotNull(path);
+        assertTrue(Files.isDirectory(path));
+        assertFalse(Files.isRegularFile(path));
+        assertTrue(Files.exists(path));
     }
 
     /**

@@ -44,19 +44,19 @@ public class FilerTest {
         Path output = room.locateFile2("out");
 
         // assert contents
-        assertPath(output, "");
+        assertFilePath(output, "");
         assertNotSame(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
 
         // copy
         Filer.copy(input, output);
 
         // assert contents
-        assertPath(output, read(input));
+        assertFilePath(output, read(input));
         assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
     }
 
     @Test
-    public void copyFileToAbsentFile() throws Exception {
+    public void copyFileToAbsent() throws Exception {
         Path input = room.locateFile2("file");
         Path output = room.locateAbsent2("out");
 
@@ -64,7 +64,7 @@ public class FilerTest {
         Filer.copy(input, output);
 
         // assert contents
-        assertPath(output, read(input));
+        assertFilePath(output, read(input));
         assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
     }
 
@@ -77,19 +77,7 @@ public class FilerTest {
         Filer.copy(input, output);
 
         // assert contents
-        assertPath(output.resolve(input.getFileName()), read(input));
-    }
-
-    @Test
-    public void copyFileToAbsentDirectory() throws Exception {
-        Path input = room.locateFile2("file");
-        Path output = room.locateAbsent2("directory/out");
-
-        // copy
-        Filer.copy(input, output);
-
-        // assert contents
-        assertPath(output, read(input));
+        assertFilePath(output.resolve(input.getFileName()), read(input));
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -103,13 +91,22 @@ public class FilerTest {
 
     @Test
     public void copyDirectoryToAbsent() throws Exception {
-        Path input = room.locateDirectory2("dir");
-        Path output = room.locateAbsent2("file");
+        Path input = room.locateDirectory2("directory");
+        Path output = room.locateAbsent2("out");
 
         // copy
         Filer.copy(input, output);
 
         // assert contents
+
+        CarbonCopy cc = new CarbonCopy(input, output.resolve(input.getFileName()));
+        assertDirectoryPath(output);
+        assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
+
+        input = input.resolve("01.txt");
+        output = output.resolve(input.getFileName());
+        assertFilePath(output);
+        assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
     }
 
     /**
@@ -147,5 +144,26 @@ public class FilerTest {
         assertDirectory(I.locate(output, "directory/child"));
         assertFile(I.locate(output, "directory/child/a"), "a");
         assertEquals(input.lastModified(), new File(output, "directory").lastModified());
+    }
+
+    /**
+     * <p>
+     * Support for simultaneous operations of Path.
+     * </p>
+     * 
+     * @version 2011/03/09 8:23:57
+     */
+    private static class CarbonCopy {
+
+        /** The all target paths. */
+        private final Path[] paths;
+
+        /**
+         * @param paths
+         */
+        private CarbonCopy(Path... paths) {
+            this.paths = paths;
+        }
+
     }
 }
