@@ -49,14 +49,14 @@ public class FilerOperationTest {
         Path output = room.locateFile2("out");
 
         // assert contents
-        assertPath(output, "");
+        assertFilePath(output, "");
         assertNotSame(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
 
         // copy
         Filer.copy(input, output);
 
         // assert contents
-        assertPath(output, read(input));
+        assertFilePath(output, read(input));
         assertThat(Files.getLastModifiedTime(input), equalTo(Files.getLastModifiedTime(output)));
     }
 
