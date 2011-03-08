@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.io;
+package ezunit.io;
 
 import static ezunit.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
+import ezbean.io.FilePath;
 import ezunit.CleanRoom;
 
 /**
@@ -36,72 +40,76 @@ public class FilerTest {
 
     @Test
     public void copyFileToPresentFile() throws Exception {
-        FilePath input = room.locateFile("file");
-        FilePath output = room.locateAbsent("out");
-        output.createNewFile();
+        Path input = room.locateFile2("file");
+        Path output = room.locateFile2("out");
 
         // assert contents
-        assertFile(output, "");
-        assertNotSame(input.lastModified(), output.lastModified());
+        assertPath(output, "");
+        assertNotSame(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
 
         // copy
-        Filer.copy(input.toPath(), output.toPath());
+        Filer.copy(input, output);
 
         // assert contents
-        assertFile(output, read(input));
-        assertEquals(input.lastModified(), output.lastModified());
+        assertPath(output, read(input));
+        assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
     }
 
     @Test
     public void copyFileToAbsentFile() throws Exception {
-        FilePath input = room.locateFile("file");
-        FilePath output = room.locateAbsent("out");
+        Path input = room.locateFile2("file");
+        Path output = room.locateAbsent2("out");
 
         // copy
-        Filer.copy(input.toPath(), output.toPath());
+        Filer.copy(input, output);
 
         // assert contents
-        assertFile(output, read(input));
-        assertEquals(input.lastModified(), output.lastModified());
+        assertPath(output, read(input));
+        assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
     }
 
     @Test
     public void copyFileToDirectory() throws Exception {
-        FilePath input = room.locateFile("file");
-        FilePath output = room.locateDirectory("directory/out");
+        Path input = room.locateFile2("file");
+        Path output = room.locateDirectory2("directory/out");
 
         // copy
-        Filer.copy(input.toPath(), output.toPath());
+        Filer.copy(input, output);
 
         // assert contents
-        assertFile(new File(output, "file"), read(input));
+        assertPath(output.resolve(input.getFileName()), read(input));
     }
 
     @Test
     public void copyFileToAbsentDirectory() throws Exception {
-        FilePath input = room.locateFile("file");
-        FilePath output = room.locateAbsent("directory/out");
+        Path input = room.locateFile2("file");
+        Path output = room.locateAbsent2("directory/out");
 
         // copy
-        Filer.copy(input.toPath(), output.toPath());
+        Filer.copy(input, output);
 
         // assert contents
-        assertFile(output, read(input));
+        assertPath(output, read(input));
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void copyDirectoryToPresentFile() throws Exception {
+        Path input = room.locateDirectory2("dir");
+        Path output = room.locateFile2("file");
+
+        // copy
+        Filer.copy(input, output);
     }
 
     @Test
-    public void copyAbsentFileToAbsentDirectory() throws Exception {
-        FilePath input = room.locateFile("file");
-        FilePath output = room.locateAbsent("absent/out");
-
-        assertNotSame(input.lastModified(), output.lastModified());
+    public void copyDirectoryToAbsent() throws Exception {
+        Path input = room.locateDirectory2("dir");
+        Path output = room.locateAbsent2("file");
 
         // copy
-        Filer.copy(input.toPath(), output.toPath());
+        Filer.copy(input, output);
 
         // assert contents
-        assertFile(output, read(input));
-        assertEquals(input.lastModified(), output.lastModified());
     }
 
     /**

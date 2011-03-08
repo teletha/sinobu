@@ -15,17 +15,20 @@
  */
 package ezunit;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -82,7 +85,33 @@ public class Ezunit {
         String expected = option(contents, null);
 
         if (expected != null) {
-            assertEquals(expected, readLine(file));
+            assertEquals(expected, readLine(file.toPath()));
+        }
+    }
+
+    /**
+     * <p>
+     * Assert that the specified abstract FilePath is FilePath (not directory), present and has the
+     * given FilePath contents.
+     * </p>
+     * 
+     * @param FilePath A FilePath to test.
+     * @param contents FilePath contents.
+     */
+    public static void assertPath(Path path, String... contents) {
+        assertNotNull(path);
+
+        // convert to native Path
+        path = Paths.get(path.toString());
+
+        assertTrue(Files.exists(path));
+        assertTrue(Files.isRegularFile(path));
+        assertThat(Files.isDirectory(path), is(false));
+
+        String expected = option(contents, null);
+
+        if (expected != null) {
+            assertEquals(expected, readLine(path));
         }
     }
 
@@ -167,8 +196,12 @@ public class Ezunit {
      * @return A located package directory.
      * @throws NullPointerException If the class is <code>null</code>.
      */
-    public static ezunit.io.File locatePackage2(Class clazz) {
-        return ezunit.io.File.locate(clazz.getResource(""));
+    public static Path locatePackage2(Class clazz) {
+        try {
+            return Paths.get(clazz.getResource("").toURI());
+        } catch (URISyntaxException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -181,10 +214,10 @@ public class Ezunit {
      * @param charset A character set used when reading the file.
      * @return A string containing all the characters from the file.
      */
-    public static String read(File file, Charset... charset) {
+    public static String read(Path path, Charset... charset) {
         StringBuilder builder = new StringBuilder();
 
-        for (String line : readLines(file, charset)) {
+        for (String line : readLines(path, charset)) {
             builder.append(line).append(File.separatorChar);
         }
 
@@ -207,8 +240,8 @@ public class Ezunit {
      * @return the first line, or null if the FilePath is empty
      * @throws IOException if an I/O error occurs
      */
-    public static String readLine(File file, Charset... charset) {
-        List<String> lines = readLines(file, option(charset, I.getEncoding()), false);
+    public static String readLine(Path path, Charset... charset) {
+        List<String> lines = readLines(path, option(charset, I.getEncoding()), false);
 
         return lines.size() == 0 ? "" : lines.get(0);
     }
@@ -225,8 +258,8 @@ public class Ezunit {
      * @return the first line, or null if the FilePath is empty
      * @throws IOException if an I/O error occurs
      */
-    public static List<String> readLines(File file, Charset... charset) {
-        return readLines(file, option(charset, I.getEncoding()), true);
+    public static List<String> readLines(Path path, Charset... charset) {
+        return readLines(path, option(charset, I.getEncoding()), true);
     }
 
     /**
@@ -244,30 +277,22 @@ public class Ezunit {
     /**
      * Read FilePath contents actually.
      * 
-     * @param file
+     * @param path
      * @param charset
      * @param all
      * @return
      */
-    private static List<String> readLines(File file, Charset charset, boolean all) {
-        List<String> lines = new ArrayList();
-        BufferedReader reader = null;
-
+    private static List<String> readLines(Path path, Charset charset, boolean all) {
         try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+            // convert to native path
+            path = Paths.get(path.toString());
 
-            for (int i = 0; reader.ready(); i++) {
-                if (!all && i == 1) {
-                    break;
-                }
-                lines.add(reader.readLine());
-            }
+            List<String> lines = Files.readAllLines(path, charset);
+
+            return all ? lines : lines.isEmpty() ? Collections.EMPTY_LIST : Collections.singletonList(lines.get(0));
         } catch (IOException e) {
             throw I.quiet(e);
-        } finally {
-            I.quiet(reader);
         }
-        return lines;
     }
 
     // ==================================================================== //

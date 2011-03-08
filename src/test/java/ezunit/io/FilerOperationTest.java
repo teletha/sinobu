@@ -16,12 +16,15 @@
 package ezunit.io;
 
 import static ezunit.Ezunit.*;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,27 +38,26 @@ import ezunit.CleanRoom;
  * 
  * @version 2008/08/26 5:25:31
  */
-public class FileOperationTest {
+public class FilerOperationTest {
 
     @Rule
     public static final CleanRoom room = new CleanRoom();
 
     @Test
-    public void copyFileToPresentFile() throws Exception {
-        File input = room.locateFile("file");
-        File output = room.locateAbsent("out");
-        output.createNewFile();
+    public void copyPresentFileToPresentFile() throws Exception {
+        Path input = room.locateFile2("file");
+        Path output = room.locateFile2("out");
 
         // assert contents
-        assertFile(output, "");
-        assertNotSame(input.lastModified(), output.lastModified());
+        assertPath(output, "");
+        assertNotSame(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
 
         // copy
-        I.copy(input, output);
+        Filer.copy(input, output);
 
         // assert contents
-        assertFile(output, read(input));
-        assertEquals(input.lastModified(), output.lastModified());
+        assertPath(output, read(input));
+        assertThat(Files.getLastModifiedTime(input), equalTo(Files.getLastModifiedTime(output)));
     }
 
     @Test

@@ -27,6 +27,10 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
@@ -54,13 +58,13 @@ public class CleanRoom extends Sandbox {
     private final FilePath host;
 
     /** The root bioclean room for tests which are related with file system. */
-    private static final ezunit.io.File clean2 = ezunit.io.File.locate("target/clean-room");
+    private static final Path clean2 = Paths.get("target/clean-room");
 
     /** The temporary bioclean room for this instance which are related with file system. */
-    public final ezunit.io.File root2 = clean2.resolve(String.valueOf(counter.incrementAndGet()));
+    public final Path root2 = clean2.resolve(root.getName());
 
     /** The host directory for test. */
-    private final ezunit.io.File host2;
+    private final Path host2;
 
     /** The clean room monitor. */
     private final Monitor monitor = new Monitor();
@@ -88,10 +92,9 @@ public class CleanRoom extends Sandbox {
         // access control
         writable(false, host);
 
-        ezunit.io.File directory2 = path == null ? locatePackage2(speculateInstantiator())
-                : ezunit.io.File.locate(path);
+        Path directory2 = path == null ? locatePackage2(speculateInstantiator()) : Paths.get(path);
 
-        if (!directory2.isDirectory()) {
+        if (!Files.isDirectory(directory2)) {
             directory2 = directory2.getParent();
         }
         this.host2 = directory2;
@@ -127,7 +130,7 @@ public class CleanRoom extends Sandbox {
      * @param name A file name.
      * @return A located present file.
      */
-    public ezunit.io.File locateFile2(String name) {
+    public Path locateFile2(String name) {
         return locate2(name, true, true);
     }
 
@@ -137,28 +140,46 @@ public class CleanRoom extends Sandbox {
      * @param path
      * @return
      */
-    private ezunit.io.File locate2(String path, boolean isPresent, boolean isFile) {
+    private Path locate2(String path, boolean isPresent, boolean isFile) {
         // null check
         if (path == null) {
             path = "";
         }
 
         // locate virtual file in the clean room
-        ezunit.io.File virtual = root2.resolve(path);
+        Path virtual = root2.resolve(path);
 
         // create virtual file if needed
         if (isPresent) {
             if (isFile) {
-                virtual.getParent().createDirectory();
-                virtual.createFile();
+                // create parent directory
+                try {
+                    Files.createDirectories(virtual.getParent());
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
+
+                // create requested file
+                try {
+                    Files.createFile(virtual);
+                } catch (FileAlreadyExistsException e) {
+                    // ignore
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
             } else {
-                virtual.createDirectory();
+                // create requested directory
+                try {
+                    Files.createDirectories(virtual);
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
             }
         }
 
         // validate file state
-        assertEquals(virtual.exists(), isPresent);
-        assertEquals(virtual.isFile(), isFile);
+        assertEquals(Files.exists(virtual), isPresent);
+        assertEquals(Files.isRegularFile(virtual), isFile);
 
         // API definition
         return virtual;
@@ -196,7 +217,7 @@ public class CleanRoom extends Sandbox {
      * @param name A directory name.
      * @return A located present directory.
      */
-    public ezunit.io.File locateDirectory2(String name) {
+    public Path locateDirectory2(String name) {
         return locate2(name, true, false);
     }
 
@@ -210,6 +231,18 @@ public class CleanRoom extends Sandbox {
      */
     public FilePath locateAbsent(String name) {
         return locate(name, false, false);
+    }
+
+    /**
+     * <p>
+     * Locate an absent resource which is assured that the specified resource doesn't exists.
+     * </p>
+     * 
+     * @param name A resource name.
+     * @return A located absent file system resource.
+     */
+    public Path locateAbsent2(String name) {
+        return locate2(name, false, false);
     }
 
     /**
@@ -287,7 +320,7 @@ public class CleanRoom extends Sandbox {
 
         // check clean room usage
         if (clean.list().length == 0) {
-            clean.delete();
+            delete(clean);
         }
 
         // delegate
