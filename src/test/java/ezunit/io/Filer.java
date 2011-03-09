@@ -137,7 +137,7 @@ public final class Filer implements FileVisitor<Path> {
     public static void copy(Path from, Path to, String... patterns) {
         try {
             if (isDirectory(from)) {
-                new Filer(from, patterns, new Copy(from, to));
+                new Filer(from, patterns, new Operation(from, to, true));
             } else {
                 if (isDirectory(to)) {
                     to = to.resolve(from.getFileName());
@@ -152,7 +152,6 @@ public final class Filer implements FileVisitor<Path> {
         } catch (IOException e) {
             throw I.quiet(e);
         }
-
     }
 
     /**
@@ -165,8 +164,24 @@ public final class Filer implements FileVisitor<Path> {
      * @param patterns
      * @return
      */
-    public static boolean move(Path from, Path to, String... patterns) {
-        return true;
+    public static void move(Path from, Path to, String... patterns) {
+        try {
+            if (isDirectory(from)) {
+                new Filer(from, patterns, new Operation(from, to, false));
+            } else {
+                if (isDirectory(to)) {
+                    to = to.resolve(from.getFileName());
+                }
+
+                // Assure the existence of the parent directory.
+                Files.createDirectories(to.getParent());
+
+                // Copy file actually.
+                Files.move(from, to, ATOMIC_MOVE, REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -178,7 +193,16 @@ public final class Filer implements FileVisitor<Path> {
      * @param patterns
      * @return
      */
-    public static boolean delete(Path from, String... patterns) {
+    public static boolean delete(Path path, String... patterns) {
+        try {
+            if (Files.isDirectory(path)) {
+                new Filer(path, patterns, new Operation(path, null, false));
+            } else {
+                Files.deleteIfExists(path);
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
         return true;
     }
 
@@ -258,7 +282,7 @@ public final class Filer implements FileVisitor<Path> {
     /**
      * @version 2011/02/16 12:19:34
      */
-    private static final class Copy extends SimpleFileVisitor<Path> {
+    private static final class Operation extends SimpleFileVisitor<Path> {
 
         /** The source location. */
         private final Path from;
@@ -269,13 +293,17 @@ public final class Filer implements FileVisitor<Path> {
         /** The sccess flag. */
         private boolean success = true;
 
+        /** The option to remain original file. */
+        private final boolean remain;
+
         /**
          * @param from
          * @param to
          */
-        private Copy(Path from, Path to) {
+        private Operation(Path from, Path to, boolean remain) {
             this.from = from.getParent();
             this.to = to;
+            this.remain = remain;
         }
 
         /**
@@ -284,9 +312,9 @@ public final class Filer implements FileVisitor<Path> {
          */
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            // System.out.println(dir + "   " + to.resolve(from.relativize(dir)));
-            createDirectory(to.resolve(from.relativize(dir)));
-
+            if (to != null) {
+                createDirectory(to.resolve(from.relativize(dir)));
+            }
             return CONTINUE;
         }
 
@@ -296,7 +324,13 @@ public final class Filer implements FileVisitor<Path> {
          */
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            Files.setLastModifiedTime(to.resolve(from.relativize(dir)), Files.getLastModifiedTime(dir));
+            if (to != null) {
+                Files.setLastModifiedTime(to.resolve(from.relativize(dir)), Files.getLastModifiedTime(dir));
+            }
+
+            if (!remain) {
+                Files.delete(dir);
+            }
             return super.postVisitDirectory(dir, exc);
         }
 
@@ -306,7 +340,13 @@ public final class Filer implements FileVisitor<Path> {
          */
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            Files.copy(file, to.resolve(from.relativize(file)), COPY_ATTRIBUTES, REPLACE_EXISTING);
+            if (to != null) {
+                Files.copy(file, to.resolve(from.relativize(file)), COPY_ATTRIBUTES, REPLACE_EXISTING);
+            }
+
+            if (!remain) {
+                Files.delete(file);
+            }
 
             return CONTINUE;
         }
