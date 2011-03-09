@@ -390,21 +390,19 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * @version 2011/02/17 15:34:28
+     * @version 2011/03/09 21:44:23
      */
-    public static class VirtualFile {
+    public static abstract class VirtualFile {
 
         /**
          * <p>
-         * Assert
+         * Build virtual files.
          * </p>
          * 
-         * @return
+         * @param root
          */
-        public VirtualFile willBeDeleted() {
+        private void build(Path root) {
 
-            // API chain
-            return this;
         }
     }
 }

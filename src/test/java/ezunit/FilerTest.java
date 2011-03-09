@@ -15,19 +15,18 @@
  */
 package ezunit;
 
+import static org.junit.Assert.*;
+
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
 
 /**
  * @version 2011/03/07 18:06:48
  */
-@RunWith(PowerAssertRunner.class)
 public class FilerTest {
 
     @Rule
@@ -117,6 +116,51 @@ public class FilerTest {
         synchrotron.child("02.txt").areSameFile();
     }
 
+    @Test(expected = NullPointerException.class)
+    public void copyNullInput() throws Exception {
+        Path input = null;
+        Path output = room.locateAbsent2("null");
+
+        // operation
+        Filer.copy(input, output);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void copyNullOutput() throws Exception {
+        Path input = room.locateAbsent2("null");
+        Path output = null;
+
+        // operation
+        Filer.copy(input, output);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void copyAbsentToFile() throws Exception {
+        Path input = room.locateAbsent2("absent");
+        Path output = room.locateFile2("out");
+
+        // operation
+        Filer.copy(input, output);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void copyAbsentToDirectory() throws Exception {
+        Path input = room.locateAbsent2("absent");
+        Path output = room.locateDirectory2("out");
+
+        // operation
+        Filer.copy(input, output);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void copyAbsentToAbsent() throws Exception {
+        Path input = room.locateAbsent2("absent");
+        Path output = room.locateAbsent2("out");
+
+        // operation
+        Filer.copy(input, output);
+    }
+
     @Test
     public void moveFileToFile() throws Exception {
         Path input = room.locateFile2("directory/01.txt");
@@ -201,43 +245,93 @@ public class FilerTest {
         synchrotron.child("02.txt").areNotSameDirectory();
     }
 
+    @Test(expected = NullPointerException.class)
+    public void moveNullInput() throws Exception {
+        Path input = null;
+        Path output = room.locateAbsent2("null");
+
+        // operation
+        Filer.move(input, output);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void moveNullOutput() throws Exception {
+        Path input = room.locateAbsent2("null");
+        Path output = null;
+
+        // operation
+        Filer.move(input, output);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void moveAbsentToFile() throws Exception {
+        Path input = room.locateAbsent2("absent");
+        Path output = room.locateFile2("out");
+
+        // operation
+        Filer.move(input, output);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void moveAbsentToDirectory() throws Exception {
+        Path input = room.locateAbsent2("absent");
+        Path output = room.locateDirectory2("out");
+
+        // operation
+        Filer.move(input, output);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void moveAbsentToAbsent() throws Exception {
+        Path input = room.locateAbsent2("absent");
+        Path output = room.locateAbsent2("out");
+
+        // operation
+        Filer.move(input, output);
+    }
+
     @Test
     public void deleteFile() {
         Path input = room.locateFile2("directory/01.txt");
 
-        assert Files.exists(input);
+        assertTrue(Files.exists(input));
 
         // operation
         Filer.delete(input);
 
-        assert Files.notExists(input);
+        assertTrue(Files.notExists(input));
     }
 
     @Test
     public void deleteDirectory() {
         Path input = room.locateDirectory2("directory");
 
-        assert Files.exists(input);
-        assert Files.exists(input.resolve("01.txt"));
-        assert Files.exists(input.resolve("child/01.txt"));
+        assertTrue(Files.exists(input));
+        assertTrue(Files.exists(input.resolve("01.txt")));
+        assertTrue(Files.exists(input.resolve("child/01.txt")));
 
         // operation
         Filer.delete(input);
 
-        assert Files.notExists(input);
-        assert Files.notExists(input.resolve("01.txt"));
-        assert Files.notExists(input.resolve("child/01.txt"));
+        assertTrue(Files.notExists(input));
+        assertTrue(Files.notExists(input.resolve("01.txt")));
+        assertTrue(Files.notExists(input.resolve("child/01.txt")));
     }
 
     @Test
     public void deleteAbsent() {
         Path input = room.locateAbsent2("absent");
 
-        assert Files.notExists(input);
+        assertTrue(Files.notExists(input));
 
         // operation
         Filer.delete(input);
 
-        assert Files.notExists(input);
+        assertTrue(Files.notExists(input));
+    }
+
+    @Test
+    public void deleteNull() throws Exception {
+        Filer.delete(null);
     }
 }

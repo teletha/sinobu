@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -356,6 +357,8 @@ public class Model<M> {
         // check whether the specified model class is enhanced or not
         if (Accessible.class.isAssignableFrom(modelClass)) {
             modelClass = (Class<M>) modelClass.getSuperclass();
+        } else if (Path.class.isAssignableFrom(modelClass)) {
+            modelClass = (Class<M>) Path.class;
         }
 
         // check cache

@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -24,9 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
@@ -38,6 +34,7 @@ import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -1392,20 +1389,20 @@ public class I implements ClassLoadListener<Extensible> {
      * @param output A target configuration file to write out. <code>null</code> is acceptable, but
      *            this method will do nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static void xml(Object model, File output) {
+    public static void xml(Object model, Path output) {
         if (model != null && output != null) {
-            // We must confirm that the parent directory exists because FileOutputStream can't
-            // create nested file.
-            output.getAbsoluteFile().getParentFile().mkdirs();
-
             // lock
             lock.writeLock().lock();
 
             Writer writer = null;
 
             try {
+                // We must confirm that the parent directory exists because FileOutputStream can't
+                // create nested file.
+                Files.createDirectories(output.getParent());
+
                 // prepare stream
-                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output), encoding));
+                writer = Files.newBufferedWriter(output, encoding);
                 XMLWriter xml = new XMLWriter(writer);
 
                 // xml start
@@ -1441,8 +1438,8 @@ public class I implements ClassLoadListener<Extensible> {
      * @param model A configuration object. <code>null</code> is acceptable, but this method will do
      *            nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static <M> M xml(File input, M model) {
-        if (input != null && input.exists() && model != null) {
+    public static <M> M xml(Path input, M model) {
+        if (input != null && Files.exists(input) && model != null) {
             // lock
             lock.readLock().lock();
 
@@ -1450,7 +1447,7 @@ public class I implements ClassLoadListener<Extensible> {
 
             try {
                 // prepare stream
-                reader = new BufferedReader(new InputStreamReader(new FileInputStream(input), encoding));
+                reader = Files.newBufferedReader(input, encoding);
 
                 parse(new InputSource(reader), new XMLIn(model));
             } catch (IOException e) {
