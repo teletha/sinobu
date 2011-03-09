@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
 import ezbean.io.FilePath;
-import ezunit.io.Filer;
 
 /**
  * <p>

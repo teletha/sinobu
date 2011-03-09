@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezunit.io;
+package ezunit;
 
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -23,9 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import ezunit.CleanRoom;
-import ezunit.PowerAssertRunner;
-import ezunit.Synchrotron;
 
 /**
  * @version 2011/03/07 18:06:48
@@ -207,6 +204,7 @@ public class FilerTest {
     @Test
     public void deleteFile() {
         Path input = room.locateFile2("directory/01.txt");
+
         assert Files.exists(input);
 
         // operation
@@ -218,6 +216,7 @@ public class FilerTest {
     @Test
     public void deleteDirectory() {
         Path input = room.locateDirectory2("directory");
+
         assert Files.exists(input);
         assert Files.exists(input.resolve("01.txt"));
         assert Files.exists(input.resolve("child/01.txt"));
@@ -233,6 +232,7 @@ public class FilerTest {
     @Test
     public void deleteAbsent() {
         Path input = room.locateAbsent2("absent");
+
         assert Files.notExists(input);
 
         // operation
