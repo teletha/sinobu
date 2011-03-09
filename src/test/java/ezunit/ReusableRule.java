@@ -29,8 +29,8 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
+import ezbean.I;
 import ezbean.model.ClassUtil;
-import ezbean.scratchpad.Solution;
 
 /**
  * <p>
@@ -135,13 +135,13 @@ public abstract class ReusableRule implements MethodRule {
                             // invoke beforeClass
                             beforeClass();
                         } catch (Exception e) {
-                            throw Solution.quiet(initializationError = e);
+                            throw I.quiet(initializationError = e);
                         }
                     }
 
                     // check initialization error
                     if (initializationError != null) {
-                        throw Solution.quiet(initializationError);
+                        throw I.quiet(initializationError);
                     }
 
                     if (!skip(method.getMethod())) {
@@ -159,14 +159,14 @@ public abstract class ReusableRule implements MethodRule {
                             // invoke test method
                             statement.evaluate();
                         } catch (Exception e) {
-                            throw Solution.quiet(e);
+                            throw I.quiet(e);
                         } finally {
                             // invoke after
                             after(method.getMethod());
                         }
                     }
                 } catch (Exception e) {
-                    throw Solution.quiet(e);
+                    throw I.quiet(e);
                 } finally {
                     // call after class
                     if (executed == tests) {
@@ -177,7 +177,7 @@ public abstract class ReusableRule implements MethodRule {
                         try {
                             afterClass();
                         } catch (Exception e) {
-                            throw Solution.quiet(e);
+                            throw I.quiet(e);
                         }
                     }
                 }

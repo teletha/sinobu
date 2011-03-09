@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
 import ezbean.io.FilePath;
+import ezunit.io.Filer;
 
 /**
  * <p>
@@ -302,7 +303,7 @@ public class CleanRoom extends Sandbox {
 
             // copy all resources newly
             for (File file : host.listFiles(monitor)) {
-                I.copy(file, root, monitor);
+                Filer.copy(file.toPath(), root.toPath()); // TODO filter
             }
 
             // reset

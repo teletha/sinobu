@@ -15,78 +15,93 @@
  */
 package ezunit.io;
 
-import static ezunit.Ezunit.*;
-import static org.junit.Assert.*;
-
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import ezbean.I;
-import ezbean.io.FilePath;
 import ezunit.CleanRoom;
+import ezunit.PowerAssertRunner;
+import ezunit.Synchrotron;
 
 /**
  * @version 2011/03/07 18:06:48
  */
+@RunWith(PowerAssertRunner.class)
 public class FilerTest {
 
     @Rule
     public static final CleanRoom room = new CleanRoom();
 
     @Test
-    public void copyFileToPresentFile() throws Exception {
-        Path input = room.locateFile2("file");
+    public void copyFileToFile() throws Exception {
+        Path input = room.locateFile2("directory/01.txt");
         Path output = room.locateFile2("out");
+        Synchrotron synchrotron = new Synchrotron(input, output);
+        synchrotron.areNotSameFile();
 
-        // assert contents
-        assertFilePath(output, "");
-        assertNotSame(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
-
-        // copy
+        // operation
         Filer.copy(input, output);
 
         // assert contents
-        assertFilePath(output, read(input));
-        assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
-    }
-
-    @Test
-    public void copyFileToAbsent() throws Exception {
-        Path input = room.locateFile2("file");
-        Path output = room.locateAbsent2("out");
-
-        // copy
-        Filer.copy(input, output);
-
-        // assert contents
-        assertFilePath(output, read(input));
-        assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
+        synchrotron.areSameFile();
     }
 
     @Test
     public void copyFileToDirectory() throws Exception {
-        Path input = room.locateFile2("file");
-        Path output = room.locateDirectory2("directory/out");
+        Path input = room.locateFile2("directory/01.txt");
+        Path output = room.locateDirectory2("out");
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameFile();
 
-        // copy
+        // operation
         Filer.copy(input, output);
 
         // assert contents
-        assertFilePath(output.resolve(input.getFileName()), read(input));
+        synchrotron.areSameFile();
+    }
+
+    @Test
+    public void copyFileToAbsent() throws Exception {
+        Path input = room.locateFile2("directory/01.txt");
+        Path output = room.locateAbsent2("out");
+        Synchrotron synchrotron = new Synchrotron(input, output);
+        synchrotron.areNotSameFile();
+
+        // operation
+        Filer.copy(input, output);
+
+        // assert contents
+        synchrotron.areSameFile();
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void copyDirectoryToPresentFile() throws Exception {
-        Path input = room.locateDirectory2("dir");
+    public void copyDirectoryToFile() throws Exception {
+        Path input = room.locateDirectory2("directory");
         Path output = room.locateFile2("file");
 
-        // copy
+        // operation
         Filer.copy(input, output);
+    }
+
+    @Test
+    public void copyDirectoryToDirectory() throws Exception {
+        Path input = room.locateDirectory2("directory");
+        Path output = room.locateDirectory2("out");
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameDirectory();
+
+        // operation
+        Filer.copy(input, output);
+
+        // assert contents
+        synchrotron.areSameDirectory();
+        synchrotron.child("01.txt").areSameFile();
+        synchrotron.sibling("child").areSameDirectory();
+        synchrotron.child("02.txt").areSameFile();
     }
 
     @Test
@@ -94,76 +109,135 @@ public class FilerTest {
         Path input = room.locateDirectory2("directory");
         Path output = room.locateAbsent2("out");
 
-        // copy
+        // operation
         Filer.copy(input, output);
 
         // assert contents
-
-        CarbonCopy cc = new CarbonCopy(input, output.resolve(input.getFileName()));
-        assertDirectoryPath(output);
-        assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
-
-        input = input.resolve("01.txt");
-        output = output.resolve(input.getFileName());
-        assertFilePath(output);
-        assertEquals(Files.getLastModifiedTime(input), Files.getLastModifiedTime(output));
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areSameDirectory();
+        synchrotron.child("01.txt").areSameFile();
+        synchrotron.sibling("child").areSameDirectory();
+        synchrotron.child("02.txt").areSameFile();
     }
 
-    /**
-     * Directory copy to present directory which is empty.
-     */
     @Test
-    public void copyDirectoryToDirectory() throws Exception {
-        FilePath input = room.locateDirectory("directory");
-        FilePath output = room.locateAbsent("out");
-        output.mkdirs();
+    public void moveFileToFile() throws Exception {
+        Path input = room.locateFile2("directory/01.txt");
+        Path output = room.locateFile2("out");
+        Synchrotron synchrotron = new Synchrotron(input, output);
+        synchrotron.areNotSameFile();
 
-        // copy
-        Filer.copy(input.toPath(), output.toPath());
+        // operation
+        Filer.move(input, output);
 
         // assert contents
-        assertFile(I.locate(output, "directory/1"), "1");
-        assertDirectory(I.locate(output, "directory/child"));
-        assertFile(I.locate(output, "directory/child/a"), "a");
-        assertEquals(input.lastModified(), new File(output, "directory").lastModified());
+        synchrotron.exists(false, true);
     }
 
-    /**
-     * Directory copy to present directory which is empty.
-     */
     @Test
-    public void copyDirectoryToAbsentDirectory() throws Exception {
-        FilePath input = room.locateDirectory("directory");
-        FilePath output = room.locateAbsent("out");
+    public void moveFileToDirectory() throws Exception {
+        Path input = room.locateFile2("directory/01.txt");
+        Path output = room.locateDirectory2("out");
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameFile();
 
-        // copy
-        Filer.copy(input.toPath(), output.toPath());
+        // operation
+        Filer.move(input, output);
 
         // assert contents
-        assertFile(I.locate(output, "directory/1"), "1");
-        assertDirectory(I.locate(output, "directory/child"));
-        assertFile(I.locate(output, "directory/child/a"), "a");
-        assertEquals(input.lastModified(), new File(output, "directory").lastModified());
+        synchrotron.exists(false, true);
     }
 
-    /**
-     * <p>
-     * Support for simultaneous operations of Path.
-     * </p>
-     * 
-     * @version 2011/03/09 8:23:57
-     */
-    private static class CarbonCopy {
+    @Test
+    public void moveFileToAbsent() throws Exception {
+        Path input = room.locateFile2("directory/01.txt");
+        Path output = room.locateAbsent2("out");
+        Synchrotron synchrotron = new Synchrotron(input, output);
+        synchrotron.exists(true, false);
 
-        /** The all target paths. */
-        private final Path[] paths;
+        // operation
+        Filer.move(input, output);
 
-        /**
-         * @param paths
-         */
-        private CarbonCopy(Path... paths) {
-            this.paths = paths;
-        }
+        // assert contents
+        synchrotron.exists(false, true);
+    }
 
+    @Test(expected = NoSuchFileException.class)
+    public void moveDirectoryToFile() throws Exception {
+        Path input = room.locateDirectory2("directory");
+        Path output = room.locateFile2("file");
+
+        // operation
+        Filer.move(input, output);
+    }
+
+    @Test
+    public void moveDirectoryToDirectory() throws Exception {
+        Path input = room.locateDirectory2("directory");
+        Path output = room.locateDirectory2("out");
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameDirectory();
+
+        // operation
+        Filer.move(input, output);
+
+        // assert contents
+        synchrotron.areNotSameDirectory();
+        synchrotron.child("01.txt").areNotSameFile();
+        synchrotron.sibling("child").areNotSameFile();
+        synchrotron.child("02.txt").areNotSameFile();
+    }
+
+    @Test
+    public void moveDirectoryToAbsent() throws Exception {
+        Path input = room.locateDirectory2("directory");
+        Path output = room.locateAbsent2("out");
+
+        // operation
+        Filer.move(input, output);
+
+        // assert contents
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameDirectory();
+        synchrotron.child("01.txt").areNotSameDirectory();
+        synchrotron.sibling("child").areNotSameDirectory();
+        synchrotron.child("02.txt").areNotSameDirectory();
+    }
+
+    @Test
+    public void deleteFile() {
+        Path input = room.locateFile2("directory/01.txt");
+        assert Files.exists(input);
+
+        // operation
+        Filer.delete(input);
+
+        assert Files.notExists(input);
+    }
+
+    @Test
+    public void deleteDirectory() {
+        Path input = room.locateDirectory2("directory");
+        assert Files.exists(input);
+        assert Files.exists(input.resolve("01.txt"));
+        assert Files.exists(input.resolve("child/01.txt"));
+
+        // operation
+        Filer.delete(input);
+
+        assert Files.notExists(input);
+        assert Files.notExists(input.resolve("01.txt"));
+        assert Files.notExists(input.resolve("child/01.txt"));
+    }
+
+    @Test
+    public void deleteAbsent() {
+        Path input = room.locateAbsent2("absent");
+        assert Files.notExists(input);
+
+        // operation
+        Filer.delete(input);
+
+        assert Files.notExists(input);
     }
 }
