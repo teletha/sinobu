@@ -17,6 +17,7 @@ package ezunit;
 
 import static org.objectweb.asm.Opcodes.*;
 
+import org.junit.Rule;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.objectweb.asm.ClassAdapter;
@@ -30,6 +31,8 @@ import org.objectweb.asm.MethodVisitor;
 import ezbean.I;
 
 /**
+ * Can't recognize {@link Rule}.
+ * 
  * @version 2011/03/09 13:18:28
  */
 public class PowerAssertRunner extends BlockJUnit4ClassRunner {

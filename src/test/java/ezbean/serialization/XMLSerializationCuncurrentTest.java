@@ -17,7 +17,8 @@ package ezbean.serialization;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -44,7 +45,7 @@ public class XMLSerializationCuncurrentTest {
     public static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */
-    private static final File testFile = room.locateFile("config.xml");
+    private static final Path testFile = room.locateFile2("config.xml");
 
     /** Thread pool for this test. */
     private ExecutorService pool = Executors.newFixedThreadPool(2);
@@ -67,7 +68,7 @@ public class XMLSerializationCuncurrentTest {
         // shutdown all pooled threads
         pool.shutdownNow();
 
-        testFile.delete();
+        Files.delete(testFile);
     }
 
     /**

@@ -320,7 +320,7 @@ public class Ezunit {
      * @return A located {@link File}.
      */
     public static final FilePath locate(String filePath) {
-        return locateFileFromCaller(filePath);
+        return I.locate(locateFileFromCaller(filePath).toString());
     }
 
     /**
@@ -344,8 +344,8 @@ public class Ezunit {
      * @param filePath A FilePath name to resolve location.
      * @return A located {@link InputSource}.
      */
-    public static final InputSource locateSource(File file) {
-        InputSource source = new InputSource(file.toURI().toString());
+    public static final InputSource locateSource(Path file) {
+        InputSource source = new InputSource(file.toUri().toString());
         source.setEncoding(I.getEncoding().name());
         source.setPublicId(file.toString());
 
@@ -375,7 +375,7 @@ public class Ezunit {
      * @param filters A list of filters to transform xml.
      * @return A created {@link Document}.
      */
-    public static final Document locateDOM(File file, XMLFilter... filters) {
+    public static final Document locateDOM(Path file, XMLFilter... filters) {
         // build xml pipe
         SAXBuilder builder = new SAXBuilder();
 
@@ -405,7 +405,7 @@ public class Ezunit {
      * @param filePath A FilePath name to resolve location.
      * @return A located file.
      */
-    private static FilePath locateFileFromCaller(String filePath) {
+    private static Path locateFileFromCaller(String filePath) {
         Class caller = getCaller();
         URL url = caller.getResource(filePath);
 
@@ -414,7 +414,11 @@ public class Ezunit {
         }
 
         // resolve FilePath location
-        return I.locate(url);
+        try {
+            return Paths.get(url.toURI());
+        } catch (URISyntaxException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -530,7 +534,7 @@ public class Ezunit {
      * @param tested A XML to be tested.
      * @param xpath A XPath expression.
      */
-    public static final void assertXPathEqual(String expected, File testedXMLFile, String xpath) {
+    public static final void assertXPathEqual(String expected, Path testedXMLFile, String xpath) {
         try {
             XPath context = XPathFactory.newInstance().newXPath();
             context.setNamespaceContext(new Namespaces());

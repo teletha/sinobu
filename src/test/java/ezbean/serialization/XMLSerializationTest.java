@@ -20,6 +20,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,7 +59,7 @@ public class XMLSerializationTest {
     public static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */
-    private static final File testFile = room.locateFile("config.xml");
+    private static final Path testFile = room.locateFile2("config.xml");
 
     /**
      * Test nesting List.
@@ -363,7 +365,7 @@ public class XMLSerializationTest {
     @Test
     public void javaFile() throws Exception {
         BuiltinBean bean = I.make(BuiltinBean.class);
-        bean.setFile(testFile);
+        bean.setFile(testFile.toFile());
 
         // write
         I.xml(bean, testFile);
@@ -371,7 +373,24 @@ public class XMLSerializationTest {
         // read
         bean = I.xml(testFile, I.make(BuiltinBean.class));
         assertNotNull(bean);
-        assertEquals(testFile, bean.getFile());
+        assertEquals(testFile.toFile(), bean.getFile());
+    }
+
+    /**
+     * Test {@link Path}.
+     */
+    @Test
+    public void javaPath() throws Exception {
+        BuiltinBean bean = I.make(BuiltinBean.class);
+        bean.setPath(testFile);
+
+        // write
+        I.xml(bean, testFile);
+
+        // read
+        bean = I.xml(testFile, I.make(BuiltinBean.class));
+        assertNotNull(bean);
+        assertEquals(testFile, bean.getPath());
     }
 
     /**
@@ -380,7 +399,7 @@ public class XMLSerializationTest {
     @Test
     public void ezbeanFile() throws Exception {
         BuiltinBean bean = I.make(BuiltinBean.class);
-        bean.setFile(testFile);
+        bean.setFile(testFile.toFile());
 
         // write
         I.xml(bean, testFile);
@@ -388,7 +407,7 @@ public class XMLSerializationTest {
         // read
         bean = I.xml(testFile, I.make(BuiltinBean.class));
         assertNotNull(bean);
-        assertEquals(testFile, bean.getFile());
+        assertEquals(testFile.toFile(), bean.getFile());
     }
 
     @Test
@@ -683,6 +702,24 @@ public class XMLSerializationTest {
     }
 
     /**
+     * @version 2010/01/08 17:11:38
+     */
+    protected static class Checker extends StringList {
+
+        private int size = -1;
+
+        /**
+         * @see ezbean.sample.bean.StringList#setList(java.util.List)
+         */
+        @Override
+        public void setList(List<String> list) {
+            super.setList(list);
+
+            size = list.size();
+        }
+    }
+
+    /**
      * Test circular reference.
      */
     @Test
@@ -731,29 +768,11 @@ public class XMLSerializationTest {
     }
 
     /**
-     * @version 2010/01/08 17:11:38
-     */
-    protected static class Checker extends StringList {
-
-        private int size = -1;
-
-        /**
-         * @see ezbean.sample.bean.StringList#setList(java.util.List)
-         */
-        @Override
-        public void setList(List<String> list) {
-            super.setList(list);
-
-            size = list.size();
-        }
-    }
-
-    /**
      * Test method for {@link ezbean.I#read(java.io.File, java.lang.Object)}.
      */
     @Test
     public void testReadWithNull1() throws Exception {
-        I.xml((File) null, (Object) null);
+        I.xml((Path) null, (Object) null);
     }
 
     /**
@@ -770,7 +789,7 @@ public class XMLSerializationTest {
      */
     @Test
     public void testReadWithNull3() throws Exception {
-        I.xml((File) null, Student.class);
+        I.xml((Path) null, Student.class);
     }
 
     /**
@@ -778,7 +797,7 @@ public class XMLSerializationTest {
      */
     @Test
     public void testWriteWithNull1() throws Exception {
-        I.xml((Object) null, (File) null);
+        I.xml((Object) null, (Path) null);
     }
 
     /**
@@ -795,9 +814,9 @@ public class XMLSerializationTest {
      */
     @Test
     public void testWriteNotExistingFile1() throws Exception {
-        File notExist = room.locateAbsent("file");
-        notExist.delete();
-        assertFalse(notExist.exists());
+        Path notExist = room.locateAbsent2("file");
+
+        assertTrue(Files.notExists(notExist));
 
         Person person = I.make(Person.class);
         person.setAge(1);
@@ -806,11 +825,7 @@ public class XMLSerializationTest {
         I.xml(person, notExist);
 
         // test
-        assertTrue(notExist.exists());
-
-        // clean up
-        assertTrue(notExist.delete());
-        assertFalse(notExist.exists());
+        assertTrue(Files.exists(notExist));
     }
 
     /**
@@ -818,9 +833,9 @@ public class XMLSerializationTest {
      */
     @Test
     public void testWriteNotExistingFile2() throws Exception {
-        File root = room.locateAbsent("directory");
-        File notExist = new File(root, "not-exist/not-exist/not-exist");
-        assertFalse(notExist.exists());
+        Path root = room.locateAbsent2("directory");
+        Path notExist = root.resolve("not-exist/not-exist/not-exist");
+        assertTrue(Files.notExists(notExist));
 
         Person person = I.make(Person.class);
         person.setAge(1);
@@ -829,11 +844,6 @@ public class XMLSerializationTest {
         I.xml(person, notExist);
 
         // test
-        assertTrue(notExist.exists());
-
-        // clean up
-        assertTrue(root.delete());
-        assertFalse(root.exists());
-        assertFalse(notExist.exists());
+        assertTrue(Files.exists(notExist));
     }
 }

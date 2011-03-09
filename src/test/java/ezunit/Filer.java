@@ -19,12 +19,15 @@ import static java.nio.file.FileVisitResult.*;
 import static java.nio.file.StandardCopyOption.*;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -35,6 +38,48 @@ import ezbean.I;
  * @version 2011/03/07 17:16:07
  */
 public final class Filer implements FileVisitor<Path> {
+
+    /** The root temporary directory for Ezbean. */
+    private static Path temporaries;
+
+    /** The temporary directory for the current processing JVM. */
+    private static Path temporary;
+
+    // initialize
+    static {
+        try {
+            temporaries = Paths.get(System.getProperty("java.io.tmpdir"), "Ezbean");
+            Files.createDirectories(temporaries);
+
+            // Clean up any old temporary directories by listing all of the files, using a prefix
+            // filter and that don't have a lock file.
+            for (Path path : Files.newDirectoryStream(temporaries, "glob:temporary*")) {
+                // create a file to represent the lock and test
+                RandomAccessFile lock = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
+
+                // delete the contents of the temporary directory since it can retrieve a
+                // exclusive lock
+                if (lock.getChannel().tryLock() != null) {
+                    // release lock at first
+                    lock.close();
+
+                    // delete actually
+                    Files.deleteIfExists(path);
+                }
+            }
+
+            // Create the temporary directory for the current processing JVM.
+            temporary = Files.createTempDirectory(temporaries, "temporary");
+
+            // Create a lock after creating the temporary directory so there is no race condition
+            // with another application trying to clean our temporary directory.
+            new RandomAccessFile(temporary.resolve("lock").toFile(), "rw").getChannel().tryLock();
+        } catch (SecurityException e) {
+            temporary = null;
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
 
     /** The base path. */
     private final Path base;
@@ -129,25 +174,27 @@ public final class Filer implements FileVisitor<Path> {
      * Copy all file in this {@link Path} to the specified {@link Path}.
      * </p>
      * 
-     * @param from
-     * @param to
+     * @param input
+     * @param output
      * @param patterns
      * @return
+     * @throws NullPointerException If the input or output file is <code>null</code>.
+     * @throws NoSuchFileException If the input file does not exist.
      */
-    public static void copy(Path from, Path to, String... patterns) {
+    public static void copy(Path input, Path output, String... patterns) {
         try {
-            if (isDirectory(from)) {
-                new Filer(from, patterns, new Operation(from, to, true));
+            if (isDirectory(input)) {
+                new Filer(input, patterns, new Operation(input, output, true));
             } else {
-                if (isDirectory(to)) {
-                    to = to.resolve(from.getFileName());
+                if (isDirectory(output)) {
+                    output = output.resolve(input.getFileName());
                 }
 
                 // Assure the existence of the parent directory.
-                Files.createDirectories(to.getParent());
+                Files.createDirectories(output.getParent());
 
                 // Copy file actually.
-                Files.copy(from, to, COPY_ATTRIBUTES, REPLACE_EXISTING);
+                Files.copy(input, output, COPY_ATTRIBUTES, REPLACE_EXISTING);
             }
         } catch (IOException e) {
             throw I.quiet(e);
@@ -159,25 +206,27 @@ public final class Filer implements FileVisitor<Path> {
      * Copy all file in this {@link Path} to the specified {@link Path}.
      * </p>
      * 
-     * @param from
-     * @param to
+     * @param input
+     * @param output
      * @param patterns
      * @return
+     * @throws NullPointerException If the input or output file is <code>null</code>.
+     * @throws NoSuchFileException If the input file does not exist.
      */
-    public static void move(Path from, Path to, String... patterns) {
+    public static void move(Path input, Path output, String... patterns) {
         try {
-            if (isDirectory(from)) {
-                new Filer(from, patterns, new Operation(from, to, false));
+            if (isDirectory(input)) {
+                new Filer(input, patterns, new Operation(input, output, false));
             } else {
-                if (isDirectory(to)) {
-                    to = to.resolve(from.getFileName());
+                if (isDirectory(output)) {
+                    output = output.resolve(input.getFileName());
                 }
 
                 // Assure the existence of the parent directory.
-                Files.createDirectories(to.getParent());
+                Files.createDirectories(output.getParent());
 
                 // Copy file actually.
-                Files.move(from, to, ATOMIC_MOVE, REPLACE_EXISTING);
+                Files.move(input, output, ATOMIC_MOVE, REPLACE_EXISTING);
             }
         } catch (IOException e) {
             throw I.quiet(e);
@@ -189,21 +238,23 @@ public final class Filer implements FileVisitor<Path> {
      * Copy all file in this {@link Path} to the specified {@link Path}.
      * </p>
      * 
-     * @param from
+     * @param intput
      * @param patterns
-     * @return
+     * @throws NullPointerException If the input file is <code>null</code>.
+     * @throws NoSuchFileException If the input file does not exist.
      */
-    public static boolean delete(Path path, String... patterns) {
-        try {
-            if (Files.isDirectory(path)) {
-                new Filer(path, patterns, new Operation(path, null, false));
-            } else {
-                Files.deleteIfExists(path);
+    public static void delete(Path intput, String... patterns) {
+        if (intput != null) {
+            try {
+                if (Files.isDirectory(intput)) {
+                    new Filer(intput, patterns, new Operation(intput, null, false));
+                } else {
+                    Files.deleteIfExists(intput);
+                }
+            } catch (IOException e) {
+                throw I.quiet(e);
             }
-        } catch (IOException e) {
-            throw I.quiet(e);
         }
-        return true;
     }
 
     /**
@@ -277,6 +328,27 @@ public final class Filer implements FileVisitor<Path> {
      */
     public static boolean isDirectory(Path path) {
         return path == null ? false : Files.isDirectory(path);
+    }
+
+    /**
+     * <p>
+     * Creates a new abstract file somewhere beneath the system's temporary directory (as defined by
+     * the <code>java.io.tmpdir</code> system property).
+     * </p>
+     * <p>
+     * </p>
+     * 
+     * @return A newly created temporary file which is not exist yet.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static Path createTemporaryFile() {
+        try {
+            return Files.createTempDirectory(temporary, "temporary");
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
