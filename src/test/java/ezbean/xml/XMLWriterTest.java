@@ -293,7 +293,7 @@ public class XMLWriterTest {
 
             // expected
             ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
-            I.copy(Files.newInputStream(locate(expectedXMLFilePath)), expectedOutput);
+            I.copy(Files.newInputStream(locate(expectedXMLFilePath)), expectedOutput, true);
 
             String[] expectedResult = line(expectedOutput.toByteArray());
 
@@ -344,7 +344,7 @@ public class XMLWriterTest {
 
             // expected
             ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
-            I.copy(Files.newInputStream(locate(expectedXMLFilePath)), expectedOutput);
+            I.copy(Files.newInputStream(locate(expectedXMLFilePath)), expectedOutput, true);
             String[] expectedResult = line(expectedOutput.toByteArray());
 
             // assert

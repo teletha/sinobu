@@ -388,13 +388,14 @@ public class I implements ClassLoadListener<Extensible> {
      * 
      * @param input A {@link InputStream} to read from.
      * @param output An {@link OutputStream} to write to.
+     * @param close Whether input and output steream will be closed automatically or not.
      * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the input or output is null.
      * @throws SecurityException If a security manager exists and its
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static void copy(InputStream input, OutputStream output) {
+    public static void copy(InputStream input, OutputStream output, boolean close) {
         int size = 0;
         byte[] buffer = new byte[8192];
 
@@ -405,8 +406,10 @@ public class I implements ClassLoadListener<Extensible> {
         } catch (IOException e) {
             throw quiet(e);
         } finally {
-            quiet(input);
-            quiet(output);
+            if (close) {
+                quiet(input);
+                quiet(output);
+            }
         }
     }
 
