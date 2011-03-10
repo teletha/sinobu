@@ -30,7 +30,7 @@ import ezunit.Synchrotron;
 /**
  * @version 2011/03/07 18:06:48
  */
-public class FilerTest {
+public class PathOperationTest {
 
     @Rule
     public static final CleanRoom room = new CleanRoom("file");
@@ -43,7 +43,7 @@ public class FilerTest {
         synchrotron.areNotSameFile();
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         synchrotron.areSameFile();
@@ -57,7 +57,7 @@ public class FilerTest {
         synchrotron.areNotSameFile();
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         synchrotron.areSameFile();
@@ -71,7 +71,7 @@ public class FilerTest {
         synchrotron.areNotSameFile();
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         synchrotron.areSameFile();
@@ -83,7 +83,7 @@ public class FilerTest {
         Path output = room.locateFile("file");
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class FilerTest {
         synchrotron.areNotSameDirectory();
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         synchrotron.areSameDirectory();
@@ -109,7 +109,7 @@ public class FilerTest {
         Path output = room.locateAbsent("out");
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
 
         // assert contents
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
@@ -125,7 +125,7 @@ public class FilerTest {
         Path output = room.locateAbsent("null");
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
     }
 
     @Test(expected = NullPointerException.class)
@@ -134,7 +134,7 @@ public class FilerTest {
         Path output = null;
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -143,7 +143,7 @@ public class FilerTest {
         Path output = room.locateFile("out");
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -152,7 +152,7 @@ public class FilerTest {
         Path output = room.locateDirectory("out");
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -161,7 +161,7 @@ public class FilerTest {
         Path output = room.locateAbsent("out");
 
         // operation
-        Filer.copy(input, output);
+        I.copy(input, output);
     }
 
     @Test
@@ -172,7 +172,7 @@ public class FilerTest {
         synchrotron.areNotSameFile();
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
 
         // assert contents
         synchrotron.exists(false, true);
@@ -186,7 +186,7 @@ public class FilerTest {
         synchrotron.areNotSameFile();
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
 
         // assert contents
         synchrotron.exists(false, true);
@@ -200,7 +200,7 @@ public class FilerTest {
         synchrotron.exists(true, false);
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
 
         // assert contents
         synchrotron.exists(false, true);
@@ -212,7 +212,7 @@ public class FilerTest {
         Path output = room.locateFile("file");
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
     }
 
     @Test
@@ -223,7 +223,7 @@ public class FilerTest {
         synchrotron.areNotSameDirectory();
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
 
         // assert contents
         synchrotron.areNotSameDirectory();
@@ -238,7 +238,7 @@ public class FilerTest {
         Path output = room.locateAbsent("out");
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
 
         // assert contents
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
@@ -254,7 +254,7 @@ public class FilerTest {
         Path output = room.locateAbsent("null");
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
     }
 
     @Test(expected = NullPointerException.class)
@@ -263,7 +263,7 @@ public class FilerTest {
         Path output = null;
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -272,7 +272,7 @@ public class FilerTest {
         Path output = room.locateFile("out");
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -281,7 +281,7 @@ public class FilerTest {
         Path output = room.locateDirectory("out");
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -290,7 +290,7 @@ public class FilerTest {
         Path output = room.locateAbsent("out");
 
         // operation
-        Filer.move(input, output);
+        I.move(input, output);
     }
 
     @Test
@@ -300,7 +300,7 @@ public class FilerTest {
         assertTrue(Files.exists(input));
 
         // operation
-        Filer.delete(input);
+        I.delete(input);
 
         assertTrue(Files.notExists(input));
     }
@@ -314,7 +314,7 @@ public class FilerTest {
         assertTrue(Files.exists(input.resolve("directory1/01.txt")));
 
         // operation
-        Filer.delete(input);
+        I.delete(input);
 
         assertTrue(Files.notExists(input));
         assertTrue(Files.notExists(input.resolve("01.txt")));
@@ -328,19 +328,19 @@ public class FilerTest {
         assertTrue(Files.notExists(input));
 
         // operation
-        Filer.delete(input);
+        I.delete(input);
 
         assertTrue(Files.notExists(input));
     }
 
     @Test
     public void deleteNull() throws Exception {
-        Filer.delete(null);
+        I.delete(null);
     }
 
     @Test
     public void createTemporary() throws Exception {
-        Path path = Filer.createTemporary();
+        Path path = I.locateTemporary();
         assertFalse(Files.exists(path));
         assertFalse(Files.isDirectory(path));
         assertFalse(Files.isRegularFile(path));
@@ -348,9 +348,9 @@ public class FilerTest {
 
     @Test
     public void createTemporaries() throws Exception {
-        Path path1 = Filer.createTemporary();
-        Path path2 = Filer.createTemporary();
-        Path path3 = Filer.createTemporary();
+        Path path1 = I.locateTemporary();
+        Path path2 = I.locateTemporary();
+        Path path3 = I.locateTemporary();
         assertFalse(Files.exists(path1));
         assertFalse(Files.exists(path2));
         assertFalse(Files.exists(path3));

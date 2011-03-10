@@ -29,7 +29,6 @@ import java.security.AccessControlException;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.Filer;
 import ezbean.I;
 
 /**
@@ -54,7 +53,7 @@ public class SandboxTest {
 
     @Test
     public void writableFile() throws Exception {
-        Path file = Filer.createTemporary();
+        Path file = I.locateTemporary();
 
         sandbox.writable(false, file);
 
@@ -85,7 +84,7 @@ public class SandboxTest {
 
     @Test(expected = NoSuchFileException.class)
     public void writableDirectory() throws Exception {
-        Path file = Filer.createTemporary();
+        Path file = I.locateTemporary();
 
         sandbox.writable(false, file);
 

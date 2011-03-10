@@ -30,7 +30,6 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 
-import ezbean.Filer;
 import ezbean.I;
 import ezbean.Modules;
 
@@ -40,7 +39,7 @@ import ezbean.Modules;
 public class PrivateModule extends ReusableRule {
 
     /** The actual private module. */
-    public final Path path = Filer.createTemporary();
+    public final Path path = I.locateTemporary();
 
     /** The original package name. */
     private final String originalPackage;
@@ -200,7 +199,7 @@ public class PrivateModule extends ReusableRule {
                 } else {
 
                     if (!path.getFileName().toString().endsWith("class")) {
-                        Filer.copy(source, dist);
+                        I.copy(source, dist);
                     } else {
                         // setup
                         ClassWriter writer = new ClassWriter(0);
