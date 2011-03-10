@@ -36,7 +36,7 @@ public class PathsTest {
     private Counter counter = new Counter();
 
     @Rule
-    public static final CleanRoom room = new CleanRoom();
+    public static final CleanRoom room = new CleanRoom("file");
 
     @Test
     public void all() throws Exception {
