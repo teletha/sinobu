@@ -16,10 +16,6 @@
 package ezbean;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,7 +28,6 @@ import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -242,7 +237,7 @@ public class I implements ClassLoadListener<Extensible> {
      * configure this value by using <a href="#ConfigurationService">Configuration Service</a>.
      * </p>
      */
-    protected static File working = new File("").getAbsoluteFile(); // Poplar Taneshima
+    protected static Path working = Paths.get(""); // Poplar Taneshima
 
     /** The namespace uri of Ezbean. */
     static final String URI = "http://ez.bean/";
@@ -533,7 +528,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @return A working directory.
      * @see #working
      */
-    public static File getWorkingDirectory() {
+    public static Path getWorkingDirectory() {
         return working;
     }
 
