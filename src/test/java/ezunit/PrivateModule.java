@@ -32,7 +32,6 @@ import org.objectweb.asm.MethodVisitor;
 
 import ezbean.I;
 import ezbean.Modules;
-import ezbean.io.FilePath;
 
 /**
  * @version 2010/11/15 0:00:48
@@ -40,7 +39,7 @@ import ezbean.io.FilePath;
 public class PrivateModule extends ReusableRule {
 
     /** The actual private module. */
-    public final Path path = FilePath.createTemporary().toPath();
+    public final Path path = Filer.createTemporary();
 
     /** The original package name. */
     private final String originalPackage;
@@ -130,7 +129,7 @@ public class PrivateModule extends ReusableRule {
      * </p>
      */
     public void load() {
-        I.load(path.toFile());
+        I.load(path);
     }
 
     /**
@@ -139,7 +138,7 @@ public class PrivateModule extends ReusableRule {
      * </p>
      */
     public void unload() {
-        I.unload(path.toFile());
+        I.unload(path);
     }
 
     /**
@@ -161,7 +160,7 @@ public class PrivateModule extends ReusableRule {
     @Override
     protected void beforeClass() throws Exception {
         // copy class file with type conversion
-        copy(testcaseRoot.toPath().resolve(originalPackage), path.resolve(overriddenPackage));
+        copy(testcaseRoot.resolve(originalPackage), path.resolve(overriddenPackage));
     }
 
     /**
@@ -319,13 +318,13 @@ public class PrivateModule extends ReusableRule {
     private abstract class PrivateClassStrategy implements Filter<Path> {
 
         /** The pre-conputed path length. */
-        private int prefix = testcaseRoot.getAbsolutePath().length() + 1;
+        private int prefix = testcaseRoot.toString().length() + 1;
 
         /**
          * @see java.nio.file.DirectoryStream.Filter#accept(java.lang.Object)
          */
         public boolean accept(Path path) throws IOException {
-            return accept(path.toAbsolutePath().toString().substring(prefix).replace(File.separatorChar, '/'));
+            return accept(path.toString().substring(prefix).replace(File.separatorChar, '/'));
         }
 
         /**

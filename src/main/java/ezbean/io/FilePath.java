@@ -22,7 +22,6 @@ import static java.nio.file.StandardCopyOption.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -35,64 +34,13 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import ezbean.I;
+import ezbean.PathSet;
 
 /**
  * @version 2011/02/27 19:03:08
  */
 @SuppressWarnings("serial")
 public class FilePath extends java.io.File {
-
-    /** The root temporary directory for Ezbean. */
-    private static FilePath temporaries;
-
-    /** The temporary directory for the current processing JVM. */
-    private static File temporary;
-
-    // initialize
-    static {
-        try {
-            temporaries = new FilePath(System.getProperty("java.io.tmpdir"), "Ezbean").getCanonicalFile();
-            temporaries.mkdirs();
-
-            // Clean up any old temporary directories by listing all of the files, using a prefix
-            // filter and that don't have a lock file.
-            for (FilePath file : temporaries.listFiles()) {
-                if (file.getName().startsWith("temporary")) {
-                    // create a file to represent the lock and test
-                    RandomAccessFile lock = new RandomAccessFile(new File(file, "lock"), "rw");
-
-                    // delete the contents of the temporary directory since it can retrieve a
-                    // exclusive lock
-                    if (lock.getChannel().tryLock() != null) {
-                        // release lock at first
-                        lock.close();
-
-                        // delete actually
-                        file.delete();
-                    }
-                }
-            }
-
-            // Create the temporary directory for the current processing JVM.
-            temporary = File.createTempFile("temporary", null, temporaries);
-
-            // Delete the file if one was automatically created by the JVM. We are going to use the
-            // name of the file as a directory name, so we do not want the file laying around.
-            temporary.delete();
-
-            // Create a temporary directory which will be used for all future temporary file
-            // requests.
-            temporary.mkdirs();
-
-            // Create a lock after creating the temporary directory so there is no race condition
-            // with another application trying to clean our temporary directory.
-            new RandomAccessFile(new File(temporary, "lock"), "rw").getChannel().tryLock();
-        } catch (SecurityException e) {
-            temporary = null;
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
 
     /** The actual filter set for directory only matcher. */
     private Set<Wildcard> includeFile = new CopyOnWriteArraySet();
@@ -421,31 +369,4 @@ public class FilePath extends java.io.File {
         }
     }
 
-    /**
-     * <p>
-     * Creates a new abstract file somewhere beneath the system's temporary directory (as defined by
-     * the <code>java.io.tmpdir</code> system property).
-     * </p>
-     * <p>
-     * </p>
-     * 
-     * @return A newly created temporary file which is not exist yet.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    public static File createTemporary() {
-        try {
-            File file = File.createTempFile("temporary", null, temporary);
-
-            // Delete the file if one was automatically created by the JVM. We may use the name of
-            // the file as a directory name, so we do not want the file laying around.
-            file.delete();
-
-            // API definition
-            return file;
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
 }

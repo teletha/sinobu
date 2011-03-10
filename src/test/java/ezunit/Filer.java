@@ -48,12 +48,12 @@ public final class Filer implements FileVisitor<Path> {
     // initialize
     static {
         try {
-            temporaries = Paths.get(System.getProperty("java.io.tmpdir"), "Ezbean");
-            Files.createDirectories(temporaries);
+            // Create the root temporary directory for Ezbean.
+            temporaries = Files.createDirectories(Paths.get(System.getProperty("java.io.tmpdir"), "Ezbean"));
 
             // Clean up any old temporary directories by listing all of the files, using a prefix
             // filter and that don't have a lock file.
-            for (Path path : Files.newDirectoryStream(temporaries, "glob:temporary*")) {
+            for (Path path : Files.newDirectoryStream(temporaries, "temporary*")) {
                 // create a file to represent the lock and test
                 RandomAccessFile lock = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
 
@@ -64,7 +64,7 @@ public final class Filer implements FileVisitor<Path> {
                     lock.close();
 
                     // delete actually
-                    Files.deleteIfExists(path);
+                    delete(path);
                 }
             }
 
@@ -343,9 +343,15 @@ public final class Filer implements FileVisitor<Path> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static Path createTemporaryFile() {
+    public static Path createTemporary() {
         try {
-            return Files.createTempDirectory(temporary, "temporary");
+            Path path = Files.createTempDirectory(temporary, "temporary");
+
+            // delete entity
+            Files.delete(path);
+
+            // API definition
+            return path;
         } catch (IOException e) {
             throw I.quiet(e);
         }

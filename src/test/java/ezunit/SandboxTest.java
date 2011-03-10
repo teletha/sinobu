@@ -18,16 +18,18 @@ package ezunit;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.security.AccessControlException;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.io.FilePath;
 
 /**
  * @version 2010/02/09 11:23:23
@@ -35,7 +37,7 @@ import ezbean.io.FilePath;
 public class SandboxTest {
 
     @Rule
-    public static Sandbox sandbox = new Sandbox(Sandbox.READ);
+    public static final Sandbox sandbox = new Sandbox(Sandbox.READ);
 
     @Test
     public void read1() throws Exception {
@@ -51,26 +53,28 @@ public class SandboxTest {
 
     @Test
     public void writableFile() throws Exception {
-        File file = FilePath.createTemporary();
+        Path file = Filer.createTemporary();
 
         sandbox.writable(false, file);
 
         // try to write
-        FileWriter writer = null;
+        Writer writer = null;
 
         try {
-            writer = new FileWriter(file);
+            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
 
             fail("This is writable file.");
         } catch (AccessControlException e) {
             // success
+        } finally {
+            I.quiet(writer);
         }
 
         // make writable
         sandbox.writable(true, file);
 
         try {
-            writer = new FileWriter(file);
+            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
         } catch (AccessControlException e) {
             fail("This is unwritable file.");
         } finally {
@@ -78,17 +82,17 @@ public class SandboxTest {
         }
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test(expected = NoSuchFileException.class)
     public void writableDirectory() throws Exception {
-        File file = FilePath.createTemporary();
+        Path file = Filer.createTemporary();
 
         sandbox.writable(false, file);
 
         // try to write
-        FileWriter writer = null;
+        Writer writer = null;
 
         try {
-            writer = new FileWriter(new File(file, "file"));
+            writer = Files.newBufferedWriter(file.resolve("file"), Charset.defaultCharset());
 
             fail("This is writable file.");
         } catch (AccessControlException e) {
@@ -99,7 +103,7 @@ public class SandboxTest {
         sandbox.writable(true, file);
 
         try {
-            writer = new FileWriter(new File(file, "file"));
+            writer = Files.newBufferedWriter(file.resolve("file"), Charset.defaultCharset());
         } catch (AccessControlException e) {
             fail("This is unwritable file.");
         } finally {

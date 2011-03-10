@@ -17,8 +17,8 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +30,7 @@ import org.junit.Test;
 import ezbean.module.external.ExtendedClass1;
 import ezbean.sample.MarkerInterface1;
 import ezbean.sample.bean.Person;
+import ezunit.Filer;
 import ezunit.PrivateModule;
 
 /**
@@ -82,7 +83,7 @@ public class ModulesTest {
     @Test
     public void loadNotExistModule() {
         assertEquals(0, modules.modules.size());
-        modules.load(new File("not-exist").toPath());
+        modules.load(Paths.get("not-exist"));
         assertEquals(0, modules.modules.size());
     }
 
@@ -138,23 +139,23 @@ public class ModulesTest {
     }
 
     @Test
-    public void reloadRelativePathAndAbsolutePath() {
-        File relativeModule = I.locate("target/module");
-        I.copy(module1.path.toFile(), relativeModule);
+    public void reloadRelativePathAndAbsolutePath() throws Exception {
+        Path relativeModule = Paths.get("target/module");
+        Filer.copy(module1.path, relativeModule);
 
         try {
             assertFalse(relativeModule.isAbsolute());
             assertEquals(0, modules.modules.size());
 
             // as relative
-            modules.load(relativeModule.toPath());
+            modules.load(relativeModule);
             assertEquals(1, modules.modules.size());
 
             // as absolute
-            modules.load(relativeModule.getAbsoluteFile().toPath());
+            modules.load(relativeModule.toAbsolutePath());
             assertEquals(1, modules.modules.size());
         } finally {
-            relativeModule.delete();
+            Filer.delete(relativeModule);
         }
     }
 
@@ -177,7 +178,7 @@ public class ModulesTest {
     @Test
     public void unloadNotExistModule() {
         assertEquals(0, modules.modules.size());
-        modules.unload(new File("not-exist").toPath());
+        modules.unload(Paths.get("not-exist"));
         assertEquals(0, modules.modules.size());
     }
 

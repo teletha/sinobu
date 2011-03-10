@@ -15,10 +15,10 @@
  */
 package ezunit;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,10 +75,10 @@ public abstract class ReusableRule implements MethodRule {
     protected final Class testcase = getCaller();
 
     /** The root directory of testcases. */
-    protected final File testcaseRoot = ClassUtil.getArchive(testcase);
+    protected final Path testcaseRoot = ClassUtil.getArchive(testcase);
 
     /** The parent directory of testcase class. */
-    protected final File testcaseDirectory = new File(testcaseRoot, testcase.getPackage().getName().replace('.', '/'));
+    protected final Path testcaseDirectory = testcaseRoot.resolve(testcase.getPackage().getName().replace('.', '/'));
 
     /** The sub rules. */
     private List<Field> rules = new ArrayList();
