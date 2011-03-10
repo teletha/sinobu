@@ -21,16 +21,19 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
-import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
@@ -41,7 +44,7 @@ import ezbean.io.FilePath;
  * The environmental rule for test that depends on file system.
  * </p>
  * 
- * @version 2011/03/07 12:36:48
+ * @version 2011/03/10 9:59:21
  */
 public class CleanRoom extends Sandbox {
 
@@ -49,25 +52,16 @@ public class CleanRoom extends Sandbox {
     private static final AtomicInteger counter = new AtomicInteger();
 
     /** The root bioclean room for tests which are related with file system. */
-    private static final FilePath clean = I.locate("target/clean-room");
+    private static final Path clean = Paths.get("target/clean-room");
 
     /** The temporary bioclean room for this instance which are related with file system. */
-    public final FilePath root = I.locate(clean, String.valueOf(counter.incrementAndGet()));
+    public final Path root = clean.resolve(String.valueOf(counter.incrementAndGet()));
 
     /** The host directory for test. */
-    private final FilePath host;
-
-    /** The root bioclean room for tests which are related with file system. */
-    private static final Path clean2 = Paths.get("target/clean-room");
-
-    /** The temporary bioclean room for this instance which are related with file system. */
-    public final Path root2 = clean2.resolve(root.getName());
-
-    /** The host directory for test. */
-    private final Path host2;
+    private final Path host;
 
     /** The clean room monitor. */
-    private final Monitor monitor = new Monitor();
+    private final Monitor monitor = new Monitor(root);
 
     /**
      * Create a clean room for the current directory.
@@ -87,17 +81,10 @@ public class CleanRoom extends Sandbox {
         if (!directory.isDirectory()) {
             directory = directory.getParentFile();
         }
-        this.host = directory;
+        this.host = directory.toPath();
 
         // access control
         writable(false, host);
-
-        Path directory2 = path == null ? locatePackage2(speculateInstantiator()) : Paths.get(path);
-
-        if (!Files.isDirectory(directory2)) {
-            directory2 = directory2.getParent();
-        }
-        this.host2 = directory2;
     }
 
     /**
@@ -130,121 +117,48 @@ public class CleanRoom extends Sandbox {
      * @param name A file name.
      * @return A located present file.
      */
-    public FilePath locateFile(String name) {
+    public Path locateFile(String name) {
         return locate(name, true, true);
     }
 
     /**
      * <p>
-     * Locate a present resource file which is assured that the spcified file exists.
-     * </p>
-     * 
-     * @param name A file name.
-     * @return A located present file.
-     */
-    public Path locateFile2(String name) {
-        return locate2(name, true, true);
-    }
-
-    /**
-     * <p>
      * Locate a present resource directory which is assured that the specified directory exists.
      * </p>
      * 
      * @param name A directory name.
      * @return A located present directory.
      */
-    public FilePath locateDirectory(String name) {
+    public Path locateDirectory(String name) {
         return locate(name, true, false);
     }
 
     /**
      * <p>
-     * Locate a present resource directory which is assured that the specified directory exists.
-     * </p>
-     * 
-     * @param name A directory name.
-     * @return A located present directory.
-     */
-    public Path locateDirectory2(String name) {
-        return locate2(name, true, false);
-    }
-
-    /**
-     * <p>
      * Locate an absent resource which is assured that the specified resource doesn't exists.
      * </p>
      * 
      * @param name A resource name.
      * @return A located absent file system resource.
      */
-    public FilePath locateAbsent(String name) {
+    public Path locateAbsent(String name) {
         return locate(name, false, false);
     }
 
     /**
-     * <p>
-     * Locate an absent resource which is assured that the specified resource doesn't exists.
-     * </p>
-     * 
-     * @param name A resource name.
-     * @return A located absent file system resource.
-     */
-    public Path locateAbsent2(String name) {
-        return locate2(name, false, false);
-    }
-
-    /**
      * Helper method to locate file in clean room.
      * 
      * @param path
      * @return
      */
-    private FilePath locate(String path, boolean isPresent, boolean isFile) {
+    private Path locate(String path, boolean isPresent, boolean isFile) {
         // null check
         if (path == null) {
             path = "";
         }
 
         // locate virtual file in the clean room
-        FilePath virtual = I.locate(root, path);
-
-        // create virtual file if needed
-        if (isPresent) {
-            if (isFile) {
-                try {
-                    virtual.getParentFile().mkdirs();
-                    virtual.createNewFile();
-                } catch (IOException e) {
-                    throw I.quiet(e);
-                }
-            } else {
-                virtual.mkdirs();
-            }
-        }
-
-        // validate file state
-        assertEquals(virtual.exists(), isPresent);
-        assertEquals(virtual.isFile(), isFile);
-
-        // API definition
-        return virtual;
-    }
-
-    /**
-     * Helper method to locate file in clean room.
-     * 
-     * @param path
-     * @return
-     */
-    private Path locate2(String path, boolean isPresent, boolean isFile) {
-        // null check
-        if (path == null) {
-            path = "";
-        }
-
-        // locate virtual file in the clean room
-        Path virtual = root2.resolve(path);
+        Path virtual = root.resolve(path);
 
         // create virtual file if needed
         if (isPresent) {
@@ -294,15 +208,15 @@ public class CleanRoom extends Sandbox {
 
         // renew clean room for this test if needed
         if (monitor.modified) {
-            root.mkdirs();
-
             // clean up all resources
-            root.delete();
-            root.mkdir();
+            sweep(root);
+
+            // create actual clean room
+            Files.createDirectories(root);
 
             // copy all resources newly
-            for (File file : host.listFiles(monitor)) {
-                Filer.copy(file.toPath(), root.toPath()); // TODO filter
+            for (Path path : Files.newDirectoryStream(host, monitor)) {
+                Filer.copy(path, root); // TODO filter
             }
 
             // reset
@@ -315,12 +229,16 @@ public class CleanRoom extends Sandbox {
      */
     @Override
     protected void afterClass() {
-        // dispose clean room actually
-        delete(root);
+        // Dispose clean room actually.
+        sweep(root);
 
-        // check clean room usage
-        if (clean.list().length == 0) {
-            delete(clean);
+        // Delete root directory of clean room.
+        try {
+            Files.delete(clean);
+        } catch (DirectoryNotEmptyException e) {
+            // CleanRoom is used by other testcase, So we can't delete.
+        } catch (IOException e) {
+            throw I.quiet(e);
         }
 
         // delegate
@@ -328,33 +246,70 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
-     * Standalone method to delete file.
+     * Helper method to delete files.
      * 
-     * @param file
+     * @param path
      */
-    private void delete(File file) {
-        if (file.isDirectory()) {
-            for (File child : file.listFiles()) {
-                delete(child);
+    private void sweep(Path path) {
+        if (Files.exists(path)) {
+            try {
+                Files.walkFileTree(path, new Sweeper());
+            } catch (IOException e) {
+                throw I.quiet(e);
             }
         }
-        file.delete();
+    }
+
+    /**
+     * @version 2011/03/10 9:35:05
+     */
+    private static final class Sweeper extends SimpleFileVisitor<Path> {
+
+        /**
+         * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
+         *      java.nio.file.attribute.BasicFileAttributes)
+         */
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            Files.deleteIfExists(file);
+            return FileVisitResult.CONTINUE;
+        }
+
+        /**
+         * @see java.nio.file.SimpleFileVisitor#postVisitDirectory(java.lang.Object,
+         *      java.io.IOException)
+         */
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            Files.deleteIfExists(dir);
+            return FileVisitResult.CONTINUE;
+        }
     }
 
     /**
      * @version 2010/02/13 13:23:22
      */
-    private class Monitor extends Security implements FileFilter {
+    private class Monitor extends Security implements Filter<Path> {
+
+        /** The path prefix. */
+        private final String prefix;
 
         /** The flag for file resource modification. */
         private boolean modified = true;
+
+        /**
+         * @param root
+         */
+        public Monitor(Path root) {
+            this.prefix = root.toString();
+        }
 
         /**
          * @see ezunit.Sandbox.Security#checkDelete(java.lang.String)
          */
         @Override
         public void checkDelete(String file) {
-            if (!modified && file.startsWith(root.getPath())) {
+            if (!modified && file.startsWith(prefix)) {
                 modified = true;
             }
         }
@@ -364,7 +319,7 @@ public class CleanRoom extends Sandbox {
          */
         @Override
         public void checkWrite(FileDescriptor fd) {
-            if (!modified && fd.toString().startsWith(root.getPath())) {
+            if (!modified && fd.toString().startsWith(prefix)) {
                 modified = true;
             }
         }
@@ -374,16 +329,16 @@ public class CleanRoom extends Sandbox {
          */
         @Override
         public void checkWrite(String file) {
-            if (!modified && file.startsWith(root.getPath())) {
+            if (!modified && file.startsWith(prefix)) {
                 modified = true;
             }
         }
 
         /**
-         * @see java.io.FileFilter#accept(java.io.File)
+         * @see java.nio.file.DirectoryStream.Filter#accept(java.lang.Object)
          */
-        public boolean accept(File file) {
-            String name = file.getName();
+        public boolean accept(Path path) throws IOException {
+            String name = path.getFileName().toString();
 
             return !name.equals("package-info.html") && !name.endsWith(".class");
         }

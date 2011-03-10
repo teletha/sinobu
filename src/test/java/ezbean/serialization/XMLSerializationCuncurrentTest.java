@@ -45,7 +45,7 @@ public class XMLSerializationCuncurrentTest {
     public static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */
-    private static final Path testFile = room.locateFile2("config.xml");
+    private static final Path testFile = room.locateFile("config.xml");
 
     /** Thread pool for this test. */
     private ExecutorService pool = Executors.newFixedThreadPool(2);

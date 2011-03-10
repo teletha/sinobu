@@ -34,8 +34,8 @@ public class FilerTest {
 
     @Test
     public void copyFileToFile() throws Exception {
-        Path input = room.locateFile2("directory/01.txt");
-        Path output = room.locateFile2("out");
+        Path input = room.locateFile("directory/01.txt");
+        Path output = room.locateFile("out");
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
 
@@ -48,8 +48,8 @@ public class FilerTest {
 
     @Test
     public void copyFileToDirectory() throws Exception {
-        Path input = room.locateFile2("directory/01.txt");
-        Path output = room.locateDirectory2("out");
+        Path input = room.locateFile("directory/01.txt");
+        Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameFile();
 
@@ -62,8 +62,8 @@ public class FilerTest {
 
     @Test
     public void copyFileToAbsent() throws Exception {
-        Path input = room.locateFile2("directory/01.txt");
-        Path output = room.locateAbsent2("out");
+        Path input = room.locateFile("directory/01.txt");
+        Path output = room.locateAbsent("out");
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
 
@@ -76,8 +76,8 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void copyDirectoryToFile() throws Exception {
-        Path input = room.locateDirectory2("directory");
-        Path output = room.locateFile2("file");
+        Path input = room.locateDirectory("directory");
+        Path output = room.locateFile("file");
 
         // operation
         Filer.copy(input, output);
@@ -85,8 +85,8 @@ public class FilerTest {
 
     @Test
     public void copyDirectoryToDirectory() throws Exception {
-        Path input = room.locateDirectory2("directory");
-        Path output = room.locateDirectory2("out");
+        Path input = room.locateDirectory("directory");
+        Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameDirectory();
 
@@ -102,8 +102,8 @@ public class FilerTest {
 
     @Test
     public void copyDirectoryToAbsent() throws Exception {
-        Path input = room.locateDirectory2("directory");
-        Path output = room.locateAbsent2("out");
+        Path input = room.locateDirectory("directory");
+        Path output = room.locateAbsent("out");
 
         // operation
         Filer.copy(input, output);
@@ -119,7 +119,7 @@ public class FilerTest {
     @Test(expected = NullPointerException.class)
     public void copyNullInput() throws Exception {
         Path input = null;
-        Path output = room.locateAbsent2("null");
+        Path output = room.locateAbsent("null");
 
         // operation
         Filer.copy(input, output);
@@ -127,7 +127,7 @@ public class FilerTest {
 
     @Test(expected = NullPointerException.class)
     public void copyNullOutput() throws Exception {
-        Path input = room.locateAbsent2("null");
+        Path input = room.locateAbsent("null");
         Path output = null;
 
         // operation
@@ -136,8 +136,8 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void copyAbsentToFile() throws Exception {
-        Path input = room.locateAbsent2("absent");
-        Path output = room.locateFile2("out");
+        Path input = room.locateAbsent("absent");
+        Path output = room.locateFile("out");
 
         // operation
         Filer.copy(input, output);
@@ -145,8 +145,8 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void copyAbsentToDirectory() throws Exception {
-        Path input = room.locateAbsent2("absent");
-        Path output = room.locateDirectory2("out");
+        Path input = room.locateAbsent("absent");
+        Path output = room.locateDirectory("out");
 
         // operation
         Filer.copy(input, output);
@@ -154,8 +154,8 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void copyAbsentToAbsent() throws Exception {
-        Path input = room.locateAbsent2("absent");
-        Path output = room.locateAbsent2("out");
+        Path input = room.locateAbsent("absent");
+        Path output = room.locateAbsent("out");
 
         // operation
         Filer.copy(input, output);
@@ -163,8 +163,8 @@ public class FilerTest {
 
     @Test
     public void moveFileToFile() throws Exception {
-        Path input = room.locateFile2("directory/01.txt");
-        Path output = room.locateFile2("out");
+        Path input = room.locateFile("directory/01.txt");
+        Path output = room.locateFile("out");
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
 
@@ -177,8 +177,8 @@ public class FilerTest {
 
     @Test
     public void moveFileToDirectory() throws Exception {
-        Path input = room.locateFile2("directory/01.txt");
-        Path output = room.locateDirectory2("out");
+        Path input = room.locateFile("directory/01.txt");
+        Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameFile();
 
@@ -191,8 +191,8 @@ public class FilerTest {
 
     @Test
     public void moveFileToAbsent() throws Exception {
-        Path input = room.locateFile2("directory/01.txt");
-        Path output = room.locateAbsent2("out");
+        Path input = room.locateFile("directory/01.txt");
+        Path output = room.locateAbsent("out");
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.exists(true, false);
 
@@ -205,8 +205,8 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void moveDirectoryToFile() throws Exception {
-        Path input = room.locateDirectory2("directory");
-        Path output = room.locateFile2("file");
+        Path input = room.locateDirectory("directory");
+        Path output = room.locateFile("file");
 
         // operation
         Filer.move(input, output);
@@ -214,8 +214,8 @@ public class FilerTest {
 
     @Test
     public void moveDirectoryToDirectory() throws Exception {
-        Path input = room.locateDirectory2("directory");
-        Path output = room.locateDirectory2("out");
+        Path input = room.locateDirectory("directory");
+        Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameDirectory();
 
@@ -231,8 +231,8 @@ public class FilerTest {
 
     @Test
     public void moveDirectoryToAbsent() throws Exception {
-        Path input = room.locateDirectory2("directory");
-        Path output = room.locateAbsent2("out");
+        Path input = room.locateDirectory("directory");
+        Path output = room.locateAbsent("out");
 
         // operation
         Filer.move(input, output);
@@ -248,7 +248,7 @@ public class FilerTest {
     @Test(expected = NullPointerException.class)
     public void moveNullInput() throws Exception {
         Path input = null;
-        Path output = room.locateAbsent2("null");
+        Path output = room.locateAbsent("null");
 
         // operation
         Filer.move(input, output);
@@ -256,7 +256,7 @@ public class FilerTest {
 
     @Test(expected = NullPointerException.class)
     public void moveNullOutput() throws Exception {
-        Path input = room.locateAbsent2("null");
+        Path input = room.locateAbsent("null");
         Path output = null;
 
         // operation
@@ -265,8 +265,8 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void moveAbsentToFile() throws Exception {
-        Path input = room.locateAbsent2("absent");
-        Path output = room.locateFile2("out");
+        Path input = room.locateAbsent("absent");
+        Path output = room.locateFile("out");
 
         // operation
         Filer.move(input, output);
@@ -274,8 +274,8 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void moveAbsentToDirectory() throws Exception {
-        Path input = room.locateAbsent2("absent");
-        Path output = room.locateDirectory2("out");
+        Path input = room.locateAbsent("absent");
+        Path output = room.locateDirectory("out");
 
         // operation
         Filer.move(input, output);
@@ -283,8 +283,8 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void moveAbsentToAbsent() throws Exception {
-        Path input = room.locateAbsent2("absent");
-        Path output = room.locateAbsent2("out");
+        Path input = room.locateAbsent("absent");
+        Path output = room.locateAbsent("out");
 
         // operation
         Filer.move(input, output);
@@ -292,7 +292,7 @@ public class FilerTest {
 
     @Test
     public void deleteFile() {
-        Path input = room.locateFile2("directory/01.txt");
+        Path input = room.locateFile("directory/01.txt");
 
         assertTrue(Files.exists(input));
 
@@ -304,7 +304,7 @@ public class FilerTest {
 
     @Test
     public void deleteDirectory() {
-        Path input = room.locateDirectory2("directory");
+        Path input = room.locateDirectory("directory");
 
         assertTrue(Files.exists(input));
         assertTrue(Files.exists(input.resolve("01.txt")));
@@ -320,7 +320,7 @@ public class FilerTest {
 
     @Test
     public void deleteAbsent() {
-        Path input = room.locateAbsent2("absent");
+        Path input = room.locateAbsent("absent");
 
         assertTrue(Files.notExists(input));
 
