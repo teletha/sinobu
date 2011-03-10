@@ -15,41 +15,17 @@
  */
 package ezbean.jdk;
 
-import static org.junit.Assert.*;
-
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.Test;
 
 /**
  * @version 2011/03/07 14:37:56
  */
-public class FileSystemTest {
+public class FilesTest {
 
     @Test(expected = NullPointerException.class)
     public void existNull() throws Exception {
         Files.exists(null); // lololol
-    }
-
-    @Test
-    public void zip() throws Exception {
-        FileSystem system = FileSystems.newFileSystem(Paths.get("src/test/resources/ezbean/io/archive/test.zip"), null);
-        assertNotNull(system);
-
-        assertTrue(Files.exists(system.getPath("1.txt")));
-        assertTrue(Files.notExists(system.getPath("not")));
-
-        int count = 0;
-
-        for (Path child : Files.newDirectoryStream(system.getPath("/"))) {
-            if (Files.exists(child)) {
-                count++;
-            }
-        }
-        assertEquals(3, count);
     }
 }
