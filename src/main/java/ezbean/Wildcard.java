@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.io;
+package ezbean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * @version 2011/01/08 1:02:24
  */
-public class Wildcard {
+class Wildcard {
 
     /** The matching types. */
     private final int[] types;

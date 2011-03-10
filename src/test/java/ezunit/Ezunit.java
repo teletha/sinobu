@@ -53,7 +53,6 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.I;
-import ezbean.io.FilePath;
 import ezbean.xml.SAXBuilder;
 import ezbean.xml.XMLWriter;
 
@@ -73,36 +72,11 @@ public class Ezunit {
      * given FilePath contents.
      * </p>
      * 
-     * @param FilePath A FilePath to test.
+     * @param Path A FilePath to test.
      * @param contents FilePath contents.
      */
-    public static void assertFile(File file, String... contents) {
-        assertNotNull(file);
-        assertTrue(file.exists());
-        assertTrue(file.isFile());
-        assertFalse(file.isDirectory());
-
-        String expected = option(contents, null);
-
-        if (expected != null) {
-            assertEquals(expected, readLine(file.toPath()));
-        }
-    }
-
-    /**
-     * <p>
-     * Assert that the specified abstract FilePath is FilePath (not directory), present and has the
-     * given FilePath contents.
-     * </p>
-     * 
-     * @param FilePath A FilePath to test.
-     * @param contents FilePath contents.
-     */
-    public static void assertFilePath(Path path, String... contents) {
+    public static void assertFile(Path path, String... contents) {
         assertNotNull(path);
-
-        // convert to native Path
-        path = Paths.get(path.toString());
 
         assertTrue(Files.exists(path));
         assertTrue(Files.isRegularFile(path));
@@ -118,59 +92,13 @@ public class Ezunit {
     /**
      * Helper method to assert file.
      * 
-     * @param file
-     */
-    public static void assertDirectory(File file) {
-        assertNotNull(file);
-        assertTrue(file.isDirectory());
-        assertFalse(file.isFile());
-        assertTrue(file.exists());
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
      * @param path
      */
-    public static void assertDirectoryPath(Path path) {
+    public static void assertDirectory(Path path) {
         assertNotNull(path);
         assertTrue(Files.isDirectory(path));
         assertFalse(Files.isRegularFile(path));
         assertTrue(Files.exists(path));
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param file
-     */
-    public static void assertArchive(File file) {
-        assertNotNull(file);
-        assertTrue(file.isDirectory());
-        assertTrue(file.isFile());
-        assertTrue(file.exists());
-    }
-
-    /**
-     * Assert FilePath path's equivalence.
-     * 
-     * @param expected
-     * @param test
-     */
-    public static void assertFileEquals(File expected, File test) {
-        assertNotNull(test);
-        assertNotNull(expected);
-
-        assertEquals(expected.getPath(), test.getPath());
-        assertEquals(expected.getAbsolutePath(), test.getAbsolutePath());
-        assertEquals(expected.getAbsoluteFile(), test.getAbsoluteFile());
-
-        try {
-            assertEquals(expected.getCanonicalPath(), test.getCanonicalPath());
-            assertEquals(expected.getCanonicalFile(), test.getCanonicalFile());
-        } catch (IOException e) {
-            fail(e.getMessage());
-        }
     }
 
     /**
@@ -182,7 +110,7 @@ public class Ezunit {
      * @return A located class file.
      * @throws NullPointerException If the class is <code>null</code>.
      */
-    public static FilePath locate(Class clazz) {
+    public static Path locate(Class clazz) {
         return I.locate(clazz.getResource(clazz.getSimpleName().concat(".class")));
     }
 
@@ -195,20 +123,7 @@ public class Ezunit {
      * @return A located package directory.
      * @throws NullPointerException If the class is <code>null</code>.
      */
-    public static FilePath locatePackage(Class clazz) {
-        return I.locate(clazz.getResource(""));
-    }
-
-    /**
-     * <p>
-     * Locate a package directory that the specified class exists.
-     * </p>
-     * 
-     * @param clazz A class to resolve location.
-     * @return A located package directory.
-     * @throws NullPointerException If the class is <code>null</code>.
-     */
-    public static Path locatePackage2(Class clazz) {
+    public static Path locatePackage(Class clazz) {
         try {
             return Paths.get(clazz.getResource("").toURI());
         } catch (URISyntaxException e) {
@@ -319,8 +234,8 @@ public class Ezunit {
      * @param filePath A FilePath name to resolve location.
      * @return A located {@link File}.
      */
-    public static final FilePath locate(String filePath) {
-        return I.locate(locateFileFromCaller(filePath).toString());
+    public static final Path locate(String filePath) {
+        return locateFileFromCaller(filePath);
     }
 
     /**

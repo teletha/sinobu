@@ -19,8 +19,8 @@ import static ezunit.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
@@ -293,8 +293,7 @@ public class XMLWriterTest {
 
             // expected
             ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
-            FileInputStream expectedInput = new FileInputStream(locate(expectedXMLFilePath));
-            I.copy(expectedInput, expectedOutput);
+            I.copy(Files.newInputStream(locate(expectedXMLFilePath)), expectedOutput);
 
             String[] expectedResult = line(expectedOutput.toByteArray());
 
@@ -345,8 +344,7 @@ public class XMLWriterTest {
 
             // expected
             ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
-            FileInputStream expectedInput = new FileInputStream(locate(expectedXMLFilePath));
-            I.copy(expectedInput, expectedOutput);
+            I.copy(Files.newInputStream(locate(expectedXMLFilePath)), expectedOutput);
             String[] expectedResult = line(expectedOutput.toByteArray());
 
             // assert

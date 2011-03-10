@@ -171,15 +171,18 @@ public final class Filer implements FileVisitor<Path> {
 
     /**
      * <p>
-     * Copy all file in this {@link Path} to the specified {@link Path}.
+     * Generic method to copy a input {@link Path} to an output {@link Path} deeply.
      * </p>
      * 
-     * @param input
-     * @param output
-     * @param patterns
-     * @return
-     * @throws NullPointerException If the input or output file is <code>null</code>.
-     * @throws NoSuchFileException If the input file does not exist.
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An outout {@link Path} object which can be file or directory.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws IOException If an I/O error occurs.
+     * @throws NoSuchFileException If the specified input file is not found. If the input file is
+     *             directory and the output file is <em>not</em> directory.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static void copy(Path input, Path output, String... patterns) {
         try {
@@ -347,7 +350,7 @@ public final class Filer implements FileVisitor<Path> {
         try {
             Path path = Files.createTempDirectory(temporary, "temporary");
 
-            // delete entity
+            // Delete entity file.
             Files.delete(path);
 
             // API definition

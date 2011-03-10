@@ -36,6 +36,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +66,6 @@ import sun.org.mozilla.javascript.internal.IdScriptableObject;
 import sun.org.mozilla.javascript.internal.NativeArray;
 import sun.org.mozilla.javascript.internal.NativeObject;
 import sun.reflect.ReflectionFactory;
-import ezbean.io.FilePath;
 import ezbean.model.ClassUtil;
 import ezbean.model.Codec;
 import ezbean.model.Model;
@@ -449,147 +449,6 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Generic method to copy a input {@link File} to an output {@link File}.
-     * </p>
-     * 
-     * @param input A input {@link File} object which can be file or directory.
-     * @param output An outout {@link File} object which can be file or directory.
-     * @throws NullPointerException If the specified input or output file is <code>null</code>.
-     * @throws IOException If an I/O error occurs.
-     * @throws FileNotFoundException If the specified input file is not found. If the input file is
-     *             directory and the output file is <em>not</em> directory.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    public static void copy(File input, File output) {
-        new FilePath(input.getPath()).copyTo(output);
-    }
-
-    /**
-     * <p>
-     * Generic method to copy a input {@link Path} to an output {@link Path}.
-     * </p>
-     * 
-     * @param input A input {@link Path} object which can be file or directory.
-     * @param output An outout {@link Path} object which can be file or directory.
-     * @throws NullPointerException If the specified input or output file is <code>null</code>.
-     * @throws IOException If an I/O error occurs.
-     * @throws FileNotFoundException If the specified input file is not found. If the input file is
-     *             directory and the output file is <em>not</em> directory.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    public static void copy(Path input, Path output) {
-        new FilePath(input.toString()).copyTo(output.toFile());
-    }
-
-    /**
-     * <p>
-     * Generic method to copy a input {@link File} to an output {@link File}.
-     * </p>
-     * 
-     * @param input A input {@link File} object which can be file or directory.
-     * @param output An outout {@link File} object which can be file or directory.
-     * @param filter A file filter to copy. If <code>null</code> is specified, all file will be
-     *            accepted. This filter is used only when the input is directory.
-     * @throws NullPointerException If the specified input or output file is <code>null</code>.
-     * @throws IOException If an I/O error occurs.
-     * @throws FileNotFoundException If the specified input file is not found. If the input file is
-     *             directory and the output file is <em>not</em> directory.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    public static void copy(File input, File output, FileFilter filter) {
-        // uncast
-        input = new File(input.getPath());
-        output = new File(output.getPath());
-
-        if (input.isDirectory()) {
-            copyD2D(input, output, filter);
-        } else {
-            // If the input is file, output can accept file or directory.
-            if (output.isDirectory()) {
-                copyF2F(input, new File(output, input.getName()));
-            } else {
-                copyF2F(input, output);
-            }
-        }
-    }
-
-    /**
-     * <p>
-     * Copies a directory to within another directory preserving the file dates. This method copies
-     * the source directory and all its contents to a directory of the same name in the specified
-     * destination directory.
-     * </p>
-     * 
-     * @param input A source directory.
-     * @param output A destination directory.
-     * @throws IOException If an I/O error occurs.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    private static void copyD2D(File input, File output, FileFilter filter) {
-        // copy
-        File dirctory = new File(output, input.getName());
-        dirctory.mkdir();
-
-        for (File child : input.listFiles(filter)) {
-            if (child.isDirectory()) {
-                copyD2D(child, dirctory, filter);
-            } else {
-                copyF2F(child, new File(dirctory, child.getName()));
-            }
-        }
-
-        // We must copy last modified date at the end.
-        dirctory.setLastModified(input.lastModified());
-    }
-
-    /**
-     * <p>
-     * Helper method to copy a file to a new location preserving the file date. This method copies
-     * the contents of the specified source file to the specified destination file.
-     * </p>
-     * 
-     * @param input A source file.
-     * @param output A destination file.
-     * @throws IOException If an I/O error occurs.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    private static void copyF2F(File input, File output) {
-        // assure that the parent directories exist
-        output.getParentFile().mkdirs();
-
-        FileChannel in = null;
-        FileChannel out = null;
-
-        try {
-            in = new FileInputStream(input).getChannel();
-            out = new FileOutputStream(output).getChannel();
-
-            // copy data actually
-            in.transferTo(0, in.size(), out);
-
-        } catch (IOException e) {
-            throw I.quiet(e);
-        } finally {
-            I.quiet(in);
-            I.quiet(out);
-        }
-
-        // We must copy last modified date at the end.
-        output.setLastModified(input.lastModified());
-    }
-
-    /**
-     * <p>
      * Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
      * <a href="Extensible#ExtensionPoint">Extension Point</a>.
      * </p>
@@ -898,7 +757,7 @@ public class I implements ClassLoadListener<Extensible> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static FilePath locate(URL filePath) {
+    public static Path locate(URL filePath) {
         try {
             // Use File constructor with URI to resolve escaped character.
             return locate(new File(filePath.toURI()).getPath());
@@ -919,25 +778,8 @@ public class I implements ClassLoadListener<Extensible> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static FilePath locate(String filePath) {
-        return new FilePath(filePath);
-    }
-
-    /**
-     * <p>
-     * Locate the specified file path and return the plain {@link File} object.
-     * </p>
-     * 
-     * @param base
-     * @param filePath A location path.
-     * @return A located {@link File}.
-     * @throws NullPointerException If the given file path is null.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    public static FilePath locate(File base, String filePath) {
-        return locate(base.toString() + '/' + filePath);
+    public static Path locate(String filePath) {
+        return Paths.get(filePath);
     }
 
     /**
