@@ -1491,8 +1491,8 @@ public class I implements ClassLoadListener<Extensible> {
      * @see ezbean.ClassLoadListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static ClassLoader load(File classPath) {
-        return make(Modules.class).load(classPath.toPath());
+    public static ClassLoader load(Path classPath) {
+        return make(Modules.class).load(classPath);
     }
 
     /**
@@ -1522,8 +1522,8 @@ public class I implements ClassLoadListener<Extensible> {
      * @see ezbean.ClassLoadListener#unload(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static void unload(File classPath) {
-        make(Modules.class).unload(classPath.toPath());
+    public static void unload(Path classPath) {
+        make(Modules.class).unload(classPath);
     }
 
     /**

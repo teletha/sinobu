@@ -17,7 +17,7 @@ package ezbean;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -183,7 +183,7 @@ public class ModuleTest {
      */
     @Test
     public void testModuleInModule() throws Exception {
-        Module module = new Module(new File("src/test/resources/ezbean/inline.zip").toPath());
+        Module module = new Module(Paths.get("src/test/resources/ezbean/inline.zip"));
         assertNotNull(module);
 
         List<Class<Object>> providers = module.find(Object.class, false);

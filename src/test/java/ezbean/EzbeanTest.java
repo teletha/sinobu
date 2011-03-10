@@ -18,8 +18,8 @@ package ezbean;
 import static ezunit.Ezunit.*;
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -311,9 +311,9 @@ public class EzbeanTest {
     /**
      * Test method with invalid argument.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testLoadWithNull() {
-        I.load((File) null);
+        I.load((Path) null);
     }
 
     /**

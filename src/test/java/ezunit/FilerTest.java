@@ -17,6 +17,7 @@ package ezunit;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -333,5 +334,20 @@ public class FilerTest {
     @Test
     public void deleteNull() throws Exception {
         Filer.delete(null);
+    }
+
+    @Test
+    public void createTemporary() throws IOException {
+        Path path = Filer.createTemporary();
+        assertFalse(Files.exists(path));
+        assertFalse(Files.isDirectory(path));
+        assertFalse(Files.isRegularFile(path));
+    }
+
+    @Test
+    public void dontCreateDuplicatedName() {
+        Path path1 = Filer.createTemporary();
+        Path path2 = Filer.createTemporary();
+        assertNotSame(path1.getFileName(), path2.getFileName());
     }
 }

@@ -37,7 +37,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
-import ezbean.io.FilePath;
 
 /**
  * <p>
@@ -76,12 +75,12 @@ public class CleanRoom extends Sandbox {
      * @param path A directory location you want to use.
      */
     public CleanRoom(String path) {
-        FilePath directory = path == null ? locatePackage(speculateInstantiator()) : I.locate(path);
+        Path directory = path == null ? locatePackage2(speculateInstantiator()) : Paths.get(path);
 
-        if (!directory.isDirectory()) {
-            directory = directory.getParentFile();
+        if (!Files.isDirectory(directory)) {
+            directory = directory.getParent();
         }
-        this.host = directory.toPath();
+        this.host = directory;
 
         // access control
         writable(false, host);

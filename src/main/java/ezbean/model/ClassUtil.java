@@ -15,10 +15,10 @@
  */
 package ezbean.model;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.util.Collections;
 import java.util.HashSet;
@@ -60,12 +60,12 @@ public final class ClassUtil {
      * @param clazz A sample class.
      * @return A class archive (e.g. jar file, classes directory) or <code>null</code>.
      */
-    public static File getArchive(Class clazz) {
+    public static Path getArchive(Class clazz) {
         // retrieve code source of this sample class
         CodeSource source = clazz.getProtectionDomain().getCodeSource();
 
         // API definition
-        return (source == null) ? null : I.locate(source.getLocation());
+        return (source == null) ? null : I.locate(source.getLocation()).toPath();
     }
 
     /**

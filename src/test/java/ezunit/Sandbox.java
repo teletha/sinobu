@@ -233,7 +233,7 @@ public class Sandbox extends ReusableRule {
     public void readable(boolean allow, Path... paths) {
         for (Path path : paths) {
             if (path != null) {
-                security.readables.add(path.toAbsolutePath().toString(), allow, whileTest);
+                security.readables.add(path.toString(), allow, whileTest);
             }
         }
     }
@@ -310,7 +310,7 @@ public class Sandbox extends ReusableRule {
     public void writable(boolean allow, Path... paths) {
         for (Path path : paths) {
             if (path != null) {
-                security.writables.add(path.toAbsolutePath().toString(), allow, whileTest);
+                security.writables.add(path.toString(), allow, whileTest);
             }
         }
     }
