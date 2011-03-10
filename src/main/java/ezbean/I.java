@@ -185,7 +185,7 @@ public class I implements ClassLoadListener<Extensible> {
     // hash have
     // i18n include
     // json
-    // k
+    // kick
     // locate load log
     // make mock
     // n
@@ -197,7 +197,7 @@ public class I implements ClassLoadListener<Extensible> {
     // transform
     // unload use
     // v
-    // write weave warn
+    // write weave warn walk
     // xml xerox
     // yield
     // zip
@@ -1327,7 +1327,7 @@ public class I implements ClassLoadListener<Extensible> {
      * </p>
      * 
      * @param classPath A classpath to load. Directory or archive file (like Jar) can be accepted.
-     * @see #unload(File)
+     * @see #unload(Path)
      * @see ezbean.ClassLoadListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
@@ -1358,7 +1358,7 @@ public class I implements ClassLoadListener<Extensible> {
      * </p>
      * 
      * @param classPath A classpath to unload. Directory or archive file (like Jar) can be accepted.
-     * @see #load(File)
+     * @see #load(Path)
      * @see ezbean.ClassLoadListener#unload(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */

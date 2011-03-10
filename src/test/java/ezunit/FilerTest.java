@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -115,25 +114,6 @@ public class FilerTest {
         synchrotron.child("01.txt").areSameFile();
         synchrotron.sibling("child").areSameDirectory();
         synchrotron.child("02.txt").areSameFile();
-    }
-
-    @Test
-    @Ignore
-    public void copyPattern() throws Exception {
-        Path input = room.locateDirectory("directory");
-        Path output = room.locateDirectory("out");
-        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
-        synchrotron.areNotSameDirectory();
-
-        // operation
-        Filer.copy(input, output, "*.txt", "!child");
-
-        // assert contents
-        synchrotron.areSameDirectory();
-        synchrotron.child("01.txt").areSameFile();
-        synchrotron.sibling("03.file").areNotSameFile();
-        synchrotron.sibling("child").areNotSameDirectory();
-        synchrotron.child("01.txt").areNotSameFile();
     }
 
     @Test(expected = NullPointerException.class)
