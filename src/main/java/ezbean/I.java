@@ -742,11 +742,11 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Locate the specified file URL and return the plain {@link File} object.
+     * Locate the specified file URL and return the plain {@link Path} object.
      * </p>
      * 
      * @param filePath A location path.
-     * @return A located {@link File}.
+     * @return A located {@link Path}.
      * @throws NullPointerException If the given file path is null.
      * @throws SecurityException If a security manager exists and its
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
@@ -763,11 +763,11 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Locate the specified file path and return the plain {@link File} object.
+     * Locate the specified file path and return the plain {@link Path} object.
      * </p>
      * 
      * @param filePath A location path.
-     * @return A located {@link File}.
+     * @return A located {@link Path}.
      * @throws NullPointerException If the given file path is null.
      * @throws SecurityException If a security manager exists and its
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezunit;
 
 import static java.nio.file.FileVisitResult.*;
 
@@ -30,6 +30,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import ezbean.I;
 
 
 /**

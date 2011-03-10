@@ -17,11 +17,11 @@ package ezunit;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -115,6 +115,25 @@ public class FilerTest {
         synchrotron.child("01.txt").areSameFile();
         synchrotron.sibling("child").areSameDirectory();
         synchrotron.child("02.txt").areSameFile();
+    }
+
+    @Test
+    @Ignore
+    public void copyPattern() throws Exception {
+        Path input = room.locateDirectory("directory");
+        Path output = room.locateDirectory("out");
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameDirectory();
+
+        // operation
+        Filer.copy(input, output, "*.txt", "!child");
+
+        // assert contents
+        synchrotron.areSameDirectory();
+        synchrotron.child("01.txt").areSameFile();
+        synchrotron.sibling("03.file").areNotSameFile();
+        synchrotron.sibling("child").areNotSameDirectory();
+        synchrotron.child("01.txt").areNotSameFile();
     }
 
     @Test(expected = NullPointerException.class)
@@ -337,7 +356,7 @@ public class FilerTest {
     }
 
     @Test
-    public void createTemporary() throws IOException {
+    public void createTemporary() throws Exception {
         Path path = Filer.createTemporary();
         assertFalse(Files.exists(path));
         assertFalse(Files.isDirectory(path));
@@ -345,9 +364,15 @@ public class FilerTest {
     }
 
     @Test
-    public void dontCreateDuplicatedName() {
+    public void createTemporaries() throws Exception {
         Path path1 = Filer.createTemporary();
         Path path2 = Filer.createTemporary();
+        Path path3 = Filer.createTemporary();
+        assertFalse(Files.exists(path1));
+        assertFalse(Files.exists(path2));
+        assertFalse(Files.exists(path3));
         assertNotSame(path1.getFileName(), path2.getFileName());
+        assertNotSame(path3.getFileName(), path2.getFileName());
+        assertNotSame(path3.getFileName(), path1.getFileName());
     }
 }
