@@ -13,52 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.io;
+package ezbean.scratchpad;
 
-import java.io.Flushable;
 import java.io.IOException;
-import java.io.Writer;
+import java.io.Reader;
+import java.nio.CharBuffer;
 
 import ezbean.I;
 
 /**
- * @version 2010/01/08 11:46:58
+ * @version 2010/01/08 11:47:20
  */
-public class AppendableWriter extends Writer {
+public class ReadableReader extends Reader {
 
-    /** The actual output. */
-    private final Appendable appendable;
+    /** The actual input. */
+    private final Readable readable;
 
     /**
-     * @param appendable
+     * @param readable
      */
-    public AppendableWriter(Appendable appendable) {
-        this.appendable = appendable;
+    public ReadableReader(Readable readable) {
+        this.readable = readable;
     }
 
     /**
-     * @see java.io.Writer#close()
+     * @see java.io.Reader#close()
      */
     @Override
     public void close() throws IOException {
-        I.quiet(appendable);
+        I.quiet(readable);
     }
 
     /**
-     * @see java.io.Writer#flush()
+     * @see java.io.Reader#read(char[], int, int)
      */
     @Override
-    public void flush() throws IOException {
-        if (appendable instanceof Flushable) {
-            ((Flushable) appendable).flush();
-        }
-    }
-
-    /**
-     * @see java.io.Writer#write(char[], int, int)
-     */
-    @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
-        appendable.append(new String(cbuf, off, len));
+    public int read(char[] cbuf, int off, int len) throws IOException {
+        return readable.read(CharBuffer.wrap(cbuf, off, len));
     }
 }
