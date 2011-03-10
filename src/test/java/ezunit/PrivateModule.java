@@ -30,6 +30,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 
+import ezbean.Filer;
 import ezbean.I;
 import ezbean.Modules;
 

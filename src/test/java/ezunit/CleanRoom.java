@@ -36,6 +36,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import ezbean.Filer;
 import ezbean.I;
 
 /**
@@ -219,7 +220,7 @@ public class CleanRoom extends Sandbox {
 
             // copy all resources newly
             for (Path path : Files.newDirectoryStream(host, monitor)) {
-                Filer.copy(path, root); // TODO filter
+                Filer.copy(path, root, "!**.class"); // TODO filter
             }
 
             // reset

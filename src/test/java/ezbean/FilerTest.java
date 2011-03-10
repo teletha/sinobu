@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezunit;
+package ezbean;
 
 import static org.junit.Assert.*;
 
@@ -24,17 +24,20 @@ import java.nio.file.Path;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezunit.CleanRoom;
+import ezunit.Synchrotron;
+
 /**
  * @version 2011/03/07 18:06:48
  */
 public class FilerTest {
 
     @Rule
-    public static final CleanRoom room = new CleanRoom();
+    public static final CleanRoom room = new CleanRoom("file");
 
     @Test
     public void copyFileToFile() throws Exception {
-        Path input = room.locateFile("directory/01.txt");
+        Path input = room.locateFile("test01/01.txt");
         Path output = room.locateFile("out");
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
@@ -48,7 +51,7 @@ public class FilerTest {
 
     @Test
     public void copyFileToDirectory() throws Exception {
-        Path input = room.locateFile("directory/01.txt");
+        Path input = room.locateFile("test01/01.txt");
         Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameFile();
@@ -62,7 +65,7 @@ public class FilerTest {
 
     @Test
     public void copyFileToAbsent() throws Exception {
-        Path input = room.locateFile("directory/01.txt");
+        Path input = room.locateFile("test01/01.txt");
         Path output = room.locateAbsent("out");
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
@@ -76,7 +79,7 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void copyDirectoryToFile() throws Exception {
-        Path input = room.locateDirectory("directory");
+        Path input = room.locateDirectory("test01");
         Path output = room.locateFile("file");
 
         // operation
@@ -85,7 +88,7 @@ public class FilerTest {
 
     @Test
     public void copyDirectoryToDirectory() throws Exception {
-        Path input = room.locateDirectory("directory");
+        Path input = room.locateDirectory("test01");
         Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameDirectory();
@@ -96,13 +99,13 @@ public class FilerTest {
         // assert contents
         synchrotron.areSameDirectory();
         synchrotron.child("01.txt").areSameFile();
-        synchrotron.sibling("child").areSameDirectory();
+        synchrotron.sibling("directory1").areSameDirectory();
         synchrotron.child("02.txt").areSameFile();
     }
 
     @Test
     public void copyDirectoryToAbsent() throws Exception {
-        Path input = room.locateDirectory("directory");
+        Path input = room.locateDirectory("test01");
         Path output = room.locateAbsent("out");
 
         // operation
@@ -112,7 +115,7 @@ public class FilerTest {
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areSameDirectory();
         synchrotron.child("01.txt").areSameFile();
-        synchrotron.sibling("child").areSameDirectory();
+        synchrotron.sibling("directory1").areSameDirectory();
         synchrotron.child("02.txt").areSameFile();
     }
 
@@ -163,7 +166,7 @@ public class FilerTest {
 
     @Test
     public void moveFileToFile() throws Exception {
-        Path input = room.locateFile("directory/01.txt");
+        Path input = room.locateFile("test01/01.txt");
         Path output = room.locateFile("out");
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
@@ -177,7 +180,7 @@ public class FilerTest {
 
     @Test
     public void moveFileToDirectory() throws Exception {
-        Path input = room.locateFile("directory/01.txt");
+        Path input = room.locateFile("test01/01.txt");
         Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameFile();
@@ -191,7 +194,7 @@ public class FilerTest {
 
     @Test
     public void moveFileToAbsent() throws Exception {
-        Path input = room.locateFile("directory/01.txt");
+        Path input = room.locateFile("test01/01.txt");
         Path output = room.locateAbsent("out");
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.exists(true, false);
@@ -205,7 +208,7 @@ public class FilerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void moveDirectoryToFile() throws Exception {
-        Path input = room.locateDirectory("directory");
+        Path input = room.locateDirectory("test01");
         Path output = room.locateFile("file");
 
         // operation
@@ -214,7 +217,7 @@ public class FilerTest {
 
     @Test
     public void moveDirectoryToDirectory() throws Exception {
-        Path input = room.locateDirectory("directory");
+        Path input = room.locateDirectory("test01");
         Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameDirectory();
@@ -225,13 +228,13 @@ public class FilerTest {
         // assert contents
         synchrotron.areNotSameDirectory();
         synchrotron.child("01.txt").areNotSameFile();
-        synchrotron.sibling("child").areNotSameFile();
+        synchrotron.sibling("directory1").areNotSameFile();
         synchrotron.child("02.txt").areNotSameFile();
     }
 
     @Test
     public void moveDirectoryToAbsent() throws Exception {
-        Path input = room.locateDirectory("directory");
+        Path input = room.locateDirectory("test01");
         Path output = room.locateAbsent("out");
 
         // operation
@@ -241,7 +244,7 @@ public class FilerTest {
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
         synchrotron.areNotSameDirectory();
         synchrotron.child("01.txt").areNotSameDirectory();
-        synchrotron.sibling("child").areNotSameDirectory();
+        synchrotron.sibling("directory1").areNotSameDirectory();
         synchrotron.child("02.txt").areNotSameDirectory();
     }
 
@@ -292,7 +295,7 @@ public class FilerTest {
 
     @Test
     public void deleteFile() {
-        Path input = room.locateFile("directory/01.txt");
+        Path input = room.locateFile("test01/01.txt");
 
         assertTrue(Files.exists(input));
 
@@ -304,18 +307,18 @@ public class FilerTest {
 
     @Test
     public void deleteDirectory() {
-        Path input = room.locateDirectory("directory");
+        Path input = room.locateDirectory("test01");
 
         assertTrue(Files.exists(input));
         assertTrue(Files.exists(input.resolve("01.txt")));
-        assertTrue(Files.exists(input.resolve("child/01.txt")));
+        assertTrue(Files.exists(input.resolve("directory1/01.txt")));
 
         // operation
         Filer.delete(input);
 
         assertTrue(Files.notExists(input));
         assertTrue(Files.notExists(input.resolve("01.txt")));
-        assertTrue(Files.notExists(input.resolve("child/01.txt")));
+        assertTrue(Files.notExists(input.resolve("directory1/01.txt")));
     }
 
     @Test
