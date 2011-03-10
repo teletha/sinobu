@@ -32,11 +32,10 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
-
 /**
  * @version 2011/03/07 17:16:07
  */
-public final class Filer implements FileVisitor<Path> {
+public final class Filer extends SimpleFileVisitor<Path> {
 
     /** The root temporary directory for Ezbean. */
     private static Path temporaries;
@@ -80,89 +79,143 @@ public final class Filer implements FileVisitor<Path> {
         }
     }
 
-    /** The base path. */
-    private final Path base;
-
-    private final int size;
-
-    /** The actual vistor to delegate. */
+    /** The actual {@link FileVisitor} to delegate. */
     private final FileVisitor<Path> visitor;
 
-    /** The include patterns. */
-    private final ArrayList<PathMatcher> includes = new ArrayList();
+    /** The flag whether we should sort out directories or not. */
+    private final boolean directory;
 
-    /** The exclude patterns. */
-    private final ArrayList<PathMatcher> excludes = new ArrayList();
+    /** The flag whether we should sort out files or not. */
+    private final boolean file;
+
+    /** The include file patterns. */
+    private final PathMatcher[] includes;
+
+    /** The exclude file patterns. */
+    private final PathMatcher[] excludes;
+
+    /** The exclude directory pattern. */
+    private final PathMatcher[] excludeDirectories;
+
+    /** The prefix size of root path. */
+    private final int start;
 
     /**
+     * @param visitor
      * @param base
+     * @param patterns
      */
-    private Filer(Path base, String[] patterns, FileVisitor<Path> visitor) throws IOException {
-        this.base = base;
+    public Filer(Path base, FileVisitor<Path> visitor, String... patterns) {
         this.visitor = visitor;
-        this.size = base.getNameCount();
+        this.start = base.getNameCount();
 
         FileSystem system = base.getFileSystem();
+        ArrayList<PathMatcher> includes = new ArrayList();
+        ArrayList<PathMatcher> excludes = new ArrayList();
+        ArrayList<PathMatcher> excludeDirectories = new ArrayList();
 
         for (String pattern : patterns) {
-            if (pattern.charAt(0) == '!') {
-                // exclude pattern
-                excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
-            } else {
-                // include pattern
+            if (pattern.charAt(0) != '!') {
+                // include
                 includes.add(system.getPathMatcher("glob:".concat(pattern)));
+            } else {
+                // exclude
+                if (pattern.endsWith("/**")) {
+                    // directory match
+                    excludeDirectories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
+                } else {
+                    // anything match
+                    excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                }
             }
         }
 
-        Files.walkFileTree(base, this);
+        // Convert into Array
+        this.includes = includes.toArray(new PathMatcher[includes.size()]);
+        this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
+        this.excludeDirectories = excludeDirectories.toArray(new PathMatcher[excludeDirectories.size()]);
+        this.file = this.includes.length != 0 || this.excludes.length != 0;
+        this.directory = this.excludeDirectories.length != 0;
+
+        try {
+            Files.walkFileTree(base, this);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
      * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object,
      *      java.nio.file.attribute.BasicFileAttributes)
      */
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-        return visitor.preVisitDirectory(dir, attrs);
+    @Override
+    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+        if (directory) {
+            // We must skip root directory.
+            int end = path.getNameCount();
+
+            if (start != end) {
+                // Retrieve relative path from base.
+                Path relative = path.subpath(start, end);
+
+                // Directory exclusion make fast traversing file tree.
+                for (PathMatcher matcher : excludeDirectories) {
+                    if (matcher.matches(relative)) {
+                        return SKIP_SUBTREE;
+                    }
+                }
+            }
+        }
+
+        // API definition
+        return visitor.preVisitDirectory(path, attrs);
     }
 
     /**
      * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
      */
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        return visitor.postVisitDirectory(dir, exc);
+    @Override
+    public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
+        return visitor.postVisitDirectory(path, exc);
     }
 
     /**
      * @see java.nio.file.FileVisitor#visitFile(java.lang.Object,
      *      java.nio.file.attribute.BasicFileAttributes)
      */
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        Path relative = file.subpath(size, file.getNameCount());
+    @Override
+    public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+        if (file) {
+            // Retrieve relative path from base.
+            Path relative = path.subpath(start, path.getNameCount());
 
-        for (PathMatcher matcher : excludes) {
-            if (matcher.matches(relative)) {
-                return FileVisitResult.CONTINUE;
+            // File exclusion
+            for (PathMatcher matcher : excludes) {
+                if (matcher.matches(relative)) {
+                    return CONTINUE;
+                }
+            }
+
+            if (includes.length != 0) {
+                // File inclusion
+                for (PathMatcher matcher : includes) {
+                    if (matcher.matches(relative)) {
+                        return visitor.visitFile(path, attrs);
+                    }
+                }
+
+                // API definition
+                return CONTINUE;
             }
         }
 
-        for (PathMatcher matcher : includes) {
-            if (matcher.matches(relative)) {
-                return visitor.visitFile(file, attrs);
-            }
-        }
-        return !includes.isEmpty() ? FileVisitResult.CONTINUE : visitor.visitFile(file, attrs);
-    }
-
-    /**
-     * @see java.nio.file.FileVisitor#visitFileFailed(java.lang.Object, java.io.IOException)
-     */
-    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-        return visitor.visitFileFailed(file, exc);
+        // API definition
+        return visitor.visitFile(path, attrs);
     }
 
     public static void walk(Path base, String[] patterns, FileVisitor<Path> visitor) {
         try {
-            Files.walkFileTree(base, new Filer(base, patterns, visitor));
+            Files.walkFileTree(base, new Filer(base, visitor, patterns));
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -186,7 +239,7 @@ public final class Filer implements FileVisitor<Path> {
     public static void copy(Path input, Path output, String... patterns) {
         try {
             if (isDirectory(input)) {
-                new ezbean.Paths(input, new Operation(input, output, 0), patterns);
+                new Filer(input, new Operation(input, output, 0), patterns);
             } else {
                 if (isDirectory(output)) {
                     output = output.resolve(input.getFileName());
@@ -218,7 +271,7 @@ public final class Filer implements FileVisitor<Path> {
     public static void move(Path input, Path output, String... patterns) {
         try {
             if (isDirectory(input)) {
-                new Filer(input, patterns, new Operation(input, output, 1));
+                new Filer(input, new Operation(input, output, 1), patterns);
             } else {
                 if (isDirectory(output)) {
                     output = output.resolve(input.getFileName());
@@ -249,7 +302,7 @@ public final class Filer implements FileVisitor<Path> {
         if (intput != null) {
             try {
                 if (Files.isDirectory(intput)) {
-                    new Filer(intput, patterns, new Operation(intput, null, 2));
+                    new Filer(intput, new Operation(intput, null, 2), patterns);
                 } else {
                     Files.deleteIfExists(intput);
                 }
@@ -356,87 +409,6 @@ public final class Filer implements FileVisitor<Path> {
             return path;
         } catch (IOException e) {
             throw I.quiet(e);
-        }
-    }
-
-    /**
-     * @version 2011/02/16 12:19:34
-     */
-    private static final class Operation extends SimpleFileVisitor<Path> {
-
-        /** The source location. */
-        private final Path from;
-
-        /** The target location. */
-        private final Path to;
-
-        /** 0:copy 1:move 2:delete. */
-        private final int type;
-
-        /**
-         * @param from
-         * @param to
-         */
-        private Operation(Path from, Path to, int type) {
-            this.from = from.getParent();
-            this.to = to;
-            this.type = type;
-        }
-
-        /**
-         * @see java.nio.file.SimpleFileVisitor#preVisitDirectory(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
-         */
-        @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            if (type != 2) {
-                createDirectory(to.resolve(from.relativize(dir)));
-            }
-            return CONTINUE;
-        }
-
-        /**
-         * @see java.nio.file.SimpleFileVisitor#postVisitDirectory(java.lang.Object,
-         *      java.io.IOException)
-         */
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            switch (type) {
-            case 0:
-                Files.setLastModifiedTime(to.resolve(from.relativize(dir)), Files.getLastModifiedTime(dir));
-                break;
-
-            case 1:
-                Files.setLastModifiedTime(to.resolve(from.relativize(dir)), Files.getLastModifiedTime(dir));
-                // pass-through
-
-            case 2:
-                Files.delete(dir);
-                break;
-            }
-            return CONTINUE;
-        }
-
-        /**
-         * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
-         */
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            switch (type) {
-            case 0:
-                Files.copy(file, to.resolve(from.relativize(file)), COPY_ATTRIBUTES, REPLACE_EXISTING);
-                break;
-
-            case 1:
-                Files.move(file, to.resolve(from.relativize(file)), REPLACE_EXISTING);
-                break;
-
-            case 2:
-                Files.delete(file);
-                break;
-            }
-            return CONTINUE;
         }
     }
 }
