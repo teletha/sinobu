@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezunit;
+package ezbean;
 
 import static java.nio.file.FileVisitResult.*;
 import static java.nio.file.StandardCopyOption.*;
@@ -32,7 +32,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
-import ezbean.I;
 
 /**
  * @version 2011/03/07 17:16:07
@@ -187,7 +186,7 @@ public final class Filer implements FileVisitor<Path> {
     public static void copy(Path input, Path output, String... patterns) {
         try {
             if (isDirectory(input)) {
-                new Filer(input, patterns, new Operation(input, output, true));
+                new ezbean.Paths(input, new Operation(input, output, 0), patterns);
             } else {
                 if (isDirectory(output)) {
                     output = output.resolve(input.getFileName());
@@ -219,7 +218,7 @@ public final class Filer implements FileVisitor<Path> {
     public static void move(Path input, Path output, String... patterns) {
         try {
             if (isDirectory(input)) {
-                new Filer(input, patterns, new Operation(input, output, false));
+                new Filer(input, patterns, new Operation(input, output, 1));
             } else {
                 if (isDirectory(output)) {
                     output = output.resolve(input.getFileName());
@@ -250,7 +249,7 @@ public final class Filer implements FileVisitor<Path> {
         if (intput != null) {
             try {
                 if (Files.isDirectory(intput)) {
-                    new Filer(intput, patterns, new Operation(intput, null, false));
+                    new Filer(intput, patterns, new Operation(intput, null, 2));
                 } else {
                     Files.deleteIfExists(intput);
                 }
@@ -371,20 +370,17 @@ public final class Filer implements FileVisitor<Path> {
         /** The target location. */
         private final Path to;
 
-        /** The sccess flag. */
-        private boolean success = true;
-
-        /** The option to remain original file. */
-        private final boolean remain;
+        /** 0:copy 1:move 2:delete. */
+        private final int type;
 
         /**
          * @param from
          * @param to
          */
-        private Operation(Path from, Path to, boolean remain) {
+        private Operation(Path from, Path to, int type) {
             this.from = from.getParent();
             this.to = to;
-            this.remain = remain;
+            this.type = type;
         }
 
         /**
@@ -393,7 +389,7 @@ public final class Filer implements FileVisitor<Path> {
          */
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            if (to != null) {
+            if (type != 2) {
                 createDirectory(to.resolve(from.relativize(dir)));
             }
             return CONTINUE;
@@ -405,14 +401,20 @@ public final class Filer implements FileVisitor<Path> {
          */
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            if (to != null) {
+            switch (type) {
+            case 0:
                 Files.setLastModifiedTime(to.resolve(from.relativize(dir)), Files.getLastModifiedTime(dir));
-            }
+                break;
 
-            if (!remain) {
+            case 1:
+                Files.setLastModifiedTime(to.resolve(from.relativize(dir)), Files.getLastModifiedTime(dir));
+                // pass-through
+
+            case 2:
                 Files.delete(dir);
+                break;
             }
-            return super.postVisitDirectory(dir, exc);
+            return CONTINUE;
         }
 
         /**
@@ -421,14 +423,19 @@ public final class Filer implements FileVisitor<Path> {
          */
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            if (to != null) {
+            switch (type) {
+            case 0:
                 Files.copy(file, to.resolve(from.relativize(file)), COPY_ATTRIBUTES, REPLACE_EXISTING);
-            }
+                break;
 
-            if (!remain) {
+            case 1:
+                Files.move(file, to.resolve(from.relativize(file)), REPLACE_EXISTING);
+                break;
+
+            case 2:
                 Files.delete(file);
+                break;
             }
-
             return CONTINUE;
         }
     }

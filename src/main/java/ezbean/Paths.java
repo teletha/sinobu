@@ -30,17 +30,25 @@ import java.util.ArrayList;
 /**
  * @version 2011/03/10 17:54:08
  */
-class Paths implements FileVisitor<Path> {
+public class Paths implements FileVisitor<Path> {
 
-    FileVisitor<Path> visitor;
+    /** The actual {@link FileVisitor} to delegate. */
+    private final FileVisitor<Path> visitor;
 
-    Path base;
+    /** The flag whether we should sort out directories or not. */
+    private final boolean directory;
 
-    PathMatcher[] includes;
+    /** The flag whether we should sort out files or not. */
+    private final boolean file;
 
-    PathMatcher[] excludes;
+    /** The include file patterns. */
+    private final PathMatcher[] includes;
 
-    PathMatcher[] excludeDirectories;
+    /** The exclude file patterns. */
+    private final PathMatcher[] excludes;
+
+    /** The exclude directory pattern. */
+    private final PathMatcher[] excludeDirectories;
 
     /** The prefix size of root path. */
     private final int start;
@@ -50,9 +58,8 @@ class Paths implements FileVisitor<Path> {
      * @param base
      * @param patterns
      */
-    Paths(Path base, FileVisitor<Path> visitor, String... patterns) {
+    public Paths(Path base, FileVisitor<Path> visitor, String... patterns) {
         this.visitor = visitor;
-        this.base = base;
         this.start = base.getNameCount();
 
         FileSystem system = base.getFileSystem();
@@ -61,19 +68,18 @@ class Paths implements FileVisitor<Path> {
         ArrayList<PathMatcher> excludeDirectories = new ArrayList();
 
         for (String pattern : patterns) {
-            if (pattern.charAt(0) == '!') {
+            if (pattern.charAt(0) != '!') {
+                // include
+                includes.add(system.getPathMatcher("glob:".concat(pattern)));
+            } else {
                 // exclude
                 if (pattern.endsWith("/**")) {
                     // directory match
-                    System.out.println("glob:".concat(pattern.substring(1, pattern.length() - 3)));
                     excludeDirectories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
                 } else {
                     // anything match
                     excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
                 }
-            } else {
-                // include
-                includes.add(system.getPathMatcher("glob:".concat(pattern)));
             }
         }
 
@@ -81,6 +87,8 @@ class Paths implements FileVisitor<Path> {
         this.includes = includes.toArray(new PathMatcher[includes.size()]);
         this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
         this.excludeDirectories = excludeDirectories.toArray(new PathMatcher[excludeDirectories.size()]);
+        this.file = this.includes.length != 0 || this.excludes.length != 0;
+        this.directory = this.excludeDirectories.length != 0;
 
         try {
             Files.walkFileTree(base, this);
@@ -94,17 +102,24 @@ class Paths implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
-        int end = path.getNameCount();
+        if (directory) {
+            // We must skip root directory.
+            int end = path.getNameCount();
 
-        if (start != end) {
-            Path relative = path.subpath(start, end);
+            if (start != end) {
+                // Retrieve relative path from base.
+                Path relative = path.subpath(start, end);
 
-            for (PathMatcher matcher : excludeDirectories) {
-                if (matcher.matches(relative)) {
-                    return SKIP_SUBTREE;
+                // Directory exclusion make fast traversing file tree.
+                for (PathMatcher matcher : excludeDirectories) {
+                    if (matcher.matches(relative)) {
+                        return SKIP_SUBTREE;
+                    }
                 }
             }
         }
+
+        // API definition
         return visitor.preVisitDirectory(path, attrs);
     }
 
@@ -120,24 +135,32 @@ class Paths implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-        Path relative = path.subpath(start, path.getNameCount());
+        if (file) {
+            // Retrieve relative path from base.
+            Path relative = path.subpath(start, path.getNameCount());
 
-        for (PathMatcher matcher : excludes) {
-            if (matcher.matches(relative)) {
+            // File exclusion
+            for (PathMatcher matcher : excludes) {
+                if (matcher.matches(relative)) {
+                    return CONTINUE;
+                }
+            }
+
+            if (includes.length != 0) {
+                // File inclusion
+                for (PathMatcher matcher : includes) {
+                    if (matcher.matches(relative)) {
+                        return visitor.visitFile(path, attrs);
+                    }
+                }
+
+                // API definition
                 return CONTINUE;
             }
         }
 
-        if (includes.length == 0) {
-            return visitor.visitFile(path, attrs);
-        } else {
-            for (PathMatcher matcher : includes) {
-                if (matcher.matches(relative)) {
-                    return visitor.visitFile(path, attrs);
-                }
-            }
-        }
-        return CONTINUE;
+        // API definition
+        return visitor.visitFile(path, attrs);
     }
 
     /**

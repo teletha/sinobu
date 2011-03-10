@@ -34,7 +34,7 @@ import ezunit.CleanRoom;
 public class PathsTest {
 
     @Rule
-    public static final CleanRoom room = new CleanRoom("file");
+    public static final CleanRoom room = new CleanRoom("file/test01");
 
     private Counter counter = new Counter();
 

@@ -30,7 +30,6 @@ import org.junit.Test;
 import ezbean.module.external.ExtendedClass1;
 import ezbean.sample.MarkerInterface1;
 import ezbean.sample.bean.Person;
-import ezunit.Filer;
 import ezunit.PrivateModule;
 
 /**

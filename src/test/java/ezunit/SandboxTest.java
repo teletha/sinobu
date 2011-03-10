@@ -29,6 +29,7 @@ import java.security.AccessControlException;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.Filer;
 import ezbean.I;
 
 /**
