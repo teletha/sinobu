@@ -16,6 +16,7 @@
 package ezbean;
 
 import static java.nio.file.FileVisitResult.*;
+import static java.nio.file.StandardCopyOption.*;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -29,9 +30,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
 /**
- * @version 2011/03/07 17:16:07
+ * @version 2011/03/11 8:27:35
  */
-public final class Filer extends SimpleFileVisitor<Path> {
+class Filer extends SimpleFileVisitor<Path> {
 
     /** The actual {@link FileVisitor} to delegate. */
     private final FileVisitor<Path> visitor;
@@ -54,12 +55,24 @@ public final class Filer extends SimpleFileVisitor<Path> {
     /** The prefix size of root path. */
     private final int start;
 
+    /** The source location. */
+    private final Path from;
+
+    /** The target location. */
+    private final Path to;
+
+    /** 0:copy 1:move 2:delete. */
+    private final int type;
+
     /**
      * @param visitor
      * @param base
      * @param patterns
      */
-    public Filer(Path base, FileVisitor<Path> visitor, String... patterns) {
+    public Filer(Path base, Path to, int type, FileVisitor<Path> visitor, String... patterns) {
+        this.from = base.getParent();
+        this.to = to;
+        this.type = type;
         this.visitor = visitor;
         this.start = base.getNameCount();
 
@@ -122,7 +135,18 @@ public final class Filer extends SimpleFileVisitor<Path> {
         }
 
         // API definition
-        return visitor.preVisitDirectory(path, attrs);
+        switch (type) {
+        case 0:
+        case 1:
+            Files.createDirectories(to.resolve(from.relativize(path)));
+            return CONTINUE;
+
+        case 2:
+            return CONTINUE;
+
+        default:
+            return visitor.preVisitDirectory(path, attrs);
+        }
     }
 
     /**
@@ -130,7 +154,23 @@ public final class Filer extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
-        return visitor.postVisitDirectory(path, exc);
+        switch (type) {
+        case 0:
+            Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
+            return CONTINUE;
+
+        case 1:
+            Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
+            // pass-through
+
+        case 2:
+            Files.delete(path);
+            return CONTINUE;
+
+        default:
+            return visitor.postVisitDirectory(path, exc);
+        }
+
     }
 
     /**
@@ -164,6 +204,21 @@ public final class Filer extends SimpleFileVisitor<Path> {
         }
 
         // API definition
-        return visitor.visitFile(path, attrs);
+        switch (type) {
+        case 0:
+            Files.copy(path, to.resolve(from.relativize(path)), COPY_ATTRIBUTES, REPLACE_EXISTING);
+            return CONTINUE;
+
+        case 1:
+            Files.move(path, to.resolve(from.relativize(path)), REPLACE_EXISTING);
+            return CONTINUE;
+
+        case 2:
+            Files.delete(path);
+            return CONTINUE;
+
+        default:
+            return visitor.visitFile(path, attrs);
+        }
     }
 }
