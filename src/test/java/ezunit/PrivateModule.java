@@ -16,11 +16,11 @@
 package ezunit;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.nio.file.DirectoryStream.Filter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.objectweb.asm.ClassAdapter;
@@ -161,7 +161,7 @@ public class PrivateModule extends ReusableRule {
     @Override
     protected void beforeClass() throws Exception {
         // copy class file with type conversion
-        copy(new File(testcaseRoot, originalPackage), I.locate(path.toFile(), overriddenPackage));
+        copy(testcaseRoot.toPath().resolve(originalPackage), path.resolve(overriddenPackage));
     }
 
     /**
@@ -188,34 +188,36 @@ public class PrivateModule extends ReusableRule {
      * @param source A source directory.
      * @param target A target directory.
      */
-    private void copy(File source, File target) {
-        target.mkdirs();
+    private void copy(Path source, Path target) {
+        try {
+            Files.createDirectories(target);
 
-        for (File file : source.listFiles(strategy)) {
-            File dist = I.locate(target, file.getName());
+            for (Path path : Files.newDirectoryStream(source, strategy)) {
+                Path dist = target.resolve(path.getFileName());
 
-            if (file.isDirectory()) {
-                copy(file, dist);
-            } else {
-                try {
-                    if (!file.getName().endsWith("class")) {
-                        I.copy(source, dist);
+                if (Files.isDirectory(path)) {
+                    copy(path, dist);
+                } else {
+
+                    if (!path.getFileName().toString().endsWith("class")) {
+                        Filer.copy(source, dist);
                     } else {
                         // setup
                         ClassWriter writer = new ClassWriter(0);
 
                         // convert class file
-                        new ClassReader(new FileInputStream(file)).accept(new ClassConverter(writer), 0);
+                        new ClassReader(Files.newInputStream(path)).accept(new ClassConverter(writer), 0);
 
                         // write new class file
-                        FileOutputStream stream = new FileOutputStream(dist);
+                        OutputStream stream = Files.newOutputStream(dist);
                         stream.write(writer.toByteArray());
                         stream.close();
                     }
-                } catch (IOException e) {
-                    I.quiet(e);
+
                 }
             }
+        } catch (IOException e) {
+            I.quiet(e);
         }
     }
 
@@ -314,16 +316,16 @@ public class PrivateModule extends ReusableRule {
     /**
      * @version 2010/10/14 1:16:59
      */
-    private abstract class PrivateClassStrategy implements FileFilter {
+    private abstract class PrivateClassStrategy implements Filter<Path> {
 
         /** The pre-conputed path length. */
         private int prefix = testcaseRoot.getAbsolutePath().length() + 1;
 
         /**
-         * {@inheritDoc}
+         * @see java.nio.file.DirectoryStream.Filter#accept(java.lang.Object)
          */
-        public final boolean accept(File file) {
-            return accept(file.getAbsolutePath().substring(prefix).replace(File.separatorChar, '/'));
+        public boolean accept(Path path) throws IOException {
+            return accept(path.toAbsolutePath().toString().substring(prefix).replace(File.separatorChar, '/'));
         }
 
         /**
