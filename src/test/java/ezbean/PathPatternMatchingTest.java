@@ -31,7 +31,7 @@ import ezunit.CleanRoom;
 /**
  * @version 2011/03/10 17:57:17
  */
-public class PathsTest {
+public class PathPatternMatchingTest {
 
     @Rule
     public static final CleanRoom room = new CleanRoom("file/test01");
@@ -147,7 +147,6 @@ public class PathsTest {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
             count++;
-            System.out.println(file);
             return super.visitFile(file, attrs);
         }
     }

@@ -56,7 +56,7 @@ class Operation extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
         if (type != 2) {
-            Filer.createDirectory(to.resolve(from.relativize(dir)));
+            Files.createDirectories(to.resolve(from.relativize(dir)));
         }
         return CONTINUE;
     }

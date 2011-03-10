@@ -140,7 +140,7 @@ public class ModulesTest {
     @Test
     public void reloadRelativePathAndAbsolutePath() throws Exception {
         Path relativeModule = Paths.get("target/module");
-        Filer.copy(module1.path, relativeModule);
+        I.copy(module1.path, relativeModule);
 
         try {
             assertFalse(relativeModule.isAbsolute());
@@ -154,7 +154,7 @@ public class ModulesTest {
             modules.load(relativeModule.toAbsolutePath());
             assertEquals(1, modules.modules.size());
         } finally {
-            Filer.delete(relativeModule);
+            I.delete(relativeModule);
         }
     }
 

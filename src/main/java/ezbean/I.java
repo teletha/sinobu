@@ -15,10 +15,13 @@
  */
 package ezbean;
 
+import static java.nio.file.StandardCopyOption.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
@@ -30,6 +33,7 @@ import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
@@ -278,6 +282,12 @@ public class I implements ClassLoadListener<Extensible> {
      */
     private static final Constructor instantiator;
 
+    /** The root temporary directory for Ezbean. */
+    private static final Path temporaries;
+
+    /** The temporary directory for the current processing JVM. */
+    private static final Path temporary;
+
     // initialization
     static {
         // load all Ezbean configuration service providers
@@ -305,6 +315,33 @@ public class I implements ClassLoadListener<Extensible> {
             // sax.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             // sax.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             // sax.setFeature("http://xml.org/sax/features/xmlns-uris", true);
+
+            // Create the root temporary directory for Ezbean.
+            temporaries = Files.createDirectories(Paths.get(System.getProperty("java.io.tmpdir"), "Ezbean"));
+
+            // Clean up any old temporary directories by listing all of the files, using a prefix
+            // filter and that don't have a lock file.
+            for (Path path : Files.newDirectoryStream(temporaries, "temporary*")) {
+                // create a file to represent the lock and test
+                RandomAccessFile lock = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
+
+                // delete the contents of the temporary directory since it can retrieve a
+                // exclusive lock
+                if (lock.getChannel().tryLock() != null) {
+                    // release lock at first
+                    lock.close();
+
+                    // delete actually
+                    I.delete(path);
+                }
+            }
+
+            // Create the temporary directory for the current processing JVM.
+            temporary = Files.createTempDirectory(temporaries, "temporary");
+
+            // Create a lock after creating the temporary directory so there is no race condition
+            // with another application trying to clean our temporary directory.
+            new RandomAccessFile(temporary.resolve("lock").toFile(), "rw").getChannel().tryLock();
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -413,37 +450,102 @@ public class I implements ClassLoadListener<Extensible> {
         }
     }
 
-    // /**
-    // * <p>
-    // * Note : This method closes both input and output stream carefully.
-    // * </p>
-    // * <p>
-    // * Copy bytes from a {@link InputStream} to an {@link OutputStream}. This method buffers the
-    // * input internally, so there is no need to use a buffered stream.
-    // * </p>
-    // *
-    // * @param input A {@link InputStream} to read from.
-    // * @param output An {@link OutputStream} to write to.
-    // * @throws IOException If an I/O error occurs.
-    // * @throws NullPointerException If the input or output is null.
-    // */
-    // public static void copy(ReadableByteChannel input, WritableByteChannel output) throws
-    // IOException {
-    // ByteBuffer buffer = ByteBuffer.allocateDirect(8192);
-    //
-    // try {
-    // while (input.read(buffer) != -1) {
-    // buffer.flip();
-    //
-    // output.write(buffer);
-    //
-    // buffer.clear();
-    // }
-    // } finally {
-    // input.close();
-    // output.close();
-    // }
-    // }
+    /**
+     * <p>
+     * Generic method to copy a input {@link Path} to an output {@link Path} deeply.
+     * </p>
+     * 
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An output {@link Path} object which can be file or directory.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws IOException If an I/O error occurs.
+     * @throws NoSuchFileException If the specified input file is not found. If the input file is
+     *             directory and the output file is <em>not</em> directory.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static void copy(Path input, Path output, String... patterns) {
+        try {
+            if (Files.isDirectory(input)) {
+                new Filer(input, new Operation(input, output, 0), patterns);
+            } else {
+                if (Files.isDirectory(output)) {
+                    output = output.resolve(input.getFileName());
+                }
+
+                // Assure the existence of the parent directory.
+                Files.createDirectories(output.getParent());
+
+                // Copy file actually.
+                Files.copy(input, output, COPY_ATTRIBUTES, REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Copy all file in this {@link Path} to the specified {@link Path}.
+     * </p>
+     * 
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An output {@link Path} object which can be file or directory.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws IOException If an I/O error occurs.
+     * @throws NoSuchFileException If the specified input file is not found. If the input file is
+     *             directory and the output file is <em>not</em> directory.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static void move(Path input, Path output, String... patterns) {
+        try {
+            if (Files.isDirectory(input)) {
+                new Filer(input, new Operation(input, output, 1), patterns);
+            } else {
+                if (Files.isDirectory(output)) {
+                    output = output.resolve(input.getFileName());
+                }
+
+                // Assure the existence of the parent directory.
+                Files.createDirectories(output.getParent());
+
+                // Copy file actually.
+                Files.move(input, output, ATOMIC_MOVE, REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Deletes all files deeply.
+     * </p>
+     * 
+     * @param input A input {@link Path} object which can be file or directory.
+     * @throws IOException If an I/O error occurs.
+     * @throws NoSuchFileException If the specified input file is not found. If the input file is
+     *             directory and the output file is <em>not</em> directory.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static void delete(Path intput, String... patterns) {
+        if (intput != null) {
+            try {
+                if (Files.isDirectory(intput)) {
+                    new Filer(intput, new Operation(intput, null, 2), patterns);
+                } else {
+                    Files.deleteIfExists(intput);
+                }
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
+        }
+    }
 
     /**
      * <p>
@@ -778,6 +880,47 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static Path locate(String filePath) {
         return Paths.get(filePath);
+    }
+
+    /**
+     * <p>
+     * Locate the specified file path and return the plain {@link Path} object.
+     * </p>
+     * 
+     * @param filePath A location path.
+     * @return A located {@link Path}.
+     * @throws NullPointerException If the given file path is null.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static Path locate(String filePath, String... fragments) {
+        return Paths.get(filePath, fragments);
+    }
+
+    /**
+     * <p>
+     * Creates a new abstract file somewhere beneath the system's temporary directory (as defined by
+     * the <code>java.io.tmpdir</code> system property).
+     * </p>
+     * 
+     * @return A newly created temporary file which is not exist yet.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
+     */
+    public static Path locateTemporary() {
+        try {
+            Path path = Files.createTempDirectory(temporary, "temporary");
+
+            // Delete entity file.
+            Files.delete(path);
+
+            // API definition
+            return path;
+        } catch (IOException e) {
+            throw quiet(e);
+        }
     }
 
     /**
