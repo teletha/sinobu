@@ -75,7 +75,7 @@ public class CleanRoom extends Sandbox {
      * @param path A directory location you want to use.
      */
     public CleanRoom(String path) {
-        Path directory = path == null ? locatePackage2(speculateInstantiator()) : Paths.get(path);
+        Path directory = path == null ? locatePackage(speculateInstantiator()) : Paths.get(path);
 
         if (!Files.isDirectory(directory)) {
             directory = directory.getParent();

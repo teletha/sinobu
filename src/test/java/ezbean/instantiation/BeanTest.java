@@ -127,7 +127,7 @@ public class BeanTest {
         BuiltinBean bean = I.make(BuiltinBean.class);
         assertNotNull(bean);
 
-        File file = I.locate("test");
+        File file = new File("test");
 
         assertEquals(null, bean.getFile());
         bean.setFile(file);

@@ -393,23 +393,6 @@ public class XMLSerializationTest {
         assertEquals(testFile, bean.getPath());
     }
 
-    /**
-     * Test {@link ezbean.io.FilePath}.
-     */
-    @Test
-    public void ezbeanFile() throws Exception {
-        BuiltinBean bean = I.make(BuiltinBean.class);
-        bean.setFile(testFile.toFile());
-
-        // write
-        I.xml(bean, testFile);
-
-        // read
-        bean = I.xml(testFile, I.make(BuiltinBean.class));
-        assertNotNull(bean);
-        assertEquals(testFile.toFile(), bean.getFile());
-    }
-
     @Test
     public void transientProperty() throws Exception {
         TransientBean bean = I.make(TransientBean.class);

@@ -65,7 +65,7 @@ public final class ClassUtil {
         CodeSource source = clazz.getProtectionDomain().getCodeSource();
 
         // API definition
-        return (source == null) ? null : I.locate(source.getLocation()).toPath();
+        return (source == null) ? null : I.locate(source.getLocation());
     }
 
     /**

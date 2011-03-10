@@ -44,7 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import ezbean.Accessible;
 import ezbean.I;
 import ezbean.Modules;
-import ezbean.io.FilePath;
 
 /**
  * <p>
@@ -98,7 +97,6 @@ public class Model<M> {
 
         // io, nio
         codecs.add(File.class);
-        codecs.add(FilePath.class);
     }
 
     /** The {@link Class} which is represented by this {@link Model}. */
