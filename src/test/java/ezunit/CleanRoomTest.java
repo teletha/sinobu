@@ -33,7 +33,7 @@ public class CleanRoomTest {
 
     @Test
     public void locateFile() {
-        Path file = room.locateFile2("empty");
+        Path file = room.locateFile("empty");
 
         assertTrue(Files.exists(file));
         assertTrue(Files.isRegularFile(file));
@@ -41,7 +41,7 @@ public class CleanRoomTest {
 
     @Test
     public void locateArchive() {
-        Path file = room.locateFile2("archive.zip");
+        Path file = room.locateFile("archive.zip");
 
         assertTrue(Files.exists(file));
         assertTrue(Files.isRegularFile(file));
@@ -50,7 +50,7 @@ public class CleanRoomTest {
 
     @Test
     public void locateDirectoryFromAbsent() {
-        Path file = room.locateDirectory2("absent");
+        Path file = room.locateDirectory("absent");
 
         assertTrue(Files.exists(file));
         assertTrue(Files.isDirectory(file));
@@ -58,7 +58,7 @@ public class CleanRoomTest {
 
     @Test
     public void locateDirectoryFromPresent() {
-        Path file = room.locateDirectory2("dir");
+        Path file = room.locateDirectory("dir");
 
         assertTrue(Files.exists(file));
         assertTrue(Files.isDirectory(file));
@@ -66,7 +66,7 @@ public class CleanRoomTest {
 
     @Test
     public void locateAbsent() {
-        Path file = room.locateAbsent2("absent.txt");
+        Path file = room.locateAbsent("absent.txt");
 
         assertFalse(Files.exists(file));
         assertFalse(Files.isRegularFile(file));
@@ -75,23 +75,23 @@ public class CleanRoomTest {
 
     @Test
     public void locatePresentFile() {
-        Path file = room.locateAbsent2("present.txt");
+        Path file = room.locateAbsent("present.txt");
 
         // the specified file doesn't exist yet
         assertFalse(Files.exists(file));
 
         // create file
-        file = room.locateFile2("present.txt");
+        file = room.locateFile("present.txt");
         assertTrue(Files.exists(file));
 
         // the file has already existed
-        file = room.locateFile2("present.txt");
+        file = room.locateFile("present.txt");
         assertTrue(Files.exists(file));
     }
 
     @Test
     public void locatedFileCanDelete() throws Exception {
-        Path file = room.locateFile2("empty");
+        Path file = room.locateFile("empty");
 
         assertTrue(Files.exists(file));
         assertTrue(Files.deleteIfExists(file));

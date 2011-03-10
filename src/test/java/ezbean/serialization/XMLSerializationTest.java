@@ -59,7 +59,7 @@ public class XMLSerializationTest {
     public static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */
-    private static final Path testFile = room.locateFile2("config.xml");
+    private static final Path testFile = room.locateFile("config.xml");
 
     /**
      * Test nesting List.
@@ -814,7 +814,7 @@ public class XMLSerializationTest {
      */
     @Test
     public void testWriteNotExistingFile1() throws Exception {
-        Path notExist = room.locateAbsent2("file");
+        Path notExist = room.locateAbsent("file");
 
         assertTrue(Files.notExists(notExist));
 
@@ -833,7 +833,7 @@ public class XMLSerializationTest {
      */
     @Test
     public void testWriteNotExistingFile2() throws Exception {
-        Path root = room.locateAbsent2("directory");
+        Path root = room.locateAbsent("directory");
         Path notExist = root.resolve("not-exist/not-exist/not-exist");
         assertTrue(Files.notExists(notExist));
 
