@@ -33,16 +33,104 @@ import ezunit.CleanRoom;
  */
 public class PathsTest {
 
-    private Counter counter = new Counter();
-
     @Rule
     public static final CleanRoom room = new CleanRoom("file");
 
+    private Counter counter = new Counter();
+
     @Test
     public void all() throws Exception {
-        Paths set = new Paths(room.root, counter);
-        assertNotNull(set);
+        assertCount(9);
+    }
 
+    @Test
+    public void includeWildcardLeft() throws Exception {
+        assertCount(1, "*.file");
+    }
+
+    @Test
+    public void includeWildcardsLeft() throws Exception {
+        assertCount(3, "**.file");
+    }
+
+    @Test
+    public void includeWildcardRight() throws Exception {
+        assertCount(3, "0*");
+    }
+
+    @Test
+    public void includeWildcardsRight() throws Exception {
+        assertCount(6, "d**");
+    }
+
+    @Test
+    public void includeWildcardBoth() throws Exception {
+        assertCount(2, "*1*");
+    }
+
+    @Test
+    public void includeWildcardsBoth() throws Exception {
+        assertCount(7, "**1**");
+    }
+
+    @Test
+    public void excludeWildcardLeft() throws Exception {
+        assertCount(8, "!*.file");
+    }
+
+    @Test
+    public void excludeWildcardsLeft() throws Exception {
+        assertCount(6, "!**.file");
+    }
+
+    @Test
+    public void excludeWildcardRight() throws Exception {
+        assertCount(6, "!0*");
+    }
+
+    @Test
+    public void excludeWildcardsRight() throws Exception {
+        assertCount(3, "!d**");
+    }
+
+    @Test
+    public void excludeWildcardBoth() throws Exception {
+        assertCount(7, "!*1*");
+    }
+
+    @Test
+    public void excludeWildcardsBoth() throws Exception {
+        assertCount(2, "!**1**");
+    }
+
+    @Test
+    public void mix() {
+        assertCount(2, "**.txt", "!directory**");
+    }
+
+    @Test
+    public void mix2() {
+        assertCount(3, "directory1/**");
+    }
+
+    @Test
+    public void excludeDirectory() {
+        assertCount(6, "!directory1/**");
+    }
+
+    /**
+     * Helper method to test.
+     * 
+     * @param expected
+     * @param patterns
+     */
+    private void assertCount(int expected, String... patterns) {
+        try {
+            new Paths(room.root, counter, patterns);
+            assertEquals(expected, counter.count);
+        } finally {
+            counter.count = 0;
+        }
     }
 
     /**
@@ -50,12 +138,15 @@ public class PathsTest {
      */
     private static class Counter extends SimpleFileVisitor<Path> {
 
+        private int count = 0;
+
         /**
          * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
          *      java.nio.file.attribute.BasicFileAttributes)
          */
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            count++;
             System.out.println(file);
             return super.visitFile(file, attrs);
         }
