@@ -126,7 +126,7 @@ public class PathPatternMatchingTest {
      */
     private void assertCount(int expected, String... patterns) {
         try {
-            new Filer(room.root, counter, patterns);
+            new Filer(room.root, null, 4, counter, patterns);
             assertEquals(expected, counter.count);
         } finally {
             counter.count = 0;
