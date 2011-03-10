@@ -126,7 +126,7 @@ public class PathsTest {
      */
     private void assertCount(int expected, String... patterns) {
         try {
-            new Paths(room.root, counter, patterns);
+            new Filer(room.root, counter, patterns);
             assertEquals(expected, counter.count);
         } finally {
             counter.count = 0;
