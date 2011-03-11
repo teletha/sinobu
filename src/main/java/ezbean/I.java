@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.LinkPermission;
 import java.nio.file.NoSuchFileException;
@@ -131,7 +132,7 @@ import ezbean.xml.XMLWriter;
  * <p>
  * When you want to initialize these enviroment variables and your application environment related
  * to Ezbean (e.g. external class annotation by {@link #annotate(Class, Annotation...)}, dynamic
- * class loading by {@link #load(File)}), you must implement subclass of Ezbean and declare as <a
+ * class loading by {@link #load(Path)}), you must implement subclass of Ezbean and declare as <a
  * href="http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider">service
  * provider</a>.
  * </p>
@@ -553,73 +554,6 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Move a input {@link Path} to an output {@link Path} with its attributes. Simplified strategy
-     * is the following:
-     * </p>
-     * 
-     * <pre>
-     * if (input.isFile) {
-     *   if (output.isFile) {
-     *     // Move input file to output file.
-     *   } else {
-     *     // Move input file under output directory.
-     *   }
-     * } else {
-     *   if (output.isFile) {
-     *     // NoSuchFileException will be thrown.
-     *   } else {
-     *     // Move input directory under output directory deeply.
-     *     // You can also specify <a href="#Patterns">include/exclude patterns</a>.
-     *   }
-     * }
-     * </pre>
-     * <p>
-     * If the output file already exists, it will be replaced by input file unconditionaly. The
-     * exact file attributes that are copied is platform and file system dependent and therefore
-     * unspecified. Minimally, the last-modified-time is copied to the output file if supported by
-     * both the input and output file store. Copying of file timestamps may result in precision
-     * loss.
-     * </p>
-     * <p>
-     * Moving a file is an atomic operation.
-     * </p>
-     * 
-     * @param input A input {@link Path} object which can be file or directory.
-     * @param output An output {@link Path} object which can be file or directory.
-     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
-     * @throws IOException If an I/O error occurs.
-     * @throws NullPointerException If the specified input or output file is <code>null</code>.
-     * @throws NoSuchFileException If the specified input file is not found. If the input file is
-     *             directory and the output file is <em>not</em> directory.
-     * @throws SecurityException In the case of the default provider, and a security manager is
-     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     *             check read access to the source file, the
-     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     *             the target file. If a symbolic link is copied the security manager is invoked to
-     *             check {@link LinkPermission}("symbolic").
-     */
-    public static void move(Path input, Path output, String... patterns) {
-        try {
-            if (Files.isDirectory(input)) {
-                new Visitor(input, output, 1, null, patterns);
-            } else {
-                if (Files.isDirectory(output)) {
-                    output = output.resolve(input.getFileName());
-                }
-
-                // Assure the existence of the parent directory.
-                Files.createDirectories(output.getParent());
-
-                // Copy file actually.
-                Files.move(input, output, ATOMIC_MOVE, REPLACE_EXISTING);
-            }
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * <p>
      * Delete a input {@link Path}. Simplified strategy is the following:
      * </p>
      * 
@@ -992,8 +926,8 @@ public class I implements ClassLoadListener<Extensible> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static Path locate(String filePath) {
-        return Paths.get(filePath);
+    public static Path locate(CharSequence filePath) {
+        return Paths.get(filePath.toString());
     }
 
     /**
@@ -1250,6 +1184,73 @@ public class I implements ClassLoadListener<Extensible> {
             loader = I.loader;
         }
         return ((Module) loader).define(model, trace);
+    }
+
+    /**
+     * <p>
+     * Move a input {@link Path} to an output {@link Path} with its attributes. Simplified strategy
+     * is the following:
+     * </p>
+     * 
+     * <pre>
+     * if (input.isFile) {
+     *   if (output.isFile) {
+     *     // Move input file to output file.
+     *   } else {
+     *     // Move input file under output directory.
+     *   }
+     * } else {
+     *   if (output.isFile) {
+     *     // NoSuchFileException will be thrown.
+     *   } else {
+     *     // Move input directory under output directory deeply.
+     *     // You can also specify <a href="#Patterns">include/exclude patterns</a>.
+     *   }
+     * }
+     * </pre>
+     * <p>
+     * If the output file already exists, it will be replaced by input file unconditionaly. The
+     * exact file attributes that are copied is platform and file system dependent and therefore
+     * unspecified. Minimally, the last-modified-time is copied to the output file if supported by
+     * both the input and output file store. Copying of file timestamps may result in precision
+     * loss.
+     * </p>
+     * <p>
+     * Moving a file is an atomic operation.
+     * </p>
+     * 
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An output {@link Path} object which can be file or directory.
+     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
+     * @throws IOException If an I/O error occurs.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws NoSuchFileException If the specified input file is not found. If the input file is
+     *             directory and the output file is <em>not</em> directory.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
+     */
+    public static void move(Path input, Path output, String... patterns) {
+        try {
+            if (Files.isDirectory(input)) {
+                new Visitor(input, output, 1, null, patterns);
+            } else {
+                if (Files.isDirectory(output)) {
+                    output = output.resolve(input.getFileName());
+                }
+
+                // Assure the existence of the parent directory.
+                Files.createDirectories(output.getParent());
+
+                // Copy file actually.
+                Files.move(input, output, ATOMIC_MOVE, REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -1559,6 +1560,16 @@ public class I implements ClassLoadListener<Extensible> {
 
         // API definition
         return model;
+    }
+
+    public static List<Path> walk(Path base, String... patterns) {
+        Visitor visitor = new Visitor(base, null, 3, null, patterns);
+
+        return visitor.list;
+    }
+
+    public static void walk(Path base, FileVisitor visitor, String... patterns) {
+        new Visitor(base, null, 4, visitor, patterns);
     }
 
     /**

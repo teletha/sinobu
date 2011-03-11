@@ -21,7 +21,7 @@ package ezbean;
  * whenever the class type that you want to observe is loaded into or unloaded from the JVM for the
  * first time. However it is not that this listener can listen to all events caused by any dynamic
  * class loading against JVM. This listenr can listen to only event caused by the following two
- * methods ( {@link I#load(java.io.File)} and {@link I#unload(java.io.File)}).
+ * methods ( {@link I#load(java.nio.file.Path)} and {@link I#unload(java.nio.file.Path)}).
  * </p>
  * <p>
  * You can specify the class type that you want to observe in type parameter. For instance, when you
@@ -82,8 +82,8 @@ package ezbean;
  * </p>
  * 
  * @param <T> A class type that you want to observe.
- * @see I#load(java.io.File)
- * @see I#unload(java.io.File)
+ * @see I#load(java.nio.file.Path)
+ * @see I#unload(java.nio.file.Path)
  * @version 2008/12/05 13:46:19
  */
 public interface ClassLoadListener<T> {

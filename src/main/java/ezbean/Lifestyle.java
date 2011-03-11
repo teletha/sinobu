@@ -36,8 +36,8 @@ package ezbean;
  * </pre>
  * <p>
  * The other is defining custom {@link Lifestyle}. Ezbean recognizes it automatically if your custom
- * lifestyle class is loaded or unloaded by {@link I#load(java.io.File)} and
- * {@link I#unload(java.io.File)} methods. The following is example.
+ * lifestyle class is loaded or unloaded by {@link I#load(java.nio.file.Path)} and
+ * {@link I#unload(java.nio.file.Path)} methods. The following is example.
  * </p>
  * 
  * <pre>
