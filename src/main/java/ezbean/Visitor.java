@@ -28,6 +28,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @version 2011/03/11 8:27:35
@@ -63,6 +64,9 @@ class Visitor extends SimpleFileVisitor<Path> {
 
     /** 0:copy 1:move 2:delete. */
     private final int type;
+
+    /** The matched paths list. */
+    final List<Path> list = new ArrayList();
 
     /**
      * @param visitor
@@ -142,6 +146,7 @@ class Visitor extends SimpleFileVisitor<Path> {
             return CONTINUE;
 
         case 2:
+        case 3:
             return CONTINUE;
 
         default:
@@ -165,6 +170,9 @@ class Visitor extends SimpleFileVisitor<Path> {
 
         case 2:
             Files.delete(path);
+            return CONTINUE;
+
+        case 3:
             return CONTINUE;
 
         default:
@@ -194,7 +202,7 @@ class Visitor extends SimpleFileVisitor<Path> {
                 // File inclusion
                 for (PathMatcher matcher : includes) {
                     if (matcher.matches(relative)) {
-                        return visitor.visitFile(path, attrs);
+                        return visit(path, attrs);
                     }
                 }
 
@@ -204,6 +212,18 @@ class Visitor extends SimpleFileVisitor<Path> {
         }
 
         // API definition
+        return visit(path, attrs);
+    }
+
+    /**
+     * <p>
+     * </p>
+     * 
+     * @param path
+     * @param attrs
+     * @return
+     */
+    private FileVisitResult visit(Path path, BasicFileAttributes attrs) throws IOException {
         switch (type) {
         case 0:
             Files.copy(path, to.resolve(from.relativize(path)), COPY_ATTRIBUTES, REPLACE_EXISTING);
@@ -215,6 +235,10 @@ class Visitor extends SimpleFileVisitor<Path> {
 
         case 2:
             Files.delete(path);
+            return CONTINUE;
+
+        case 3:
+            list.add(path);
             return CONTINUE;
 
         default:

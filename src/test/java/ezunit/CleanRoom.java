@@ -346,21 +346,4 @@ public class CleanRoom extends Sandbox {
             return !name.equals("package-info.html") && !name.endsWith(".class");
         }
     }
-
-    /**
-     * @version 2011/03/09 21:44:23
-     */
-    public static abstract class VirtualFile {
-
-        /**
-         * <p>
-         * Build virtual files.
-         * </p>
-         * 
-         * @param root
-         */
-        private void build(Path root) {
-
-        }
-    }
 }
