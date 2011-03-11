@@ -620,16 +620,32 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Deletes all files deeply.
+     * Delete a input {@link Path}. Simplified strategy is the following:
+     * </p>
+     * 
+     * <pre>
+     * if (input.isFile) {
+     *   // Delete input file unconditionaly.
+     * } else {
+     *   // Delete input directory deeply.
+     *   // You can also specify <a href="#Patterns">include/exclude patterns</a>.
+     * }
+     * </pre>
+     * <p>
+     * On some operating systems it may not be possible to remove a file when it is open and in use
+     * by this Java virtual machine or other programs.
      * </p>
      * 
      * @param input A input {@link Path} object which can be file or directory.
+     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
      * @throws IOException If an I/O error occurs.
-     * @throws NoSuchFileException If the specified input file is not found. If the input file is
-     *             directory and the output file is <em>not</em> directory.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
+     * @throws NullPointerException If the specified input file is <code>null</code>.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void delete(Path intput, String... patterns) {
         if (intput != null) {
