@@ -32,7 +32,7 @@ import java.util.ArrayList;
 /**
  * @version 2011/03/11 8:27:35
  */
-class Filer extends SimpleFileVisitor<Path> {
+class Visitor extends SimpleFileVisitor<Path> {
 
     /** The actual {@link FileVisitor} to delegate. */
     private final FileVisitor<Path> visitor;
@@ -69,7 +69,7 @@ class Filer extends SimpleFileVisitor<Path> {
      * @param base
      * @param patterns
      */
-    public Filer(Path base, Path to, int type, FileVisitor<Path> visitor, String... patterns) {
+    public Visitor(Path base, Path to, int type, FileVisitor<Path> visitor, String... patterns) {
         this.from = base.getParent();
         this.to = to;
         this.type = type;
