@@ -210,7 +210,7 @@ class Filer extends SimpleFileVisitor<Path> {
             return CONTINUE;
 
         case 1:
-            Files.move(path, to.resolve(from.relativize(path)), REPLACE_EXISTING);
+            Files.move(path, to.resolve(from.relativize(path)), ATOMIC_MOVE, REPLACE_EXISTING);
             return CONTINUE;
 
         case 2:
