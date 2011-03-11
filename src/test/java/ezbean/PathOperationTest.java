@@ -77,6 +77,23 @@ public class PathOperationTest {
         synchrotron.areSameFile();
     }
 
+    @Test
+    public void copyFileToAbsentDeeply() throws Exception {
+        Path input = room.locateFile("test01/01.txt");
+        Path output = room.locateAbsent("out/put/deeply");
+        assertTrue(Files.notExists(output.getParent()));
+        assertTrue(Files.notExists(output.getParent().getParent()));
+
+        Synchrotron synchrotron = new Synchrotron(input, output);
+        synchrotron.areNotSameFile();
+
+        // operation
+        I.copy(input, output);
+
+        // assert contents
+        synchrotron.areSameFile();
+    }
+
     @Test(expected = NoSuchFileException.class)
     public void copyDirectoryToFile() throws Exception {
         Path input = room.locateDirectory("test01");
@@ -104,9 +121,45 @@ public class PathOperationTest {
     }
 
     @Test
+    public void copyDirectoryToDirectoryWithReplace() throws Exception {
+        Path input = room.locateDirectory("test01");
+        Path output = room.locateDirectory("out");
+        Files.createFile(output.resolve("01.txt")); // create replaced file
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameDirectory();
+
+        // operation
+        I.copy(input, output);
+
+        // assert contents
+        synchrotron.areSameDirectory();
+        synchrotron.child("01.txt").areSameFile();
+        synchrotron.sibling("directory1").areSameDirectory();
+        synchrotron.child("02.txt").areSameFile();
+    }
+
+    @Test
     public void copyDirectoryToAbsent() throws Exception {
         Path input = room.locateDirectory("test01");
         Path output = room.locateAbsent("out");
+
+        // operation
+        I.copy(input, output);
+
+        // assert contents
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areSameDirectory();
+        synchrotron.child("01.txt").areSameFile();
+        synchrotron.sibling("directory1").areSameDirectory();
+        synchrotron.child("02.txt").areSameFile();
+    }
+
+    @Test
+    public void copyDirectoryToAbsentDeeply() throws Exception {
+        Path input = room.locateDirectory("test01");
+        Path output = room.locateAbsent("out/put/deeply");
+        assertTrue(Files.notExists(output.getParent()));
+        assertTrue(Files.notExists(output.getParent().getParent()));
 
         // operation
         I.copy(input, output);
@@ -206,6 +259,23 @@ public class PathOperationTest {
         synchrotron.exists(false, true);
     }
 
+    @Test
+    public void moveFileToAbsentDeeply() throws Exception {
+        Path input = room.locateFile("test01/01.txt");
+        Path output = room.locateAbsent("out/put/deeply");
+        assertTrue(Files.notExists(output.getParent()));
+        assertTrue(Files.notExists(output.getParent().getParent()));
+
+        Synchrotron synchrotron = new Synchrotron(input, output);
+        synchrotron.exists(true, false);
+
+        // operation
+        I.move(input, output);
+
+        // assert contents
+        synchrotron.exists(false, true);
+    }
+
     @Test(expected = NoSuchFileException.class)
     public void moveDirectoryToFile() throws Exception {
         Path input = room.locateDirectory("test01");
@@ -233,9 +303,45 @@ public class PathOperationTest {
     }
 
     @Test
+    public void moveDirectoryToDirectoryWithReplace() throws Exception {
+        Path input = room.locateDirectory("test01");
+        Path output = room.locateDirectory("out");
+        Files.createFile(output.resolve("01.txt")); // create replaced file
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameDirectory();
+
+        // operation
+        I.move(input, output);
+
+        // assert contents
+        synchrotron.areNotSameDirectory();
+        synchrotron.child("01.txt").areNotSameFile();
+        synchrotron.sibling("directory1").areNotSameFile();
+        synchrotron.child("02.txt").areNotSameFile();
+    }
+
+    @Test
     public void moveDirectoryToAbsent() throws Exception {
         Path input = room.locateDirectory("test01");
         Path output = room.locateAbsent("out");
+
+        // operation
+        I.move(input, output);
+
+        // assert contents
+        Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
+        synchrotron.areNotSameDirectory();
+        synchrotron.child("01.txt").areNotSameDirectory();
+        synchrotron.sibling("directory1").areNotSameDirectory();
+        synchrotron.child("02.txt").areNotSameDirectory();
+    }
+
+    @Test
+    public void moveDirectoryToAbsentDeeply() throws Exception {
+        Path input = room.locateDirectory("test01");
+        Path output = room.locateAbsent("out/put/deeply");
+        assertTrue(Files.notExists(output.getParent()));
+        assertTrue(Files.notExists(output.getParent().getParent()));
 
         // operation
         I.move(input, output);

@@ -33,6 +33,7 @@ import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.LinkPermission;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -171,6 +172,37 @@ import ezbean.xml.XMLWriter;
  *   }
  * }
  * </pre>
+ * 
+ * <h2 id="Patterns">Include/Exclude Patterns</h2>
+ * <p>
+ * Ezbean adopts "glob" pattern matching instead of "regex". * The case-insensitivity is platform
+ * dependent and therefore not specified. Example is the following that:
+ * </p>
+ * <dl>
+ * <dt>*</dt>
+ * <dd>Matches zero or more characters of a name component without crossing directory boundaries.</dd>
+ * <dt>**</dt>
+ * <dd>Matches zero or more characters of a name component with crossing directory boundaries.</dd>
+ * <dt>?</dt>
+ * <dd>Matches exactly one character of a name component.</dd>
+ * <dt>*.java</dt>
+ * <dd>Matches a path that represents a file name ending with ".java" in the current directory.</dd>
+ * <dt>**.java</dt>
+ * <dd>Matches a path that represents a file name ending with ".java" in all directories.</dd>
+ * <dt>!**.java</dt>
+ * <dd>Matches file names <em>not</em> ending with ".java" in all directories.</dd>
+ * <dt>**.*</dt>
+ * <dd>Matches file names containing a dot.</dd>
+ * <dt>**.{java,class}</dt>
+ * <dd>Matches file names ending with ".java" or ".class".</dd>
+ * <dt>**&#47;foo.?</dt>
+ * <dd>Matches file names starting with "foo." and a single character extension.</dd>
+ * </dl>
+ * <p>
+ * The backslash character (\) is used to escape characters that would otherwise be interpreted as
+ * special characters. The expression \\ matches a single backslash and "\{" matches a left brace
+ * for example.
+ * </p>
  * 
  * @see ServiceLoader
  * @version 2010/02/05 1:53:29
@@ -452,18 +484,52 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Generic method to copy a input {@link Path} to an output {@link Path} deeply.
+     * Copy a input {@link Path} to the output {@link Path} with its attributes. Simplified strategy
+     * is the following:
+     * </p>
+     * 
+     * <pre>
+     * if (input.isFile) {
+     *   if (output.isFile) {
+     *     // Copy input file to output file.
+     *   } else {
+     *     // Copy input file under output directory.
+     *   }
+     * } else {
+     *   if (output.isFile) {
+     *     // NoSuchFileException will be thrown.
+     *   } else {
+     *     // Copy input directory under output directory deeply.
+     *     // You can also specify <a href="#Patterns">include/exclude patterns</a>.
+     *   }
+     * }
+     * </pre>
+     * <p>
+     * If the output file already exists, it will be replaced by input file unconditionaly. The
+     * exact file attributes that are copied is platform and file system dependent and therefore
+     * unspecified. Minimally, the last-modified-time is copied to the output file if supported by
+     * both the input and output file store. Copying of file timestamps may result in precision
+     * loss.
+     * </p>
+     * <p>
+     * Copying a file is not an atomic operation. If an {@link IOException} is thrown then it
+     * possible that the output file is incomplete or some of its file attributes have not been
+     * copied from the input file.
      * </p>
      * 
      * @param input A input {@link Path} object which can be file or directory.
      * @param output An output {@link Path} object which can be file or directory.
-     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
      * @throws IOException If an I/O error occurs.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
      * @throws NoSuchFileException If the specified input file is not found. If the input file is
      *             directory and the output file is <em>not</em> directory.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void copy(Path input, Path output, String... patterns) {
         try {
@@ -487,18 +553,50 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Copy all file in this {@link Path} to the specified {@link Path}.
+     * Move a input {@link Path} to an output {@link Path} with its attributes. Simplified strategy
+     * is the following:
+     * </p>
+     * 
+     * <pre>
+     * if (input.isFile) {
+     *   if (output.isFile) {
+     *     // Move input file to output file.
+     *   } else {
+     *     // Move input file under output directory.
+     *   }
+     * } else {
+     *   if (output.isFile) {
+     *     // NoSuchFileException will be thrown.
+     *   } else {
+     *     // Move input directory under output directory deeply.
+     *     // You can also specify <a href="#Patterns">include/exclude patterns</a>.
+     *   }
+     * }
+     * </pre>
+     * <p>
+     * If the output file already exists, it will be replaced by input file unconditionaly. The
+     * exact file attributes that are copied is platform and file system dependent and therefore
+     * unspecified. Minimally, the last-modified-time is copied to the output file if supported by
+     * both the input and output file store. Copying of file timestamps may result in precision
+     * loss.
+     * </p>
+     * <p>
+     * Moving a file is an atomic operation.
      * </p>
      * 
      * @param input A input {@link Path} object which can be file or directory.
      * @param output An output {@link Path} object which can be file or directory.
-     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
      * @throws IOException If an I/O error occurs.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
      * @throws NoSuchFileException If the specified input file is not found. If the input file is
      *             directory and the output file is <em>not</em> directory.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void move(Path input, Path output, String... patterns) {
         try {

@@ -15,17 +15,64 @@
  */
 package ezbean.jdk;
 
-import java.nio.file.Files;
+import static java.nio.file.StandardCopyOption.*;
+import static org.junit.Assert.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.junit.Rule;
 import org.junit.Test;
+
+import ezunit.CleanRoom;
 
 /**
  * @version 2011/03/07 14:37:56
  */
 public class FilesTest {
 
+    @Rule
+    public static final CleanRoom room = new CleanRoom();
+
     @Test(expected = NullPointerException.class)
     public void existNull() throws Exception {
         Files.exists(null); // lololol
+    }
+
+    @Test
+    public void copyEmptyDirectoryIntoAbsentDirectory() throws Exception {
+        Path input = room.locateDirectory("test");
+        Path output = room.locateAbsent("out");
+        assertTrue(Files.isDirectory(input));
+
+        Files.copy(input, output);
+
+        assertTrue(Files.isDirectory(output));
+    }
+
+    @Test
+    public void copyEmptyDirectoryIntoPresentDirectory() throws Exception {
+        Path input = room.locateDirectory("test");
+        Path output = room.locateDirectory("out");
+        assertTrue(Files.isDirectory(input));
+
+        Files.copy(input, output, REPLACE_EXISTING);
+
+        assertTrue(Files.isDirectory(output));
+    }
+
+    @Test
+    public void copyDirectory() throws Exception {
+        Path input = room.locateDirectory("test/child");
+        Path output = room.locateAbsent("out");
+
+        assertTrue(Files.isDirectory(input));
+        assertTrue(Files.isDirectory(input.getParent()));
+
+        Files.copy(input, output, REPLACE_EXISTING);
+
+        assertTrue(Files.isDirectory(output));
+        assertFalse(Files.isDirectory(output.resolve("test")));
+        assertFalse(Files.isDirectory(output.resolve("child")));
     }
 }
