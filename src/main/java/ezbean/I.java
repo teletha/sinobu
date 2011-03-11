@@ -534,7 +534,7 @@ public class I implements ClassLoadListener<Extensible> {
     public static void copy(Path input, Path output, String... patterns) {
         try {
             if (Files.isDirectory(input)) {
-                new Filer(input, output, 0, null, patterns);
+                new Visitor(input, output, 0, null, patterns);
             } else {
                 if (Files.isDirectory(output)) {
                     output = output.resolve(input.getFileName());
@@ -601,7 +601,7 @@ public class I implements ClassLoadListener<Extensible> {
     public static void move(Path input, Path output, String... patterns) {
         try {
             if (Files.isDirectory(input)) {
-                new Filer(input, output, 1, null, patterns);
+                new Visitor(input, output, 1, null, patterns);
             } else {
                 if (Files.isDirectory(output)) {
                     output = output.resolve(input.getFileName());
@@ -651,7 +651,7 @@ public class I implements ClassLoadListener<Extensible> {
         if (intput != null) {
             try {
                 if (Files.isDirectory(intput)) {
-                    new Filer(intput, null, 2, null, patterns);
+                    new Visitor(intput, null, 2, null, patterns);
                 } else {
                     Files.deleteIfExists(intput);
                 }
