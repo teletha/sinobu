@@ -20,20 +20,30 @@ import static java.nio.file.StandardCopyOption.*;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
+import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumSet;
 
 /**
- * @version 2011/03/11 8:27:35
+ * @version 2011/03/12 12:32:44
  */
-class Visitor extends SimpleFileVisitor<Path> {
+@SuppressWarnings("serial")
+class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
+
+    /** The source. */
+    private final Path from;
+
+    /** The destination. */
+    private final Path to;
+
+    /** The operation type. */
+    private final int type;
 
     /** The actual {@link FileVisitor} to delegate. */
     private final FileVisitor<Path> visitor;
@@ -53,63 +63,68 @@ class Visitor extends SimpleFileVisitor<Path> {
     /** The exclude directory pattern. */
     private final PathMatcher[] excludeDirectories;
 
-    /** The prefix size of root path. */
-    private final int start;
-
-    /** The source location. */
-    private final Path from;
-
-    /** The target location. */
-    private final Path to;
-
-    /** 0:copy 1:move 2:delete. */
-    private final int type;
-
-    /** The matched paths list. */
-    final List<Path> list = new ArrayList();
-
     /**
-     * @param visitor
-     * @param base
-     * @param patterns
+     * <p>
+     * Utility for file tree traversal.
+     * </p>
      */
-    public Visitor(Path base, Path to, int type, FileVisitor<Path> visitor, String... patterns) {
-        this.from = base.getParent();
-        this.to = to;
+    Visitor(Path from, Path to, int type, FileVisitor visitor, String... patterns) {
         this.type = type;
         this.visitor = visitor;
-        this.start = base.getNameCount();
 
-        FileSystem system = base.getFileSystem();
-        ArrayList<PathMatcher> includes = new ArrayList();
-        ArrayList<PathMatcher> excludes = new ArrayList();
-        ArrayList<PathMatcher> excludeDirectories = new ArrayList();
-
-        for (String pattern : patterns) {
-            if (pattern.charAt(0) != '!') {
-                // include
-                includes.add(system.getPathMatcher("glob:".concat(pattern)));
-            } else {
-                // exclude
-                if (pattern.endsWith("/**")) {
-                    // directory match
-                    excludeDirectories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
-                } else {
-                    // anything match
-                    excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
-                }
-            }
-        }
-
-        // Convert into Array
-        this.includes = includes.toArray(new PathMatcher[includes.size()]);
-        this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
-        this.excludeDirectories = excludeDirectories.toArray(new PathMatcher[excludeDirectories.size()]);
-        this.file = this.includes.length != 0 || this.excludes.length != 0;
-        this.directory = this.excludeDirectories.length != 0;
+        int depth;
 
         try {
-            Files.walkFileTree(base, this);
+            if (Files.isDirectory(from)) {
+                this.from = 3 <= type ? from : from.getParent();
+                this.to = to;
+                depth = 128;
+            } else {
+                // The delete operation doesn't need destination.
+                if (type != 2) {
+                    if (Files.isDirectory(to)) {
+                        to = to.resolve(from.getFileName());
+                    }
+
+                    Files.createDirectories(to.getParent());
+                }
+
+                this.from = from;
+                this.to = to;
+                depth = 0;
+            }
+
+            // Parse and Generate path matchers..
+            FileSystem system = from.getFileSystem();
+            ArrayList<PathMatcher> includes = new ArrayList();
+            ArrayList<PathMatcher> excludes = new ArrayList();
+            ArrayList<PathMatcher> excludeDirectories = new ArrayList();
+
+            for (String pattern : patterns) {
+                if (pattern.charAt(0) != '!') {
+                    // include
+                    includes.add(system.getPathMatcher("glob:".concat(pattern)));
+                } else {
+                    // exclude
+                    if (pattern.endsWith("/**")) {
+                        // directory match
+                        excludeDirectories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
+                    } else {
+                        // anything match
+                        excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                    }
+                }
+            }
+
+            // Convert into Array
+            this.includes = includes.toArray(new PathMatcher[includes.size()]);
+            this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
+            this.excludeDirectories = excludeDirectories.toArray(new PathMatcher[excludeDirectories.size()]);
+            this.file = this.includes.length != 0 || this.excludes.length != 0;
+            this.directory = this.excludeDirectories.length != 0;
+
+            // Walk file tree actually.
+            Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), depth, this);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -119,34 +134,27 @@ class Visitor extends SimpleFileVisitor<Path> {
      * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object,
      *      java.nio.file.attribute.BasicFileAttributes)
      */
-    @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
         if (directory) {
-            // We must skip root directory.
-            int end = path.getNameCount();
+            // Retrieve relative path from base.
+            Path relative = from.relativize(path);
 
-            if (start != end) {
-                // Retrieve relative path from base.
-                Path relative = path.subpath(start, end);
-
-                // Directory exclusion make fast traversing file tree.
-                for (PathMatcher matcher : excludeDirectories) {
-                    if (matcher.matches(relative)) {
-                        return SKIP_SUBTREE;
-                    }
+            // Directory exclusion make fast traversing file tree.
+            for (PathMatcher matcher : excludeDirectories) {
+                if (matcher.matches(relative)) {
+                    return SKIP_SUBTREE;
                 }
             }
         }
 
-        // API definition
         switch (type) {
-        case 0:
-        case 1:
+        case 0: // copy
+        case 1: // move
             Files.createDirectories(to.resolve(from.relativize(path)));
-            return CONTINUE;
+            // fall-through to reduce footprint
 
-        case 2:
-        case 3:
+        case 2: // delete
+        case 3: // walk
             return CONTINUE;
 
         default:
@@ -157,20 +165,19 @@ class Visitor extends SimpleFileVisitor<Path> {
     /**
      * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
      */
-    @Override
     public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
         switch (type) {
-        case 0:
+        case 0: // copy
             Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
             return CONTINUE;
 
-        case 1:
+        case 1: // move
             Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
-            // pass-through
+            // fall-through to reduce footprint
 
-        case 2:
+        case 2: // delete
             Files.delete(path);
-            return CONTINUE;
+            // fall-through to reduce footprint
 
         case 3:
             return CONTINUE;
@@ -178,18 +185,16 @@ class Visitor extends SimpleFileVisitor<Path> {
         default:
             return visitor.postVisitDirectory(path, exc);
         }
-
     }
 
     /**
      * @see java.nio.file.FileVisitor#visitFile(java.lang.Object,
      *      java.nio.file.attribute.BasicFileAttributes)
      */
-    @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
         if (file) {
             // Retrieve relative path from base.
-            Path relative = path.subpath(start, path.getNameCount());
+            Path relative = from.relativize(path);
 
             // File exclusion
             for (PathMatcher matcher : excludes) {
@@ -210,35 +215,42 @@ class Visitor extends SimpleFileVisitor<Path> {
                 return CONTINUE;
             }
         }
-
-        // API definition
         return visit(path, attrs);
     }
 
     /**
+     * @see java.nio.file.FileVisitor#visitFileFailed(java.lang.Object, java.io.IOException)
+     */
+    public FileVisitResult visitFileFailed(Path path, IOException exc) throws IOException {
+        return CONTINUE;
+    }
+
+    /**
      * <p>
+     * Helper method to invoke file visit actions.
      * </p>
      * 
      * @param path
      * @param attrs
      * @return
+     * @throws IOException
      */
     private FileVisitResult visit(Path path, BasicFileAttributes attrs) throws IOException {
         switch (type) {
-        case 0:
+        case 0: // copy
             Files.copy(path, to.resolve(from.relativize(path)), COPY_ATTRIBUTES, REPLACE_EXISTING);
             return CONTINUE;
 
-        case 1:
+        case 1: // move
             Files.move(path, to.resolve(from.relativize(path)), ATOMIC_MOVE, REPLACE_EXISTING);
             return CONTINUE;
 
-        case 2:
+        case 2: // delete
             Files.delete(path);
             return CONTINUE;
 
-        case 3:
-            list.add(path);
+        case 3: // walk
+            add(path);
             return CONTINUE;
 
         default:

@@ -190,7 +190,7 @@ public class PathOperationTest {
         I.copy(input, output);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void copyAbsentToFile() throws Exception {
         Path input = room.locateAbsent("absent");
         Path output = room.locateFile("out");
@@ -199,7 +199,7 @@ public class PathOperationTest {
         I.copy(input, output);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void copyAbsentToDirectory() throws Exception {
         Path input = room.locateAbsent("absent");
         Path output = room.locateDirectory("out");
@@ -208,7 +208,7 @@ public class PathOperationTest {
         I.copy(input, output);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void copyAbsentToAbsent() throws Exception {
         Path input = room.locateAbsent("absent");
         Path output = room.locateAbsent("out");
@@ -372,7 +372,7 @@ public class PathOperationTest {
         I.move(input, output);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void moveAbsentToFile() throws Exception {
         Path input = room.locateAbsent("absent");
         Path output = room.locateFile("out");
@@ -381,7 +381,7 @@ public class PathOperationTest {
         I.move(input, output);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void moveAbsentToDirectory() throws Exception {
         Path input = room.locateAbsent("absent");
         Path output = room.locateDirectory("out");
@@ -390,7 +390,7 @@ public class PathOperationTest {
         I.move(input, output);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void moveAbsentToAbsent() throws Exception {
         Path input = room.locateAbsent("absent");
         Path output = room.locateAbsent("out");
