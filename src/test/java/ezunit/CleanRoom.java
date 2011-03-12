@@ -34,6 +34,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
@@ -61,6 +64,9 @@ public class CleanRoom extends Sandbox {
 
     /** The clean room monitor. */
     private final Monitor monitor = new Monitor(root);
+
+    /** The all generated {@link VirtualFile}. */
+    private final ArrayList<VirtualFile> virtuals = new ArrayList();
 
     /**
      * Create a clean room for the current directory.
@@ -200,6 +206,42 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
+     * <p>
+     * Locate a present resource file which is assured that the spcified file exists.
+     * </p>
+     * 
+     * @param name A file name.
+     * @return A located present file.
+     */
+    public VirtualFile locateVirtualFile(String name) {
+        VirtualFile file = new VirtualFile(locate(name, true, true));
+
+        // Record new virtual file.
+        virtuals.add(file);
+
+        // API definition
+        return file;
+    }
+
+    /**
+     * <p>
+     * Locate an absent resource which is assured that the specified resource doesn't exists.
+     * </p>
+     * 
+     * @param name A resource name.
+     * @return A located absent file system resource.
+     */
+    public VirtualFile locateVirtual(String name) {
+        VirtualFile file = new VirtualFile(locate(name, false, false));
+
+        // Record new virtual file.
+        virtuals.add(file);
+
+        // API definition
+        return file;
+    }
+
+    /**
      * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
      */
     @Override
@@ -228,6 +270,18 @@ public class CleanRoom extends Sandbox {
     }
 
     /**
+     * @see ezunit.Sandbox#after(java.lang.reflect.Method)
+     */
+    @Override
+    protected void after(Method method) {
+        try {
+            validate();
+        } finally {
+            super.after(method);
+        }
+    }
+
+    /**
      * @see ezunit.ReusableRule#afterClass()
      */
     @Override
@@ -246,6 +300,21 @@ public class CleanRoom extends Sandbox {
 
         // delegate
         super.afterClass();
+    }
+
+    /**
+     * <p>
+     * Vlidate all declarations.
+     * </p>
+     */
+    final void validate() {
+        try {
+            for (VirtualFile virtual : virtuals) {
+                virtual.validate();
+            }
+        } finally {
+            virtuals.clear(); // clear all virtuals
+        }
     }
 
     /**
@@ -344,6 +413,146 @@ public class CleanRoom extends Sandbox {
             String name = path.getFileName().toString();
 
             return !name.equals("package-info.html") && !name.endsWith(".class");
+        }
+    }
+
+    /**
+     * @version 2011/03/12 12:44:19
+     */
+    public static class VirtualFile {
+
+        final Path path;
+
+        /** The all declared file states. */
+        private final List<FutureState> states = new ArrayList();
+
+        /**
+         * Invisible constructor.
+         */
+        private VirtualFile(Path path) {
+            this.path = path;
+        }
+
+        /**
+         * <p>
+         * Assert the followings.
+         * </p>
+         * <ul>
+         * <li>This file exists now.</li>
+         * <li>This file will be deleted after test.</li>
+         * </ul>
+         */
+        public void willBeDeleted() {
+            // now
+            assertTrue(Files.exists(path));
+
+            // future
+            states.add(new FutureState(new Not(new Exist()), "'" + path + "' must be deleted after test."));
+        }
+
+        /**
+         * <p>
+         * Assert the followings.
+         * </p>
+         * <ul>
+         * <li>This file don't exist now.</li>
+         * <li>This file will be created after test.</li>
+         * </ul>
+         */
+        public void willBeCreated() {
+            // now
+            assertTrue(Files.notExists(path));
+
+            // future
+            states.add(new FutureState(new Exist(), "'" + path + "' must be created after test."));
+        }
+
+        /**
+         * <p>
+         * Validate all registered states.
+         * </p>
+         */
+        private void validate() {
+            for (FutureState state : states) {
+                if (!state.validator.validate(path)) {
+                    throw state;
+                }
+            }
+        }
+    }
+
+    /**
+     * @version 2011/03/12 12:46:44
+     */
+    @SuppressWarnings("serial")
+    private static class FutureState extends IllegalStateException {
+
+        /** The file state validator. */
+        private final Validator validator;
+
+        /**
+         * @param message
+         */
+        private FutureState(Validator validator, String message) {
+            super(message);
+
+            this.validator = validator;
+
+            // Hide unnecessary stack traces.
+            StackTraceElement[] elements = getStackTrace();
+            setStackTrace(Arrays.copyOfRange(elements, 1, elements.length));
+        }
+    }
+
+    /**
+     * @version 2011/03/12 13:07:34
+     */
+    private static interface Validator {
+
+        /**
+         * <p>
+         * Validate the specified path state.
+         * <p>
+         * 
+         * @param path A target path.
+         * @return A result.
+         */
+        boolean validate(Path path);
+    }
+
+    /**
+     * @version 2011/03/12 13:08:56
+     */
+    private static class Exist implements Validator {
+
+        /**
+         * @see ezunit.CleanRoom.Validator#validate(java.nio.file.Path)
+         */
+        public boolean validate(Path path) {
+            return Files.exists(path);
+        }
+    }
+
+    /**
+     * @version 2011/03/12 13:19:05
+     */
+    private static class Not implements Validator {
+
+        /** The actual. */
+        private final Validator validator;
+
+        /**
+         * @param validator
+         */
+        private Not(Validator validator) {
+            this.validator = validator;
+        }
+
+        /**
+         * @see ezunit.CleanRoom.Validator#validate(java.nio.file.Path)
+         */
+        public boolean validate(Path path) {
+            return !validator.validate(path);
         }
     }
 }
