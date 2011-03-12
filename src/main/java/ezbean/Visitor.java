@@ -48,12 +48,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
     /** The actual {@link FileVisitor} to delegate. */
     private final FileVisitor<Path> visitor;
 
-    /** The flag whether we should sort out directories or not. */
-    private final boolean directory;
-
-    /** The flag whether we should sort out files or not. */
-    private final boolean file;
-
     /** The include file patterns. */
     private final PathMatcher[] includes;
 
@@ -120,8 +114,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             this.includes = includes.toArray(new PathMatcher[includes.size()]);
             this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
             this.excludeDirectories = excludeDirectories.toArray(new PathMatcher[excludeDirectories.size()]);
-            this.file = this.includes.length != 0 || this.excludes.length != 0;
-            this.directory = this.excludeDirectories.length != 0;
 
             // Walk file tree actually.
             Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), depth, this);
@@ -135,15 +127,13 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
-        if (directory) {
-            // Retrieve relative path from base.
-            Path relative = from.relativize(path);
+        // Retrieve relative path from base.
+        Path relative = from.relativize(path);
 
-            // Directory exclusion make fast traversing file tree.
-            for (PathMatcher matcher : excludeDirectories) {
-                if (matcher.matches(relative)) {
-                    return SKIP_SUBTREE;
-                }
+        // Directory exclusion make fast traversing file tree.
+        for (PathMatcher matcher : excludeDirectories) {
+            if (matcher.matches(relative)) {
+                return SKIP_SUBTREE;
             }
         }
 
@@ -192,30 +182,23 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-        if (file) {
-            // Retrieve relative path from base.
-            Path relative = from.relativize(path);
+        // Retrieve relative path from base.
+        Path relative = from.relativize(path);
 
-            // File exclusion
-            for (PathMatcher matcher : excludes) {
-                if (matcher.matches(relative)) {
-                    return CONTINUE;
-                }
-            }
-
-            if (includes.length != 0) {
-                // File inclusion
-                for (PathMatcher matcher : includes) {
-                    if (matcher.matches(relative)) {
-                        return visit(path, attrs);
-                    }
-                }
-
-                // API definition
+        // File exclusion
+        for (PathMatcher matcher : excludes) {
+            if (matcher.matches(relative)) {
                 return CONTINUE;
             }
         }
-        return visit(path, attrs);
+
+        // File inclusion
+        for (PathMatcher matcher : includes) {
+            if (matcher.matches(relative)) {
+                return visit(path, attrs);
+            }
+        }
+        return includes.length != 0 ? CONTINUE : visit(path, attrs);
     }
 
     /**
