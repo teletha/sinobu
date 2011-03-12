@@ -126,8 +126,9 @@ public class PathPatternMatchingTest {
      */
     private void assertCount(int expected, String... patterns) {
         try {
-            // by visitor
-            I.walk(room.root, counter, patterns);
+            // by user
+            I.walk(room.root, false, counter, patterns);
+            assertEquals(expected, counter.count);
 
             // by walker
             assertEquals(expected, I.walk(room.root, patterns).size());

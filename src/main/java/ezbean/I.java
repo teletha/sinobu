@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static java.nio.file.StandardCopyOption.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -525,8 +523,8 @@ public class I implements ClassLoadListener<Extensible> {
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
      * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the specified input or output file is <code>null</code>.
-     * @throws NoSuchFileException If the specified input file is not found. If the input file is
-     *             directory and the output file is <em>not</em> directory.
+     * @throws NoSuchFileException If the input file is directory and the output file is
+     *             <em>not</em> directory.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
      *             check read access to the source file, the
@@ -535,23 +533,7 @@ public class I implements ClassLoadListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void copy(Path input, Path output, String... patterns) {
-        try {
-            if (Files.isDirectory(input)) {
-                new Visitor(input, output, 0, null, patterns);
-            } else {
-                if (Files.isDirectory(output)) {
-                    output = output.resolve(input.getFileName());
-                }
-
-                // Assure the existence of the parent directory.
-                Files.createDirectories(output.getParent());
-
-                // Copy file actually.
-                Files.copy(input, output, COPY_ATTRIBUTES, REPLACE_EXISTING);
-            }
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
+        new Visitor(input, output, 0, null, patterns);
     }
 
     /**
@@ -583,17 +565,9 @@ public class I implements ClassLoadListener<Extensible> {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static void delete(Path intput, String... patterns) {
-        if (intput != null) {
-            try {
-                if (Files.isDirectory(intput)) {
-                    new Visitor(intput, null, 2, null, patterns);
-                } else {
-                    Files.deleteIfExists(intput);
-                }
-            } catch (IOException e) {
-                throw I.quiet(e);
-            }
+    public static void delete(Path input, String... patterns) {
+        if (input != null) {
+            new Visitor(input, null, 2, null, patterns);
         }
     }
 
@@ -1226,8 +1200,8 @@ public class I implements ClassLoadListener<Extensible> {
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
      * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the specified input or output file is <code>null</code>.
-     * @throws NoSuchFileException If the specified input file is not found. If the input file is
-     *             directory and the output file is <em>not</em> directory.
+     * @throws NoSuchFileException If the input file is directory and the output file is
+     *             <em>not</em> directory.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
      *             check read access to the source file, the
@@ -1236,23 +1210,7 @@ public class I implements ClassLoadListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void move(Path input, Path output, String... patterns) {
-        try {
-            if (Files.isDirectory(input)) {
-                new Visitor(input, output, 1, null, patterns);
-            } else {
-                if (Files.isDirectory(output)) {
-                    output = output.resolve(input.getFileName());
-                }
-
-                // Assure the existence of the parent directory.
-                Files.createDirectories(output.getParent());
-
-                // Copy file actually.
-                Files.move(input, output, ATOMIC_MOVE, REPLACE_EXISTING);
-            }
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
+        new Visitor(input, output, 1, null, patterns);
     }
 
     /**
@@ -1564,10 +1522,54 @@ public class I implements ClassLoadListener<Extensible> {
         return model;
     }
 
+    /**
+     * <p>
+     * Walk a file tree.
+     * </p>
+     * <p>
+     * This method walks a file tree rooted at a given starting file. The file tree traversal is
+     * depth-first with the given {@link FileVisitor} invoked for each file encountered. File tree
+     * traversal completes when all accessible files in the tree have been visited, or a visit
+     * method returns a result of {@link FileVisitResult#TERMINATE}. Where a visit method terminates
+     * due an {@link IOException}, an uncaught error, or runtime exception, then the traversal is
+     * terminated and the error or exception is propagated to the caller of this method.
+     * </p>
+     * <p>
+     * For each file encountered this method attempts to read its {@link BasicFileAttributes}. If
+     * the file is not a directory then the
+     * {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked with the file
+     * attributes. If the file attributes cannot be read, due to an I/O exception, then the
+     * {@link FileVisitor#visitFileFailed(Object, IOException)s} method is invoked with the I/O
+     * exception.
+     * </p>
+     * <p>
+     * Where the file is a directory, and the directory could not be opened, then the
+     * {@link FileVisitor#visitFileFailed(Object, IOException)} method is invoked with the I/O
+     * exception, after which, the file tree walk continues, by default, at the next sibling of the
+     * directory.
+     * </p>
+     * <p>
+     * Where the directory is opened successfully, then the entries in the directory, and their
+     * descendants are visited. When all entries have been visited, or an I/O error occurs during
+     * iteration of the directory, then the directory is closed and the visitor's
+     * {@link FileVisitor#postVisitDirectory(Object, IOException)} method is invoked. The file tree
+     * walk then continues, by default, at the next sibling of the directory.
+     * </p>
+     * <p>
+     * If a visitor returns a result of <code>null</code> then {@link NullPointerException} is
+     * thrown.
+     * </p>
+     * <p>
+     * When a security manager is installed and it denies access to a file (or directory), then it
+     * is ignored and the visitor is not invoked for that file (or directory).
+     * </p>
+     * 
+     * @param start
+     * @param visitor
+     * @param patterns
+     */
     public static List<Path> walk(Path base, String... patterns) {
-        Visitor visitor = new Visitor(base, null, 3, null, patterns);
-
-        return visitor.list;
+        return new Visitor(base, null, 3, null, patterns);
     }
 
     /**
@@ -1616,7 +1618,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @param visitor
      * @param patterns
      */
-    public static void walk(Path base, FileVisitor visitor, String... patterns) {
+    public static void walk(Path base, boolean baseRelative, FileVisitor visitor, String... patterns) {
         new Visitor(base, null, 4, visitor, patterns);
     }
 
