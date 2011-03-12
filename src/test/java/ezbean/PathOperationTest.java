@@ -422,6 +422,7 @@ public class PathOperationTest {
         // operation
         I.delete(input);
 
+        assertTrue(Files.exists(input.getParent()));
         assertTrue(Files.notExists(input));
         assertTrue(Files.notExists(input.resolve("01.txt")));
         assertTrue(Files.notExists(input.resolve("directory1/01.txt")));

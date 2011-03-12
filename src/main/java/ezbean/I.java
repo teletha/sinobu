@@ -206,7 +206,7 @@ import ezbean.xml.XMLWriter;
  * </p>
  * 
  * @see ServiceLoader
- * @version 2010/02/05 1:53:29
+ * @version 2011/03/13 0:32:41
  */
 public class I implements ClassLoadListener<Extensible> {
 
@@ -1524,52 +1524,15 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Walk a file tree.
-     * </p>
-     * <p>
-     * This method walks a file tree rooted at a given starting file. The file tree traversal is
-     * depth-first with the given {@link FileVisitor} invoked for each file encountered. File tree
-     * traversal completes when all accessible files in the tree have been visited, or a visit
-     * method returns a result of {@link FileVisitResult#TERMINATE}. Where a visit method terminates
-     * due an {@link IOException}, an uncaught error, or runtime exception, then the traversal is
-     * terminated and the error or exception is propagated to the caller of this method.
-     * </p>
-     * <p>
-     * For each file encountered this method attempts to read its {@link BasicFileAttributes}. If
-     * the file is not a directory then the
-     * {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked with the file
-     * attributes. If the file attributes cannot be read, due to an I/O exception, then the
-     * {@link FileVisitor#visitFileFailed(Object, IOException)s} method is invoked with the I/O
-     * exception.
-     * </p>
-     * <p>
-     * Where the file is a directory, and the directory could not be opened, then the
-     * {@link FileVisitor#visitFileFailed(Object, IOException)} method is invoked with the I/O
-     * exception, after which, the file tree walk continues, by default, at the next sibling of the
-     * directory.
-     * </p>
-     * <p>
-     * Where the directory is opened successfully, then the entries in the directory, and their
-     * descendants are visited. When all entries have been visited, or an I/O error occurs during
-     * iteration of the directory, then the directory is closed and the visitor's
-     * {@link FileVisitor#postVisitDirectory(Object, IOException)} method is invoked. The file tree
-     * walk then continues, by default, at the next sibling of the directory.
-     * </p>
-     * <p>
-     * If a visitor returns a result of <code>null</code> then {@link NullPointerException} is
-     * thrown.
-     * </p>
-     * <p>
-     * When a security manager is installed and it denies access to a file (or directory), then it
-     * is ignored and the visitor is not invoked for that file (or directory).
+     * Walk a file tree and collect files you want to match.
      * </p>
      * 
-     * @param start
-     * @param visitor
-     * @param patterns
+     * @param start A depature point.
+     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
+     * @return All matched files. (<em>not</em> including directory)
      */
-    public static List<Path> walk(Path base, String... patterns) {
-        return new Visitor(base, null, 3, null, patterns);
+    public static List<Path> walk(Path start, String... patterns) {
+        return new Visitor(start, null, 3, null, patterns);
     }
 
     /**
@@ -1614,12 +1577,12 @@ public class I implements ClassLoadListener<Extensible> {
      * is ignored and the visitor is not invoked for that file (or directory).
      * </p>
      * 
-     * @param start
-     * @param visitor
-     * @param patterns
+     * @param start A depature point.
+     * @param visitor A file tree visitor to invoke for each file and directory.
+     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      */
-    public static void walk(Path base, FileVisitor visitor, String... patterns) {
-        new Visitor(base, null, 4, visitor, patterns);
+    public static void walk(Path start, FileVisitor visitor, String... patterns) {
+        new Visitor(start, null, 4, visitor, patterns);
     }
 
     /**

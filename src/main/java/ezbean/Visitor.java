@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 /**
- * @version 2011/03/12 12:32:44
+ * @version 2011/03/13 0:32:21
  */
 @SuppressWarnings("serial")
 class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
@@ -55,7 +55,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
     private final PathMatcher[] excludes;
 
     /** The exclude directory pattern. */
-    private final PathMatcher[] excludeDirectories;
+    private final PathMatcher[] directories;
 
     /**
      * <p>
@@ -66,57 +66,46 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         this.type = type;
         this.visitor = visitor;
 
-        int depth;
-
         try {
-            if (Files.isDirectory(from)) {
-                this.from = 3 <= type ? from : from.getParent();
-                this.to = to;
-                depth = 128;
-            } else {
-                // The delete operation doesn't need destination.
-                if (type != 2) {
-                    if (Files.isDirectory(to)) {
-                        to = to.resolve(from.getFileName());
-                    }
+            boolean directory = Files.isDirectory(from);
 
-                    Files.createDirectories(to.getParent());
-                }
+            // The copy and move operations need the root path.
+            this.from = directory && type < 2 ? from.getParent() : from;
 
-                this.from = from;
-                this.to = to;
-                depth = 0;
+            // The copy and move operations need destination. If the source is file, so destination
+            // must be file and its name is equal to source file.
+            this.to = !directory && type < 2 && Files.isDirectory(to) ? to.resolve(from.getFileName()) : to;
+
+            if (type < 2) {
+                Files.createDirectories(to.getParent());
             }
 
-            // Parse and Generate path matchers..
+            // Parse and create path matchers..
             FileSystem system = from.getFileSystem();
             ArrayList<PathMatcher> includes = new ArrayList();
             ArrayList<PathMatcher> excludes = new ArrayList();
-            ArrayList<PathMatcher> excludeDirectories = new ArrayList();
+            ArrayList<PathMatcher> directories = new ArrayList();
 
             for (String pattern : patterns) {
                 if (pattern.charAt(0) != '!') {
                     // include
                     includes.add(system.getPathMatcher("glob:".concat(pattern)));
+                } else if (!pattern.endsWith("/**")) {
+                    // exclude files
+                    excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
                 } else {
-                    // exclude
-                    if (pattern.endsWith("/**")) {
-                        // directory match
-                        excludeDirectories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
-                    } else {
-                        // anything match
-                        excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
-                    }
+                    // exclude directory
+                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
                 }
             }
 
             // Convert into Array
             this.includes = includes.toArray(new PathMatcher[includes.size()]);
             this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
-            this.excludeDirectories = excludeDirectories.toArray(new PathMatcher[excludeDirectories.size()]);
+            this.directories = directories.toArray(new PathMatcher[directories.size()]);
 
             // Walk file tree actually.
-            Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), depth, this);
+            Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), directory ? Integer.MAX_VALUE : 0, this);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -131,7 +120,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         Path relative = from.relativize(path);
 
         // Directory exclusion make fast traversing file tree.
-        for (PathMatcher matcher : excludeDirectories) {
+        for (PathMatcher matcher : directories) {
             if (matcher.matches(relative)) {
                 return SKIP_SUBTREE;
             }
@@ -140,7 +129,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         switch (type) {
         case 0: // copy
         case 1: // move
-            Files.createDirectories(to.resolve(from.relativize(path)));
+            Files.createDirectories(to.resolve(relative));
             // fall-through to reduce footprint
 
         case 2: // delete
@@ -169,7 +158,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             Files.delete(path);
             // fall-through to reduce footprint
 
-        case 3:
+        case 3: // walk
             return CONTINUE;
 
         default:
