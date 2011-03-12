@@ -290,16 +290,16 @@ public class PathOperationTest {
         Path input = room.locateDirectory("test01");
         Path output = room.locateDirectory("out");
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
-        synchrotron.areNotSameDirectory();
+        synchrotron.exists(true, false);
 
         // operation
         I.move(input, output);
 
         // assert contents
-        synchrotron.areNotSameDirectory();
-        synchrotron.child("01.txt").areNotSameFile();
-        synchrotron.sibling("directory1").areNotSameFile();
-        synchrotron.child("02.txt").areNotSameFile();
+        synchrotron.exists(false, true);
+        synchrotron.child("01.txt").exists(false, true);
+        synchrotron.sibling("directory1").exists(false, true);
+        synchrotron.child("02.txt").exists(false, true);
     }
 
     @Test
@@ -308,16 +308,16 @@ public class PathOperationTest {
         Path output = room.locateDirectory("out");
         Files.createFile(output.resolve("01.txt")); // create replaced file
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
-        synchrotron.areNotSameDirectory();
+        synchrotron.exists(true, false);
 
         // operation
         I.move(input, output);
 
         // assert contents
-        synchrotron.areNotSameDirectory();
-        synchrotron.child("01.txt").areNotSameFile();
-        synchrotron.sibling("directory1").areNotSameFile();
-        synchrotron.child("02.txt").areNotSameFile();
+        synchrotron.exists(false, true);
+        synchrotron.child("01.txt").exists(false, true);
+        synchrotron.sibling("directory1").exists(false, true);
+        synchrotron.child("02.txt").exists(false, true);
     }
 
     @Test
@@ -330,10 +330,10 @@ public class PathOperationTest {
 
         // assert contents
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
-        synchrotron.areNotSameDirectory();
-        synchrotron.child("01.txt").areNotSameDirectory();
-        synchrotron.sibling("directory1").areNotSameDirectory();
-        synchrotron.child("02.txt").areNotSameDirectory();
+        synchrotron.exists(false, true);
+        synchrotron.child("01.txt").exists(false, true);
+        synchrotron.sibling("directory1").exists(false, true);
+        synchrotron.child("02.txt").exists(false, true);
     }
 
     @Test
@@ -348,10 +348,10 @@ public class PathOperationTest {
 
         // assert contents
         Synchrotron synchrotron = new Synchrotron(input, output.resolve(input.getFileName()));
-        synchrotron.areNotSameDirectory();
-        synchrotron.child("01.txt").areNotSameDirectory();
-        synchrotron.sibling("directory1").areNotSameDirectory();
-        synchrotron.child("02.txt").areNotSameDirectory();
+        synchrotron.exists(false, true);
+        synchrotron.child("01.txt").exists(false, true);
+        synchrotron.sibling("directory1").exists(false, true);
+        synchrotron.child("02.txt").exists(false, true);
     }
 
     @Test(expected = NullPointerException.class)
