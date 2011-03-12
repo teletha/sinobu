@@ -1618,7 +1618,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @param visitor
      * @param patterns
      */
-    public static void walk(Path base, boolean baseRelative, FileVisitor visitor, String... patterns) {
+    public static void walk(Path base, FileVisitor visitor, String... patterns) {
         new Visitor(base, null, 4, visitor, patterns);
     }
 
