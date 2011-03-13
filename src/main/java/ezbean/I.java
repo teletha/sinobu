@@ -426,25 +426,29 @@ public class I implements ClassLoadListener<Extensible> {
         // retrieve a tracer of the current processing thread
         Deque<List> tracer = tracers.resolve();
 
-        // create target binding
-        Observer targetBind = new Observer(tracer.poll(), null);
+        try {
+            // create target binding
+            Observer targetBind = new Observer(tracer.poll(), null);
 
-        // create source binding
-        Observer subjectBind = new Observer(tracer.poll(), targetBind);
+            // create source binding
+            Observer subjectBind = new Observer(tracer.poll(), targetBind);
 
-        if (twoway) {
-            // bind each other
-            targetBind.listener = subjectBind;
-        } else {
-            // dispose target binding
-            targetBind.dispose();
+            if (twoway) {
+                // bind each other
+                targetBind.listener = subjectBind;
+            } else {
+                // dispose target binding
+                targetBind.dispose();
+            }
+
+            // initial property binding
+            subjectBind.change(null, subjectBind.path.get(0), null, null);
+
+            // API definition
+            return subjectBind;
+        } finally {
+            tracer.clear(); // clean up property path tracing context
         }
-
-        // initial property binding
-        subjectBind.change(null, subjectBind.path.get(0), null, null);
-
-        // API definition
-        return subjectBind;
     }
 
     /**
@@ -1232,8 +1236,14 @@ public class I implements ClassLoadListener<Extensible> {
             throw new NullPointerException();
         }
 
-        // API definition
-        return new Observer(tracers.resolve().poll(), listener);
+        Deque<List> tracer = tracers.resolve();
+
+        try {
+            // API definition
+            return new Observer(tracer.poll(), listener);
+        } finally {
+            tracer.clear(); // clean up property path tracing context
+        }
     }
 
     /**
