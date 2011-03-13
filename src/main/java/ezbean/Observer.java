@@ -26,7 +26,7 @@ import ezbean.model.Property;
  * This implementation is dirty, but small footprint.
  * </p>
  * 
- * @version 2010/01/10 8:44:55
+ * @version 2011/03/13 11:06:24
  */
 class Observer extends ModelWalker implements PropertyListener, Disposable {
 
