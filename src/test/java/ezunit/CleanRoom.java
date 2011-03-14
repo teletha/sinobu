@@ -17,6 +17,7 @@ package ezunit;
 
 import static ezunit.Ezunit.*;
 import static ezunit.UnsafeUtility.*;
+import static java.nio.file.StandardCopyOption.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
@@ -72,7 +73,16 @@ public class CleanRoom extends Sandbox {
      * Create a clean room for the current directory.
      */
     public CleanRoom() {
-        this(null);
+        this((Path) null);
+    }
+
+    /**
+     * Create a clean room for the directory that the specified path indicates.
+     * 
+     * @param relativePath A relative location path you want to use.
+     */
+    public CleanRoom(String relativePath) {
+        this(I.locate(relativePath));
     }
 
     /**
@@ -80,16 +90,21 @@ public class CleanRoom extends Sandbox {
      * 
      * @param path A relative location path you want to use.
      */
-    public CleanRoom(String path) {
+    public CleanRoom(Path path) {
         Path directory = locatePackage(speculateInstantiator());
 
         if (path != null) {
-            directory = directory.resolve(path);
+            if (path.isAbsolute()) {
+                directory = path;
+            } else {
+                directory = directory.resolve(path);
+            }
         }
 
         if (!Files.isDirectory(directory)) {
             directory = directory.getParent();
         }
+
         this.host = directory;
 
         // access control
@@ -256,13 +271,8 @@ public class CleanRoom extends Sandbox {
             // clean up all resources
             sweep(root);
 
-            // create actual clean room
-            Files.createDirectories(root);
-
             // copy all resources newly
-            for (Path path : Files.newDirectoryStream(host, monitor)) {
-                I.copy(path, root, "!**.class"); // TODO filter
-            }
+            copyDirectory(host, root);
 
             // reset
             monitor.modified = false;
@@ -315,6 +325,41 @@ public class CleanRoom extends Sandbox {
         } finally {
             virtuals.clear(); // clear all virtuals
         }
+    }
+
+    /**
+     * <p>
+     * Helper method to copy all resource in the specified directory.
+     * </p>
+     * 
+     * @param input A input directory.
+     * @param output An output directory.
+     * @throws IOException I/O error.
+     */
+    private void copyDirectory(Path input, Path output) throws IOException {
+        Files.createDirectories(output);
+
+        for (Path path : Files.newDirectoryStream(input, monitor)) {
+            if (Files.isDirectory(path)) {
+                copyDirectory(path, output.resolve(path.getFileName()));
+            } else {
+                copyFile(path, output.resolve(path.getFileName()));
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Copy a input file to an output file. You can override this method to change file copy
+     * behavior.
+     * </p>
+     * 
+     * @param input A input file. (not directory)
+     * @param output An output file. (not directory)
+     * @throws IOException I/O error.
+     */
+    protected void copyFile(Path input, Path output) throws IOException {
+        Files.copy(input, output, COPY_ATTRIBUTES);
     }
 
     /**
