@@ -1399,51 +1399,55 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     /**
-     * @param <S>
-     * @param <T>
-     * @param source
-     * @param destinationClass
-     * @return
+     * <p>
+     * Transform any type object into the specified type possible.
+     * </p>
+     * 
+     * @param <M> A output type you want to transform into.
+     * @param input A target object.
+     * @param output A target type.
+     * @return A transformed object.
+     * @throws NullPointerException If the output type is <code>null</code>.
      */
-    public static <S, T> T transform(S source, Class<T> destinationClass) {
+    public static <M> M transform(Object input, Class<M> output) {
         // check null
-        if (source == null) {
+        if (input == null) {
             return null;
         }
 
-        Model<S> sourceModel = Model.load((Class) source.getClass());
-        Model<T> destinationModel = Model.load(destinationClass);
+        Model inputModel = Model.load((Class) input.getClass());
+        Model<M> outputModel = Model.load(output);
 
         // no conversion
-        if (sourceModel == destinationModel) {
-            return (T) source;
+        if (inputModel == outputModel) {
+            return (M) input;
         }
 
-        Codec<S> sourceCodec = sourceModel.getCodec();
-        Codec<T> destinationCodec = destinationModel.getCodec();
+        Codec inputCodec = inputModel.getCodec();
+        Codec<M> outputCodec = outputModel.getCodec();
 
         // check whether each model are attribute model or not
-        if (sourceCodec == null && destinationCodec == null) {
+        if (inputCodec == null && outputCodec == null) {
             // we should copy property values
 
             // create destination object
-            T m = I.make(destinationClass);
+            M m = I.make(output);
 
             // copy actually
-            sourceModel.walk(source, new ModelState(m, destinationModel));
+            inputModel.walk(input, new ModelState(m, outputModel));
 
             // API definition
             return m;
         } else {
             // type conversion
-            if (destinationClass == String.class && sourceCodec != null) {
-                return (T) sourceCodec.encode(source);
+            if (output == String.class) {
+                return (M) ((inputCodec != null) ? inputCodec.encode(input) : input.toString());
             }
 
-            if (sourceModel.type == String.class && destinationCodec != null) {
-                return destinationCodec.decode((String) source);
+            if (inputModel.type == String.class && outputCodec != null) {
+                return outputCodec.decode((String) input);
             }
-            return (T) source;
+            return (M) input;
         }
     }
 
