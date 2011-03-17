@@ -29,7 +29,6 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-import ezbean.I;
 import ezbean.model.ClassUtil;
 
 /**
@@ -89,8 +88,8 @@ public abstract class ReusableRule implements MethodRule {
     /** The nunber of executed test methods. */
     private int executed = 0;
 
-    /** The initialization error holder. */
-    private Throwable initializationError;
+    /** The current trapped error. */
+    private Throwable error;
 
     /** The shutdown hook to invoke afterClass method when only selected test method is executed. */
     private final AfterClassInvoker invoker = new AfterClassInvoker();
@@ -134,14 +133,14 @@ public abstract class ReusableRule implements MethodRule {
 
                             // invoke beforeClass
                             beforeClass();
-                        } catch (Exception e) {
-                            throw I.quiet(initializationError = e);
+                        } catch (Throwable e) {
+                            throw error(e);
                         }
                     }
 
                     // check initialization error
-                    if (initializationError != null) {
-                        throw I.quiet(initializationError);
+                    if (error != null) {
+                        throw error;
                     }
 
                     if (!skip(method.getMethod())) {
@@ -158,15 +157,15 @@ public abstract class ReusableRule implements MethodRule {
 
                             // invoke test method
                             statement.evaluate();
-                        } catch (Exception e) {
-                            throw I.quiet(e);
+                        } catch (Throwable e) {
+                            throw error(e);
                         } finally {
                             // invoke after
                             after(method.getMethod());
                         }
                     }
-                } catch (Exception e) {
-                    throw I.quiet(e);
+                } catch (Throwable e) {
+                    throw error(e);
                 } finally {
                     // call after class
                     if (executed == tests) {
@@ -176,8 +175,8 @@ public abstract class ReusableRule implements MethodRule {
                         // invoke afterClass
                         try {
                             afterClass();
-                        } catch (Exception e) {
-                            throw I.quiet(e);
+                        } catch (Throwable e) {
+                            throw error(e);
                         }
                     }
                 }
@@ -234,6 +233,23 @@ public abstract class ReusableRule implements MethodRule {
      * </p>
      */
     protected void afterClass() {
+    }
+
+    /**
+     * <p>
+     * Helper method to throw error user-friendly.
+     * </p>
+     * 
+     * @param throwable A current caught error.
+     * @return A root error.
+     */
+    private Throwable error(Throwable throwable) {
+        if (error == null) {
+            error = throwable;
+        } else {
+            error.addSuppressed(throwable);
+        }
+        return error;
     }
 
     /**
