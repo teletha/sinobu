@@ -514,6 +514,21 @@ public class CleanRoom extends Sandbox {
 
         /**
          * <p>
+         * Assert the followings.
+         * </p>
+         * <ul>
+         * <li>The file which is located by the specified path doesn't exist now.</li>
+         * <li>The file which is located by the specified path will be created.</li>
+         * </ul>
+         * 
+         * @param path
+         */
+        public void willHave(String path) {
+
+        }
+
+        /**
+         * <p>
          * Validate all registered states.
          * </p>
          */
