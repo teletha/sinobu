@@ -246,7 +246,7 @@ public abstract class ReusableRule implements MethodRule {
     private Throwable error(Throwable throwable) {
         if (error == null) {
             error = throwable;
-        } else {
+        } else if (error != throwable) {
             error.addSuppressed(throwable);
         }
         return error;
