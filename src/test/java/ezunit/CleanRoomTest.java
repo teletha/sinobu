@@ -138,7 +138,7 @@ public class CleanRoomTest {
         file.willBeCreated();
 
         // actual operation
-        Files.createFile(file.path);
+        // /Files.createFile(file.path);
 
         // force validation
         room.validate();
@@ -150,6 +150,20 @@ public class CleanRoomTest {
         file.willBeCreated();
 
         // no operation
+
+        // force validation
+        room.validate();
+    }
+
+    @Test
+    public void willHave() throws Exception {
+        VirtualFile directory = room.locateVirtualDirectory("directory");
+        directory.willHave("one");
+        directory.willHave("two");
+
+        // actual operation
+        Files.createFile(directory.path.resolve("one"));
+        Files.createFile(directory.path.resolve("two"));
 
         // force validation
         room.validate();

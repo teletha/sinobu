@@ -29,6 +29,8 @@ import java.nio.charset.Charset;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -229,13 +231,19 @@ public class CleanRoom extends Sandbox {
      * @return A located present file.
      */
     public VirtualFile locateVirtualFile(String name) {
-        VirtualFile file = new VirtualFile(locate(name, true, true));
+        return new VirtualFile(locate(name, true, true), false);
+    }
 
-        // Record new virtual file.
-        virtuals.add(file);
-
-        // API definition
-        return file;
+    /**
+     * <p>
+     * Locate a present resource file which is assured that the spcified file exists.
+     * </p>
+     * 
+     * @param name A file name.
+     * @return A located present file.
+     */
+    public VirtualFile locateVirtualDirectory(String name) {
+        return new VirtualFile(locate(name, true, false), false);
     }
 
     /**
@@ -247,13 +255,7 @@ public class CleanRoom extends Sandbox {
      * @return A located absent file system resource.
      */
     public VirtualFile locateVirtual(String name) {
-        VirtualFile file = new VirtualFile(locate(name, false, false));
-
-        // Record new virtual file.
-        virtuals.add(file);
-
-        // API definition
-        return file;
+        return new VirtualFile(locate(name, false, false), false);
     }
 
     /**
@@ -464,9 +466,16 @@ public class CleanRoom extends Sandbox {
     /**
      * @version 2011/03/12 12:44:19
      */
-    public static class VirtualFile {
+    public class VirtualFile {
 
-        final Path path;
+        /** The actual path. */
+        public final Path path;
+
+        /** The internal base path. */
+        private final Path base;
+
+        /** The internal file system for base path. */
+        private final FileSystem system;
 
         /** The all declared file states. */
         private final List<FutureState> states = new ArrayList();
@@ -474,8 +483,23 @@ public class CleanRoom extends Sandbox {
         /**
          * Invisible constructor.
          */
-        private VirtualFile(Path path) {
+        private VirtualFile(Path path, boolean archive) {
             this.path = path;
+
+            if (!archive) {
+                this.base = path;
+            } else {
+                try {
+                    FileSystem system = FileSystems.newFileSystem(path, null);
+                    this.base = system.getPath("/");
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
+            }
+            this.system = base.getFileSystem();
+
+            // Record new virtual file.
+            virtuals.add(this);
         }
 
         /**
@@ -524,7 +548,8 @@ public class CleanRoom extends Sandbox {
          * @param path
          */
         public void willHave(String path) {
-
+            // future
+            states.add(new FutureState(new Exist(), "'" + path + "' must be created after test."));
         }
 
         /**
