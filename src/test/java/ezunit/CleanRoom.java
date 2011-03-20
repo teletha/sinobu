@@ -37,7 +37,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ezbean.I;
@@ -67,7 +68,7 @@ public class CleanRoom extends Sandbox {
     private final Monitor monitor = new Monitor(root);
 
     /** The all used archives. */
-    private final ArrayList<FileSystem> archives = new ArrayList();
+    private final Set<FileSystem> archives = new HashSet();
 
     /**
      * Create a clean room for the current directory.
@@ -154,8 +155,18 @@ public class CleanRoom extends Sandbox {
      * @return A located present archive file.
      */
     public Path locateArchive(String name) {
-        Path path = locateFile(name);
+        return locateArchive(locateFile(name));
+    }
 
+    /**
+     * <p>
+     * Locate a present resource file which is assured that the spcified file exists as archive.
+     * </p>
+     * 
+     * @param name A file name.
+     * @return A located present archive file.
+     */
+    public Path locateArchive(Path path) {
         try {
             FileSystem system = FileSystems.newFileSystem(path, null);
 

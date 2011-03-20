@@ -44,11 +44,15 @@ public class CleanRoomTest {
 
     @Test
     public void locateArchive() {
-        Path file = room.locateFile("archive.zip");
+        Path file = room.locateFile("jar");
+        I.copy(ClassUtil.getArchive(Test.class), file);
 
-        assertTrue(Files.exists(file));
-        assertTrue(Files.isRegularFile(file));
-        assertFalse(Files.isDirectory(file));
+        file = room.locateArchive("jar");
+        assertTrue(Files.exists(file.resolve("org/junit/Test.class")));
+        assertTrue(Files.isRegularFile(file.resolve("org/junit/Test.class")));
+        assertTrue(Files.exists(file.resolve("org/junit")));
+        assertTrue(Files.isDirectory(file.resolve("org/junit")));
+        assertTrue(Files.notExists(file.resolve("not-exists")));
     }
 
     @Test
@@ -99,15 +103,5 @@ public class CleanRoomTest {
         assertTrue(Files.exists(file));
         assertTrue(Files.deleteIfExists(file));
         assertFalse(Files.exists(file));
-    }
-
-    @Test
-    public void archive() throws Exception {
-        Path file = room.locateFile("jar");
-        I.copy(ClassUtil.getArchive(Test.class), file);
-
-        file = room.locateArchive("jar");
-        assertTrue(Files.exists(file.resolve("org/junit/Test.class")));
-        assertTrue(Files.notExists(file.resolve("not-exists")));
     }
 }
