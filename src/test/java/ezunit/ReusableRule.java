@@ -88,7 +88,7 @@ public abstract class ReusableRule implements MethodRule {
     /** The nunber of executed test methods. */
     private int executed = 0;
 
-    /** The current trapped error. */
+    /** The current trapped error. This field is package private for test. */
     private Throwable error;
 
     /** The shutdown hook to invoke afterClass method when only selected test method is executed. */
@@ -118,6 +118,9 @@ public abstract class ReusableRule implements MethodRule {
      *      org.junit.runners.model.FrameworkMethod, java.lang.Object)
      */
     public final Statement apply(final Statement base, final FrameworkMethod method, final Object target) {
+        // reset previous error
+        error = null;
+
         return new Statement() {
 
             /**
@@ -127,20 +130,11 @@ public abstract class ReusableRule implements MethodRule {
                 try {
                     // call before class
                     if (executed++ == 0) {
-                        try {
-                            // register
-                            Runtime.getRuntime().addShutdownHook(invoker);
+                        // register
+                        Runtime.getRuntime().addShutdownHook(invoker);
 
-                            // invoke beforeClass
-                            beforeClass();
-                        } catch (Throwable e) {
-                            throw error(e);
-                        }
-                    }
-
-                    // check initialization error
-                    if (error != null) {
-                        throw error;
+                        // invoke beforeClass
+                        beforeClass();
                     }
 
                     if (!skip(method.getMethod())) {
@@ -158,14 +152,14 @@ public abstract class ReusableRule implements MethodRule {
                             // invoke test method
                             statement.evaluate();
                         } catch (Throwable e) {
-                            throw error(e);
+                            catchError(e);
                         } finally {
                             // invoke after
                             after(method.getMethod());
                         }
                     }
                 } catch (Throwable e) {
-                    throw error(e);
+                    catchError(e);
                 } finally {
                     // call after class
                     if (executed == tests) {
@@ -175,12 +169,17 @@ public abstract class ReusableRule implements MethodRule {
                         // invoke afterClass
                         try {
                             afterClass();
-                        } catch (Throwable e) {
-                            throw error(e);
+                        } catch (Exception e) {
+                            catchError(e);
                         }
+                    }
+
+                    if (error != null) {
+                        throw error;
                     }
                 }
             }
+
         };
     }
 
@@ -237,19 +236,43 @@ public abstract class ReusableRule implements MethodRule {
 
     /**
      * <p>
+     * Burke the current trapped error unconditionaly.
+     * </p>
+     */
+    protected final void burkeError() {
+        burkeError(null);
+    }
+
+    /**
+     * <p>
+     * Burke the current trapped error if its type is the specified {@link Throwable}.
+     * </p>
+     * 
+     * @param condition The conditional type.
+     */
+    protected final void burkeError(Class<? extends Throwable> condition) {
+        if (condition == null) {
+            condition = Throwable.class;
+        }
+
+        if (condition.isInstance(error)) {
+            error = null;
+        }
+    }
+
+    /**
+     * <p>
      * Helper method to throw error user-friendly.
      * </p>
      * 
      * @param throwable A current caught error.
-     * @return A root error.
      */
-    private Throwable error(Throwable throwable) {
+    private void catchError(Throwable throwable) {
         if (error == null) {
             error = throwable;
         } else if (error != throwable) {
             error.addSuppressed(throwable);
         }
-        return error;
     }
 
     /**
