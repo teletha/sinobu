@@ -88,7 +88,7 @@ public abstract class ReusableRule implements MethodRule {
     /** The nunber of executed test methods. */
     private int executed = 0;
 
-    /** The current trapped error. This field is package private for test. */
+    /** The current trapped error. */
     private Throwable error;
 
     /** The shutdown hook to invoke afterClass method when only selected test method is executed. */
@@ -169,7 +169,7 @@ public abstract class ReusableRule implements MethodRule {
                         // invoke afterClass
                         try {
                             afterClass();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             catchError(e);
                         }
                     }
@@ -267,7 +267,7 @@ public abstract class ReusableRule implements MethodRule {
      * 
      * @param throwable A current caught error.
      */
-    private void catchError(Throwable throwable) {
+    protected final void catchError(Throwable throwable) {
         if (error == null) {
             error = throwable;
         } else if (error != throwable) {
