@@ -23,7 +23,8 @@ import java.nio.file.Path;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezunit.CleanRoom.VirtualFile;
+import ezbean.I;
+import ezbean.model.ClassUtil;
 
 /**
  * @version 2011/03/08 18:35:36
@@ -101,71 +102,12 @@ public class CleanRoomTest {
     }
 
     @Test
-    public void virtualFile() throws Exception {
-        VirtualFile file = room.locateVirtualFile("test");
-        assertNotNull(file);
-        assertNotNull(file.path);
-        assertTrue(Files.exists(file.path));
-        assertTrue(Files.isRegularFile(file.path));
-    }
+    public void archive() throws Exception {
+        Path file = room.locateFile("jar");
+        I.copy(ClassUtil.getArchive(Test.class), file);
 
-    @Test
-    public void willBeDeleted() throws Exception {
-        VirtualFile file = room.locateVirtualFile("test");
-        file.willBeDeleted();
-
-        // actual operation
-        Files.delete(file.path);
-
-        // force validation
-        room.validate();
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void willBeDeletedFail() throws Exception {
-        VirtualFile file = room.locateVirtualFile("test");
-        file.willBeDeleted();
-
-        // no operation
-
-        // force validation
-        room.validate();
-    }
-
-    @Test
-    public void willBeCreated() throws Exception {
-        VirtualFile file = room.locateVirtual("test");
-        file.willBeCreated();
-
-        // actual operation
-        // /Files.createFile(file.path);
-
-        // force validation
-        room.validate();
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void willBeCreatedFail() throws Exception {
-        VirtualFile file = room.locateVirtual("test");
-        file.willBeCreated();
-
-        // no operation
-
-        // force validation
-        room.validate();
-    }
-
-    @Test
-    public void willHave() throws Exception {
-        VirtualFile directory = room.locateVirtualDirectory("directory");
-        directory.willHave("one");
-        directory.willHave("two");
-
-        // actual operation
-        Files.createFile(directory.path.resolve("one"));
-        Files.createFile(directory.path.resolve("two"));
-
-        // force validation
-        room.validate();
+        file = room.locateArchive("jar");
+        assertTrue(Files.exists(file.resolve("org/junit/Test.class")));
+        assertTrue(Files.notExists(file.resolve("not-exists")));
     }
 }
