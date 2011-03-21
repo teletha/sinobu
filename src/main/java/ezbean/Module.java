@@ -82,6 +82,9 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
     /** The root of this module. */
     final Path path;
 
+    /** The root of this module. */
+    private final Path base;
+
     /** The list of service provider classes (by class and interface). [java.lang.String, int[]] */
     private final List<Object[]> infos = new CopyOnWriteArrayList();
 
@@ -114,8 +117,10 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
                 path = FileSystems.newFileSystem(path, this).getPath("/");
             }
 
+            this.base = path;
+
             // Then, we can scan module transparently.
-            Files.walkFileTree(path, this);
+            I.walk(path, this, "**.class");
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -142,33 +147,31 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
      */
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         // exclude non-class file
-        if (file.toString().endsWith(".class")) {
-            InputStream input = Files.newInputStream(file);
-            String name = path.relativize(file).toString();
+        InputStream input = Files.newInputStream(file);
+        String name = base.relativize(file).toString();
 
-            // Don't write the following because "fqnc" field requires actual class name. If a
-            // module returns a non-class file (e.g. properties, xml, txt) at the end, there is
-            // a possibility that the module can't distinguish between system and Ezbean
-            // module correctly.
-            //
-            // this.fqcn = name;
-            //
-            // compute fully qualified class name
-            this.fqcn = name.substring(0, name.length() - 6).replace(File.separatorChar, '.');
+        // Don't write the following because "fqnc" field requires actual class name. If a
+        // module returns a non-class file (e.g. properties, xml, txt) at the end, there is
+        // a possibility that the module can't distinguish between system and Ezbean
+        // module correctly.
+        //
+        // this.fqcn = name;
+        //
+        // compute fully qualified class name
+        this.fqcn = name.substring(0, name.length() - 6).replace(File.separatorChar, '.').replace('/', '.');
 
-            // try to read class file and check it
-            try {
-                // static field reference will be inlined by compiler, so we should pass all
-                // flags to ClassReader (it doesn't increase byte code size)
-                new ClassReader(input).accept(this, SKIP_CODE | SKIP_DEBUG | SKIP_FRAMES);
-            } catch (FileNotFoundException e) {
-                // this exception means that the given class name may indicate some external
-                // extension class or interface, so we can ignore it
-            } catch (IllegalStateException e) {
-                // scanning was stoped normally
-            } finally {
-                input.close();
-            }
+        // try to read class file and check it
+        try {
+            // static field reference will be inlined by compiler, so we should pass all
+            // flags to ClassReader (it doesn't increase byte code size)
+            new ClassReader(input).accept(this, SKIP_CODE | SKIP_DEBUG | SKIP_FRAMES);
+        } catch (FileNotFoundException e) {
+            // this exception means that the given class name may indicate some external
+            // extension class or interface, so we can ignore it
+        } catch (IllegalStateException e) {
+            // scanning was stoped normally
+        } finally {
+            input.close();
         }
         return CONTINUE;
     }
