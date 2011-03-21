@@ -44,38 +44,46 @@ import ezbean.sample.SourceAnnotation;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/11/14 21:36:46
+ * @version 2011/03/21 18:30:58
  */
 public class ModuleTest {
 
     @Rule
     public static PrivateModule external = new PrivateModule("module/external", true, false);
 
-    /**
-     * Test method for {@link ezbean.Module#getModuleFile()}.
-     */
+    @Rule
+    public static PrivateModule jar = new PrivateModule("module/external", true, true);
+
     @Test
-    public void testGetModuleFile() throws Exception {
+    public void modulePath() throws Exception {
         Module module = new Module(external.path);
         assertNotNull(module);
         assertEquals(external.path, module.path);
     }
 
-    /**
-     * Ezbean module has a {@link Module}.
-     */
     @Test
-    public void testModuleClassLoader() throws Exception {
+    public void jarModulePath() throws Exception {
+        Module module = new Module(jar.path);
+        assertNotNull(module);
+        assertEquals(jar.path, module.path);
+    }
+
+    @Test
+    public void moduleClassloader() throws Exception {
         Module module = new Module(external.path);
         assertNotNull(module);
         assertNotSame(I.loader, module);
     }
 
-    /**
-     * Test method for {@link ezbean.Module#findAll(java.lang.Class)}.
-     */
     @Test
-    public void testFindProviders1() throws Exception {
+    public void jarModuleClassloader() throws Exception {
+        Module module = new Module(jar.path);
+        assertNotNull(module);
+        assertNotSame(I.loader, module);
+    }
+
+    @Test
+    public void findProviders1() throws Exception {
         Module module = new Module(external.path);
         assertNotNull(module);
 
@@ -87,12 +95,35 @@ public class ModuleTest {
         check(providers, AnnotatedExtendedClass1.class, ExtendedClass3.class, ExtendedClass5.class);
     }
 
-    /**
-     * Test method for {@link ezbean.Module#findAll(java.lang.Class)}.
-     */
     @Test
-    public void testFindProviders2() throws Exception {
+    public void findProvidersFromJar1() throws Exception {
+        Module module = new Module(jar.path);
+        assertNotNull(module);
+
+        List<Class<MarkerInterface1>> providers = module.find(MarkerInterface1.class, false);
+        assertNotNull(providers);
+        assertEquals(3, providers.size());
+
+        // collect names to assert
+        check(providers, AnnotatedExtendedClass1.class, ExtendedClass3.class, ExtendedClass5.class);
+    }
+
+    @Test
+    public void findProviders2() throws Exception {
         Module module = new Module(external.path);
+        assertNotNull(module);
+
+        List<Class<MarkerInterface2>> providers = module.find(MarkerInterface2.class, false);
+        assertNotNull(providers);
+        assertEquals(1, providers.size());
+
+        // collect names to assert
+        check(providers, ExtendedClass4.class);
+    }
+
+    @Test
+    public void findProvidersFomJar2() throws Exception {
+        Module module = new Module(jar.path);
         assertNotNull(module);
 
         List<Class<MarkerInterface2>> providers = module.find(MarkerInterface2.class, false);
@@ -108,7 +139,7 @@ public class ModuleTest {
      * classes.
      */
     @Test
-    public void testFindProviders3() throws Exception {
+    public void findProviders3() throws Exception {
         Module module = new Module(external.path);
         assertNotNull(module);
 
@@ -120,11 +151,8 @@ public class ModuleTest {
         check(providers, AnnotatedClass1.class, AnnotatedClass2.class, AnnotatedClass3.class, AnnotatedExtendedClass1.class, ExtendedClass1.class, ExtendedClass2.class, ExtendedClass3.class, ExtendedClass4.class, ExtendedClass5.class, SingletonClass.class);
     }
 
-    /**
-     * Find annotated classes.
-     */
     @Test
-    public void testFindProviders4() throws Exception {
+    public void findRuntimeAnnotatedClass1() throws Exception {
         Module module = new Module(external.path);
         assertNotNull(module);
 
@@ -136,11 +164,8 @@ public class ModuleTest {
         check(providers, AnnotatedClass1.class, AnnotatedClass3.class, AnnotatedExtendedClass1.class);
     }
 
-    /**
-     * Find annotated classes.
-     */
     @Test
-    public void testFindProviders5() throws Exception {
+    public void findRuntimeAnnotatedClass2() throws Exception {
         Module module = new Module(external.path);
         assertNotNull(module);
 
@@ -152,11 +177,8 @@ public class ModuleTest {
         check(providers, AnnotatedClass2.class, AnnotatedClass3.class);
     }
 
-    /**
-     * Find annotated classes.
-     */
     @Test
-    public void testFindProviders6() throws Exception {
+    public void findSourceAnnotatedClass() throws Exception {
         Module module = new Module(external.path);
         assertNotNull(module);
 
@@ -165,11 +187,8 @@ public class ModuleTest {
         assertEquals(0, providers.size());
     }
 
-    /**
-     * Find annotated classes.
-     */
     @Test
-    public void testFindProviders7() throws Exception {
+    public void findClassAnnotatedClass() throws Exception {
         Module module = new Module(external.path);
         assertNotNull(module);
 
@@ -178,11 +197,8 @@ public class ModuleTest {
         assertEquals(0, providers.size());
     }
 
-    /**
-     * Test that the inline module isn't scanned.
-     */
     @Test
-    public void testModuleInModule() throws Exception {
+    public void moduleInModule() throws Exception {
         Module module = new Module(Paths.get("src/test/resources/ezbean/inline.zip"));
         assertNotNull(module);
 
