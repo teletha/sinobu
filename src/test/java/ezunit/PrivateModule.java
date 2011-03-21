@@ -15,13 +15,21 @@
  */
 package ezunit;
 
+import static java.nio.file.FileVisitResult.*;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.nio.file.DirectoryStream.Filter;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -160,7 +168,24 @@ public class PrivateModule extends ReusableRule {
     @Override
     protected void beforeClass() throws Exception {
         // copy class file with type conversion
-        copy(testcaseRoot.resolve(originalPackage), path.resolve(overriddenPackage));
+        if (!createJar) {
+            copy(testcaseRoot.resolve(originalPackage), path.resolve(overriddenPackage));
+        } else {
+            // create temporary
+            Path temporary = I.locateTemporary();
+
+            // copy class files with conversion
+            copy(testcaseRoot.resolve(originalPackage), temporary.resolve(overriddenPackage));
+
+            // create jar packer
+            Archiver archiver = new Archiver(temporary, path);
+
+            // scan all class files and pack it
+            I.walk(temporary, archiver);
+
+            // close stream properly
+            archiver.output.close();
+        }
     }
 
     /**
@@ -336,5 +361,51 @@ public class PrivateModule extends ReusableRule {
          * @return A result.
          */
         protected abstract boolean accept(String fqcn);
+    }
+
+    /**
+     * @version 2011/03/21 14:41:38
+     */
+    private static class Archiver extends SimpleFileVisitor<Path> {
+
+        /** The actual jar output. */
+        private final ZipOutputStream output;
+
+        /** The base path. */
+        private final Path base;
+
+        /**
+         * @param out
+         * @param base
+         */
+        private Archiver(Path base, Path destination) throws IOException {
+            this.output = new ZipOutputStream(Files.newOutputStream(destination));
+            this.base = base;
+        }
+
+        /**
+         * @see java.nio.file.FileVisitor#visitFile(java.lang.Object,
+         *      java.nio.file.attribute.BasicFileAttributes)
+         */
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            ZipEntry entry = new ZipEntry(base.relativize(file).toString().replace(File.separatorChar, '/'));
+            entry.setSize(attrs.size());
+            entry.setTime(attrs.lastModifiedTime().toMillis());
+            output.putNextEntry(entry);
+
+            // copy data
+            InputStream input = Files.newInputStream(file);
+
+            try {
+                I.copy(input, output, false);
+            } finally {
+                I.quiet(input);
+            }
+            output.closeEntry();
+
+            // API definition
+            return CONTINUE;
+        }
     }
 }

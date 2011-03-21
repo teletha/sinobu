@@ -46,6 +46,9 @@ public class ModulesTest {
     @Rule
     public static final PrivateModule module3 = new PrivateModule("module/external", true, false);
 
+    @Rule
+    public static final PrivateModule module4 = new PrivateModule("module/external", true, true);
+
     /** The clean and empty module repository for test. */
     private Modules modules;
 
@@ -60,6 +63,13 @@ public class ModulesTest {
     public void loadModule() {
         assertEquals(0, modules.modules.size());
         modules.load(module1.path);
+        assertEquals(1, modules.modules.size());
+    }
+
+    @Test
+    public void loadJarModule() {
+        assertEquals(0, modules.modules.size());
+        modules.load(module4.path);
         assertEquals(1, modules.modules.size());
     }
 
@@ -164,6 +174,15 @@ public class ModulesTest {
         modules.load(module1.path);
         assertEquals(1, modules.modules.size());
         modules.unload(module1.path);
+        assertEquals(0, modules.modules.size());
+    }
+
+    @Test
+    public void unloadJarModule() {
+        assertEquals(0, modules.modules.size());
+        modules.load(module4.path);
+        assertEquals(1, modules.modules.size());
+        modules.unload(module4.path);
         assertEquals(0, modules.modules.size());
     }
 
