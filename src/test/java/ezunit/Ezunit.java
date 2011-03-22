@@ -321,7 +321,7 @@ public class Ezunit {
         URL url = caller.getResource(filePath);
 
         if (url == null) {
-            fail("The resource is not found. [" + filePath + "]");
+            throw new AssertionError("The resource is not found. [" + filePath + "]");
         }
 
         // resolve FilePath location
@@ -484,9 +484,7 @@ public class Ezunit {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/08/29 20:19:07
+     * @version 2011/03/23 8:07:19
      */
     private static class IgnoreWhitspaceFilter extends XMLFilterImpl {
 
