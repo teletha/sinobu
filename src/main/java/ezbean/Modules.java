@@ -205,10 +205,12 @@ public final class Modules implements ClassLoadListener {
 
     /**
      * <p>
+     * Load the specified class from Ezbean class loader repository.
      * </p>
      * 
-     * @param fqcn
-     * @return
+     * @param fqcn A fully qualified class name.
+     * @return A loaded class.
+     * @throws ClassNotFoundException If the class is not found.
      */
     public static final Class load(String fqcn) {
         for (Module module : I.make(Modules.class).modules) {
