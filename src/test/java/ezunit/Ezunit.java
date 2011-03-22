@@ -15,7 +15,6 @@
  */
 package ezunit;
 
-import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -76,11 +75,10 @@ public class Ezunit {
      * @param contents FilePath contents.
      */
     public static void assertFile(Path path, String... contents) {
-        assertNotNull(path);
-
-        assertTrue(Files.exists(path));
-        assertTrue(Files.isRegularFile(path));
-        assertThat(Files.isDirectory(path), is(false));
+        assert path != null;
+        assert Files.exists(path);
+        assert Files.isRegularFile(path);
+        assert !Files.isDirectory(path);
 
         String expected = option(contents, null);
 
