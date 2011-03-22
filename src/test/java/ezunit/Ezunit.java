@@ -56,9 +56,7 @@ import ezbean.xml.SAXBuilder;
 import ezbean.xml.XMLWriter;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/08/29 22:04:35
+ * @version 2011/03/23 7:51:19
  */
 public class Ezunit {
 
