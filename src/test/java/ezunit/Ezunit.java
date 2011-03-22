@@ -453,7 +453,7 @@ public class Ezunit {
 
             assertEquals(expected, result);
         } catch (XPathExpressionException e) {
-            fail(e.getLocalizedMessage());
+            throw new AssertionError(e.getLocalizedMessage());
         }
     }
 
