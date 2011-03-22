@@ -15,8 +15,6 @@
  */
 package ezbean.instantiation;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import ezbean.I;
@@ -25,7 +23,7 @@ import ezbean.Manageable;
 import ezbean.Singleton;
 
 /**
- * @version 2010/02/18 9:35:35
+ * @version 2011/03/22 16:54:08
  */
 public class ConstructorInjectionTest {
 
@@ -35,8 +33,8 @@ public class ConstructorInjectionTest {
     @Test
     public void constructorInjection() {
         ConstructorInjection test = I.make(ConstructorInjection.class);
-        assertNotNull(test);
-        assertNotNull(test.injected);
+        assert test != null;
+        assert test.injected != null;
     }
 
     /**
@@ -45,15 +43,15 @@ public class ConstructorInjectionTest {
     @Test
     public void singletonInjection() {
         ConstructorSingletonInjection test1 = I.make(ConstructorSingletonInjection.class);
-        assertNotNull(test1);
-        assertNotNull(test1.injected);
+        assert test1 != null;
+        assert test1.injected != null;
 
         ConstructorSingletonInjection test2 = I.make(ConstructorSingletonInjection.class);
-        assertNotNull(test2);
-        assertNotNull(test2.injected);
+        assert test2 != null;
+        assert test2.injected != null;
 
-        assertNotSame(test1, test2);
-        assertEquals(test1.injected, test2.injected);
+        assert test1 != test2;
+        assert test1.injected == test2.injected;
     }
 
     /**
@@ -62,8 +60,8 @@ public class ConstructorInjectionTest {
     @Test
     public void tooManyConstructors() {
         TooManyConstructors test = I.make(TooManyConstructors.class);
-        assertNotNull(test);
-        assertNull(test.injected);
+        assert test != null;
+        assert test.injected == null;
     }
 
     /**
@@ -163,10 +161,10 @@ public class ConstructorInjectionTest {
     @Test
     public void circularDependenciesWithProvider() {
         CircularLifestyleA circularA = I.make(CircularLifestyleA.class);
-        assertNotNull(circularA.other);
+        assert circularA.other != null;
 
         CircularLifestyleB circularB = I.make(CircularLifestyleB.class);
-        assertNotNull(circularB.other);
+        assert circularB.other != null;
     }
 
     /**
@@ -175,10 +173,10 @@ public class ConstructorInjectionTest {
     @Test
     public void circularDependenciesWithProviderMix() {
         CircularMixA circularA = I.make(CircularMixA.class);
-        assertNotNull(circularA.other);
+        assert circularA.other != null;
 
         CircularMixB circularB = I.make(CircularMixB.class);
-        assertNotNull(circularB.other);
+        assert circularB.other != null;
     }
 
     /**

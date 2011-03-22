@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +42,7 @@ import ezbean.sample.SourceAnnotation;
 import ezunit.PrivateModule;
 
 /**
- * @version 2011/03/21 18:30:58
+ * @version 2011/03/22 16:37:20
  */
 public class ModuleTest {
 
@@ -57,39 +55,39 @@ public class ModuleTest {
     @Test
     public void modulePath() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
-        assertEquals(external.path, module.path);
+        assert module != null;
+        assert external.path == module.path;
     }
 
     @Test
     public void jarModulePath() throws Exception {
         Module module = new Module(jar.path);
-        assertNotNull(module);
-        assertEquals(jar.path, module.path);
+        assert module != null;
+        assert jar.path == module.path;
     }
 
     @Test
     public void moduleClassloader() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
-        assertNotSame(I.loader, module);
+        assert module != null;
+        assert I.loader != module;
     }
 
     @Test
     public void jarModuleClassloader() throws Exception {
         Module module = new Module(jar.path);
-        assertNotNull(module);
-        assertNotSame(I.loader, module);
+        assert module != null;
+        assert I.loader != module;
     }
 
     @Test
     public void findProviders1() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<MarkerInterface1>> providers = module.find(MarkerInterface1.class, false);
-        assertNotNull(providers);
-        assertEquals(3, providers.size());
+        assert providers != null;
+        assert 3 == providers.size();
 
         // collect names to assert
         check(providers, AnnotatedExtendedClass1.class, ExtendedClass3.class, ExtendedClass5.class);
@@ -98,11 +96,11 @@ public class ModuleTest {
     @Test
     public void findProvidersFromJar1() throws Exception {
         Module module = new Module(jar.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<MarkerInterface1>> providers = module.find(MarkerInterface1.class, false);
-        assertNotNull(providers);
-        assertEquals(3, providers.size());
+        assert providers != null;
+        assert 3 == providers.size();
 
         // collect names to assert
         check(providers, AnnotatedExtendedClass1.class, ExtendedClass3.class, ExtendedClass5.class);
@@ -111,11 +109,11 @@ public class ModuleTest {
     @Test
     public void findProviders2() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<MarkerInterface2>> providers = module.find(MarkerInterface2.class, false);
-        assertNotNull(providers);
-        assertEquals(1, providers.size());
+        assert providers != null;
+        assert 1 == providers.size();
 
         // collect names to assert
         check(providers, ExtendedClass4.class);
@@ -124,11 +122,11 @@ public class ModuleTest {
     @Test
     public void findProvidersFomJar2() throws Exception {
         Module module = new Module(jar.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<MarkerInterface2>> providers = module.find(MarkerInterface2.class, false);
-        assertNotNull(providers);
-        assertEquals(1, providers.size());
+        assert providers != null;
+        assert 1 == providers.size();
 
         // collect names to assert
         check(providers, ExtendedClass4.class);
@@ -141,11 +139,11 @@ public class ModuleTest {
     @Test
     public void findProviders3() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<Object>> providers = module.find(Object.class, false);
-        assertNotNull(providers);
-        assertEquals(10, providers.size());
+        assert providers != null;
+        assert 10 == providers.size();
 
         // collect names to assert
         check(providers, AnnotatedClass1.class, AnnotatedClass2.class, AnnotatedClass3.class, AnnotatedExtendedClass1.class, ExtendedClass1.class, ExtendedClass2.class, ExtendedClass3.class, ExtendedClass4.class, ExtendedClass5.class, SingletonClass.class);
@@ -154,11 +152,11 @@ public class ModuleTest {
     @Test
     public void findRuntimeAnnotatedClass1() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<RuntimeAnnotation1>> providers = module.find(RuntimeAnnotation1.class, false);
-        assertNotNull(providers);
-        assertEquals(3, providers.size());
+        assert providers != null;
+        assert 3 == providers.size();
 
         // collect names to assert
         check(providers, AnnotatedClass1.class, AnnotatedClass3.class, AnnotatedExtendedClass1.class);
@@ -167,11 +165,11 @@ public class ModuleTest {
     @Test
     public void findRuntimeAnnotatedClass2() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<RuntimeAnnotation2>> providers = module.find(RuntimeAnnotation2.class, false);
-        assertNotNull(providers);
-        assertEquals(2, providers.size());
+        assert providers != null;
+        assert 2 == providers.size();
 
         // collect names to assert
         check(providers, AnnotatedClass2.class, AnnotatedClass3.class);
@@ -180,31 +178,31 @@ public class ModuleTest {
     @Test
     public void findSourceAnnotatedClass() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<SourceAnnotation>> providers = module.find(SourceAnnotation.class, false);
-        assertNotNull(providers);
-        assertEquals(0, providers.size());
+        assert providers != null;
+        assert 0 == providers.size();
     }
 
     @Test
     public void findClassAnnotatedClass() throws Exception {
         Module module = new Module(external.path);
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<ClassAnnotation>> providers = module.find(ClassAnnotation.class, false);
-        assertNotNull(providers);
-        assertEquals(0, providers.size());
+        assert providers != null;
+        assert 0 == providers.size();
     }
 
     @Test
     public void moduleInModule() throws Exception {
         Module module = new Module(Paths.get("src/test/resources/ezbean/inline.zip"));
-        assertNotNull(module);
+        assert module != null;
 
         List<Class<Object>> providers = module.find(Object.class, false);
-        assertNotNull(providers);
-        assertEquals(0, providers.size());
+        assert providers != null;
+        assert 0 == providers.size();
     }
 
     /**
@@ -222,7 +220,7 @@ public class ModuleTest {
         }
 
         for (Class clazz : classes) {
-            assertTrue(names.contains(external.convert(clazz).getName()));
+            assert names.contains(external.convert(clazz).getName());
         }
     }
 }

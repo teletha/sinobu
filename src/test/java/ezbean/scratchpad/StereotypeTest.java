@@ -15,9 +15,6 @@
  */
 package ezbean.scratchpad;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,18 +27,19 @@ import java.util.Map;
 import org.junit.Test;
 
 /**
- * @version 2010/01/14 2:17:08
+ * @version 2011/03/22 17:10:46
  */
 public class StereotypeTest {
 
     @Test
     public void stereotype() {
-        assertEquals(StereotypeAnnotation1.class, getAnnotation(Base.class, StereotypeAnnotation1.class).annotationType());
+        assert getAnnotation(Base.class, StereotypeAnnotation1.class).annotationType()
+                .equals(StereotypeAnnotation1.class);
     }
 
     @Test
     public void priority() {
-        assertThat(getAnnotation(Base.class, StereotypeAnnotation2.class).name(), is("A"));
+        assert getAnnotation(Base.class, StereotypeAnnotation2.class).name().equals("A");
     }
 
     /**

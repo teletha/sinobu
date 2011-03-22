@@ -15,8 +15,6 @@
  */
 package ezunit;
 
-import static org.junit.Assert.*;
-
 import java.nio.file.Files;
 
 import org.junit.Rule;
@@ -35,16 +33,16 @@ public class PrivateModuleTest {
 
     @Test
     public void path() throws Exception {
-        assertTrue(Files.isDirectory(module.path));
-        assertTrue(Files.isRegularFile(moduleJar.path));
+        assert Files.isDirectory(module.path);
+        assert Files.isRegularFile(moduleJar.path);
     }
 
     @Test
     public void convert() throws Exception {
-        assertNotNull(module.convert(Clazz.class));
-        assertNotNull(moduleJar.convert(Clazz.class));
-        assertNotSame(Clazz.class, module.convert(Clazz.class));
-        assertNotSame(Clazz.class, moduleJar.convert(Clazz.class));
+        assert module.convert(Clazz.class) != null;
+        assert moduleJar.convert(Clazz.class) != null;
+        assert Clazz.class != module.convert(Clazz.class);
+        assert Clazz.class != moduleJar.convert(Clazz.class);
     }
 
     /**

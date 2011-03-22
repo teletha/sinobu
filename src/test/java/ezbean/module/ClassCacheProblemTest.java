@@ -15,8 +15,6 @@
  */
 package ezbean.module;
 
-import static org.junit.Assert.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +29,7 @@ import ezbean.module.external.SingletonClass;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/02/04 12:40:34
+ * @version 2011/03/22 17:08:49
  */
 public class ClassCacheProblemTest {
 
@@ -44,37 +42,37 @@ public class ClassCacheProblemTest {
     @Test
     public void testClassCacheForPrototype() throws Exception {
         Model model1 = Model.load(module.convert(ExtendedClass1.class));
-        assertNotNull(model1);
+        assert model1 != null;
 
         Class class1 = model1.type;
-        assertNotNull(class1);
+        assert class1 != null;
 
         ClassLoader loader1 = class1.getClassLoader();
-        assertNotNull(loader1);
+        assert loader1 != null;
 
         Object object1 = I.make(class1);
-        assertNotNull(object1);
+        assert object1 != null;
 
         // reload
         module.load();
 
         Model model2 = Model.load(module.convert(ExtendedClass1.class));
-        assertNotNull(model2);
+        assert model2 != null;
 
         Class class2 = model2.type;
-        assertNotNull(class2);
+        assert class2 != null;
 
         ClassLoader loader2 = class2.getClassLoader();
-        assertNotNull(loader2);
+        assert loader2 != null;
 
         Object object2 = I.make(class2);
-        assertNotNull(object2);
+        assert object2 != null;
 
         // check
-        assertNotSame(model1, model2);
-        assertNotSame(class1, class2);
-        assertNotSame(loader1, loader2);
-        assertNotSame(object1, object2);
+        assert model1 != model2;
+        assert class1 != class2;
+        assert loader1 != loader2;
+        assert object1 != object2;
     }
 
     /**
@@ -83,42 +81,42 @@ public class ClassCacheProblemTest {
     @Test
     public void testClassCacheForSingleton() {
         Model model1 = Model.load(module.convert(SingletonClass.class));
-        assertNotNull(model1);
+        assert model1 != null;
 
         Class class1 = model1.type;
-        assertNotNull(class1);
+        assert class1 != null;
 
         Object object1a = I.make(class1);
-        assertNotNull(object1a);
+        assert object1a != null;
 
         Object object1b = I.make(class1);
-        assertNotNull(object1b);
+        assert object1b != null;
 
         // check singleton
-        assertEquals(object1a, object1b);
+        assert object1b.equals(object1a);
 
         // reload
         module.load();
 
         Model model2 = Model.load(module.convert(SingletonClass.class));
-        assertNotNull(model2);
+        assert model2 != null;
 
         Class class2 = model2.type;
-        assertNotNull(class2);
+        assert class2 != null;
 
         Object object2a = I.make(class2);
-        assertNotNull(object2a);
+        assert object2a != null;
 
         Object object2b = I.make(class2);
-        assertNotNull(object2b);
+        assert object2b != null;
 
         // check singleton
-        assertEquals(object2a, object2b);
+        assert object2b.equals(object2a);
 
         // check old class
         Object object3 = I.make(class1);
-        assertNotSame(object1a, object3);
-        assertNotSame(object2a, object3);
+        assert object1a != object3;
+        assert object2a != object3;
     }
 
     /**
@@ -127,18 +125,18 @@ public class ClassCacheProblemTest {
     @Test
     public void testClassCacheInMapKeyReference() {
         Model model = Model.load(module.convert(ExtendedClass1.class));
-        assertNotNull(model);
+        assert model != null;
 
         Class clazz = model.type;
-        assertNotNull(clazz);
+        assert clazz != null;
 
         // create module aware map
         Map<Class, Object> cache = Modules.aware(new HashMap());
         cache.put(clazz, "1");
-        assertTrue(cache.containsKey(clazz));
+        assert cache.containsKey(clazz);
 
         // unload module
         module.unload();
-        assertFalse(cache.containsKey(clazz));
+        assert !cache.containsKey(clazz);
     }
 }

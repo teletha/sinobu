@@ -16,20 +16,14 @@
 package ezbean.xml;
 
 import static ezunit.Ezunit.*;
-import static org.junit.Assert.*;
-
 
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import ezbean.xml.XMLScanner;
-
 /**
- * DOCUMENT.
- * 
- * @version 2007/10/19 6:16:48
+ * @version 2011/03/22 17:23:36
  */
 public class SAXBuilderTest {
 
@@ -47,10 +41,10 @@ public class SAXBuilderTest {
         builder.endDocument();
 
         Document document = builder.getDocument();
-        assertNotNull(document);
-        assertEquals("test", document.getDocumentElement().getLocalName());
-        assertEquals(null, document.getDocumentElement().getNamespaceURI());
-        assertEquals(null, document.getDocumentElement().getPrefix());
+        assert document != null;
+        assert document.getDocumentElement().getLocalName().equals("test");
+        assert document.getDocumentElement().getNamespaceURI() == null;
+        assert document.getDocumentElement().getPrefix() == null;
     }
 
     /**
@@ -68,10 +62,10 @@ public class SAXBuilderTest {
         builder.endDocument();
 
         Document document = builder.getDocument();
-        assertNotNull(document);
-        assertEquals("test", document.getDocumentElement().getLocalName());
-        assertEquals("s", document.getDocumentElement().getNamespaceURI());
-        assertEquals("o", document.getDocumentElement().getPrefix());
+        assert document != null;
+        assert document.getDocumentElement().getLocalName().equals("test");
+        assert document.getDocumentElement().getNamespaceURI().equals("s");
+        assert document.getDocumentElement().getPrefix().equals("o");
     }
 
     /**
@@ -101,27 +95,27 @@ public class SAXBuilderTest {
 
         // assertion
         Document document = builder.getDocument();
-        assertNotNull(document);
+        assert document != null;
 
         Element root = document.getDocumentElement();
-        assertEquals("test", root.getLocalName());
-        assertEquals("s", root.getNamespaceURI());
-        assertEquals("o", root.getPrefix());
+        assert root.getLocalName().equals("test");
+        assert root.getNamespaceURI().equals("s");
+        assert root.getPrefix().equals("o");
 
         Element child = (Element) root.getFirstChild();
-        assertEquals("child", child.getLocalName());
-        assertEquals("s", child.getNamespaceURI());
-        assertEquals("o", child.getPrefix());
+        assert child.getLocalName().equals("child");
+        assert child.getNamespaceURI().equals("s");
+        assert child.getPrefix().equals("o");
 
         child = (Element) child.getNextSibling();
-        assertEquals("child", child.getLocalName());
-        assertEquals("change", child.getNamespaceURI());
-        assertEquals("o", child.getPrefix());
+        assert child.getLocalName().equals("child");
+        assert child.getNamespaceURI().equals("change");
+        assert child.getPrefix().equals("o");
 
         child = (Element) child.getNextSibling();
-        assertEquals("child", child.getLocalName());
-        assertEquals("s", child.getNamespaceURI());
-        assertEquals("o", child.getPrefix());
+        assert child.getLocalName().equals("child");
+        assert child.getNamespaceURI().equals("s");
+        assert child.getPrefix().equals("o");
     }
 
     /**
@@ -132,6 +126,6 @@ public class SAXBuilderTest {
         SAXBuilder builder = new SAXBuilder();
 
         Document document = builder.getDocument();
-        assertNull(document);
+        assert document == null;
     }
 }

@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
@@ -128,10 +126,10 @@ public class PathPatternMatchingTest {
         try {
             // by user
             I.walk(room.root, counter, patterns);
-            assertEquals(expected, counter.count);
+            assert expected == counter.count;
 
             // by walker
-            assertEquals(expected, I.walk(room.root, patterns).size());
+            assert expected == I.walk(room.root, patterns).size();
         } finally {
             counter.count = 0;
         }

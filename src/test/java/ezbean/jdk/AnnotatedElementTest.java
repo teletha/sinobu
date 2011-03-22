@@ -15,8 +15,6 @@
  */
 package ezbean.jdk;
 
-import static org.junit.Assert.*;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,7 +23,7 @@ import java.lang.reflect.Method;
 import org.junit.Test;
 
 /**
- * @version 2010/11/06 7:36:14
+ * @version 2011/03/22 16:55:52
  */
 public class AnnotatedElementTest {
 
@@ -33,7 +31,7 @@ public class AnnotatedElementTest {
     public void cantRetrieveAnnotationFromOverriddenMethod() throws Exception {
         Method method = Child.class.getMethod("publicMethod");
         Annotation[] annotations = method.getAnnotations();
-        assertEquals(0, annotations.length);
+        assert 0 == annotations.length;
     }
 
     /**

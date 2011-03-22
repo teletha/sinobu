@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.util.Locale;
 
 import org.junit.Rule;
@@ -25,7 +23,7 @@ import org.junit.Test;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/01/05 19:51:10
+ * @version 2011/03/22 16:31:23
  */
 public class I18NTest {
 
@@ -34,24 +32,24 @@ public class I18NTest {
 
     @Test
     public void i18n() throws Exception {
-        assertEquals("メッセージ", I.i18n(MessageBundle.class).message());
+        assert "メッセージ".equals(I.i18n(MessageBundle.class).message());
     }
 
     @Test
     public void useNotLoadedBundleClass() {
         module.unload();
 
-        assertEquals("message", I.i18n(MessageBundle.class).message());
+        assert "message".equals(I.i18n(MessageBundle.class).message());
     }
 
     @Test
     public void param() throws Exception {
-        assertEquals("メッセージ10", I.i18n(MessageBundle.class).messageWithParam(10));
+        assert "メッセージ10".equals(I.i18n(MessageBundle.class).messageWithParam(10));
     }
 
     @Test
     public void override() throws Exception {
-        assertEquals("message", I.i18n(MessageBundle.class).dontOverride());
+        assert "message".equals(I.i18n(MessageBundle.class).dontOverride());
     }
 
     @Test(expected = NullPointerException.class)
@@ -60,7 +58,7 @@ public class I18NTest {
     }
 
     /**
-     * @version 2010/01/15 18:30:11
+     * @version 2011/03/22 16:31:29
      */
     @SuppressWarnings("unused")
     private static class OverrideDefaultLocale implements Lifestyle<Locale> {
@@ -74,7 +72,7 @@ public class I18NTest {
     }
 
     /**
-     * @version 2010/01/05 19:55:34
+     * @version 2011/03/22 16:31:32
      */
     @Manageable(lifestyle = Singleton.class)
     private static class MessageBundle implements Extensible {
@@ -93,7 +91,7 @@ public class I18NTest {
     }
 
     /**
-     * @version 2010/01/05 19:55:37
+     * @version 2011/03/22 16:31:35
      */
     @SuppressWarnings("unused")
     private static class MessageBundle_ja extends MessageBundle {

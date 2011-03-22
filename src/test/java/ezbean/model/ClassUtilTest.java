@@ -15,8 +15,6 @@
  */
 package ezbean.model;
 
-import static org.junit.Assert.*;
-
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
@@ -35,7 +33,7 @@ import ezbean.sample.bean.GenericBoundedBean;
 import ezbean.sample.bean.Student;
 
 /**
- * @version 2010/02/15 15:09:38
+ * @version 2011/03/22 17:04:38
  */
 public class ClassUtilTest {
 
@@ -45,8 +43,8 @@ public class ClassUtilTest {
     @Test
     public void testGetAllTypes01() {
         Set<Class> classes = ClassUtil.getTypes(ExtendClass.class);
-        assertEquals(11, classes.size());
-        assertTrue(classes.contains(ExtendClass.class));
+        assert 11 == classes.size();
+        assert classes.contains(ExtendClass.class);
     }
 
     /**
@@ -55,7 +53,7 @@ public class ClassUtilTest {
     @Test
     public void testGetAllTypes02() {
         Set<Class> classes = ClassUtil.getTypes(null);
-        assertEquals(0, classes.size());
+        assert 0 == classes.size();
     }
 
     /**
@@ -64,7 +62,7 @@ public class ClassUtilTest {
     @Test
     public void testGetMiniConstructor01() {
         Constructor constructor = ClassUtil.getMiniConstructor(NoneConstructor.class);
-        assertNotNull(constructor);
+        assert constructor != null;
     }
 
     /**
@@ -73,8 +71,8 @@ public class ClassUtilTest {
     @Test
     public void testGetMiniConstructor02() {
         Constructor constructor = ClassUtil.getMiniConstructor(OneConstructor.class);
-        assertNotNull(constructor);
-        assertEquals(1, constructor.getParameterTypes().length);
+        assert constructor != null;
+        assert 1 == constructor.getParameterTypes().length;
     }
 
     /**
@@ -83,8 +81,8 @@ public class ClassUtilTest {
     @Test
     public void testGetMiniConstructor03() {
         Constructor constructor = ClassUtil.getMiniConstructor(TwoConstructor.class);
-        assertNotNull(constructor);
-        assertEquals(1, constructor.getParameterTypes().length);
+        assert constructor != null;
+        assert 1 == constructor.getParameterTypes().length;
     }
 
     /**
@@ -93,8 +91,8 @@ public class ClassUtilTest {
     @Test
     public void testGetMiniConstructor04() {
         Constructor constructor = ClassUtil.getMiniConstructor(HashMap.class);
-        assertNotNull(constructor);
-        assertEquals(0, constructor.getParameterTypes().length);
+        assert constructor != null;
+        assert 0 == constructor.getParameterTypes().length;
     }
 
     /**
@@ -103,8 +101,8 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes01() {
         Type[] types = ClassUtil.getParameter(ParameterizedStringByInterface.class, ParameterInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     /**
@@ -113,8 +111,8 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes02() {
         Type[] types = ClassUtil.getParameter(ParameterizedObjectByInterface.class, ParameterInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(Object.class, types[0]);
+        assert 1 == types.length;
+        assert Object.class == types[0];
     }
 
     /**
@@ -123,8 +121,8 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes14() {
         Type[] types = ClassUtil.getParameter(ParameterizedWildcardByInterface.class, ParameterInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(Map.class, types[0]);
+        assert 1 == types.length;
+        assert Map.class == types[0];
     }
 
     /**
@@ -133,7 +131,7 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes03() {
         Type[] types = ClassUtil.getParameter(ParameterizedNoneByInterface.class, ParameterInterface.class);
-        assertEquals(0, types.length);
+        assert 0 == types.length;
     }
 
     /**
@@ -142,22 +140,22 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes04() {
         Type[] types = ClassUtil.getParameter(ExtendedFromInterface.class, ParameterInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     @Test
     public void parameterFromOverriddenInterface() {
         Type[] types = ClassUtil.getParameter(TypedExtendedFromInterface.class, ParameterInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     @Test
     public void parameterFromOverrideInterface() {
         Type[] types = ClassUtil.getParameter(TypedExtendedFromInterface.class, ExtensibleByInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     /**
@@ -166,8 +164,8 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes06() {
         Type[] types = ClassUtil.getParameter(ParameterizedStringByClass.class, ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     /**
@@ -176,8 +174,8 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes07() {
         Type[] types = ClassUtil.getParameter(ParameterizedObjectByClass.class, ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(Object.class, types[0]);
+        assert 1 == types.length;
+        assert Object.class == types[0];
     }
 
     /**
@@ -186,8 +184,8 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes15() {
         Type[] types = ClassUtil.getParameter(ParameterizedWildcardByClass.class, ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(Map.class, types[0]);
+        assert 1 == types.length;
+        assert Map.class == types[0];
     }
 
     /**
@@ -196,7 +194,7 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes08() {
         Type[] types = ClassUtil.getParameter(ParameterizedNoneByClass.class, ParameterClass.class);
-        assertEquals(0, types.length);
+        assert 0 == types.length;
     }
 
     /**
@@ -205,8 +203,8 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes09() {
         Type[] types = ClassUtil.getParameter(ExtendedFromClass.class, ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     /**
@@ -215,8 +213,8 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes10() {
         Type[] types = ClassUtil.getParameter(TypedExtendedFromClass.class, ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     /**
@@ -225,12 +223,12 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes11() {
         Type[] types = ClassUtil.getParameter(ParameterFromMultipleSource.class, ParameterInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(Type.class, types[0]);
+        assert 1 == types.length;
+        assert Type.class == types[0];
 
         types = ClassUtil.getParameter(ParameterFromMultipleSource.class, ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(Class.class, types[0]);
+        assert 1 == types.length;
+        assert Class.class == types[0];
     }
 
     /**
@@ -239,112 +237,112 @@ public class ClassUtilTest {
     @Test
     public void testGetParameterizedTypes12() {
         Type[] types = ClassUtil.getParameter(MultipleParameterClass.class, MultipleParameter.class);
-        assertEquals(2, types.length);
-        assertEquals(Integer.class, types[0]);
-        assertEquals(Long.class, types[1]);
+        assert 2 == types.length;
+        assert Integer.class == types[0];
+        assert Long.class == types[1];
     }
 
     @Test
     public void parameterIsArrayFromInterface() {
         Type[] types = ClassUtil.getParameter(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(String[].class, types[0]);
+        assert 1 == types.length;
+        assert String[].class == types[0];
     }
 
     @Test
     public void parameterIsArrayFromClass() {
         Type[] types = ClassUtil.getParameter(ParameterizedStringArrayByClass.class, ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String[].class, types[0]);
+        assert 1 == types.length;
+        assert String[].class == types[0];
     }
 
     @Test
     public void methodGetPrameterAcceptsNullType() {
         Type[] types = ClassUtil.getParameter(null, ParameterClass.class);
-        assertEquals(0, types.length);
+        assert 0 == types.length;
     }
 
     @Test
     public void methodGetPrameterAcceptsNullTarget() {
         Type[] types = ClassUtil.getParameter(ParameterizedStringByClass.class, null);
-        assertEquals(0, types.length);
+        assert 0 == types.length;
     }
 
     @Test
     public void subclassHasAnotherParameter() {
         Type[] types = ClassUtil.getParameter(TypedSubClass.class, ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     @Test
     public void constructorHasParameterClass() {
         Constructor constructor = ClassUtil.getMiniConstructor(ParameterClassConstructor.class);
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     @Test
     public void constructorHasExtendableByClass() {
         Constructor constructor = ClassUtil.getMiniConstructor(ExtensibleByClassConstructor.class);
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
-        assertEquals(1, types.length);
-        assertEquals(Integer.class, types[0]);
+        assert 1 == types.length;
+        assert Integer.class == types[0];
     }
 
     @Test
     public void constructorHasArrayParameter() {
         Constructor constructor = ClassUtil.getMiniConstructor(ArrayParameterConstructor.class);
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String[].class, types[0]);
+        assert 1 == types.length;
+        assert String[].class == types[0];
     }
 
     @Test
     public void constructorHasMultipleParameter() {
         Constructor constructor = ClassUtil.getMiniConstructor(MultipleParameterConstructor.class);
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
-        assertEquals(2, types.length);
-        assertEquals(Readable.class, types[0]);
-        assertEquals(Appendable.class, types[1]);
+        assert 2 == types.length;
+        assert Readable.class == types[0];
+        assert Appendable.class == types[1];
     }
 
     @Test
     public void constructorHasOverlapParameter() {
         Constructor constructor = ClassUtil.getMiniConstructor(ImplicitParameterConstructor.class);
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
-        assertEquals(1, types.length);
-        assertEquals(Map.class, types[0]);
+        assert 1 == types.length;
+        assert Map.class == types[0];
     }
 
     @Test
     public void constructorHasOverlappedParameter() {
         Constructor constructor = ClassUtil.getMiniConstructor(ImplicitParameterConstructor.class);
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     @Test
     public void parameterVariableFromInterface() {
         Type[] types = ClassUtil.getParameter(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     @Test
     public void parameterVariableFromClass() {
         Type[] types = ClassUtil.getParameter(ParameterVariableStringByClass.class, ParameterVariableClass.class);
-        assertEquals(1, types.length);
-        assertEquals(String.class, types[0]);
+        assert 1 == types.length;
+        assert String.class == types[0];
     }
 
     @Test
     public void bundedBean() {
         Type[] types = ClassUtil.getParameter(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
-        assertEquals(1, types.length);
-        assertEquals(Student.class, types[0]);
+        assert 1 == types.length;
+        assert Student.class == types[0];
     }
 
     /**
@@ -352,16 +350,16 @@ public class ClassUtilTest {
      */
     @Test
     public void testWrap() {
-        assertEquals(Integer.class, ClassUtil.wrap(int.class));
-        assertEquals(Long.class, ClassUtil.wrap(long.class));
-        assertEquals(Float.class, ClassUtil.wrap(float.class));
-        assertEquals(Double.class, ClassUtil.wrap(double.class));
-        assertEquals(Boolean.class, ClassUtil.wrap(boolean.class));
-        assertEquals(Byte.class, ClassUtil.wrap(byte.class));
-        assertEquals(Short.class, ClassUtil.wrap(short.class));
-        assertEquals(Character.class, ClassUtil.wrap(char.class));
-        assertEquals(String.class, ClassUtil.wrap(String.class));
-        assertEquals(null, ClassUtil.wrap(null));
+        assert Integer.class == ClassUtil.wrap(int.class);
+        assert Long.class == ClassUtil.wrap(long.class);
+        assert Float.class == ClassUtil.wrap(float.class);
+        assert Double.class == ClassUtil.wrap(double.class);
+        assert Boolean.class == ClassUtil.wrap(boolean.class);
+        assert Byte.class == ClassUtil.wrap(byte.class);
+        assert Short.class == ClassUtil.wrap(short.class);
+        assert Character.class == ClassUtil.wrap(char.class);
+        assert String.class == ClassUtil.wrap(String.class);
+        assert null == ClassUtil.wrap(null);
     }
 
     /**
@@ -659,27 +657,27 @@ public class ClassUtilTest {
     @Test
     public void complexTypeHierarchy1() {
         Type[] types = ClassUtil.getParameter(ConsolesUI.class, StackContainer.class);
-        assertEquals(2, types.length);
-        assertEquals(Shell.class, types[0]);
-        assertEquals(Console.class, types[1]);
+        assert 2 == types.length;
+        assert Shell.class == types[0];
+        assert Console.class == types[1];
 
     }
 
     @Test
     public void complexTypeHierarchy2() {
         Type[] types = ClassUtil.getParameter(ConsolesUI.class, SelectableUI.class);
-        assertEquals(3, types.length);
-        assertEquals(JPanel.class, types[0]);
-        assertEquals(Shell.class, types[1]);
-        assertEquals(Console.class, types[2]);
+        assert 3 == types.length;
+        assert JPanel.class == types[0];
+        assert Shell.class == types[1];
+        assert Console.class == types[2];
     }
 
     @Test
     public void complexTypeHierarchy3() {
         Type[] types = ClassUtil.getParameter(ConsolesUI.class, UI.class);
-        assertEquals(2, types.length);
-        assertEquals(JPanel.class, types[0]);
-        assertEquals(Shell.class, types[1]);
+        assert 2 == types.length;
+        assert JPanel.class == types[0];
+        assert Shell.class == types[1];
     }
 
     /**

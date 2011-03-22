@@ -15,8 +15,6 @@
  */
 package ezbean.module;
 
-import static org.junit.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -24,7 +22,7 @@ import ezbean.I;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/11/13 23:11:31
+ * @version 2011/03/22 17:07:32
  */
 public class ClassloaderUpdateTest {
 
@@ -40,10 +38,10 @@ public class ClassloaderUpdateTest {
 
         Object object2 = I.make(module.convert(Private.class));
 
-        assertNotSame(object1, object2);
-        assertNotSame(object1.getClass(), object2.getClass());
-        assertEquals(object1.getClass().getName(), object2.getClass().getName());
-        assertNotSame(object1.getClass().getClassLoader(), object2.getClass().getClassLoader());
+        assert object1 != object2;
+        assert object1.getClass() != object2.getClass();
+        assert object2.getClass().getName().equals(object1.getClass().getName());
+        assert object1.getClass().getClassLoader() != object2.getClass().getClassLoader();
     }
 
     /**

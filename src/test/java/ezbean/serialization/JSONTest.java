@@ -15,8 +15,6 @@
  */
 package ezbean.serialization;
 
-import static org.junit.Assert.*;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +37,7 @@ import ezbean.sample.bean.Student;
 import ezbean.sample.bean.TransientBean;
 
 /**
- * @version 2009/04/11 18:50:31
+ * @version 2011/03/22 17:20:34
  */
 public class JSONTest {
 
@@ -50,13 +48,13 @@ public class JSONTest {
 
         // write
         String json = I.json(student);
-        assertEquals("{\"age\":\"15\"}", json);
+        assert json.equals("{\"age\":\"15\"}");
 
         // read
         student = I.json(Student.class, json);
-        assertEquals(15, student.getAge());
-        assertNull(student.getFirstName());
-        assertNull(student.getLastName());
+        assert student.getAge() == 15;
+        assert student.getFirstName() == null;
+        assert student.getLastName() == null;
     }
 
     @Test
@@ -68,14 +66,14 @@ public class JSONTest {
 
         // write
         String json = I.json(student);
-        assertEquals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}", json);
+        assert json.equals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}");
 
         // read
         student = I.json(Student.class, json);
-        assertEquals(15, student.getAge());
-        assertEquals("Mio", student.getFirstName());
-        assertEquals("Akiyama", student.getLastName());
-        assertNull(student.getSchool());
+        assert student.getAge() == 15;
+        assert student.getFirstName().equals("Mio");
+        assert student.getLastName().equals("Akiyama");
+        assert student.getSchool() == null;
     }
 
     @Test
@@ -91,14 +89,14 @@ public class JSONTest {
 
         // write
         String json = I.json(student);
-        assertEquals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\",\"school\":{\"name\":\"Sakura High School\"}}", json);
+        assert json.equals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\",\"school\":{\"name\":\"Sakura High School\"}}");
 
         // read
         student = I.json(Student.class, json);
-        assertEquals(15, student.getAge());
-        assertEquals("Mio", student.getFirstName());
-        assertEquals("Akiyama", student.getLastName());
-        assertEquals("Sakura High School", student.getSchool().getName());
+        assert student.getAge() == 15;
+        assert student.getFirstName().equals("Mio");
+        assert student.getLastName().equals("Akiyama");
+        assert student.getSchool().getName().equals("Sakura High School");
     }
 
     @Test
@@ -112,14 +110,14 @@ public class JSONTest {
 
         // write
         String json = I.json(primitive);
-        assertEquals("{\"boolean\":\"false\",\"byte\":\"0\",\"char\":\"c\",\"double\":\"0.0\",\"float\":\"0.1\",\"int\":\"-5\",\"long\":\"0\",\"short\":\"0\"}", json);
+        assert json.equals("{\"boolean\":\"false\",\"byte\":\"0\",\"char\":\"c\",\"double\":\"0.0\",\"float\":\"0.1\",\"int\":\"-5\",\"long\":\"0\",\"short\":\"0\"}");
 
         // read
         primitive = I.json(Primitive.class, json);
-        assertFalse(primitive.isBoolean());
-        assertEquals('c', primitive.getChar());
-        assertEquals(-5, primitive.getInt());
-        assertEquals(0.1f, primitive.getFloat(), 0d);
+        assert !primitive.isBoolean();
+        assert primitive.getChar() == 'c';
+        assert primitive.getInt() == -5;
+        assert primitive.getFloat() == 0.1f;
     }
 
     @Test
@@ -134,15 +132,15 @@ public class JSONTest {
 
         // write
         String json = I.json(strings);
-        assertEquals("{\"list\":[\"one\",\"two\",\"three\"]}", json);
+        assert json.equals("{\"list\":[\"one\",\"two\",\"three\"]}");
 
         // read
         strings = I.json(StringList.class, json);
         list = strings.getList();
-        assertNotNull(list);
-        assertEquals("one", list.get(0));
-        assertEquals("two", list.get(1));
-        assertEquals("three", list.get(2));
+        assert list != null;
+        assert list.get(0).equals("one");
+        assert list.get(1).equals("two");
+        assert list.get(2).equals("three");
     }
 
     @Test
@@ -157,13 +155,13 @@ public class JSONTest {
 
         // write
         String json = I.json(strings);
-        assertEquals("{\"map\":{\"two\":\"2\",\"one\":\"1\",\"three\":\"3\"}}", json);
+        assert json.equals("{\"map\":{\"two\":\"2\",\"one\":\"1\",\"three\":\"3\"}}");
 
         // read
         strings = I.json(StringMap.class, json);
         map = strings.getMap();
-        assertNotNull(map);
-        assertEquals("1", map.get("one"));
+        assert map != null;
+        assert map.get("one").equals("1");
     }
 
     @Test
@@ -175,13 +173,13 @@ public class JSONTest {
 
         // write
         String json = I.json(bean);
-        assertEquals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T09:00:00\",\"someClass\":\"java.lang.String\"}", json);
+        assert json.equals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T09:00:00\",\"someClass\":\"java.lang.String\"}");
 
         // read
         bean = I.json(BuiltinBean.class, json);
-        assertEquals(String.class, bean.getSomeClass());
-        assertEquals(new Date(0), bean.getDate());
-        assertEquals(new BigInteger("1234567890987654321"), bean.getBigInteger());
+        assert bean.getSomeClass().equals(String.class);
+        assert bean.getDate().equals(new Date(0));
+        assert bean.getBigInteger().equals(new BigInteger("1234567890987654321"));
     }
 
     @Test
@@ -200,7 +198,7 @@ public class JSONTest {
 
         // write
         String json = I.json(group);
-        assertEquals("{\"members\":[{\"age\":\"1\"},{\"age\":\"1\"},{\"age\":\"2\"}]}", json);
+        assert json.equals("{\"members\":[{\"age\":\"1\"},{\"age\":\"1\"},{\"age\":\"2\"}]}");
     }
 
     @Test
@@ -210,11 +208,11 @@ public class JSONTest {
 
         // write
         String json = I.json(person);
-        assertEquals("{\"age\":\"0\",\"firstName\":\"\\\"\"}", json);
+        assert json.equals("{\"age\":\"0\",\"firstName\":\"\\\"\"}");
 
         // read
         person = I.json(Person.class, json);
-        assertEquals("\"", person.getFirstName());
+        assert person.getFirstName().equals("\"");
     }
 
     @Test
@@ -224,36 +222,36 @@ public class JSONTest {
 
         // write
         String json = I.json(person);
-        assertEquals("{\"age\":\"0\",\"firstName\":\"\\\\\"}", json);
+        assert json.equals("{\"age\":\"0\",\"firstName\":\"\\\\\"}");
 
         // read
         person = I.json(Person.class, json);
-        assertEquals("\\", person.getFirstName());
+        assert person.getFirstName().equals("\\");
     }
 
     @Test
     public void nullJSON1() {
-        assertNotNull(I.json(Person.class, (CharSequence) null));
+        assert I.json(Person.class, (CharSequence) null) != null;
     }
 
     @Test
     public void nullJSON2() {
-        assertNotNull(I.json(Person.class, (Readable) null));
+        assert I.json(Person.class, (Readable) null) != null;
     }
 
     @Test
     public void emptyJSON() {
-        assertNotNull(I.json(Person.class, ""));
+        assert I.json(Person.class, "") != null;
     }
 
     @Test
     public void invlidJSON1() {
-        assertNotNull(I.json(Person.class, "15"));
+        assert I.json(Person.class, "15") != null;
     }
 
     @Test
     public void invlidJSON2() {
-        assertNotNull(I.json(Person.class, "@"));
+        assert I.json(Person.class, "@") != null;
     }
 
     @Test(expected = ClassCircularityError.class)
@@ -261,7 +259,7 @@ public class JSONTest {
         ChainBean chain = I.make(ChainBean.class);
         chain.setNext(chain);
 
-        assertEquals("{\"next\":{}}", I.json(chain));
+        assert I.json(chain).equals("{\"next\":{}}");
     }
 
     @Test
@@ -272,11 +270,11 @@ public class JSONTest {
 
         // write
         String json = I.json(bean);
-        assertEquals("{\"none\":\"15\"}", json);
+        assert json.equals("{\"none\":\"15\"}");
 
         // read
         bean = I.json(TransientBean.class, json);
-        assertEquals(15, bean.getNone());
-        assertEquals(0, bean.getBoth());
+        assert bean.getNone() == 15;
+        assert bean.getBoth() == 0;
     }
 }

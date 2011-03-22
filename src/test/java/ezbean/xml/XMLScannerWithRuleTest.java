@@ -16,7 +16,6 @@
 package ezbean.xml;
 
 import static ezunit.Ezunit.*;
-import static org.junit.Assert.*;
 
 import javax.xml.parsers.FactoryConfigurationError;
 
@@ -28,9 +27,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import ezbean.I;
 
 /**
- * DOCUMENT.
- * 
- * @version 2007/06/22 16:56:54
+ * @version 2011/03/22 17:22:31
  */
 public class XMLScannerWithRuleTest {
 
@@ -824,7 +821,7 @@ public class XMLScannerWithRuleTest {
     @Test
     public void testPrivateClass() throws Exception {
         XMLScanner scanner = new PrivateRuleScanner();
-        assertNotNull(scanner);
+        assert scanner != null;
     }
 
     /**
@@ -844,7 +841,7 @@ public class XMLScannerWithRuleTest {
         Terminator scanner = new Terminator();
         I.parse(locateSource("rule/terminator.xml"), scanner);
 
-        assertEquals(0, scanner.count);
+        assert scanner.count == 0;
     }
 
     /**

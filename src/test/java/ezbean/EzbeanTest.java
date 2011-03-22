@@ -16,7 +16,6 @@
 package ezbean;
 
 import static ezunit.Ezunit.*;
-import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -35,9 +34,7 @@ import ezbean.sample.modifier.Public;
 import ezbean.xml.Encloser;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/18 10:42:20
+ * @version 2011/03/22 16:45:04
  */
 public class EzbeanTest {
 
@@ -46,7 +43,7 @@ public class EzbeanTest {
      */
     @Test
     public void testInstantiate01() throws Exception {
-        assertNotNull(I.make(Public.class));
+        assert I.make(Public.class) != null;
     }
 
     /**
@@ -55,8 +52,8 @@ public class EzbeanTest {
     @Test
     public void testInstantiate02() throws Exception {
         Class clazz = Class.forName("ezbean.sample.modifier.PackagePrivate");
-        assertNotNull(clazz);
-        assertNotNull(I.make(clazz));
+        assert clazz != null;
+        assert I.make(clazz) != null;
     }
 
     /**
@@ -64,7 +61,7 @@ public class EzbeanTest {
      */
     @Test
     public void testInstantiate03() throws Exception {
-        assertNotNull(I.make(PublicStatic.class));
+        assert I.make(PublicStatic.class) != null;
     }
 
     /**
@@ -73,8 +70,8 @@ public class EzbeanTest {
     @Test
     public void testInstantiate04() throws Exception {
         Class clazz = Class.forName("ezbean.sample.modifier.Nested$ProtectedStatic");
-        assertNotNull(clazz);
-        assertNotNull(I.make(clazz));
+        assert clazz != null;
+        assert I.make(clazz) != null;
     }
 
     /**
@@ -83,8 +80,8 @@ public class EzbeanTest {
     @Test
     public void testInstantiate05() throws Exception {
         Class clazz = Class.forName("ezbean.sample.modifier.Nested$PackagePrivateStatic");
-        assertNotNull(clazz);
-        assertNotNull(I.make(clazz));
+        assert clazz != null;
+        assert I.make(clazz) != null;
     }
 
     /**
@@ -93,8 +90,8 @@ public class EzbeanTest {
     @Test
     public void testInstantiate06() throws Exception {
         Class clazz = Class.forName("ezbean.sample.modifier.Nested$PrivateStatic");
-        assertNotNull(clazz);
-        assertNotNull(I.make(clazz));
+        assert clazz != null;
+        assert I.make(clazz) != null;
     }
 
     /**
@@ -102,7 +99,7 @@ public class EzbeanTest {
      */
     @Test
     public void testInstantiate07() throws Exception {
-        assertNotNull(I.make(ezbean.sample.modifier.Nested.Public.class));
+        assert I.make(ezbean.sample.modifier.Nested.Public.class) != null;
     }
 
     /**
@@ -111,8 +108,8 @@ public class EzbeanTest {
     @Test
     public void testInstantiate08() throws Exception {
         Class clazz = Class.forName("ezbean.sample.modifier.Nested$Protected");
-        assertNotNull(clazz);
-        assertNotNull(I.make(clazz));
+        assert clazz != null;
+        assert I.make(clazz) != null;
     }
 
     /**
@@ -121,8 +118,8 @@ public class EzbeanTest {
     @Test
     public void testInstantiate09() throws Exception {
         Class clazz = Class.forName("ezbean.sample.modifier.Nested$PackagePrivate");
-        assertNotNull(clazz);
-        assertNotNull(I.make(clazz));
+        assert clazz != null;
+        assert I.make(clazz) != null;
     }
 
     /**
@@ -131,8 +128,8 @@ public class EzbeanTest {
     @Test
     public void testInstantiate10() throws Exception {
         Class clazz = Class.forName("ezbean.sample.modifier.Nested$Private");
-        assertNotNull(clazz);
-        assertNotNull(I.make(clazz));
+        assert clazz != null;
+        assert I.make(clazz) != null;
     }
 
     /**
@@ -140,7 +137,7 @@ public class EzbeanTest {
      */
     @Test(expected = TypeNotPresentException.class)
     public void testInstantiate11() throws Exception {
-        assertNotNull(I.make(Abstract.class));
+        assert I.make(Abstract.class) != null;
     }
 
     /**
@@ -173,9 +170,9 @@ public class EzbeanTest {
     @Test
     public void testSelfCircularReferenceInStaticInitializer() {
         SelfCircularReference instance = I.make(SelfCircularReference.class);
-        assertNotNull(instance);
-        assertNotNull(SelfCircularReference.instance);
-        assertNotSame(instance, SelfCircularReference.instance);
+        assert instance != null;
+        assert SelfCircularReference.instance != null;
+        assert instance != SelfCircularReference.instance;
     }
 
     /**
@@ -196,9 +193,9 @@ public class EzbeanTest {
     @Test
     public void testSingletonSelfCircularReference() {
         SingletonSelfCircularReference instance = I.make(SingletonSelfCircularReference.class);
-        assertNotNull(instance);
-        assertNotNull(SingletonSelfCircularReference.instance);
-        assertEquals(instance, SingletonSelfCircularReference.instance);
+        assert instance != null;
+        assert SingletonSelfCircularReference.instance != null;
+        assert instance == SingletonSelfCircularReference.instance;
     }
 
     /**
@@ -258,7 +255,7 @@ public class EzbeanTest {
      */
     @Test
     public void testCollection01() throws Exception {
-        assertNotNull(I.make(List.class));
+        assert I.make(List.class) != null;
     }
 
     /**
@@ -266,7 +263,7 @@ public class EzbeanTest {
      */
     @Test
     public void testCollection02() throws Exception {
-        assertNotNull(I.make(Map.class));
+        assert I.make(Map.class) != null;
     }
 
     /**
@@ -275,11 +272,11 @@ public class EzbeanTest {
     @Test
     public void testReservedName01() {
         Primitive primitive = I.make(Primitive.class);
-        assertNotNull(primitive);
-        assertEquals(0, primitive.getInt());
+        assert primitive != null;
+        assert 0 == primitive.getInt();
 
         primitive.setInt(100);
-        assertEquals(100, primitive.getInt());
+        assert 100 == primitive.getInt();
     }
 
     /**
@@ -288,11 +285,11 @@ public class EzbeanTest {
     @Test
     public void testReservedName02() {
         Primitive primitive = I.make(Primitive.class);
-        assertNotNull(primitive);
-        assertEquals(0L, primitive.getLong());
+        assert primitive != null;
+        assert 0L == primitive.getLong();
 
         primitive.setLong(100);
-        assertEquals(100L, primitive.getLong());
+        assert 100L == primitive.getLong();
     }
 
     /**
@@ -301,11 +298,11 @@ public class EzbeanTest {
     @Test
     public void testReservedName03() {
         Primitive primitive = I.make(Primitive.class);
-        assertNotNull(primitive);
-        assertEquals(false, primitive.isBoolean());
+        assert primitive != null;
+        assert false == primitive.isBoolean();
 
         primitive.setBoolean(true);
-        assertEquals(true, primitive.isBoolean());
+        assert true == primitive.isBoolean();
     }
 
     /**
@@ -478,7 +475,7 @@ public class EzbeanTest {
         try {
             throwError();
         } catch (Exception e) {
-            assertTrue(e instanceof ClassNotFoundException);
+            assert e instanceof ClassNotFoundException;
         }
     }
 

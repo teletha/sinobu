@@ -15,8 +15,6 @@
  */
 package ezunit;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 /**
@@ -26,26 +24,26 @@ public class UnsafeUtilityTest {
 
     @Test
     public void instantiate() throws Exception {
-        assertEquals(null, new Root().clazz);
-        assertEquals(UnsafeUtilityTest.class, new Parent().clazz);
-        assertEquals(UnsafeUtilityTest.class, new Child().clazz);
+        assert new Root().clazz == null;
+        assert new Parent().clazz == UnsafeUtilityTest.class;
+        assert new Child().clazz == UnsafeUtilityTest.class;
     }
 
     @Test
     public void instantiateFromStaticMethod() throws Exception {
-        assertEquals(Root.class, Root.speculteParent());
-        assertEquals(Root.class, Root.speculteChild());
-        assertEquals(Parent.class, Parent.speculteParent());
-        assertEquals(Parent.class, Parent.speculteChild());
-        assertEquals(Child.class, Child.speculteParent());
-        assertEquals(Child.class, Child.speculteChild());
+        assert Root.class == Root.speculteParent();
+        assert Root.class == Root.speculteChild();
+        assert Parent.class == Parent.speculteParent();
+        assert Parent.class == Parent.speculteChild();
+        assert Child.class == Child.speculteParent();
+        assert Child.class == Child.speculteChild();
     }
 
     @Test
     public void instantiateFromStaticInitializer() throws Exception {
-        assertEquals(Root.class, Root.fromStatic);
-        assertEquals(Parent.class, Parent.fromStatic);
-        assertEquals(Child.class, Child.fromStatic);
+        assert Root.class == Root.fromStatic;
+        assert Parent.class == Parent.fromStatic;
+        assert Child.class == Child.fromStatic;
     }
 
     /**

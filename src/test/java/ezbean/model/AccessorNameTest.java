@@ -15,17 +15,13 @@
  */
 package ezbean.model;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/21 16:51:56
+ * @version 2011/03/22 17:05:12
  */
 public class AccessorNameTest {
 
@@ -35,12 +31,11 @@ public class AccessorNameTest {
     @Test
     public void normal() throws Exception {
         Model model = Model.load(Person.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("age");
-
-        assertEquals("getAge", property.accessors[0].getName());
-        assertEquals("setAge", property.accessors[1].getName());
+        assert property.accessors[0].getName().equals("getAge");
+        assert property.accessors[1].getName().equals("setAge");
     }
 
     /**
@@ -49,16 +44,14 @@ public class AccessorNameTest {
     @Test
     public void primitive() throws Exception {
         Model model = Model.load(Primitive.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("boolean");
-
-        assertEquals("isBoolean", property.accessors[0].getName());
-        assertEquals("setBoolean", property.accessors[1].getName());
+        assert property.accessors[0].getName().equals("isBoolean");
+        assert property.accessors[1].getName().equals("setBoolean");
 
         property = model.getProperty("int");
-
-        assertEquals("getInt", property.accessors[0].getName());
-        assertEquals("setInt", property.accessors[1].getName());
+        assert property.accessors[0].getName().equals("getInt");
+        assert property.accessors[1].getName().equals("setInt");
     }
 }

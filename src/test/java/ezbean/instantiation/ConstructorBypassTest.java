@@ -15,8 +15,6 @@
  */
 package ezbean.instantiation;
 
-import static org.junit.Assert.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -36,7 +34,7 @@ import ezbean.Modules;
 import ezunit.UnsafeUtility;
 
 /**
- * @version 2010/02/09 18:01:58
+ * @version 2011/03/22 16:54:33
  */
 public class ConstructorBypassTest {
 
@@ -51,42 +49,42 @@ public class ConstructorBypassTest {
     public void byReflectionFactory() throws Exception {
         // no bypass
         Child child = I.make(Child.class);
-        assertTrue(child instanceof Child);
-        assertEquals(2, call);
+        assert child instanceof Child;
+        assert 2 == call;
 
         // bypass
         child = UnsafeUtility.newInstance(Child.class);
-        assertTrue(child instanceof Child);
-        assertEquals(2, call); // Cool!!!
+        assert child instanceof Child;
+        assert 2 == call; // Cool!!!
     }
 
     @Test
     public void byObjectStreamClass() throws Exception {
         // no bypass
         Child child = I.make(Child.class);
-        assertTrue(child instanceof Child);
-        assertEquals(2, call);
+        assert child instanceof Child;
+        assert 2 == call;
 
         // bypass
         Method method = ObjectStreamClass.class.getDeclaredMethod("newInstance", new Class[] {});
         method.setAccessible(true);
 
         child = (Child) method.invoke(ObjectStreamClass.lookup(Child.class));
-        assertTrue(child instanceof Child);
-        assertEquals(3, call); // Umm...
+        assert child instanceof Child;
+        assert 3 == call; // Umm...
     }
 
     @Test
     public void byMockObjectInputStream() throws Exception {
         // no bypass
         Child child = I.make(Child.class);
-        assertTrue(child instanceof Child);
-        assertEquals(2, call);
+        assert child instanceof Child;
+        assert 2 == call;
 
         // bypass
         child = (Child) new Mock(Child.class).readObject();
-        assertTrue(child instanceof Child);
-        assertEquals(3, call); // Umm...
+        assert child instanceof Child;
+        assert 3 == call; // Umm...
     }
 
     /**

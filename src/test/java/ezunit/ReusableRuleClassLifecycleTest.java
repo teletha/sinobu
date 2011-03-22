@@ -15,8 +15,6 @@
  */
 package ezunit;
 
-import static org.junit.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -30,7 +28,7 @@ public class ReusableRuleClassLifecycleTest {
 
     @Test
     public void notInvoked() throws Exception {
-        fail("We must not invoke this test method.");
+        throw new AssertionError("We must not invoke this test method.");
     }
 
     /**

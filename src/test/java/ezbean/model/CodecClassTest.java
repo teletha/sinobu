@@ -15,15 +15,13 @@
  */
 package ezbean.model;
 
-import static org.junit.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/02/04 10:29:49
+ * @version 2011/03/22 17:03:59
  */
 public class CodecClassTest {
 
@@ -34,19 +32,19 @@ public class CodecClassTest {
     public void systemClass() throws Exception {
         CodecClass codec = new CodecClass();
         Class clazz = codec.decode("java.lang.String");
-        assertNotNull(clazz);
-        assertEquals("java.lang.String", codec.encode(clazz));
+        assert clazz != null;
+        assert codec.encode(clazz).equals("java.lang.String");
     }
 
     @Test
     public void moduleClass() throws Exception {
         Class clazz = module.convert(Private.class);
-        assertNotSame(Private.class, clazz);
+        assert Private.class != clazz;
 
         CodecClass codec = new CodecClass();
         String fqcn = codec.encode(clazz);
-        assertNotSame(Private.class.getName(), fqcn);
-        assertEquals(clazz, codec.decode(fqcn));
+        assert Private.class.getName() != fqcn;
+        assert codec.decode(fqcn).equals(clazz);
     }
 
     /**

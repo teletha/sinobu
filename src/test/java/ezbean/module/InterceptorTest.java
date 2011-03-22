@@ -15,8 +15,6 @@
  */
 package ezbean.module;
 
-import static org.junit.Assert.*;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ import ezbean.Interceptor;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/11/12 11:45:21
+ * @version 2011/03/22 17:06:39
  */
 public class InterceptorTest {
 
@@ -42,7 +40,7 @@ public class InterceptorTest {
         InterceptedBean bean = I.make(InterceptedBean.class);
         bean.setName("test");
 
-        assertEquals("test", bean.getName());
+        assert "test" == bean.getName();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -56,11 +54,11 @@ public class InterceptorTest {
         InterceptedBean bean = I.make(InterceptedBean.class);
         bean.setSequence("test");
 
-        assertEquals(4, bean.order.size());
-        assertEquals(11, bean.order.get(0).intValue());
-        assertEquals(21, bean.order.get(1).intValue());
-        assertEquals(22, bean.order.get(2).intValue());
-        assertEquals(12, bean.order.get(3).intValue());
+        assert 4 == bean.order.size();
+        assert 11 == bean.order.get(0).intValue();
+        assert 21 == bean.order.get(1).intValue();
+        assert 22 == bean.order.get(2).intValue();
+        assert 12 == bean.order.get(3).intValue();
     }
 
     @Test
@@ -68,11 +66,11 @@ public class InterceptorTest {
         InterceptedBean bean = I.make(InterceptedBean.class);
         bean.setReverse("test");
 
-        assertEquals(4, bean.order.size());
-        assertEquals(21, bean.order.get(0).intValue());
-        assertEquals(11, bean.order.get(1).intValue());
-        assertEquals(12, bean.order.get(2).intValue());
-        assertEquals(22, bean.order.get(3).intValue());
+        assert 4 == bean.order.size();
+        assert 21 == bean.order.get(0).intValue();
+        assert 11 == bean.order.get(1).intValue();
+        assert 12 == bean.order.get(2).intValue();
+        assert 22 == bean.order.get(3).intValue();
     }
 
     @Test
@@ -80,7 +78,7 @@ public class InterceptorTest {
         InterceptedBean bean = I.make(InterceptedBean.class);
         bean.setValue(1);
 
-        assertEquals(5, bean.getValue());
+        assert 5 == bean.getValue();
     }
 
     /**

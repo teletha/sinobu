@@ -15,14 +15,12 @@
  */
 package ezbean.model;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import ezbean.sample.bean.TransientBean;
 
 /**
- * @version 2011/02/27 21:40:49
+ * @version 2011/03/22 16:56:26
  */
 public class TransientPropertyTest {
 
@@ -30,34 +28,34 @@ public class TransientPropertyTest {
     public void transientGetter() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("onlyGetter");
-        assertTrue(property.isTransient());
+        assert property.isTransient();
     }
 
     @Test
     public void transientSetter() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("onlySetter");
-        assertTrue(property.isTransient());
+        assert property.isTransient();
     }
 
     @Test
     public void transientBoth() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("both");
-        assertTrue(property.isTransient());
+        assert property.isTransient();
     }
 
     @Test
     public void transientInverse() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("inverse");
-        assertTrue(property.isTransient());
+        assert property.isTransient();
     }
 
     @Test
     public void transientNone() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("none");
-        assertFalse(property.isTransient());
+        assert !property.isTransient();
     }
 }

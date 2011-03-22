@@ -15,8 +15,6 @@
  */
 package ezbean.module;
 
-import static org.junit.Assert.*;
-
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
@@ -30,7 +28,7 @@ import ezbean.I;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/02/03 21:01:59
+ * @version 2011/03/22 17:08:02
  */
 public class ClassloaderUnloadTest {
 
@@ -49,7 +47,7 @@ public class ClassloaderUnloadTest {
     @Test
     public void count() throws Exception {
         // use module class
-        assertNotNull(I.make(module.convert(Single.class)));
+        assert I.make(module.convert(Single.class)) != null;
 
         // reload module and execute gc if possible
         module.load();
@@ -60,13 +58,13 @@ public class ClassloaderUnloadTest {
         long initialUnloaded = classLoading.getUnloadedClassCount();
 
         // use module class
-        assertNotNull(I.make(module.convert(Single.class)));
+        assert I.make(module.convert(Single.class)) != null;
 
         // create snapshot
         int loaded = classLoading.getLoadedClassCount();
         long unloaded = classLoading.getUnloadedClassCount();
-        assertEquals(2, loaded - initialLoaded);
-        assertEquals(0, unloaded - initialUnloaded);
+        assert 2 == loaded - initialLoaded;
+        assert 0 == unloaded - initialUnloaded;
 
         // reload module and execute gc if possible
         module.load();
@@ -75,9 +73,9 @@ public class ClassloaderUnloadTest {
         // create snapshot
         int lastLoaded = classLoading.getLoadedClassCount();
         long lastUnloaded = classLoading.getUnloadedClassCount();
-        assertTrue(lastLoaded - loaded <= -2);
-        assertTrue(2 <= lastUnloaded - unloaded);
-        assertEquals(loaded - lastLoaded, lastUnloaded - unloaded);
+        assert lastLoaded - loaded <= -2;
+        assert 2 <= lastUnloaded - unloaded;
+        assert loaded - lastLoaded == lastUnloaded - unloaded;
     }
 
     /**

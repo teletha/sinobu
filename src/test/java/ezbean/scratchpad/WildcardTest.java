@@ -15,201 +15,199 @@
  */
 package ezbean.scratchpad;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 /**
- * @version 2010/12/23 1:25:49
+ * @version 2011/03/22 17:09:40
  */
 public class WildcardTest {
 
     @Test
     public void none() throws Exception {
-        assertTrue(match("test.java", "test.java"));
+        assert match("test.java", "test.java");
     }
 
     @Test
     public void wildcard() throws Exception {
-        assertTrue(match("test.java", "*"));
-        assertTrue(match("test.java", "**"));
-        assertTrue(match("test.java", "***"));
-        assertTrue(match("test.java", "****"));
-        assertTrue(match("test.java", "***st**"));
+        assert match("test.java", "*");
+        assert match("test.java", "**");
+        assert match("test.java", "***");
+        assert match("test.java", "****");
+        assert match("test.java", "***st**");
     }
 
     @Test
     public void wildcardRight() throws Exception {
-        assertTrue(match("benchmarktest.java", "*.java"));
-        assertFalse(match("short", "*patternIsLongerThanInputValue"));
-        assertFalse(match("Value", "*patternIsLongerThanInputValue"));
+        assert match("benchmarktest.java", "*.java");
+        assert !match("short", "*patternIsLongerThanInputValue");
+        assert !match("Value", "*patternIsLongerThanInputValue");
     }
 
     @Test
     public void wildcardLeft() throws Exception {
-        assertTrue(match("test.java", "test.*"));
-        assertFalse(match("short", "patternIsLongerThanInputValue*"));
-        assertFalse(match("pattern", "patternIsLongerThanInputValue*"));
+        assert match("test.java", "test.*");
+        assert !match("short", "patternIsLongerThanInputValue*");
+        assert !match("pattern", "patternIsLongerThanInputValue*");
     }
 
     @Test
     public void wildcardBoth() throws Exception {
-        assertTrue(match("test.java", "test*java"));
+        assert match("test.java", "test*java");
     }
 
     @Test
     public void wildcardNone() throws Exception {
-        assertTrue(match("test.java", "test*.java"));
+        assert match("test.java", "test*.java");
     }
 
     @Test
     public void ambiguous() throws Exception {
-        assertTrue(match("test.java", "t*a"));
+        assert match("test.java", "t*a");
     }
 
     @Test
     public void multiple() throws Exception {
-        assertTrue(match("test.java", "t*s*.j*a"));
+        assert match("test.java", "t*s*.j*a");
     }
 
     @Test
     public void dontRetreat() throws Exception {
-        assertFalse(match("MatchAtNextPosition", "*ext*ext*"));
+        assert !match("MatchAtNextPosition", "*ext*ext*");
     }
 
     @Test
     public void dontRetreatOne() throws Exception {
-        assertFalse(match("MatchAtNextPosition", "*e*e*"));
-        assertTrue(match("MatchAtNextPosition", "*e*x*"));
+        assert !match("MatchAtNextPosition", "*e*e*");
+        assert match("MatchAtNextPosition", "*e*x*");
     }
 
     @Test
     public void dontRetreatMix() throws Exception {
-        assertFalse(match("MatchAtNextPosition", "*e*ext*"));
-        assertTrue(match("MatchAtNextPosition", "*e*xt*"));
+        assert !match("MatchAtNextPosition", "*e*ext*");
+        assert match("MatchAtNextPosition", "*e*xt*");
     }
 
     @Test
     public void escapeChar() throws Exception {
-        assertTrue(match("test.java", "\\test.java"));
+        assert match("test.java", "\\test.java");
     }
 
     @Test
     public void escapeAstarisk() throws Exception {
-        assertTrue(match("i*i", "i\\*i"));
+        assert match("i*i", "i\\*i");
     }
 
     @Test
     public void escapeEscape() throws Exception {
-        assertTrue(match("i\\i", "i\\\\i"));
+        assert match("i\\i", "i\\\\i");
     }
 
     @Test
     public void escapeComplex() throws Exception {
-        assertFalse(match("complex", "comple\\*"));
-        assertTrue(match("comple*", "comple\\*"));
-        assertFalse(match("complex", "comple\\\\*"));
-        assertTrue(match("comple\\x", "comple\\\\*"));
-        assertFalse(match("comple\\\\", "comple\\\\\\*"));
-        assertTrue(match("comple\\*", "comple\\\\\\*"));
+        assert !match("complex", "comple\\*");
+        assert match("comple*", "comple\\*");
+        assert !match("complex", "comple\\\\*");
+        assert match("comple\\x", "comple\\\\*");
+        assert !match("comple\\\\", "comple\\\\\\*");
+        assert match("comple\\*", "comple\\\\\\*");
     }
 
     @Test
     public void more() throws Exception {
-        assertFalse(match("test.java", "test.javaa"));
-        assertFalse(match("test.java", "ttest.java"));
+        assert !match("test.java", "test.javaa");
+        assert !match("test.java", "ttest.java");
     }
 
     @Test
     public void less() throws Exception {
-        assertFalse(match("test.java", "test.jav"));
-        assertFalse(match("test.java", "est.java"));
+        assert !match("test.java", "test.jav");
+        assert !match("test.java", "est.java");
     }
 
     @Test
     public void miss() throws Exception {
-        assertFalse(match("test.java", "test.jawa"));
+        assert !match("test.java", "test.jawa");
     }
 
     @Test
     public void missWildcardRight() throws Exception {
-        assertFalse(match("benchmarktest.java", "*.txt"));
+        assert !match("benchmarktest.java", "*.txt");
     }
 
     @Test
     public void missHead() throws Exception {
-        assertFalse(match("head doesn't match", "d*h"));
+        assert !match("head doesn't match", "d*h");
     }
 
     @Test
     public void missTail() throws Exception {
-        assertFalse(match("tail doesn't match", "t*m"));
+        assert !match("tail doesn't match", "t*m");
     }
 
     @Test
     public void missBoth() throws Exception {
-        assertFalse(match("abcdefghijklmn", "*00*"));
+        assert !match("abcdefghijklmn", "*00*");
     }
 
     @Test
     public void noneAsciiWildcardSingleCharcter() throws Exception {
-        assertTrue(match("あいうえお", "あ*お"));
+        assert match("あいうえお", "あ*お");
     }
 
     @Test
     public void noneAsciiWildcardMultipleCharcters() throws Exception {
-        assertTrue(match("あいうえお", "あい*お"));
+        assert match("あいうえお", "あい*お");
     }
 
     @Test
     public void noneAsciiMultipleWildcards() throws Exception {
-        assertTrue(match("天上天下唯我独尊", "天上*下*独尊"));
+        assert match("天上天下唯我独尊", "天上*下*独尊");
     }
 
     @Test
     public void noneAsciiMiss() throws Exception {
-        assertFalse(match("天上天下唯我独尊", "天*使"));
+        assert !match("天上天下唯我独尊", "天*使");
     }
 
     @Test
     public void noneAsciiAmbiguous() throws Exception {
-        assertTrue(match("天使ちゃんまじ天使", "天*使"));
-        assertTrue(match("天使ちゃんまじ天使", "*まじ天*使"));
-        assertTrue(match("天使ちゃんまじ天使", "天*使ちゃん*"));
+        assert match("天使ちゃんまじ天使", "天*使");
+        assert match("天使ちゃんまじ天使", "*まじ天*使");
+        assert match("天使ちゃんまじ天使", "天*使ちゃん*");
     }
 
     @Test
     public void ignoreCaseUpper() throws Exception {
-        assertTrue(match("abcd", "*CD"));
-        assertTrue(match("abcd", "AB*"));
-        assertTrue(match("abcd", "*B*"));
-        assertTrue(match("abcd", "*BC*"));
+        assert match("abcd", "*CD");
+        assert match("abcd", "AB*");
+        assert match("abcd", "*B*");
+        assert match("abcd", "*BC*");
     }
 
     @Test
     public void ignoreCaseLower() throws Exception {
-        assertTrue(match("ABCD", "*cd"));
-        assertTrue(match("ABCD", "ab*"));
-        assertTrue(match("ABCD", "*b*"));
-        assertTrue(match("ABCD", "*bc*"));
+        assert match("ABCD", "*cd");
+        assert match("ABCD", "ab*");
+        assert match("ABCD", "*b*");
+        assert match("ABCD", "*bc*");
     }
 
     @Test
     public void ignoreCaseMix() throws Exception {
-        assertTrue(match("aBcD", "*Cd"));
-        assertTrue(match("aBcD", "Ab*"));
-        assertTrue(match("aBcD", "*b*"));
-        assertTrue(match("aBcD", "*bC*"));
+        assert match("aBcD", "*Cd");
+        assert match("aBcD", "Ab*");
+        assert match("aBcD", "*b*");
+        assert match("aBcD", "*bC*");
     }
 
     @Test
     public void slash() throws Exception {
-        assertTrue(match("directory/file", "directory/file"));
+        assert match("directory/file", "directory/file");
     }
 
     @Test
     public void slashWildcard() throws Exception {
-        assertTrue(match("directory/file", "directory/*"));
+        assert match("directory/file", "directory/*");
     }
 
     /**

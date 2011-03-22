@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import ezbean.sample.bean.ChainBean;
@@ -30,9 +28,7 @@ import ezbean.sample.bean.Student;
 import ezbean.sample.bean.TransientBean;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/17 13:50:21
+ * @version 2011/03/22 16:42:35
  */
 public class BindingTest {
 
@@ -46,24 +42,24 @@ public class BindingTest {
         Person target = I.make(Person.class);
         target.setAge(10);
 
-        assertEquals(5, source.getAge());
-        assertEquals(10, target.getAge());
+        assert 5 == source.getAge();
+        assert 10 == target.getAge();
 
         // bind
         I.bind(I.mock(source).getAge(), I.mock(target).getAge(), true);
 
-        assertEquals(5, source.getAge());
-        assertEquals(5, target.getAge());
+        assert 5 == source.getAge();
+        assert 5 == target.getAge();
 
         // from source
         source.setAge(1);
-        assertEquals(1, source.getAge());
-        assertEquals(1, target.getAge());
+        assert 1 == source.getAge();
+        assert 1 == target.getAge();
 
         // from target
         target.setAge(4);
-        assertEquals(4, source.getAge());
-        assertEquals(4, target.getAge());
+        assert 4 == source.getAge();
+        assert 4 == target.getAge();
     }
 
     /**
@@ -78,32 +74,32 @@ public class BindingTest {
         target.setFirstName("uma");
         target.setLastName("uma");
 
-        assertEquals("kuma", source.getFirstName());
-        assertEquals("kuma", source.getLastName());
-        assertEquals("uma", target.getFirstName());
-        assertEquals("uma", target.getLastName());
+        assert "kuma" == source.getFirstName();
+        assert "kuma" == source.getLastName();
+        assert "uma" == target.getFirstName();
+        assert "uma" == target.getLastName();
 
         // bind
         I.bind(I.mock(source).getFirstName(), I.mock(target).getLastName(), true);
 
-        assertEquals("kuma", source.getFirstName());
-        assertEquals("kuma", source.getLastName());
-        assertEquals("uma", target.getFirstName());
-        assertEquals("kuma", target.getLastName());
+        assert "kuma" == source.getFirstName();
+        assert "kuma" == source.getLastName();
+        assert "uma" == target.getFirstName();
+        assert "kuma" == target.getLastName();
 
         // from source
         source.setFirstName("test");
-        assertEquals("test", source.getFirstName());
-        assertEquals("kuma", source.getLastName());
-        assertEquals("uma", target.getFirstName());
-        assertEquals("test", target.getLastName());
+        assert "test" == source.getFirstName();
+        assert "kuma" == source.getLastName();
+        assert "uma" == target.getFirstName();
+        assert "test" == target.getLastName();
 
         // from target
         target.setLastName("change");
-        assertEquals("change", source.getFirstName());
-        assertEquals("kuma", source.getLastName());
-        assertEquals("uma", target.getFirstName());
-        assertEquals("change", target.getLastName());
+        assert "change" == source.getFirstName();
+        assert "kuma" == source.getLastName();
+        assert "uma" == target.getFirstName();
+        assert "change" == target.getLastName();
     }
 
     /**
@@ -120,24 +116,24 @@ public class BindingTest {
         Student source = I.make(Student.class);
         Student target = I.make(Student.class);
 
-        assertEquals(null, source.getSchool());
-        assertEquals(null, target.getSchool());
+        assert null == source.getSchool();
+        assert null == target.getSchool();
 
         // bind
         I.bind(I.mock(source).getSchool(), I.mock(target).getSchool(), true);
 
-        assertEquals(null, source.getSchool());
-        assertEquals(null, target.getSchool());
+        assert null == source.getSchool();
+        assert null == target.getSchool();
 
         // from source
         source.setSchool(lulim);
-        assertEquals(lulim, source.getSchool());
-        assertEquals(lulim, target.getSchool());
+        assert lulim == source.getSchool();
+        assert lulim == target.getSchool();
 
         // from target
         target.setSchool(spica);
-        assertEquals(spica, source.getSchool());
-        assertEquals(spica, target.getSchool());
+        assert spica == source.getSchool();
+        assert spica == target.getSchool();
     }
 
     /**
@@ -154,41 +150,41 @@ public class BindingTest {
         Student source = I.make(Student.class);
         Student target = I.make(Student.class);
 
-        assertEquals(null, source.getSchool());
-        assertEquals(null, target.getSchool());
+        assert null == source.getSchool();
+        assert null == target.getSchool();
 
         // bind
         I.bind(I.mock(source).getSchool().getName(), I.mock(target).getSchool().getName(), true);
 
-        assertEquals(null, source.getSchool());
-        assertEquals(null, target.getSchool());
+        assert null == source.getSchool();
+        assert null == target.getSchool();
 
         // from source
         source.setSchool(lulim);
-        assertEquals(lulim, source.getSchool());
-        assertEquals("lulim", source.getSchool().getName());
-        assertEquals(null, target.getSchool());
+        assert lulim == source.getSchool();
+        assert "lulim" == source.getSchool().getName();
+        assert null == target.getSchool();
 
         // from target
         target.setSchool(spica);
-        assertEquals(lulim, source.getSchool());
-        assertEquals("spica", source.getSchool().getName());
-        assertEquals(spica, target.getSchool());
-        assertEquals("spica", target.getSchool().getName());
+        assert lulim == source.getSchool();
+        assert "spica" == source.getSchool().getName();
+        assert spica == target.getSchool();
+        assert "spica" == target.getSchool().getName();
 
         // nested property change from source
         lulim.setName("lulim");
-        assertEquals(lulim, source.getSchool());
-        assertEquals("lulim", source.getSchool().getName());
-        assertEquals(spica, target.getSchool());
-        assertEquals("lulim", target.getSchool().getName());
+        assert lulim == source.getSchool();
+        assert "lulim" == source.getSchool().getName();
+        assert spica == target.getSchool();
+        assert "lulim" == target.getSchool().getName();
 
         // nested property change from target
         spica.setName("spica");
-        assertEquals(lulim, source.getSchool());
-        assertEquals("spica", source.getSchool().getName());
-        assertEquals(spica, target.getSchool());
-        assertEquals("spica", target.getSchool().getName());
+        assert lulim == source.getSchool();
+        assert "spica" == source.getSchool().getName();
+        assert spica == target.getSchool();
+        assert "spica" == target.getSchool().getName();
     }
 
     /**
@@ -207,51 +203,51 @@ public class BindingTest {
         Student target = I.make(Student.class);
         target.setSchool(spica);
 
-        assertEquals(lulim, source.getSchool());
-        assertEquals("lulim", source.getSchool().getName());
-        assertEquals(spica, target.getSchool());
-        assertEquals("spica", target.getSchool().getName());
+        assert lulim == source.getSchool();
+        assert "lulim" == source.getSchool().getName();
+        assert spica == target.getSchool();
+        assert "spica" == target.getSchool().getName();
 
         // bind
         I.bind(I.mock(source).getSchool().getName(), I.mock(target).getSchool().getName(), true);
 
-        assertEquals(lulim, source.getSchool());
-        assertEquals("lulim", source.getSchool().getName());
-        assertEquals(spica, target.getSchool());
-        assertEquals("lulim", target.getSchool().getName());
+        assert lulim == source.getSchool();
+        assert "lulim" == source.getSchool().getName();
+        assert spica == target.getSchool();
+        assert "lulim" == target.getSchool().getName();
 
         // null from source
         source.setSchool(null);
-        assertEquals(null, source.getSchool());
-        assertEquals(spica, target.getSchool());
-        assertEquals(null, target.getSchool().getName());
+        assert null == source.getSchool();
+        assert spica == target.getSchool();
+        assert null == target.getSchool().getName();
 
-        assertEquals("lulim", lulim.getName());
-        assertEquals(null, spica.getName());
+        assert "lulim" == lulim.getName();
+        assert null == spica.getName();
 
         // change nested property which is removed from binding
         lulim.setName("no effect");
-        assertEquals("no effect", lulim.getName());
-        assertEquals(null, spica.getName());
+        assert "no effect" == lulim.getName();
+        assert null == spica.getName();
 
         // change nested property which is belong to binding without source
         spica.setName("effect");
-        assertEquals("no effect", lulim.getName());
-        assertEquals("effect", spica.getName());
+        assert "no effect" == lulim.getName();
+        assert "effect" == spica.getName();
 
         // make source graph valid (source has high priority)
         source.setSchool(lulim);
-        assertEquals(lulim, source.getSchool());
-        assertEquals("no effect", source.getSchool().getName());
-        assertEquals(spica, target.getSchool());
-        assertEquals("no effect", target.getSchool().getName());
+        assert lulim == source.getSchool();
+        assert "no effect" == source.getSchool().getName();
+        assert spica == target.getSchool();
+        assert "no effect" == target.getSchool().getName();
 
         // change from nested object directly
         spica.setName("change");
-        assertEquals(lulim, source.getSchool());
-        assertEquals("change", source.getSchool().getName());
-        assertEquals(spica, target.getSchool());
-        assertEquals("change", target.getSchool().getName());
+        assert lulim == source.getSchool();
+        assert "change" == source.getSchool().getName();
+        assert spica == target.getSchool();
+        assert "change" == target.getSchool().getName();
     }
 
     /**
@@ -264,24 +260,24 @@ public class BindingTest {
         Person target = I.make(Person.class);
         target.setFirstName("test");
 
-        assertEquals(5, source.getAge());
-        assertEquals("test", target.getFirstName());
+        assert 5 == source.getAge();
+        assert "test" == target.getFirstName();
 
         // bind
         I.bind(I.mock(source).getAge(), I.mock(target).getFirstName(), true);
 
-        assertEquals(5, source.getAge());
-        assertEquals("5", target.getFirstName());
+        assert 5 == source.getAge();
+        assert target.getFirstName().equals("5");
 
         // from source
         source.setAge(1);
-        assertEquals(1, source.getAge());
-        assertEquals("1", target.getFirstName());
+        assert 1 == source.getAge();
+        assert target.getFirstName().equals("1");
 
         // from target
         target.setFirstName("23");
-        assertEquals(23, source.getAge());
-        assertEquals("23", target.getFirstName());
+        assert 23 == source.getAge();
+        assert target.getFirstName().equals("23");
     }
 
     /**
@@ -294,24 +290,24 @@ public class BindingTest {
         Person target = I.make(Person.class);
         target.setFirstName("test");
 
-        assertEquals(5, source.getAge());
-        assertEquals("test", target.getFirstName());
+        assert 5 == source.getAge();
+        assert "test" == target.getFirstName();
 
         // bind
         I.bind(I.mock(source).getAge(), I.mock(target).getFirstName(), true);
 
-        assertEquals(5, source.getAge());
-        assertEquals("5", target.getFirstName());
+        assert 5 == source.getAge();
+        assert target.getFirstName().equals("5");
 
         // from source
         source.setAge(1);
-        assertEquals(1, source.getAge());
-        assertEquals("1", target.getFirstName());
+        assert 1 == source.getAge();
+        assert target.getFirstName().equals("1");
 
         // from target
         target.setFirstName("invalid");
-        assertEquals(1, source.getAge());
-        assertEquals("invalid", target.getFirstName());
+        assert 1 == source.getAge();
+        assert "invalid" == target.getFirstName();
     }
 
     /**
@@ -333,8 +329,8 @@ public class BindingTest {
 
         // one - two - three
         // first - second - third
-        assertEquals(three, two.getNext());
-        assertEquals(third, second.getNext());
+        assert three == two.getNext();
+        assert third == second.getNext();
 
         // bind
         I.bind(I.mock(one).getNext().getNext(), I.mock(first).getNext().getNext(), true);
@@ -342,28 +338,28 @@ public class BindingTest {
         // this is initial binding
         // one - two - three
         // first - second - three
-        assertEquals(two, one.getNext());
-        assertEquals(three, two.getNext());
-        assertEquals(second, first.getNext());
-        assertEquals(three, second.getNext());
+        assert two == one.getNext();
+        assert three == two.getNext();
+        assert second == first.getNext();
+        assert three == second.getNext();
 
         // from source at last path
         // one - two - third
         // first - second - third
         two.setNext(third);
-        assertEquals(two, one.getNext());
-        assertEquals(third, two.getNext());
-        assertEquals(second, first.getNext());
-        assertEquals(third, second.getNext());
+        assert two == one.getNext();
+        assert third == two.getNext();
+        assert second == first.getNext();
+        assert third == second.getNext();
 
         // from target at last path
         // one - two - three
         // first - second - three
         second.setNext(three);
-        assertEquals(two, one.getNext());
-        assertEquals(three, two.getNext());
-        assertEquals(second, first.getNext());
-        assertEquals(three, second.getNext());
+        assert two == one.getNext();
+        assert three == two.getNext();
+        assert second == first.getNext();
+        assert three == second.getNext();
 
         // create anothor chain
         ChainBean tick = I.make(ChainBean.class).setName("tick");
@@ -374,11 +370,11 @@ public class BindingTest {
         // one - tick - tack
         // first - second - tack
         one.setNext(tick);
-        assertEquals(tick, one.getNext());
-        assertEquals(tack, tick.getNext());
-        assertEquals(second, first.getNext());
-        assertEquals(tack, second.getNext());
-        assertEquals(three, two.getNext());
+        assert tick == one.getNext();
+        assert tack == tick.getNext();
+        assert second == first.getNext();
+        assert tack == second.getNext();
+        assert three == two.getNext();
 
         // create anothor chain
         ChainBean foo = I.make(ChainBean.class).setName("foo");
@@ -389,22 +385,22 @@ public class BindingTest {
         // one - tick - bar
         // first - foo - bar
         first.setNext(foo);
-        assertEquals(tick, one.getNext());
-        assertEquals(bar, tick.getNext());
-        assertEquals(foo, first.getNext());
-        assertEquals(bar, foo.getNext());
-        assertEquals(three, two.getNext());
-        assertEquals(tack, second.getNext());
+        assert tick == one.getNext();
+        assert bar == tick.getNext();
+        assert foo == first.getNext();
+        assert bar == foo.getNext();
+        assert three == two.getNext();
+        assert tack == second.getNext();
 
         // no binding change
         two.setNext(third);
         second.setNext(three);
-        assertEquals(tick, one.getNext()); // as-is
-        assertEquals(bar, tick.getNext()); // as-is
-        assertEquals(foo, first.getNext()); // as-is
-        assertEquals(bar, foo.getNext()); // as-is
-        assertEquals(third, two.getNext()); // change
-        assertEquals(three, second.getNext()); // change
+        assert tick == one.getNext(); // as-is
+        assert bar == tick.getNext(); // as-is
+        assert foo == first.getNext(); // as-is
+        assert bar == foo.getNext(); // as-is
+        assert third == two.getNext(); // change
+        assert three == second.getNext(); // change
     }
 
     @Test
@@ -417,8 +413,8 @@ public class BindingTest {
 
         // from source
         source.setGeneric("test");
-        assertEquals("test", source.getGeneric());
-        assertEquals("test", target.getGeneric());
+        assert "test" == source.getGeneric();
+        assert "test" == target.getGeneric();
     }
 
     @Test
@@ -436,11 +432,11 @@ public class BindingTest {
 
         // bind
         I.bind(I.mock(source).getGeneric().getFirstName(), I.mock(target).getFirstName(), true);
-        assertEquals("one", target.getFirstName());
+        assert "one" == target.getFirstName();
 
         // from source
         source.setGeneric(two);
-        assertEquals("two", target.getFirstName());
+        assert "two" == target.getFirstName();
     }
 
     @Test
@@ -450,28 +446,28 @@ public class BindingTest {
         TransientBean target = I.make(TransientBean.class);
         target.setBoth(10);
 
-        assertEquals(5, source.getBoth());
-        assertEquals(10, target.getBoth());
+        assert 5 == source.getBoth();
+        assert 10 == target.getBoth();
 
         // bind
         I.bind(I.mock(source).getBoth(), I.mock(target).getBoth(), true);
 
-        assertEquals(5, source.getBoth());
-        assertEquals(5, target.getBoth());
+        assert 5 == source.getBoth();
+        assert 5 == target.getBoth();
 
         // from source
         source.setBoth(1);
-        assertEquals(1, source.getBoth());
-        assertEquals(1, target.getBoth());
+        assert 1 == source.getBoth();
+        assert 1 == target.getBoth();
 
         // from target
         target.setBoth(4);
-        assertEquals(4, source.getBoth());
-        assertEquals(4, target.getBoth());
+        assert 4 == source.getBoth();
+        assert 4 == target.getBoth();
     }
 
     /**
-     * @version 2009/07/17 16:48:16
+     * @version 2011/03/22 16:42:39
      */
     protected static class GenericNest extends GenericBean<Person> {
     }
@@ -486,8 +482,8 @@ public class BindingTest {
 
         // from source
         source.setGeneric("test");
-        assertEquals("test", source.getGeneric());
-        assertEquals("test", target.getGeneric());
+        assert "test" == source.getGeneric();
+        assert "test" == target.getGeneric();
     }
 
     @Test
@@ -500,8 +496,8 @@ public class BindingTest {
 
         // from source
         source.setGeneric("test");
-        assertEquals("test", source.getGeneric());
-        assertEquals("test", target.getGeneric());
+        assert "test" == source.getGeneric();
+        assert "test" == target.getGeneric();
     }
 
     /**
@@ -564,29 +560,29 @@ public class BindingTest {
         Person target = I.make(Person.class);
         target.setAge(10);
 
-        assertEquals(5, source.getAge());
-        assertEquals(10, target.getAge());
+        assert 5 == source.getAge();
+        assert 10 == target.getAge();
 
         // bind
         I.bind(I.mock(source).getAge(), I.mock(target).getAge(), false);
 
-        assertEquals(5, source.getAge());
-        assertEquals(5, target.getAge());
+        assert 5 == source.getAge();
+        assert 5 == target.getAge();
 
         // from source
         source.setAge(1);
-        assertEquals(1, source.getAge());
-        assertEquals(1, target.getAge());
+        assert 1 == source.getAge();
+        assert 1 == target.getAge();
 
         // from target
         target.setAge(4);
-        assertEquals(1, source.getAge());
-        assertEquals(4, target.getAge());
+        assert 1 == source.getAge();
+        assert 4 == target.getAge();
 
         // from source
         source.setAge(7);
-        assertEquals(7, source.getAge());
-        assertEquals(7, target.getAge());
+        assert 7 == source.getAge();
+        assert 7 == target.getAge();
     }
 
     /**
@@ -599,37 +595,37 @@ public class BindingTest {
         Person target = I.make(Person.class);
         target.setAge(10);
 
-        assertEquals(5, source.getAge());
-        assertEquals(10, target.getAge());
+        assert 5 == source.getAge();
+        assert 10 == target.getAge();
 
         // bind
         Disposable disposable = I.bind(I.mock(source).getAge(), I.mock(target).getAge(), true);
 
-        assertEquals(5, source.getAge());
-        assertEquals(5, target.getAge());
+        assert 5 == source.getAge();
+        assert 5 == target.getAge();
 
         // from source
         source.setAge(1);
-        assertEquals(1, source.getAge());
-        assertEquals(1, target.getAge());
+        assert 1 == source.getAge();
+        assert 1 == target.getAge();
 
         // from target
         target.setAge(4);
-        assertEquals(4, source.getAge());
-        assertEquals(4, target.getAge());
+        assert 4 == source.getAge();
+        assert 4 == target.getAge();
 
         // unbind
         disposable.dispose();
 
         // from source
         source.setAge(17);
-        assertEquals(17, source.getAge());
-        assertEquals(4, target.getAge());
+        assert 17 == source.getAge();
+        assert 4 == target.getAge();
 
         // from target
         target.setAge(71);
-        assertEquals(17, source.getAge());
-        assertEquals(71, target.getAge());
+        assert 17 == source.getAge();
+        assert 71 == target.getAge();
     }
 
     /**
@@ -642,14 +638,14 @@ public class BindingTest {
         Person target = I.make(Person.class);
         target.setAge(10);
 
-        assertEquals(5, source.getAge());
-        assertEquals(10, target.getAge());
+        assert 5 == source.getAge();
+        assert 10 == target.getAge();
 
         // bind
         Disposable disposable = I.bind(I.mock(source).getAge(), I.mock(target).getAge(), true);
 
-        assertEquals(5, source.getAge());
-        assertEquals(5, target.getAge());
+        assert 5 == source.getAge();
+        assert 5 == target.getAge();
 
         // unbind repeatedly
         disposable.dispose();
@@ -658,7 +654,7 @@ public class BindingTest {
 
         // from source
         source.setAge(17);
-        assertEquals(17, source.getAge());
-        assertEquals(5, target.getAge());
+        assert 17 == source.getAge();
+        assert 5 == target.getAge();
     }
 }

@@ -15,8 +15,6 @@
  */
 package ezunit;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.Writer;
@@ -63,7 +61,7 @@ public class SandboxTest {
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
 
-            fail("This is writable file.");
+            throw new AssertionError("This is writable file.");
         } catch (AccessControlException e) {
             // success
         } finally {
@@ -76,7 +74,7 @@ public class SandboxTest {
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
         } catch (AccessControlException e) {
-            fail("This is unwritable file.");
+            throw new AssertionError("This is unwritable file.");
         } finally {
             I.quiet(writer);
         }
@@ -94,7 +92,7 @@ public class SandboxTest {
         try {
             writer = Files.newBufferedWriter(file.resolve("file"), Charset.defaultCharset());
 
-            fail("This is writable file.");
+            throw new AssertionError("This is writable file.");
         } catch (AccessControlException e) {
             // success
         }
@@ -105,7 +103,7 @@ public class SandboxTest {
         try {
             writer = Files.newBufferedWriter(file.resolve("file"), Charset.defaultCharset());
         } catch (AccessControlException e) {
-            fail("This is unwritable file.");
+            throw new AssertionError("This is unwritable file.");
         } finally {
             I.quiet(writer);
         }

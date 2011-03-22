@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -29,7 +27,7 @@ import ezbean.sample.bean.Student;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/01/22 1:53:15
+ * @version 2011/03/22 16:32:28
  */
 public class LifestyleTest {
 
@@ -39,60 +37,60 @@ public class LifestyleTest {
     @Test
     public void override() {
         With object = I.make(With.class);
-        assertNotSame(object, I.make(With.class));
+        assert object != I.make(With.class);
 
         // unload module
         module.unload();
 
         object = I.make(With.class);
-        assertSame(object, I.make(With.class));
+        assert object == I.make(With.class);
     }
 
     @Test
     public void unload() {
-        assertSame(WithoutLifestyle.object, I.make(Without.class));
-        assertSame(WithoutLifestyle.object, I.make(Without.class));
+        assert WithoutLifestyle.object == I.make(Without.class);
+        assert WithoutLifestyle.object == I.make(Without.class);
 
         // unload module
         module.unload();
 
         Without object = I.make(Without.class);
-        assertNotSame(WithoutLifestyle.object, object);
-        assertNotSame(object, I.make(Without.class));
+        assert WithoutLifestyle.object != object;
+        assert object != I.make(Without.class);
     }
 
     @Test
     public void unloadOverridden() {
-        assertEquals(Locale.ROOT, I.make(Locale.class));
+        assert Locale.ROOT.equals(I.make(Locale.class));
 
         // unload lifestyle definition
         I.make(I.class).unload(LocalLifestyle.class);
 
-        assertEquals(Locale.getDefault(), I.make(Locale.class));
+        assert Locale.getDefault().equals(I.make(Locale.class));
     }
 
     @Test
     public void extendPrototype() {
         Person person = I.make(Person.class);
-        assertEquals("default", person.getFirstName());
+        assert "default".equals(person.getFirstName());
     }
 
     @Test
     public void extendPrototypeWithClassParameter() {
         Student person = I.make(Student.class);
-        assertTrue(person instanceof Student);
-        assertEquals("default", person.getFirstName());
+        assert person instanceof Student;
+        assert "default".equals(person.getFirstName());
     }
 
     @Test
     public void customLifestyle() {
-        assertSame(WithoutLifestyle.object, I.make(Without.class));
+        assert WithoutLifestyle.object == I.make(Without.class);
     }
 
     @Test
     public void customPrototype() {
         CustomClass instance = I.make(CustomClass.class);
-        assertTrue(CustomLifestyle.set.contains(instance));
+        assert CustomLifestyle.set.contains(instance);
     }
 
     /**
@@ -233,7 +231,7 @@ public class LifestyleTest {
 
         public CustomLifestyle(Class<M> modelClass) {
             super(modelClass);
-            assertEquals(CustomClass.class, modelClass);
+            assert CustomClass.class.equals(modelClass);
         }
 
         /**

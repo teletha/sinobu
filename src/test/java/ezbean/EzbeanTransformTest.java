@@ -15,60 +15,58 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 /**
- * @version 2011/03/15 14:44:41
+ * @version 2011/03/22 16:50:58
  */
 public class EzbeanTransformTest {
 
     @Test
     public void inputNull() throws Exception {
-        assertEquals(null, I.transform(null, int.class));
-        assertEquals(null, I.transform(null, String.class));
+        assert I.transform(null, int.class) == null;
+        assert I.transform(null, String.class) == null;
     }
 
     @Test(expected = NullPointerException.class)
     public void outputNull() throws Exception {
-        assertEquals(null, I.transform("1", null));
+        assert I.transform("1", null) == null;
     }
 
     @Test
     public void transformInt() {
-        assertEquals(1, (int) I.transform("1", int.class));
-        assertEquals("1", I.transform(1, String.class));
+        assert I.transform("1", int.class) == 1;
+        assert I.transform(1, String.class).equals("1");
     }
 
     @Test
     public void transformLong() {
-        assertEquals(1L, (long) I.transform("1", long.class));
-        assertEquals("1", I.transform(1L, String.class));
+        assert I.transform("1", long.class) == 1L;
+        assert I.transform(1L, String.class).equals("1");
     }
 
     @Test
     public void transformChar() {
-        assertEquals('1', (char) I.transform("1", char.class));
-        assertEquals("1", I.transform('1', String.class));
+        assert I.transform("1", char.class) == '1';
+        assert I.transform('1', String.class).equals("1");
     }
 
     @Test
     public void transformFloat() {
-        assertEquals(1.3f, (float) I.transform("1.3", float.class), 0);
-        assertEquals("1.3", I.transform(1.3f, String.class));
+        assert I.transform("1.3", float.class) == 1.3f;
+        assert I.transform(1.3f, String.class).equals("1.3");
     }
 
     @Test
     public void transformDouble() {
-        assertEquals(1.3d, (double) I.transform("1.3", double.class), 0);
-        assertEquals("1.3", I.transform(1.3d, String.class));
+        assert I.transform("1.3", double.class) == 1.3d;
+        assert I.transform(1.3d, String.class).equals("1.3");
     }
 
     @Test
     public void transformBoolean() {
-        assertTrue((boolean) I.transform("true", boolean.class));
-        assertEquals("true", I.transform(true, String.class));
+        assert I.transform("true", boolean.class);
+        assert I.transform(true, String.class).equals("true");
     }
 
     @Test
@@ -77,14 +75,14 @@ public class EzbeanTransformTest {
         a.setValue(10);
 
         // initial value
-        assertEquals(10, a.getValue());
+        assert 10 == a.getValue();
 
         // transform
         BeanB b = I.transform(a, BeanB.class);
 
         // initial value
-        assertEquals(10, a.getValue());
-        assertEquals("10", b.getValue());
+        assert 10 == a.getValue();
+        assert b.getValue().equals("10");
     }
 
     /**

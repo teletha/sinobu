@@ -16,9 +16,6 @@
 package ezbean.xml;
 
 import static ezunit.Ezunit.*;
-import static org.junit.Assert.*;
-
-
 
 import org.junit.Test;
 import org.xml.sax.InputSource;
@@ -26,12 +23,9 @@ import org.xml.sax.Locator;
 import org.xml.sax.helpers.LocatorImpl;
 
 import ezbean.I;
-import ezbean.xml.XMLScanner;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/23 12:59:59
+ * @version 2011/03/22 17:24:26
  */
 public class LocatorTest {
 
@@ -49,7 +43,7 @@ public class LocatorTest {
         I.parse(source, chaser);
 
         // assert
-        assertEquals("dummy.xml", chaser.locator.getPublicId());
+        assert chaser.locator.getPublicId().equals("dummy.xml");
     }
 
     /**

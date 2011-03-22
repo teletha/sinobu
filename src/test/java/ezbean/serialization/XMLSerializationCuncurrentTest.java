@@ -15,8 +15,6 @@
  */
 package ezbean.serialization;
 
-import static org.junit.Assert.*;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ import ezbean.sample.bean.StringList;
 import ezunit.CleanRoom;
 
 /**
- * @version 2011/03/07 12:35:22
+ * @version 2011/03/22 17:18:40
  */
 public class XMLSerializationCuncurrentTest {
 
@@ -86,9 +84,9 @@ public class XMLSerializationCuncurrentTest {
 
         StringList result = future.get();
 
-        assertNotNull(result);
-        assertNotNull(result.getList());
-        assertEquals(100000, result.getList().size());
+        assert result != null;
+        assert result.getList() != null;
+        assert 100000 == result.getList().size();
     }
 
     private StringList createBigList() {

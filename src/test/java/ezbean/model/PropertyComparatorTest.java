@@ -15,8 +15,6 @@
  */
 package ezbean.model;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +25,7 @@ import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
 
 /**
- * @version 2009/04/12 16:14:10
+ * @version 2011/03/22 16:56:52
  */
 public class PropertyComparatorTest {
 
@@ -47,10 +45,10 @@ public class PropertyComparatorTest {
         // create innocuous BeanModel as property comparator and sort above properties by it
         Collections.sort(properties);
 
-        assertEquals("first", properties.get(0).name);
-        assertEquals("int", properties.get(1).name);
-        assertEquals("string", properties.get(2).name);
-        assertEquals("aaa", properties.get(3).name);
-        assertEquals("abc", properties.get(4).name);
+        assert "first" == properties.get(0).name;
+        assert "int" == properties.get(1).name;
+        assert "string" == properties.get(2).name;
+        assert "aaa" == properties.get(3).name;
+        assert "abc" == properties.get(4).name;
     }
 }

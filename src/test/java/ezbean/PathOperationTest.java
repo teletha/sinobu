@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -28,7 +26,7 @@ import ezunit.CleanRoom;
 import ezunit.Synchrotron;
 
 /**
- * @version 2011/03/07 18:06:48
+ * @version 2011/03/22 16:40:43
  */
 public class PathOperationTest {
 
@@ -81,8 +79,8 @@ public class PathOperationTest {
     public void copyFileToAbsentDeeply() throws Exception {
         Path input = room.locateFile("test01/01.txt");
         Path output = room.locateAbsent("out/put/deeply");
-        assertTrue(Files.notExists(output.getParent()));
-        assertTrue(Files.notExists(output.getParent().getParent()));
+        assert Files.notExists(output.getParent());
+        assert Files.notExists(output.getParent().getParent());
 
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
@@ -158,8 +156,8 @@ public class PathOperationTest {
     public void copyDirectoryToAbsentDeeply() throws Exception {
         Path input = room.locateDirectory("test01");
         Path output = room.locateAbsent("out/put/deeply");
-        assertTrue(Files.notExists(output.getParent()));
-        assertTrue(Files.notExists(output.getParent().getParent()));
+        assert Files.notExists(output.getParent());
+        assert Files.notExists(output.getParent().getParent());
 
         // operation
         I.copy(input, output);
@@ -263,8 +261,8 @@ public class PathOperationTest {
     public void moveFileToAbsentDeeply() throws Exception {
         Path input = room.locateFile("test01/01.txt");
         Path output = room.locateAbsent("out/put/deeply");
-        assertTrue(Files.notExists(output.getParent()));
-        assertTrue(Files.notExists(output.getParent().getParent()));
+        assert Files.notExists(output.getParent());
+        assert Files.notExists(output.getParent().getParent());
 
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.exists(true, false);
@@ -340,8 +338,8 @@ public class PathOperationTest {
     public void moveDirectoryToAbsentDeeply() throws Exception {
         Path input = room.locateDirectory("test01");
         Path output = room.locateAbsent("out/put/deeply");
-        assertTrue(Files.notExists(output.getParent()));
-        assertTrue(Files.notExists(output.getParent().getParent()));
+        assert Files.notExists(output.getParent());
+        assert Files.notExists(output.getParent().getParent());
 
         // operation
         I.move(input, output);
@@ -403,41 +401,41 @@ public class PathOperationTest {
     public void deleteFile() {
         Path input = room.locateFile("test01/01.txt");
 
-        assertTrue(Files.exists(input));
+        assert Files.exists(input);
 
         // operation
         I.delete(input);
 
-        assertTrue(Files.notExists(input));
+        assert Files.notExists(input);
     }
 
     @Test
     public void deleteDirectory() {
         Path input = room.locateDirectory("test01");
 
-        assertTrue(Files.exists(input));
-        assertTrue(Files.exists(input.resolve("01.txt")));
-        assertTrue(Files.exists(input.resolve("directory1/01.txt")));
+        assert Files.exists(input);
+        assert Files.exists(input.resolve("01.txt"));
+        assert Files.exists(input.resolve("directory1/01.txt"));
 
         // operation
         I.delete(input);
 
-        assertTrue(Files.exists(input.getParent()));
-        assertTrue(Files.notExists(input));
-        assertTrue(Files.notExists(input.resolve("01.txt")));
-        assertTrue(Files.notExists(input.resolve("directory1/01.txt")));
+        assert Files.exists(input.getParent());
+        assert Files.notExists(input);
+        assert Files.notExists(input.resolve("01.txt"));
+        assert Files.notExists(input.resolve("directory1/01.txt"));
     }
 
     @Test
     public void deleteAbsent() {
         Path input = room.locateAbsent("absent");
 
-        assertTrue(Files.notExists(input));
+        assert Files.notExists(input);
 
         // operation
         I.delete(input);
 
-        assertTrue(Files.notExists(input));
+        assert Files.notExists(input);
     }
 
     @Test
@@ -448,9 +446,9 @@ public class PathOperationTest {
     @Test
     public void createTemporary() throws Exception {
         Path path = I.locateTemporary();
-        assertFalse(Files.exists(path));
-        assertFalse(Files.isDirectory(path));
-        assertFalse(Files.isRegularFile(path));
+        assert !Files.exists(path);
+        assert !Files.isDirectory(path);
+        assert !Files.isRegularFile(path);
     }
 
     @Test
@@ -458,11 +456,11 @@ public class PathOperationTest {
         Path path1 = I.locateTemporary();
         Path path2 = I.locateTemporary();
         Path path3 = I.locateTemporary();
-        assertFalse(Files.exists(path1));
-        assertFalse(Files.exists(path2));
-        assertFalse(Files.exists(path3));
-        assertNotSame(path1.getFileName(), path2.getFileName());
-        assertNotSame(path3.getFileName(), path2.getFileName());
-        assertNotSame(path3.getFileName(), path1.getFileName());
+        assert !Files.exists(path1);
+        assert !Files.exists(path2);
+        assert !Files.exists(path3);
+        assert path1.getFileName() != path2.getFileName();
+        assert path3.getFileName() != path2.getFileName();
+        assert path3.getFileName() != path1.getFileName();
     }
 }

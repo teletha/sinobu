@@ -15,8 +15,6 @@
  */
 package ezbean.model;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,7 +30,7 @@ import ezbean.sample.bean.StringMap;
 import ezbean.sample.bean.Student;
 
 /**
- * @version 2010/01/10 8:36:34
+ * @version 2011/03/22 16:58:45
  */
 public class ModelWalkerTest {
 
@@ -51,8 +49,8 @@ public class ModelWalkerTest {
         collector.traverse(person);
 
         // assert
-        assertEquals(2, collector.enterNodes.size());
-        assertEquals(2, collector.leaveNodes.size());
+        assert 2 == collector.enterNodes.size();
+        assert 2 == collector.leaveNodes.size();
     }
 
     /**
@@ -73,13 +71,13 @@ public class ModelWalkerTest {
         collector.traverse(person);
 
         // assert
-        assertEquals(4, collector.enterNodes.size());
-        assertEquals(4, collector.leaveNodes.size());
+        assert 4 == collector.enterNodes.size();
+        assert 4 == collector.leaveNodes.size();
 
         person = (Person) collector.enterNodes.get(0).value;
-        assertEquals(18, person.getAge());
-        assertEquals("Mizuho", person.getFirstName());
-        assertEquals("Miyanokoji", person.getLastName());
+        assert 18 == person.getAge();
+        assert "Mizuho" == person.getFirstName();
+        assert "Miyanokoji" == person.getLastName();
     }
 
     /**
@@ -100,8 +98,8 @@ public class ModelWalkerTest {
         collector.traverse(person, Arrays.asList("age"));
 
         // assert
-        assertEquals(2, collector.enterNodes.size());
-        assertEquals(2, collector.leaveNodes.size());
+        assert 2 == collector.enterNodes.size();
+        assert 2 == collector.leaveNodes.size();
     }
 
     /**
@@ -115,9 +113,9 @@ public class ModelWalkerTest {
         person.setAge(-1);
 
         Walker walker = new Walker();
-        assertEquals("Itiko", walker.traverse(person, Arrays.asList("firstName")));
-        assertEquals("Takasima", walker.traverse(person, Arrays.asList("lastName")));
-        assertEquals(-1, walker.traverse(person, Arrays.asList("age")));
+        assert "Itiko" == walker.traverse(person, Arrays.asList("firstName"));
+        assert "Takasima" == walker.traverse(person, Arrays.asList("lastName"));
+        assert walker.traverse(person, Arrays.asList("age")).equals(-1);
     }
 
     /**
@@ -128,7 +126,7 @@ public class ModelWalkerTest {
         Person person = I.make(Person.class);
 
         Walker walker = new Walker();
-        assertEquals(null, walker.traverse(person, Arrays.asList("unexpected")));
+        assert null == walker.traverse(person, Arrays.asList("unexpected"));
     }
 
     /**
@@ -145,9 +143,9 @@ public class ModelWalkerTest {
         stringMap.setMap(map);
 
         Walker walker = new Walker();
-        assertEquals("1", walker.traverse(stringMap, Arrays.asList("map", "item1")));
-        assertEquals("2", walker.traverse(stringMap, Arrays.asList("map", "item2")));
-        assertEquals("3", walker.traverse(stringMap, Arrays.asList("map", "item3")));
+        assert "1" == walker.traverse(stringMap, Arrays.asList("map", "item1"));
+        assert "2" == walker.traverse(stringMap, Arrays.asList("map", "item2"));
+        assert "3" == walker.traverse(stringMap, Arrays.asList("map", "item3"));
     }
 
     /**
@@ -175,14 +173,14 @@ public class ModelWalkerTest {
         collector.traverse(student);
 
         // assert
-        assertEquals(8, collector.enterNodes.size());
+        assert 8 == collector.enterNodes.size();
 
         // reuse
         collector.enterNodes.clear();
         collector.traverse(student);
 
         // assert
-        assertEquals(8, collector.enterNodes.size());
+        assert 8 == collector.enterNodes.size();
     }
 
     /**
