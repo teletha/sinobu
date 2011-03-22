@@ -48,7 +48,7 @@ import ezbean.I;
  * The environmental rule for test that depends on file system.
  * </p>
  * 
- * @version 2011/03/10 9:59:21
+ * @version 2011/03/10 9:59:22
  */
 public class CleanRoom extends Sandbox {
 
