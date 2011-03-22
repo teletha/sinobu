@@ -15,8 +15,6 @@
  */
 package ezunit;
 
-import static org.junit.Assert.*;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +47,12 @@ public class ReusableRuleTest {
 
     @BeforeClass
     public static void beforeClass() {
-        assertEquals(0, invocations.size());
+        assert 0 == invocations.size();
     }
 
     @AfterClass
     public static void afterClass() {
-        assertEquals(2, invocations.size());
+        assert 2 == invocations.size();
     }
 
     @Before
@@ -64,30 +62,30 @@ public class ReusableRuleTest {
 
     @Test
     public void invokeSubRules1() throws Exception {
-        assertTrue(rule.beforeClassInvoked);
-        assertEquals(1, TopRule.sub1.beforeClassInvoked);
-        assertEquals(1, rule.sub2.beforeClassInvoked);
-        assertEquals(counter, TopRule.sub1.counter);
-        assertEquals(counter, rule.sub2.counter);
+        assert rule.beforeClassInvoked;
+        assert 1 == TopRule.sub1.beforeClassInvoked;
+        assert 1 == rule.sub2.beforeClassInvoked;
+        assert counter == TopRule.sub1.counter;
+        assert counter == rule.sub2.counter;
     }
 
     @Test
     public void invokeSubRules2() throws Exception {
-        assertTrue(rule.beforeClassInvoked);
-        assertEquals(1, TopRule.sub1.beforeClassInvoked);
-        assertEquals(1, rule.sub2.beforeClassInvoked);
-        assertEquals(counter, TopRule.sub1.counter);
-        assertEquals(counter, rule.sub2.counter);
+        assert rule.beforeClassInvoked;
+        assert 1 == TopRule.sub1.beforeClassInvoked;
+        assert 1 == rule.sub2.beforeClassInvoked;
+        assert counter == TopRule.sub1.counter;
+        assert counter == rule.sub2.counter;
     }
 
     @Test
     public void dontInvoke() throws Exception {
-        fail("don't be invoked");
+        throw new AssertionError("don't be invoked");
     }
 
     @Test
     public void doesntInvoke() throws Exception {
-        fail("don't be invoked");
+        throw new AssertionError("don't be invoked");
     }
 
     /**
@@ -129,7 +127,7 @@ public class ReusableRuleTest {
         @Override
         protected void beforeClass() throws Exception {
             beforeClassInvoked++;
-            assertEquals(ReusableRuleTest.class, testcase);
+            assert ReusableRuleTest.class == testcase;
         }
 
         /**
@@ -138,7 +136,7 @@ public class ReusableRuleTest {
         @Override
         protected void before(Method method) throws Exception {
             counter++;
-            assertTrue(method.getName().contains("nvoke"));
+            assert method.getName().contains("nvoke");
         }
     }
 
@@ -153,7 +151,7 @@ public class ReusableRuleTest {
         @Override
         protected void beforeClass() throws Exception {
             invocations.add("beforeClass from Sub");
-            assertEquals(1, invocations.size());
+            assert 1 == invocations.size();
         }
 
         /**
@@ -161,7 +159,7 @@ public class ReusableRuleTest {
          */
         @Override
         protected void afterClass() {
-            assertEquals(1, invocations.size());
+            assert 1 == invocations.size();
             invocations.add("afterClass from Sub");
         }
     }

@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import ezbean.sample.bean.GenericStringBean;
@@ -25,9 +23,7 @@ import ezbean.sample.bean.School;
 import ezbean.sample.bean.Student;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/11 18:37:02
+ * @version 2011/03/22 16:39:53
  */
 public class ObserverTest {
 
@@ -75,19 +71,19 @@ public class ObserverTest {
         I.observe(I.mock(person).getFirstName(), listener);
 
         // assert
-        assertNull(listener.bean);
-        assertNull(listener.propertyName);
-        assertNull(listener.oldValue);
-        assertNull(listener.newValue);
+        assert listener.bean == null;
+        assert listener.propertyName == null;
+        assert listener.oldValue == null;
+        assert listener.newValue == null;
 
         // change property
         person.setFirstName("miku");
 
         // assert
-        assertEquals(person, listener.bean);
-        assertEquals("firstName", listener.propertyName);
-        assertEquals(null, listener.oldValue);
-        assertEquals("miku", listener.newValue);
+        assert person == listener.bean;
+        assert "firstName" == listener.propertyName;
+        assert null == listener.oldValue;
+        assert "miku" == listener.newValue;
     }
 
     /**
@@ -103,19 +99,19 @@ public class ObserverTest {
         I.observe(I.mock(person).getAge(), listener);
 
         // assert
-        assertNull(listener.bean);
-        assertNull(listener.propertyName);
-        assertNull(listener.oldValue);
-        assertNull(listener.newValue);
+        assert listener.bean == null;
+        assert listener.propertyName == null;
+        assert listener.oldValue == null;
+        assert listener.newValue == null;
 
         // change property
         person.setAge(10);
 
         // assert
-        assertEquals(person, listener.bean);
-        assertEquals("age", listener.propertyName);
-        assertEquals(0, listener.oldValue);
-        assertEquals(10, listener.newValue);
+        assert person == listener.bean;
+        assert "age" == listener.propertyName;
+        assert listener.oldValue.equals(0);
+        assert listener.newValue.equals(10);
     }
 
     /**
@@ -134,19 +130,19 @@ public class ObserverTest {
         I.observe(I.mock(student).getSchool().getName(), listener);
 
         // assert
-        assertNull(listener.bean);
-        assertNull(listener.propertyName);
-        assertNull(listener.oldValue);
-        assertNull(listener.newValue);
+        assert listener.bean == null;
+        assert listener.propertyName == null;
+        assert listener.oldValue == null;
+        assert listener.newValue == null;
 
         // change property
         student.setSchool(school);
 
         // assert
-        assertEquals(school, listener.bean);
-        assertEquals("name", listener.propertyName);
-        assertEquals(null, listener.oldValue);
-        assertEquals("ashfood", listener.newValue);
+        assert school == listener.bean;
+        assert "name" == listener.propertyName;
+        assert null == listener.oldValue;
+        assert "ashfood" == listener.newValue;
 
         // change property
         School newSchool = I.make(School.class);
@@ -154,19 +150,19 @@ public class ObserverTest {
         student.setSchool(newSchool);
 
         // assert
-        assertEquals(newSchool, listener.bean);
-        assertEquals("name", listener.propertyName);
-        assertEquals("ashfood", listener.oldValue);
-        assertEquals("new", listener.newValue);
+        assert newSchool == listener.bean;
+        assert "name" == listener.propertyName;
+        assert "ashfood" == listener.oldValue;
+        assert "new" == listener.newValue;
 
         // change name property in school
         newSchool.setName("change");
 
         // assert
-        assertEquals(newSchool, listener.bean);
-        assertEquals("name", listener.propertyName);
-        assertEquals("new", listener.oldValue);
-        assertEquals("change", listener.newValue);
+        assert newSchool == listener.bean;
+        assert "name" == listener.propertyName;
+        assert "new" == listener.oldValue;
+        assert "change" == listener.newValue;
     }
 
     @Test
@@ -182,10 +178,10 @@ public class ObserverTest {
         bean.setGeneric("test");
 
         // assert
-        assertEquals(bean, listener.bean);
-        assertEquals("generic", listener.propertyName);
-        assertEquals(null, listener.oldValue);
-        assertEquals("test", listener.newValue);
+        assert bean == listener.bean;
+        assert "generic" == listener.propertyName;
+        assert null == listener.oldValue;
+        assert "test" == listener.newValue;
     }
 
     /**
@@ -201,13 +197,13 @@ public class ObserverTest {
         Disposable disposable = I.observe(I.mock(person).getFirstName(), listener);
 
         // assert
-        assertNull(listener.newValue);
+        assert listener.newValue == null;
 
         // change property
         person.setFirstName("miku");
 
         // assert
-        assertEquals("miku", listener.newValue);
+        assert "miku" == listener.newValue;
 
         // unobserve
         disposable.dispose();
@@ -216,7 +212,7 @@ public class ObserverTest {
         person.setFirstName("change");
 
         // assert
-        assertEquals("miku", listener.newValue);
+        assert "miku" == listener.newValue;
     }
 
     /**

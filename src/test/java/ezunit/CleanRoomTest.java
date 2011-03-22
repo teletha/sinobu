@@ -15,8 +15,6 @@
  */
 package ezunit;
 
-import static org.junit.Assert.*;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -38,8 +36,9 @@ public class CleanRoomTest {
     public void locateFile() {
         Path file = room.locateFile("empty");
 
-        assertTrue(Files.exists(file));
-        assertTrue(Files.isRegularFile(file));
+        assert Files.exists(file);
+        assert Files.isRegularFile(file);
+
     }
 
     @Test
@@ -48,36 +47,36 @@ public class CleanRoomTest {
         I.copy(ClassUtil.getArchive(Test.class), file);
 
         file = room.locateArchive("jar");
-        assertTrue(Files.exists(file.resolve("org/junit/Test.class")));
-        assertTrue(Files.isRegularFile(file.resolve("org/junit/Test.class")));
-        assertTrue(Files.exists(file.resolve("org/junit")));
-        assertTrue(Files.isDirectory(file.resolve("org/junit")));
-        assertTrue(Files.notExists(file.resolve("not-exists")));
+        assert Files.exists(file.resolve("org/junit/Test.class"));
+        assert Files.isRegularFile(file.resolve("org/junit/Test.class"));
+        assert Files.exists(file.resolve("org/junit"));
+        assert Files.isDirectory(file.resolve("org/junit"));
+        assert Files.notExists(file.resolve("not-exists"));
     }
 
     @Test
     public void locateDirectoryFromAbsent() {
         Path file = room.locateDirectory("absent");
 
-        assertTrue(Files.exists(file));
-        assertTrue(Files.isDirectory(file));
+        assert Files.exists(file);
+        assert Files.isDirectory(file);
     }
 
     @Test
     public void locateDirectoryFromPresent() {
         Path file = room.locateDirectory("dir");
 
-        assertTrue(Files.exists(file));
-        assertTrue(Files.isDirectory(file));
+        assert Files.exists(file);
+        assert Files.isDirectory(file);
     }
 
     @Test
     public void locateAbsent() {
         Path file = room.locateAbsent("absent.txt");
 
-        assertFalse(Files.exists(file));
-        assertFalse(Files.isRegularFile(file));
-        assertFalse(Files.isDirectory(file));
+        assert Files.notExists(file);
+        assert !Files.isRegularFile(file);
+        assert !Files.isDirectory(file);
     }
 
     @Test
@@ -85,23 +84,23 @@ public class CleanRoomTest {
         Path file = room.locateAbsent("present.txt");
 
         // the specified file doesn't exist yet
-        assertFalse(Files.exists(file));
+        assert !Files.exists(file);
 
         // create file
         file = room.locateFile("present.txt");
-        assertTrue(Files.exists(file));
+        assert Files.exists(file);
 
         // the file has already existed
         file = room.locateFile("present.txt");
-        assertTrue(Files.exists(file));
+        assert Files.exists(file);
     }
 
     @Test
     public void locatedFileCanDelete() throws Exception {
         Path file = room.locateFile("empty");
 
-        assertTrue(Files.exists(file));
-        assertTrue(Files.deleteIfExists(file));
-        assertFalse(Files.exists(file));
+        assert Files.exists(file);
+        assert Files.deleteIfExists(file);
+        assert Files.notExists(file);
     }
 }

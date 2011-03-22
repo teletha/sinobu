@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -26,7 +24,7 @@ import ezbean.sample.bean.Student;
 import ezunit.PrivateModule;
 
 /**
- * @version 2009/12/30 15:38:41
+ * @version 2011/03/22 16:44:14
  */
 public class ExtensibleTest {
 
@@ -35,17 +33,17 @@ public class ExtensibleTest {
 
     @Test
     public void listByClass() {
-        assertEquals(5, I.find(EPClass.class).size());
+        assert 5 == I.find(EPClass.class).size();
     }
 
     @Test
     public void listByInterface() {
-        assertEquals(4, I.find(EPInterface.class).size());
+        assert 4 == I.find(EPInterface.class).size();
     }
 
     @Test
     public void listByNonExtensionPoint() {
-        assertEquals(0, I.find(EPBoth.class).size());
+        assert 0 == I.find(EPBoth.class).size();
     }
 
     @Test(expected = NullPointerException.class)
@@ -55,70 +53,70 @@ public class ExtensibleTest {
 
     @Test
     public void unlist() throws Exception {
-        assertEquals(5, I.find(EPClass.class).size());
+        assert 5 == I.find(EPClass.class).size();
         module.unload();
-        assertEquals(0, I.find(EPClass.class).size());
+        assert 0 == I.find(EPClass.class).size();
     }
 
     @Test
     public void key() throws Exception {
         KEPClass extension = I.find(KEPClass.class, Person.class);
-        assertNotNull(extension);
-        assertEquals(KEPClassExtension1.class, extension.getClass());
+        assert extension != null;
+        assert KEPClassExtension1.class == extension.getClass();
 
         extension = I.find(KEPClass.class, String.class);
-        assertNotNull(extension);
-        assertEquals(KEPClassExtension2.class, extension.getClass());
+        assert extension != null;
+        assert KEPClassExtension2.class == extension.getClass();
     }
 
     @Test
     public void keyBySubclass() throws Exception {
-        assertNull(I.find(KEPClass.class, Student.class));
+        assert I.find(KEPClass.class, Student.class) == null;
     }
 
     @Test
     public void keyByNonExistence() throws Exception {
-        assertNull(I.find(KEPClass.class, School.class));
+        assert I.find(KEPClass.class, School.class) == null;
     }
 
     @Test
     public void keyByNull() throws Exception {
-        assertNull(I.find(null, null));
+        assert I.find(null, null) == null;
     }
 
     @Test
     public void keyByNullKey() throws Exception {
-        assertNull(I.find(KEPClass.class, null));
+        assert I.find(KEPClass.class, null) == null;
     }
 
     @Test
     public void keyByNullExtensionPoint() throws Exception {
-        assertNull(I.find(null, Person.class));
+        assert I.find(null, Person.class) == null;
     }
 
     @Test
     public void unkey() throws Exception {
         KEPClass extension = I.find(KEPClass.class, Person.class);
-        assertNotNull(extension);
-        assertEquals(KEPClassExtension1.class, extension.getClass());
+        assert extension != null;
+        assert KEPClassExtension1.class == extension.getClass();
 
         module.unload();
-        assertNull(I.find(KEPClass.class, Person.class));
+        assert I.find(KEPClass.class, Person.class) == null;
     }
 
     @Test
     public void unSameKey() throws Exception {
         KEPClass extension = I.find(KEPClass.class, Integer.class);
-        assertNotNull(extension);
-        assertEquals(SameKEP2.class, extension.getClass());
+        assert extension != null;
+        assert SameKEP2.class == extension.getClass();
 
         I.make(I.class).unload(SameKEP2.class);
         extension = I.find(KEPClass.class, Integer.class);
-        assertNotNull(extension);
-        assertEquals(SameKEP1.class, extension.getClass());
+        assert extension != null;
+        assert SameKEP1.class == extension.getClass();
 
         I.make(I.class).unload(SameKEP1.class);
-        assertNull(I.find(KEPClass.class, Integer.class));
+        assert I.find(KEPClass.class, Integer.class) == null;
     }
 
     /**

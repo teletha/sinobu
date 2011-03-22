@@ -15,47 +15,31 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
-
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.Manageable;
-import ezbean.ThreadSpecific;
 import ezunit.MultiThreadTestCase;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/05/30 22:55:35
+ * @version 2011/03/22 16:28:30
  */
 public class ThreadSpecificTest extends MultiThreadTestCase {
 
-    /**
-     * Test {@link ThreadSpecific}.
-     */
     @Test
-    public void testResolve1() {
+    public void resolve1() {
         ThreadSpecificClass instance1 = I.make(ThreadSpecificClass.class);
-        assertNotNull(instance1);
+        assert instance1 != null;
 
         ThreadSpecificClass instance2 = I.make(ThreadSpecificClass.class);
-        assertNotNull(instance2);
-
-        assertSame(instance1, instance2);
+        assert instance2 != null;
+        assert instance1 == instance2;
     }
 
-    /**
-     * Test {@link ThreadSpecific}.
-     */
     @Test
-    public void testResolve2() throws Exception {
+    public void resolve2() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         // container
@@ -80,22 +64,19 @@ public class ThreadSpecificTest extends MultiThreadTestCase {
 
         // await all
         countDownLatch.await();
-        assertNotNull(futures[0]);
-        assertNotNull(futures[1]);
+        assert futures[0] != null;
+        assert futures[1] != null;
 
         ThreadSpecificClass instance1 = futures[0].get();
-        assertNotNull(instance1);
+        assert instance1 != null;
 
         ThreadSpecificClass instance2 = futures[1].get();
-        assertNotNull(instance2);
-
-        assertNotSame(instance1, instance2);
+        assert instance2 != null;
+        assert instance1 != instance2;
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/05/30 22:50:38
+     * @version 2011/03/22 16:29:27
      */
     @Manageable(lifestyle = ThreadSpecific.class)
     private static class ThreadSpecificClass {

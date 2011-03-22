@@ -16,7 +16,6 @@
 package ezbean.serialization;
 
 import static ezunit.Ezunit.*;
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.Serializable;
@@ -50,7 +49,7 @@ import ezbean.sample.bean.TransientBean;
 import ezunit.CleanRoom;
 
 /**
- * @version 2011/03/07 12:35:17
+ * @version 2011/03/22 17:17:16
  */
 public class XMLSerializationTest {
 
@@ -89,23 +88,23 @@ public class XMLSerializationTest {
         // read
         nestingList = I.xml(testFile, I.make(NestingList.class));
 
-        assertNotNull(nestingList);
+        assert nestingList != null;
 
         root = nestingList.getNesting();
-        assertNotNull(root);
-        assertEquals(2, root.size());
+        assert root != null;
+        assert root.size() == 2;
 
         list1 = root.get(0);
-        assertNotNull(list1);
-        assertEquals(1, list1.get(0).intValue());
-        assertEquals(2, list1.get(1).intValue());
-        assertEquals(3, list1.get(2).intValue());
+        assert list1 != null;
+        assert list1.get(0).intValue() == 1;
+        assert list1.get(1).intValue() == 2;
+        assert list1.get(2).intValue() == 3;
 
         list2 = root.get(1);
-        assertNotNull(list2);
-        assertEquals(10, list2.get(0).intValue());
-        assertEquals(11, list2.get(1).intValue());
-        assertEquals(12, list2.get(2).intValue());
+        assert list2 != null;
+        assert list2.get(0).intValue() == 10;
+        assert list2.get(1).intValue() == 11;
+        assert list2.get(2).intValue() == 12;
     }
 
     /**
@@ -128,15 +127,15 @@ public class XMLSerializationTest {
 
         // read
         primitive = I.xml(testFile, I.make(Primitive.class));
-        assertNotNull(primitive);
-        assertEquals(true, primitive.isBoolean());
-        assertEquals('c', primitive.getChar());
-        assertEquals((byte) 10, primitive.getByte());
-        assertEquals(3.14, primitive.getDouble(), 0);
-        assertEquals(1.41421356F, primitive.getFloat(), 0);
-        assertEquals(-256, primitive.getInt());
-        assertEquals(-987654321L, primitive.getLong());
-        assertEquals((short) 21, primitive.getShort());
+        assert primitive != null;
+        assert primitive.isBoolean();
+        assert primitive.getChar() == 'c';
+        assert primitive.getByte() == 10;
+        assert primitive.getDouble() == 3.14d;
+        assert primitive.getFloat() == 1.41421356f;
+        assert primitive.getInt() == -256;
+        assert primitive.getLong() == -987654321L;
+        assert primitive.getShort() == 21;
     }
 
     /**
@@ -158,13 +157,13 @@ public class XMLSerializationTest {
 
         // read
         stringList = I.xml(testFile, I.make(StringList.class));
-        assertNotNull(stringList);
+        assert stringList != null;
 
         list = stringList.getList();
-        assertEquals("<", list.get(0));
-        assertEquals(">", list.get(1));
-        assertEquals("\"", list.get(2));
-        assertEquals("'", list.get(3));
+        assert list.get(0).equals("<");
+        assert list.get(1).equals(">");
+        assert list.get(2).equals("\"");
+        assert list.get(3).equals("'");
     }
 
     /**
@@ -185,12 +184,12 @@ public class XMLSerializationTest {
 
         // read
         stringList = I.xml(testFile, I.make(StringList.class));
-        assertNotNull(stringList);
+        assert stringList != null;
 
         list = stringList.getList();
-        assertEquals("ﾃｽﾄ", list.get(0));
-        assertEquals("です", list.get(1));
-        assertEquals("(´･ω･`)", list.get(2));
+        assert list.get(0).equals("ﾃｽﾄ");
+        assert list.get(1).equals("です");
+        assert list.get(2).equals("(´･ω･`)");
     }
 
     /**
@@ -211,14 +210,14 @@ public class XMLSerializationTest {
 
         // read
         stringMap = I.xml(testFile, I.make(StringMap.class));
-        assertNotNull(stringMap);
+        assert stringMap != null;
 
         map = stringMap.getMap();
-        assertNotNull(map);
-        assertEquals(3, map.size());
-        assertEquals("one", map.get("1"));
-        assertEquals("two", map.get("2"));
-        assertEquals("three", map.get("3"));
+        assert map != null;
+        assert map.size() == 3;
+        assert map.get("1").equals("one");
+        assert map.get("2").equals("two");
+        assert map.get("3").equals("three");
     }
 
     /**
@@ -239,14 +238,14 @@ public class XMLSerializationTest {
 
         // read
         stringMap = I.xml(testFile, I.make(StringMap.class));
-        assertNotNull(stringMap);
+        assert stringMap != null;
 
         map = stringMap.getMap();
-        assertNotNull(map);
-        assertEquals(3, map.size());
-        assertEquals("one", map.get("\""));
-        assertEquals("two", map.get(" "));
-        assertEquals("three", map.get("<"));
+        assert map != null;
+        assert map.size() == 3;
+        assert map.get("\"").equals("one");
+        assert map.get(" ").equals("two");
+        assert map.get("<").equals("three");
     }
 
     /**
@@ -267,14 +266,14 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(CompatibleKeyMap.class));
-        assertNotNull(bean);
+        assert bean != null;
 
         map = bean.getIntegerKey();
-        assertNotNull(map);
-        assertEquals(3, map.size());
-        assertEquals(String.class, map.get(1));
-        assertEquals(Class.class, map.get(2));
-        assertEquals(Integer.class, map.get(3));
+        assert map != null;
+        assert map.size() == 3;
+        assert map.get(1).equals(String.class);
+        assert map.get(2).equals(Class.class);
+        assert map.get(3).equals(Integer.class);
     }
 
     /**
@@ -295,11 +294,11 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(IncompatibleKeyMap.class));
-        assertNotNull(bean);
+        assert bean != null;
 
         map = bean.getIncompatible();
-        assertNotNull(map);
-        assertEquals(0, map.size());
+        assert map != null;
+        assert map.size() == 0;
     }
 
     /**
@@ -315,8 +314,8 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(BuiltinBean.class));
-        assertNotNull(bean);
-        assertEquals(SchoolEnum.Miator, bean.getSchoolEnum());
+        assert bean != null;
+        assert bean.getSchoolEnum().equals(SchoolEnum.Miator);
     }
 
     /**
@@ -332,8 +331,8 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(BuiltinBean.class));
-        assertNotNull(bean);
-        assertEquals(new Date(0L), bean.getDate());
+        assert bean != null;
+        assert bean.getDate().equals(new Date(0L));
 
         // validate format
         assertXPathEqual("1970-01-01T09:00:00", testFile, "/BuiltinBean/@date");
@@ -352,8 +351,8 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(BuiltinBean.class));
-        assertNotNull(bean);
-        assertEquals(EzbeanTest.class, bean.getSomeClass());
+        assert bean != null;
+        assert bean.getSomeClass().equals(EzbeanTest.class);
 
         // validate format
         assertXPathEqual(EzbeanTest.class.getName(), testFile, "/BuiltinBean/@someClass");
@@ -372,8 +371,8 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(BuiltinBean.class));
-        assertNotNull(bean);
-        assertEquals(testFile.toFile(), bean.getFile());
+        assert bean != null;
+        assert bean.getFile().equals(testFile.toFile());
     }
 
     /**
@@ -389,8 +388,8 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(BuiltinBean.class));
-        assertNotNull(bean);
-        assertEquals(testFile, bean.getPath());
+        assert bean != null;
+        assert bean.getPath().equals(testFile);
     }
 
     @Test
@@ -404,9 +403,9 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(TransientBean.class));
-        assertNotNull(bean);
-        assertEquals(10, bean.getNone());
-        assertEquals(0, bean.getBoth());
+        assert bean != null;
+        assert bean.getNone() == 10;
+        assert bean.getBoth() == 0;
     }
 
     @Test
@@ -425,14 +424,14 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(NestedCollection.class));
-        assertNotNull(bean);
+        assert bean != null;
         map = bean.getNest();
-        assertNotNull(bean);
+        assert bean != null;
         list = map.get("a");
-        assertNotNull(list);
+        assert list != null;
         person = list.get(0);
-        assertNotNull(person);
-        assertEquals(17, person.getAge());
+        assert person != null;
+        assert person.getAge() == 17;
     }
 
     /**
@@ -453,14 +452,14 @@ public class XMLSerializationTest {
 
         // read
         stringList = I.xml(testFile, I.make(StringList.class));
-        assertNotNull(stringList);
+        assert stringList != null;
 
         list = stringList.getList();
-        assertNotNull(list);
-        assertEquals(3, list.size());
-        assertEquals("1", list.get(0));
-        assertEquals("2", list.get(1));
-        assertEquals("3", list.get(2));
+        assert list != null;
+        assert list.size() == 3;
+        assert list.get(0).equals("1");
+        assert list.get(1).equals("2");
+        assert list.get(2).equals("3");
 
         // list must not have ez:key attribute
         assertXPathEqual("String", testFile, "local-name(//String[1])");
@@ -484,16 +483,16 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(StringList.class));
-        assertNotNull(bean);
+        assert bean != null;
 
         list = bean.getList();
-        assertNotNull(list);
-        assertEquals(5, list.size());
-        assertNull(list.get(0));
-        assertEquals("", list.get(1));
-        assertNull(list.get(2));
-        assertEquals("k-on", list.get(3));
-        assertNull(list.get(4));
+        assert list != null;
+        assert list.size() == 5;
+        assert list.get(0) == null;
+        assert list.get(1).equals("");
+        assert list.get(2) == null;
+        assert list.get(3).equals("k-on");
+        assert list.get(4) == null;
     }
 
     /**
@@ -514,14 +513,14 @@ public class XMLSerializationTest {
 
         // read
         stringMap = I.xml(testFile, I.make(StringMap.class));
-        assertNotNull(stringMap);
+        assert stringMap != null;
 
         map = stringMap.getMap();
-        assertNotNull(map);
-        assertEquals(3, map.size());
-        assertEquals("one", map.get("one"));
-        assertEquals("two", map.get("two"));
-        assertEquals("three", map.get("three"));
+        assert map != null;
+        assert map.size() == 3;
+        assert map.get("one").equals("one");
+        assert map.get("two").equals("two");
+        assert map.get("three").equals("three");
 
         // map must have ez:key attribute
         assertXPathEqual("two", testFile, "//String[1]/@ez:key");
@@ -541,14 +540,14 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(StringMap.class));
-        assertNotNull(bean);
+        assert bean != null;
 
         map = bean.getMap();
-        assertNotNull(map);
-        assertEquals(2, map.size());
-        assertEquals("", map.get(""));
-        assertNull(map.get("null"));
-        assertTrue(map.containsKey("null"));
+        assert map != null;
+        assert map.size() == 2;
+        assert map.get("").equals("");
+        assert map.get("null") == null;
+        assert map.containsKey("null");
     }
 
     @Test
@@ -574,20 +573,20 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(GenericPersonBean.class));
-        assertNotNull(bean);
+        assert bean != null;
 
         Person person = bean.getGeneric();
-        assertNotNull(person);
-        assertEquals("saki", person.getLastName());
+        assert person != null;
+        assert person.getLastName().equals("saki");
         list = bean.getGenericList();
-        assertNotNull(list);
+        assert list != null;
 
         person = list.get(0);
-        assertNotNull(person);
-        assertEquals("saki", person.getLastName());
+        assert person != null;
+        assert person.getLastName().equals("saki");
         person = list.get(1);
-        assertNotNull(person);
-        assertEquals("nodoka", person.getLastName());
+        assert person != null;
+        assert person.getLastName().equals("nodoka");
     }
 
     @Test
@@ -620,19 +619,19 @@ public class XMLSerializationTest {
 
         // read
         bean = I.xml(testFile, I.make(GenericPersonBean.class));
-        assertNotNull(bean);
+        assert bean != null;
 
         list = bean.getGenericList();
-        assertNotNull(list);
-        assertEquals("Koume", list.get(0).getFirstName());
-        assertEquals("Koume", list.get(1).getFirstName());
-        assertEquals("Akiko", list.get(2).getFirstName());
-        assertEquals("Tamaki", list.get(3).getFirstName());
-        assertEquals("Akiko", list.get(4).getFirstName());
-        assertEquals("Tamaki", list.get(5).getFirstName());
-        assertEquals(list.get(0), list.get(1));
-        assertEquals(list.get(2), list.get(4));
-        assertEquals(list.get(3), list.get(5));
+        assert list != null;
+        assert list.get(0).getFirstName().equals("Koume");
+        assert list.get(1).getFirstName().equals("Koume");
+        assert list.get(2).getFirstName().equals("Akiko");
+        assert list.get(3).getFirstName().equals("Tamaki");
+        assert list.get(4).getFirstName().equals("Akiko");
+        assert list.get(5).getFirstName().equals("Tamaki");
+        assert list.get(1).equals(list.get(0));
+        assert list.get(4).equals(list.get(2));
+        assert list.get(5).equals(list.get(3));
     }
 
     @Test
@@ -653,16 +652,16 @@ public class XMLSerializationTest {
 
         // read
         stringList = I.xml(testFile, I.make(StringList.class));
-        assertNotNull(stringList);
+        assert stringList != null;
 
         list = stringList.getList();
-        assertNotNull(list);
-        assertEquals("1", list.get(0));
-        assertEquals("1", list.get(1));
-        assertEquals("2", list.get(2));
-        assertEquals("3", list.get(3));
-        assertEquals("2", list.get(4));
-        assertEquals("3", list.get(5));
+        assert list != null;
+        assert list.get(0).equals("1");
+        assert list.get(1).equals("1");
+        assert list.get(2).equals("2");
+        assert list.get(3).equals("3");
+        assert list.get(4).equals("2");
+        assert list.get(5).equals("3");
     }
 
     @Test
@@ -680,8 +679,8 @@ public class XMLSerializationTest {
 
         // read
         checker = I.xml(testFile, I.make(Checker.class));
-        assertNotNull(checker);
-        assertEquals(3, checker.size);
+        assert checker != null;
+        assert checker.size == 3;
     }
 
     /**
@@ -733,21 +732,21 @@ public class XMLSerializationTest {
 
         // read
         student = I.xml(testFile, I.make(Student.class));
-        assertNotNull(student);
-        assertEquals(17, student.getAge());
-        assertEquals("Himeko", student.getFirstName());
-        assertEquals("Kurusugawa", student.getLastName());
+        assert student != null;
+        assert student.getAge() == 17;
+        assert student.getFirstName().equals("Himeko");
+        assert student.getLastName().equals("Kurusugawa");
 
         school = student.getSchool();
-        assertEquals("OtoTatibana", school.getName());
-        assertEquals(2, school.getStudents().size());
+        assert school.getName().equals("OtoTatibana");
+        assert school.getStudents().size() == 2;
 
         student2 = school.getStudents().get(0);
-        assertNotNull(student2);
-        assertEquals(17, student2.getAge());
-        assertEquals("Himeko", student2.getFirstName());
-        assertEquals("Kurusugawa", student2.getLastName());
-        assertEquals(student, student2);
+        assert student2 != null;
+        assert student2.getAge() == 17;
+        assert student2.getFirstName().equals("Himeko");
+        assert student2.getLastName().equals("Kurusugawa");
+        assert student2.equals(student);
     }
 
     /**
@@ -763,7 +762,7 @@ public class XMLSerializationTest {
      */
     @Test
     public void testReadWithNull2() throws Exception {
-        assertNotNull(testFile);
+        assert testFile != null;
         I.xml(testFile, (Object) null);
     }
 
@@ -788,7 +787,7 @@ public class XMLSerializationTest {
      */
     @Test
     public void testWriteWithNull2() throws Exception {
-        assertNotNull(testFile);
+        assert testFile != null;
         I.xml((Object) null, testFile);
     }
 
@@ -799,7 +798,7 @@ public class XMLSerializationTest {
     public void testWriteNotExistingFile1() throws Exception {
         Path notExist = room.locateAbsent("file");
 
-        assertTrue(Files.notExists(notExist));
+        assert Files.notExists(notExist);
 
         Person person = I.make(Person.class);
         person.setAge(1);
@@ -808,7 +807,7 @@ public class XMLSerializationTest {
         I.xml(person, notExist);
 
         // test
-        assertTrue(Files.exists(notExist));
+        assert Files.exists(notExist);
     }
 
     /**
@@ -818,7 +817,7 @@ public class XMLSerializationTest {
     public void testWriteNotExistingFile2() throws Exception {
         Path root = room.locateAbsent("directory");
         Path notExist = root.resolve("not-exist/not-exist/not-exist");
-        assertTrue(Files.notExists(notExist));
+        assert Files.notExists(notExist);
 
         Person person = I.make(Person.class);
         person.setAge(1);
@@ -827,6 +826,6 @@ public class XMLSerializationTest {
         I.xml(person, notExist);
 
         // test
-        assertTrue(Files.exists(notExist));
+        assert Files.exists(notExist);
     }
 }

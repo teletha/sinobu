@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,7 +25,7 @@ import ezbean.sample.RuntimeAnnotation1;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/11/15 0:56:29
+ * @version 2011/03/22 16:43:15
  */
 public class ClassLoadListenerTest {
 
@@ -147,8 +145,8 @@ public class ClassLoadListenerTest {
          * @param unloaded
          */
         protected void assertClass(int loaded, int unloaded) {
-            assertEquals(loaded, this.loaded);
-            assertEquals(unloaded, this.unloaded);
+            assert loaded == this.loaded;
+            assert unloaded == this.unloaded;
         }
     }
 
@@ -201,8 +199,8 @@ public class ClassLoadListenerTest {
          * @param unloaded
          */
         protected void assertClass(int loaded, int unloaded) {
-            assertEquals(loaded, this.loaded);
-            assertEquals(unloaded, this.unloaded);
+            assert loaded == this.loaded;
+            assert unloaded == this.unloaded;
         }
     }
 }

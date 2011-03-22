@@ -15,8 +15,6 @@
  */
 package ezbean.model;
 
-import static org.junit.Assert.*;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -26,9 +24,7 @@ import java.util.Locale;
 import org.junit.Test;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/08 4:15:44
+ * @version 2011/03/22 17:03:20
  */
 public class CodecTest {
 
@@ -40,7 +36,7 @@ public class CodecTest {
         Codec converter = new Codec(BigInteger.class);
         BigInteger test = new BigInteger("0");
 
-        assertEquals(new BigInteger("0"), converter.decode(converter.encode(test)));
+        assert converter.decode(converter.encode(test)).equals(new BigInteger("0"));
     }
 
     /**
@@ -51,7 +47,7 @@ public class CodecTest {
         Codec converter = new Codec(BigDecimal.class);
         BigDecimal test = new BigDecimal("0");
 
-        assertEquals(new BigDecimal("0"), converter.decode(converter.encode(test)));
+        assert converter.decode(converter.encode(test)).equals(new BigDecimal("0"));
     }
 
     /**
@@ -62,7 +58,7 @@ public class CodecTest {
         Codec converter = new Codec(StringBuilder.class);
         StringBuilder test = new StringBuilder("test");
 
-        assertEquals(new StringBuilder("test").toString(), converter.decode(converter.encode(test)).toString());
+        assert converter.decode(converter.encode(test)).toString().equals(new StringBuilder("test").toString());
     }
 
     /**
@@ -73,7 +69,7 @@ public class CodecTest {
         Codec converter = new Codec(StringBuffer.class);
         StringBuffer test = new StringBuffer("test");
 
-        assertEquals(new StringBuffer("test").toString(), converter.decode(converter.encode(test)).toString());
+        assert converter.decode(converter.encode(test)).toString().equals(new StringBuffer("test").toString());
     }
 
     /**
@@ -84,7 +80,7 @@ public class CodecTest {
         Codec converter = new Codec(Locale.class);
         Locale test = new Locale("en");
 
-        assertEquals(new Locale("en"), converter.decode(converter.encode(test)));
+        assert converter.decode(converter.encode(test)).equals(new Locale("en"));
     }
 
     /**
@@ -95,7 +91,7 @@ public class CodecTest {
         Codec converter = new Codec(URL.class);
         URL test = new URL("http://sourceforge.net/");
 
-        assertEquals(new URL("http://sourceforge.net/"), converter.decode(converter.encode(test)));
+        assert converter.decode(converter.encode(test)).equals(new URL("http://sourceforge.net/"));
     }
 
     /**
@@ -106,6 +102,6 @@ public class CodecTest {
         Codec converter = new Codec(URI.class);
         URI test = new URI("http://sourceforge.net/");
 
-        assertEquals(new URI("http://sourceforge.net/"), converter.decode(converter.encode(test)));
+        assert converter.decode(converter.encode(test)).equals(new URI("http://sourceforge.net/"));
     }
 }

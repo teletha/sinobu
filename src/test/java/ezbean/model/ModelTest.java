@@ -15,8 +15,6 @@
  */
 package ezbean.model;
 
-import static org.junit.Assert.*;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +43,7 @@ import ezbean.sample.bean.invalid.ProtectedAccessor;
 import ezbean.sample.bean.invalid.StaticAccessor;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/06/16 17:18:44
+ * @version 2011/03/22 17:02:48
  */
 public class ModelTest {
 
@@ -59,15 +55,15 @@ public class ModelTest {
      * @param propertyType
      */
     private void assertProperty(Model model, String propertyName, Class propertyType) {
-        assertNotNull(model);
-        assertNotNull(propertyName);
-        assertNotNull(propertyType);
+        assert model != null;
+        assert propertyName != null;
+        assert propertyType != null;
 
         Property property = model.getProperty(propertyName);
-        assertNotNull(property);
-        assertEquals(propertyType, property.model.type);
-        assertNotNull(property.accessors[0]);
-        assertNotNull(property.accessors[1]);
+        assert property != null;
+        assert propertyType == property.model.type;
+        assert property.accessors[0] != null;
+        assert property.accessors[1] != null;
     }
 
     /**
@@ -77,17 +73,17 @@ public class ModelTest {
     public void testGetModel() throws Exception {
         // from class
         Model<Person> model = Model.load(Person.class);
-        assertNotNull(model);
-        assertEquals(Person.class, model.type);
+        assert model != null;
+        assert Person.class == model.type;
 
         // from instance
         Person person = I.make(Person.class);
         Model<Person> model2 = Model.load((Class) person.getClass());
-        assertNotNull(model);
-        assertEquals(Person.class, model.type);
+        assert model != null;
+        assert Person.class == model.type;
 
         // identical check
-        assertEquals(true, model == model2);
+        assert model == model2;
     }
 
     /**
@@ -96,8 +92,8 @@ public class ModelTest {
     @Test
     public void testModel01() {
         Model<Model> model = Model.load(Model.class);
-        assertNotNull(model);
-        assertEquals(Model.class, model.type);
+        assert model != null;
+        assert Model.class == model.type;
     }
 
     /**
@@ -106,21 +102,21 @@ public class ModelTest {
     @Test
     public void testModel02() {
         Model model = Model.load(WildcardBean.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("wildcardList");
-        assertNotNull(property);
-        assertEquals(List.class, property.model.type);
+        assert property != null;
+        assert List.class == property.model.type;
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Object.class, property.model.type);
+        assert property != null;
+        assert Object.class == property.model.type;
 
         property = model.getProperty("wildcardMap");
-        assertNotNull(property);
-        assertEquals(Map.class, property.model.type);
+        assert property != null;
+        assert Map.class == property.model.type;
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Object.class, property.model.type);
+        assert property != null;
+        assert Object.class == property.model.type;
     }
 
     /**
@@ -129,16 +125,16 @@ public class ModelTest {
     @Test
     public void testModel03() {
         Model<InheritanceBean> model = Model.load(InheritanceBean.class);
-        assertNotNull(model);
-        assertEquals(InheritanceBean.class, model.type);
+        assert model != null;
+        assert InheritanceBean.class == model.type;
 
         Property property = model.getProperty("int");
-        assertNotNull(property);
+        assert property != null;
 
         property = model.getProperty("string");
-        assertNotNull(property);
+        assert property != null;
 
-        assertEquals(2, model.properties.size());
+        assert 2 == model.properties.size();
     }
 
     /**
@@ -147,24 +143,24 @@ public class ModelTest {
     @Test
     public void testModel04() {
         Model model = Model.load(StringMap.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("map");
-        assertNotNull(property);
+        assert property != null;
 
         model = property.model;
-        assertNotNull(model);
-        assertEquals(Map.class, model.type);
-        assertEquals(0, model.properties.size());
-        assertEquals(true, model.isCollection());
-        assertNull(model.getCodec());
+        assert model != null;
+        assert Map.class == model.type;
+        assert 0 == model.properties.size();
+        assert true == model.isCollection();
+        assert model.getCodec() == null;
 
         property = model.getProperty("test");
-        assertNotNull(property);
+        assert property != null;
 
         model = property.model;
-        assertNotNull(model);
-        assertEquals(String.class, model.type);
+        assert model != null;
+        assert String.class == model.type;
     }
 
     /**
@@ -173,24 +169,24 @@ public class ModelTest {
     @Test
     public void compatibleKeyMap() {
         Model model = Model.load(CompatibleKeyMap.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("integerKey");
-        assertNotNull(property);
+        assert property != null;
 
         model = property.model;
-        assertNotNull(model);
-        assertEquals(Map.class, model.type);
-        assertEquals(0, model.properties.size());
-        assertEquals(true, model.isCollection());
-        assertNull(model.getCodec());
+        assert model != null;
+        assert Map.class == model.type;
+        assert 0 == model.properties.size();
+        assert true == model.isCollection();
+        assert model.getCodec() == null;
 
         property = model.getProperty("1");
-        assertNotNull(property);
+        assert property != null;
 
         model = property.model;
-        assertNotNull(model);
-        assertEquals(Class.class, model.type);
+        assert model != null;
+        assert Class.class == model.type;
     }
 
     /**
@@ -199,17 +195,17 @@ public class ModelTest {
     @Test
     public void incompatibleKeyMap() {
         Model model = Model.load(IncompatibleKeyMap.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("incompatible");
-        assertNotNull(property);
+        assert property != null;
 
         model = property.model;
-        assertNotNull(model);
-        assertEquals(Map.class, model.type);
-        assertEquals(0, model.properties.size());
-        assertEquals(false, model.isCollection());
-        assertNull(model.getCodec());
+        assert model != null;
+        assert Map.class == model.type;
+        assert 0 == model.properties.size();
+        assert !model.isCollection();
+        assert model.getCodec() == null;
     }
 
     /**
@@ -218,25 +214,27 @@ public class ModelTest {
     @Test
     public void testModel06() {
         Model model = Model.load(GenericStringBean.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("generic");
-        assertNotNull(property);
-        assertEquals(String.class, property.model.type);
+        assert property != null;
+        assert String.class == property.model.type;
 
         property = model.getProperty("genericList");
-        assertNotNull(property);
-        assertEquals(List.class, property.model.type);
+        assert property != null;
+        assert List.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(String.class, property.model.type);
+        assert property != null;
+        assert String.class == property.model.type;
 
         property = model.getProperty("genericMap");
-        assertNotNull(property);
-        assertEquals(Map.class, property.model.type);
+        assert property != null;
+        assert Map.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(String.class, property.model.type);
+        assert property != null;
+        assert String.class == property.model.type;
     }
 
     /**
@@ -245,25 +243,27 @@ public class ModelTest {
     @Test
     public void testGenericObjectModel() {
         Model model = Model.load(ModelBean.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("generic");
-        assertNotNull(property);
-        assertEquals(Person.class, property.model.type);
+        assert property != null;
+        assert Person.class == property.model.type;
 
         property = model.getProperty("genericList");
-        assertNotNull(property);
-        assertEquals(List.class, property.model.type);
+        assert property != null;
+        assert List.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Person.class, property.model.type);
+        assert property != null;
+        assert Person.class == property.model.type;
 
         property = model.getProperty("genericMap");
-        assertNotNull(property);
-        assertEquals(Map.class, property.model.type);
+        assert property != null;
+        assert Map.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Person.class, property.model.type);
+        assert property != null;
+        assert Person.class == property.model.type;
     }
 
     /**
@@ -278,34 +278,39 @@ public class ModelTest {
     @Test
     public void testGenericListModel() {
         Model model = Model.load(ListBean.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("generic");
-        assertNotNull(property);
-        assertEquals(List.class, property.model.type);
+        assert property != null;
+        assert List.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(String.class, property.model.type);
+        assert property != null;
+        assert String.class == property.model.type;
 
         property = model.getProperty("genericList");
-        assertNotNull(property);
-        assertEquals(List.class, property.model.type);
+        assert property != null;
+        assert List.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(List.class, property.model.type);
+        assert property != null;
+        assert List.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(String.class, property.model.type);
+        assert property != null;
+        assert String.class == property.model.type;
 
         property = model.getProperty("genericMap");
-        assertNotNull(property);
-        assertEquals(Map.class, property.model.type);
+        assert property != null;
+        assert Map.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(List.class, property.model.type);
+        assert property != null;
+        assert List.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(String.class, property.model.type);
+        assert property != null;
+        assert String.class == property.model.type;
     }
 
     /**
@@ -320,34 +325,39 @@ public class ModelTest {
     @Test
     public void testGenericMapModel() {
         Model model = Model.load(MapBean.class);
-        assertNotNull(model);
+        assert model != null;
 
         Property property = model.getProperty("generic");
-        assertNotNull(property);
-        assertEquals(Map.class, property.model.type);
+        assert property != null;
+        assert Map.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Integer.class, property.model.type);
+        assert property != null;
+        assert Integer.class == property.model.type;
 
         property = model.getProperty("genericList");
-        assertNotNull(property);
-        assertEquals(List.class, property.model.type);
+        assert property != null;
+        assert List.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Map.class, property.model.type);
+        assert property != null;
+        assert Map.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Integer.class, property.model.type);
+        assert property != null;
+        assert Integer.class == property.model.type;
 
         property = model.getProperty("genericMap");
-        assertNotNull(property);
-        assertEquals(Map.class, property.model.type);
+        assert property != null;
+        assert Map.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Map.class, property.model.type);
+        assert property != null;
+        assert Map.class == property.model.type;
+
         property = property.model.getProperty("0");
-        assertNotNull(property);
-        assertEquals(Integer.class, property.model.type);
+        assert property != null;
+        assert Integer.class == property.model.type;
     }
 
     /**
@@ -396,10 +406,10 @@ public class ModelTest {
     @Test
     public void testInvalidBean02() {
         Model<OnlyGetter> model = Model.load(OnlyGetter.class);
-        assertNotNull(model);
+        assert model != null;
 
         List<Property> list = model.properties;
-        assertEquals(0, list.size());
+        assert 0 == list.size();
     }
 
     /**
@@ -408,10 +418,10 @@ public class ModelTest {
     @Test
     public void testInvalidBean03() {
         Model<OnlySetter> model = Model.load(OnlySetter.class);
-        assertNotNull(model);
+        assert model != null;
 
         List<Property> list = model.properties;
-        assertEquals(0, list.size());
+        assert 0 == list.size();
     }
 
     /**
@@ -420,10 +430,10 @@ public class ModelTest {
     @Test
     public void testInvalidBean04() {
         Model<FinalAccessor> model = Model.load(FinalAccessor.class);
-        assertNotNull(model);
+        assert model != null;
 
         List<Property> list = model.properties;
-        assertEquals(0, list.size());
+        assert 0 == list.size();
     }
 
     /**
@@ -432,10 +442,10 @@ public class ModelTest {
     @Test
     public void testInvalidBean05() {
         Model model = Model.load(ProtectedAccessor.class);
-        assertNotNull(model);
+        assert model != null;
 
         List<Property> list = model.properties;
-        assertEquals(3, list.size());
+        assert 3 == list.size();
     }
 
     /**
@@ -444,10 +454,10 @@ public class ModelTest {
     @Test
     public void testInvalidBean07() {
         Model model = Model.load(OverrideFinalAccessor.class);
-        assertNotNull(model);
+        assert model != null;
 
         List<Property> list = model.properties;
-        assertEquals(0, list.size());
+        assert 0 == list.size();
     }
 
     /**
@@ -456,10 +466,10 @@ public class ModelTest {
     @Test
     public void testInvalidBean06() {
         Model model = Model.load(StaticAccessor.class);
-        assertNotNull(model);
+        assert model != null;
 
         List<Property> list = model.properties;
-        assertEquals(0, list.size());
+        assert 0 == list.size();
     }
 
     /**
@@ -523,7 +533,7 @@ public class ModelTest {
         person.setAge(1);
 
         Model model = Model.load(Person.class);
-        assertEquals(1, model.get(person, model.getProperty("age")));
+        assert model.get(person, model.getProperty("age")).equals(1);
     }
 
     @Test
@@ -532,7 +542,7 @@ public class ModelTest {
         bean.setGeneric("value");
 
         Model model = Model.load(GenericStringBean.class);
-        assertEquals("value", model.get(bean, model.getProperty("generic")));
+        assert "value" == model.get(bean, model.getProperty("generic"));
     }
 
     @Test
@@ -541,7 +551,7 @@ public class ModelTest {
         Model model = Model.load(Person.class);
         model.set(person, model.getProperty("age"), 1);
 
-        assertEquals(1, person.getAge());
+        assert 1 == person.getAge();
     }
 
     @Test
@@ -550,7 +560,7 @@ public class ModelTest {
         Model model = Model.load(GenericStringBean.class);
         model.set(bean, model.getProperty("generic"), "value");
 
-        assertEquals("value", bean.getGeneric());
+        assert "value" == bean.getGeneric();
     }
 
 }

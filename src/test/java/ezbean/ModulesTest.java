@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -33,7 +31,7 @@ import ezbean.sample.bean.Person;
 import ezunit.PrivateModule;
 
 /**
- * @version 2010/11/14 21:42:48
+ * @version 2011/03/22 16:36:07
  */
 public class ModulesTest {
 
@@ -61,90 +59,90 @@ public class ModulesTest {
 
     @Test
     public void loadModule() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load(module1.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
     }
 
     @Test
     public void loadJarModule() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load(module4.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
     }
 
     @Test
     public void loadMultipleModules() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load(module1.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
         modules.load(module2.path);
-        assertEquals(2, modules.modules.size());
+        assert 2 == modules.modules.size();
     }
 
     @Test
     public void loadNull() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load((Path) null);
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
     }
 
     @Test
     public void loadNotExistModule() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load(Paths.get("not-exist"));
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
     }
 
     @Test
     public void loadDuplicateClass() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load(module2.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
 
         Module first = modules.modules.get(0);
         List<Class<MarkerInterface1>> providers1 = first.find(MarkerInterface1.class, false);
-        assertEquals(3, providers1.size());
+        assert 3 == providers1.size();
 
         // assert class loader
         // all service providers should been loaded by first module
         for (Class provider : providers1) {
-            assertEquals(first, provider.getClassLoader());
+            assert first == provider.getClassLoader();
         }
 
         // load another module which content is same
         modules.load(module3.path);
         Module second = modules.modules.get(1);
         List<Class<MarkerInterface1>> providers2 = second.find(MarkerInterface1.class, false);
-        assertEquals(3, providers2.size());
+        assert 3 == providers2.size();
 
         // assert class loader
         // all service providers should been loaded by first module
         for (Class provider : providers2) {
-            assertEquals(first, provider.getClassLoader());
+            assert first == provider.getClassLoader();
         }
 
         // unload first module
         modules.unload(module2.path);
         List<Class<MarkerInterface1>> providers3 = second.find(MarkerInterface1.class, false);
-        assertEquals(3, providers3.size());
+        assert 3 == providers3.size();
 
         // assert class loader
         // all service providers should been loaded by second module
         for (Class provider : providers3) {
-            assertEquals(second, provider.getClassLoader());
+            assert second == provider.getClassLoader();
         }
     }
 
     @Test
     public void reload() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load(module1.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
         modules.load(module1.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
         modules.load(module1.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
     }
 
     @Test
@@ -153,16 +151,16 @@ public class ModulesTest {
         I.copy(module1.path, relativeModule);
 
         try {
-            assertFalse(relativeModule.isAbsolute());
-            assertEquals(0, modules.modules.size());
+            assert !relativeModule.isAbsolute();
+            assert 0 == modules.modules.size();
 
             // as relative
             modules.load(relativeModule);
-            assertEquals(1, modules.modules.size());
+            assert 1 == modules.modules.size();
 
             // as absolute
             modules.load(relativeModule.toAbsolutePath());
-            assertEquals(1, modules.modules.size());
+            assert 1 == modules.modules.size();
         } finally {
             I.delete(relativeModule);
         }
@@ -170,34 +168,34 @@ public class ModulesTest {
 
     @Test
     public void unloadModule() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load(module1.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
         modules.unload(module1.path);
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
     }
 
     @Test
     public void unloadJarModule() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.load(module4.path);
-        assertEquals(1, modules.modules.size());
+        assert 1 == modules.modules.size();
         modules.unload(module4.path);
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
     }
 
     @Test
     public void unloadNull() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.unload(module1.path);
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
     }
 
     @Test
     public void unloadNotExistModule() {
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
         modules.unload(Paths.get("not-exist"));
-        assertEquals(0, modules.modules.size());
+        assert 0 == modules.modules.size();
     }
 
     @Test
@@ -206,8 +204,8 @@ public class ModulesTest {
         map.put(Person.class, "This entry will not be unloaded.");
         map.put(module2.convert(ExtendedClass1.class), "This entry will be unloaded.");
 
-        assertEquals(2, map.size());
+        assert 2 == map.size();
         module2.unload();
-        assertEquals(1, map.size());
+        assert 1 == map.size();
     }
 }

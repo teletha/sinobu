@@ -15,29 +15,25 @@
  */
 package ezbean.module;
 
-import static org.junit.Assert.*;
-
-
 import org.junit.Test;
 
 import ezbean.I;
 import ezbean.sample.bean.Person;
 
-
 /**
- * @verimport ezbean.sample.bean.Person; sion 2009/07/29 15:23:28
+ * @version 2011/03/22 17:06:14
  */
 public class ResourceLoadingTest {
 
     @Test
     public void loadResourceByNormalClass() {
         Person person = new Person();
-        assertNotNull(person.getClass().getResource(Person.class.getSimpleName() + ".class"));
+        assert person.getClass().getResource(Person.class.getSimpleName() + ".class") != null;
     }
 
     @Test
     public void loadResourceByEnhancedClass() {
         Person person = I.make(Person.class);
-        assertNotNull(person.getClass().getResource(Person.class.getSimpleName() + ".class"));
+        assert person.getClass().getResource(Person.class.getSimpleName() + ".class") != null;
     }
 }

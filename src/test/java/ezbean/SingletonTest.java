@@ -15,40 +15,25 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
-
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.Manageable;
-import ezbean.Singleton;
-
 /**
- * DOCUMENT.
- * 
- * @version 2008/05/30 22:53:05
+ * @version 2011/03/22 16:27:26
  */
 public class SingletonTest {
 
-    /**
-     * Test {@link Singleton}.
-     */
     @Test
-    public void testResolve() {
+    public void resolve() {
         SingletonClass instance1 = I.make(SingletonClass.class);
-        assertNotNull(instance1);
+        assert instance1 != null;
 
         SingletonClass instance2 = I.make(SingletonClass.class);
-        assertNotNull(instance2);
-
-        assertSame(instance1, instance2);
+        assert instance2 != null;
+        assert instance1 == instance2;
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/05/30 22:50:38
+     * @version 2011/03/22 16:29:43
      */
     @Manageable(lifestyle = Singleton.class)
     private static class SingletonClass {

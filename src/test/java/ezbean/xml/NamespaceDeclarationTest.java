@@ -16,21 +16,15 @@
 package ezbean.xml;
 
 import static ezunit.Ezunit.*;
-import static org.junit.Assert.*;
-
-
 
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.I;
-import ezbean.xml.XMLScanner;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/02 10:19:04
+ * @version 2011/03/22 17:24:09
  */
 public class NamespaceDeclarationTest {
 
@@ -51,8 +45,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(1, counter.start);
-        assertEquals(1, counter.end);
+        assert 1 == counter.start;
+        assert 1 == counter.end;
     }
 
     /**
@@ -72,8 +66,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(1, counter.start);
-        assertEquals(1, counter.end);
+        assert 1 == counter.start;
+        assert 1 == counter.end;
     }
 
     /**
@@ -95,8 +89,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(2, counter.start);
-        assertEquals(2, counter.end);
+        assert 2 == counter.start;
+        assert 2 == counter.end;
     }
 
     /**
@@ -118,8 +112,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(2, counter.start);
-        assertEquals(2, counter.end);
+        assert 2 == counter.start;
+        assert 2 == counter.end;
     }
 
     /**
@@ -139,8 +133,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(0, counter.start);
-        assertEquals(0, counter.end);
+        assert 0 == counter.start;
+        assert 0 == counter.end;
     }
 
     /**
@@ -160,8 +154,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(0, counter.start);
-        assertEquals(0, counter.end);
+        assert 0 == counter.start;
+        assert 0 == counter.end;
     }
 
     /**
@@ -183,8 +177,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(0, counter.start);
-        assertEquals(0, counter.end);
+        assert 0 == counter.start;
+        assert 0 == counter.end;
     }
 
     /**
@@ -208,8 +202,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(0, counter.start);
-        assertEquals(0, counter.end);
+        assert 0 == counter.start;
+        assert 0 == counter.end;
     }
 
     /**
@@ -233,8 +227,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(0, counter.start);
-        assertEquals(0, counter.end);
+        assert 0 == counter.start;
+        assert 0 == counter.end;
     }
 
     /**
@@ -258,8 +252,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), scanner, counter);
 
         // assertion
-        assertEquals(2, counter.start);
-        assertEquals(2, counter.end);
+        assert 2 == counter.start;
+        assert 2 == counter.end;
     }
 
     /**
@@ -284,8 +278,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), first, second, counter);
 
         // assertion
-        assertEquals(2, counter.start);
-        assertEquals(2, counter.end);
+        assert 2 == counter.start;
+        assert 2 == counter.end;
     }
 
     /**
@@ -310,8 +304,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), first, second, counter);
 
         // assertion
-        assertEquals(1, counter.start);
-        assertEquals(1, counter.end);
+        assert 1 == counter.start;
+        assert 1 == counter.end;
     }
 
     /**
@@ -336,8 +330,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), first, second, counter);
 
         // assertion
-        assertEquals(2, counter.start);
-        assertEquals(2, counter.end);
+        assert 2 == counter.start;
+        assert 2 == counter.end;
     }
 
     /**
@@ -362,8 +356,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), first, second, counter);
 
         // assertion
-        assertEquals(2, counter.start);
-        assertEquals(2, counter.end);
+        assert 2 == counter.start;
+        assert 2 == counter.end;
     }
 
     /**
@@ -388,8 +382,8 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), first, second, counter);
 
         // assertion
-        assertEquals(2, counter.start);
-        assertEquals(2, counter.end);
+        assert 2 == counter.start;
+        assert 2 == counter.end;
     }
 
     /**
@@ -414,14 +408,12 @@ public class NamespaceDeclarationTest {
         I.parse(locateSource("dummy.xml"), first, second, counter);
 
         // assertion
-        assertEquals(1, counter.start);
-        assertEquals(1, counter.end);
+        assert 1 == counter.start;
+        assert 1 == counter.end;
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/11/02 10:28:56
+     * @version 2011/03/22 17:23:59
      */
     private static class Counter extends XMLFilterImpl {
 

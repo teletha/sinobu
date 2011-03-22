@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.lang.reflect.Field;
 import java.util.Deque;
 import java.util.List;
@@ -33,7 +31,7 @@ import ezbean.sample.bean.Student;
 import ezbean.sample.dependency.DependenciedBean;
 
 /**
- * @version 2009/05/18 12:14:06
+ * @version 2011/03/22 16:45:42
  */
 public class EzbeanTraceTest {
 
@@ -77,9 +75,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(person, tracer.getFirst().get(0));
-        assertEquals("age", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert person == tracer.getFirst().get(0);
+        assert "age" == tracer.getFirst().get(1);
     }
 
     /**
@@ -92,10 +90,10 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(student, tracer.getFirst().get(0));
-        assertEquals("school", tracer.getFirst().get(1));
-        assertEquals("name", tracer.getFirst().get(2));
+        assert 1 == tracer.size();
+        assert student == tracer.getFirst().get(0);
+        assert "school" == tracer.getFirst().get(1);
+        assert "name" == tracer.getFirst().get(2);
     }
 
     @Test
@@ -105,9 +103,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(primitive, tracer.getFirst().get(0));
-        assertEquals("boolean", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert primitive == tracer.getFirst().get(0);
+        assert "boolean" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -117,9 +115,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(primitive, tracer.getFirst().get(0));
-        assertEquals("int", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert primitive == tracer.getFirst().get(0);
+        assert "int" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -129,9 +127,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(primitive, tracer.getFirst().get(0));
-        assertEquals("long", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert primitive == tracer.getFirst().get(0);
+        assert "long" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -141,9 +139,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(primitive, tracer.getFirst().get(0));
-        assertEquals("float", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert primitive == tracer.getFirst().get(0);
+        assert "float" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -153,9 +151,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(primitive, tracer.getFirst().get(0));
-        assertEquals("double", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert primitive == tracer.getFirst().get(0);
+        assert "double" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -165,9 +163,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(primitive, tracer.getFirst().get(0));
-        assertEquals("char", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert primitive == tracer.getFirst().get(0);
+        assert "char" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -177,9 +175,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(primitive, tracer.getFirst().get(0));
-        assertEquals("byte", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert primitive == tracer.getFirst().get(0);
+        assert "byte" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -189,9 +187,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(primitive, tracer.getFirst().get(0));
-        assertEquals("short", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert primitive == tracer.getFirst().get(0);
+        assert "short" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -201,9 +199,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(array, tracer.getFirst().get(0));
-        assertEquals("objects", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert array == tracer.getFirst().get(0);
+        assert "objects" == tracer.getFirst().get(1);
     }
 
     @Test
@@ -213,9 +211,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(bean, tracer.getFirst().get(0));
-        assertEquals("firstName", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert bean == tracer.getFirst().get(0);
+        assert "firstName" == tracer.getFirst().get(1);
     }
 
     /**
@@ -231,9 +229,9 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(bean, tracer.getFirst().get(0));
-        assertEquals("generic", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert bean == tracer.getFirst().get(0);
+        assert "generic" == tracer.getFirst().get(1);
     }
 
     /**
@@ -252,28 +250,28 @@ public class EzbeanTraceTest {
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(bean, tracer.getFirst().get(0));
-        assertEquals("name", tracer.getFirst().get(1));
+        assert 1 == tracer.size();
+        assert bean == tracer.getFirst().get(0);
+        assert "name" == tracer.getFirst().get(1);
     }
 
     @Test
     public void testDontCallActualMethod() {
         DontCall call = I.make(DontCall.class);
         DontCall mock = I.mock(call);
-        assertFalse(call.called);
-        assertFalse(mock.called);
+        assert !call.called;
+        assert !mock.called;
 
         // call at mock object
         mock.getName();
 
         Deque<List> tracer = tracers.resolve();
 
-        assertEquals(1, tracer.size());
-        assertEquals(call, tracer.getFirst().get(0));
-        assertEquals("name", tracer.getFirst().get(1));
-        assertFalse(call.called);
-        assertFalse(mock.called);
+        assert 1 == tracer.size();
+        assert call == tracer.getFirst().get(0);
+        assert "name" == tracer.getFirst().get(1);
+        assert !call.called;
+        assert !mock.called;
     }
 
     /**

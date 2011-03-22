@@ -15,8 +15,6 @@
  */
 package ezbean.jdk;
 
-import static junit.framework.Assert.*;
-
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -31,7 +29,7 @@ import ezbean.sample.bean.invalid.ProtectedAccessor;
 /**
  * {@link PropertyDescriptor} is not pathetic in JDK7.
  * 
- * @version 2010/02/20 9:35:44
+ * @version 2011/03/22 16:55:02
  */
 public class PropertyDescriptorIsPatheticTest {
 
@@ -39,23 +37,23 @@ public class PropertyDescriptorIsPatheticTest {
     public void primitive() throws Exception {
         PropertyDescriptor descriptor = new PropertyDescriptor("boolean", Primitive.class);
         Method method = descriptor.getReadMethod();
-        assertEquals("isBoolean", method.getName());
+        assert method.getName().equals("isBoolean");
     }
 
     @Test
     public void wrapper() throws Exception {
         PropertyDescriptor descriptor = new PropertyDescriptor("boolean", PrimitiveWrapper.class);
         Method method = descriptor.getReadMethod();
-        assertEquals("isBoolean", method.getName());
+        assert method.getName().equals("isBoolean");
     }
 
     @Test
     public void generic() throws Exception {
         PropertyDescriptor descriptor = new PropertyDescriptor("generic", GenericGetterBean.class);
         Method getter = descriptor.getReadMethod();
-        assertEquals("getGeneric", getter.getName());
+        assert getter.getName().equals("getGeneric");
         Method setter = descriptor.getWriteMethod();
-        assertEquals("setGeneric", setter.getName());
+        assert setter.getName().equals("setGeneric");
     }
 
     @Test(expected = IntrospectionException.class)

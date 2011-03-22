@@ -15,8 +15,6 @@
  */
 package ezbean.module;
 
-import static org.junit.Assert.*;
-
 import java.awt.Dimension;
 import java.util.Date;
 
@@ -27,28 +25,28 @@ import org.junit.Test;
 import ezbean.I;
 
 /**
- * @version 2010/10/26 23:54:09
+ * @version 2011/03/22 17:05:52
  */
 public class SystemPackageTest {
 
     @Test
     public void defineClassInCoreSystemPackage1() throws Exception {
         Date date = I.make(Date.class);
-        assertNotNull(date);
-        assertNotSame(Date.class, date.getClass());
+        assert date != null;
+        assert Date.class != date.getClass();
     }
 
     @Test
     public void defineClassInCoreSystemPackage2() throws Exception {
         Dimension dimension = I.make(Dimension.class);
-        assertNotNull(dimension);
-        assertNotSame(Dimension.class, dimension.getClass());
+        assert dimension != null;
+        assert Dimension.class != dimension.getClass();
     }
 
     @Test
     public void defineClassInExtendedSystemPackage() throws Exception {
         JFrame frame = I.make(JFrame.class);
-        assertNotNull(frame);
-        assertNotSame(JFrame.class, frame.getClass());
+        assert frame != null;
+        assert JFrame.class != frame.getClass();
     }
 }

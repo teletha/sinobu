@@ -15,40 +15,25 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
-
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.Manageable;
-import ezbean.Prototype;
-
 /**
- * DOCUMENT.
- * 
- * @version 2008/05/30 22:49:10
+ * @version 2011/03/22 16:26:42
  */
 public class PrototypeTest {
 
-    /**
-     * Test {@link Prototype}.
-     */
     @Test
-    public void testResolve() {
+    public void resolve() {
         PrototypeClass instance1 = I.make(PrototypeClass.class);
-        assertNotNull(instance1);
+        assert instance1 != null;
 
         PrototypeClass instance2 = I.make(PrototypeClass.class);
-        assertNotNull(instance2);
-
-        assertNotSame(instance1, instance2);
+        assert instance2 != null;
+        assert instance1 != instance2;
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/05/30 22:50:38
+     * @version 2011/03/22 16:30:07
      */
     @Manageable(lifestyle = Prototype.class)
     private static class PrototypeClass {

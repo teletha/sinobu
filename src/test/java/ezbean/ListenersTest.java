@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -24,7 +22,7 @@ import java.util.List;
 import org.junit.Test;
 
 /**
- * @version 2010/01/17 9:33:47
+ * @version 2011/03/22 16:35:18
  */
 public class ListenersTest {
 
@@ -73,18 +71,18 @@ public class ListenersTest {
         // emulate property change event
         listeners.notify("bean", "name", "old", "new");
 
-        assertEquals("bean", listener.source);
-        assertEquals("name", listener.propertyName);
-        assertEquals("old", listener.oldObject);
-        assertEquals("new", listener.newValue);
+        assert listener.source.equals("bean");
+        assert listener.propertyName.equals("name");
+        assert listener.oldObject.equals("old");
+        assert listener.newValue.equals("new");
 
         // emulate property change event (this invocation makes no change)
         listeners.notify("bean", "any", "foo", "bar");
 
-        assertEquals("bean", listener.source);
-        assertEquals("name", listener.propertyName);
-        assertEquals("old", listener.oldObject);
-        assertEquals("new", listener.newValue);
+        assert listener.source.equals("bean");
+        assert listener.propertyName.equals("name");
+        assert listener.oldObject.equals("old");
+        assert listener.newValue.equals("new");
     }
 
     /**
@@ -102,28 +100,28 @@ public class ListenersTest {
         // emulate property change event
         listeners.notify("bean", "one", "foo", "bar");
 
-        assertEquals("bean", listener1.source);
-        assertEquals("one", listener1.propertyName);
-        assertEquals("foo", listener1.oldObject);
-        assertEquals("bar", listener1.newValue);
+        assert listener1.source.equals("bean");
+        assert listener1.propertyName.equals("one");
+        assert listener1.oldObject.equals("foo");
+        assert listener1.newValue.equals("bar");
 
-        assertEquals(null, listener2.source);
-        assertEquals(null, listener2.propertyName);
-        assertEquals(null, listener2.oldObject);
-        assertEquals(null, listener2.newValue);
+        assert listener2.source == null;
+        assert listener2.propertyName == null;
+        assert listener2.oldObject == null;
+        assert listener2.newValue == null;
 
         // emulate property change event
         listeners.notify("bean", "two", "bar", "baz");
 
-        assertEquals("bean", listener1.source);
-        assertEquals("one", listener1.propertyName);
-        assertEquals("foo", listener1.oldObject);
-        assertEquals("bar", listener1.newValue);
+        assert listener1.source.equals("bean");
+        assert listener1.propertyName.equals("one");
+        assert listener1.oldObject.equals("foo");
+        assert listener1.newValue.equals("bar");
 
-        assertEquals("bean", listener2.source);
-        assertEquals("two", listener2.propertyName);
-        assertEquals("bar", listener2.oldObject);
-        assertEquals("baz", listener2.newValue);
+        assert listener2.source.equals("bean");
+        assert listener2.propertyName.equals("two");
+        assert listener2.oldObject.equals("bar");
+        assert listener2.newValue.equals("baz");
     }
 
     /**
@@ -138,10 +136,10 @@ public class ListenersTest {
         // emulate property change event
         listeners.notify("bean", "name", "old", "new");
 
-        assertEquals("bean", listener.source);
-        assertEquals("name", listener.propertyName);
-        assertEquals("old", listener.oldObject);
-        assertEquals("new", listener.newValue);
+        assert listener.source.equals("bean");
+        assert listener.propertyName.equals("name");
+        assert listener.oldObject.equals("old");
+        assert listener.newValue.equals("new");
 
         // poll listener
         listeners.pull("name", listener);
@@ -149,10 +147,10 @@ public class ListenersTest {
         // emulate property change event
         listeners.notify("bean", "name", "foo", "bar");
 
-        assertEquals("bean", listener.source);
-        assertEquals("name", listener.propertyName);
-        assertEquals("old", listener.oldObject);
-        assertEquals("new", listener.newValue);
+        assert listener.source.equals("bean");
+        assert listener.propertyName.equals("name");
+        assert listener.oldObject.equals("old");
+        assert listener.newValue.equals("new");
     }
 
     /**
@@ -170,15 +168,15 @@ public class ListenersTest {
         // emulate property change event
         listeners.notify("bean", "one", "foo", "bar");
 
-        assertEquals("bean", listener1.source);
-        assertEquals("one", listener1.propertyName);
-        assertEquals("foo", listener1.oldObject);
-        assertEquals("bar", listener1.newValue);
+        assert listener1.source.equals("bean");
+        assert listener1.propertyName.equals("one");
+        assert listener1.oldObject.equals("foo");
+        assert listener1.newValue.equals("bar");
 
-        assertEquals("bean", listener2.source);
-        assertEquals("one", listener2.propertyName);
-        assertEquals("foo", listener2.oldObject);
-        assertEquals("bar", listener2.newValue);
+        assert listener2.source.equals("bean");
+        assert listener2.propertyName.equals("one");
+        assert listener2.oldObject.equals("foo");
+        assert listener2.newValue.equals("bar");
 
         // poll listener
         listeners.pull("one", listener1);
@@ -186,15 +184,15 @@ public class ListenersTest {
         // emulate property change event
         listeners.notify("bean", "one", "bar", "baz");
 
-        assertEquals("bean", listener1.source);
-        assertEquals("one", listener1.propertyName);
-        assertEquals("foo", listener1.oldObject);
-        assertEquals("bar", listener1.newValue);
+        assert listener1.source.equals("bean");
+        assert listener1.propertyName.equals("one");
+        assert listener1.oldObject.equals("foo");
+        assert listener1.newValue.equals("bar");
 
-        assertEquals("bean", listener2.source);
-        assertEquals("one", listener2.propertyName);
-        assertEquals("bar", listener2.oldObject);
-        assertEquals("baz", listener2.newValue);
+        assert listener2.source.equals("bean");
+        assert listener2.propertyName.equals("one");
+        assert listener2.oldObject.equals("bar");
+        assert listener2.newValue.equals("baz");
     }
 
     @Test
@@ -218,7 +216,7 @@ public class ListenersTest {
 
         // emulate property change event
         listeners.notify("bean", "name", "old", "new");
-        assertEquals(1, counter.size());
+        assert counter.size() == 1;
     }
 
     /**
@@ -246,15 +244,15 @@ public class ListenersTest {
 
         // emulate property change event
         listeners.notify("bean", "name", "old", "new");
-        assertEquals(1, counter.size());
+        assert counter.size() == 1;
 
         // emulate property change event (listener will remove itself)
         listeners.notify("bean", "name", "foo", "bar");
-        assertEquals(2, counter.size());
+        assert counter.size() == 2;
 
         // emulate property change event (context has no listener)
         listeners.notify("bean", "name", "bar", "baz");
-        assertEquals(2, counter.size());
+        assert counter.size() == 2;
     }
 
     public void notifyNullSource() {
@@ -289,7 +287,7 @@ public class ListenersTest {
         listeners.notify("some", "test", null, null);
 
         // assert
-        assertEquals(0, listener.newValue); // change was not propagated
+        assert listener.newValue.equals(0); // change was not propagated
     }
 
     /**
@@ -309,7 +307,7 @@ public class ListenersTest {
         listeners.notify("some", "test", null, 1);
 
         // assert
-        assertEquals(1, listener.newValue); // change was propagated
+        assert listener.newValue.equals(1); // change was propagated
     }
 
     /**
@@ -329,7 +327,7 @@ public class ListenersTest {
         listeners.notify("some", "test", 1, null);
 
         // assert
-        assertEquals(null, listener.newValue); // change was propagated
+        assert listener.newValue == null; // change was propagated
     }
 
     /**
@@ -349,7 +347,7 @@ public class ListenersTest {
         listeners.notify("some", "test", 1, 1);
 
         // assert
-        assertEquals(0, listener.newValue); // change was not propagated
+        assert listener.newValue.equals(0); // change was not propagated
     }
 
     /**

@@ -15,15 +15,13 @@
  */
 package ezbean.scratchpad;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 /**
- * @version 2010/02/04 1:31:09
+ * @version 2011/03/22 17:11:06
  */
 public class NCATest {
 
@@ -42,9 +40,9 @@ public class NCATest {
 
     @Test
     public void testname() throws Exception {
-        assertEquals(Number.class, getNCA(1, 2d, 3f));
-        assertEquals(String.class, getNCA("test"));
-        assertEquals(Exception.class, getNCA(new IOException(), new SAXException()));
+        assert getNCA(1, 2d, 3f).equals(Number.class);
+        assert getNCA("test").equals(String.class);
+        assert getNCA(new IOException(), new SAXException()).equals(Exception.class);
 
         // Class AbstractStringBuilder = getNCA(new StringBuffer(), new StringBuilder());
     }

@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static org.junit.Assert.*;
-
 import java.util.Locale;
 
 import org.junit.AfterClass;
@@ -24,7 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * @version 2010/01/16 18:44:06
+ * @version 2011/03/22 16:43:38
  */
 public class DefaultLocaleTest {
 
@@ -43,18 +41,18 @@ public class DefaultLocaleTest {
 
     @Test
     public void defaultLocale() throws Exception {
-        assertEquals(Locale.getDefault(), I.make(Locale.class));
+        assert Locale.getDefault() == I.make(Locale.class);
     }
 
     @Test
     public void changeDefaultLocale() throws Exception {
         Locale.setDefault(Locale.CANADA);
-        assertEquals(Locale.CANADA, I.make(Locale.class));
+        assert Locale.CANADA == I.make(Locale.class);
 
         Locale.setDefault(Locale.JAPAN);
-        assertEquals(Locale.JAPAN, I.make(Locale.class));
+        assert Locale.JAPAN == I.make(Locale.class);
 
         Locale.setDefault(Locale.ROOT);
-        assertEquals(Locale.ROOT, I.make(Locale.class));
+        assert Locale.ROOT == I.make(Locale.class);
     }
 }

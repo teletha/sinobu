@@ -15,33 +15,25 @@
  */
 package ezbean.module;
 
-import static org.junit.Assert.*;
-
-
 import java.security.CodeSource;
-
-
 
 import org.junit.Test;
 
 import ezbean.I;
 import ezbean.sample.bean.Person;
 
-
 /**
- * DOCUMENT.
- * 
- * @version 2007/10/15 9:04:33
+ * @version 2011/03/22 17:07:03
  */
 public class CodeSourceTest {
 
     @Test
     public void testCodeSource() {
         Person person = I.make(Person.class);
-        assertNotSame(Person.class, person.getClass());
+        assert Person.class != person.getClass();
 
         CodeSource source1 = person.getClass().getProtectionDomain().getCodeSource();
         CodeSource source2 = Person.class.getProtectionDomain().getCodeSource();
-        assertEquals(source1, source2);
+        assert source2.equals(source1);
     }
 }
