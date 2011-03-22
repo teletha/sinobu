@@ -15,15 +15,13 @@
  */
 package ezunit;
 
-import static org.junit.Assert.*;
-
 import java.lang.reflect.Method;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * @version 2011/03/20 10:09:04
+ * @version 2011/03/23 8:53:39
  */
 public class ReusableRuleLifecycleTest {
 
@@ -32,12 +30,12 @@ public class ReusableRuleLifecycleTest {
 
     @Test
     public void notInvoked() throws Exception {
-        fail("We must not invoke this test method.");
+        throw new AssertionError("We must not invoke this test method.");
     }
 
     @Test
     public void notExecuted() throws Exception {
-        fail("We must not invoke this test method.");
+        throw new AssertionError("We must not invoke this test method.");
     }
 
     /**
