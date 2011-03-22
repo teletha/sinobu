@@ -379,7 +379,7 @@ public class Ezunit {
             System.out.println("The expected document :");
             dumpXML(expected);
 
-            fail(diff.toString());
+            throw new AssertionError(diff.toString());
         }
     }
 
@@ -412,7 +412,7 @@ public class Ezunit {
             System.out.println("The expected document :");
             dumpXML(expected);
 
-            fail(diff.toString());
+            throw new AssertionError(diff.toString());
         }
     }
 
