@@ -91,10 +91,10 @@ public class Ezunit {
      * @param path
      */
     public static void assertDirectory(Path path) {
-        assertNotNull(path);
-        assertTrue(Files.isDirectory(path));
-        assertFalse(Files.isRegularFile(path));
-        assertTrue(Files.exists(path));
+        assert path != null;
+        assert Files.isDirectory(path);
+        assert Files.isRegularFile(path);
+        assert Files.exists(path);
     }
 
     /**
