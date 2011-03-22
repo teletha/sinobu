@@ -42,7 +42,7 @@ import ezbean.I;
 import ezbean.Modules;
 
 /**
- * @version 2010/11/15 0:00:48
+ * @version 2011/03/22 8:51:40
  */
 public class PrivateModule extends ReusableRule {
 
@@ -58,6 +58,7 @@ public class PrivateModule extends ReusableRule {
     /** The private class filter. */
     private final PrivateClassStrategy strategy;
 
+    /** Flag for creating jar. */
     private boolean createJar;
 
     /**
