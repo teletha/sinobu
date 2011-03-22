@@ -302,7 +302,7 @@ public class Ezunit {
         Document document = builder.getDocument();
 
         // check null
-        assertNotNull(document);
+        assert document != null;
 
         // API definition
         return document;
