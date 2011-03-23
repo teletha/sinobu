@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -131,8 +130,8 @@ import ezbean.xml.XMLWriter;
  * </ul>
  * <p>
  * When you want to initialize these enviroment variables and your application environment related
- * to Ezbean (e.g. external class annotation by {@link #annotate(Class, Annotation...)}, dynamic
- * class loading by {@link #load(Path)}), you must implement subclass of Ezbean and declare as <a
+ * to Ezbean, dynamic class loading by {@link #load(Path)}), you must implement subclass of Ezbean
+ * and declare as <a
  * href="http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider">service
  * provider</a>.
  * </p>
@@ -1388,10 +1387,10 @@ public class I implements ClassLoadListener<Extensible> {
      * Deceive complier that the specified checked exception is unchecked exception.
      * </p>
      * 
-     * @param <T>
-     * @param throwable
-     * @return
-     * @throws T
+     * @param <T> A dummy type for {@link RuntimeException}.
+     * @param throwable Any error.
+     * @return A runtime error.
+     * @throws T Dummy error to deceive compiler.
      */
     @SuppressWarnings("unchecked")
     private static <T extends Throwable> T quietly(Throwable throwable) throws T {

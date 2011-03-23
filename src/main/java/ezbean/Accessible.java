@@ -35,7 +35,7 @@ public interface Accessible {
      * @param value A new value.
      * @return A property.
      */
-    Object access(int id, Object params);
+    Object access(int id, Object value);
 
     /**
      * Retrieve the assosiated context with this accessible object.

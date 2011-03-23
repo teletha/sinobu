@@ -53,8 +53,8 @@ import ezbean.Modules;
  * <dl>
  * <dt>Attribute Model</dt>
  * <dd>This is a model which has no property at all. You can check whether a model is attribute or
- * not by using {@link #isAttribute()} method. Normaly, {@link Model} class represents this model
- * type.</dd>
+ * not by using that {@link #getCodec()} method returns <code>null</code> or not. Normaly,
+ * {@link Model} class represents this model type.</dd>
  * <dt>Collection Model</dt>
  * <dd>This is a model whose all.properties indicate same type of Model (e.g. List, Map, Attribute).
  * You can check whether a model is collection or not by using {@link #isCollection()} method.</dd>
