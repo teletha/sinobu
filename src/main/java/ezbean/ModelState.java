@@ -70,10 +70,8 @@ final class ModelState implements PropertyWalker, PropertyListener, Disposable {
     }
 
     /**
-     * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
-     *      java.lang.Object)
+     * {@inheritDoc}
      */
-    @Override
     public void change(Object bean, String name, Object oldValue, Object newValue) {
         try {
             I.copy(bean, Files.newBufferedWriter(file, I.getEncoding()), false);
@@ -83,9 +81,8 @@ final class ModelState implements PropertyWalker, PropertyListener, Disposable {
     }
 
     /**
-     * @see ezbean.Disposable#dispose()
+     * {@inheritDoc}
      */
-    @Override
     public void dispose() {
         Listeners<String, PropertyListener> listeners = ((Accessible) object).context();
 
