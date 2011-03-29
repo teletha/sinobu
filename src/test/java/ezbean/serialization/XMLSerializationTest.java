@@ -19,6 +19,7 @@ import static ezunit.Ezunit.*;
 
 import java.io.File;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -60,6 +61,14 @@ public class XMLSerializationTest {
     /** The serialization file. */
     private static final Path testFile = room.locateFile("config.xml");
 
+    private Appendable output() throws Exception {
+        return Files.newBufferedWriter(testFile, I.getEncoding());
+    }
+
+    private Readable input() throws Exception {
+        return Files.newBufferedReader(testFile, I.getEncoding());
+    }
+
     /**
      * Test nesting List.
      */
@@ -83,10 +92,10 @@ public class XMLSerializationTest {
         nestingList.setNesting(root);
 
         // write
-        I.xml(nestingList, testFile);
+        I.xml(nestingList, output());
 
         // read
-        nestingList = I.xml(testFile, I.make(NestingList.class));
+        nestingList = I.xml(input(), I.make(NestingList.class));
 
         assert nestingList != null;
 
@@ -123,10 +132,10 @@ public class XMLSerializationTest {
         primitive.setShort((short) 21);
 
         // write
-        I.xml(primitive, testFile);
+        I.xml(primitive, output());
 
         // read
-        primitive = I.xml(testFile, I.make(Primitive.class));
+        primitive = I.xml(input(), I.make(Primitive.class));
         assert primitive != null;
         assert primitive.isBoolean();
         assert primitive.getChar() == 'c';
@@ -153,10 +162,10 @@ public class XMLSerializationTest {
         stringList.setList(list);
 
         // write
-        I.xml(stringList, testFile);
+        I.xml(stringList, output());
 
         // read
-        stringList = I.xml(testFile, I.make(StringList.class));
+        stringList = I.xml(input(), I.make(StringList.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -180,10 +189,10 @@ public class XMLSerializationTest {
         stringList.setList(list);
 
         // write
-        I.xml(stringList, testFile);
+        I.xml(stringList, output());
 
         // read
-        stringList = I.xml(testFile, I.make(StringList.class));
+        stringList = I.xml(input(), I.make(StringList.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -206,10 +215,10 @@ public class XMLSerializationTest {
         stringMap.setMap(map);
 
         // write
-        I.xml(stringMap, testFile);
+        I.xml(stringMap, output());
 
         // read
-        stringMap = I.xml(testFile, I.make(StringMap.class));
+        stringMap = I.xml(input(), I.make(StringMap.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -234,10 +243,10 @@ public class XMLSerializationTest {
         stringMap.setMap(map);
 
         // write
-        I.xml(stringMap, testFile);
+        I.xml(stringMap, output());
 
         // read
-        stringMap = I.xml(testFile, I.make(StringMap.class));
+        stringMap = I.xml(input(), I.make(StringMap.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -262,10 +271,10 @@ public class XMLSerializationTest {
         bean.setIntegerKey(map);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(CompatibleKeyMap.class));
+        bean = I.xml(input(), I.make(CompatibleKeyMap.class));
         assert bean != null;
 
         map = bean.getIntegerKey();
@@ -290,10 +299,10 @@ public class XMLSerializationTest {
         bean.setIncompatible(map);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(IncompatibleKeyMap.class));
+        bean = I.xml(input(), I.make(IncompatibleKeyMap.class));
         assert bean != null;
 
         map = bean.getIncompatible();
@@ -310,10 +319,10 @@ public class XMLSerializationTest {
         bean.setSchoolEnum(SchoolEnum.Miator);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(BuiltinBean.class));
+        bean = I.xml(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getSchoolEnum().equals(SchoolEnum.Miator);
     }
@@ -327,10 +336,10 @@ public class XMLSerializationTest {
         bean.setDate(new Date(0L));
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(BuiltinBean.class));
+        bean = I.xml(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getDate().equals(new Date(0L));
 
@@ -347,10 +356,10 @@ public class XMLSerializationTest {
         bean.setSomeClass(EzbeanTest.class);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(BuiltinBean.class));
+        bean = I.xml(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getSomeClass().equals(EzbeanTest.class);
 
@@ -367,10 +376,10 @@ public class XMLSerializationTest {
         bean.setFile(testFile.toFile());
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(BuiltinBean.class));
+        bean = I.xml(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getFile().equals(testFile.toFile());
     }
@@ -384,10 +393,10 @@ public class XMLSerializationTest {
         bean.setPath(testFile);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(BuiltinBean.class));
+        bean = I.xml(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getPath().equals(testFile);
     }
@@ -399,10 +408,10 @@ public class XMLSerializationTest {
         bean.setBoth(20);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(TransientBean.class));
+        bean = I.xml(input(), I.make(TransientBean.class));
         assert bean != null;
         assert bean.getNone() == 10;
         assert bean.getBoth() == 0;
@@ -420,10 +429,10 @@ public class XMLSerializationTest {
         bean.setNest(map);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(NestedCollection.class));
+        bean = I.xml(input(), I.make(NestedCollection.class));
         assert bean != null;
         map = bean.getNest();
         assert bean != null;
@@ -448,10 +457,10 @@ public class XMLSerializationTest {
         stringList.setList(list);
 
         // write
-        I.xml(stringList, testFile);
+        I.xml(stringList, output());
 
         // read
-        stringList = I.xml(testFile, I.make(StringList.class));
+        stringList = I.xml(input(), I.make(StringList.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -479,10 +488,10 @@ public class XMLSerializationTest {
         bean.setList(list);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(StringList.class));
+        bean = I.xml(input(), I.make(StringList.class));
         assert bean != null;
 
         list = bean.getList();
@@ -509,10 +518,10 @@ public class XMLSerializationTest {
         stringMap.setMap(map);
 
         // write
-        I.xml(stringMap, testFile);
+        I.xml(stringMap, output());
 
         // read
-        stringMap = I.xml(testFile, I.make(StringMap.class));
+        stringMap = I.xml(input(), I.make(StringMap.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -536,10 +545,10 @@ public class XMLSerializationTest {
         bean.setMap(map);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(StringMap.class));
+        bean = I.xml(input(), I.make(StringMap.class));
         assert bean != null;
 
         map = bean.getMap();
@@ -569,10 +578,10 @@ public class XMLSerializationTest {
         bean.setGenericList(list);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(GenericPersonBean.class));
+        bean = I.xml(input(), I.make(GenericPersonBean.class));
         assert bean != null;
 
         Person person = bean.getGeneric();
@@ -615,10 +624,10 @@ public class XMLSerializationTest {
         bean.setGenericList(list);
 
         // write
-        I.xml(bean, testFile);
+        I.xml(bean, output());
 
         // read
-        bean = I.xml(testFile, I.make(GenericPersonBean.class));
+        bean = I.xml(input(), I.make(GenericPersonBean.class));
         assert bean != null;
 
         list = bean.getGenericList();
@@ -648,10 +657,10 @@ public class XMLSerializationTest {
         stringList.setList(list);
 
         // write
-        I.xml(stringList, testFile);
+        I.xml(stringList, output());
 
         // read
-        stringList = I.xml(testFile, I.make(StringList.class));
+        stringList = I.xml(input(), I.make(StringList.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -675,10 +684,10 @@ public class XMLSerializationTest {
         checker.setList(list);
 
         // write
-        I.xml(checker, testFile);
+        I.xml(checker, output());
 
         // read
-        checker = I.xml(testFile, I.make(Checker.class));
+        checker = I.xml(input(), I.make(Checker.class));
         assert checker != null;
         assert checker.size == 3;
     }
@@ -728,10 +737,10 @@ public class XMLSerializationTest {
         school.setStudents(students);
 
         // write
-        I.xml(student, testFile);
+        I.xml(student, output());
 
         // read
-        student = I.xml(testFile, I.make(Student.class));
+        student = I.xml(input(), I.make(Student.class));
         assert student != null;
         assert student.getAge() == 17;
         assert student.getFirstName().equals("Himeko");
@@ -752,80 +761,40 @@ public class XMLSerializationTest {
     /**
      * Test method for {@link ezbean.I#read(java.io.File, java.lang.Object)}.
      */
-    @Test
-    public void testReadWithNull1() throws Exception {
-        I.xml((Path) null, (Object) null);
+    @Test(expected = NullPointerException.class)
+    public void readNull() throws Exception {
+        I.xml((Readable) null, (Object) null);
     }
 
     /**
      * Test method for {@link ezbean.I#read(java.io.File, java.lang.Object)}.
      */
-    @Test
-    public void testReadWithNull2() throws Exception {
-        assert testFile != null;
-        I.xml(testFile, (Object) null);
+    @Test(expected = NullPointerException.class)
+    public void readNullInput() throws Exception {
+        I.xml((Readable) null, I.make(Student.class));
     }
 
     /**
      * Test method for {@link ezbean.I#read(java.io.File, java.lang.Object)}.
      */
-    @Test
-    public void testReadWithNull3() throws Exception {
-        I.xml((Path) null, Student.class);
+    @Test(expected = NullPointerException.class)
+    public void readNullOutput() throws Exception {
+        I.xml(new StringReader("xml"), (Object) null);
     }
 
     /**
      * Test method for {@link ezbean.I#write(java.lang.Object, java.io.File)}.
      */
-    @Test
-    public void testWriteWithNull1() throws Exception {
-        I.xml((Object) null, (Path) null);
+    @Test(expected = NullPointerException.class)
+    public void writeNull() throws Exception {
+        I.xml((Object) null, (Appendable) null);
     }
 
     /**
      * Test method for {@link ezbean.I#write(java.lang.Object, java.io.File)}.
      */
-    @Test
-    public void testWriteWithNull2() throws Exception {
-        assert testFile != null;
-        I.xml((Object) null, testFile);
-    }
-
-    /**
-     * Test writing Ezbean against for not existing file.
-     */
-    @Test
-    public void testWriteNotExistingFile1() throws Exception {
-        Path notExist = room.locateAbsent("file");
-
-        assert Files.notExists(notExist);
-
-        Person person = I.make(Person.class);
-        person.setAge(1);
-
-        // write Ezbean
-        I.xml(person, notExist);
-
-        // test
-        assert Files.exists(notExist);
-    }
-
-    /**
-     * Test writing Ezbean against for not existing file which has a deep tree.
-     */
-    @Test
-    public void testWriteNotExistingFile2() throws Exception {
-        Path root = room.locateAbsent("directory");
-        Path notExist = root.resolve("not-exist/not-exist/not-exist");
-        assert Files.notExists(notExist);
-
-        Person person = I.make(Person.class);
-        person.setAge(1);
-
-        // write Ezbean
-        I.xml(person, notExist);
-
-        // test
-        assert Files.exists(notExist);
+    @Test(expected = NullPointerException.class)
+    public void writeNullInput() throws Exception {
+        I.xml((Object) null, output());
     }
 }

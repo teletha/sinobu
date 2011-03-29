@@ -15,6 +15,7 @@
  */
 package ezbean.serialization;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import ezbean.sample.bean.StringList;
 import ezunit.CleanRoom;
 
 /**
- * @version 2011/03/22 17:18:40
+ * @version 2011/03/29 12:37:35
  */
 public class XMLSerializationCuncurrentTest {
 
@@ -65,8 +66,6 @@ public class XMLSerializationCuncurrentTest {
     public void release() throws Exception {
         // shutdown all pooled threads
         pool.shutdownNow();
-
-        Files.delete(testFile);
     }
 
     /**
@@ -103,9 +102,7 @@ public class XMLSerializationCuncurrentTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/07/14 19:37:24
+     * @version 2011/03/29 12:37:30
      */
     private static class Reader implements Callable<StringList> {
 
@@ -113,14 +110,12 @@ public class XMLSerializationCuncurrentTest {
          * @see java.util.concurrent.Callable#call()
          */
         public StringList call() throws Exception {
-            return I.xml(testFile, I.make(StringList.class));
+            return I.xml(Files.newBufferedReader(testFile, I.getEncoding()), I.make(StringList.class));
         }
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/07/14 19:37:24
+     * @version 2011/03/29 12:37:27
      */
     private static class Writer implements Runnable {
 
@@ -139,7 +134,11 @@ public class XMLSerializationCuncurrentTest {
          * @see java.lang.Runnable#run()
          */
         public void run() {
-            I.xml(bean, testFile);
+            try {
+                I.xml(bean, Files.newBufferedWriter(testFile, I.getEncoding()));
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
         }
     }
 }
