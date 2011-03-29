@@ -15,6 +15,10 @@
  */
 package ezbean;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import ezbean.model.Model;
 import ezbean.model.Property;
 import ezbean.model.PropertyWalker;
@@ -27,7 +31,7 @@ import ezbean.model.PropertyWalker;
  * 
  * @version 2010/01/08 19:42:29
  */
-final class ModelState implements PropertyWalker {
+final class ModelState implements PropertyWalker, PropertyListener, Disposable {
 
     /** The current model. */
     Model model;
@@ -40,6 +44,8 @@ final class ModelState implements PropertyWalker {
 
     /** The current location for {@link XMLIn} process. */
     int i = 0;
+
+    Path file;
 
     /**
      * Create State instance.
@@ -61,5 +67,30 @@ final class ModelState implements PropertyWalker {
 
         // never check null because PropertyWalker traverses existing properties
         this.model.set(object, dest, I.transform(node, dest.model.type));
+    }
+
+    /**
+     * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
+     *      java.lang.Object)
+     */
+    @Override
+    public void change(Object bean, String name, Object oldValue, Object newValue) {
+        try {
+            I.copy(bean, Files.newBufferedWriter(file, I.getEncoding()), false);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * @see ezbean.Disposable#dispose()
+     */
+    @Override
+    public void dispose() {
+        Listeners<String, PropertyListener> listeners = ((Accessible) object).context();
+
+        for (Property property : ((Model<?>) model).properties) {
+            listeners.pull(property.name, this);
+        }
     }
 }

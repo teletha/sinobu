@@ -444,6 +444,26 @@ public class I implements ClassLoadListener<Extensible> {
         }
     }
 
+    public static Disposable bind(Object model, Path file) {
+        ModelState listener = new ModelState(model, Model.load(model.getClass()));
+        listener.file = file;
+
+        Listeners<String, PropertyListener> listeners = ((Accessible) model).context();
+
+        for (Property property : Model.load(model.getClass()).properties) {
+            listeners.push(property.name, listener);
+        }
+
+        try {
+            copy(Files.newBufferedReader(file, encoding), model);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+
+        // API definition
+        return listener;
+    }
+
     /**
      * <p>
      * Note : This method closes both input and output stream carefully.
@@ -531,6 +551,58 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static void copy(Path input, Path output, String... patterns) {
         new Visitor(input, output, 0, null, patterns);
+    }
+
+    public static <M> M copy(CharSequence input, M output) {
+        return copy((Readable) (input == null ? null : CharBuffer.wrap(input)), output);
+    }
+
+    public static synchronized <M> M copy(Readable input, M output) {
+        ReadableReader reader = new ReadableReader(input);
+
+        try {
+            // Parse as XML
+            parse(new InputSource(reader), new XMLIn(output));
+
+            // API definition
+            return output;
+        } catch (Exception e) {
+            // The user input has some error as XML so we should try it as JSON.
+            try {
+                // Reset input reader.
+                reader.reset = true;
+
+                // Parse as JSON.
+                return json(Model.load(output.getClass()), output, script.eval(reader));
+            } catch (ScriptException se) {
+                return output;
+            }
+        } finally {
+            quiet(input);
+        }
+    }
+
+    public static synchronized void copy(Object input, Appendable output, boolean json) {
+        try {
+            if (json) {
+                // traverse configuration as json
+                new JSON(output).traverse(input);
+            } else {
+                XMLWriter xml = new XMLWriter(output);
+
+                // xml start
+                xml.startDocument();
+                xml.startPrefixMapping("ez", URI);
+
+                // traverse configuration as xml
+                new XMLOut(xml).traverse(input);
+
+                xml.endDocument();
+                // xml end
+            }
+        } finally {
+            quiet(output);
+        }
     }
 
     /**
@@ -765,7 +837,7 @@ public class I implements ClassLoadListener<Extensible> {
         StringBuilder output = new StringBuilder();
 
         // jsonize
-        json(model, output);
+        copy(model, output, true);
 
         // API definition
         return output.toString();
@@ -779,13 +851,13 @@ public class I implements ClassLoadListener<Extensible> {
      * @param model A configuration object. <code>null</code> is acceptable, but this method will do
      *            nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static void json(Object model, Appendable output) {
-        try {
-            new JSON(output).traverse(model);
-        } finally {
-            quiet(output);
-        }
-    }
+    // public static void json(Object model, Appendable output) {
+    // try {
+    // new JSON(output).traverse(model);
+    // } finally {
+    // quiet(output);
+    // }
+    // }
 
     /**
      * <p>
@@ -803,9 +875,9 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws UnsupportedOperationException If the config class is inner-class.
      * @throws ClassCircularityError If the config class has circular dependency.
      */
-    public static <M> M json(CharSequence input, M model) {
-        return json((Readable) (input == null ? null : CharBuffer.wrap(input)), model);
-    }
+    // public static <M> M json(CharSequence input, M model) {
+    // return copy((Readable) (input == null ? null : CharBuffer.wrap(input)), model);
+    // }
 
     /**
      * <p>
@@ -823,15 +895,16 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws UnsupportedOperationException If the config class is inner-class.
      * @throws ClassCircularityError If the config class has circular dependency.
      */
-    public static <M> M json(Readable input, M model) {
-        try {
-            return json(Model.load(model.getClass()), model, script.eval(new ReadableReader(input, "a=")));
-        } catch (ScriptException e) {
-            return model;
-        } finally {
-            quiet(input);
-        }
-    }
+    // public static <M> M json(Readable input, M model) {
+    // try {
+    // return json(Model.load(model.getClass()), model, script.eval(new ReadableReader(input,
+    // "a=")));
+    // } catch (ScriptException e) {
+    // return model;
+    // } finally {
+    // quiet(input);
+    // }
+    // }
 
     /**
      * <p>
@@ -1461,8 +1534,8 @@ public class I implements ClassLoadListener<Extensible> {
     public static String xml(Object model) {
         StringBuilder output = new StringBuilder();
 
-        // jsonize
-        xml(model, output);
+        // xmlize
+        copy(model, output, false);
 
         // API definition
         return output.toString();
@@ -1476,23 +1549,23 @@ public class I implements ClassLoadListener<Extensible> {
      * @param model A configuration object. <code>null</code> is acceptable, but this method will do
      *            nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static synchronized void xml(Object model, Appendable output) {
-        try {
-            XMLWriter xml = new XMLWriter(output);
-
-            // xml start
-            xml.startDocument();
-            xml.startPrefixMapping("ez", URI);
-
-            // traverse configuration
-            new XMLOut(xml).traverse(model);
-
-            xml.endDocument();
-            // xml end
-        } finally {
-            quiet(output);
-        }
-    }
+    // public static synchronized void xml(Object model, Appendable output) {
+    // try {
+    // XMLWriter xml = new XMLWriter(output);
+    //
+    // // xml start
+    // xml.startDocument();
+    // xml.startPrefixMapping("ez", URI);
+    //
+    // // traverse configuration
+    // new XMLOut(xml).traverse(model);
+    //
+    // xml.endDocument();
+    // // xml end
+    // } finally {
+    // quiet(output);
+    // }
+    // }
 
     /**
      * <p>
@@ -1510,13 +1583,13 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws UnsupportedOperationException If the config class is inner-class.
      * @throws ClassCircularityError If the config class has circular dependency.
      */
-    public static <M> M xml(CharSequence input, M model) {
-        return xml((Readable) (input == null ? null : CharBuffer.wrap(input)), model);
-    }
+    // public static <M> M xml(CharSequence input, M model) {
+    // return copy((Readable) (input == null ? null : CharBuffer.wrap(input)), model);
+    // }
 
     /**
      * <p>
-     * Read the given configuration as json and create the configuration object.
+     * Read the specified XML input and copy all data into the model object.
      * </p>
      * 
      * @param input A configuration as json to be red. If <code>null</code>, empty string or invalid
@@ -1530,103 +1603,18 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws UnsupportedOperationException If the config class is inner-class.
      * @throws ClassCircularityError If the config class has circular dependency.
      */
-    public static synchronized <M> M xml(Readable input, M model) {
-        Objects.requireNonNull(model);
-
-        try {
-            // parse xml
-            parse(new InputSource(new ReadableReader(input, null)), new XMLIn(model));
-
-            // API definition
-            return model;
-        } finally {
-            quiet(input);
-        }
-    }
-
-    /**
-     * <p>
-     * Write out the given configuration object to the file.
-     * </p>
-     * 
-     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
-     *            nothing (don't throw {@link java.lang.NullPointerException}).
-     * @param output A target configuration file to write out. <code>null</code> is acceptable, but
-     *            this method will do nothing (don't throw {@link java.lang.NullPointerException}).
-     */
-    // public static void xml(Object model, Path output) {
-    // if (model != null && output != null) {
-    // // lock
-    // lock.writeLock().lock();
-    //
-    // Writer writer = null;
+    // public static synchronized <M> M xml(Readable input, M outpu) {
+    // Objects.requireNonNull(outpu);
     //
     // try {
-    // // We must confirm that the parent directory exists because FileOutputStream can't
-    // // create nested file.
-    // Files.createDirectories(output.getParent());
-    //
-    // // prepare stream
-    // writer = Files.newBufferedWriter(output, encoding);
-    // XMLWriter xml = new XMLWriter(writer);
-    //
-    // // xml start
-    // xml.startDocument();
-    // xml.startPrefixMapping("ez", URI);
-    //
-    // // traverse configuration
-    // new XMLOut(xml).traverse(model);
-    //
-    // xml.endDocument();
-    // // xml end
-    // } catch (Exception e) {
-    // throw quiet(e);
-    // } finally {
-    // // unlock
-    // lock.writeLock().unlock();
-    //
-    // quiet(writer);
-    // }
-    // }
-    // }
-
-    /**
-     * <p>
-     * Read the given configuration file and create the configuration object.
-     * <p>
-     * </p>
-     * In view of the initial state (e.g. when the system starts up, the configuration file may been
-     * not created yet), this method will do nothing when the file doesn't exist. </p>
-     * 
-     * @param input A configuration file to be red. <code>null</code> is acceptable, but this method
-     *            will do nothing (don't throw {@link java.lang.NullPointerException}).
-     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
-     *            nothing (don't throw {@link java.lang.NullPointerException}).
-     */
-    // public static <M> M xml(Path input, M model) {
-    // if (input != null && Files.exists(input) && model != null) {
-    // // lock
-    // lock.readLock().lock();
-    //
-    // Reader reader = null;
-    //
-    // try {
-    // // prepare stream
-    // reader = Files.newBufferedReader(input, encoding);
-    //
-    // parse(new InputSource(reader), new XMLIn(model));
-    // } catch (IOException e) {
-    // throw quiet(e);
-    // } finally {
-    // // unlock
-    // lock.readLock().unlock();
-    //
-    // quiet(reader);
-    // }
-    // }
+    // // parse xml
+    // parse(new InputSource(new ReadableReader(input, null)), new XMLIn(outpu));
     //
     // // API definition
-    // return model;
+    // return outpu;
+    // } finally {
+    // quiet(input);
+    // }
     // }
 
     /**

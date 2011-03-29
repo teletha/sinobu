@@ -15,6 +15,11 @@
  */
 package ezbean.scratchpad;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import ezbean.I;
 import ezbean.Manageable;
 import ezbean.Singleton;
@@ -73,6 +78,43 @@ public class EzbeanScratchpad {
      */
     public static <M> M xerox(M model) {
         return model;
+    }
+
+    public static <M> M xml(CharSequence input, Class<M> model) {
+        return xml(new StringReader(input.toString()), model);
+    }
+
+    public static <M> M xml(Path input, Class<M> model) {
+        try {
+            return xml(Files.newBufferedReader(input, I.getEncoding()), model);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    public static <M> M xml(Readable input, Class<M> model) {
+        return null;
+    }
+
+    public static String xml(Object input, boolean xml) {
+        return null;
+    }
+
+    public static void xml(Object input, Path output, boolean xml) {
+        try {
+            if (Files.notExists(output)) {
+                Files.createDirectories(output.getParent());
+                Files.createFile(output);
+            }
+
+            xml(input, Files.newBufferedWriter(output, I.getEncoding()), xml);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    public static void xml(Object input, Appendable output, boolean xml) {
+
     }
 
     /**

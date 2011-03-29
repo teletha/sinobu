@@ -20,23 +20,24 @@ import java.io.Reader;
 import java.nio.CharBuffer;
 
 /**
- * @version 2011/03/29 10:02:50
+ * @version 2011/03/29 14:07:03
  */
 class ReadableReader extends Reader {
 
     /** The actual reader. */
     private Readable readable;
 
-    /** The appendable header. */
-    private String header;
+    /** The latest red cache. */
+    private CharBuffer last;
+
+    /** The flag whether this reader is reseted or not. */
+    boolean reset = false;
 
     /**
      * @param readable
-     * @param header
      */
-    ReadableReader(Readable readable, String header) {
+    ReadableReader(Readable readable) {
         this.readable = readable;
-        this.header = header;
     }
 
     /**
@@ -44,22 +45,14 @@ class ReadableReader extends Reader {
      */
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
-        if (header == null) {
-            return readable.read(CharBuffer.wrap(cbuf, off, len));
+        if (!reset) {
+            return readable.read(last = CharBuffer.wrap(cbuf, off, len));
         } else {
-            String text = header;
-            int length = text.length();
+            // flag off
+            reset = false;
 
-            // reset
-            header = null;
-
-            // insert header text
-            for (int i = 0; i < length; i++) {
-                cbuf[i] = text.charAt(i);
-            }
-
-            // read normally
-            return readable.read(CharBuffer.wrap(cbuf, off + length, len - length)) + length;
+            // Read the latest buffer with JSON header text.
+            return CharBuffer.wrap(cbuf, off, len).put("a=").put((CharBuffer) last.flip()).flip().limit();
         }
     }
 
