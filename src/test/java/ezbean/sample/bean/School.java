@@ -16,12 +16,10 @@
 package ezbean.sample.bean;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: School.java,v 1.0 2007/01/08 15:42:00 Teletha Exp $
+ * @version 2011/03/30 16:33:05
  */
 public class School {
 
@@ -30,6 +28,9 @@ public class School {
 
     /** The students list. */
     private List<Student> students;
+
+    /** The teacher list. */
+    private Map<String, Person> teachers;
 
     /**
      * Get the name property of this {@link School}.
@@ -65,6 +66,24 @@ public class School {
      */
     public void setStudents(List<Student> students) {
         this.students = students;
+    }
+
+    /**
+     * Get the teachers property of this {@link School}.
+     * 
+     * @return The teachers property.
+     */
+    public Map<String, Person> getTeachers() {
+        return teachers;
+    }
+
+    /**
+     * Set the teachers property of this {@link School}.
+     * 
+     * @param teachers The teachers value to set.
+     */
+    public void setTeachers(Map<String, Person> teachers) {
+        this.teachers = teachers;
     }
 
     /**

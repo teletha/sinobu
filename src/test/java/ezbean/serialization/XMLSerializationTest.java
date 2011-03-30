@@ -69,6 +69,44 @@ public class XMLSerializationTest {
         return Files.newBufferedReader(testFile, I.getEncoding());
     }
 
+    @Test
+    public void list() throws Exception {
+        Student student = I.make(Student.class);
+        student.setFirstName("test");
+
+        List<Student> students = new ArrayList();
+        students.add(student);
+
+        School school = I.make(School.class);
+        school.setStudents(students);
+
+        // write
+        I.copy(school, output(), false);
+
+        // read
+        school = I.copy(input(), I.make(School.class));
+        assert school.getStudents().get(0).getFirstName().equals("test");
+    }
+
+    @Test
+    public void map() throws Exception {
+        Person teacher = I.make(Person.class);
+        teacher.setFirstName("test");
+
+        Map<String, Person> teachers = new HashMap();
+        teachers.put("role", teacher);
+
+        School school = I.make(School.class);
+        school.setTeachers(teachers);
+
+        // write
+        I.copy(school, output(), false);
+
+        // read
+        school = I.copy(input(), I.make(School.class));
+        assert school.getTeachers().get("role").getFirstName().equals("test");
+    }
+
     /**
      * Test nesting List.
      */

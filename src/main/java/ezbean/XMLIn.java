@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.model.Codec;
 import ezbean.model.Model;
 import ezbean.model.Property;
+import ezbean.xml.XMLScanner;
 
 /**
  * <p>
@@ -39,16 +39,18 @@ import ezbean.model.Property;
  * 
  * @version 2010/01/12 22:54:15
  */
-class XMLIn extends XMLFilterImpl {
+class XMLIn extends XMLScanner {
 
     /** The root object. */
-    private final Object root;
+    private Object root;
 
     /** The id and object mapping. */
     private final HashMap objects = new HashMap();
 
     /** The stack of states. */
     private final LinkedList<ModelState> states = new LinkedList<ModelState>();
+
+    boolean pref = false;
 
     /**
      * Create ConfigurationReader instance.
@@ -65,9 +67,21 @@ class XMLIn extends XMLFilterImpl {
      */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
+        if (pref && localName.equals("preferences")) {
+            return;
+        }
+
         ModelState state;
 
         if (states.size() == 0) {
+            if (pref) {
+                for (Preference preference : I.find(Preference.class)) {
+                    if (Model.load(preference.getClass()).name.equals(localName)) {
+                        root = preference;
+                        break;
+                    }
+                }
+            }
             state = new ModelState(root, Model.load(root.getClass()));
         } else {
             ModelState parent = states.peekLast();
@@ -157,6 +171,10 @@ class XMLIn extends XMLFilterImpl {
      */
     @Override
     public void endElement(String uri, String localName, String qName) {
+        if (pref && localName.equals("preferences")) {
+            return;
+        }
+
         ModelState current = states.pollLast();
         ModelState parent = states.peekLast();
 
