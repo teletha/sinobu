@@ -73,7 +73,7 @@ public abstract class Preference implements Extensible {
                 Files.createFile(file);
             }
 
-            I.copy(this, Files.newBufferedWriter(file, I.encoding), false);
+            I.write(this, Files.newBufferedWriter(file, I.encoding), false);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -87,7 +87,7 @@ public abstract class Preference implements Extensible {
     public void restore() {
         if (Files.exists(file)) {
             try {
-                I.copy(Files.newBufferedReader(file, I.encoding), this);
+                I.read(Files.newBufferedReader(file, I.encoding), this);
             } catch (IOException e) {
                 throw I.quiet(e);
             }
