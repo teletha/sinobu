@@ -203,7 +203,7 @@ import ezbean.xml.XMLWriter;
  * </p>
  * 
  * @see ServiceLoader
- * @version 2011/03/13 0:32:41
+ * @version 2011/03/31 17:38:41
  */
 public class I implements ClassLoadListener<Extensible> {
 
@@ -444,26 +444,6 @@ public class I implements ClassLoadListener<Extensible> {
             tracer.clear(); // clean up property path tracing context
         }
     }
-
-    // public static Disposable bind(Object model, Path file) {
-    // ModelState listener = new ModelState(model, Model.load(model.getClass()));
-    // listener.file = file;
-    //
-    // Listeners<String, PropertyListener> listeners = ((Accessible) model).context();
-    //
-    // for (Property property : Model.load(model.getClass()).properties) {
-    // listeners.push(property.name, listener);
-    // }
-    //
-    // try {
-    // read(Files.newBufferedReader(file, encoding), model);
-    // } catch (IOException e) {
-    // throw I.quiet(e);
-    // }
-    //
-    // // API definition
-    // return listener;
-    // }
 
     /**
      * <p>
@@ -993,7 +973,7 @@ public class I implements ClassLoadListener<Extensible> {
      * </p>
      * 
      * @param <M> A model object to trace property paths.
-     * @param mode A model class to trace.
+     * @param model A model class to trace.
      * @return A tracing object.
      * @throws NullPointerException If the specified tracer is <code>null</code>.
      */
@@ -1480,100 +1460,6 @@ public class I implements ClassLoadListener<Extensible> {
             return (M) input;
         }
     }
-
-    /**
-     * <p>
-     * Write out the given configuration object as JSON.
-     * </p>
-     * 
-     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
-     *            nothing (don't throw {@link java.lang.NullPointerException}).
-     */
-    // public static String xml(Object model) {
-    // StringBuilder output = new StringBuilder();
-    //
-    // // xmlize
-    // write(model, output, false);
-    //
-    // // API definition
-    // return output.toString();
-    // }
-
-    /**
-     * <p>
-     * Write out the given configuration object as JSON.
-     * </p>
-     * 
-     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
-     *            nothing (don't throw {@link java.lang.NullPointerException}).
-     */
-    // public static synchronized void xml(Object model, Appendable output) {
-    // try {
-    // XMLWriter xml = new XMLWriter(output);
-    //
-    // // xml start
-    // xml.startDocument();
-    // xml.startPrefixMapping("ez", URI);
-    //
-    // // traverse configuration
-    // new XMLOut(xml).traverse(model);
-    //
-    // xml.endDocument();
-    // // xml end
-    // } finally {
-    // quiet(output);
-    // }
-    // }
-
-    /**
-     * <p>
-     * Read the given configuration as json and create the configuration object.
-     * </p>
-     * 
-     * @param input A configuration as json to be red. If <code>null</code>, empty string or invalid
-     *            json string is passed, this method ignores this input and returns the default
-     *            object which equals to <code>I.create(configClass);</code>
-     * @param model A model for output. <code>null</code> will throw
-     *            {@link java.lang.NullPointerException}.
-     * @return A configuration object to be created.
-     * @throws NullPointerException If the config class is null.
-     * @throws IllegalArgumentException If the config class is non-accessible or final class.
-     * @throws UnsupportedOperationException If the config class is inner-class.
-     * @throws ClassCircularityError If the config class has circular dependency.
-     */
-    // public static <M> M xml(CharSequence input, M model) {
-    // return copy((Readable) (input == null ? null : CharBuffer.wrap(input)), model);
-    // }
-
-    /**
-     * <p>
-     * Read the specified XML input and copy all data into the model object.
-     * </p>
-     * 
-     * @param input A configuration as json to be red. If <code>null</code>, empty string or invalid
-     *            json string is passed, this method ignores this input and returns the default
-     *            object which equals to <code>I.create(configClass);</code>
-     * @param modelClass A model class. <code>null</code> will throw
-     *            {@link java.lang.NullPointerException}.
-     * @return A configuration object to be created.
-     * @throws NullPointerException If the config class is null.
-     * @throws IllegalArgumentException If the config class is non-accessible or final class.
-     * @throws UnsupportedOperationException If the config class is inner-class.
-     * @throws ClassCircularityError If the config class has circular dependency.
-     */
-    // public static synchronized <M> M xml(Readable input, M outpu) {
-    // Objects.requireNonNull(outpu);
-    //
-    // try {
-    // // parse xml
-    // parse(new InputSource(new ReadableReader(input, null)), new XMLIn(outpu));
-    //
-    // // API definition
-    // return outpu;
-    // } finally {
-    // quiet(input);
-    // }
-    // }
 
     /**
      * <p>
