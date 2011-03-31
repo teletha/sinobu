@@ -38,27 +38,9 @@ import ezbean.sample.bean.Student;
 import ezbean.sample.bean.TransientBean;
 
 /**
- * @version 2011/03/22 17:20:34
+ * @version 2011/03/31 16:59:01
  */
 public class JSONTest {
-
-    /**
-     * <p>
-     * Helper method to convert bean to json expression.
-     * </p>
-     * 
-     * @param model A target bean.
-     * @return JSON expression.
-     */
-    private static String json(Object model) {
-        StringBuilder output = new StringBuilder();
-
-        // jsonize
-        I.write(model, output, true);
-
-        // API definition
-        return output.toString();
-    }
 
     @Test
     public void singleProperty() {
@@ -248,40 +230,9 @@ public class JSONTest {
         assert person.getFirstName().equals("\\");
     }
 
-    @Test(expected = NullPointerException.class)
-    public void nullInputCharSequence() {
-        assert I.read((CharSequence) null, I.make(Person.class)) != null;
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void nullInputReadable() {
-        assert I.read((Readable) null, I.make(Person.class)) != null;
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void nullOutputBean() throws Exception {
-        I.read("{\"age\":\"15\"}", (Object) null);
-    }
-
     @Test
-    public void invalidOutputBean() throws Exception {
-        Class clazz = I.read("{\"age\":\"15\"}", Class.class);
-        assert clazz == Class.class;
-    }
-
-    @Test
-    public void emptyJSON() {
-        assert I.read("", I.make(Person.class)) != null;
-    }
-
-    @Test
-    public void invalidJSON1() {
+    public void readIncompatibleJSON() {
         assert I.read("15", I.make(Person.class)) != null;
-    }
-
-    @Test
-    public void invalidJSON2() {
-        assert I.read("@", I.make(Person.class)) != null;
     }
 
     @Test(expected = ClassCircularityError.class)
@@ -314,5 +265,23 @@ public class JSONTest {
         assert person.getAge() == 15;
         assert person.getFirstName().equals("Mio");
         assert person.getLastName().equals("Akiyama");
+    }
+
+    /**
+     * <p>
+     * Helper method to convert bean to json expression.
+     * </p>
+     * 
+     * @param model A target bean.
+     * @return JSON expression.
+     */
+    private static String json(Object model) {
+        StringBuilder output = new StringBuilder();
+
+        // jsonize
+        I.write(model, output, true);
+
+        // API definition
+        return output.toString();
     }
 }

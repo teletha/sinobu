@@ -37,7 +37,7 @@ import ezunit.CleanRoom;
 /**
  * @version 2011/03/29 12:37:35
  */
-public class XMLSerializationCuncurrentTest {
+public class XMLCuncurrentTest {
 
     /** The temporaries. */
     @Rule

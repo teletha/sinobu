@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -775,126 +776,6 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Write out the given configuration object as JSON.
-     * </p>
-     * 
-     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
-     *            nothing (don't throw {@link java.lang.NullPointerException}).
-     */
-    // public static String json(Object model) {
-    // StringBuilder output = new StringBuilder();
-    //
-    // // jsonize
-    // write(model, output, true);
-    //
-    // // API definition
-    // return output.toString();
-    // }
-
-    /**
-     * <p>
-     * Write out the given configuration object as JSON.
-     * </p>
-     * 
-     * @param model A configuration object. <code>null</code> is acceptable, but this method will do
-     *            nothing (don't throw {@link java.lang.NullPointerException}).
-     */
-    // public static void json(Object model, Appendable output) {
-    // try {
-    // new JSON(output).traverse(model);
-    // } finally {
-    // quiet(output);
-    // }
-    // }
-
-    /**
-     * <p>
-     * Read the given configuration as json and create the configuration object.
-     * </p>
-     * 
-     * @param input A configuration as json to be red. If <code>null</code>, empty string or invalid
-     *            json string is passed, this method ignores this input and returns the default
-     *            object which equals to <code>I.create(configClass);</code>
-     * @param model A model for output. <code>null</code> will throw
-     *            {@link java.lang.NullPointerException}.
-     * @return A configuration object to be created.
-     * @throws NullPointerException If the config class is null.
-     * @throws IllegalArgumentException If the config class is non-accessible or final class.
-     * @throws UnsupportedOperationException If the config class is inner-class.
-     * @throws ClassCircularityError If the config class has circular dependency.
-     */
-    // public static <M> M json(CharSequence input, M model) {
-    // return copy((Readable) (input == null ? null : CharBuffer.wrap(input)), model);
-    // }
-
-    /**
-     * <p>
-     * Read the given configuration as json and create the configuration object.
-     * </p>
-     * 
-     * @param input A configuration as json to be red. If <code>null</code>, empty string or invalid
-     *            json string is passed, this method ignores this input and returns the default
-     *            object which equals to <code>I.create(configClass);</code>
-     * @param modelClass A model class. <code>null</code> will throw
-     *            {@link java.lang.NullPointerException}.
-     * @return A configuration object to be created.
-     * @throws NullPointerException If the config class is null.
-     * @throws IllegalArgumentException If the config class is non-accessible or final class.
-     * @throws UnsupportedOperationException If the config class is inner-class.
-     * @throws ClassCircularityError If the config class has circular dependency.
-     */
-    // public static <M> M json(Readable input, M model) {
-    // try {
-    // return json(Model.load(model.getClass()), model, script.eval(new ReadableReader(input,
-    // "a=")));
-    // } catch (ScriptException e) {
-    // return model;
-    // } finally {
-    // quiet(input);
-    // }
-    // }
-
-    /**
-     * <p>
-     * Helper method to traverse json structure using Java Object {@link Model}.
-     * </p>
-     * 
-     * @param <M> A current model type.
-     * @param model A java object model.
-     * @param java A java value.
-     * @param js A javascript value.
-     * @return A restored java object.
-     */
-    private static <M> M json(Model model, M java, Object js) {
-        if (js instanceof IdScriptableObject) {
-            for (Object id : ((IdScriptableObject) js).getIds()) {
-                // compute property
-                Property property = model.getProperty(id.toString());
-
-                if (property != null) {
-                    // calculate value
-                    Object value = model.type == List.class ? ((NativeArray) js).get((Integer) id, null)
-                            : ((NativeObject) js).get((String) id, null);
-
-                    // convert value
-                    if (property.isAttribute()) {
-                        value = transform(value, property.model.type);
-                    } else {
-                        value = json(property.model, make(property.model.type), value);
-                    }
-
-                    // assign value
-                    model.set(java, property, value);
-                }
-            }
-        }
-
-        // API definition
-        return java;
-    }
-
-    /**
-     * <p>
      * Locate the specified file URL and return the plain {@link Path} object.
      * </p>
      * 
@@ -1112,7 +993,7 @@ public class I implements ClassLoadListener<Extensible> {
      * </p>
      * 
      * @param <M> A model object to trace property paths.
-     * @param type A model class to trace.
+     * @param mode A model class to trace.
      * @return A tracing object.
      * @throws NullPointerException If the specified tracer is <code>null</code>.
      */
@@ -1418,37 +1299,133 @@ public class I implements ClassLoadListener<Extensible> {
         throw (T) throwable;
     }
 
+    /**
+     * <p>
+     * Reads Java object tree from the given XML or JSON input.
+     * </p>
+     * 
+     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
+     * @param output A root Java object. All properties will be assigned from the given data deeply.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
+     * @return A root Java object.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws NoSuchFileException If the input path doesn't exist.
+     * @throws AccessDeniedException If the input is not regular file but directory.
+     */
     public static <M> M read(Path input, M output) {
-        return null;
+        try {
+            return read(Files.newBufferedReader(input, encoding), output);
+        } catch (Exception e) {
+            throw quiet(e);
+        }
     }
 
+    /**
+     * <p>
+     * Reads Java object tree from the given XML or JSON input.
+     * </p>
+     * 
+     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
+     * @param output A root Java object. All properties will be assigned from the given data deeply.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
+     * @return A root Java object.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
     public static <M> M read(CharSequence input, M output) {
         return read((Readable) (input == null ? null : CharBuffer.wrap(input)), output);
     }
 
+    /**
+     * <p>
+     * Reads Java object tree from the given XML or JSON input.
+     * </p>
+     * <p>
+     * If the input object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
+     * will be invoked certainly.
+     * </p>
+     * 
+     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
+     * @param output A root Java object. All properties will be assigned from the given data deeply.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
+     * @return A root Java object.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
     public static synchronized <M> M read(Readable input, M output) {
-        Parser reader = new Parser(input);
+        Parser parser = new Parser(input);
 
         try {
             // Parse as XML
-            parse(new InputSource(reader), new XMLIn(output));
+            parse(new InputSource(parser), new XMLIn(output));
 
-            // API definition
+            // The input data is valid XML.
             return output;
         } catch (Exception e) {
             // The user input has some error as XML so we should try it as JSON.
             try {
-                // Reset input reader.
-                reader.reset = true;
+                parser.reset = true; // reset input reader
 
                 // Parse as JSON.
-                return json(Model.load(output.getClass()), output, script.eval(reader));
-            } catch (ScriptException se) {
-                return output;
+                return json(Model.load(output.getClass()), output, script.eval(parser));
+            } catch (Exception se) {
+                throw quiet(se);
             }
         } finally {
             quiet(input);
         }
+    }
+
+    /**
+     * <p>
+     * Helper method to traverse json structure using Java Object {@link Model}.
+     * </p>
+     * 
+     * @param <M> A current model type.
+     * @param model A java object model.
+     * @param java A java value.
+     * @param js A javascript value.
+     * @return A restored java object.
+     */
+    private static <M> M json(Model model, M java, Object js) {
+        if (js instanceof IdScriptableObject) {
+            for (Object id : ((IdScriptableObject) js).getIds()) {
+                // compute property
+                Property property = model.getProperty(id.toString());
+
+                if (property != null) {
+                    // calculate value
+                    Object value = model.type == List.class ? ((NativeArray) js).get((Integer) id, null)
+                            : ((NativeObject) js).get((String) id, null);
+
+                    // convert value
+                    if (property.isAttribute()) {
+                        value = transform(value, property.model.type);
+                    } else {
+                        value = json(property.model, make(property.model.type), value);
+                    }
+
+                    // assign value
+                    model.set(java, property, value);
+                }
+            }
+        }
+
+        // API definition
+        return java;
     }
 
     /**
@@ -1661,10 +1638,52 @@ public class I implements ClassLoadListener<Extensible> {
         new Visitor(start, null, 4, visitor, patterns);
     }
 
+    /**
+     * <p>
+     * Writes Java object tree to the given output as XML or JSON.
+     * </p>
+     * <p>
+     * The encoding of output data is equivalent to {@link #getEncoding()}.
+     * </p>
+     * <p>
+     * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
+     * will be invoked certainly.
+     * </p>
+     * 
+     * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
+     *            throw {@link java.lang.NullPointerException}.
+     * @param outpu A serialized data output. <code>null</code> will throw
+     *            {@link NullPointerException}.
+     * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
+     *            XML expression.
+     * @throws NullPointerException If the input Java object or the output is <code>null</code> .
+     * @throws AccessDeniedException If the output is not regular file but directory.
+     */
     public static void write(Object input, Path output, boolean json) {
-
+        try {
+            I.write(input, Files.newBufferedWriter(output, encoding), json);
+        } catch (Exception e) {
+            throw quiet(e);
+        }
     }
 
+    /**
+     * <p>
+     * Writes Java object tree to the given output as XML or JSON.
+     * </p>
+     * <p>
+     * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
+     * will be invoked certainly.
+     * </p>
+     * 
+     * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
+     *            throw {@link java.lang.NullPointerException}.
+     * @param outpu A serialized data output. <code>null</code> will throw
+     *            {@link NullPointerException}.
+     * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
+     *            XML expression.
+     * @throws NullPointerException If the input Java object or the output is <code>null</code> .
+     */
     public static synchronized void write(Object input, Appendable output, boolean json) {
         try {
             if (json) {
