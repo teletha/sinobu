@@ -1427,7 +1427,7 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     public static synchronized <M> M read(Readable input, M output) {
-        ReadableReader reader = new ReadableReader(input);
+        Parser reader = new Parser(input);
 
         try {
             // Parse as XML
