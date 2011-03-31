@@ -444,25 +444,25 @@ public class I implements ClassLoadListener<Extensible> {
         }
     }
 
-    public static Disposable bind(Object model, Path file) {
-        ModelState listener = new ModelState(model, Model.load(model.getClass()));
-        listener.file = file;
-
-        Listeners<String, PropertyListener> listeners = ((Accessible) model).context();
-
-        for (Property property : Model.load(model.getClass()).properties) {
-            listeners.push(property.name, listener);
-        }
-
-        try {
-            copy(Files.newBufferedReader(file, encoding), model);
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-
-        // API definition
-        return listener;
-    }
+    // public static Disposable bind(Object model, Path file) {
+    // ModelState listener = new ModelState(model, Model.load(model.getClass()));
+    // listener.file = file;
+    //
+    // Listeners<String, PropertyListener> listeners = ((Accessible) model).context();
+    //
+    // for (Property property : Model.load(model.getClass()).properties) {
+    // listeners.push(property.name, listener);
+    // }
+    //
+    // try {
+    // read(Files.newBufferedReader(file, encoding), model);
+    // } catch (IOException e) {
+    // throw I.quiet(e);
+    // }
+    //
+    // // API definition
+    // return listener;
+    // }
 
     /**
      * <p>
@@ -551,58 +551,6 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static void copy(Path input, Path output, String... patterns) {
         new Visitor(input, output, 0, null, patterns);
-    }
-
-    public static <M> M copy(CharSequence input, M output) {
-        return copy((Readable) (input == null ? null : CharBuffer.wrap(input)), output);
-    }
-
-    public static synchronized <M> M copy(Readable input, M output) {
-        ReadableReader reader = new ReadableReader(input);
-
-        try {
-            // Parse as XML
-            parse(new InputSource(reader), new XMLIn(output));
-
-            // API definition
-            return output;
-        } catch (Exception e) {
-            // The user input has some error as XML so we should try it as JSON.
-            try {
-                // Reset input reader.
-                reader.reset = true;
-
-                // Parse as JSON.
-                return json(Model.load(output.getClass()), output, script.eval(reader));
-            } catch (ScriptException se) {
-                return output;
-            }
-        } finally {
-            quiet(input);
-        }
-    }
-
-    public static synchronized void copy(Object input, Appendable output, boolean json) {
-        try {
-            if (json) {
-                // traverse configuration as json
-                new JSON(output).traverse(input);
-            } else {
-                XMLWriter xml = new XMLWriter(output);
-
-                // xml start
-                xml.startDocument();
-                xml.startPrefixMapping("ez", URI);
-
-                // traverse configuration as xml
-                new XMLOut(xml).traverse(input);
-
-                xml.endDocument();
-                // xml end
-            }
-        } finally {
-            quiet(output);
-        }
     }
 
     /**
@@ -833,15 +781,15 @@ public class I implements ClassLoadListener<Extensible> {
      * @param model A configuration object. <code>null</code> is acceptable, but this method will do
      *            nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static String json(Object model) {
-        StringBuilder output = new StringBuilder();
-
-        // jsonize
-        copy(model, output, true);
-
-        // API definition
-        return output.toString();
-    }
+    // public static String json(Object model) {
+    // StringBuilder output = new StringBuilder();
+    //
+    // // jsonize
+    // write(model, output, true);
+    //
+    // // API definition
+    // return output.toString();
+    // }
 
     /**
      * <p>
@@ -1470,6 +1418,39 @@ public class I implements ClassLoadListener<Extensible> {
         throw (T) throwable;
     }
 
+    public static <M> M read(Path input, M output) {
+        return null;
+    }
+
+    public static <M> M read(CharSequence input, M output) {
+        return read((Readable) (input == null ? null : CharBuffer.wrap(input)), output);
+    }
+
+    public static synchronized <M> M read(Readable input, M output) {
+        ReadableReader reader = new ReadableReader(input);
+
+        try {
+            // Parse as XML
+            parse(new InputSource(reader), new XMLIn(output));
+
+            // API definition
+            return output;
+        } catch (Exception e) {
+            // The user input has some error as XML so we should try it as JSON.
+            try {
+                // Reset input reader.
+                reader.reset = true;
+
+                // Parse as JSON.
+                return json(Model.load(output.getClass()), output, script.eval(reader));
+            } catch (ScriptException se) {
+                return output;
+            }
+        } finally {
+            quiet(input);
+        }
+    }
+
     /**
      * <p>
      * Transform any type object into the specified type possible.
@@ -1531,15 +1512,15 @@ public class I implements ClassLoadListener<Extensible> {
      * @param model A configuration object. <code>null</code> is acceptable, but this method will do
      *            nothing (don't throw {@link java.lang.NullPointerException}).
      */
-    public static String xml(Object model) {
-        StringBuilder output = new StringBuilder();
-
-        // xmlize
-        copy(model, output, false);
-
-        // API definition
-        return output.toString();
-    }
+    // public static String xml(Object model) {
+    // StringBuilder output = new StringBuilder();
+    //
+    // // xmlize
+    // write(model, output, false);
+    //
+    // // API definition
+    // return output.toString();
+    // }
 
     /**
      * <p>
@@ -1678,6 +1659,33 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static void walk(Path start, FileVisitor visitor, String... patterns) {
         new Visitor(start, null, 4, visitor, patterns);
+    }
+
+    public static void write(Object input, Path output, boolean json) {
+
+    }
+
+    public static synchronized void write(Object input, Appendable output, boolean json) {
+        try {
+            if (json) {
+                // traverse configuration as json
+                new JSON(output).traverse(input);
+            } else {
+                XMLWriter xml = new XMLWriter(output);
+
+                // xml start
+                xml.startDocument();
+                xml.startPrefixMapping("ez", URI);
+
+                // traverse configuration as xml
+                new XMLOut(xml).traverse(input);
+
+                xml.endDocument();
+                // xml end
+            }
+        } finally {
+            quiet(output);
+        }
     }
 
     /**

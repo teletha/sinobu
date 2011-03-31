@@ -42,17 +42,35 @@ import ezbean.sample.bean.TransientBean;
  */
 public class JSONTest {
 
+    /**
+     * <p>
+     * Helper method to convert bean to json expression.
+     * </p>
+     * 
+     * @param model A target bean.
+     * @return JSON expression.
+     */
+    private static String json(Object model) {
+        StringBuilder output = new StringBuilder();
+
+        // jsonize
+        I.write(model, output, true);
+
+        // API definition
+        return output.toString();
+    }
+
     @Test
     public void singleProperty() {
         Student student = I.make(Student.class);
         student.setAge(15);
 
         // write
-        String json = I.json(student);
+        String json = json(student);
         assert json.equals("{\"age\":\"15\"}");
 
         // read
-        student = I.copy(json, I.make(Student.class));
+        student = I.read(json, I.make(Student.class));
         assert student.getAge() == 15;
         assert student.getFirstName() == null;
         assert student.getLastName() == null;
@@ -66,11 +84,11 @@ public class JSONTest {
         student.setLastName("Akiyama");
 
         // write
-        String json = I.json(student);
+        String json = json(student);
         assert json.equals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}");
 
         // read
-        student = I.copy(json, I.make(Student.class));
+        student = I.read(json, I.make(Student.class));
         assert student.getAge() == 15;
         assert student.getFirstName().equals("Mio");
         assert student.getLastName().equals("Akiyama");
@@ -89,11 +107,11 @@ public class JSONTest {
         student.setSchool(school);
 
         // write
-        String json = I.json(student);
+        String json = json(student);
         assert json.equals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\",\"school\":{\"name\":\"Sakura High School\"}}");
 
         // read
-        student = I.copy(json, I.make(Student.class));
+        student = I.read(json, I.make(Student.class));
         assert student.getAge() == 15;
         assert student.getFirstName().equals("Mio");
         assert student.getLastName().equals("Akiyama");
@@ -110,11 +128,11 @@ public class JSONTest {
         primitive.setFloat(0.1f);
 
         // write
-        String json = I.json(primitive);
+        String json = json(primitive);
         assert json.equals("{\"boolean\":\"false\",\"byte\":\"0\",\"char\":\"c\",\"double\":\"0.0\",\"float\":\"0.1\",\"int\":\"-5\",\"long\":\"0\",\"short\":\"0\"}");
 
         // read
-        primitive = I.copy(json, I.make(Primitive.class));
+        primitive = I.read(json, I.make(Primitive.class));
         assert !primitive.isBoolean();
         assert primitive.getChar() == 'c';
         assert primitive.getInt() == -5;
@@ -132,11 +150,11 @@ public class JSONTest {
         strings.setList(list);
 
         // write
-        String json = I.json(strings);
+        String json = json(strings);
         assert json.equals("{\"list\":[\"one\",\"two\",\"three\"]}");
 
         // read
-        strings = I.copy(json, I.make(StringList.class));
+        strings = I.read(json, I.make(StringList.class));
         list = strings.getList();
         assert list != null;
         assert list.get(0).equals("one");
@@ -155,11 +173,11 @@ public class JSONTest {
         strings.setMap(map);
 
         // write
-        String json = I.json(strings);
+        String json = json(strings);
         assert json.equals("{\"map\":{\"two\":\"2\",\"one\":\"1\",\"three\":\"3\"}}");
 
         // read
-        strings = I.copy(json, I.make(StringMap.class));
+        strings = I.read(json, I.make(StringMap.class));
         map = strings.getMap();
         assert map != null;
         assert map.get("one").equals("1");
@@ -173,11 +191,11 @@ public class JSONTest {
         bean.setBigInteger(new BigInteger("1234567890987654321"));
 
         // write
-        String json = I.json(bean);
+        String json = json(bean);
         assert json.equals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T09:00:00\",\"someClass\":\"java.lang.String\"}");
 
         // read
-        bean = I.copy(json, I.make(BuiltinBean.class));
+        bean = I.read(json, I.make(BuiltinBean.class));
         assert bean.getSomeClass().equals(String.class);
         assert bean.getDate().equals(new Date(0));
         assert bean.getBigInteger().equals(new BigInteger("1234567890987654321"));
@@ -198,7 +216,7 @@ public class JSONTest {
         group.setMembers(list);
 
         // write
-        String json = I.json(group);
+        String json = json(group);
         assert json.equals("{\"members\":[{\"age\":\"1\"},{\"age\":\"1\"},{\"age\":\"2\"}]}");
     }
 
@@ -208,11 +226,11 @@ public class JSONTest {
         person.setFirstName("\"");
 
         // write
-        String json = I.json(person);
+        String json = json(person);
         assert json.equals("{\"age\":\"0\",\"firstName\":\"\\\"\"}");
 
         // read
-        person = I.copy(json, I.make(Person.class));
+        person = I.read(json, I.make(Person.class));
         assert person.getFirstName().equals("\"");
     }
 
@@ -222,48 +240,48 @@ public class JSONTest {
         person.setFirstName("\\");
 
         // write
-        String json = I.json(person);
+        String json = json(person);
         assert json.equals("{\"age\":\"0\",\"firstName\":\"\\\\\"}");
 
         // read
-        person = I.copy(json, I.make(Person.class));
+        person = I.read(json, I.make(Person.class));
         assert person.getFirstName().equals("\\");
     }
 
     @Test(expected = NullPointerException.class)
     public void nullInputCharSequence() {
-        assert I.copy((CharSequence) null, I.make(Person.class)) != null;
+        assert I.read((CharSequence) null, I.make(Person.class)) != null;
     }
 
     @Test(expected = NullPointerException.class)
     public void nullInputReadable() {
-        assert I.copy((Readable) null, I.make(Person.class)) != null;
+        assert I.read((Readable) null, I.make(Person.class)) != null;
     }
 
     @Test(expected = NullPointerException.class)
     public void nullOutputBean() throws Exception {
-        I.copy("{\"age\":\"15\"}", (Object) null);
+        I.read("{\"age\":\"15\"}", (Object) null);
     }
 
     @Test
     public void invalidOutputBean() throws Exception {
-        Class clazz = I.copy("{\"age\":\"15\"}", Class.class);
+        Class clazz = I.read("{\"age\":\"15\"}", Class.class);
         assert clazz == Class.class;
     }
 
     @Test
     public void emptyJSON() {
-        assert I.copy("", I.make(Person.class)) != null;
+        assert I.read("", I.make(Person.class)) != null;
     }
 
     @Test
     public void invalidJSON1() {
-        assert I.copy("15", I.make(Person.class)) != null;
+        assert I.read("15", I.make(Person.class)) != null;
     }
 
     @Test
     public void invalidJSON2() {
-        assert I.copy("@", I.make(Person.class)) != null;
+        assert I.read("@", I.make(Person.class)) != null;
     }
 
     @Test(expected = ClassCircularityError.class)
@@ -271,7 +289,7 @@ public class JSONTest {
         ChainBean chain = I.make(ChainBean.class);
         chain.setNext(chain);
 
-        assert I.json(chain).equals("{\"next\":{}}");
+        assert json(chain).equals("{\"next\":{}}");
     }
 
     @Test
@@ -281,18 +299,18 @@ public class JSONTest {
         bean.setNone(15);
 
         // write
-        String json = I.json(bean);
+        String json = json(bean);
         assert json.equals("{\"none\":\"15\"}");
 
         // read
-        bean = I.copy(json, I.make(TransientBean.class));
+        bean = I.read(json, I.make(TransientBean.class));
         assert bean.getNone() == 15;
         assert bean.getBoth() == 0;
     }
 
     @Test
     public void fromReader() throws Exception {
-        Person person = I.copy(new StringReader("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}"), I.make(Person.class));
+        Person person = I.read(new StringReader("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}"), I.make(Person.class));
         assert person.getAge() == 15;
         assert person.getFirstName().equals("Mio");
         assert person.getLastName().equals("Akiyama");

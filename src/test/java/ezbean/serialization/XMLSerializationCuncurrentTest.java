@@ -110,7 +110,7 @@ public class XMLSerializationCuncurrentTest {
          * @see java.util.concurrent.Callable#call()
          */
         public StringList call() throws Exception {
-            return I.copy(Files.newBufferedReader(testFile, I.getEncoding()), I.make(StringList.class));
+            return I.read(Files.newBufferedReader(testFile, I.getEncoding()), I.make(StringList.class));
         }
     }
 
@@ -135,7 +135,7 @@ public class XMLSerializationCuncurrentTest {
          */
         public void run() {
             try {
-                I.copy(bean, Files.newBufferedWriter(testFile, I.getEncoding()), false);
+                I.write(bean, Files.newBufferedWriter(testFile, I.getEncoding()), false);
             } catch (IOException e) {
                 throw I.quiet(e);
             }

@@ -74,7 +74,7 @@ final class ModelState implements PropertyWalker, PropertyListener, Disposable {
      */
     public void change(Object bean, String name, Object oldValue, Object newValue) {
         try {
-            I.copy(bean, Files.newBufferedWriter(file, I.getEncoding()), false);
+            I.write(bean, Files.newBufferedWriter(file, I.getEncoding()), false);
         } catch (IOException e) {
             throw I.quiet(e);
         }

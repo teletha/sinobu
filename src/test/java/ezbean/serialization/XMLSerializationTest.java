@@ -81,10 +81,10 @@ public class XMLSerializationTest {
         school.setStudents(students);
 
         // write
-        I.copy(school, output(), false);
+        I.write(school, output(), false);
 
         // read
-        school = I.copy(input(), I.make(School.class));
+        school = I.read(input(), I.make(School.class));
         assert school.getStudents().get(0).getFirstName().equals("test");
     }
 
@@ -100,10 +100,10 @@ public class XMLSerializationTest {
         school.setTeachers(teachers);
 
         // write
-        I.copy(school, output(), false);
+        I.write(school, output(), false);
 
         // read
-        school = I.copy(input(), I.make(School.class));
+        school = I.read(input(), I.make(School.class));
         assert school.getTeachers().get("role").getFirstName().equals("test");
     }
 
@@ -130,10 +130,10 @@ public class XMLSerializationTest {
         nestingList.setNesting(root);
 
         // write
-        I.copy(nestingList, output(), false);
+        I.write(nestingList, output(), false);
 
         // read
-        nestingList = I.copy(input(), I.make(NestingList.class));
+        nestingList = I.read(input(), I.make(NestingList.class));
 
         assert nestingList != null;
 
@@ -170,10 +170,10 @@ public class XMLSerializationTest {
         primitive.setShort((short) 21);
 
         // write
-        I.copy(primitive, output(), false);
+        I.write(primitive, output(), false);
 
         // read
-        primitive = I.copy(input(), I.make(Primitive.class));
+        primitive = I.read(input(), I.make(Primitive.class));
         assert primitive != null;
         assert primitive.isBoolean();
         assert primitive.getChar() == 'c';
@@ -200,10 +200,10 @@ public class XMLSerializationTest {
         stringList.setList(list);
 
         // write
-        I.copy(stringList, output(), false);
+        I.write(stringList, output(), false);
 
         // read
-        stringList = I.copy(input(), I.make(StringList.class));
+        stringList = I.read(input(), I.make(StringList.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -227,10 +227,10 @@ public class XMLSerializationTest {
         stringList.setList(list);
 
         // write
-        I.copy(stringList, output(), false);
+        I.write(stringList, output(), false);
 
         // read
-        stringList = I.copy(input(), I.make(StringList.class));
+        stringList = I.read(input(), I.make(StringList.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -253,10 +253,10 @@ public class XMLSerializationTest {
         stringMap.setMap(map);
 
         // write
-        I.copy(stringMap, output(), false);
+        I.write(stringMap, output(), false);
 
         // read
-        stringMap = I.copy(input(), I.make(StringMap.class));
+        stringMap = I.read(input(), I.make(StringMap.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -281,10 +281,10 @@ public class XMLSerializationTest {
         stringMap.setMap(map);
 
         // write
-        I.copy(stringMap, output(), false);
+        I.write(stringMap, output(), false);
 
         // read
-        stringMap = I.copy(input(), I.make(StringMap.class));
+        stringMap = I.read(input(), I.make(StringMap.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -309,10 +309,10 @@ public class XMLSerializationTest {
         bean.setIntegerKey(map);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(CompatibleKeyMap.class));
+        bean = I.read(input(), I.make(CompatibleKeyMap.class));
         assert bean != null;
 
         map = bean.getIntegerKey();
@@ -337,10 +337,10 @@ public class XMLSerializationTest {
         bean.setIncompatible(map);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(IncompatibleKeyMap.class));
+        bean = I.read(input(), I.make(IncompatibleKeyMap.class));
         assert bean != null;
 
         map = bean.getIncompatible();
@@ -357,10 +357,10 @@ public class XMLSerializationTest {
         bean.setSchoolEnum(SchoolEnum.Miator);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(BuiltinBean.class));
+        bean = I.read(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getSchoolEnum().equals(SchoolEnum.Miator);
     }
@@ -374,10 +374,10 @@ public class XMLSerializationTest {
         bean.setDate(new Date(0L));
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(BuiltinBean.class));
+        bean = I.read(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getDate().equals(new Date(0L));
 
@@ -394,10 +394,10 @@ public class XMLSerializationTest {
         bean.setSomeClass(EzbeanTest.class);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(BuiltinBean.class));
+        bean = I.read(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getSomeClass().equals(EzbeanTest.class);
 
@@ -414,10 +414,10 @@ public class XMLSerializationTest {
         bean.setFile(testFile.toFile());
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(BuiltinBean.class));
+        bean = I.read(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getFile().equals(testFile.toFile());
     }
@@ -431,10 +431,10 @@ public class XMLSerializationTest {
         bean.setPath(testFile);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(BuiltinBean.class));
+        bean = I.read(input(), I.make(BuiltinBean.class));
         assert bean != null;
         assert bean.getPath().equals(testFile);
     }
@@ -446,10 +446,10 @@ public class XMLSerializationTest {
         bean.setBoth(20);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(TransientBean.class));
+        bean = I.read(input(), I.make(TransientBean.class));
         assert bean != null;
         assert bean.getNone() == 10;
         assert bean.getBoth() == 0;
@@ -467,10 +467,10 @@ public class XMLSerializationTest {
         bean.setNest(map);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(NestedCollection.class));
+        bean = I.read(input(), I.make(NestedCollection.class));
         assert bean != null;
         map = bean.getNest();
         assert bean != null;
@@ -495,10 +495,10 @@ public class XMLSerializationTest {
         stringList.setList(list);
 
         // write
-        I.copy(stringList, output(), false);
+        I.write(stringList, output(), false);
 
         // read
-        stringList = I.copy(input(), I.make(StringList.class));
+        stringList = I.read(input(), I.make(StringList.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -526,10 +526,10 @@ public class XMLSerializationTest {
         bean.setList(list);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(StringList.class));
+        bean = I.read(input(), I.make(StringList.class));
         assert bean != null;
 
         list = bean.getList();
@@ -556,10 +556,10 @@ public class XMLSerializationTest {
         stringMap.setMap(map);
 
         // write
-        I.copy(stringMap, output(), false);
+        I.write(stringMap, output(), false);
 
         // read
-        stringMap = I.copy(input(), I.make(StringMap.class));
+        stringMap = I.read(input(), I.make(StringMap.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -583,10 +583,10 @@ public class XMLSerializationTest {
         bean.setMap(map);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(StringMap.class));
+        bean = I.read(input(), I.make(StringMap.class));
         assert bean != null;
 
         map = bean.getMap();
@@ -616,10 +616,10 @@ public class XMLSerializationTest {
         bean.setGenericList(list);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(GenericPersonBean.class));
+        bean = I.read(input(), I.make(GenericPersonBean.class));
         assert bean != null;
 
         Person person = bean.getGeneric();
@@ -662,10 +662,10 @@ public class XMLSerializationTest {
         bean.setGenericList(list);
 
         // write
-        I.copy(bean, output(), false);
+        I.write(bean, output(), false);
 
         // read
-        bean = I.copy(input(), I.make(GenericPersonBean.class));
+        bean = I.read(input(), I.make(GenericPersonBean.class));
         assert bean != null;
 
         list = bean.getGenericList();
@@ -695,10 +695,10 @@ public class XMLSerializationTest {
         stringList.setList(list);
 
         // write
-        I.copy(stringList, output(), false);
+        I.write(stringList, output(), false);
 
         // read
-        stringList = I.copy(input(), I.make(StringList.class));
+        stringList = I.read(input(), I.make(StringList.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -722,10 +722,10 @@ public class XMLSerializationTest {
         checker.setList(list);
 
         // write
-        I.copy(checker, output(), false);
+        I.write(checker, output(), false);
 
         // read
-        checker = I.copy(input(), I.make(Checker.class));
+        checker = I.read(input(), I.make(Checker.class));
         assert checker != null;
         assert checker.size == 3;
     }
@@ -775,10 +775,10 @@ public class XMLSerializationTest {
         school.setStudents(students);
 
         // write
-        I.copy(student, output(), false);
+        I.write(student, output(), false);
 
         // read
-        student = I.copy(input(), I.make(Student.class));
+        student = I.read(input(), I.make(Student.class));
         assert student != null;
         assert student.getAge() == 17;
         assert student.getFirstName().equals("Himeko");
@@ -801,7 +801,7 @@ public class XMLSerializationTest {
      */
     @Test(expected = NullPointerException.class)
     public void readNull() throws Exception {
-        I.copy((Readable) null, (Object) null);
+        I.read((Readable) null, (Object) null);
     }
 
     /**
@@ -809,7 +809,7 @@ public class XMLSerializationTest {
      */
     @Test(expected = NullPointerException.class)
     public void readNullInput() throws Exception {
-        I.copy((Readable) null, I.make(Student.class));
+        I.read((Readable) null, I.make(Student.class));
     }
 
     /**
@@ -817,7 +817,7 @@ public class XMLSerializationTest {
      */
     @Test(expected = NullPointerException.class)
     public void readNullOutput() throws Exception {
-        I.copy(new StringReader("xml"), (Object) null);
+        I.read(new StringReader("xml"), (Object) null);
     }
 
     /**
@@ -825,7 +825,7 @@ public class XMLSerializationTest {
      */
     @Test(expected = NullPointerException.class)
     public void writeNull() throws Exception {
-        I.copy((Object) null, (Appendable) null, false);
+        I.write((Object) null, (Appendable) null, false);
     }
 
     /**
@@ -833,6 +833,6 @@ public class XMLSerializationTest {
      */
     @Test(expected = NullPointerException.class)
     public void writeNullInput() throws Exception {
-        I.copy((Object) null, output(), false);
+        I.write((Object) null, output(), false);
     }
 }
