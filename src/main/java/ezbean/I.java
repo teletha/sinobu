@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -294,6 +295,9 @@ public class I implements ClassLoadListener<Extensible> {
      * elements are property names as {@link java.lang.String}.
      */
     private static final ThreadSpecific<Deque<List>> tracers = new ThreadSpecific(ArrayDeque.class);
+
+    /** The lock for configurations. */
+    private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     /** The sax parser factory for reuse. */
     private static final SAXParserFactory sax = SAXParserFactory.newInstance();
@@ -1345,10 +1349,13 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws ScriptException If the input data is empty or invalid format.
      */
-    public static synchronized <M> M read(Readable input, M output) {
+    public static <M> M read(Readable input, M output) {
         Parser parser = new Parser(input);
 
         try {
+            // aquire lock
+            lock.readLock().lock();
+
             // Parse as XML
             parse(new InputSource(parser), new XMLIn(output));
 
@@ -1365,6 +1372,10 @@ public class I implements ClassLoadListener<Extensible> {
                 throw quiet(se);
             }
         } finally {
+            // relese lock
+            lock.readLock().unlock();
+
+            // close carefuly
             quiet(input);
         }
     }
@@ -1570,8 +1581,11 @@ public class I implements ClassLoadListener<Extensible> {
      *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
-    public static synchronized void write(Object input, Appendable output, boolean json) {
+    public static void write(Object input, Appendable output, boolean json) {
         try {
+            // aquire lock
+            lock.writeLock().lock();
+
             if (json) {
                 // traverse configuration as json
                 new JSON(output).traverse(input);
@@ -1589,6 +1603,10 @@ public class I implements ClassLoadListener<Extensible> {
                 // xml end
             }
         } finally {
+            // relese lock
+            lock.writeLock().unlock();
+
+            // close carefuly
             quiet(output);
         }
     }
