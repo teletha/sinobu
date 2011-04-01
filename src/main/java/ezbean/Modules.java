@@ -19,7 +19,6 @@ import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +28,10 @@ import ezbean.model.ClassUtil;
 import ezbean.model.Model;
 
 /**
- * @version 2011/03/07 16:03:02
+ * @version 2011/04/01 13:30:27
  */
 @Manageable(lifestyle = Singleton.class)
-public final class Modules implements ClassLoadListener {
-
-    /** The list of module aware maps. */
-    private static final List<WeakReference<Map>> awares = new CopyOnWriteArrayList();
+class Modules implements ClassLoadListener {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -121,7 +117,7 @@ public final class Modules implements ClassLoadListener {
      * 
      * @param path A module path to load. Directory or archive path (like Jar) can be accepted.
      */
-    public ClassLoader load(Path path) {
+    ClassLoader load(Path path) {
         // check module file
         if (path != null && Files.exists(path)) {
             // If the given module file has been already loaded, we must unload it on ahead.
@@ -159,7 +155,7 @@ public final class Modules implements ClassLoadListener {
      * 
      * @param path A module path to unload. Directory or archive path (like Jar) can be accepted.
      */
-    public void unload(Path path) {
+    void unload(Path path) {
         // check module file
         if (path != null && Files.exists(path)) {
             for (Module module : modules) {
@@ -173,11 +169,11 @@ public final class Modules implements ClassLoadListener {
                         }
 
                         // unload class key from module aware map
-                        for (WeakReference<Map> reference : awares) {
+                        for (WeakReference<Map> reference : I.awares) {
                             Map aware = reference.get();
 
                             if (aware == null) {
-                                awares.remove(reference);
+                                I.awares.remove(reference);
                             } else {
                                 Iterator<Class> iterator = aware.keySet().iterator();
 
@@ -201,47 +197,5 @@ public final class Modules implements ClassLoadListener {
                 }
             }
         }
-    }
-
-    /**
-     * <p>
-     * Load the specified class from Ezbean class loader repository.
-     * </p>
-     * 
-     * @param fqcn A fully qualified class name.
-     * @return A loaded class.
-     * @throws ClassNotFoundException If the class is not found.
-     */
-    public static final Class load(String fqcn) {
-        for (Module module : I.make(Modules.class).modules) {
-            try {
-                return module.loadClass(fqcn);
-            } catch (ClassNotFoundException e) {
-                // continue
-            }
-        }
-        throw I.quiet(new ClassNotFoundException());
-    }
-
-    /**
-     * <p>
-     * Make the {@link Map} which has any key be recognized to the module unloading event and
-     * disposes the key which is associated with the module automatically.
-     * </p>
-     * <p>
-     * This method has same syntax of {@link Collections#synchronizedMap(Map)}.
-     * </p>
-     * 
-     * @param map A target {@link Map} object to be aware of module unloading event.
-     * @return The given {@link Map} object.
-     */
-    public static final <M extends Map<Class, ?>> M aware(M map) {
-        // We don't need to check whether the given map is already passed or not.
-        // Because this method will be not called so frequently and duplicated item
-        // will rise no problem except for amount of memory usage.
-        awares.add(new WeakReference(map));
-
-        // API definition
-        return map;
     }
 }

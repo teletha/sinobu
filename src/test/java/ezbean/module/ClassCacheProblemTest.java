@@ -22,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.Modules;
 import ezbean.model.Model;
 import ezbean.module.external.ExtendedClass1;
 import ezbean.module.external.SingletonClass;
@@ -131,7 +130,7 @@ public class ClassCacheProblemTest {
         assert clazz != null;
 
         // create module aware map
-        Map<Class, Object> cache = Modules.aware(new HashMap());
+        Map<Class, Object> cache = I.aware(new HashMap());
         cache.put(clazz, "1");
         assert cache.containsKey(clazz);
 

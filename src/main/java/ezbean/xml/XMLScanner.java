@@ -32,7 +32,6 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.I;
-import ezbean.Modules;
 
 /**
  * <p>
@@ -83,7 +82,7 @@ import ezbean.Modules;
 public class XMLScanner extends XMLFilterImpl {
 
     /** The rule set cache. */
-    private static final Map<Class, Object[]> caches = Modules.aware(new HashMap());
+    private static final Map<Class, Object[]> caches = I.aware(new HashMap());
 
     /** The all compiled rule methods that are defined in the rule class. */
     private final RuleMethod[] methods;
