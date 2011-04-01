@@ -200,7 +200,7 @@ public class ModulesTest {
 
     @Test
     public void unloadAwaredClassCorrectly() throws Exception {
-        Map<Class, String> map = Modules.aware(new HashMap());
+        Map<Class, String> map = I.aware(new HashMap());
         map.put(Person.class, "This entry will not be unloaded.");
         map.put(module2.convert(ExtendedClass1.class), "This entry will be unloaded.");
 

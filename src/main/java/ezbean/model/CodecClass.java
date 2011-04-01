@@ -17,8 +17,8 @@ package ezbean.model;
 
 import java.util.Locale;
 
+import ezbean.I;
 import ezbean.Lifestyle;
-import ezbean.Modules;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ class CodecClass extends Codec<Class> implements Lifestyle<Locale> {
      * @see ezbean.model.Codec#decode(java.lang.String)
      */
     public Class decode(String value) {
-        return Modules.load(value);
+        return I.load(value);
     }
 
     /**

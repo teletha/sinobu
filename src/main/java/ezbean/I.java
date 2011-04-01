@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -39,6 +40,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -48,6 +50,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.script.ScriptEngine;
@@ -280,8 +283,11 @@ public class I implements ClassLoadListener<Extensible> {
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
+    /** The list of module aware maps. */
+    static final List<WeakReference<Map>> awares = new CopyOnWriteArrayList();
+
     /** The cache between Model and Lifestyle. */
-    private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = Modules.aware(new ConcurrentHashMap<Class, Lifestyle>());
+    private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = I.aware(new ConcurrentHashMap<Class, Lifestyle>());
 
     /** The mapping from extension point to extensions. */
     private static final Listeners<Class, Class> extensions = new Listeners();
@@ -392,6 +398,28 @@ public class I implements ClassLoadListener<Extensible> {
      */
     protected I() {
         // do nothing here for environment initialization by subclass
+    }
+
+    /**
+     * <p>
+     * Make the {@link Map} which has any key be recognized to the module unloading event and
+     * disposes the key which is associated with the module automatically.
+     * </p>
+     * <p>
+     * This method has same syntax of {@link Collections#synchronizedMap(Map)}.
+     * </p>
+     * 
+     * @param map A target {@link Map} object to be aware of module unloading event.
+     * @return The given {@link Map} object.
+     */
+    public static <M extends Map> M aware(M map) {
+        // We don't need to check whether the given map is already passed or not.
+        // Because this method will be not called so frequently and duplicated item
+        // will rise no problem except for amount of memory usage.
+        I.awares.add(new WeakReference(map));
+
+        // API definition
+        return map;
     }
 
     /**
@@ -1610,6 +1638,26 @@ public class I implements ClassLoadListener<Extensible> {
             // close carefuly
             quiet(output);
         }
+    }
+
+    /**
+     * <p>
+     * Load the specified class from Ezbean class loader repository.
+     * </p>
+     * 
+     * @param fqcn A fully qualified class name.
+     * @return A loaded class.
+     * @throws ClassNotFoundException If the class is not found.
+     */
+    public static Class load(String fqcn) {
+        for (Module module : make(Modules.class).modules) {
+            try {
+                return module.loadClass(fqcn);
+            } catch (ClassNotFoundException e) {
+                // continue
+            }
+        }
+        throw quiet(new ClassNotFoundException());
     }
 
     /**
