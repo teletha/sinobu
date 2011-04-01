@@ -1368,7 +1368,7 @@ public class I implements ClassLoadListener<Extensible> {
                 reader.i = 1; // reset input reader
 
                 // Parse as JSON.
-                return json(Model.load(output.getClass()), output, script.eval(reader));
+                return read(Model.load(output.getClass()), output, script.eval(reader));
             } catch (Exception se) {
                 throw quiet(se);
             }
@@ -1392,7 +1392,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @param js A javascript value.
      * @return A restored java object.
      */
-    private static <M> M json(Model model, M java, Object js) {
+    private static <M> M read(Model model, M java, Object js) {
         if (js instanceof IdScriptableObject) {
             for (Object id : ((IdScriptableObject) js).getIds()) {
                 // compute property
@@ -1407,7 +1407,7 @@ public class I implements ClassLoadListener<Extensible> {
                     if (property.isAttribute()) {
                         value = transform(value, property.model.type);
                     } else {
-                        value = json(property.model, make(property.model.type), value);
+                        value = read(property.model, make(property.model.type), value);
                     }
 
                     // assign value
