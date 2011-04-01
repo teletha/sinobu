@@ -25,7 +25,7 @@ import ezbean.model.PropertyWalker;
 
 /**
  * <p>
- * This is multi-purpose implementation class.
+ * This is multi-purpose implementation class. Please connive this extremely-dirty code.
  * </p>
  * <ul>
  * <li>State recorder for XML serialization ({@link XMLIn})</li>
