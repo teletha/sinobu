@@ -15,19 +15,27 @@
  */
 package ezbean;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.CharBuffer;
+
 import ezbean.model.Model;
 import ezbean.model.Property;
 import ezbean.model.PropertyWalker;
 
 /**
  * <p>
- * This is dual-purpose implementation class. One is a state recorder for configuration and the
- * other a {@link PropertyWalker} implementation for bean transformation.
+ * This is multi-purpose implementation class.
  * </p>
+ * <ul>
+ * <li>State recorder for XML serialization ({@link XMLIn})</li>
+ * <li>{@link PropertyListener} implementation for {@link I#transform(Object, Class)}</li>
+ * <li>{@link Reader} implementation for {@link I#read(Readable, Object)}</li>
+ * </ul>
  * 
- * @version 2010/01/08 19:42:29
+ * @version 2011/04/01 11:21:56
  */
-final class ModelState implements PropertyWalker {
+final class Util extends Reader implements PropertyWalker {
 
     /** The current model. */
     Model model;
@@ -41,13 +49,16 @@ final class ModelState implements PropertyWalker {
     /** The current location for {@link XMLIn} process. */
     int i = 0;
 
+    /** The latest cache for {@link I#read(Readable, Object)}. */
+    private CharBuffer last;
+
     /**
-     * Create State instance.
+     * Create utility instance.
      * 
      * @param object A actual object.
      * @param model A model of the specified object.
      */
-    ModelState(Object object, Model model) {
+    Util(Object object, Model model) {
         this.object = object;
         this.model = model;
     }
@@ -61,5 +72,29 @@ final class ModelState implements PropertyWalker {
 
         // never check null because PropertyWalker traverses existing properties
         this.model.set(object, dest, I.transform(node, dest.model.type));
+    }
+
+    /**
+     * @see java.io.Reader#read(char[], int, int)
+     */
+    @Override
+    public int read(char[] cbuf, int off, int len) throws IOException {
+        if (i == 0) {
+            return ((Readable) object).read(last = CharBuffer.wrap(cbuf, off, len));
+        } else {
+            // flag off
+            i = 0;
+
+            // Read the latest buffer with JSON header text.
+            return CharBuffer.wrap(cbuf, off, len).put("a=").put((CharBuffer) last.flip()).flip().limit();
+        }
+    }
+
+    /**
+     * @see java.io.Reader#close()
+     */
+    @Override
+    public void close() throws IOException {
+        I.quiet(object);
     }
 }

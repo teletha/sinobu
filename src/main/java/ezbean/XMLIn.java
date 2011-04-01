@@ -48,7 +48,7 @@ class XMLIn extends XMLScanner {
     private final HashMap objects = new HashMap();
 
     /** The stack of states. */
-    private final LinkedList<ModelState> states = new LinkedList<ModelState>();
+    private final LinkedList<Util> states = new LinkedList<Util>();
 
     /**
      * Create ConfigurationReader instance.
@@ -65,12 +65,12 @@ class XMLIn extends XMLScanner {
      */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
-        ModelState state;
+        Util state;
 
         if (states.size() == 0) {
-            state = new ModelState(root, Model.load(root.getClass()));
+            state = new Util(root, Model.load(root.getClass()));
         } else {
-            ModelState parent = states.peekLast();
+            Util parent = states.peekLast();
 
             // Compute property.
             //
@@ -108,7 +108,7 @@ class XMLIn extends XMLScanner {
             }
 
             // create next state
-            state = new ModelState(object, property.model);
+            state = new Util(object, property.model);
             state.property = property;
         }
 
@@ -157,8 +157,8 @@ class XMLIn extends XMLScanner {
      */
     @Override
     public void endElement(String uri, String localName, String qName) {
-        ModelState current = states.pollLast();
-        ModelState parent = states.peekLast();
+        Util current = states.pollLast();
+        Util parent = states.peekLast();
 
         if (parent != null) {
             parent.model.set(parent.object, current.property, current.object);

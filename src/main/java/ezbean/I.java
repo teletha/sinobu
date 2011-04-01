@@ -1351,24 +1351,24 @@ public class I implements ClassLoadListener<Extensible> {
      * @throws ScriptException If the input data is empty or invalid format.
      */
     public static <M> M read(Readable input, M output) {
-        Parser parser = new Parser(input);
+        Util reader = new Util(input, null);
 
         try {
             // aquire lock
             lock.readLock().lock();
 
             // Parse as XML
-            parse(new InputSource(parser), new XMLIn(output));
+            parse(new InputSource(reader), new XMLIn(output));
 
             // The input data is valid XML.
             return output;
         } catch (Exception e) {
             // The user input has some error as XML so we should try it as JSON.
             try {
-                parser.reset = true; // reset input reader
+                reader.i = 1; // reset input reader
 
                 // Parse as JSON.
-                return json(Model.load(output.getClass()), output, script.eval(parser));
+                return json(Model.load(output.getClass()), output, script.eval(reader));
             } catch (Exception se) {
                 throw quiet(se);
             }
@@ -1456,7 +1456,7 @@ public class I implements ClassLoadListener<Extensible> {
             M m = I.make(output);
 
             // copy actually
-            inputModel.walk(input, new ModelState(m, outputModel));
+            inputModel.walk(input, new Util(m, outputModel));
 
             // API definition
             return m;
