@@ -43,7 +43,7 @@ public class EzbeanScratchpad {
      * 
      * @param <M>
      * @param m
-     * @return
+     * @return A created object.
      */
     public static <M> M create(M... m) {
         return (M) I.make(m.getClass().getComponentType());
@@ -53,7 +53,7 @@ public class EzbeanScratchpad {
      * @param <E>
      * @param extensionPoint
      * @param key
-     * @return
+     * @return An extension.
      */
     public static <E extends Extension> E find(Class<E> extensionPoint, Class<?> key) {
         return null;
@@ -63,7 +63,7 @@ public class EzbeanScratchpad {
      * @param <E>
      * @param extensionPoint
      * @param key
-     * @return
+     * @return An extension.
      */
     public static <E extends Extension<? extends ExtensionKeyProvider<? super K>>, K> E find(Class<E> extensionPoint, K key) {
         return null;
@@ -74,7 +74,7 @@ public class EzbeanScratchpad {
      * 
      * @param <M>
      * @param model
-     * @return
+     * @return A clone object.
      */
     public static <M> M xerox(M model) {
         return model;

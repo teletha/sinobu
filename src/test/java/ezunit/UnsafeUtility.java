@@ -69,7 +69,7 @@ public class UnsafeUtility {
      * 
      * @param <T>
      * @param model
-     * @return
+     * @return A constructor bypassed instance.
      */
     public static <T> T newInstance(Class<T> model) {
         if (model == null) {
@@ -107,7 +107,7 @@ public class UnsafeUtility {
      * Helper method to compute caller class.
      * 
      * @param depth
-     * @return
+     * @return A caller object.
      */
     public static Class getCaller(int depth) {
         return Reflection.getCallerClass(depth + 2);

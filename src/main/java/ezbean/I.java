@@ -1531,7 +1531,7 @@ public class I implements ClassLoadListener<Extensible> {
      * the file is not a directory then the
      * {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked with the file
      * attributes. If the file attributes cannot be read, due to an I/O exception, then the
-     * {@link FileVisitor#visitFileFailed(Object, IOException)s} method is invoked with the I/O
+     * {@link FileVisitor#visitFileFailed(Object, IOException)} method is invoked with the I/O
      * exception.
      * </p>
      * <p>
