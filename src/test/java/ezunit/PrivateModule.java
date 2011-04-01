@@ -158,7 +158,7 @@ public class PrivateModule extends ReusableRule {
      * </p>
      * 
      * @param clazz
-     * @return
+     * @return A converted fuly qualified class name.
      */
     public Class convert(Class clazz) {
         try {

@@ -26,21 +26,21 @@ public interface OnlyGetter {
     /**
      * Getter.
      * 
-     * @return
+     * @return A value.
      */
     String getString();
 
     /**
      * Getter.
      * 
-     * @return
+     * @return A value.
      */
     int getInt();
 
     /**
      * Getter.
      * 
-     * @return
+     * @return A value.
      */
     OnlyGetter getMyself();
 }
