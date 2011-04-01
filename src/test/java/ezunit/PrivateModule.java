@@ -39,7 +39,6 @@ import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 
 import ezbean.I;
-import ezbean.Modules;
 
 /**
  * @version 2011/03/22 8:51:40
@@ -60,6 +59,9 @@ public class PrivateModule extends ReusableRule {
 
     /** Flag for creating jar. */
     private boolean createJar;
+
+    /** The class loader of private module. */
+    private ClassLoader loader;
 
     /**
      * <p>
@@ -138,7 +140,7 @@ public class PrivateModule extends ReusableRule {
      * </p>
      */
     public void load() {
-        I.load(path);
+        loader = I.load(path);
     }
 
     /**
@@ -159,8 +161,12 @@ public class PrivateModule extends ReusableRule {
      * @return
      */
     public Class convert(Class clazz) {
-        return Modules.load(clazz.getName()
-                .replace(originalPackage.replace('/', '.'), overriddenPackage.replace('/', '.')));
+        try {
+            return loader.loadClass(clazz.getName()
+                    .replace(originalPackage.replace('/', '.'), overriddenPackage.replace('/', '.')));
+        } catch (ClassNotFoundException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
