@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.Modules;
 import ezunit.UnsafeUtility;
 
 /**
@@ -131,14 +130,6 @@ public class ConstructorBypassTest {
                     .put(data)
                     .put(new byte[] {2, 0, 0, 120, 112})
                     .array());
-        }
-
-        /**
-         * @see java.io.ObjectInputStream#resolveClass(java.io.ObjectStreamClass)
-         */
-        @Override
-        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-            return Modules.load(desc.getName());
         }
     }
 
