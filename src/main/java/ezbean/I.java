@@ -1210,7 +1210,8 @@ public class I implements ClassLoadListener<Extensible> {
      * }
      * </pre>
      * <p>
-     * Throw the specified checked exception quietly.
+     * Throw the specified checked exception quietly or close the specified {@link AutoCloseable}
+     * object quietly.
      * </p>
      * <p>
      * This method <em>doesn't</em> wrap checked exception around unchecked exception (e.g. new
@@ -1241,7 +1242,7 @@ public class I implements ClassLoadListener<Extensible> {
      * }
      * </pre>
      * 
-     * @param throwable A exception to throw quietly.
+     * @param object A exception to throw quietly or a object to close quietly.
      * @return A pseudo unchecked exception.
      * @throws NullPointerException If the specified exception is <code>null</code>.
      */
@@ -1549,7 +1550,7 @@ public class I implements ClassLoadListener<Extensible> {
      * 
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
-     * @param outpu A serialized data output. <code>null</code> will throw
+     * @param output A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
      * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
      *            XML expression.
@@ -1575,7 +1576,7 @@ public class I implements ClassLoadListener<Extensible> {
      * 
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
-     * @param outpu A serialized data output. <code>null</code> will throw
+     * @param output A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
      * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
      *            XML expression.
