@@ -15,37 +15,14 @@
  */
 package ezbean.jdk;
 
-import java.nio.file.Path;
-
 /**
- * @version 2011/04/01 18:17:12
+ * @version 2011/04/03 14:46:50
  */
-public interface FileListener {
+enum FileWatchEventType {
 
-    /**
-     * <p>
-     * Listen file system event.
-     * </p>
-     * 
-     * @param path
-     */
-    void create(Path path);
+    Created,
 
-    /**
-     * <p>
-     * Listen file system event.
-     * </p>
-     * 
-     * @param path
-     */
-    void delete(Path path);
+    Deleted,
 
-    /**
-     * <p>
-     * Listen file system event.
-     * </p>
-     * 
-     * @param path
-     */
-    void modify(Path path);
+    Modified;
 }
