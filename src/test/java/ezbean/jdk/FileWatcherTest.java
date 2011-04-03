@@ -15,16 +15,18 @@
  */
 package ezbean.jdk;
 
-import static java.nio.file.StandardWatchEventKind.*;
+import static ezbean.jdk.FileWatchEventType.*;
+import static java.util.concurrent.TimeUnit.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
 import java.util.Arrays;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -41,40 +43,290 @@ public class FileWatcherTest {
     public static final CleanRoom room = new CleanRoom();
 
     /** The file system event listener. */
-    private Counter watcher = new Counter();
+    private EventQueue queue = new EventQueue();
+
+    /** The disposable. */
+    private Disposable disposable;
+
+    /** The latest event. */
+    private Event last;
 
     @Test
-    public void watch() throws Exception {
-        Path file = room.locateFile("test");
+    public void modifyFile() throws Exception {
+        Path path = room.locateFile("test");
 
         // observe
-        observe(file, watcher, ENTRY_MODIFY);
+        observe(path);
 
         // modify
-        Files.write(file, Arrays.asList("test"), I.getEncoding());
+        write(path);
+
+        // verify events
+        verify(path, Modified);
+    }
+
+    @Test
+    public void modifyFileMultiple() throws Exception {
+        Path path = room.locateFile("multiple");
+
+        // observe
+        observe(path);
+
+        // modify
+        write(path);
+        write(path);
+
+        // verify events
+        verify(path, Modified);
+    }
+
+    @Test
+    public void modifyMultipleFilesInSameDirectory1() throws Exception {
+        Path path1 = room.locateFile("sameDirectory1");
+        Path path2 = room.locateFile("sameDirectory2");
+
+        // observe
+        observe(path1); // only 1
+
+        // modify and verify
+        write(path1);
+        verify(path1, Modified);
+
+        // modify
+        write(path2);
 
     }
 
-    /**
-     * @version 2011/04/01 17:48:34
-     */
-    private static class Counter implements FileListener {
+    @Test
+    public void modifyMultipleFilesInSameDirectory() throws Exception {
+        Path path1 = room.locateFile("sameDirectory1");
+        Path path2 = room.locateFile("sameDirectory2");
 
-        /**
-         * @see ezbean.jdk.FileListener#change(java.nio.file.WatchEvent)
-         */
-        @Override
-        public void change(WatchEvent<Path> event) {
-            System.out.println(event);
+        // observe
+        observe(path1); // only 1
+        observe(path2); // only 1
+
+        // modify and verify
+        write(path1);
+        verify(path1, Modified);
+
+        // modify
+        write(path2);
+        verify(path2, Modified);
+
+    }
+
+    @Test
+    public void modifyMultipleFilesInSameDirectory2() throws Exception {
+        Path path1 = room.locateFile("sameDirectory1");
+        Path path2 = room.locateFile("sameDirectory2");
+
+        // observe
+        observe(path1); // only 1
+
+        // modify
+        write(path1);
+        write(path2);
+
+        // verify
+        verify(path1, Modified);
+        verify(path2, Modified);
+    }
+
+    @Before
+    public void before() {
+        disposable = null;
+        last = null;
+    }
+
+    @After
+    public void after() {
+        if (disposable != null) {
+            disposable.dispose();
         }
     }
 
-    private static Executor pool = Executors.newCachedThreadPool();
+    @AfterClass
+    public static void afterClass() throws Exception {
+        Watcher.service.close();
+    }
 
-    private static Watcher task = new Watcher();
+    /**
+     * <p>
+     * Helper method to observe the specified path.
+     * </p>
+     * 
+     * @param path
+     */
+    private void observe(Path path) {
+        disposable = observe(path, queue);
+    }
 
-    static {
-        pool.execute(task);
+    /**
+     * <p>
+     * Helper method to write file with some data.
+     * </p>
+     * 
+     * @param path
+     */
+    private void write(Path path) {
+        try {
+            Files.write(path, Arrays.asList("write"), I.getEncoding());
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Verify events of the specified path.
+     * </p>
+     * 
+     * @param path
+     */
+    private void verify(Path path, FileWatchEventType... events) {
+        for (FileWatchEventType event : events) {
+            try {
+                Event retrieved = queue.poll(1000, MILLISECONDS);
+
+                if (retrieved == null) {
+                    throw new AssertionError(event + " event doesn't rise in '" + path + "'.");
+                } else {
+                    // consume similar events
+                    while (retrieved.equals(last)) {
+                        retrieved = queue.poll(1000, MILLISECONDS);
+                    }
+
+                    // record as last event
+                    last = retrieved;
+
+                    // check path
+                    assert Files.isSameFile(path, retrieved.path);
+                }
+            } catch (InterruptedException e) {
+                throw I.quiet(e);
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Verify that any events doesn't happen.
+     * </p>
+     */
+    private void verifyZero() {
+        // consume similar events
+        while (true) {
+            Event retrieved;
+            try {
+                retrieved = queue.poll(200, MILLISECONDS);
+
+                if (retrieved == null) {
+                    return;
+                }
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * @version 2011/04/03 14:14:01
+     */
+    @SuppressWarnings("serial")
+    private static class EventQueue extends SynchronousQueue<Event> implements FileListener {
+
+        /**
+         * 
+         */
+        private EventQueue() {
+            super(true);
+        }
+
+        /**
+         * @see ezbean.jdk.FileListener#create(java.nio.file.Path)
+         */
+        @Override
+        public void create(Path path) {
+            try {
+                put(new Event(path, "create"));
+            } catch (InterruptedException e) {
+                throw I.quiet(e);
+            }
+        }
+
+        /**
+         * @see ezbean.jdk.FileListener#delete(java.nio.file.Path)
+         */
+        @Override
+        public void delete(Path path) {
+            try {
+                put(new Event(path, "delete"));
+            } catch (InterruptedException e) {
+                throw I.quiet(e);
+            }
+        }
+
+        /**
+         * @see ezbean.jdk.FileListener#modify(java.nio.file.Path)
+         */
+        @Override
+        public void modify(Path path) {
+            try {
+                put(new Event(path, "modify"));
+            } catch (InterruptedException e) {
+                throw I.quiet(e);
+            }
+        }
+    }
+
+    /**
+     * @version 2011/04/03 15:21:50
+     */
+    private static class Event {
+
+        /** The event path. */
+        private final Path path;
+
+        /** The event type. */
+        private final String type;
+
+        /**
+         * @param path
+         * @param type
+         */
+        private Event(Path path, String type) {
+            this.path = path;
+            this.type = type;
+        }
+
+        /**
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
+            Event other = (Event) obj;
+            if (path == null) {
+                if (other.path != null) return false;
+            } else if (!path.equals(other.path)) return false;
+            if (type == null) {
+                if (other.type != null) return false;
+            } else if (!type.equals(other.type)) return false;
+            return true;
+        }
+
+        /**
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "Event [path=" + path + ", type=" + type + "]";
+        }
     }
 
     /**
@@ -84,16 +336,9 @@ public class FileWatcherTest {
      * 
      * @param target
      * @param listener
-     * @param kinds
      * @return
      */
-    public static Disposable observe(Path target, FileListener listener, Kind... kinds) throws Exception {
-        // Create file system watcher task.
-        task.register(target, listener, kinds);
-
-        // Execute task in another thread.
-
-        // API definition
-        return task;
+    public static Disposable observe(Path target, FileListener listener) {
+        return new Watcher(target, listener);
     }
 }
