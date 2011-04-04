@@ -1516,6 +1516,19 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
+     * Walk a file tree and collect files you want to match.
+     * </p>
+     * 
+     * @param start A depature point.
+     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
+     * @return All matched files. (<em>not</em> including directory)
+     */
+    public static List<Path> walk(Path start, int depth, int mode, String... patterns) {
+        return new Visitor(start, null, 3, null, patterns);
+    }
+
+    /**
+     * <p>
      * Walk a file tree.
      * </p>
      * <p>

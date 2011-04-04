@@ -24,5 +24,7 @@ enum FileWatchEventType {
 
     Deleted,
 
-    Modified;
+    Modified,
+
+    None;
 }
