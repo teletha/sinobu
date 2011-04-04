@@ -18,22 +18,16 @@ package ezbean.jdk;
 import static java.nio.file.StandardWatchEventKind.*;
 
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import ezbean.Disposable;
 import ezbean.I;
@@ -42,91 +36,74 @@ import ezbean.Listeners;
 /**
  * @version 2011/04/01 17:55:54
  */
-class Watcher extends SimpleFileVisitor<Path> implements Runnable, Disposable {
-
-    private static Executor pool = Executors.newCachedThreadPool();
+class Watcher implements Runnable, Disposable {
 
     /** The actual file system observer. */
-    static final WatchService service;
+    static WatchService service;
 
-    static {
-        try {
-            service = FileSystems.getDefault().newWatchService();
+    /** The watching child paths. */
+    static final Listeners<Path, Watcher> listeners = new Listeners();
 
-            Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+    /** The watching path. */
+    private Path path;
 
-                @Override
-                public void uncaughtException(Thread t, Throwable e) {
-                    e.printStackTrace();
-                }
-            });
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
+    private Path original;
 
-    private static final ConcurrentHashMap<WatchKey, Watcher> keys = new ConcurrentHashMap();
-
-    /** The actual watching path. */
-    private final Path path;
-
-    /** The user listener. */
-    private final FileListener listener;
+    /** The event listener. */
+    private FileListener listener;
 
     /** The actual watching system. */
     private WatchKey key;
 
-    private final Listeners<Path, FileListener> listeners = new Listeners();
+    private CopyOnWriteArrayList<Watcher> children = new CopyOnWriteArrayList();
+
+    private final boolean file;
 
     /**
      * @param path
      */
     Watcher(Path path, FileListener listener) {
-        if (Files.notExists(path)) {
-            // error
-        }
-
-        this.path = path;
+        this.original = path;
         this.listener = listener;
 
-        listeners.pull(path, listener);
-
-        if (!Files.isDirectory(path)) {
-            path = path.getParent();
-        } else {
-            I.walk(path, this);
+        // Execute task in another thread if not running.
+        if (service == null) {
+            try {
+                service = FileSystems.getDefault().newWatchService();
+                FileWatcherTest.pool.execute(this);
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
         }
 
+        System.out.println("regist  " + path);
+
         try {
-            key = path.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            if (!Files.isDirectory(path)) {
+                this.file = true;
+                this.path = path.getParent();
+                this.key = path.getParent().register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+                listeners.push(path.getParent(), this);
+            } else {
+                this.file = false;
+                this.path = path;
+                this.key = path.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+                listeners.push(path, this);
 
-            // register file system observer
-            keys.put(key, this);
+                DirectoryStream<Path> stream = Files.newDirectoryStream(path);
 
-            // Execute task in another thread if not running.
-            if (keys.size() == 1) {
-                pool.execute(this);
+                for (Path child : stream) {
+                    if (Files.isDirectory(child)) {
+                        System.out.println("" + child);
+                        children.add(new Watcher(child, listener));
+                    }
+                }
+                stream.close();
             }
         } catch (Exception e) {
             throw I.quiet(e);
         }
-    }
 
-    /**
-     * @see java.nio.file.SimpleFileVisitor#preVisitDirectory(java.lang.Object,
-     *      java.nio.file.attribute.BasicFileAttributes)
-     */
-    @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-        if (Files.isSameFile(dir, path)) {
-            // skip root
-            return FileVisitResult.CONTINUE;
-        } else {
-
-            new Watcher(dir, listener);
-
-            return FileVisitResult.SKIP_SUBTREE;
-        }
     }
 
     /**
@@ -134,18 +111,13 @@ class Watcher extends SimpleFileVisitor<Path> implements Runnable, Disposable {
      */
     @Override
     public void run() {
+        int latest = 0;
+
         while (true) {
             try {
                 // wait for key to be signalled
                 WatchKey key = service.take();
-
-                // Retrieve observing directory.
-                Watcher watcher = keys.get(key);
-
-                // Some operation system rises multiple file system events against one operation
-                // from user's point of view. So, we should identify the event type and context to
-                // aggregate them.
-                HashSet identity = new HashSet();
+                System.out.println(" start new");
 
                 for (WatchEvent event : key.pollEvents()) {
                     Kind kind = event.kind();
@@ -154,33 +126,41 @@ class Watcher extends SimpleFileVisitor<Path> implements Runnable, Disposable {
                         continue;
                     }
 
-                    Path path = ((Path) key.watchable()).resolve((Path) event.context());
+                    Path directory = (Path) key.watchable();
+                    Path context = (Path) event.context();
+                    Path path = directory.resolve(context);
 
-                    if (this.path.equals(path) && identity.add(Objects.hash(event.context(), kind))) {
+                    // Some operation system rises multiple file system events against one operation
+                    // from user's point of view. So, we should identify the event type and context
+                    // to aggregate them.
+                    int current = Objects.hash(directory, context, kind);
+                    System.out.println(directory + "  " + context + "  " + kind + "  " + current + "  " + latest + "  " + this + "  " + Thread.currentThread());
 
-                        System.out.println(path + "  " + watcher);
+                    if (current == latest) {
+                        continue; // skip sequential same events
+                    }
+                    latest = current; // record current event
+
+                    // Retrieve observing directory
+
+                    for (Watcher watcher : listeners.get(directory)) {
+                        if (watcher.file && !watcher.original.equals(path)) {
+                            continue;
+                        }
 
                         if (kind == ENTRY_CREATE) {
-                            watcher.listener.create(path);
+                            watcher.listener.create(directory.resolve(context));
                         } else if (kind == ENTRY_DELETE) {
-                            watcher.listener.delete(path);
+                            watcher.listener.delete(directory.resolve(context));
                         } else if (kind == ENTRY_MODIFY) {
-                            watcher.listener.modify(path);
+                            System.out.println(path);
+                            watcher.listener.modify(directory.resolve(context));
                         }
                     }
                 }
 
                 // reset key and remove from set if directory no longer accessible
-                boolean valid = key.reset();
-
-                if (!valid) {
-                    keys.remove(key);
-
-                    // all directories are inaccessible
-                    if (keys.isEmpty()) {
-                        break;
-                    }
-                }
+                key.reset();
             } catch (Exception x) {
                 return;
             }
@@ -192,11 +172,17 @@ class Watcher extends SimpleFileVisitor<Path> implements Runnable, Disposable {
      */
     @Override
     public void dispose() {
-        Watcher watcher = keys.remove(key);
+        listeners.pull(path, this);
 
-        if (watcher != null) {
-            listeners.remove(watcher.path, watcher.listener);
+        if (listeners.get(path).size() == 0) {
+            key.cancel();
+            System.out.println("dispose child " + path + "  " + key.isValid());
         }
-        key.cancel();
+
+        for (Watcher child : children) {
+            child.dispose();
+        }
+
+        children.clear();
     }
 }

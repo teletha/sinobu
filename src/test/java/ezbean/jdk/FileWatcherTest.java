@@ -21,12 +21,18 @@ import static java.util.concurrent.TimeUnit.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -45,13 +51,30 @@ public class FileWatcherTest {
     /** The file system event listener. */
     private EventQueue queue = new EventQueue();
 
-    /** The disposable. */
-    private Disposable disposable;
+    /** The disposable instances. */
+    private List<Disposable> disposables = new ArrayList();
 
-    /** The latest event. */
-    private Event last;
+    @Before
+    public void before() {
+        disposables.clear();
+    }
+
+    @After
+    public void after() {
+        verifyNone();
+
+        for (Disposable disposable : disposables) {
+            disposable.dispose();
+        }
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        Watcher.service.close();
+    }
 
     @Test
+    @Ignore
     public void modifyFile() throws Exception {
         Path path = room.locateFile("test");
 
@@ -66,6 +89,7 @@ public class FileWatcherTest {
     }
 
     @Test
+    @Ignore
     public void modifyFileMultiple() throws Exception {
         Path path = room.locateFile("multiple");
 
@@ -81,6 +105,7 @@ public class FileWatcherTest {
     }
 
     @Test
+    @Ignore
     public void modifyMultipleFilesInSameDirectory1() throws Exception {
         Path path1 = room.locateFile("sameDirectory1");
         Path path2 = room.locateFile("sameDirectory2");
@@ -98,13 +123,14 @@ public class FileWatcherTest {
     }
 
     @Test
+    @Ignore
     public void modifyMultipleFilesInSameDirectory() throws Exception {
         Path path1 = room.locateFile("sameDirectory1");
         Path path2 = room.locateFile("sameDirectory2");
 
         // observe
-        observe(path1); // only 1
-        observe(path2); // only 1
+        observe(path1);
+        observe(path2);
 
         // modify and verify
         write(path1);
@@ -113,13 +139,13 @@ public class FileWatcherTest {
         // modify
         write(path2);
         verify(path2, Modified);
-
     }
 
     @Test
-    public void modifyMultipleFilesInSameDirectory2() throws Exception {
-        Path path1 = room.locateFile("sameDirectory1");
-        Path path2 = room.locateFile("sameDirectory2");
+    @Ignore
+    public void modifyMultipleFilesInSameDirectoryButObserveOnlyOne() throws Exception {
+        Path path1 = room.locateFile("sameDirectoryOnlyOne1");
+        Path path2 = room.locateFile("sameDirectoryOnlyOne2");
 
         // observe
         observe(path1); // only 1
@@ -130,25 +156,80 @@ public class FileWatcherTest {
 
         // verify
         verify(path1, Modified);
-        verify(path2, Modified);
     }
 
-    @Before
-    public void before() {
-        disposable = null;
-        last = null;
+    @Test
+    @Ignore
+    public void createFile() throws Exception {
+        Path path = room.locateAbsent("test");
+
+        // observe
+        observe(path);
+
+        // create
+        create(path);
+
+        // verify events
+        verify(path, Created);
     }
 
-    @After
-    public void after() {
-        if (disposable != null) {
-            disposable.dispose();
-        }
+    @Test
+    @Ignore
+    public void deleteFile() throws Exception {
+        Path path = room.locateFile("test");
+
+        // observe
+        observe(path);
+
+        // delete
+        delete(path);
+
+        // verify events
+        verify(path, Deleted);
     }
 
-    @AfterClass
-    public static void afterClass() throws Exception {
-        Watcher.service.close();
+    @Test
+    public void modifyFileFromDirectory() throws Exception {
+        Path path = room.locateFile("directory/file");
+
+        // observe
+        observe(path.getParent());
+
+        // modify
+        write(path);
+
+        // verify events
+        verify(path, Modified);
+    }
+
+    @Test
+    @Ignore
+    public void modifyDirectory() throws Exception {
+        Path path = room.locateDirectory("directory/child");
+
+        // observe
+        observe(path.getParent());
+
+        // modify
+        touch(path);
+
+        // verify events
+        verify(path, Modified);
+    }
+
+    @Test
+    @Ignore
+    public void modifyDirectoryDeeply() throws Exception {
+        Path path = room.locateDirectory("directory/child/descendant");
+
+        // observe
+        // observe(path.getParent().getParent());
+
+        // modify
+        // touch(path);
+
+        // verify events
+        // verify(path, Modified);
     }
 
     /**
@@ -159,7 +240,40 @@ public class FileWatcherTest {
      * @param path
      */
     private void observe(Path path) {
-        disposable = observe(path, queue);
+        disposables.add(observe(path, queue));
+    }
+
+    /**
+     * <p>
+     * Helper method to create file with no data.
+     * </p>
+     * 
+     * @param path
+     */
+    private void create(Path path) {
+        if (Files.notExists(path)) {
+            try {
+                Files.createDirectories(path.getParent());
+                Files.createFile(path);
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Helper method to modify file attribute.
+     * </p>
+     * 
+     * @param path
+     */
+    private void touch(Path path) {
+        try {
+            Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -179,6 +293,23 @@ public class FileWatcherTest {
 
     /**
      * <p>
+     * Helper method to delete file.
+     * </p>
+     * 
+     * @param path
+     */
+    private void delete(Path path) {
+        if (Files.exists(path)) {
+            try {
+                Files.delete(path);
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
+        }
+    }
+
+    /**
+     * <p>
      * Verify events of the specified path.
      * </p>
      * 
@@ -192,16 +323,7 @@ public class FileWatcherTest {
                 if (retrieved == null) {
                     throw new AssertionError(event + " event doesn't rise in '" + path + "'.");
                 } else {
-                    // consume similar events
-                    while (retrieved.equals(last)) {
-                        retrieved = queue.poll(1000, MILLISECONDS);
-                    }
-
-                    // record as last event
-                    last = retrieved;
-
-                    // check path
-                    assert Files.isSameFile(path, retrieved.path);
+                    assert Files.isSameFile(path, retrieved.path) : "Expected is " + path + "   but retrieved is " + retrieved.path;
                 }
             } catch (InterruptedException e) {
                 throw I.quiet(e);
@@ -216,19 +338,15 @@ public class FileWatcherTest {
      * Verify that any events doesn't happen.
      * </p>
      */
-    private void verifyZero() {
-        // consume similar events
-        while (true) {
-            Event retrieved;
-            try {
-                retrieved = queue.poll(200, MILLISECONDS);
+    private void verifyNone() {
+        try {
+            Event retrieved = queue.poll(50, MILLISECONDS);
 
-                if (retrieved == null) {
-                    return;
-                }
-            } catch (InterruptedException e) {
-                return;
+            if (retrieved != null) {
+                throw new AssertionError(retrieved + " is illegal.");
             }
+        } catch (InterruptedException e) {
+            throw I.quiet(e);
         }
     }
 
@@ -251,7 +369,7 @@ public class FileWatcherTest {
         @Override
         public void create(Path path) {
             try {
-                put(new Event(path, "create"));
+                put(new Event(path, Created));
             } catch (InterruptedException e) {
                 throw I.quiet(e);
             }
@@ -263,7 +381,7 @@ public class FileWatcherTest {
         @Override
         public void delete(Path path) {
             try {
-                put(new Event(path, "delete"));
+                put(new Event(path, Deleted));
             } catch (InterruptedException e) {
                 throw I.quiet(e);
             }
@@ -275,7 +393,8 @@ public class FileWatcherTest {
         @Override
         public void modify(Path path) {
             try {
-                put(new Event(path, "modify"));
+                System.out.println("rise " + path);
+                put(new Event(path, Modified));
             } catch (InterruptedException e) {
                 throw I.quiet(e);
             }
@@ -283,7 +402,7 @@ public class FileWatcherTest {
     }
 
     /**
-     * @version 2011/04/03 15:21:50
+     * @version 2011/04/04 15:09:12
      */
     private static class Event {
 
@@ -291,15 +410,27 @@ public class FileWatcherTest {
         private final Path path;
 
         /** The event type. */
-        private final String type;
+        private final FileWatchEventType type;
 
         /**
          * @param path
          * @param type
          */
-        private Event(Path path, String type) {
+        private Event(Path path, FileWatchEventType type) {
             this.path = path;
             this.type = type;
+        }
+
+        /**
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((path == null) ? 0 : path.hashCode());
+            result = prime * result + ((type == null) ? 0 : type.hashCode());
+            return result;
         }
 
         /**
@@ -314,9 +445,7 @@ public class FileWatcherTest {
             if (path == null) {
                 if (other.path != null) return false;
             } else if (!path.equals(other.path)) return false;
-            if (type == null) {
-                if (other.type != null) return false;
-            } else if (!type.equals(other.type)) return false;
+            if (type != other.type) return false;
             return true;
         }
 
@@ -338,7 +467,10 @@ public class FileWatcherTest {
      * @param listener
      * @return
      */
-    public static Disposable observe(Path target, FileListener listener) {
-        return new Watcher(target, listener);
+    public synchronized static Disposable observe(Path path, FileListener listener) {
+
+        return new Watcher(path, listener);
     }
+
+    static Executor pool = Executors.newCachedThreadPool();
 }
