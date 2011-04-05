@@ -136,7 +136,7 @@ public class PathPatternMatchingTest {
 
     @Test
     public void depthDeeply2() throws Exception {
-        assertCount(4, 3, true, test02);
+        assertCount(5, 3, true, test02);
     }
 
     @Test
