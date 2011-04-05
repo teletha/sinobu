@@ -563,7 +563,7 @@ public class I implements ClassLoadListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void copy(Path input, Path output, String... patterns) {
-        new Visitor(input, output, 0, null, patterns);
+        new Visitor(input, output, 0, 0, null, patterns);
     }
 
     /**
@@ -597,7 +597,7 @@ public class I implements ClassLoadListener<Extensible> {
      */
     public static void delete(Path input, String... patterns) {
         if (input != null) {
-            new Visitor(input, null, 2, null, patterns);
+            new Visitor(input, null, 2, 0, null, patterns);
         }
     }
 
@@ -1127,7 +1127,7 @@ public class I implements ClassLoadListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void move(Path input, Path output, String... patterns) {
-        new Visitor(input, output, 1, null, patterns);
+        new Visitor(input, output, 1, 0, null, patterns);
     }
 
     /**
@@ -1511,7 +1511,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @return All matched files. (<em>not</em> including directory)
      */
     public static List<Path> walk(Path start, String... patterns) {
-        return new Visitor(start, null, 3, null, patterns);
+        return new Visitor(start, null, 3, 0, null, patterns);
     }
 
     /**
@@ -1523,8 +1523,8 @@ public class I implements ClassLoadListener<Extensible> {
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      * @return All matched files. (<em>not</em> including directory)
      */
-    public static List<Path> walk(Path start, int depth, int mode, String... patterns) {
-        return new Visitor(start, null, 3, null, patterns);
+    public static List<Path> walk(Path start, int depth, boolean file, String... patterns) {
+        return new Visitor(start, null, file ? 3 : 4, depth, null, patterns);
     }
 
     /**
@@ -1574,7 +1574,7 @@ public class I implements ClassLoadListener<Extensible> {
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      */
     public static void walk(Path start, FileVisitor visitor, String... patterns) {
-        new Visitor(start, null, 4, visitor, patterns);
+        new Visitor(start, null, 5, 0, visitor, patterns);
     }
 
     /**
