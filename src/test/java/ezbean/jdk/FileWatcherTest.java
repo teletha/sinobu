@@ -32,7 +32,6 @@ import java.util.concurrent.SynchronousQueue;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -74,7 +73,6 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
     public void modifyFile() throws Exception {
         Path path = room.locateFile("test");
 
@@ -89,7 +87,6 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
     public void modifyFileMultiple() throws Exception {
         Path path = room.locateFile("multiple");
 
@@ -105,7 +102,6 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
     public void modifyMultipleFilesInSameDirectory1() throws Exception {
         Path path1 = room.locateFile("sameDirectory1");
         Path path2 = room.locateFile("sameDirectory2");
@@ -123,7 +119,6 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
     public void modifyMultipleFilesInSameDirectory() throws Exception {
         Path path1 = room.locateFile("sameDirectory1");
         Path path2 = room.locateFile("sameDirectory2");
@@ -142,7 +137,6 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
     public void modifyMultipleFilesInSameDirectoryButObserveOnlyOne() throws Exception {
         Path path1 = room.locateFile("sameDirectoryOnlyOne1");
         Path path2 = room.locateFile("sameDirectoryOnlyOne2");
@@ -159,7 +153,6 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
     public void createFile() throws Exception {
         Path path = room.locateAbsent("test");
 
@@ -174,7 +167,6 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
     public void deleteFile() throws Exception {
         Path path = room.locateFile("test");
 
@@ -203,7 +195,20 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
+    public void modifyFileFromDirectoryDeeply() throws Exception {
+        Path path = room.locateFile("directory/child/file");
+
+        // observe
+        observe(path.getParent().getParent());
+
+        // modify
+        write(path);
+
+        // verify events
+        verify(path, Modified);
+    }
+
+    @Test
     public void modifyDirectory() throws Exception {
         Path path = room.locateDirectory("directory/child");
 
@@ -218,7 +223,6 @@ public class FileWatcherTest {
     }
 
     @Test
-    @Ignore
     public void modifyDirectoryDeeply() throws Exception {
         Path path = room.locateDirectory("directory/child/descendant");
 
@@ -393,7 +397,6 @@ public class FileWatcherTest {
         @Override
         public void modify(Path path) {
             try {
-                System.out.println("rise " + path);
                 put(new Event(path, Modified));
             } catch (InterruptedException e) {
                 throw I.quiet(e);

@@ -18,7 +18,6 @@ package ezbean.jdk;
 import static java.nio.file.StandardWatchEventKind.*;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,7 +26,6 @@ import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import ezbean.Disposable;
 import ezbean.I;
@@ -44,10 +42,10 @@ class Watcher implements Runnable, Disposable {
     /** The watching child paths. */
     static final Listeners<Path, Watcher> listeners = new Listeners();
 
-    /** The watching path. */
-    private Path path;
+    /** The watching directory. */
+    private Path directory;
 
-    private Path original;
+    private Path file;
 
     /** The event listener. */
     private FileListener listener;
@@ -55,15 +53,10 @@ class Watcher implements Runnable, Disposable {
     /** The actual watching system. */
     private WatchKey key;
 
-    private CopyOnWriteArrayList<Watcher> children = new CopyOnWriteArrayList();
-
-    private final boolean file;
-
     /**
      * @param path
      */
     Watcher(Path path, FileListener listener) {
-        this.original = path;
         this.listener = listener;
 
         // Execute task in another thread if not running.
@@ -76,29 +69,18 @@ class Watcher implements Runnable, Disposable {
             }
         }
 
-        System.out.println("regist  " + path);
-
         try {
             if (!Files.isDirectory(path)) {
-                this.file = true;
-                this.path = path.getParent();
+                this.file = path;
+                this.directory = path.getParent();
                 this.key = path.getParent().register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                 listeners.push(path.getParent(), this);
             } else {
-                this.file = false;
-                this.path = path;
+                this.file = null;
+                this.directory = path;
                 this.key = path.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                 listeners.push(path, this);
 
-                DirectoryStream<Path> stream = Files.newDirectoryStream(path);
-
-                for (Path child : stream) {
-                    if (Files.isDirectory(child)) {
-                        System.out.println("" + child);
-                        children.add(new Watcher(child, listener));
-                    }
-                }
-                stream.close();
             }
         } catch (Exception e) {
             throw I.quiet(e);
@@ -117,7 +99,6 @@ class Watcher implements Runnable, Disposable {
             try {
                 // wait for key to be signalled
                 WatchKey key = service.take();
-                System.out.println(" start new");
 
                 for (WatchEvent event : key.pollEvents()) {
                     Kind kind = event.kind();
@@ -134,17 +115,17 @@ class Watcher implements Runnable, Disposable {
                     // from user's point of view. So, we should identify the event type and context
                     // to aggregate them.
                     int current = Objects.hash(directory, context, kind);
-                    System.out.println(directory + "  " + context + "  " + kind + "  " + current + "  " + latest + "  " + this + "  " + Thread.currentThread());
 
                     if (current == latest) {
                         continue; // skip sequential same events
                     }
+
                     latest = current; // record current event
 
                     // Retrieve observing directory
 
                     for (Watcher watcher : listeners.get(directory)) {
-                        if (watcher.file && !watcher.original.equals(path)) {
+                        if (watcher.file != null && !watcher.file.equals(path)) {
                             continue;
                         }
 
@@ -153,7 +134,6 @@ class Watcher implements Runnable, Disposable {
                         } else if (kind == ENTRY_DELETE) {
                             watcher.listener.delete(directory.resolve(context));
                         } else if (kind == ENTRY_MODIFY) {
-                            System.out.println(path);
                             watcher.listener.modify(directory.resolve(context));
                         }
                     }
@@ -172,17 +152,10 @@ class Watcher implements Runnable, Disposable {
      */
     @Override
     public void dispose() {
-        listeners.pull(path, this);
+        listeners.pull(directory, this);
 
-        if (listeners.get(path).size() == 0) {
+        if (listeners.get(directory).size() == 0) {
             key.cancel();
-            System.out.println("dispose child " + path + "  " + key.isValid());
         }
-
-        for (Watcher child : children) {
-            child.dispose();
-        }
-
-        children.clear();
     }
 }
