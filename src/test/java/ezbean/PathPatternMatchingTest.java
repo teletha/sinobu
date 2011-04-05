@@ -116,6 +116,26 @@ public class PathPatternMatchingTest {
         assertCount(6, "!directory1/**");
     }
 
+    @Test
+    public void depth() throws Exception {
+        assertCount(3, 1, true);
+    }
+
+    @Test
+    public void depthZero() throws Exception {
+        assertCount(9, 0, true);
+    }
+
+    @Test
+    public void depthNegative() throws Exception {
+        assertCount(9, -1, true);
+    }
+
+    @Test
+    public void directory() throws Exception {
+        assertCount(2, 0, false);
+    }
+
     /**
      * Helper method to test.
      * 
@@ -130,6 +150,22 @@ public class PathPatternMatchingTest {
 
             // by walker
             assert expected == I.walk(room.root, patterns).size();
+        } finally {
+            counter.count = 0;
+        }
+    }
+
+    /**
+     * Helper method to test.
+     * 
+     * @param expected
+     * @param depth
+     * @param includeFilesOnly
+     * @param patterns
+     */
+    private void assertCount(int expected, int depth, boolean includeFilesOnly, String... patterns) {
+        try {
+            assert expected == I.walk(room.root, depth, includeFilesOnly, patterns).size();
         } finally {
             counter.count = 0;
         }
