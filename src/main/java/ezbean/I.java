@@ -1521,13 +1521,13 @@ public class I implements ClassLoadListener<Extensible> {
      * 
      * @param start A depature point. The result list doesn't include this starting path.
      * @param depth A maximum number of directory levels to visit.
-     * @param file <code>true</code> includes files only (<em>not</em> including directories),
+     * @param includeFilesOnly <code>true</code> includes files only (<em>not</em> including directories),
      *            <code>false</code> includes directories only (<em>not</em> including files).
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      * @return All matched files.
      */
-    public static List<Path> walk(Path start, int depth, boolean file, String... patterns) {
-        return new Visitor(start, null, file ? 3 : 4, depth, null, patterns);
+    public static List<Path> walk(Path start, int depth, boolean includeFilesOnly, String... patterns) {
+        return new Visitor(start, null, includeFilesOnly ? 3 : 4, depth, null, patterns);
     }
 
     /**
