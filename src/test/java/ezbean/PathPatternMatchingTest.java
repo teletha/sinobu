@@ -32,7 +32,10 @@ import ezunit.CleanRoom;
 public class PathPatternMatchingTest {
 
     @Rule
-    public static final CleanRoom room = new CleanRoom("file/test01");
+    public static final CleanRoom test01 = new CleanRoom("file/test01");
+
+    @Rule
+    public static final CleanRoom test02 = new CleanRoom("file/test02");
 
     private Counter counter = new Counter();
 
@@ -117,23 +120,58 @@ public class PathPatternMatchingTest {
     }
 
     @Test
-    public void depth() throws Exception {
-        assertCount(3, 1, true);
+    public void depth1() throws Exception {
+        assertCount(3, 1, true, test01);
+    }
+
+    @Test
+    public void depth2() throws Exception {
+        assertCount(0, 1, true, test02);
+    }
+
+    @Test
+    public void depthDeeply1() throws Exception {
+        assertCount(2, 2, true, test02);
+    }
+
+    @Test
+    public void depthDeeply2() throws Exception {
+        assertCount(4, 3, true, test02);
     }
 
     @Test
     public void depthZero() throws Exception {
-        assertCount(9, 0, true);
+        assertCount(9, 0, true, test01);
     }
 
     @Test
     public void depthNegative() throws Exception {
-        assertCount(9, -1, true);
+        assertCount(9, -1, true, test01);
     }
 
     @Test
-    public void directory() throws Exception {
-        assertCount(2, 0, false);
+    public void directory1() throws Exception {
+        assertCount(2, 0, false, test01);
+    }
+
+    @Test
+    public void directory2() throws Exception {
+        assertCount(9, 0, false, test02);
+    }
+
+    @Test
+    public void directoryDepth() throws Exception {
+        assertCount(2, 1, false, test02);
+    }
+
+    @Test
+    public void directoryDeepDepth1() throws Exception {
+        assertCount(6, 2, false, test02);
+    }
+
+    @Test
+    public void directoryDeepDepth2() throws Exception {
+        assertCount(8, 3, false, test02);
     }
 
     /**
@@ -145,11 +183,11 @@ public class PathPatternMatchingTest {
     private void assertCount(int expected, String... patterns) {
         try {
             // by user
-            I.walk(room.root, counter, patterns);
+            I.walk(test01.root, counter, patterns);
             assert expected == counter.count;
 
             // by walker
-            assert expected == I.walk(room.root, patterns).size();
+            assert expected == I.walk(test01.root, patterns).size();
         } finally {
             counter.count = 0;
         }
@@ -163,7 +201,7 @@ public class PathPatternMatchingTest {
      * @param includeFilesOnly
      * @param patterns
      */
-    private void assertCount(int expected, int depth, boolean includeFilesOnly, String... patterns) {
+    private void assertCount(int expected, int depth, boolean includeFilesOnly, CleanRoom room, String... patterns) {
         try {
             assert expected == I.walk(room.root, depth, includeFilesOnly, patterns).size();
         } finally {
@@ -186,6 +224,30 @@ public class PathPatternMatchingTest {
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
             count++;
             return super.visitFile(file, attrs);
+        }
+
+        /**
+         * @see java.nio.file.SimpleFileVisitor#preVisitDirectory(java.lang.Object,
+         *      java.nio.file.attribute.BasicFileAttributes)
+         */
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            if (dir.equals(test01.root)) {
+                throw new AssertionError("Root directory is passed.");
+            }
+            return super.preVisitDirectory(dir, attrs);
+        }
+
+        /**
+         * @see java.nio.file.SimpleFileVisitor#postVisitDirectory(java.lang.Object,
+         *      java.io.IOException)
+         */
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            if (dir.equals(test01.root)) {
+                throw new AssertionError("Root directory is passed.");
+            }
+            return super.postVisitDirectory(dir, exc);
         }
     }
 }

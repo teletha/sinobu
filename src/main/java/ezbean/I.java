@@ -1503,10 +1503,10 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Walk a file tree and collect files you want to match.
+     * Walk a file tree and collect files you want to filter by pattern matching.
      * </p>
      * 
-     * @param start A depature point.
+     * @param start A depature point. The result list doesn't include this starting path.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      * @return All matched files. (<em>not</em> including directory)
      */
@@ -1516,12 +1516,15 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Walk a file tree and collect files you want to match.
+     * Walk a file tree and collect files you want to filter by various conditions.
      * </p>
      * 
-     * @param start A depature point.
+     * @param start A depature point. The result list doesn't include this starting path.
+     * @param depth A maximum number of directory levels to visit.
+     * @param file <code>true</code> includes files only (<em>not</em> including directories),
+     *            <code>false</code> includes directories only (<em>not</em> including files).
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
-     * @return All matched files. (<em>not</em> including directory)
+     * @return All matched files.
      */
     public static List<Path> walk(Path start, int depth, boolean file, String... patterns) {
         return new Visitor(start, null, file ? 3 : 4, depth, null, patterns);
@@ -1529,7 +1532,7 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Walk a file tree.
+     * Walk a file tree. The starting path is not notified to {@link FileVisitor} .
      * </p>
      * <p>
      * This method walks a file tree rooted at a given starting file. The file tree traversal is
@@ -1569,7 +1572,7 @@ public class I implements ClassLoadListener<Extensible> {
      * is ignored and the visitor is not invoked for that file (or directory).
      * </p>
      * 
-     * @param start A depature point.
+     * @param start A depature point. This starting path is not notified to your visitor.
      * @param visitor A file tree visitor to invoke for each file and directory.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      */

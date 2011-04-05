@@ -130,19 +130,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
-        // The {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked for
-        // all files, including directories, encountered at max depth. So we use the value which
-        // is greater than the user specified max depth, and skip lowest files using
-        // SKIP_SUBTREE value.
-        if (current == depth) {
-            return SKIP_SUBTREE;
-        }
-
-        // Then, we can count up depth.
-        current++;
-        
-        
-
         // Retrieve relative path from base.
         Path relative = from.relativize(path);
 
@@ -160,20 +147,33 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             // fall-through to reduce footprint
 
         case 2: // delete
-        case 3: // walk file
             return CONTINUE;
 
         case 4: // walk directory
-            if (current != 2) {
-                add(path);
+            // skip root directory
+            if (current != 1) add(path);
+
+            // fall-through to reduce footprint
+
+        case 3: // walk file
+            // The {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked for
+            // all files, including directories, encountered at max depth. So we use the value which
+            // is greater than the user specified max depth, and skip lowest files using
+            // SKIP_SUBTREE value.
+            //
+            // At first, we must check max depth.
+            if (current == depth) {
+                return SKIP_SUBTREE;
             }
+
+            // Then, we can count up current depth.
+            current++;
+
+            // API definition
             return CONTINUE;
 
         default:
-            if (current == 2) {
-                return CONTINUE;
-            }
-            return visitor.preVisitDirectory(path, attrs);
+            return current++ == 1 ? CONTINUE : visitor.preVisitDirectory(path, attrs);
         }
     }
 
@@ -181,8 +181,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
      */
     public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
-        current--;
-
         switch (type) {
         case 0: // copy
             Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
@@ -198,10 +196,11 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
         case 3: // walk file
         case 4: // walk directory
+            current--;
             return CONTINUE;
 
         default:
-            return visitor.postVisitDirectory(path, exc);
+            return --current == 1 ? CONTINUE : visitor.postVisitDirectory(path, exc);
         }
     }
 
