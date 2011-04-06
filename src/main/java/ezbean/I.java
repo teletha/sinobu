@@ -1880,7 +1880,7 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
                     latest = hash;
 
                     for (Watch watch : watches.get(directory)) {
-                        if (watch.visitor.visitFile(path, null) == FileVisitResult.TERMINATE) {
+                        if (watch.visitor.accept(watch.visitor.from.relativize(path))) {
                             switch (type) {
                             case 0: // CREATE
                                 watch.listener.create(path);

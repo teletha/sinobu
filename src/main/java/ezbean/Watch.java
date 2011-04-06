@@ -18,17 +18,14 @@ package ezbean;
 import static java.nio.file.StandardWatchEventKind.*;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.WatchKey;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @version 2011/04/06 17:36:35
  */
-class Watch extends SimpleFileVisitor<Path> implements Disposable {
+class Watch implements Disposable {
 
     /** The registered directory path. */
     final Path directory;
@@ -71,7 +68,7 @@ class Watch extends SimpleFileVisitor<Path> implements Disposable {
     Watch(Path directory, Path root, FileListener listener, String... patterns) {
         this.directory = directory;
         this.listener = listener;
-        this.visitor = new Visitor(root, null, 6, 1, this, patterns);
+        this.visitor = new Visitor(root, null, 6, 1, null, patterns);
 
         try {
             for (Path child : I.walk(directory, 1, false)) {
@@ -101,14 +98,5 @@ class Watch extends SimpleFileVisitor<Path> implements Disposable {
         for (Watch watch : children) {
             watch.dispose();
         }
-    }
-
-    /**
-     * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
-     *      java.nio.file.attribute.BasicFileAttributes)
-     */
-    @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        return FileVisitResult.TERMINATE; // accept
     }
 }
