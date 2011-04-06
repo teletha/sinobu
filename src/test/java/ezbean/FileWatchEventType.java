@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.jdk;
+package ezbean;
 
 /**
  * @version 2011/04/03 14:46:50

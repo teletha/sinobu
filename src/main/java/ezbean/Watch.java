@@ -1,0 +1,114 @@
+/*
+ * Copyright (C) 2011 Nameless Production Committee.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package ezbean;
+
+import static java.nio.file.StandardWatchEventKind.*;
+
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.WatchKey;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ * @version 2011/04/06 17:36:35
+ */
+class Watch extends SimpleFileVisitor<Path> implements Disposable {
+
+    /** The registered directory path. */
+    final Path directory;
+
+    /** The user speecified event listener. */
+    final FileListener listener;
+
+    /** The pattern matching utility. */
+    final Visitor visitor;
+
+    /** The actual event listener. */
+    final WatchKey key;
+
+    /** The sub watchers. */
+    final CopyOnWriteArrayList<Watch> children = new CopyOnWriteArrayList();
+
+    /**
+     * @param directory
+     * @param parent
+     */
+    Watch(Path directory, Watch parent) {
+        this.directory = directory;
+        this.listener = parent.listener;
+        this.visitor = parent.visitor;
+
+        try {
+            this.key = directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+
+            // register
+            I.watches.push(directory, this);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * @param directory
+     * @param listener
+     */
+    Watch(Path directory, Path root, FileListener listener, String... patterns) {
+        this.directory = directory;
+        this.listener = listener;
+        this.visitor = new Visitor(root, null, 6, 1, this, patterns);
+
+        try {
+            for (Path child : I.walk(directory, 1, false)) {
+                children.add(new Watch(child, directory, listener, patterns));
+            }
+            this.key = directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+
+            // register
+            I.watches.push(directory, this);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * @see ezbean.Disposable#dispose()
+     */
+    @Override
+    public void dispose() {
+        I.watches.pull(directory, this);
+
+        if (I.watches.get(directory).size() == 0) {
+            key.cancel();
+        }
+
+        // dispose sub directories
+        for (Watch watch : children) {
+            watch.dispose();
+        }
+    }
+
+    /**
+     * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
+     *      java.nio.file.attribute.BasicFileAttributes)
+     */
+    @Override
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        return FileVisitResult.TERMINATE; // accept
+    }
+}

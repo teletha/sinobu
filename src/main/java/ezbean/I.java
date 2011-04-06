@@ -15,6 +15,8 @@
  */
 package ezbean;
 
+import static java.nio.file.StandardWatchEventKind.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +31,7 @@ import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -36,6 +39,10 @@ import java.nio.file.LinkPermission;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchEvent.Kind;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -51,6 +58,8 @@ import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.script.ScriptEngine;
@@ -209,7 +218,7 @@ import ezbean.xml.XMLWriter;
  * @see ServiceLoader
  * @version 2011/03/31 17:38:41
  */
-public class I implements ClassLoadListener<Extensible> {
+public class I implements ClassLoadListener<Extensible>, Runnable {
 
     // Candidates of Method Name
     //
@@ -286,6 +295,12 @@ public class I implements ClassLoadListener<Extensible> {
     /** The list of module aware maps. */
     static final List<WeakReference<Map>> awares = new CopyOnWriteArrayList();
 
+    /** The file system observer service. */
+    static final WatchService service;
+
+    /** The file system observer mapping. */
+    static final Listeners<Path, Watch> watches = new Listeners();
+
     /** The cache between Model and Lifestyle. */
     private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = I.aware(new ConcurrentHashMap<Class, Lifestyle>());
 
@@ -324,6 +339,9 @@ public class I implements ClassLoadListener<Extensible> {
 
     /** The temporary directory for the current processing JVM. */
     private static final Path temporary;
+
+    /** The reusable thread pool for Ezbean. */
+    private static final ExecutorService threads = Executors.newCachedThreadPool();
 
     // initialization
     static {
@@ -379,6 +397,12 @@ public class I implements ClassLoadListener<Extensible> {
             // Create a lock after creating the temporary directory so there is no race condition
             // with another application trying to clean our temporary directory.
             new RandomAccessFile(temporary.resolve("lock").toFile(), "rw").getChannel().tryLock();
+
+            // Create default file system observer service. */
+            service = FileSystems.getDefault().newWatchService();
+
+            // Start file system observer.
+            threads.execute(make(I.class));
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -1161,6 +1185,23 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
+     * Observe file system.
+     * </p>
+     * 
+     * @param target
+     * @param listener
+     * @return
+     */
+    public static Disposable observe(Path path, FileListener listener, String... patterns) {
+        if (!Files.isDirectory(path)) {
+            patterns = new String[] {path.getFileName().toString()};
+            path = path.getParent();
+        }
+        return new Watch(path, path, listener, patterns);
+    }
+
+    /**
+     * <p>
      * Parse the specified xml {@link InputSource} using the specified sequence of {@link XMLFilter}
      * . The application can use this method to instruct the XML reader to begin parsing an XML
      * document from any valid input source (a character stream, a byte stream, or a URI).
@@ -1521,8 +1562,9 @@ public class I implements ClassLoadListener<Extensible> {
      * 
      * @param start A depature point. The result list doesn't include this starting path.
      * @param depth A maximum number of directory levels to visit.
-     * @param includeFilesOnly <code>true</code> includes files only (<em>not</em> including directories),
-     *            <code>false</code> includes directories only (<em>not</em> including files).
+     * @param includeFilesOnly <code>true</code> includes files only (<em>not</em> including
+     *            directories), <code>false</code> includes directories only (<em>not</em> including
+     *            files).
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      * @return All matched files.
      */
@@ -1741,6 +1783,7 @@ public class I implements ClassLoadListener<Extensible> {
     /**
      * @see ezbean.ClassLoadListener#load(java.lang.Class)
      */
+    @Override
     public final void load(Class extension) {
         // search and collect information for all extension points
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
@@ -1773,6 +1816,7 @@ public class I implements ClassLoadListener<Extensible> {
     /**
      * @see ezbean.ClassLoadListener#unload(java.lang.Class)
      */
+    @Override
     public final void unload(Class extension) {
         // search and collect information for all extension points
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
@@ -1798,6 +1842,74 @@ public class I implements ClassLoadListener<Extensible> {
                         lifestyles.remove(params[0]);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * @see java.lang.Runnable#run()
+     */
+    @Override
+    public final void run() {
+        int latest = 0;
+
+        while (true) {
+            try {
+                WatchKey key = service.take();
+                Path directory = (Path) key.watchable();
+
+                for (WatchEvent event : key.pollEvents()) {
+                    // OMFG!!! Kind is not enum!!! So we convert it int value for usability.
+                    // 0 : CREATE
+                    // 1 : DELETE
+                    // 2 : MODIFY
+                    Kind kind = event.kind();
+                    int type = kind == ENTRY_CREATE ? 0 : kind == ENTRY_DELETE ? 1 : 2;
+
+                    // make current modified path
+                    Path path = directory.resolve((Path) event.context());
+
+                    // integrate sequencial events
+                    int hash = Objects.hash(path, kind);
+
+                    if (hash == latest) {
+                        continue;
+                    }
+
+                    // update latest event
+                    latest = hash;
+
+                    for (Watch watch : watches.get(directory)) {
+                        if (watch.visitor.visitFile(path, null) == FileVisitResult.TERMINATE) {
+                            switch (type) {
+                            case 0: // CREATE
+                                watch.listener.create(path);
+
+                                if (Files.isDirectory(path)) {
+                                    watch.children.add(new Watch(path, watch));
+                                }
+                                break;
+
+                            case 1: // DELETE
+                                watch.listener.delete(path);
+                                break;
+
+                            default: // MODIFY
+                                watch.listener.modify(path);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // reset
+                if (!key.reset()) {
+                    for (Watch watch : watches.get(directory)) {
+                        watch.dispose();
+                    }
+                }
+            } catch (Exception e) {
+                throw quiet(e);
             }
         }
     }

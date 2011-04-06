@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.jdk;
+package ezbean;
 
 import java.nio.file.Path;
 
 /**
- * @version 2011/04/01 18:17:12
+ * @version 2011/04/06 17:36:41
  */
 public interface FileListener {
 

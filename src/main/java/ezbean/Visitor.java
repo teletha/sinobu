@@ -81,7 +81,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             // all files, including directories, encountered at max depth. So we use the value which
             // is greater than the user specified max depth, and skip lowest files using
             // SKIP_SUBTREE value.
-            this.depth = directory ? depth <= 0 ? Integer.MAX_VALUE : depth + 1 : 0;
+            this.depth = directory ? depth <= 0 || depth == Integer.MAX_VALUE ? Integer.MAX_VALUE : depth + 1 : 0;
 
             // The copy and move operations need the root path.
             this.from = directory && type < 2 ? from.getParent() : from;
@@ -94,7 +94,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
                 Files.createDirectories(to.getParent());
             }
 
-            // Parse and create path matchers..
+            // Parse and create path matchers.
             FileSystem system = from.getFileSystem();
             ArrayList<PathMatcher> includes = new ArrayList();
             ArrayList<PathMatcher> excludes = new ArrayList();
@@ -119,7 +119,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             this.directories = directories.toArray(new PathMatcher[directories.size()]);
 
             // Walk file tree actually.
-            Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), this.depth, this);
+            if (type <= 5) Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), this.depth, this);
         } catch (IOException e) {
             throw I.quiet(e);
         }
