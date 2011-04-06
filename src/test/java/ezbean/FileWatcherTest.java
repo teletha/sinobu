@@ -41,7 +41,7 @@ import ezunit.CleanRoom;
 public class FileWatcherTest {
 
     @Rule
-    public static final CleanRoom room = new CleanRoom();
+    public static final CleanRoom room = new CleanRoom(I.locateTemporary());
 
     /** The file system event listener. */
     private EventQueue queue = new EventQueue();
@@ -348,8 +348,8 @@ public class FileWatcherTest {
         try {
             Event retrieved = queue.poll(30, MILLISECONDS);
 
-            if (retrieved != null) {
-                throw new AssertionError(retrieved + " is illegal.");
+            while (retrieved != null) {
+                retrieved = queue.poll(30, MILLISECONDS);
             }
         } catch (InterruptedException e) {
             throw I.quiet(e);
