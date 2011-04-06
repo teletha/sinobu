@@ -48,7 +48,7 @@ import ezbean.I;
  * The environmental rule for test that depends on file system.
  * </p>
  * 
- * @version 2011/03/10 9:59:24
+ * @version 2011/04/06 22:47:29
  */
 public class CleanRoom extends Sandbox {
 
@@ -57,6 +57,9 @@ public class CleanRoom extends Sandbox {
 
     /** The root bioclean room for tests which are related with file system. */
     private static final Path clean = Paths.get("target/clean-room");
+
+    /** The virtual clean room. */
+    public static final CleanRoom Virtual = new CleanRoom(I.locateTemporary().toAbsolutePath());
 
     /** The temporary bioclean room for this instance which are related with file system. */
     public final Path root = clean.resolve(String.valueOf(counter.incrementAndGet()));
@@ -97,6 +100,14 @@ public class CleanRoom extends Sandbox {
         if (path != null) {
             if (path.isAbsolute()) {
                 directory = path;
+
+                if (Files.notExists(directory)) {
+                    try {
+                        Files.createDirectories(directory);
+                    } catch (IOException e) {
+                        throw I.quiet(e);
+                    }
+                }
             } else {
                 directory = directory.resolve(path);
             }

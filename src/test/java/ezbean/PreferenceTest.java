@@ -30,7 +30,7 @@ public class PreferenceTest {
     public static final PrivateModule module = new PrivateModule();
 
     @Rule
-    public static final CleanRoom room = new CleanRoom();
+    public static final CleanRoom room = new CleanRoom(I.locateTemporary());
 
     @Rule
     public static final EzbeanSetting config = new EzbeanSetting(room.root);
