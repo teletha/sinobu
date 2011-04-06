@@ -336,15 +336,7 @@ public class FileWatcherTest {
             }
         }
 
-        verifyNone();
-    }
-
-    /**
-     * <p>
-     * Verify that any events doesn't happen.
-     * </p>
-     */
-    private void verifyNone() {
+        // remove following events
         try {
             Event retrieved = queue.poll(30, MILLISECONDS);
 

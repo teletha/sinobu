@@ -37,7 +37,7 @@ import java.util.EnumSet;
 class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
     /** The source. */
-    private final Path from;
+     final Path from;
 
     /** The destination. */
     private final Path to;
@@ -212,20 +212,33 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         // Retrieve relative path from base.
         Path relative = from.relativize(path);
 
-        // File exclusion
-        for (PathMatcher matcher : excludes) {
-            if (matcher.matches(relative)) {
+        if (accept(relative)) {
+            switch (type) {
+            case 0: // copy
+                Files.copy(path, to.resolve(relative), COPY_ATTRIBUTES, REPLACE_EXISTING);
                 return CONTINUE;
-            }
-        }
 
-        // File inclusion
-        for (PathMatcher matcher : includes) {
-            if (matcher.matches(relative)) {
-                return visit(path, attrs);
+            case 1: // move
+                Files.move(path, to.resolve(relative), ATOMIC_MOVE, REPLACE_EXISTING);
+                return CONTINUE;
+
+            case 2: // delete
+                Files.delete(path);
+                return CONTINUE;
+
+            case 3: // walk file
+                add(path);
+                // fall-through to reduce footprint
+
+            case 4: // walk directory
+                return CONTINUE;
+
+            default:
+                return visitor.visitFile(path, attrs);
             }
+        } else {
+            return CONTINUE;
         }
-        return includes.length != 0 ? CONTINUE : visit(path, attrs);
     }
 
     /**
@@ -237,37 +250,26 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
     /**
      * <p>
-     * Helper method to invoke file visit actions.
+     * Helper method to test whether the path is acceptable or not.
      * </p>
      * 
-     * @param path
-     * @param attrs
-     * @return
-     * @throws IOException
+     * @param path A target path.
+     * @return A result.
      */
-    private FileVisitResult visit(Path path, BasicFileAttributes attrs) throws IOException {
-        switch (type) {
-        case 0: // copy
-            Files.copy(path, to.resolve(from.relativize(path)), COPY_ATTRIBUTES, REPLACE_EXISTING);
-            return CONTINUE;
-
-        case 1: // move
-            Files.move(path, to.resolve(from.relativize(path)), ATOMIC_MOVE, REPLACE_EXISTING);
-            return CONTINUE;
-
-        case 2: // delete
-            Files.delete(path);
-            return CONTINUE;
-
-        case 3: // walk file
-            add(path);
-            // fall-through to reduce footprint
-
-        case 4: // walk directory
-            return CONTINUE;
-
-        default:
-            return visitor.visitFile(path, attrs);
+    boolean accept(Path path) {
+        // File exclusion
+        for (PathMatcher matcher : excludes) {
+            if (matcher.matches(path)) {
+                return false;
+            }
         }
+
+        // File inclusion
+        for (PathMatcher matcher : includes) {
+            if (matcher.matches(path)) {
+                return true;
+            }
+        }
+        return includes.length == 0;
     }
 }
