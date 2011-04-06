@@ -150,6 +150,11 @@ public class PathPatternMatchingTest {
     }
 
     @Test
+    public void depthMAX() throws Exception {
+        assertCount(9, Integer.MAX_VALUE, true, test01);
+    }
+
+    @Test
     public void directory1() throws Exception {
         assertCount(2, 0, false, test01);
     }

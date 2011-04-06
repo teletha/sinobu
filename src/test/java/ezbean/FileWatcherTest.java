@@ -13,30 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.jdk;
+package ezbean;
 
-import static ezbean.jdk.FileWatchEventType.*;
+import static ezbean.FileWatchEventType.*;
 import static java.util.concurrent.TimeUnit.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.Disposable;
-import ezbean.I;
 import ezunit.CleanRoom;
 
 /**
@@ -60,16 +56,9 @@ public class FileWatcherTest {
 
     @After
     public void after() {
-        verifyNone();
-
         for (Disposable disposable : disposables) {
             disposable.dispose();
         }
-    }
-
-    @AfterClass
-    public static void afterClass() throws Exception {
-        Watcher.service.close();
     }
 
     @Test
@@ -99,23 +88,6 @@ public class FileWatcherTest {
 
         // verify events
         verify(path, Modified);
-    }
-
-    @Test
-    public void modifyMultipleFilesInSameDirectory1() throws Exception {
-        Path path1 = room.locateFile("sameDirectory1");
-        Path path2 = room.locateFile("sameDirectory2");
-
-        // observe
-        observe(path1); // only 1
-
-        // modify and verify
-        write(path1);
-        verify(path1, Modified);
-
-        // modify
-        write(path2);
-
     }
 
     @Test
@@ -181,10 +153,10 @@ public class FileWatcherTest {
     }
 
     @Test
-    public void modifyFileFromDirectory() throws Exception {
+    public void modifyFileObserveFromDirectory() throws Exception {
         Path path = room.locateFile("directory/file");
 
-        // observe
+        // observe root
         observe(path.getParent());
 
         // modify
@@ -195,21 +167,7 @@ public class FileWatcherTest {
     }
 
     @Test
-    public void modifyFileFromDirectoryDeeply() throws Exception {
-        Path path = room.locateFile("directory/child/file");
-
-        // observe
-        observe(path.getParent().getParent());
-
-        // modify
-        write(path);
-
-        // verify events
-        verify(path, Modified);
-    }
-
-    @Test
-    public void modifyDirectory() throws Exception {
+    public void modifyDirectoryObserveFromDirectory() throws Exception {
         Path path = room.locateDirectory("directory/child");
 
         // observe
@@ -223,17 +181,59 @@ public class FileWatcherTest {
     }
 
     @Test
-    public void modifyDirectoryDeeply() throws Exception {
+    public void modifyFileObserveFromDeepDirectory() throws Exception {
+        Path path = room.locateFile("directory/child/item/deep/file");
+
+        // observe root
+        observe(path.getParent().getParent().getParent());
+
+        // modify
+        write(path);
+
+        // verify events
+        verify(path, Modified);
+    }
+
+    @Test
+    public void modifyDirectoryObserveFromDeepDirectory() throws Exception {
         Path path = room.locateDirectory("directory/child/descendant");
 
         // observe
-        // observe(path.getParent().getParent());
+        observe(path.getParent().getParent());
 
         // modify
-        // touch(path);
+        touch(path);
 
         // verify events
-        // verify(path, Modified);
+        verify(path, Modified);
+    }
+
+    @Test
+    public void modifyFileInCreatedDirectory() throws Exception {
+        Path directory = room.locateDirectory("directory");
+        Path file = room.locateAbsent("directory/child/file");
+
+        // observe
+        observe(directory);
+
+        // create sub directory
+        Files.createDirectories(file.getParent());
+
+        // verify events
+        verify(file.getParent(), Created);
+
+        // create file in created directory
+        Files.createFile(file);
+
+        // verify events
+        verify(file, Created);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void absent() throws Exception {
+        Path path = room.locateAbsent("absent/file");
+
+        observe(path);
     }
 
     /**
@@ -244,7 +244,7 @@ public class FileWatcherTest {
      * @param path
      */
     private void observe(Path path) {
-        disposables.add(observe(path, queue));
+        disposables.add(I.observe(path, queue));
     }
 
     /**
@@ -322,7 +322,7 @@ public class FileWatcherTest {
     private void verify(Path path, FileWatchEventType... events) {
         for (FileWatchEventType event : events) {
             try {
-                Event retrieved = queue.poll(1000, MILLISECONDS);
+                Event retrieved = queue.poll(500, MILLISECONDS);
 
                 if (retrieved == null) {
                     throw new AssertionError(event + " event doesn't rise in '" + path + "'.");
@@ -335,6 +335,8 @@ public class FileWatcherTest {
                 throw I.quiet(e);
             }
         }
+
+        verifyNone();
     }
 
     /**
@@ -344,7 +346,7 @@ public class FileWatcherTest {
      */
     private void verifyNone() {
         try {
-            Event retrieved = queue.poll(50, MILLISECONDS);
+            Event retrieved = queue.poll(30, MILLISECONDS);
 
             if (retrieved != null) {
                 throw new AssertionError(retrieved + " is illegal.");
@@ -368,7 +370,7 @@ public class FileWatcherTest {
         }
 
         /**
-         * @see ezbean.jdk.FileListener#create(java.nio.file.Path)
+         * @see ezbean.FileListener#create(java.nio.file.Path)
          */
         @Override
         public void create(Path path) {
@@ -380,7 +382,7 @@ public class FileWatcherTest {
         }
 
         /**
-         * @see ezbean.jdk.FileListener#delete(java.nio.file.Path)
+         * @see ezbean.FileListener#delete(java.nio.file.Path)
          */
         @Override
         public void delete(Path path) {
@@ -392,7 +394,7 @@ public class FileWatcherTest {
         }
 
         /**
-         * @see ezbean.jdk.FileListener#modify(java.nio.file.Path)
+         * @see ezbean.FileListener#modify(java.nio.file.Path)
          */
         @Override
         public void modify(Path path) {
@@ -460,20 +462,4 @@ public class FileWatcherTest {
             return "Event [path=" + path + ", type=" + type + "]";
         }
     }
-
-    /**
-     * <p>
-     * Observe file system.
-     * </p>
-     * 
-     * @param target
-     * @param listener
-     * @return
-     */
-    public synchronized static Disposable observe(Path path, FileListener listener) {
-
-        return new Watcher(path, listener);
-    }
-
-    static Executor pool = Executors.newCachedThreadPool();
 }
