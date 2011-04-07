@@ -20,18 +20,13 @@ import static java.nio.file.StandardWatchEventKind.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.WatchKey;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
- * @version 2011/04/06 17:36:35
+ * @version 2011/04/07 20:31:03
  */
 class Watch implements Disposable {
-
-    private static ConcurrentHashMap<Path, WatchKey> keies = new ConcurrentHashMap();
-
-    /** The registered directory path. */
-    final Path directory;
 
     /** The user speecified event listener. */
     final FileListener listener;
@@ -39,60 +34,29 @@ class Watch implements Disposable {
     /** The pattern matching utility. */
     final Visitor visitor;
 
-    /** The sub watchers. */
-    final CopyOnWriteArrayList<Watch> children = new CopyOnWriteArrayList();
-
-    /**
-     * @param directory
-     * @param parent
-     */
-    Watch(Path directory, Watch parent) {
-        this.directory = directory;
-        this.listener = parent.listener;
-        this.visitor = parent.visitor;
-
-        try {
-            keies.put(directory, directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY));
-
-            // register
-            I.watches.push(directory, this);
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
-
     /**
      * @param directory
      * @param listener
      */
-    Watch(Path directory, Path root, FileListener listener, String... patterns) {
-        this.directory = directory;
+    Watch(Path directory, FileListener listener, String... patterns) {
         this.listener = listener;
-        this.visitor = new Visitor(root, null, 6, null, patterns);
+        this.visitor = new Visitor(directory, null, 6, null, patterns);
 
-        try {
-            for (Path child : I.walkDirectory(directory)) {
-                children.add(new Watch(child, directory, listener, patterns));
-            }
-
-            keies.put(directory, directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY));
-
-            // register
-            I.watches.push(directory, this);
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
+        // register
+        register(directory);
     }
 
     void register(Path path) {
+        List<Path> list = I.walkDirectory(path);
+        list.add(path);
 
-        try {
-            keies.put(path, path.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY));
-
-            // register
-            I.watches.push(path, this);
-        } catch (IOException e) {
-            throw I.quiet(e);
+        for (Path directory : list) {
+            try {
+                // register
+                I.watches.push(directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY), this);
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
         }
     }
 
@@ -101,15 +65,13 @@ class Watch implements Disposable {
      */
     @Override
     public void dispose() {
-        I.watches.pull(directory, this);
+        for (Entry<WatchKey, List<Watch>> entry : I.watches.entrySet()) {
+            if (entry.getValue().remove(this)) {
 
-        if (I.watches.get(directory).size() == 0) {
-            keies.remove(directory).cancel();
-        }
-
-        // dispose sub directories
-        for (Watch watch : children) {
-            watch.dispose();
+                if (entry.getValue().size() == 0) {
+                    entry.getKey().cancel();
+                }
+            }
         }
     }
 }
