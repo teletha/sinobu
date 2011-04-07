@@ -125,63 +125,13 @@ public class PathPatternMatchingTest {
     }
 
     @Test
-    public void depth1() throws Exception {
-        assertCount(3, 1, true, test01);
-    }
-
-    @Test
-    public void depth2() throws Exception {
-        assertCount(0, 1, true, test02);
-    }
-
-    @Test
-    public void depthDeeply1() throws Exception {
-        assertCount(2, 2, true, test02);
-    }
-
-    @Test
-    public void depthDeeply2() throws Exception {
-        assertCount(5, 3, true, test02);
-    }
-
-    @Test
-    public void depthZero() throws Exception {
-        assertCount(9, 0, true, test01);
-    }
-
-    @Test
-    public void depthNegative() throws Exception {
-        assertCount(9, -1, true, test01);
-    }
-
-    @Test
-    public void depthMAX() throws Exception {
-        assertCount(9, Integer.MAX_VALUE, true, test01);
-    }
-
-    @Test
     public void directory1() throws Exception {
-        assertCount(2, 0, false, test01);
+        assertCount(2, false, test01);
     }
 
     @Test
     public void directory2() throws Exception {
-        assertCount(9, 0, false, test02);
-    }
-
-    @Test
-    public void directoryDepth() throws Exception {
-        assertCount(2, 1, false, test02);
-    }
-
-    @Test
-    public void directoryDeepDepth1() throws Exception {
-        assertCount(6, 2, false, test02);
-    }
-
-    @Test
-    public void directoryDeepDepth2() throws Exception {
-        assertCount(8, 3, false, test02);
+        assertCount(9, false, test02);
     }
 
     /**
@@ -211,9 +161,9 @@ public class PathPatternMatchingTest {
      * @param includeFilesOnly
      * @param patterns
      */
-    private void assertCount(int expected, int depth, boolean includeFilesOnly, CleanRoom room, String... patterns) {
+    private void assertCount(int expected, boolean includeFilesOnly, CleanRoom room, String... patterns) {
         try {
-            assert expected == I.walk(room.root, depth, includeFilesOnly, patterns).size();
+            assert expected == I.walk(room.root, includeFilesOnly, patterns).size();
         } finally {
             counter.count = 0;
         }
