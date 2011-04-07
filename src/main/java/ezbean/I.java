@@ -299,7 +299,7 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
     static final WatchService service;
 
     /** The file system observer mapping. */
-    static final Listeners<Path, Watch> watches = new Listeners();
+    static final Listeners<WatchKey, Watch> watches = new Listeners();
 
     /** The cache between Model and Lifestyle. */
     private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = I.aware(new ConcurrentHashMap<Class, Lifestyle>());
@@ -1197,7 +1197,7 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
             patterns = new String[] {path.getFileName().toString()};
             path = path.getParent();
         }
-        return new Watch(path, path, listener, patterns);
+        return new Watch(path, listener, patterns);
     }
 
     /**
@@ -1875,14 +1875,14 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
                     // update latest event
                     latest = hash;
 
-                    for (Watch watch : watches.get(directory)) {
+                    for (Watch watch : watches.get(key)) {
                         if (watch.visitor.accept(watch.visitor.from.relativize(path))) {
                             switch (type) {
                             case 0: // CREATE
                                 watch.listener.create(path);
 
                                 if (Files.isDirectory(path)) {
-                                    watch.children.add(new Watch(path, watch));
+                                    watch.register(path);
                                 }
                                 break;
 
