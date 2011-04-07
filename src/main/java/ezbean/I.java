@@ -1557,16 +1557,12 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
 
     /**
      * <p>
-     * Walk a file tree and collect files you want to filter by various conditions.
+     * Walk a file tree and collect directories you want to filter by various conditions.
      * </p>
      * 
      * @param start A depature point. The result list doesn't include this starting path.
-     * @param depth A maximum number of directory levels to visit.
-     * @param includeFilesOnly <code>true</code> includes files only (<em>not</em> including
-     *            directories), <code>false</code> includes directories only (<em>not</em> including
-     *            files).
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
-     * @return All matched files.
+     * @return All matched directories. (<em>not</em> including file)
      */
     public static List<Path> walkDirectory(Path start, String... patterns) {
         return new Visitor(start, null, 4, null, patterns);
