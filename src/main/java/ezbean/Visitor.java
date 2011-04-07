@@ -57,9 +57,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
     /** The exclude directory pattern. */
     private final PathMatcher[] directories;
 
-    /** The current file system depth. */
-    private int current = 0;
-
     /**
      * <p>
      * Utility for file tree traversal.
@@ -124,22 +121,16 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
-        current++;
-
         // Retrieve relative path from base.
         Path relative = from.relativize(path);
 
         // Skip root directory.
-        if (current != 1) {
-            // Directory exclusion make fast traversing file tree.
-            for (PathMatcher matcher : directories) {
-                if (matcher.matches(relative)) {
-                    // SKIP_SUBTREE doesn't invoke postVisitDirectory method.
-                    // So we decrement current depth now.
-                    current--;
-
-                    return SKIP_SUBTREE;
-                }
+        // Directory exclusion make fast traversing file tree.
+        for (PathMatcher matcher : directories) {
+            // Normally, we can't use identical equal against path object. But only root path object
+            // is passed as parameter value, so we can use identical equal here.
+            if (from != path && matcher.matches(relative)) {
+                return SKIP_SUBTREE;
             }
         }
 
@@ -154,7 +145,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
         case 4: // walk directory
             // skip root directory
-            if (current != 1) add(path);
+            if (from != path) add(path);
             // fall-through to reduce footprint
 
         case 3: // walk file
@@ -162,7 +153,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
         default:
             // Skip root directory
-            return current == 1 ? CONTINUE : visitor.preVisitDirectory(path, attrs);
+            return from == path ? CONTINUE : visitor.preVisitDirectory(path, attrs);
         }
     }
 
@@ -170,8 +161,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
      */
     public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
-        current--;
-
         switch (type) {
         case 0: // copy
             Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
@@ -191,7 +180,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
         default:
             // Skip root directory.
-            return current == 0 ? CONTINUE : visitor.postVisitDirectory(path, exc);
+            return from == path ? CONTINUE : visitor.postVisitDirectory(path, exc);
         }
     }
 

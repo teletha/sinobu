@@ -1568,8 +1568,8 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      * @return All matched files.
      */
-    public static List<Path> walk(Path start, boolean includeFilesOnly, String... patterns) {
-        return new Visitor(start, null, includeFilesOnly ? 3 : 4, null, patterns);
+    public static List<Path> walkDirectory(Path start, String... patterns) {
+        return new Visitor(start, null, 4, null, patterns);
     }
 
     /**
