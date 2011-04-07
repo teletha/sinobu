@@ -1870,7 +1870,7 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
                     Path path = directory.resolve((Path) event.context());
 
                     // integrate sequencial events
-                    int hash = Objects.hash(path, kind);
+                    int hash = Objects.hash(path, kind, key);
 
                     if (hash == latest) {
                         continue;
@@ -1904,6 +1904,7 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
 
                 // reset
                 if (!key.reset()) {
+
                     for (Watch watch : watches.get(directory)) {
                         watch.dispose();
                     }
