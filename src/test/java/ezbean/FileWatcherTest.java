@@ -125,6 +125,34 @@ public class FileWatcherTest {
     }
 
     @Test
+    public void modifyMultipleFilesInSameDirectoryButDisposeOne() throws Exception {
+        Path path1 = room.locateFile("sameDirectory1");
+        Path path2 = room.locateFile("sameDirectory2");
+
+        // observe
+        Disposable disposable = observe(path1);
+        observe(path2);
+
+        // modify and verify
+        write(path1);
+        verify(path1, Modified);
+
+        // modify and verify
+        write(path2);
+        verify(path2, Modified);
+
+        disposable.dispose();
+
+        // modify and verify
+        write(path1);
+        verifyNone();
+
+        // modify and verify
+        write(path2);
+        verify(path2, Modified);
+    }
+
+    @Test
     public void createFile() throws Exception {
         Path path = room.locateAbsent("test");
 
@@ -236,6 +264,38 @@ public class FileWatcherTest {
         observe(path);
     }
 
+    @Test
+    public void observeTwice() throws Exception {
+        Path path = room.locateFile("test");
+
+        // observe
+        Disposable disposable = observe(path);
+
+        // modify
+        write(path);
+
+        // verify events
+        verify(path, Modified);
+
+        // dispose
+        disposable.dispose();
+
+        // modify
+        write(path);
+
+        // verify events
+        verifyNone();
+
+        // observe
+        disposable = observe(path);
+
+        // modify
+        write(path);
+
+        // verify events
+        verify(path, Modified);
+    }
+
     /**
      * <p>
      * Helper method to observe the specified path.
@@ -243,8 +303,12 @@ public class FileWatcherTest {
      * 
      * @param path
      */
-    private void observe(Path path) {
-        disposables.add(I.observe(path, queue));
+    private Disposable observe(Path path) {
+        Disposable disposable = I.observe(path, queue);
+
+        disposables.add(disposable);
+
+        return disposable;
     }
 
     /**
@@ -338,10 +402,27 @@ public class FileWatcherTest {
 
         // remove following events
         try {
-            Event retrieved = queue.poll(30, MILLISECONDS);
+            Event retrieved = queue.poll(10, MILLISECONDS);
 
             while (retrieved != null) {
-                retrieved = queue.poll(30, MILLISECONDS);
+                retrieved = queue.poll(10, MILLISECONDS);
+            }
+        } catch (InterruptedException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Heleper method to check no event is queued.
+     * </p>
+     */
+    private void verifyNone() {
+        try {
+            Event event = queue.poll(10, MILLISECONDS);
+
+            if (event != null) {
+                throw new AssertionError("The unnecessary event is found.");
             }
         } catch (InterruptedException e) {
             throw I.quiet(e);

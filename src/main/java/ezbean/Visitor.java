@@ -37,10 +37,10 @@ import java.util.EnumSet;
 class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
     /** The source. */
-     final Path from;
+    final Path from;
 
     /** The destination. */
-    private final Path to;
+    final Path to;
 
     /** The operation type. */
     private final int type;
