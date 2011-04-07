@@ -57,31 +57,20 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
     /** The exclude directory pattern. */
     private final PathMatcher[] directories;
 
-    /** The max file system depth. */
-    private final int depth;
-
     /** The current file system depth. */
-    private int current = 1;
+    private int current = 0;
 
     /**
      * <p>
      * Utility for file tree traversal.
      * </p>
      */
-    Visitor(Path from, Path to, int type, int depth, FileVisitor visitor, String... patterns) {
+    Visitor(Path from, Path to, int type, FileVisitor visitor, String... patterns) {
         this.type = type;
         this.visitor = visitor;
 
         try {
             boolean directory = Files.isDirectory(from);
-
-            // The depth of scanning.
-            //
-            // The {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked for
-            // all files, including directories, encountered at max depth. So we use the value which
-            // is greater than the user specified max depth, and skip lowest files using
-            // SKIP_SUBTREE value.
-            this.depth = directory ? depth <= 0 || depth == Integer.MAX_VALUE ? Integer.MAX_VALUE : depth + 1 : 0;
 
             // The copy and move operations need the root path.
             this.from = directory && type < 2 ? from.getParent() : from;
@@ -101,6 +90,11 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             ArrayList<PathMatcher> directories = new ArrayList();
 
             for (String pattern : patterns) {
+                // convert pattern to reduce unnecessary file system scanning
+                if (pattern.equals("*")) {
+                    pattern = "!*/**";
+                }
+
                 if (pattern.charAt(0) != '!') {
                     // include
                     includes.add(system.getPathMatcher("glob:".concat(pattern)));
@@ -119,7 +113,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             this.directories = directories.toArray(new PathMatcher[directories.size()]);
 
             // Walk file tree actually.
-            if (type <= 5) Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), this.depth, this);
+            if (type <= 5) Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, this);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -130,13 +124,22 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+        current++;
+
         // Retrieve relative path from base.
         Path relative = from.relativize(path);
 
-        // Directory exclusion make fast traversing file tree.
-        for (PathMatcher matcher : directories) {
-            if (matcher.matches(relative)) {
-                return SKIP_SUBTREE;
+        // Skip root directory.
+        if (current != 1) {
+            // Directory exclusion make fast traversing file tree.
+            for (PathMatcher matcher : directories) {
+                if (matcher.matches(relative)) {
+                    // SKIP_SUBTREE doesn't invoke postVisitDirectory method.
+                    // So we decrement current depth now.
+                    current--;
+
+                    return SKIP_SUBTREE;
+                }
             }
         }
 
@@ -152,28 +155,14 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         case 4: // walk directory
             // skip root directory
             if (current != 1) add(path);
-
             // fall-through to reduce footprint
 
         case 3: // walk file
-            // The {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked for
-            // all files, including directories, encountered at max depth. So we use the value which
-            // is greater than the user specified max depth, and skip lowest files using
-            // SKIP_SUBTREE value.
-            //
-            // At first, we must check max depth.
-            if (current == depth) {
-                return SKIP_SUBTREE;
-            }
-
-            // Then, we can count up current depth.
-            current++;
-
-            // API definition
             return CONTINUE;
 
         default:
-            return current++ == 1 ? CONTINUE : visitor.preVisitDirectory(path, attrs);
+            // Skip root directory
+            return current == 1 ? CONTINUE : visitor.preVisitDirectory(path, attrs);
         }
     }
 
@@ -181,6 +170,8 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
      */
     public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
+        current--;
+
         switch (type) {
         case 0: // copy
             Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
@@ -196,11 +187,11 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
         case 3: // walk file
         case 4: // walk directory
-            current--;
             return CONTINUE;
 
         default:
-            return --current == 1 ? CONTINUE : visitor.postVisitDirectory(path, exc);
+            // Skip root directory.
+            return current == 0 ? CONTINUE : visitor.postVisitDirectory(path, exc);
         }
     }
 
