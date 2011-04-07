@@ -20,12 +20,15 @@ import static java.nio.file.StandardWatchEventKind.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.WatchKey;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @version 2011/04/06 17:36:35
  */
 class Watch implements Disposable {
+
+    private static ConcurrentHashMap<Path, WatchKey> keies = new ConcurrentHashMap();
 
     /** The registered directory path. */
     final Path directory;
@@ -35,9 +38,6 @@ class Watch implements Disposable {
 
     /** The pattern matching utility. */
     final Visitor visitor;
-
-    /** The actual event listener. */
-    final WatchKey key;
 
     /** The sub watchers. */
     final CopyOnWriteArrayList<Watch> children = new CopyOnWriteArrayList();
@@ -52,7 +52,7 @@ class Watch implements Disposable {
         this.visitor = parent.visitor;
 
         try {
-            this.key = directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            keies.put(directory, directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY));
 
             // register
             I.watches.push(directory, this);
@@ -74,10 +74,23 @@ class Watch implements Disposable {
             for (Path child : I.walkDirectory(directory)) {
                 children.add(new Watch(child, directory, listener, patterns));
             }
-            this.key = directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+
+            keies.put(directory, directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY));
 
             // register
             I.watches.push(directory, this);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    void register(Path path) {
+
+        try {
+            keies.put(path, path.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY));
+
+            // register
+            I.watches.push(path, this);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -91,7 +104,7 @@ class Watch implements Disposable {
         I.watches.pull(directory, this);
 
         if (I.watches.get(directory).size() == 0) {
-            key.cancel();
+            keies.remove(directory).cancel();
         }
 
         // dispose sub directories
