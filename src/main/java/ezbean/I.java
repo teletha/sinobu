@@ -1899,12 +1899,7 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
                 }
 
                 // reset
-                if (!key.reset()) {
-
-                    for (Watch watch : watches.get(directory)) {
-                        watch.dispose();
-                    }
-                }
+                key.reset();
             } catch (Exception e) {
                 throw quiet(e);
             }
