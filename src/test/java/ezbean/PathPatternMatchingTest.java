@@ -115,6 +115,11 @@ public class PathPatternMatchingTest {
     }
 
     @Test
+    public void wildcardOnly() throws Exception {
+        assertCount(3, "*");
+    }
+
+    @Test
     public void excludeDirectory() {
         assertCount(6, "!directory1/**");
     }
