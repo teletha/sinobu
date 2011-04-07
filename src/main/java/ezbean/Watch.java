@@ -71,7 +71,7 @@ class Watch implements Disposable {
         this.visitor = new Visitor(root, null, 6, null, patterns);
 
         try {
-            for (Path child : I.walk(directory, false)) {
+            for (Path child : I.walkDirectory(directory)) {
                 children.add(new Watch(child, directory, listener, patterns));
             }
             this.key = directory.register(I.service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);

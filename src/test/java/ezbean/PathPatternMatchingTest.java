@@ -126,12 +126,12 @@ public class PathPatternMatchingTest {
 
     @Test
     public void directory1() throws Exception {
-        assertCount(2, false, test01);
+        assertDirectoryCount(2, test01);
     }
 
     @Test
     public void directory2() throws Exception {
-        assertCount(9, false, test02);
+        assertDirectoryCount(9, test02);
     }
 
     /**
@@ -161,9 +161,9 @@ public class PathPatternMatchingTest {
      * @param includeFilesOnly
      * @param patterns
      */
-    private void assertCount(int expected, boolean includeFilesOnly, CleanRoom room, String... patterns) {
+    private void assertDirectoryCount(int expected, CleanRoom room, String... patterns) {
         try {
-            assert expected == I.walk(room.root, includeFilesOnly, patterns).size();
+            assert expected == I.walkDirectory(room.root, patterns).size();
         } finally {
             counter.count = 0;
         }
