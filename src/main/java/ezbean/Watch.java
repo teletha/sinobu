@@ -49,10 +49,9 @@ class Watch implements Disposable, Runnable {
      * @param visitor Name matching patterns.
      */
     Watch(Path path, PathListener listener, Visitor visitor) {
-        this.listener = listener;
-        this.visitor = visitor;
-
         try {
+            this.listener = listener;
+            this.visitor = visitor;
             this.service = path.getFileSystem().newWatchService();
 
             // register
