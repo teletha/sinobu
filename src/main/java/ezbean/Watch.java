@@ -22,13 +22,12 @@ import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
 
 /**
- * @version 2011/04/08 16:05:45
+ * @version 2011/04/08 17:40:16
  */
 class Watch implements Disposable, Runnable {
 
@@ -97,34 +96,21 @@ class Watch implements Disposable, Runnable {
                 WatchKey key = service.take();
 
                 for (WatchEvent event : key.pollEvents()) {
-                    // OMFG!!! Kind is not enum!!! So we convert it int value for usability.
-                    // 0 : CREATE
-                    // 1 : DELETE
-                    // 2 : MODIFY
-                    Kind kind = event.kind();
-                    int type = kind == ENTRY_CREATE ? 0 : kind == ENTRY_DELETE ? 1 : 2;
-
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
 
                     // pattern matching
                     if (visitor.accept(visitor.from.relativize(path))) {
-                        switch (type) {
-                        case 0: // CREATE
+                        if (event.kind() == ENTRY_CREATE) {
                             listener.create(path); // fire event
 
                             if (Files.isDirectory(path)) {
                                 register(path);
                             }
-                            break;
-
-                        case 1: // DELETE
+                        } else if (event.kind() == ENTRY_DELETE) {
                             listener.delete(path); // fire event
-                            break;
-
-                        default: // MODIFY
+                        } else {
                             listener.modify(path); // fire event
-                            break;
                         }
                     }
                 }
