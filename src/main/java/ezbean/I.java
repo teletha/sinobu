@@ -1166,10 +1166,27 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Observe the file system change event of the specified path.
+     * Observe the file system change and raises events when a file, directory, or file in a
+     * directory, changes.
+     * </p>
+     * <p>
+     * You can watch for changes in files and subdirectories of the specified directory.
+     * </p>
+     * <p>
+     * The operating system interpret a cut-and-paste action or a move action as a rename action for
+     * a directory and its contents. If you cut and paste a folder with files into a directory being
+     * watched, the {@link PathListener} object reports only the directory as new, but not its
+     * contents because they are essentially only renamed.
+     * </p>
+     * <p>
+     * Common file system operations might raise more than one event. For example, when a file is
+     * moved from one directory to another, several Modify and some Create and Delete events might
+     * be raised. Moving a file is a complex operation that consists of multiple simple operations,
+     * therefore raising multiple events. Likewise, some applications might cause additional file
+     * system events that are detected by {@link PathListener} .
      * </p>
      * 
-     * @param path A target path you want to observe.
+     * @param path A target path you want to observe. (file and directory are acceptable)
      * @param listener A event listener.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
      *            patterns if you want to observe a file.
@@ -1182,8 +1199,9 @@ public class I implements ClassLoadListener<Extensible> {
      *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
+     * @see PathListener
      */
-    public static Disposable observe(Path path, FileListener listener, String... patterns) {
+    public static Disposable observe(Path path, PathListener listener, String... patterns) {
         if (!Files.isDirectory(path)) {
             patterns = new String[] {path.getFileName().toString()};
             path = path.getParent();

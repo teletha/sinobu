@@ -479,14 +479,14 @@ public class FileWatcherTest {
      * @version 2011/04/03 14:14:01
      */
     @SuppressWarnings("serial")
-    private static class EventQueue extends SynchronousQueue<Event> implements FileListener {
+    private static class EventQueue extends SynchronousQueue<Event> implements PathListener {
 
         private EventQueue() {
             super(true);
         }
 
         /**
-         * @see ezbean.FileListener#create(java.nio.file.Path)
+         * @see ezbean.PathListener#create(java.nio.file.Path)
          */
         @Override
         public void create(Path path) {
@@ -498,7 +498,7 @@ public class FileWatcherTest {
         }
 
         /**
-         * @see ezbean.FileListener#delete(java.nio.file.Path)
+         * @see ezbean.PathListener#delete(java.nio.file.Path)
          */
         @Override
         public void delete(Path path) {
@@ -510,7 +510,7 @@ public class FileWatcherTest {
         }
 
         /**
-         * @see ezbean.FileListener#modify(java.nio.file.Path)
+         * @see ezbean.PathListener#modify(java.nio.file.Path)
          */
         @Override
         public void modify(Path path) {
