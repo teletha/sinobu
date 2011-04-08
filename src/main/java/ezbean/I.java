@@ -15,8 +15,6 @@
  */
 package ezbean;
 
-import static java.nio.file.StandardWatchEventKind.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +29,6 @@ import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -39,10 +36,6 @@ import java.nio.file.LinkPermission;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -218,7 +211,7 @@ import ezbean.xml.XMLWriter;
  * @see ServiceLoader
  * @version 2011/03/31 17:38:41
  */
-public class I implements ClassLoadListener<Extensible>, Runnable {
+public class I implements ClassLoadListener<Extensible> {
 
     // Candidates of Method Name
     //
@@ -294,12 +287,6 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
 
     /** The list of module aware maps. */
     static final List<WeakReference<Map>> awares = new CopyOnWriteArrayList();
-
-    /** The file system observer service. */
-    static final WatchService service;
-
-    /** The file system observer mapping. */
-    static final Listeners<WatchKey, Watch> watches = new Listeners();
 
     /** The cache between Model and Lifestyle. */
     private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = I.aware(new ConcurrentHashMap<Class, Lifestyle>());
@@ -397,12 +384,6 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
             // Create a lock after creating the temporary directory so there is no race condition
             // with another application trying to clean our temporary directory.
             new RandomAccessFile(temporary.resolve("lock").toFile(), "rw").getChannel().tryLock();
-
-            // Create default file system observer service. */
-            service = FileSystems.getDefault().newWatchService();
-
-            // Start file system observer.
-            threads.execute(make(I.class));
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -1197,7 +1178,15 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
             patterns = new String[] {path.getFileName().toString()};
             path = path.getParent();
         }
-        return new Watch(path, listener, patterns);
+
+        // Create logical file system watch service.
+        Watch watch = new Watch(path, listener, patterns);
+
+        // Run in anothor thread.
+        threads.execute(watch);
+
+        // API definition
+        return watch;
     }
 
     /**
@@ -1838,70 +1827,6 @@ public class I implements ClassLoadListener<Extensible>, Runnable {
                         lifestyles.remove(params[0]);
                     }
                 }
-            }
-        }
-    }
-
-    /**
-     * @see java.lang.Runnable#run()
-     */
-    @Override
-    public final void run() {
-        int latest = 0;
-
-        while (true) {
-            try {
-                WatchKey key = service.take();
-                Path directory = (Path) key.watchable();
-
-                for (WatchEvent event : key.pollEvents()) {
-                    // OMFG!!! Kind is not enum!!! So we convert it int value for usability.
-                    // 0 : CREATE
-                    // 1 : DELETE
-                    // 2 : MODIFY
-                    Kind kind = event.kind();
-                    int type = kind == ENTRY_CREATE ? 0 : kind == ENTRY_DELETE ? 1 : 2;
-
-                    // make current modified path
-                    Path path = directory.resolve((Path) event.context());
-
-                    // integrate sequencial events
-                    int hash = Objects.hash(path, kind, key);
-
-                    if (hash == latest) {
-                        continue;
-                    }
-
-                    // update latest event
-                    latest = hash;
-
-                    for (Watch watch : watches.get(key)) {
-                        if (watch.visitor.accept(watch.visitor.from.relativize(path))) {
-                            switch (type) {
-                            case 0: // CREATE
-                                watch.listener.create(path);
-
-                                if (Files.isDirectory(path)) {
-                                    watch.register(path);
-                                }
-                                break;
-
-                            case 1: // DELETE
-                                watch.listener.delete(path);
-                                break;
-
-                            default: // MODIFY
-                                watch.listener.modify(path);
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // reset
-                key.reset();
-            } catch (Exception e) {
-                throw quiet(e);
             }
         }
     }
