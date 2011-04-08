@@ -58,9 +58,6 @@ public class CleanRoom extends Sandbox {
     /** The root bioclean room for tests which are related with file system. */
     private static final Path clean = Paths.get("target/clean-room");
 
-    /** The virtual clean room. */
-    public static final CleanRoom Virtual = new CleanRoom(I.locateTemporary().toAbsolutePath());
-
     /** The temporary bioclean room for this instance which are related with file system. */
     public final Path root = clean.resolve(String.valueOf(counter.incrementAndGet()));
 
