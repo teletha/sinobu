@@ -15,7 +15,6 @@
  */
 package ezbean;
 
-import static ezbean.FileWatchEventType.*;
 import static java.util.concurrent.TimeUnit.*;
 
 import java.io.IOException;
@@ -35,12 +34,21 @@ import org.junit.Test;
 import ezunit.CleanRoom;
 
 /**
- * @version 2011/04/01 16:45:40
+ * @version 2011/04/09 7:09:37
  */
-public class FileWatcherTest {
+public class PathObservationTest {
 
     @Rule
     public static final CleanRoom room = new CleanRoom(I.locateTemporary());
+
+    /** The event type. */
+    private static final String Created = "create";
+
+    /** The event type. */
+    private static final String Deleted = "delete";
+
+    /** The event type. */
+    private static final String Modified = "modify";
 
     /** The file system event listener. */
     private EventQueue queue = new EventQueue();
@@ -429,8 +437,8 @@ public class FileWatcherTest {
      * 
      * @param path
      */
-    private void verify(Path path, FileWatchEventType... events) {
-        for (FileWatchEventType event : events) {
+    private void verify(Path path, String... events) {
+        for (String event : events) {
             try {
                 Event retrieved = queue.poll(200, MILLISECONDS);
 
@@ -531,43 +539,15 @@ public class FileWatcherTest {
         private final Path path;
 
         /** The event type. */
-        private final FileWatchEventType type;
+        private final String type;
 
         /**
          * @param path
          * @param type
          */
-        private Event(Path path, FileWatchEventType type) {
+        private Event(Path path, String type) {
             this.path = path;
             this.type = type;
-        }
-
-        /**
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((path == null) ? 0 : path.hashCode());
-            result = prime * result + ((type == null) ? 0 : type.hashCode());
-            return result;
-        }
-
-        /**
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            Event other = (Event) obj;
-            if (path == null) {
-                if (other.path != null) return false;
-            } else if (!path.equals(other.path)) return false;
-            if (type != other.type) return false;
-            return true;
         }
 
         /**

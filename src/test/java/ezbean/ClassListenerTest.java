@@ -25,7 +25,7 @@ import ezbean.sample.RuntimeAnnotation1;
 import ezunit.PrivateModule;
 
 /**
- * @version 2011/03/22 16:43:15
+ * @version 2011/04/09 7:09:57
  */
 public class ClassListenerTest {
 

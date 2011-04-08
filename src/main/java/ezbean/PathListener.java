@@ -24,7 +24,7 @@ import java.nio.file.Path;
  * </p>
  * 
  * @see I#observe(Path, PathListener, String...)
- * @version 2011/04/08 19:04:07
+ * @version 2011/04/09 7:10:06
  */
 public interface PathListener {
 
