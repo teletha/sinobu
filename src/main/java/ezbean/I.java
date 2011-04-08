@@ -1166,12 +1166,22 @@ public class I implements ClassLoadListener<Extensible> {
 
     /**
      * <p>
-     * Observe file system.
+     * Observe the file system change event of the specified path.
      * </p>
      * 
-     * @param target
-     * @param listener
-     * @return
+     * @param path A target path you want to observe.
+     * @param listener A event listener.
+     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
+     *            patterns if you want to observe a file.
+     * @return A {@link Disposable} object for this observation. You can stop observing to call the
+     *         method {@link Disposable#dispose()} of the returned object.
+     * @throws NullPointerException If the specified path or listener is <code>null</code>.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static Disposable observe(Path path, FileListener listener, String... patterns) {
         if (!Files.isDirectory(path)) {
