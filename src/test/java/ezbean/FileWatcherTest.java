@@ -167,11 +167,40 @@ public class FileWatcherTest {
     }
 
     @Test
+    public void createFileInDeepDirectory() throws Exception {
+        Path path = room.locateAbsent("directory/child/create");
+        Files.createDirectories(path.getParent());
+
+        // observe
+        observe(path);
+
+        // create
+        create(path);
+
+        // verify events
+        verify(path, Created);
+    }
+
+    @Test
     public void deleteFile() throws Exception {
         Path path = room.locateFile("test");
 
         // observe
         observe(path);
+
+        // delete
+        delete(path);
+
+        // verify events
+        verify(path, Deleted);
+    }
+
+    @Test
+    public void deleteFileInDeepDirectory() throws Exception {
+        Path path = room.locateFile("directory/child/delete");
+
+        // observe
+        observe(path.getParent().getParent());
 
         // delete
         delete(path);
@@ -239,21 +268,39 @@ public class FileWatcherTest {
     @Test
     public void modifyFileInCreatedDirectory() throws Exception {
         Path directory = room.locateDirectory("directory");
-        Path file = room.locateAbsent("directory/child/file");
+        Path path = room.locateAbsent("directory/child/file");
 
         // observe
         observe(directory);
 
         // create sub directory
-        Files.createDirectories(file.getParent());
+        Files.createDirectories(path.getParent());
 
         // verify events
-        verify(file.getParent(), Created);
+        verify(path.getParent(), Created);
 
         // create file in created directory
-        Files.createFile(file);
+        Files.createFile(path);
 
         // verify events
+        verify(path, Created);
+    }
+
+    @Test
+    public void createFileAndDirectoryInCreatedDirectory() throws Exception {
+        Path root = room.locateDirectory("directory");
+        Path directory = root.resolve("child/dir");
+        Path file = directory.resolve("file");
+
+        // observe
+        observe(root);
+
+        // create sub directory
+        Files.createDirectories(directory);
+        verify(directory.getParent(), Created);
+
+        // create sub file
+        create(file);
         verify(file, Created);
     }
 
@@ -386,7 +433,7 @@ public class FileWatcherTest {
     private void verify(Path path, FileWatchEventType... events) {
         for (FileWatchEventType event : events) {
             try {
-                Event retrieved = queue.poll(500, MILLISECONDS);
+                Event retrieved = queue.poll(200, MILLISECONDS);
 
                 if (retrieved == null) {
                     throw new AssertionError(event + " event doesn't rise in '" + path + "'.");
@@ -435,9 +482,6 @@ public class FileWatcherTest {
     @SuppressWarnings("serial")
     private static class EventQueue extends SynchronousQueue<Event> implements FileListener {
 
-        /**
-         * 
-         */
         private EventQueue() {
             super(true);
         }
