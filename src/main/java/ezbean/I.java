@@ -1180,7 +1180,7 @@ public class I implements ClassLoadListener<Extensible> {
         }
 
         // Create logical file system watch service.
-        Watch watch = new Watch(path, listener, patterns);
+        Watch watch = new Watch(path, listener, new Visitor(path, null, 6, null, patterns));
 
         // Run in anothor thread.
         threads.execute(watch);
@@ -1549,7 +1549,7 @@ public class I implements ClassLoadListener<Extensible> {
      * Walk a file tree and collect directories you want to filter by various conditions.
      * </p>
      * 
-     * @param start A depature point. The result list doesn't include this starting path.
+     * @param start A depature point. The result list include this starting path.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      * @return All matched directories. (<em>not</em> including file)
      */

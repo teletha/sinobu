@@ -144,8 +144,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             return CONTINUE;
 
         case 4: // walk directory
-            // skip root directory
-            if (from != path) add(path);
+            add(path);
             // fall-through to reduce footprint
 
         case 3: // walk file

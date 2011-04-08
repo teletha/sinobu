@@ -126,12 +126,12 @@ public class PathPatternMatchingTest {
 
     @Test
     public void directory1() throws Exception {
-        assertDirectoryCount(2, test01);
+        assertDirectoryCount(3, test01);
     }
 
     @Test
     public void directory2() throws Exception {
-        assertDirectoryCount(9, test02);
+        assertDirectoryCount(10, test02);
     }
 
     /**
