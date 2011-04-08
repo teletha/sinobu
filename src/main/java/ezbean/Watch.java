@@ -34,7 +34,7 @@ class Watch implements Disposable, Runnable {
     final WatchService service;
 
     /** The user speecified event listener. */
-    final FileListener listener;
+    final PathListener listener;
 
     /** The pattern matching utility. */
     final Visitor visitor;
@@ -48,7 +48,7 @@ class Watch implements Disposable, Runnable {
      * @param listener A event listener.
      * @param visitor Name matching patterns.
      */
-    Watch(Path path, FileListener listener, Visitor visitor) {
+    Watch(Path path, PathListener listener, Visitor visitor) {
         this.listener = listener;
         this.visitor = visitor;
 
