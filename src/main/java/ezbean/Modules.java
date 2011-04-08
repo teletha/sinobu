@@ -31,7 +31,7 @@ import ezbean.model.Model;
  * @version 2011/04/01 13:30:27
  */
 @Manageable(lifestyle = Singleton.class)
-class Modules implements ClassLoadListener {
+class Modules implements ClassListener {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -47,7 +47,7 @@ class Modules implements ClassLoadListener {
      */
     Modules() {
         // built-in ClassLoadListener
-        types.add(new Object[] {this, ClassLoadListener.class});
+        types.add(new Object[] {this, ClassListener.class});
     }
 
     /**
@@ -72,12 +72,12 @@ class Modules implements ClassLoadListener {
     }
 
     /**
-     * @see ezbean.ClassLoadListener#load(java.lang.Class)
+     * @see ezbean.ClassListener#load(java.lang.Class)
      */
     public void load(Class clazz) {
         if (clazz != Modules.class && clazz != Module.class) {
             Object[] types = {I.make(clazz), Object.class};
-            Class[] params = ClassUtil.getParameter(clazz, ClassLoadListener.class);
+            Class[] params = ClassUtil.getParameter(clazz, ClassListener.class);
 
             if (params.length != 0) {
                 types[1] = params[0];
@@ -87,7 +87,7 @@ class Modules implements ClassLoadListener {
             // that is unknown. So we must notify this event to all modules.
             for (Module module : modules) {
                 for (Class provider : module.find((Class<?>) types[1], false)) {
-                    ((ClassLoadListener) types[0]).load(provider);
+                    ((ClassListener) types[0]).load(provider);
                 }
             }
 
@@ -97,7 +97,7 @@ class Modules implements ClassLoadListener {
     }
 
     /**
-     * @see ezbean.ClassLoadListener#unload(java.lang.Class)
+     * @see ezbean.ClassListener#unload(java.lang.Class)
      */
     public void unload(Class clazz) {
         for (Object[] types : this.types) {
@@ -134,7 +134,7 @@ class Modules implements ClassLoadListener {
                 // fire event
                 for (Object[] types : this.types) {
                     for (Class provider : module.find((Class<?>) types[1], false)) {
-                        ((ClassLoadListener) types[0]).load(provider);
+                        ((ClassListener) types[0]).load(provider);
                     }
                 }
                 return module;
@@ -164,7 +164,7 @@ class Modules implements ClassLoadListener {
                         // fire event
                         for (Object[] types : this.types) {
                             for (Class provider : module.find((Class<?>) types[1], false)) {
-                                ((ClassLoadListener) types[0]).unload(provider);
+                                ((ClassListener) types[0]).unload(provider);
                             }
                         }
 

@@ -27,7 +27,7 @@ import ezunit.PrivateModule;
 /**
  * @version 2011/03/22 16:43:15
  */
-public class ClassLoadListenerTest {
+public class ClassListenerTest {
 
     @Rule
     public static final PrivateModule module = new PrivateModule("module/external");
@@ -98,10 +98,10 @@ public class ClassLoadListenerTest {
 
     @Test
     public void awareAllClass() throws Exception {
-        ClassListener listener = I.make(ClassListener.class);
+        ClassLoadListener listener = I.make(ClassLoadListener.class);
 
         // load listener
-        modules.load(ClassListener.class);
+        modules.load(ClassLoadListener.class);
 
         // load module
         modules.load(module.path);
@@ -118,21 +118,21 @@ public class ClassLoadListenerTest {
      * @version 2010/11/13 23:33:35
      */
     @Manageable(lifestyle = Singleton.class)
-    private abstract static class AbstractCounter<T> implements ClassLoadListener<T> {
+    private abstract static class AbstractCounter<T> implements ClassListener<T> {
 
         private int loaded = 0;
 
         private int unloaded = 0;
 
         /**
-         * @see ezbean.ClassLoadListener#load(java.lang.Class)
+         * @see ezbean.ClassListener#load(java.lang.Class)
          */
         public void load(Class<T> clazz) {
             loaded++;
         }
 
         /**
-         * @see ezbean.ClassLoadListener#unload(java.lang.Class)
+         * @see ezbean.ClassListener#unload(java.lang.Class)
          */
         public void unload(Class<T> clazz) {
             unloaded++;
@@ -172,21 +172,21 @@ public class ClassLoadListenerTest {
      * @version 2010/11/13 23:33:35
      */
     @Manageable(lifestyle = Singleton.class)
-    private static class ClassListener implements ClassLoadListener {
+    private static class ClassLoadListener implements ClassListener {
 
         private int loaded = 0;
 
         private int unloaded = 0;
 
         /**
-         * @see ezbean.ClassLoadListener#load(java.lang.Class)
+         * @see ezbean.ClassListener#load(java.lang.Class)
          */
         public void load(Class clazz) {
             loaded++;
         }
 
         /**
-         * @see ezbean.ClassLoadListener#unload(java.lang.Class)
+         * @see ezbean.ClassListener#unload(java.lang.Class)
          */
         public void unload(Class clazz) {
             unloaded++;

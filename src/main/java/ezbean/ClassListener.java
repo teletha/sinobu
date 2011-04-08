@@ -48,7 +48,7 @@ package ezbean;
  * }
  * </pre>
  * <p>
- * {@link ClassLoadListener} accepts not only so-called class (concreate class, abstract class and
+ * {@link ClassListener} accepts not only so-called class (concreate class, abstract class and
  * interface) but also annotation. In the event that ClassLoadListener is parameterized by
  * annotation class, each methods are invoked whenever a class which is annotated by the parameter'
  * annotation is loaded.
@@ -77,7 +77,7 @@ package ezbean;
  * }
  * </pre>
  * <p>
- * If you don't use any parameter, {@link ClassLoadListener} assumes that {@link Object} class is
+ * If you don't use any parameter, {@link ClassListener} assumes that {@link Object} class is
  * specified. In other words, the listener will be able to listen to event at any classes.
  * </p>
  * 
@@ -86,7 +86,7 @@ package ezbean;
  * @see I#unload(java.nio.file.Path)
  * @version 2008/12/05 13:46:19
  */
-public interface ClassLoadListener<T> {
+public interface ClassListener<T> {
 
     /**
      * <p>
