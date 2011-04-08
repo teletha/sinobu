@@ -20,7 +20,6 @@ import static java.util.concurrent.TimeUnit.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
@@ -304,7 +303,7 @@ public class FileWatcherTest {
         verify(file, Created);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void absent() throws Exception {
         Path path = room.locateAbsent("absent/file");
 

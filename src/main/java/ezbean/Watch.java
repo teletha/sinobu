@@ -24,14 +24,13 @@ import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.List;
 
 /**
  * @version 2011/04/08 17:40:16
  */
 class Watch implements Disposable, Runnable {
 
-    /** The actual file system watch system. */
+    /** The actual file event notification facility. */
     final WatchService service;
 
     /** The user speecified event listener. */
@@ -41,36 +40,27 @@ class Watch implements Disposable, Runnable {
     final Visitor visitor;
 
     /**
-     * @param directory
-     * @param listener
-     */
-    Watch(Path directory, FileListener listener, String... patterns) {
-        this.listener = listener;
-        this.visitor = new Visitor(directory, null, 6, null, patterns);
-
-        try {
-            this.service = directory.getFileSystem().newWatchService();
-
-            // register
-            register(directory);
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
      * <p>
-     * Helper
+     * Ezbean's file event notification facility.
      * </p>
      * 
-     * @param path
+     * @param path A target directory.
+     * @param listener A event listener.
+     * @param visitor Name matching patterns.
      */
-    private void register(Path path) throws Exception {
-        List<Path> list = I.walkDirectory(path);
-        list.add(path);
+    Watch(Path path, FileListener listener, Visitor visitor) {
+        this.listener = listener;
+        this.visitor = visitor;
 
-        for (Path directory : list) {
-            directory.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        try {
+            this.service = path.getFileSystem().newWatchService();
+
+            // register
+            for (Path dir : I.walkDirectory(path)) {
+                dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            }
+        } catch (Exception e) {
+            throw I.quiet(e);
         }
     }
 
@@ -105,7 +95,9 @@ class Watch implements Disposable, Runnable {
                             listener.create(path); // fire event
 
                             if (Files.isDirectory(path)) {
-                                register(path);
+                                for (Path dir : I.walkDirectory(path)) {
+                                    dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+                                }
                             }
                         } else if (event.kind() == ENTRY_DELETE) {
                             listener.delete(path); // fire event
