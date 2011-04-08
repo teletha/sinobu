@@ -211,7 +211,7 @@ import ezbean.xml.XMLWriter;
  * @see ServiceLoader
  * @version 2011/03/31 17:38:41
  */
-public class I implements ClassLoadListener<Extensible> {
+public class I implements ClassListener<Extensible> {
 
     // Candidates of Method Name
     //
@@ -1755,7 +1755,7 @@ public class I implements ClassLoadListener<Extensible> {
      * 
      * @param classPath A classpath to load. Directory or archive file (like Jar) can be accepted.
      * @see #unload(Path)
-     * @see ezbean.ClassLoadListener#load(Class)
+     * @see ezbean.ClassListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static ClassLoader load(Path classPath) {
@@ -1786,7 +1786,7 @@ public class I implements ClassLoadListener<Extensible> {
      * 
      * @param classPath A classpath to unload. Directory or archive file (like Jar) can be accepted.
      * @see #load(Path)
-     * @see ezbean.ClassLoadListener#unload(Class)
+     * @see ezbean.ClassListener#unload(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static void unload(Path classPath) {
@@ -1794,7 +1794,7 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     /**
-     * @see ezbean.ClassLoadListener#load(java.lang.Class)
+     * @see ezbean.ClassListener#load(java.lang.Class)
      */
     @Override
     public final void load(Class extension) {
@@ -1827,7 +1827,7 @@ public class I implements ClassLoadListener<Extensible> {
     }
 
     /**
-     * @see ezbean.ClassLoadListener#unload(java.lang.Class)
+     * @see ezbean.ClassListener#unload(java.lang.Class)
      */
     @Override
     public final void unload(Class extension) {
