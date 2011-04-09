@@ -17,7 +17,6 @@ package ezbean;
 
 import static java.nio.file.StandardWatchEventKind.*;
 
-import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,7 +69,7 @@ class Watch implements Disposable, Runnable {
     public void dispose() {
         try {
             service.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw I.quiet(e);
         }
     }
