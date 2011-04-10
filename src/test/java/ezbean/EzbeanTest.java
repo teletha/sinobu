@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.XMLFilterImpl;
@@ -391,13 +392,14 @@ public class EzbeanTest {
     // ===============================================================
     // Test Parse Method
     // ===============================================================
-
-    /**
-     * Parse with <code>null</code> source.
-     */
     @Test(expected = NullPointerException.class)
-    public void testParseWithNull() throws IOException {
-        I.parse(null);
+    public void testParseWithNullInputSource() throws IOException {
+        I.parse((InputSource) null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testParseWithNullPath() throws IOException {
+        I.parse((Path) null);
     }
 
     /**
