@@ -1243,6 +1243,40 @@ public class I implements ClassListener<Extensible> {
      * @throws IOException An IO exception from the parser, possibly from a byte stream or character
      *             stream supplied by the application.
      */
+    public static void parse(Path source, XMLFilter... filters) {
+        try {
+            parse(new InputSource(Files.newBufferedReader(source, encoding)), filters);
+        } catch (IOException e) {
+            throw quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Parse the specified xml {@link InputSource} using the specified sequence of {@link XMLFilter}
+     * . The application can use this method to instruct the XML reader to begin parsing an XML
+     * document from any valid input source (a character stream, a byte stream, or a URI).
+     * </p>
+     * <p>
+     * Ezbean use the {@link XMLReader} which has the following features.
+     * </p>
+     * <ul>
+     * <li>Support XML namespaces.</li>
+     * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude) Version
+     * 1.0</a>.</li>
+     * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
+     * <li><em>Not</em> support external DTD completely (parser doesn't even access DTD, using
+     * "http://apache.org/xml/features/nonvalidating/load-external-dtd" feature).</li>
+     * </ul>
+     * 
+     * @param source A xml source.
+     * @param filters A list of filters to parse a sax event. This may be <code>null</code>.
+     * @throws NullPointerException If the specified source is <code>null</code>. If one of the
+     *             specified filter is <code>null</code>.
+     * @throws SAXException Any SAX exception, possibly wrapping another exception.
+     * @throws IOException An IO exception from the parser, possibly from a byte stream or character
+     *             stream supplied by the application.
+     */
     public static void parse(InputSource source, XMLFilter... filters) {
         try {
             // create new xml reader
