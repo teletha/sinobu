@@ -1219,9 +1219,9 @@ public class I implements ClassListener<Extensible> {
 
     /**
      * <p>
-     * Parse the specified xml {@link InputSource} using the specified sequence of {@link XMLFilter}
-     * . The application can use this method to instruct the XML reader to begin parsing an XML
-     * document from any valid input source (a character stream, a byte stream, or a URI).
+     * Parse the specified xml {@link Path} using the specified sequence of {@link XMLFilter} . The
+     * application can use this method to instruct the XML reader to begin parsing an XML document
+     * from the specified path.
      * </p>
      * <p>
      * Ezbean use the {@link XMLReader} which has the following features.
@@ -1235,7 +1235,7 @@ public class I implements ClassListener<Extensible> {
      * "http://apache.org/xml/features/nonvalidating/load-external-dtd" feature).</li>
      * </ul>
      * 
-     * @param source A xml source.
+     * @param source A path to xml source.
      * @param filters A list of filters to parse a sax event. This may be <code>null</code>.
      * @throws NullPointerException If the specified source is <code>null</code>. If one of the
      *             specified filter is <code>null</code>.
@@ -1244,11 +1244,11 @@ public class I implements ClassListener<Extensible> {
      *             stream supplied by the application.
      */
     public static void parse(Path source, XMLFilter... filters) {
-        try {
-            parse(new InputSource(Files.newBufferedReader(source, encoding)), filters);
-        } catch (IOException e) {
-            throw quiet(e);
-        }
+        InputSource input = new InputSource(source.toUri().toString());
+        input.setEncoding(encoding.name());
+        input.setPublicId(source.toString());
+
+        parse(input, filters);
     }
 
     /**
