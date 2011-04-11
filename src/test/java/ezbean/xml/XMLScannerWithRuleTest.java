@@ -362,45 +362,27 @@ public class XMLScannerWithRuleTest {
     }
 
     @Test
-    public void protectedRuleMethod() throws Exception {
+    public void parentRule() throws Exception {
+
+        /**
+         * @version 2011/04/11 14:39:34
+         */
         @SuppressWarnings("unused")
-        XMLScanner scanner = new XMLScanner() {
+        class Parent extends XMLScanner {
 
             @Rule(match = "test")
-            protected void test() throws SAXException {
+            public void test() throws SAXException {
                 element("new");
             }
-        };
+        }
 
-        assertXMLIdentical("rule/expected17.xml", "rule/test17.xml", scanner);
-    }
+        /**
+         * @version 2011/04/11 14:39:37
+         */
+        class Child extends Parent {
+        }
 
-    @Test
-    public void packagePrivateRuleMethod() throws Exception {
-        @SuppressWarnings("unused")
-        XMLScanner scanner = new XMLScanner() {
-
-            @Rule(match = "test")
-            void test() throws SAXException {
-                element("new");
-            }
-        };
-
-        assertXMLIdentical("rule/expected17.xml", "rule/test17.xml", scanner);
-    }
-
-    @Test
-    public void privateRuleMethod() throws Exception {
-        @SuppressWarnings("unused")
-        XMLScanner scanner = new XMLScanner() {
-
-            @Rule(match = "test")
-            private void test() throws SAXException {
-                element("new");
-            }
-        };
-
-        assertXMLIdentical("rule/expected17.xml", "rule/test17.xml", scanner);
+        assertXMLIdentical("rule/expected17.xml", "rule/test17.xml", new Child());
     }
 
     /**

@@ -147,7 +147,7 @@ public class XMLScanner extends XMLFilterImpl {
             // resolve rule methods
             ArrayList<RuleMethod> methods = new ArrayList();
 
-            for (Method method : getClass().getDeclaredMethods()) {
+            for (Method method : getClass().getMethods()) {
                 Rule rule = method.getAnnotation(Rule.class);
 
                 if (rule != null) {
