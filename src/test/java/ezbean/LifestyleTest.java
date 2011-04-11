@@ -93,6 +93,12 @@ public class LifestyleTest {
         assert CustomLifestyle.set.contains(instance);
     }
 
+    @Test
+    public void interfaceLifestyle() throws Exception {
+        Interface resolved = I.make(Interface.class);
+        assert resolved == InterfaceLifestyle.implementation;
+    }
+
     /**
      * <p>
      * External class without {@link Manageable} annotation.
@@ -250,5 +256,33 @@ public class LifestyleTest {
     @Manageable(lifestyle = CustomLifestyle.class)
     private static class CustomClass {
 
+    }
+
+    /**
+     * @version 2011/04/11 13:05:55
+     */
+    private static interface Interface {
+    }
+
+    /**
+     * @version 2011/04/11 13:06:14
+     */
+    private static class InterfaceImplementation implements Interface {
+    }
+
+    /**
+     * @version 2011/04/11 13:06:55
+     */
+    private static class InterfaceLifestyle implements Lifestyle<Interface> {
+
+        private static InterfaceImplementation implementation = new InterfaceImplementation();
+
+        /**
+         * @see ezbean.Lifestyle#resolve()
+         */
+        @Override
+        public Interface resolve() {
+            return implementation;
+        }
     }
 }
