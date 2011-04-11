@@ -886,6 +886,7 @@ public class I implements ClassListener<Extensible> {
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
      * @throws UnsupportedOperationException If the model class is inner-class.
      * @throws ClassCircularityError If the model has circular dependency.
+     * @throws InstantiationException If Ezbean can't instantiate(resolve) the model class.
      */
     public static <M> M make(Class<M> modelClass) {
         return makeLifestyle(modelClass).resolve();
@@ -908,6 +909,7 @@ public class I implements ClassListener<Extensible> {
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
      * @throws UnsupportedOperationException If the model class is inner-class.
      * @throws ClassCircularityError If the model has circular dependency.
+     * @throws InstantiationException If Ezbean can't instantiate(resolve) the model class.
      */
     static <M> Lifestyle<M> makeLifestyle(Class<M> modelClass) {
         // At first, we must confirm the cached lifestyle associated with the model class. If
@@ -988,9 +990,11 @@ public class I implements ClassListener<Extensible> {
             // Trace dependency graph to detect circular dependencies.
             Constructor constructor = ClassUtil.getMiniConstructor(actualClass);
 
-            for (Class param : constructor.getParameterTypes()) {
-                if (param != Lifestyle.class && param != Class.class) {
-                    makeLifestyle(param);
+            if (constructor != null) {
+                for (Class param : constructor.getParameterTypes()) {
+                    if (param != Lifestyle.class && param != Class.class) {
+                        makeLifestyle(param);
+                    }
                 }
             }
 

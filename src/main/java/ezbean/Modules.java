@@ -58,7 +58,6 @@ class Modules implements ClassListener {
      * @param <S> A type of service provider interface.
      * @param spi A service provider interface to find. An abstract class is only accepted.
      * @return A finded service provider class.
-     * @throws TypeNotPresentException If the suitable service provider class is not found.
      */
     public <S> Class<S> find(Class<S> spi) {
         for (Module module : modules) {
@@ -68,7 +67,7 @@ class Modules implements ClassListener {
                 return list.get(0);
             }
         }
-        throw new TypeNotPresentException(spi.getName(), null);
+        return spi;
     }
 
     /**

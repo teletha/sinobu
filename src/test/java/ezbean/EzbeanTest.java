@@ -133,10 +133,7 @@ public class EzbeanTest {
         assert I.make(clazz) != null;
     }
 
-    /**
-     * Test Nested public class.
-     */
-    @Test(expected = TypeNotPresentException.class)
+    @Test(expected = InstantiationException.class)
     public void testInstantiate11() throws Exception {
         assert I.make(Abstract.class) != null;
     }
