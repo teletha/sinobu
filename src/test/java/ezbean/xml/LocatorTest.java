@@ -17,6 +17,8 @@ package ezbean.xml;
 
 import static ezunit.Ezunit.*;
 
+import java.nio.file.Path;
+
 import org.junit.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -25,15 +27,12 @@ import org.xml.sax.helpers.LocatorImpl;
 import ezbean.I;
 
 /**
- * @version 2011/03/22 17:24:26
+ * @version 2011/04/11 11:30:24
  */
 public class LocatorTest {
 
-    /**
-     * Locator.
-     */
     @Test
-    public void testLocator() {
+    public void publicId() {
         InputSource source = locateSource("dummy.xml");
         source.setPublicId("dummy.xml");
 
@@ -46,10 +45,20 @@ public class LocatorTest {
         assert chaser.locator.getPublicId().equals("dummy.xml");
     }
 
+    @Test
+    public void publicIdFromPath() {
+        Path path = locate("dummy.xml");
+        Chaser chaser = new Chaser();
+
+        // parse
+        I.parse(path, chaser);
+
+        // assert
+        assert chaser.locator.getPublicId().equals(path.toAbsolutePath().toString());
+    }
+
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/11/23 13:50:48
+     * @version 2011/04/11 11:30:28
      */
     private static class Chaser extends XMLScanner {
 

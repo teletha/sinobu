@@ -296,7 +296,7 @@ public class Ezunit {
         list.add(builder);
 
         // start parsing
-        I.parse(locateSource(file), list.toArray(new XMLFilter[list.size()]));
+        I.parse(file, list.toArray(new XMLFilter[list.size()]));
 
         // retrive result DOM document
         Document document = builder.getDocument();
