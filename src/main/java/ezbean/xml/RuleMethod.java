@@ -18,6 +18,8 @@ package ezbean.xml;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.xml.sax.Attributes;
+
 /**
  * <p>
  * Rule method is a compiled expression of template in XSLT.
@@ -29,7 +31,7 @@ import java.util.List;
  * or {@link java.util.SortedSet} for more information.
  * </p>
  * 
- * @version 2008/11/02 15:14:17
+ * @version 2011/04/13 14:51:29
  */
 class RuleMethod implements Comparable<RuleMethod> {
 
@@ -39,11 +41,27 @@ class RuleMethod implements Comparable<RuleMethod> {
     /** The compiled local names. */
     final int[] names;
 
-    /** The parameter type cache for rule method invocation. */
-    final int type;
-
     /** The actual rule method to invoke. */
     final Method method;
+
+    /**
+     * <p>
+     * The rule method type.
+     * </p>
+     * <dl>
+     * <dt>0</dt>
+     * <dd>No parameter.</dd>
+     * <dt>1</dt>
+     * <dd>Parameter is {@link Attributes} only.</dd>
+     * <dt>2</dt>
+     * <dd>Parameters are text contents and {@link Attributes}.</dd>
+     * <dt>3</dt>
+     * <dd>Parameter is text contents only.</dd>
+     * <dt>4</dt>
+     * <dd>Parameter is {@link Bits} only.</dd>
+     * </dl>
+     */
+    final int type;
 
     /**
      * Create RuleMethod instance.
