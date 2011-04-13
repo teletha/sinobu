@@ -28,7 +28,7 @@ import ezbean.I;
  * footprint.
  * </p>
  * 
- * @version 2010/12/13 23:59:01
+ * @version 2011/04/13 14:56:15
  */
 class RuleContext extends XMLFilterImpl {
 
