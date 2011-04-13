@@ -42,7 +42,7 @@ class RuleContext extends XMLFilterImpl {
     final ContentHandler handler;
 
     /** The attribute copy. */
-    final AttributesImpl atts;
+    AttributesImpl atts;
 
     /** The position that this context has started. */
     int start;
@@ -63,7 +63,10 @@ class RuleContext extends XMLFilterImpl {
         this.handler = scanner.getContentHandler();
 
         // copy attributes if the rule method requires it
-        this.atts = new AttributesImpl(atts);
+        if (rule.clazz != null) {
+            this.atts = I.make(rule.clazz);
+            this.atts.setAttributes(atts);
+        }
 
         // initialize content handler
         setContentHandler(handler);

@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * <p>
@@ -63,6 +64,9 @@ class RuleMethod implements Comparable<RuleMethod> {
      */
     final int type;
 
+    /** The attribute class. */
+    Class<? extends AttributesImpl> clazz;
+
     /**
      * Create RuleMethod instance.
      * 
@@ -93,6 +97,7 @@ class RuleMethod implements Comparable<RuleMethod> {
         switch (params.length) {
         case 2:
             type = 2;
+            clazz = params[1];
             break;
 
         case 1:
@@ -102,6 +107,7 @@ class RuleMethod implements Comparable<RuleMethod> {
                 type = 4;
             } else {
                 type = 1;
+                clazz = params[0];
             }
             break;
 
