@@ -821,6 +821,32 @@ public class XMLScannerWithRuleTest {
     }
 
     @Test
+    public void invokeProceedMethodForChildRule() throws Exception {
+        final List events = new ArrayList();
+
+        XMLScanner scanner = new XMLScanner() {
+
+            @SuppressWarnings("unused")
+            @Rule(match = "root")
+            public void root() throws SAXException {
+                events.add(1);
+
+                proceed();
+            }
+
+            @SuppressWarnings("unused")
+            @Rule(match = "child")
+            public void child() throws SAXException {
+                events.add(1);
+            }
+        };
+
+        I.parse(locateSource("rule/test02.xml"), scanner);
+
+        assert events.size() == 3;
+    }
+
+    @Test
     public void nestWithContent() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 

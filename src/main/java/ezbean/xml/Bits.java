@@ -18,11 +18,8 @@ package ezbean.xml;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
-
-import ezbean.I;
 
 /**
  * <p>
@@ -35,36 +32,6 @@ public final class Bits extends XMLFilterImpl {
 
     /** The event cache. */
     final ArrayList<Object[]> bits = new ArrayList();
-
-    /**
-     * <p>
-     * Send buffered sax events to the given content handler.
-     * </p>
-     * 
-     * @param handler A target content handler.
-     */
-    public void send(XMLScanner handler) {
-        for (int i = 0; i < bits.size(); i++) {
-            Object[] bit = bits.get(i);
-
-            switch (bit.length) {
-            case 1:
-                handler.text((String) bit[0]);
-                break;
-
-            case 2:
-                handler.start((String) bit[0], (Attributes) bit[1]);
-                break;
-
-            default:
-                try {
-                    handler.endElement((String) bit[0], (String) bit[1], (String) bit[2]);
-                } catch (SAXException e) {
-                    throw I.quiet(e);
-                }
-            }
-        }
-    }
 
     /**
      * <p>
