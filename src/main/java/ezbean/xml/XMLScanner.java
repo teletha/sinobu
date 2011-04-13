@@ -373,6 +373,35 @@ public class XMLScanner extends XMLFilterImpl {
 
     /**
      * <p>
+     * Send buffered sax events to the this {@link XMLScanner}.
+     * </p>
+     * 
+     * @param bits An event fragment.
+     */
+    protected final void include(Bits bits) {
+        try {
+            for (Object[] bit : bits.bits) {
+                switch (bit.length) {
+                case 3:
+                    endElement((String) bit[0], (String) bit[1], (String) bit[2]);
+
+                    break;
+
+                case 4:
+                    startElement((String) bit[0], (String) bit[1], (String) bit[2], (Attributes) bit[3]);
+                    break;
+
+                default:
+                    text((String) bit[0]);
+                }
+            }
+        } catch (SAXException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
      * Helper method to send the SAX event (start element).
      * </p>
      * <p>
@@ -521,35 +550,6 @@ public class XMLScanner extends XMLFilterImpl {
         start(name, dist);
         if ((i & 1) == 0) text(atts[i]);
         end();
-    }
-
-    /**
-     * <p>
-     * Send buffered sax events to the given content handler.
-     * </p>
-     * 
-     * @param handler A target content handler.
-     */
-    public final void include(Bits bits) {
-        try {
-            for (Object[] bit : bits.bits) {
-                switch (bit.length) {
-                case 1:
-                    text((String) bit[0]);
-                    break;
-
-                case 2:
-                    String[] resolved = resolve((String) bit[0]);
-                    startElement(resolved[0], resolved[1], (String) bit[0], (Attributes) bit[1]);
-                    break;
-
-                default:
-                    endElement((String) bit[0], (String) bit[1], (String) bit[2]);
-                }
-            }
-        } catch (SAXException e) {
-            throw I.quiet(e);
-        }
     }
 
     /**
