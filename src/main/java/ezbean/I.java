@@ -60,11 +60,13 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.AttributesImpl;
 
 import sun.org.mozilla.javascript.internal.IdScriptableObject;
 import sun.org.mozilla.javascript.internal.NativeArray;
@@ -343,6 +345,7 @@ public class I implements ClassListener<Extensible> {
         lifestyles.put(List.class, new Prototype(ArrayList.class));
         lifestyles.put(Map.class, new Prototype(HashMap.class));
         lifestyles.put(Prototype.class, new Prototype(Prototype.class));
+        lifestyles.put(Attributes.class, new Prototype(AttributesImpl.class));
 
         try {
             // This instantiator instantiates an object with out any side effects caused by the
