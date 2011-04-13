@@ -31,7 +31,7 @@ import ezbean.I;
  * 
  * @version 2010/12/13 8:11:39
  */
-class Bits extends XMLFilterImpl {
+public final class Bits extends XMLFilterImpl {
 
     /** The event cache. */
     final ArrayList<Object[]> bits = new ArrayList();
@@ -42,7 +42,7 @@ class Bits extends XMLFilterImpl {
      * @param handler A target content handler.
      * @param context A context object.
      */
-    void send(XMLScanner handler) {
+    public void send(XMLScanner handler) {
         for (int i = 0; i < bits.size(); i++) {
             Object[] bit = bits.get(i);
 

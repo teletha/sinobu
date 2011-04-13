@@ -18,9 +18,6 @@ package ezbean.xml;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
-
 /**
  * <p>
  * Rule method is a compiled expression of template in XSLT.
@@ -42,11 +39,8 @@ class RuleMethod implements Comparable<RuleMethod> {
     /** The compiled local names. */
     final int[] names;
 
-    /** The flag whether this rule must be invoked lazy or not. */
-    final boolean lazy;
-
-    /** The attribute class for data cache and rule invocation. */
-    final Class<? extends AttributesImpl> atts;
+    /** The parameter type cache for rule method invocation. */
+    final int type;
 
     /** The actual rule method to invoke. */
     final Method method;
@@ -78,20 +72,24 @@ class RuleMethod implements Comparable<RuleMethod> {
         // parameters validation
         Class[] params = method.getParameterTypes();
 
-        if (params.length == 0) {
-            lazy = false;
-            atts = null;
-        } else if (params.length == 1 && String.class == params[0]) {
-            lazy = true;
-            atts = null;
-        } else if (params.length == 1 && Attributes.class.isAssignableFrom(params[0])) {
-            lazy = false;
-            atts = (AttributesImpl.class.isAssignableFrom(params[0]) ? params[0] : AttributesImpl.class);
-        } else if (params.length == 2 && String.class == params[0] && Attributes.class.isAssignableFrom(params[1])) {
-            lazy = true;
-            atts = (AttributesImpl.class.isAssignableFrom(params[1]) ? params[1] : AttributesImpl.class);
-        } else {
-            throw new IllegalArgumentException("'Invalid parameters : " + method);
+        switch (params.length) {
+        case 2:
+            type = 2;
+            break;
+
+        case 1:
+            if (params[0] == String.class) {
+                type = 3;
+            } else if (params[0] == Bits.class) {
+                type = 4;
+            } else {
+                type = 1;
+            }
+            break;
+
+        default:
+            type = 0;
+            break;
         }
     }
 
@@ -99,7 +97,6 @@ class RuleMethod implements Comparable<RuleMethod> {
      * Check whether this rule method matchs the given context or not.
      * 
      * @param paths A current path list. A size of the list equals to the current cursor position.
-     * 
      *            <code>int[]<code> has two length, int[0] contains  namespace uri and int[1] contains local name.
      * @return A result.
      */
