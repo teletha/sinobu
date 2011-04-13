@@ -29,7 +29,7 @@ import ezbean.I;
  * This class is a buffer of SAX events.
  * </p>
  * 
- * @version 2010/12/13 8:11:39
+ * @version 2011/04/13 14:49:27
  */
 public final class Bits extends XMLFilterImpl {
 
@@ -37,10 +37,11 @@ public final class Bits extends XMLFilterImpl {
     final ArrayList<Object[]> bits = new ArrayList();
 
     /**
-     * Send buffered sax events to the given content handler with the context object.
+     * <p>
+     * Send buffered sax events to the given content handler.
+     * </p>
      * 
      * @param handler A target content handler.
-     * @param context A context object.
      */
     public void send(XMLScanner handler) {
         for (int i = 0; i < bits.size(); i++) {
@@ -66,7 +67,9 @@ public final class Bits extends XMLFilterImpl {
     }
 
     /**
-     * @see org.xml.sax.helpers.XMLFilterImpl#characters(char[], int, int)
+     * <p>
+     * Record character event.
+     * </p>
      */
     @Override
     public void characters(char[] ch, int start, int length) {
@@ -74,8 +77,9 @@ public final class Bits extends XMLFilterImpl {
     }
 
     /**
-     * @see org.xml.sax.helpers.XMLFilterImpl#startElement(java.lang.String, java.lang.String,
-     *      java.lang.String, org.xml.sax.Attributes)
+     * <p>
+     * Record start element event.
+     * </p>
      */
     @Override
     public void startElement(String uri, String local, String name, Attributes atts) {
@@ -83,8 +87,9 @@ public final class Bits extends XMLFilterImpl {
     }
 
     /**
-     * @see org.xml.sax.helpers.XMLFilterImpl#endElement(java.lang.String, java.lang.String,
-     *      java.lang.String)
+     * <p>
+     * Record end element event.
+     * </p>
      */
     @Override
     public void endElement(String uri, String local, String name) {
