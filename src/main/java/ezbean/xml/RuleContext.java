@@ -75,7 +75,7 @@ class RuleContext extends XMLFilterImpl {
     void proceed() {
         if (1 < rule.type) {
             // lazy context
-            bits.send(scanner);
+            scanner.include(bits);
         } else {
             // eager context
             bits = new Bits();
@@ -157,7 +157,7 @@ class RuleContext extends XMLFilterImpl {
             } else {
                 // eager context
                 if (bits != null) {
-                    bits.send(scanner);
+                    scanner.include(bits);
                 }
             }
         } catch (Exception e) {
