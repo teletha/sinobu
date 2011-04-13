@@ -63,12 +63,7 @@ class RuleContext extends XMLFilterImpl {
         this.handler = scanner.getContentHandler();
 
         // copy attributes if the rule method requires it
-        if (rule.atts == null) {
-            this.atts = null;
-        } else {
-            this.atts = I.make(rule.atts);
-            this.atts.setAttributes(atts);
-        }
+        this.atts = new AttributesImpl(atts);
 
         // initialize content handler
         setContentHandler(handler);
@@ -78,7 +73,7 @@ class RuleContext extends XMLFilterImpl {
      * Proceed SAX parser's processing.
      */
     void proceed() {
-        if (rule.lazy) {
+        if (1 < rule.type) {
             // lazy context
             bits.send(scanner);
         } else {
@@ -95,7 +90,7 @@ class RuleContext extends XMLFilterImpl {
      *             thrown in rule method.
      */
     void start() {
-        if (rule.lazy) {
+        if (1 < rule.type) {
             // lazy context
             bits = new Bits();
             setContentHandler(bits);
@@ -104,7 +99,7 @@ class RuleContext extends XMLFilterImpl {
             try {
                 // Invoke rule method. In RuleContext, rule type must indicates 0 (no parameter) or
                 // 2 (require attribute only).
-                if (rule.atts == null) {
+                if (rule.type == 0) {
                     rule.method.invoke(scanner);
                 } else {
                     rule.method.invoke(scanner, atts);
@@ -131,7 +126,7 @@ class RuleContext extends XMLFilterImpl {
      */
     void end() {
         try {
-            if (rule.lazy) {
+            if (1 < rule.type) {
                 // lazy context
 
                 // restore content handler
@@ -146,11 +141,17 @@ class RuleContext extends XMLFilterImpl {
                     }
                 }
 
-                // Invoke rule method (lazy evaluation). In LazyContext, rule type must indicates 1
-                // (require content only) or 3 (require content and attribute).
-                if (rule.atts == null) {
+                // Invoke rule method (lazy evaluation).
+                switch (rule.type) {
+                case 3: // require content only
                     rule.method.invoke(scanner, contents.toString());
-                } else {
+                    break;
+
+                case 4: // require event only
+                    rule.method.invoke(scanner, bits);
+                    break;
+
+                default: // require content and attribute
                     rule.method.invoke(scanner, contents.toString(), atts);
                 }
             } else {

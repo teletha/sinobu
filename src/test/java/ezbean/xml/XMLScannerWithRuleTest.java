@@ -17,6 +17,9 @@ package ezbean.xml;
 
 import static ezunit.Ezunit.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.parsers.FactoryConfigurationError;
 
 import org.junit.Test;
@@ -782,6 +785,42 @@ public class XMLScannerWithRuleTest {
     }
 
     @Test
+    public void bits() throws Exception {
+        final List events = new ArrayList();
+
+        XMLScanner scanner = new XMLScanner() {
+
+            @SuppressWarnings("unused")
+            @Rule(match = "root")
+            public void root(Bits bits) throws SAXException {
+                events.addAll(bits.bits);
+            }
+        };
+
+        I.parse(locateSource("rule/test01.xml"), scanner);
+
+        assert events.size() == 0;
+    }
+
+    @Test
+    public void bitsWithChild() throws Exception {
+        final List events = new ArrayList();
+
+        XMLScanner scanner = new XMLScanner() {
+
+            @SuppressWarnings("unused")
+            @Rule(match = "root")
+            public void root(Bits bits) throws SAXException {
+                events.addAll(bits.bits);
+            }
+        };
+
+        I.parse(locateSource("rule/test02.xml"), scanner);
+
+        assert events.size() == 7;
+    }
+
+    @Test
     public void nestWithContent() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
@@ -844,7 +883,7 @@ public class XMLScannerWithRuleTest {
     /**
      * Test invalid rule. Using invalid parameter.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidRule2() throws Exception {
         new XMLScanner() {
 
@@ -858,7 +897,7 @@ public class XMLScannerWithRuleTest {
     /**
      * Test invalid rule. Using invalid parameter.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidRule3() throws Exception {
         new XMLScanner() {
 
@@ -872,7 +911,7 @@ public class XMLScannerWithRuleTest {
     /**
      * Test invalid rule. Using invalid parameter.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidRule4() throws Exception {
         new XMLScanner() {
 
@@ -886,7 +925,7 @@ public class XMLScannerWithRuleTest {
     /**
      * Test invalid rule. Using invalid order.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidRule5() throws Exception {
         new XMLScanner() {
 
