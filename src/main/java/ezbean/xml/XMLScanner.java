@@ -379,7 +379,7 @@ public class XMLScanner extends XMLFilterImpl {
      * 
      * @param source An event fragment.
      */
-    protected final void include(Bits source) {
+    public final void include(Bits source) {
         try {
             for (Object[] bit : source.bits) {
                 switch (bit.length) {
@@ -408,7 +408,7 @@ public class XMLScanner extends XMLFilterImpl {
      * 
      * @param source An external source.
      */
-    protected final void include(Path source) {
+    public final void include(Path source) {
         // Prepare event buffer.
         Bits bits = new Bits();
 
