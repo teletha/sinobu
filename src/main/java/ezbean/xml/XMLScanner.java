@@ -18,6 +18,7 @@ package ezbean.xml;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -373,14 +374,14 @@ public class XMLScanner extends XMLFilterImpl {
 
     /**
      * <p>
-     * Send buffered sax events to the this {@link XMLScanner}.
+     * Include buffered sax events to this {@link XMLScanner}.
      * </p>
      * 
-     * @param bits An event fragment.
+     * @param source An event fragment.
      */
-    protected final void include(Bits bits) {
+    protected final void include(Bits source) {
         try {
-            for (Object[] bit : bits.bits) {
+            for (Object[] bit : source.bits) {
                 switch (bit.length) {
                 case 3:
                     endElement((String) bit[0], (String) bit[1], (String) bit[2]);
@@ -398,6 +399,24 @@ public class XMLScanner extends XMLFilterImpl {
         } catch (SAXException e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Include external source to this {@link XMLScanner}.
+     * </p>
+     * 
+     * @param source An external source.
+     */
+    protected final void include(Path source) {
+        // Prepare event buffer.
+        Bits bits = new Bits();
+
+        // Parse external source.
+        I.parse(source, bits);
+
+        // Send all buffered events to this listener.
+        include(bits);
     }
 
     /**
