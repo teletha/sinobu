@@ -18,6 +18,7 @@ package ezbean.xml;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 /**
@@ -49,7 +50,7 @@ public final class Bits extends XMLFilterImpl {
      */
     @Override
     public void startElement(String uri, String local, String name, Attributes atts) {
-        bits.add(new Object[] {uri, local, name, atts});
+        bits.add(new Object[] {uri, local, name, new AttributesImpl(atts)});
     }
 
     /**
