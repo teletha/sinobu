@@ -252,7 +252,7 @@ public class XMLScannerTest {
     /**
      * Test to avoid the circular method calling.
      */
-    @Test
+    @Test(expected = StackOverflowError.class)
     public void testOverrideMethodLoop01() throws Exception {
         SAXBuilder builder = new SAXBuilder();
         XMLScanner writer = new XMLScanner() {
@@ -284,7 +284,7 @@ public class XMLScannerTest {
     /**
      * Test to avoid the circular method calling.
      */
-    @Test
+    @Test(expected = StackOverflowError.class)
     public void testOverrideMethodLoop02() throws Exception {
         SAXBuilder builder = new SAXBuilder();
         XMLScanner writer = new XMLScanner() {
@@ -316,7 +316,7 @@ public class XMLScannerTest {
     /**
      * Test to avoid the circular method calling.
      */
-    @Test
+    @Test(expected = StackOverflowError.class)
     public void testOverrideMethodLoop03() throws Exception {
         SAXBuilder builder = new SAXBuilder();
         XMLScanner writer = new XMLScanner() {
