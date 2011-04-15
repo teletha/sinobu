@@ -452,7 +452,7 @@ public class XMLScanner extends XMLFilterImpl {
 
         try {
             if (latest == null) {
-                super.startElement(resolved[0], resolved[1], name, atts);
+                startElement(resolved[0], resolved[1], name, atts);
             } else {
                 latest.startElement(resolved[0], resolved[1], name, atts);
             }
@@ -513,7 +513,7 @@ public class XMLScanner extends XMLFilterImpl {
 
         try {
             if (latest == null) {
-                super.endElement(resolved[0], resolved[1], name);
+                endElement(resolved[0], resolved[1], name);
             } else {
                 latest.endElement(resolved[0], resolved[1], name);
             }
@@ -541,7 +541,7 @@ public class XMLScanner extends XMLFilterImpl {
     public final void text(String ch) {
         try {
             if (latest == null) {
-                super.characters(ch.toCharArray(), 0, ch.length());
+                characters(ch.toCharArray(), 0, ch.length());
             } else {
                 latest.characters(ch.toCharArray(), 0, ch.length());
             }
