@@ -378,22 +378,30 @@ public class XMLScanner extends XMLFilterImpl {
      * </p>
      * 
      * @param source An event fragment.
+     * @param filters A chain of event filters. Each filter is applied sequentially from left to
+     *            right.
      */
-    public final void include(Bits source) {
+    public final void include(Bits source, XMLScanner... filters) {
+        XMLScanner base = this;
+
+        for (int i = filters.length - 1; 0 <= i; i--) {
+            filters[i].setContentHandler(base);
+            base = filters[i];
+        }
+
         try {
             for (Object[] bit : source.bits) {
                 switch (bit.length) {
                 case 3:
-                    endElement((String) bit[0], (String) bit[1], (String) bit[2]);
-
+                    base.endElement((String) bit[0], (String) bit[1], (String) bit[2]);
                     break;
 
                 case 4:
-                    startElement((String) bit[0], (String) bit[1], (String) bit[2], (Attributes) bit[3]);
+                    base.startElement((String) bit[0], (String) bit[1], (String) bit[2], (Attributes) bit[3]);
                     break;
 
                 default:
-                    text((String) bit[0]);
+                    base.text((String) bit[0]);
                 }
             }
         } catch (SAXException e) {
@@ -407,8 +415,10 @@ public class XMLScanner extends XMLFilterImpl {
      * </p>
      * 
      * @param source An external source.
+     * @param filters A chain of event filters. Each filter is applied sequentially from left to
+     *            right.
      */
-    public final void include(Path source) {
+    public final void include(Path source, XMLScanner... filters) {
         // Prepare event buffer.
         Bits bits = new Bits();
 
@@ -416,7 +426,7 @@ public class XMLScanner extends XMLFilterImpl {
         I.parse(source, bits);
 
         // Send all buffered events to this listener.
-        include(bits);
+        include(bits, filters);
     }
 
     /**
