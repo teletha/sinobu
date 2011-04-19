@@ -381,7 +381,7 @@ public class XMLScanner extends XMLFilterImpl {
      * @param filters A chain of event filters. Each filter is applied sequentially from left to
      *            right.
      */
-    public final void include(Bits source, XMLScanner... filters) {
+    public void include(Bits source, XMLScanner... filters) {
         XMLScanner base = this;
 
         for (int i = filters.length - 1; 0 <= i; i--) {
