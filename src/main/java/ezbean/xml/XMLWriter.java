@@ -329,7 +329,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     public void startCDATA() {
         try {
             checkEvent(CHARACTER);
-            out.append("<[CDATA[");
+            out.append("<![CDATA[");
         } catch (IOException e) {
             throw I.quiet(e);
         }
