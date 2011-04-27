@@ -102,6 +102,24 @@ public class XMLScannerWithRuleTest {
         assertXMLIdentical("rule/expected04.xml", "rule/test04.xml", scanner);
     }
 
+    @Test
+    public void useMethodName() throws Exception {
+        XMLScanner scanner = new XMLScanner() {
+
+            @SuppressWarnings("unused")
+            public static final String XMLNS_NEW = "new";
+
+            @SuppressWarnings("unused")
+            @Rule
+            public void child(Attributes atts) throws SAXException {
+                start("new:child", atts);
+                end();
+            }
+        };
+
+        assertXMLIdentical("rule/expected04.xml", "rule/test04.xml", scanner);
+    }
+
     /**
      * Test direct call.
      */

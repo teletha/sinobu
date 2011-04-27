@@ -76,7 +76,7 @@ class RuleMethod implements Comparable<RuleMethod> {
      */
     RuleMethod(Method method, Rule rule, XMLScanner scanner) {
         // compile matching pattern
-        String[] paths = rule.match().split("/");
+        String[] paths = (rule.match().length() == 0 ? method.getName() : rule.match()).split("/");
         uris = new int[paths.length];
         names = new int[paths.length];
 

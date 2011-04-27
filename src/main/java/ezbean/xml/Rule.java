@@ -33,11 +33,14 @@ import java.lang.annotation.Target;
 public @interface Rule {
 
     /**
-     * Describe the location path you want to search.
+     * <p>
+     * Describe the location path you want to search. If you don't specify it, Ezbean uses the name
+     * of the annotated method.
+     * </p>
      * 
      * @return A simple pattern value like XPath.
      */
-    String match();
+    String match() default "";
 
     /**
      * Priority of this rule.
