@@ -194,12 +194,20 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         if (accept(relative)) {
             switch (type) {
             case 0: // copy
-                Files.copy(path, to.resolve(relative), COPY_ATTRIBUTES, REPLACE_EXISTING);
+                Path dest = to.resolve(relative);
+
+                if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                    Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
+                }
                 return CONTINUE;
 
             case 1: // move
-                Files.move(path, to.resolve(relative), ATOMIC_MOVE, REPLACE_EXISTING);
-                return CONTINUE;
+                dest = to.resolve(relative);
+
+                if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                    Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
+                    return CONTINUE;
+                }
 
             case 2: // delete
                 Files.delete(path);
