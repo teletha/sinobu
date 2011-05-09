@@ -37,10 +37,10 @@ import java.util.EnumSet;
 class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
     /** The source. */
-    final Path from;
+    Path from;
 
     /** The destination. */
-    final Path to;
+    Path to;
 
     /** The operation type. */
     private final int type;
@@ -90,6 +90,8 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
                 // convert pattern to reduce unnecessary file system scanning
                 if (pattern.equals("*")) {
                     pattern = "!*/**";
+                } else if (pattern.equals("**")) {
+                    this.from = from;
                 }
 
                 if (pattern.charAt(0) != '!') {

@@ -119,6 +119,21 @@ public class PathOperationTest {
     }
 
     @Test
+    public void copyDirectoryChildrenToDirectory() throws Exception {
+        Path input = room.locateDirectory("test01");
+        Path output = room.locateDirectory("out");
+        Synchrotron synchrotron = new Synchrotron(input, output);
+
+        // operation
+        I.copy(input, output, "**");
+
+        // assert contents
+        synchrotron.child("01.txt").areSameFile();
+        synchrotron.sibling("directory1").areSameDirectory();
+        synchrotron.child("02.txt").areSameFile();
+    }
+
+    @Test
     public void copyDirectoryToDirectoryWithReplace() throws Exception {
         Path input = room.locateDirectory("test01");
         Path output = room.locateDirectory("out");
@@ -295,6 +310,22 @@ public class PathOperationTest {
 
         // assert contents
         synchrotron.exists(false, true);
+        synchrotron.child("01.txt").exists(false, true);
+        synchrotron.sibling("directory1").exists(false, true);
+        synchrotron.child("02.txt").exists(false, true);
+    }
+
+    @Test
+    public void moveDirectoryChildrenToDirectory() throws Exception {
+        Path input = room.locateDirectory("test01");
+        Path output = room.locateDirectory("out");
+        Synchrotron synchrotron = new Synchrotron(input, output);
+
+        // operation
+        I.move(input, output, "**");
+
+        // assert contents
+        synchrotron.exists(true, true);
         synchrotron.child("01.txt").exists(false, true);
         synchrotron.sibling("directory1").exists(false, true);
         synchrotron.child("02.txt").exists(false, true);
