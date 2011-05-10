@@ -458,6 +458,23 @@ public class PathOperationTest {
     }
 
     @Test
+    public void deleteDirectoryChildren() {
+        Path input = room.locateDirectory("test01");
+
+        assert Files.exists(input);
+        assert Files.exists(input.resolve("01.txt"));
+        assert Files.exists(input.resolve("directory1/01.txt"));
+
+        // operation
+        I.delete(input, "**");
+
+        assert Files.exists(input.getParent());
+        assert Files.exists(input);
+        assert Files.notExists(input.resolve("01.txt"));
+        assert Files.notExists(input.resolve("directory1/01.txt"));
+    }
+
+    @Test
     public void deleteAbsent() {
         Path input = room.locateAbsent("absent");
 

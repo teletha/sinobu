@@ -57,6 +57,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
     /** The exclude directory pattern. */
     private final PathMatcher[] directories;
 
+    /** We must skip root directory? */
+    private boolean root = false;
+
     /**
      * <p>
      * Utility for file tree traversal.
@@ -92,6 +95,8 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
                     pattern = "!*/**";
                 } else if (pattern.equals("**")) {
                     this.from = from;
+                    this.root = true;
+                    continue;
                 }
 
                 if (pattern.charAt(0) != '!') {
@@ -172,7 +177,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             // fall-through to reduce footprint
 
         case 2: // delete
-            Files.delete(path);
+            if (!root || from != path) {
+                Files.delete(path);
+            }
             // fall-through to reduce footprint
 
         case 3: // walk file
