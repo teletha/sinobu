@@ -20,7 +20,6 @@ import static java.nio.file.StandardCopyOption.*;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
-import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -28,7 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.Collections;
 
 /**
  * @version 2011/04/05 16:13:31
@@ -117,7 +116,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             this.directories = directories.toArray(new PathMatcher[directories.size()]);
 
             // Walk file tree actually.
-            if (type <= 5) Files.walkFileTree(from, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, this);
+            if (type <= 5) Files.walkFileTree(from, Collections.EMPTY_SET, Integer.MAX_VALUE, this);
         } catch (IOException e) {
             throw I.quiet(e);
         }
