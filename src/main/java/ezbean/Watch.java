@@ -15,7 +15,7 @@
  */
 package ezbean;
 
-import static java.nio.file.StandardWatchEventKind.*;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Files;
