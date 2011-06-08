@@ -29,6 +29,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import ezbean.I;
+import ezunit.SAXBuilder;
 
 /**
  * @version 2010/02/05 1:31:37
