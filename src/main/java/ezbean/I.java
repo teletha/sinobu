@@ -1699,6 +1699,10 @@ public class I implements ClassListener<Extensible> {
      */
     public static void write(Object input, Path output, boolean json) {
         try {
+            if (Files.notExists(output)) {
+                Files.createDirectories(output.getParent());
+            }
+
             I.write(input, Files.newBufferedWriter(output, encoding), json);
         } catch (Exception e) {
             throw quiet(e);
