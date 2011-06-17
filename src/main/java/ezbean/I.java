@@ -809,9 +809,9 @@ public class I implements ClassListener<Extensible> {
     public static Path locate(URL filePath) {
         try {
             // Use File constructor with URI to resolve escaped character.
-            return locate(new File(filePath.toURI()).getPath());
+            return new File(filePath.toURI()).toPath();
         } catch (URISyntaxException e) {
-            return locate(filePath.getPath());
+            return new File(filePath.getPath()).toPath();
         }
     }
 
@@ -828,9 +828,6 @@ public class I implements ClassListener<Extensible> {
      *             created.
      */
     public static Path locate(String filePath) {
-        if (filePath.startsWith("file:/")) {
-            filePath = filePath.substring(6);
-        }
         return Paths.get(filePath);
     }
 

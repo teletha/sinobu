@@ -15,6 +15,7 @@
  */
 package ezbean;
 
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -46,15 +47,9 @@ public class PathOperationTest {
     }
 
     @Test
-    public void locateFileProtocol() throws Exception {
-        String url = room.root.toAbsolutePath().toString();
-
-        if (!url.startsWith("file:")) {
-            url = "file:/" + url;
-        }
-
-        Path path = I.locate(url);
-        assert path.isAbsolute();
+    public void locateWhitespace() throws Exception {
+        Path path = I.locate(new URL("file://white space"));
+        assert !path.isAbsolute();
     }
 
     @Test
