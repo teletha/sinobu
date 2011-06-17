@@ -34,6 +34,30 @@ public class PathOperationTest {
     public static final CleanRoom room = new CleanRoom("file");
 
     @Test
+    public void locateRelative() throws Exception {
+        Path path = I.locate("context");
+        assert !path.isAbsolute();
+    }
+
+    @Test
+    public void locateAbsolute() throws Exception {
+        Path path = I.locate(room.root.toAbsolutePath().toString());
+        assert path.isAbsolute();
+    }
+
+    @Test
+    public void locateFileProtocol() throws Exception {
+        String url = room.root.toAbsolutePath().toString();
+
+        if (!url.startsWith("file:")) {
+            url = "file:/" + url;
+        }
+
+        Path path = I.locate(url);
+        assert path.isAbsolute();
+    }
+
+    @Test
     public void copyFileToFile() throws Exception {
         Path input = room.locateFile("test01/01.txt");
         Path output = room.locateFile("out");
