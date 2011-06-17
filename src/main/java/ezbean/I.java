@@ -827,24 +827,11 @@ public class I implements ClassListener<Extensible> {
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
-    public static Path locate(CharSequence filePath) {
-        return Paths.get(filePath.toString());
-    }
-
-    /**
-     * <p>
-     * Locate the specified file path and return the plain {@link Path} object.
-     * </p>
-     * 
-     * @param filePath A location path.
-     * @return A located {@link Path}.
-     * @throws NullPointerException If the given file path is null.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
-     */
-    public static Path locate(String filePath, String... fragments) {
-        return Paths.get(filePath, fragments);
+    public static Path locate(String filePath) {
+        if (filePath.startsWith("file:/")) {
+            filePath = filePath.substring(6);
+        }
+        return Paths.get(filePath);
     }
 
     /**
