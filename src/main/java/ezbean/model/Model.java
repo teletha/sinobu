@@ -397,12 +397,12 @@ public class Model<M> {
 
             // ListModel
             if (List.class.isAssignableFrom(clazz)) {
-                return new ListModel(parameterized, base);
+                return new ListModel(clazz, parameterized.getActualTypeArguments()[0], base);
             }
 
             // MapModel
             if (Map.class.isAssignableFrom(clazz)) {
-                return new MapModel(parameterized, base);
+                return new MapModel(clazz, parameterized.getActualTypeArguments(), base);
             }
 
             // ClassModel

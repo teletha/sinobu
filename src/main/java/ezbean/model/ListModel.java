@@ -15,7 +15,6 @@
  */
 package ezbean.model;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -30,20 +29,14 @@ class ListModel extends Model<List> {
     /**
      * Create ListModel instance.
      * 
-     * @param parameterizedType
+     * @param clazz A raw class.
+     * @param type A parameter class.
      * @throws IllegalArgumentException If the list model has no parameter or invalid parameter.
      */
-    ListModel(ParameterizedType parameterizedType, Type base) {
-        super(List.class);
+    ListModel(Class clazz, Type type, Type base) {
+        super(clazz);
 
-        // verify model
-        Type[] types = parameterizedType.getActualTypeArguments();
-
-        if (types.length != 1) {
-            throw new IllegalArgumentException("ListModel must have only one parameter.");
-        }
-
-        itemModel = Model.load(types[0], base);
+        itemModel = Model.load(type, base);
     }
 
     /**

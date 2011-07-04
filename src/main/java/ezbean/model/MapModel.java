@@ -15,11 +15,10 @@
  */
 package ezbean.model;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import ezbean.I;
 
@@ -37,18 +36,12 @@ class MapModel extends Model<Map> {
     /**
      * Create MapModel instance.
      * 
-     * @param type
+     * @param clazz A raw class.
+     * @param types A list of parameter classes.
      * @throws IllegalArgumentException If the map model has no parameter or invalid parameter.
      */
-    MapModel(ParameterizedType parameterizedType, Type base) {
-        super(Map.class);
-
-        // verify model
-        Type[] types = parameterizedType.getActualTypeArguments();
-
-        if (types.length != 2) {
-            throw new IllegalArgumentException("MapModel must have only two parameters.");
-        }
+    MapModel(Class clazz, Type[] types, Type base) {
+        super(clazz);
 
         this.key = Model.load(types[0], base);
         this.value = Model.load(types[1], base);
