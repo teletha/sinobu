@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -335,6 +336,28 @@ public class ClassUtilTest {
     public void parameterVariableFromClass() {
         Type[] types = ClassUtil.getParameter(ParameterVariableStringByClass.class, ParameterVariableClass.class);
         assert 1 == types.length;
+        assert String.class == types[0];
+    }
+
+    @Test
+    public void list() throws Exception {
+        Type[] types = ClassUtil.getParameter(StringList.class, List.class);
+        assert 1 == types.length;
+        assert String.class == types[0];
+
+        types = ClassUtil.getParameter(StringList.class, ArrayList.class);
+        assert 1 == types.length;
+        assert String.class == types[0];
+    }
+
+    @Test
+    public void map() throws Exception {
+        Type[] types = ClassUtil.getParameter(StringMap.class, Map.class);
+        assert 2 == types.length;
+        assert String.class == types[0];
+
+        types = ClassUtil.getParameter(StringMap.class, HashMap.class);
+        assert 2 == types.length;
         assert String.class == types[0];
     }
 
@@ -729,4 +752,17 @@ public class ClassUtilTest {
      */
     private static class ConsolesUI extends StackContainer<Shell, Console> {
     }
+
+    /**
+     * @version 2011/07/04 16:52:36
+     */
+    private static class StringList extends ArrayList<String> {
+    }
+
+    /**
+     * @version 2011/07/04 16:52:36
+     */
+    private static class StringMap extends HashMap<String, String> {
+    }
+
 }
