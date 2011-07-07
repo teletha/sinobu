@@ -31,6 +31,8 @@ import org.junit.Test;
 
 import ezbean.I;
 import ezbean.sample.bean.GenericBoundedBean;
+import ezbean.sample.bean.StringItemList;
+import ezbean.sample.bean.StringItemMap;
 import ezbean.sample.bean.Student;
 
 /**
@@ -341,22 +343,22 @@ public class ClassUtilTest {
 
     @Test
     public void list() throws Exception {
-        Type[] types = ClassUtil.getParameter(StringList.class, List.class);
+        Type[] types = ClassUtil.getParameter(StringItemList.class, List.class);
         assert 1 == types.length;
         assert String.class == types[0];
 
-        types = ClassUtil.getParameter(StringList.class, ArrayList.class);
+        types = ClassUtil.getParameter(StringItemList.class, ArrayList.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void map() throws Exception {
-        Type[] types = ClassUtil.getParameter(StringMap.class, Map.class);
+        Type[] types = ClassUtil.getParameter(StringItemMap.class, Map.class);
         assert 2 == types.length;
         assert String.class == types[0];
 
-        types = ClassUtil.getParameter(StringMap.class, HashMap.class);
+        types = ClassUtil.getParameter(StringItemMap.class, HashMap.class);
         assert 2 == types.length;
         assert String.class == types[0];
     }
@@ -752,17 +754,4 @@ public class ClassUtilTest {
      */
     private static class ConsolesUI extends StackContainer<Shell, Console> {
     }
-
-    /**
-     * @version 2011/07/04 16:52:36
-     */
-    private static class StringList extends ArrayList<String> {
-    }
-
-    /**
-     * @version 2011/07/04 16:52:36
-     */
-    private static class StringMap extends HashMap<String, String> {
-    }
-
 }
