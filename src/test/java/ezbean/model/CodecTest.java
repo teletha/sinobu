@@ -89,9 +89,9 @@ public class CodecTest {
     @Test
     public void testURL() throws Exception {
         Codec converter = new Codec(URL.class);
-        URL test = new URL("http://sourceforge.net/");
+        URL test = new URL("http://localhost/");
 
-        assert converter.decode(converter.encode(test)).equals(new URL("http://sourceforge.net/"));
+        assert converter.decode(converter.encode(test)).equals(new URL("http://localhost/"));
     }
 
     /**
@@ -100,8 +100,8 @@ public class CodecTest {
     @Test
     public void testURI() throws Exception {
         Codec converter = new Codec(URI.class);
-        URI test = new URI("http://sourceforge.net/");
+        URI test = new URI("http://localhost/");
 
-        assert converter.decode(converter.encode(test)).equals(new URI("http://sourceforge.net/"));
+        assert converter.decode(converter.encode(test)).equals(new URI("http://localhost/"));
     }
 }
