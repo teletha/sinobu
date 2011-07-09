@@ -25,7 +25,7 @@ import ezbean.I;
 /**
  * @version 2010/01/10 17:10:23
  */
-class MapModel extends Model<Map> {
+class MapModel extends Model {
 
     /** The prameterized key of this model. */
     private final Model key;
@@ -67,11 +67,11 @@ class MapModel extends Model<Map> {
      * @see ezbean.model.Model#get(java.lang.Object, ezbean.model.Property)
      */
     @Override
-    public Object get(Map object, Property property) {
+    public Object get(Object object, Property property) {
         if (key.getCodec() == null) {
             return super.get(object, property);
         } else {
-            return object.get(I.transform(property.name, key.type));
+            return ((Map) object).get(I.transform(property.name, key.type));
         }
     }
 
@@ -79,11 +79,11 @@ class MapModel extends Model<Map> {
      * @see ezbean.model.Model#set(java.lang.Object, ezbean.model.Property, java.lang.Object)
      */
     @Override
-    public void set(Map object, Property property, Object propertyValue) {
+    public void set(Object object, Property property, Object propertyValue) {
         if (key.getCodec() == null) {
             super.set(object, property, propertyValue);
         } else {
-            object.put(I.transform(property.name, key.type), propertyValue);
+            ((Map) object).put(I.transform(property.name, key.type), propertyValue);
         }
     }
 
@@ -91,11 +91,11 @@ class MapModel extends Model<Map> {
      * @see ezbean.model.Model#walk(java.lang.Object, ezbean.model.PropertyWalker)
      */
     @Override
-    public void walk(Map object, PropertyWalker walker) {
+    public void walk(Object object, PropertyWalker walker) {
         if (key.getCodec() == null) {
             super.walk(object, walker);
         } else {
-            for (Entry<Object, Object> entry : (Set<Entry<Object, Object>>) object.entrySet()) {
+            for (Entry<Object, Object> entry : (Set<Entry<Object, Object>>) ((Map) object).entrySet()) {
                 walker.walk(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue());
             }
         }

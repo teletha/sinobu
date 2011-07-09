@@ -54,7 +54,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
     protected String className;
 
     /** The model. */
-    protected Model<?> model;
+    protected Model model;
 
     /** The type of this model. */
     protected Type modelType;
