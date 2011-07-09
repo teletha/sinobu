@@ -47,6 +47,11 @@ import ezbean.sample.bean.invalid.StaticAccessor;
  */
 public class ModelTest {
 
+    static {
+        // dirty code to load I class at first
+        assert I.getClassLoader() instanceof ClassLoader;
+    }
+
     /**
      * Helper method to assert property.
      * 
