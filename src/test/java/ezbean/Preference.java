@@ -38,7 +38,7 @@ public abstract class Preference implements Extensible {
     private final DefaultStore defaults = new DefaultStore();
 
     /** The model for this preference. */
-    private final Model<Preference> model;
+    private final Model model;
 
     /** The automatic saving location. */
     private final Path file;

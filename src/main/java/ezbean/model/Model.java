@@ -64,7 +64,7 @@ import ezbean.I;
  * 
  * @version 2011/03/07 22:16:00
  */
-public class Model<M> {
+public class Model {
 
     /** The model repository. */
     static final Map<Class, Model> models = I.aware(new ConcurrentHashMap());
@@ -99,7 +99,7 @@ public class Model<M> {
     }
 
     /** The {@link Class} which is represented by this {@link Model}. */
-    public final Class<M> type;
+    public final Class type;
 
     /** The human readable identifier of this object model. */
     public final String name;
@@ -118,7 +118,7 @@ public class Model<M> {
      * @param type A target class to analyze as model.
      * @throws NullPointerException If the specified model class is <code>null</code>.
      */
-    protected Model(Class<M> type) {
+    protected Model(Class type) {
         // Skip null check because this method can throw NullPointerException.
         // if (model == null) throw new NullPointerException("Model class shouldn't be null.");
 
@@ -257,7 +257,7 @@ public class Model<M> {
      * 
      * @return A suitable codec or <code>null</code>.
      */
-    public Codec<M> getCodec() {
+    public Codec getCodec() {
         return codec != null ? codec : I.find(Codec.class, type);
     }
 
@@ -278,7 +278,7 @@ public class Model<M> {
      * @return A resolved property value. This value may be <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public Object get(M object, Property property) {
+    public Object get(Object object, Property property) {
         if (object instanceof Accessible) {
             return ((Accessible) object).access(property.id, null);
         }
@@ -299,7 +299,7 @@ public class Model<M> {
      *            <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public void set(M object, Property property, Object propertyValue) {
+    public void set(Object object, Property property, Object propertyValue) {
         if (object instanceof Accessible) {
             ((Accessible) object).access(property.id + 1, propertyValue);
         } else {
@@ -319,7 +319,7 @@ public class Model<M> {
      * @param walker A property iterator. This value accepts <code>null</code>.
      * @see PropertyWalker#walk(Model, Property, Object)
      */
-    public void walk(M object, PropertyWalker walker) {
+    public void walk(Object object, PropertyWalker walker) {
         // check whether this model is attribute or not.
         if (walker != null && getCodec() == null) {
             for (Property property : properties) {
@@ -350,16 +350,16 @@ public class Model<M> {
      * @throws NullPointerException If the given model class is null.
      * @throws IllegalArgumentException If the given model class is not found.
      */
-    public static <M> Model<M> load(Class<M> modelClass) {
+    public static Model load(Class modelClass) {
         // check whether the specified model class is enhanced or not
         if (Accessible.class.isAssignableFrom(modelClass)) {
-            modelClass = (Class<M>) modelClass.getSuperclass();
+            modelClass = modelClass.getSuperclass();
         } else if (Path.class.isAssignableFrom(modelClass)) {
-            modelClass = (Class<M>) Path.class;
+            modelClass = Path.class;
         }
 
         // check cache
-        Model<M> model = models.get(modelClass);
+        Model model = models.get(modelClass);
 
         if (model == null) {
             // create new model

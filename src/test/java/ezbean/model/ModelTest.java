@@ -77,13 +77,13 @@ public class ModelTest {
     @Test
     public void testGetModel() throws Exception {
         // from class
-        Model<Person> model = Model.load(Person.class);
+        Model model = Model.load(Person.class);
         assert model != null;
         assert Person.class == model.type;
 
         // from instance
         Person person = I.make(Person.class);
-        Model<Person> model2 = Model.load((Class) person.getClass());
+        Model model2 = Model.load((Class) person.getClass());
         assert model != null;
         assert Person.class == model.type;
 
@@ -96,7 +96,7 @@ public class ModelTest {
      */
     @Test
     public void testModel01() {
-        Model<Model> model = Model.load(Model.class);
+        Model model = Model.load(Model.class);
         assert model != null;
         assert Model.class == model.type;
     }
@@ -129,7 +129,7 @@ public class ModelTest {
      */
     @Test
     public void testModel03() {
-        Model<InheritanceBean> model = Model.load(InheritanceBean.class);
+        Model model = Model.load(InheritanceBean.class);
         assert model != null;
         assert InheritanceBean.class == model.type;
 
@@ -410,7 +410,7 @@ public class ModelTest {
      */
     @Test
     public void testInvalidBean02() {
-        Model<OnlyGetter> model = Model.load(OnlyGetter.class);
+        Model model = Model.load(OnlyGetter.class);
         assert model != null;
 
         List<Property> list = model.properties;
@@ -422,7 +422,7 @@ public class ModelTest {
      */
     @Test
     public void testInvalidBean03() {
-        Model<OnlySetter> model = Model.load(OnlySetter.class);
+        Model model = Model.load(OnlySetter.class);
         assert model != null;
 
         List<Property> list = model.properties;
@@ -434,7 +434,7 @@ public class ModelTest {
      */
     @Test
     public void testInvalidBean04() {
-        Model<FinalAccessor> model = Model.load(FinalAccessor.class);
+        Model model = Model.load(FinalAccessor.class);
         assert model != null;
 
         List<Property> list = model.properties;

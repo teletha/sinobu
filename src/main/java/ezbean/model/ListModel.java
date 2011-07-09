@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * @version 2009/07/22 23:37:56
  */
-class ListModel extends Model<List> {
+class ListModel extends Model {
 
     /** The prameterized item of this model. */
     private final Model itemModel;
@@ -66,43 +66,47 @@ class ListModel extends Model<List> {
      * @see ezbean.model.Model#get(java.lang.Object, ezbean.model.Property)
      */
     @Override
-    public Object get(List object, Property property) {
-        if (property.id < 0 || object.size() <= property.id) {
+    public Object get(Object object, Property property) {
+        List list = (List) object;
+
+        if (property.id < 0 || list.size() <= property.id) {
             throw new IllegalArgumentException("The property id '" + property.id + "' is out of bounds.");
         }
-        return object.get(property.id);
+        return list.get(property.id);
     }
 
     /**
      * @see ezbean.model.Model#set(java.lang.Object, ezbean.model.Property, java.lang.Object)
      */
     @Override
-    public void set(List object, Property property, Object propertyValue) {
+    public void set(Object object, Property property, Object propertyValue) {
         if (property.id < 0) {
             throw new IllegalArgumentException("The property id '" + property.id + "' is out of bounds.");
         }
 
-        if (object.size() <= property.id) {
-            int o = property.id - object.size() + 1;
+        List list = (List) object;
+
+        if (list.size() <= property.id) {
+            int o = property.id - list.size() + 1;
             for (int i = 0; i < o; i++) {
-                object.add(null);
+                list.add(null);
             }
         }
-        object.set(property.id, propertyValue);
+        list.set(property.id, propertyValue);
     }
 
     /**
      * @see ezbean.model.Model#walk(java.lang.Object, ezbean.model.PropertyWalker)
      */
     @Override
-    public void walk(List object, PropertyWalker walker) {
+    public void walk(Object object, PropertyWalker walker) {
         if (object != null && walker != null) {
             // prepare counter for list index
             int counter = 0;
 
             // We must use extended for loop because the sequential access is not efficient for some
             // List implementation.
-            for (Object value : object) {
+            for (Object value : (List) object) {
                 Property property = new Property(itemModel, String.valueOf(counter));
                 property.id = counter++;
 

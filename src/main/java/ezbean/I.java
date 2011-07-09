@@ -929,7 +929,7 @@ public class I implements ClassListener<Extensible> {
         }
 
         // We can obtain the model about the actual model class.
-        Model<M> model = Model.load(actualClass);
+        Model model = Model.load(actualClass);
 
         // If this model is non-accessible or final class, we can not extend it for bean
         // enhancement. So we must throw some exception.
@@ -968,7 +968,7 @@ public class I implements ClassListener<Extensible> {
             if (lifestyle == null) {
                 // If the actual model class doesn't provide its lifestyle explicitly, we use
                 // Prototype lifestyle which is default lifestyle in Ezbean.
-                Manageable manageable = model.type.getAnnotation(Manageable.class);
+                Manageable manageable = (Manageable) model.type.getAnnotation(Manageable.class);
 
                 // Create new lifestyle for the actual model class
                 lifestyle = make(manageable == null ? Prototype.class : manageable.lifestyle());
@@ -1549,7 +1549,7 @@ public class I implements ClassListener<Extensible> {
         }
 
         Model inputModel = Model.load((Class) input.getClass());
-        Model<M> outputModel = Model.load(output);
+        Model outputModel = Model.load(output);
 
         // no conversion
         if (inputModel == outputModel) {
