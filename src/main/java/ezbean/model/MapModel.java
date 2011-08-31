@@ -43,6 +43,10 @@ class MapModel extends Model {
     MapModel(Class clazz, Type[] types, Type base) {
         super(clazz);
 
+        if (types.length == 0) {
+            types = new Type[] {Object.class, Object.class};
+        }
+
         this.key = Model.load(types[0], base);
         this.value = Model.load(types[1], base);
     }
