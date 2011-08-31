@@ -94,7 +94,7 @@ class XMLOut extends ModelWalker {
                 name = property.model.name;
 
                 // collection needs key attribute
-                if (model.type == Map.class) {
+                if (Map.class.isAssignableFrom(model.type)) {
                     attributes.addAttribute(URI, null, "ez:key", null, property.name);
                 }
             } else if (!property.isAttribute()) {

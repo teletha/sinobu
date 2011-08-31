@@ -40,6 +40,11 @@ import ezbean.sample.bean.Student;
  */
 public class ClassUtilTest {
 
+    static {
+        // dirty code to load I class at first
+        assert I.getClassLoader() instanceof ClassLoader;
+    }
+
     /**
      * Test method for {@link ezbean.model.ClassUtil#getTypes(java.lang.Class)}.
      */

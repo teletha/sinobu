@@ -31,6 +31,8 @@ import ezbean.sample.bean.GenericStringBean;
 import ezbean.sample.bean.IncompatibleKeyMap;
 import ezbean.sample.bean.InheritanceBean;
 import ezbean.sample.bean.Person;
+import ezbean.sample.bean.StringItemList;
+import ezbean.sample.bean.StringItemMap;
 import ezbean.sample.bean.StringMap;
 import ezbean.sample.bean.Student;
 import ezbean.sample.bean.WildcardBean;
@@ -369,6 +371,18 @@ public class ModelTest {
      * @version 2009/07/15 12:49:55
      */
     private static class MapBean extends GenericBean<Map<String, Integer>> {
+    }
+
+    @Test
+    public void list() throws Exception {
+        Model model = Model.load(StringItemList.class);
+        assert model instanceof ListModel;
+    }
+
+    @Test
+    public void map() throws Exception {
+        Model model = Model.load(StringItemMap.class);
+        assert model instanceof MapModel;
     }
 
     @Test

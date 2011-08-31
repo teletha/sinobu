@@ -41,6 +41,8 @@ import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.School;
 import ezbean.sample.bean.SchoolEnum;
+import ezbean.sample.bean.StringItemList;
+import ezbean.sample.bean.StringItemMap;
 import ezbean.sample.bean.StringList;
 import ezbean.sample.bean.StringMap;
 import ezbean.sample.bean.Student;
@@ -79,6 +81,22 @@ public class XMLTest {
     }
 
     @Test
+    public void listModel() throws Exception {
+        StringItemList list = I.make(StringItemList.class);
+        list.add("10");
+        list.add("20");
+
+        // write
+        I.write(list, config, false);
+
+        // read
+        list = I.read(config, I.make(StringItemList.class));
+        assert list.size() == 2;
+        assert list.get(0).equals("10");
+        assert list.get(1).equals("20");
+    }
+
+    @Test
     public void map() throws Exception {
         Person teacher = I.make(Person.class);
         teacher.setFirstName("test");
@@ -95,6 +113,22 @@ public class XMLTest {
         // read
         school = I.read(config, I.make(School.class));
         assert school.getTeachers().get("role").getFirstName().equals("test");
+    }
+
+    @Test
+    public void mapModel() throws Exception {
+        StringItemMap map = I.make(StringItemMap.class);
+        map.put("one", "1");
+        map.put("two", "2");
+
+        // write
+        I.write(map, config, false);
+
+        // read
+        map = I.read(config, I.make(StringItemMap.class));
+        assert map.size() == 2;
+        assert map.get("one").equals("1");
+        assert map.get("two").equals("2");
     }
 
     /**

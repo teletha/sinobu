@@ -363,7 +363,14 @@ public class Model {
 
         if (model == null) {
             // create new model
-            model = new Model(modelClass);
+            if (List.class.isAssignableFrom(modelClass)) {
+                model = new ListModel(modelClass, ClassUtil.getParameter(modelClass, List.class)[0], List.class);
+            } else if (Map.class.isAssignableFrom(modelClass)) {
+                System.out.println(modelClass);
+                model = new MapModel(modelClass, ClassUtil.getParameter(modelClass, Map.class), Map.class);
+            } else {
+                model = new Model(modelClass);
+            }
 
             // store it
             models.put(modelClass, model);
