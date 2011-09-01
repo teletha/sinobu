@@ -31,7 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.sample.bean.StringList;
+import ezbean.sample.bean.StringListProperty;
 import ezunit.CleanRoom;
 
 /**
@@ -73,29 +73,29 @@ public class XMLCuncurrentTest {
      */
     @Test
     public void testReadAndWrite1() throws Exception {
-        StringList bean = createBigList();
+        StringListProperty bean = createBigList();
 
         // write
         pool.execute(new Writer(bean));
 
         // read
-        Future<StringList> future = pool.submit(new Reader());
+        Future<StringListProperty> future = pool.submit(new Reader());
 
-        StringList result = future.get();
+        StringListProperty result = future.get();
 
         assert result != null;
         assert result.getList() != null;
         assert 100000 == result.getList().size();
     }
 
-    private StringList createBigList() {
+    private StringListProperty createBigList() {
         List list = new ArrayList(100000);
 
         for (int i = 0; i < 100000; i++) {
             list.add(i);
         }
 
-        StringList bean = I.make(StringList.class);
+        StringListProperty bean = I.make(StringListProperty.class);
         bean.setList(list);
 
         return bean;
@@ -104,13 +104,13 @@ public class XMLCuncurrentTest {
     /**
      * @version 2011/03/29 12:37:30
      */
-    private static class Reader implements Callable<StringList> {
+    private static class Reader implements Callable<StringListProperty> {
 
         /**
          * @see java.util.concurrent.Callable#call()
          */
-        public StringList call() throws Exception {
-            return I.read(Files.newBufferedReader(testFile, I.getEncoding()), I.make(StringList.class));
+        public StringListProperty call() throws Exception {
+            return I.read(Files.newBufferedReader(testFile, I.getEncoding()), I.make(StringListProperty.class));
         }
     }
 

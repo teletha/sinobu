@@ -31,8 +31,8 @@ import org.junit.Test;
 
 import ezbean.I;
 import ezbean.sample.bean.GenericBoundedBean;
-import ezbean.sample.bean.StringItemList;
-import ezbean.sample.bean.StringItemMap;
+import ezbean.sample.bean.StringList;
+import ezbean.sample.bean.StringMap;
 import ezbean.sample.bean.Student;
 
 /**
@@ -348,22 +348,22 @@ public class ClassUtilTest {
 
     @Test
     public void list() throws Exception {
-        Type[] types = ClassUtil.getParameter(StringItemList.class, List.class);
+        Type[] types = ClassUtil.getParameter(StringList.class, List.class);
         assert 1 == types.length;
         assert String.class == types[0];
 
-        types = ClassUtil.getParameter(StringItemList.class, ArrayList.class);
+        types = ClassUtil.getParameter(StringList.class, ArrayList.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void map() throws Exception {
-        Type[] types = ClassUtil.getParameter(StringItemMap.class, Map.class);
+        Type[] types = ClassUtil.getParameter(StringMap.class, Map.class);
         assert 2 == types.length;
         assert String.class == types[0];
 
-        types = ClassUtil.getParameter(StringItemMap.class, HashMap.class);
+        types = ClassUtil.getParameter(StringMap.class, HashMap.class);
         assert 2 == types.length;
         assert String.class == types[0];
     }

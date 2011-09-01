@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,34 +15,11 @@
  */
 package ezbean.sample.bean;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: StringList.java,v 1.0 2007/01/16 19:08:54 Teletha Exp $
+ * @version 2011/07/07 21:48:52
  */
-public class StringList {
-
-    private List<String> list;
-
-    /**
-     * Get the list property of this {@link StringList}.
-     * 
-     * @return The list prperty.
-     */
-    public List<String> getList() {
-        return list;
-    }
-
-    /**
-     * Set the list property of this {@link StringList}.
-     * 
-     * @param list The list value to set.
-     */
-    public void setList(List<String> list) {
-        this.list = list;
-    }
-
+@SuppressWarnings("serial")
+public class StringList extends ArrayList<String> {
 }

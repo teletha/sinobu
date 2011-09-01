@@ -31,9 +31,9 @@ import ezbean.sample.bean.GenericStringBean;
 import ezbean.sample.bean.IncompatibleKeyMap;
 import ezbean.sample.bean.InheritanceBean;
 import ezbean.sample.bean.Person;
-import ezbean.sample.bean.StringItemList;
-import ezbean.sample.bean.StringItemMap;
+import ezbean.sample.bean.StringList;
 import ezbean.sample.bean.StringMap;
+import ezbean.sample.bean.StringMapProperty;
 import ezbean.sample.bean.Student;
 import ezbean.sample.bean.WildcardBean;
 import ezbean.sample.bean.WildcardTypeSetter;
@@ -149,7 +149,7 @@ public class ModelTest {
      */
     @Test
     public void testModel04() {
-        Model model = Model.load(StringMap.class);
+        Model model = Model.load(StringMapProperty.class);
         assert model != null;
 
         Property property = model.getProperty("map");
@@ -375,13 +375,13 @@ public class ModelTest {
 
     @Test
     public void list() throws Exception {
-        Model model = Model.load(StringItemList.class);
+        Model model = Model.load(StringList.class);
         assert model instanceof ListModel;
     }
 
     @Test
     public void map() throws Exception {
-        Model model = Model.load(StringItemMap.class);
+        Model model = Model.load(StringMap.class);
         assert model instanceof MapModel;
     }
 
