@@ -41,10 +41,10 @@ import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.School;
 import ezbean.sample.bean.SchoolEnum;
-import ezbean.sample.bean.StringItemList;
-import ezbean.sample.bean.StringItemMap;
 import ezbean.sample.bean.StringList;
 import ezbean.sample.bean.StringMap;
+import ezbean.sample.bean.StringListProperty;
+import ezbean.sample.bean.StringMapProperty;
 import ezbean.sample.bean.Student;
 import ezbean.sample.bean.TransientBean;
 import ezunit.CleanRoom;
@@ -82,7 +82,7 @@ public class XMLTest {
 
     @Test
     public void listModel() throws Exception {
-        StringItemList list = I.make(StringItemList.class);
+        StringList list = I.make(StringList.class);
         list.add("10");
         list.add("20");
 
@@ -90,7 +90,7 @@ public class XMLTest {
         I.write(list, config, false);
 
         // read
-        list = I.read(config, I.make(StringItemList.class));
+        list = I.read(config, I.make(StringList.class));
         assert list.size() == 2;
         assert list.get(0).equals("10");
         assert list.get(1).equals("20");
@@ -117,7 +117,7 @@ public class XMLTest {
 
     @Test
     public void mapModel() throws Exception {
-        StringItemMap map = I.make(StringItemMap.class);
+        StringMap map = I.make(StringMap.class);
         map.put("one", "1");
         map.put("two", "2");
 
@@ -125,7 +125,7 @@ public class XMLTest {
         I.write(map, config, false);
 
         // read
-        map = I.read(config, I.make(StringItemMap.class));
+        map = I.read(config, I.make(StringMap.class));
         assert map.size() == 2;
         assert map.get("one").equals("1");
         assert map.get("two").equals("2");
@@ -220,14 +220,14 @@ public class XMLTest {
         list.add("\"");
         list.add("'");
 
-        StringList stringList = I.make(StringList.class);
+        StringListProperty stringList = I.make(StringListProperty.class);
         stringList.setList(list);
 
         // write
         I.write(stringList, config, false);
 
         // read
-        stringList = I.read(config, I.make(StringList.class));
+        stringList = I.read(config, I.make(StringListProperty.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -247,14 +247,14 @@ public class XMLTest {
         list.add("です");
         list.add("(´･ω･`)");
 
-        StringList stringList = I.make(StringList.class);
+        StringListProperty stringList = I.make(StringListProperty.class);
         stringList.setList(list);
 
         // write
         I.write(stringList, config, false);
 
         // read
-        stringList = I.read(config, I.make(StringList.class));
+        stringList = I.read(config, I.make(StringListProperty.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -268,7 +268,7 @@ public class XMLTest {
      */
     @Test
     public void testReadAndWrite8() throws Exception {
-        StringMap stringMap = I.make(StringMap.class);
+        StringMapProperty stringMap = I.make(StringMapProperty.class);
         Map<String, String> map = new HashMap<String, String>();
         map.put("1", "one");
         map.put("2", "two");
@@ -280,7 +280,7 @@ public class XMLTest {
         I.write(stringMap, config, false);
 
         // read
-        stringMap = I.read(config, I.make(StringMap.class));
+        stringMap = I.read(config, I.make(StringMapProperty.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -296,7 +296,7 @@ public class XMLTest {
      */
     @Test
     public void testReadAndWrite9() throws Exception {
-        StringMap stringMap = I.make(StringMap.class);
+        StringMapProperty stringMap = I.make(StringMapProperty.class);
         Map<String, String> map = new HashMap<String, String>();
         map.put("\"", "one");
         map.put(" ", "two");
@@ -308,7 +308,7 @@ public class XMLTest {
         I.write(stringMap, config, false);
 
         // read
-        stringMap = I.read(config, I.make(StringMap.class));
+        stringMap = I.read(config, I.make(StringMapProperty.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -510,7 +510,7 @@ public class XMLTest {
      */
     @Test
     public void readAndWriteList() throws Exception {
-        StringList stringList = I.make(StringList.class);
+        StringListProperty stringList = I.make(StringListProperty.class);
         List<String> list = new ArrayList<String>();
         list.add("1");
         list.add("2");
@@ -522,7 +522,7 @@ public class XMLTest {
         I.write(stringList, config, false);
 
         // read
-        stringList = I.read(config, I.make(StringList.class));
+        stringList = I.read(config, I.make(StringListProperty.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -546,14 +546,14 @@ public class XMLTest {
         list.add("k-on");
         list.add(null);
 
-        StringList bean = I.make(StringList.class);
+        StringListProperty bean = I.make(StringListProperty.class);
         bean.setList(list);
 
         // write
         I.write(bean, config, false);
 
         // read
-        bean = I.read(config, I.make(StringList.class));
+        bean = I.read(config, I.make(StringListProperty.class));
         assert bean != null;
 
         list = bean.getList();
@@ -571,7 +571,7 @@ public class XMLTest {
      */
     @Test
     public void readAndWriteMap() throws Exception {
-        StringMap stringMap = I.make(StringMap.class);
+        StringMapProperty stringMap = I.make(StringMapProperty.class);
         Map<String, String> map = new HashMap<String, String>();
         map.put("one", "one");
         map.put("two", "two");
@@ -583,7 +583,7 @@ public class XMLTest {
         I.write(stringMap, config, false);
 
         // read
-        stringMap = I.read(config, I.make(StringMap.class));
+        stringMap = I.read(config, I.make(StringMapProperty.class));
         assert stringMap != null;
 
         map = stringMap.getMap();
@@ -603,14 +603,14 @@ public class XMLTest {
         map.put("", "");
         map.put("null", null);
 
-        StringMap bean = I.make(StringMap.class);
+        StringMapProperty bean = I.make(StringMapProperty.class);
         bean.setMap(map);
 
         // write
         I.write(bean, config, false);
 
         // read
-        bean = I.read(config, I.make(StringMap.class));
+        bean = I.read(config, I.make(StringMapProperty.class));
         assert bean != null;
 
         map = bean.getMap();
@@ -707,7 +707,7 @@ public class XMLTest {
 
     @Test
     public void multipleAttributeReference() throws Exception {
-        StringList stringList = I.make(StringList.class);
+        StringListProperty stringList = I.make(StringListProperty.class);
         List<String> list = new ArrayList<String>();
         list.add("1");
         list.add("1");
@@ -722,7 +722,7 @@ public class XMLTest {
         I.write(stringList, config, false);
 
         // read
-        stringList = I.read(config, I.make(StringList.class));
+        stringList = I.read(config, I.make(StringListProperty.class));
         assert stringList != null;
 
         list = stringList.getList();
@@ -757,12 +757,12 @@ public class XMLTest {
     /**
      * @version 2010/01/08 17:11:38
      */
-    protected static class Checker extends StringList {
+    protected static class Checker extends StringListProperty {
 
         private int size = -1;
 
         /**
-         * @see ezbean.sample.bean.StringList#setList(java.util.List)
+         * @see ezbean.sample.bean.StringListProperty#setList(java.util.List)
          */
         @Override
         public void setList(List<String> list) {

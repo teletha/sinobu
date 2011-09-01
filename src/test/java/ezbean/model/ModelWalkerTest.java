@@ -26,7 +26,7 @@ import org.junit.Test;
 import ezbean.I;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
-import ezbean.sample.bean.StringMap;
+import ezbean.sample.bean.StringMapProperty;
 import ezbean.sample.bean.Student;
 
 /**
@@ -139,7 +139,7 @@ public class ModelWalkerTest {
         map.put("item2", "2");
         map.put("item3", "3");
 
-        StringMap stringMap = new StringMap();
+        StringMapProperty stringMap = new StringMapProperty();
         stringMap.setMap(map);
 
         Walker walker = new Walker();

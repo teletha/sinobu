@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,33 +15,11 @@
  */
 package ezbean.sample.bean;
 
-import java.util.Map;
+import java.util.HashMap;
 
 /**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: StringMap.java,v 1.0 2007/02/18 12:39:08 Teletha Exp $
+ * @version 2011/07/07 21:49:14
  */
-public class StringMap {
-
-    private Map<String, String> map;
-
-    /**
-     * Get the map property of this {@link StringMap}.
-     * 
-     * @return The map prperty.
-     */
-    public Map<String, String> getMap() {
-        return map;
-    }
-
-    /**
-     * Set the map property of this {@link StringMap}.
-     * 
-     * @param map The map value to set.
-     */
-    public void setMap(Map<String, String> map) {
-        this.map = map;
-    }
+@SuppressWarnings("serial")
+public class StringMap extends HashMap<String, String> {
 }

@@ -32,8 +32,8 @@ import ezbean.sample.bean.Group;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.bean.School;
-import ezbean.sample.bean.StringList;
-import ezbean.sample.bean.StringMap;
+import ezbean.sample.bean.StringListProperty;
+import ezbean.sample.bean.StringMapProperty;
 import ezbean.sample.bean.Student;
 import ezbean.sample.bean.TransientBean;
 
@@ -128,7 +128,7 @@ public class JSONTest {
         list.add("two");
         list.add("three");
 
-        StringList strings = I.make(StringList.class);
+        StringListProperty strings = I.make(StringListProperty.class);
         strings.setList(list);
 
         // write
@@ -136,7 +136,7 @@ public class JSONTest {
         assert json.equals("{\"list\":[\"one\",\"two\",\"three\"]}");
 
         // read
-        strings = I.read(json, I.make(StringList.class));
+        strings = I.read(json, I.make(StringListProperty.class));
         list = strings.getList();
         assert list != null;
         assert list.get(0).equals("one");
@@ -151,7 +151,7 @@ public class JSONTest {
         map.put("two", "2");
         map.put("three", "3");
 
-        StringMap strings = I.make(StringMap.class);
+        StringMapProperty strings = I.make(StringMapProperty.class);
         strings.setMap(map);
 
         // write
@@ -159,7 +159,7 @@ public class JSONTest {
         assert json.equals("{\"map\":{\"two\":\"2\",\"one\":\"1\",\"three\":\"3\"}}");
 
         // read
-        strings = I.read(json, I.make(StringMap.class));
+        strings = I.read(json, I.make(StringMapProperty.class));
         map = strings.getMap();
         assert map != null;
         assert map.get("one").equals("1");
