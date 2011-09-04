@@ -15,6 +15,9 @@
  */
 package ezbean.performance;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
@@ -133,6 +136,42 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
             public Object call() throws Exception {
                 method.invoke(person, param);
                 return person;
+            }
+        });
+    }
+
+    /**
+     * MH access.
+     */
+    @Test
+    public void methodHandle() {
+        benchmark(new Callable() {
+
+            private Person person = I.make(Person.class);
+
+            private MethodHandle method;
+
+            private String param = "test";
+
+            {
+                try {
+                    MethodType type = MethodType.methodType(void.class, String.class);
+                    method = MethodHandles.lookup().findVirtual(Person.class, "setFirstName", type);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            /**
+             * @see java.util.concurrent.Callable#call()
+             */
+            public Object call() throws Exception {
+                try {
+                    method.invokeExact(person, param);
+                    return person;
+                } catch (Throwable e) {
+                    throw I.quiet(e);
+                }
             }
         });
     }
