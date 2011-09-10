@@ -25,8 +25,8 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import ezbean.model.ClassUtil;
@@ -68,7 +68,7 @@ import ezbean.model.ClassUtil;
  * 
  * @version 2010/10/07 21:37:38
  */
-public abstract class ReusableRule implements MethodRule {
+public abstract class ReusableRule implements TestRule {
 
     /** The testcase class. */
     protected final Class testcase = getCaller();
@@ -100,7 +100,7 @@ public abstract class ReusableRule implements MethodRule {
     protected ReusableRule() {
         for (Field field : getClass().getFields()) {
             if (field.isAnnotationPresent(Rule.class) && Modifier.isPublic(field.getModifiers())) {
-                if (MethodRule.class.isAssignableFrom(field.getType())) {
+                if (TestRule.class.isAssignableFrom(field.getType())) {
                     rules.add(field);
                 }
             }
@@ -114,10 +114,11 @@ public abstract class ReusableRule implements MethodRule {
     }
 
     /**
-     * @see org.junit.rules.MethodRule#apply(org.junit.runners.model.Statement,
-     *      org.junit.runners.model.FrameworkMethod, java.lang.Object)
+     * @see org.junit.rules.TestRule#apply(org.junit.runners.model.Statement,
+     *      org.junit.runner.Description)
      */
-    public final Statement apply(final Statement base, final FrameworkMethod method, final Object target) {
+    @Override
+    public final Statement apply(final Statement base, final Description description) {
         // reset previous error
         error = null;
 
@@ -128,6 +129,8 @@ public abstract class ReusableRule implements MethodRule {
              */
             public void evaluate() throws Throwable {
                 try {
+                    Method method = description.getTestClass().getMethod(description.getMethodName());
+
                     // call before class
                     if (executed++ == 0) {
                         // register
@@ -137,16 +140,16 @@ public abstract class ReusableRule implements MethodRule {
                         beforeClass();
                     }
 
-                    if (!skip(method.getMethod())) {
+                    if (!skip(method)) {
                         try {
                             // invoke before
-                            before(method.getMethod());
+                            before(method);
 
                             // make chain of method rules
                             Statement statement = base;
 
                             for (Field rule : rules) {
-                                statement = ((MethodRule) rule.get(ReusableRule.this)).apply(statement, method, target);
+                                statement = ((TestRule) rule.get(ReusableRule.this)).apply(statement, description);
                             }
 
                             // invoke test method
@@ -155,7 +158,7 @@ public abstract class ReusableRule implements MethodRule {
                             catchError(e);
                         } finally {
                             // invoke after
-                            after(method.getMethod());
+                            after(method);
                         }
                     }
                 } catch (Throwable e) {
