@@ -27,10 +27,10 @@ import ezbean.I;
 /**
  * @version 2011/09/22 16:22:02
  */
-public class CharacterUserTest {
+public class CommandLineUserTest {
 
     @Rule
-    public static final CharacterUser user = new CharacterUser();
+    public static final CommandLineUser user = new CommandLineUser();
 
     @Test
     public void input() throws Exception {
@@ -50,13 +50,6 @@ public class CharacterUserTest {
     @Test
     public void inputSequentially() throws Exception {
         user.willInput("1");
-        user.willInput("2");
-        assert "12".equals(read());
-    }
-
-    @Test
-    public void line() throws Exception {
-        user.willInput("1\r\n");
         user.willInput("2");
         assert "1".equals(read());
         assert "2".equals(read());

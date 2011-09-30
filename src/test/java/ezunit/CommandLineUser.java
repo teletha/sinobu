@@ -29,7 +29,7 @@ import java.util.Deque;
  * 
  * @version 2011/09/22 15:34:02
  */
-public class CharacterUser extends ReusableRule {
+public class CommandLineUser extends ReusableRule {
 
     /** The mock system input. */
     private MockInputStream input;
@@ -40,6 +40,23 @@ public class CharacterUser extends ReusableRule {
     /** The original system error. */
     private MockOutputStream error;
 
+    /** The ignore system output. */
+    private boolean ignore;
+
+    /**
+     * 
+     */
+    public CommandLineUser() {
+        this(false);
+    }
+
+    /**
+     * @param ignoreOutput
+     */
+    public CommandLineUser(boolean ignoreOutput) {
+        this.ignore = ignoreOutput;
+    }
+
     /**
      * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
      */
@@ -47,8 +64,11 @@ public class CharacterUser extends ReusableRule {
     protected void before(Method method) throws Exception {
         // swap
         System.setIn(input = new MockInputStream());
-        System.setOut(output = new MockOutputStream(false));
-        System.setErr(error = new MockOutputStream(true));
+
+        if (!ignore) {
+            System.setOut(output = new MockOutputStream(false));
+            System.setErr(error = new MockOutputStream(true));
+        }
     }
 
     /**
@@ -58,8 +78,11 @@ public class CharacterUser extends ReusableRule {
     protected void after(Method method) {
         // restore original
         System.setIn(input.original);
-        System.setOut(output.original);
-        System.setErr(error.original);
+
+        if (!ignore) {
+            System.setOut(output.original);
+            System.setErr(error.original);
+        }
     }
 
     /**
@@ -67,7 +90,7 @@ public class CharacterUser extends ReusableRule {
      */
     public void willInput(String... values) {
         for (String value : values) {
-            input.deque.add(new UserInput(value));
+            input.deque.add(new UserInput(value.concat("\r\n")));
         }
     }
 
