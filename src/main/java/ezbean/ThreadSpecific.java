@@ -53,7 +53,7 @@ public class ThreadSpecific<M> extends Prototype<M> {
      * 
      * @param modelClass
      */
-    public ThreadSpecific(Class<M> modelClass) {
+    protected ThreadSpecific(Class<M> modelClass) {
         super(modelClass);
     }
 

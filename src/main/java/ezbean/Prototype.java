@@ -19,7 +19,6 @@ import java.lang.reflect.Constructor;
 
 import ezbean.model.ClassUtil;
 
-
 /**
  * <p>
  * This lifestyle creates a new instance every time demanded. This is default lifestyle in Ezbean.
@@ -44,7 +43,7 @@ public class Prototype<M> implements Lifestyle<M> {
      * 
      * @param modelClass
      */
-    public Prototype(Class<M> modelClass) {
+    protected Prototype(Class<M> modelClass) {
         // find default constructor as instantiator
         instantiator = ClassUtil.getMiniConstructor(modelClass);
         params = instantiator.getParameterTypes();
