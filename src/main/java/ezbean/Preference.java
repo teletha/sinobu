@@ -22,6 +22,19 @@ import ezbean.model.Model;
 import ezbean.model.Property;
 
 /**
+ * <p>
+ * This lifestyle guarantees that only one instance of the specific class exists in Ezbean and all
+ * its properties are paersisted automatically as user configuration file.
+ * </p>
+ * <p>
+ * When the instance is initialized, Ezbean restores all properties form the persisted user
+ * configuration file. When any instance's property is changed, Ezbean automatically stores it to
+ * the user configuration file.
+ * </p>
+ * 
+ * @see Prototype
+ * @see Singleton
+ * @see ThreadSpecific
  * @version 2011/11/03 20:16:51
  */
 public class Preference<M> extends Singleton<M> implements PropertyListener {
@@ -30,6 +43,8 @@ public class Preference<M> extends Singleton<M> implements PropertyListener {
     protected final Path path;
 
     /**
+     * Create Preference instance.
+     * 
      * @param modelClass
      */
     protected Preference(Class<M> modelClass) {
