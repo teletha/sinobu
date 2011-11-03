@@ -34,7 +34,7 @@ public class Singleton<M> extends Prototype<M> {
      * 
      * @param modelClass
      */
-    public Singleton(Class<M> modelClass) {
+    protected Singleton(Class<M> modelClass) {
         super(modelClass);
 
         instance = super.resolve();

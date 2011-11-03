@@ -27,19 +27,19 @@ import ezbean.model.Property;
 public class Preference<M> extends Singleton<M> implements PropertyListener {
 
     /** The automatic saving location. */
-    private final Path file;
+    protected final Path path;
 
     /**
      * @param modelClass
      */
-    public Preference(Class<M> modelClass) {
+    protected Preference(Class<M> modelClass) {
         super(modelClass);
 
         Model model = Model.load(modelClass);
-        this.file = I.getWorkingDirectory().resolve("preferences").resolve(model.type.getName().concat(".xml"));
+        this.path = I.getWorkingDirectory().resolve("preferences").resolve(model.type.getName().concat(".xml"));
 
-        if (Files.exists(file)) {
-            I.read(file, instance);
+        if (Files.exists(path)) {
+            I.read(path, instance);
         }
 
         // observe each properties
@@ -53,6 +53,6 @@ public class Preference<M> extends Singleton<M> implements PropertyListener {
      */
     @Override
     public void change(Object bean, String name, Object oldValue, Object newValue) {
-        I.write(instance, file, false);
+        I.write(instance, path, false);
     }
 }
