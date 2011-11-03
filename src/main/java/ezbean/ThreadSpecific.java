@@ -41,7 +41,8 @@ package ezbean;
  * 
  * @see Prototype
  * @see Singleton
- * @version 2007/06/13 14:15:57
+ * @see Preference
+ * @version 2011/11/04 0:12:03
  */
 public class ThreadSpecific<M> extends Prototype<M> {
 
@@ -58,7 +59,7 @@ public class ThreadSpecific<M> extends Prototype<M> {
     }
 
     /**
-     * @see ezbean.Lifestyle#resolve()
+     * {@inheritDoc}
      */
     @Override
     public M resolve() {

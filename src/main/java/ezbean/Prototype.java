@@ -28,7 +28,8 @@ import ezbean.model.ClassUtil;
  * 
  * @see Singleton
  * @see ThreadSpecific
- * @version 2010/02/19 18:06:21
+ * @see Preference
+ * @version 2011/11/04 0:11:32
  */
 public class Prototype<M> implements Lifestyle<M> {
 

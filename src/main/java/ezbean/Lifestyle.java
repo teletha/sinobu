@@ -17,8 +17,8 @@ package ezbean;
 
 /**
  * <p>
- * Lifestyle manages the instance in the specific context. Ezbean provides three commonly used
- * lifestyles ({@link Prototype}, {@link Singleton} and {@link ThreadSpecific}).
+ * Lifestyle manages the instance in the specific context. Ezbean provides four commonly used
+ * lifestyles ({@link Prototype}, {@link Singleton}, {@link ThreadSpecific} and {@link Preference}).
  * </p>
  * <p>
  * There are two ways to specify {@link Lifestyle} for the class.
@@ -52,8 +52,9 @@ package ezbean;
  * @see Prototype
  * @see Singleton
  * @see ThreadSpecific
+ * @see Preference
  * @see Manageable#lifestyle()
- * @version 2010/01/15 18:24:19
+ * @version 2011/11/04 0:03:20
  */
 public interface Lifestyle<M> extends Extensible {
 
