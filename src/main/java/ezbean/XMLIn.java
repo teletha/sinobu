@@ -39,6 +39,7 @@ import ezbean.xml.XMLScanner;
  * 
  * @version 2010/01/12 22:54:15
  */
+@SuppressWarnings("resource")
 class XMLIn extends XMLScanner {
 
     /** The root object. */

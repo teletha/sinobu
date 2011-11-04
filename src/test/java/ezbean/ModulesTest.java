@@ -33,6 +33,7 @@ import ezunit.PrivateModule;
 /**
  * @version 2011/03/22 16:36:07
  */
+@SuppressWarnings("resource")
 public class ModulesTest {
 
     @Rule
