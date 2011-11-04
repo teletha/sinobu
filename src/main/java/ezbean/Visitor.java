@@ -83,6 +83,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             }
 
             // Parse and create path matchers.
+            @SuppressWarnings("resource")
             FileSystem system = from.getFileSystem();
             ArrayList<PathMatcher> includes = new ArrayList();
             ArrayList<PathMatcher> excludes = new ArrayList();
