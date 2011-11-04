@@ -32,6 +32,7 @@ import ezbean.I;
 /**
  * @version 2010/02/09 11:23:23
  */
+@SuppressWarnings("resource")
 public class SandboxTest {
 
     @Rule
