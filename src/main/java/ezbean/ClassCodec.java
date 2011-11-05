@@ -13,28 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.model;
+package ezbean;
 
 import java.util.Locale;
 
-import ezbean.I;
-import ezbean.Lifestyle;
+import ezbean.model.Codec;
 
 /**
  * <p>
  * This is dual-purpose implementation class. One is codec for {@link Class}. The other is lifestyle
  * for {@link Locale}.
  * </p>
+ * <p>
+ * This class locates ezbean package to access {@link Modules}'s package-private field.
+ * </p>
  * 
  * @version 2010/01/16 19:33:09
  */
-class CodecClass extends Codec<Class> implements Lifestyle<Locale> {
+class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
 
     /**
      * @see ezbean.model.Codec#decode(java.lang.String)
      */
     public Class decode(String value) {
-        return I.load(value);
+        for (Module module : I.make(Modules.class).modules) {
+            try {
+                return module.loadClass(value);
+            } catch (ClassNotFoundException e) {
+                // continue
+            }
+        }
+        throw new IllegalArgumentException(value);
     }
 
     /**

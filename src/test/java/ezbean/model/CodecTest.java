@@ -23,6 +23,8 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import ezbean.model.Codec;
+
 /**
  * @version 2011/03/22 17:03:20
  */

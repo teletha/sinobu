@@ -1742,26 +1742,6 @@ public class I implements ClassListener<Extensible> {
 
     /**
      * <p>
-     * Load the specified class from Ezbean class loader repository.
-     * </p>
-     * 
-     * @param fqcn A fully qualified class name.
-     * @return A loaded class.
-     * @throws ClassNotFoundException If the class is not found.
-     */
-    public static Class load(String fqcn) {
-        for (Module module : make(Modules.class).modules) {
-            try {
-                return module.loadClass(fqcn);
-            } catch (ClassNotFoundException e) {
-                // continue
-            }
-        }
-        throw quiet(new ClassNotFoundException());
-    }
-
-    /**
-     * <p>
      * Load the file as an additional classpath into JVM. If the file indicates the classpath which
      * is already loaded, that will be reloaded. The classpath can accept directory or archive (like
      * Jar). If it is <code>null</code> or a file, this method does nothing.
