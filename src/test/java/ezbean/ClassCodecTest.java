@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean.model;
+package ezbean;
 
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.ClassCodec;
 import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 17:03:59
  */
-public class CodecClassTest {
+public class ClassCodecTest {
 
     @Rule
     public static final PrivateModule module = new PrivateModule(true, false);
 
     @Test
     public void systemClass() throws Exception {
-        CodecClass codec = new CodecClass();
+        ClassCodec codec = new ClassCodec();
         Class clazz = codec.decode("java.lang.String");
         assert clazz != null;
         assert codec.encode(clazz).equals("java.lang.String");
@@ -41,7 +42,7 @@ public class CodecClassTest {
         Class clazz = module.convert(Private.class);
         assert Private.class != clazz;
 
-        CodecClass codec = new CodecClass();
+        ClassCodec codec = new ClassCodec();
         String fqcn = codec.encode(clazz);
         assert Private.class.getName() != fqcn;
         assert codec.decode(fqcn).equals(clazz);
