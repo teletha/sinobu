@@ -83,6 +83,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             }
 
             // Parse and create path matchers.
+
+            // Default file system doesn't support close method, so we can ignore to release
+            // resource.
             @SuppressWarnings("resource")
             FileSystem system = from.getFileSystem();
             ArrayList<PathMatcher> includes = new ArrayList();
