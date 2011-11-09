@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import ezbean.model.Model;
-import ezbean.model.Property;
 
 /**
  * <p>
@@ -35,9 +34,9 @@ import ezbean.model.Property;
  * @see Prototype
  * @see Singleton
  * @see ThreadSpecific
- * @version 2011/11/03 20:16:51
+ * @version 2011/11/09 21:04:05
  */
-public class Preference<M> extends Singleton<M> implements PropertyListener {
+public class Preference<M> extends Singleton<M> implements Runnable {
 
     /** The automatic saving location. */
     protected final Path path;
@@ -50,24 +49,22 @@ public class Preference<M> extends Singleton<M> implements PropertyListener {
     protected Preference(Class<M> modelClass) {
         super(modelClass);
 
-        Model model = Model.load(modelClass);
-        this.path = I.getWorkingDirectory().resolve("preferences").resolve(model.type.getName().concat(".xml"));
+        this.path = I.getWorkingDirectory()
+                .resolve("preferences")
+                .resolve(Model.load(modelClass).type.getName().concat(".xml"));
 
         if (Files.exists(path)) {
             I.read(path, instance);
         }
 
-        // observe each properties
-        for (Property property : model.properties) {
-            (((Accessible) instance).context()).push(property.name, this);
-        }
+        Runtime.getRuntime().addShutdownHook(new Thread(this));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void change(Object bean, String name, Object oldValue, Object newValue) {
+    public void run() {
         I.write(instance, path, false);
     }
 }
