@@ -97,7 +97,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
 
         try {
             // write xml declaration
-            out.append("<?xml version=\"1.0\" encoding=\"").append(I.getEncoding().name()).append("\"?>").append(EOL);
+            out.append("<?xml version=\"1.0\" encoding=\"").append(I.$encoding.name()).append("\"?>").append(EOL);
         } catch (IOException e) {
             throw I.quiet(e);
         }

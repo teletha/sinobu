@@ -40,7 +40,7 @@ public class EzbeanSetting extends ReusableRule {
      */
     public EzbeanSetting(Path working) {
         this.working = working;
-        this.workingOriginal = I.working;
+        this.workingOriginal = I.$working;
     }
 
     /**
@@ -48,7 +48,7 @@ public class EzbeanSetting extends ReusableRule {
      */
     @Override
     protected void before(Method method) throws Exception {
-        I.working = working;
+        I.$working = working;
     }
 
     /**
@@ -56,6 +56,6 @@ public class EzbeanSetting extends ReusableRule {
      */
     @Override
     protected void after(Method method) {
-        I.working = workingOriginal;
+        I.$working = workingOriginal;
     }
 }

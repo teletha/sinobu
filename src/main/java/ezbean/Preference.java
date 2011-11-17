@@ -49,9 +49,7 @@ public class Preference<M> extends Singleton<M> implements Runnable {
     protected Preference(Class<M> modelClass) {
         super(modelClass);
 
-        this.path = I.getWorkingDirectory()
-                .resolve("preferences")
-                .resolve(Model.load(modelClass).type.getName().concat(".xml"));
+        this.path = I.$working.resolve("preferences").resolve(Model.load(modelClass).type.getName().concat(".xml"));
 
         if (Files.exists(path)) {
             I.read(path, instance);

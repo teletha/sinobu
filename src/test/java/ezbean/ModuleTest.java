@@ -71,14 +71,14 @@ public class ModuleTest {
     public void moduleClassloader() throws Exception {
         Module module = new Module(external.path);
         assert module != null;
-        assert I.loader != module;
+        assert I.$loader != module;
     }
 
     @Test
     public void jarModuleClassloader() throws Exception {
         Module module = new Module(jar.path);
         assert module != null;
-        assert I.loader != module;
+        assert I.$loader != module;
     }
 
     @Test
