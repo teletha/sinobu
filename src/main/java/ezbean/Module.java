@@ -99,7 +99,7 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
      * @param path A module path as classpath, A <code>null</code> is not accepted.
      */
     Module(Path path) throws MalformedURLException {
-        super(new URL[] {path.toUri().toURL()}, I.loader);
+        super(new URL[] {path.toUri().toURL()}, I.$loader);
 
         // we don't need to check null because this is internal class
         // if (moduleFile == null) {

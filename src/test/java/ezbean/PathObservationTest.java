@@ -407,7 +407,7 @@ public class PathObservationTest {
      */
     private void write(Path path) {
         try {
-            Files.write(path, Arrays.asList("write"), I.getEncoding());
+            Files.write(path, Arrays.asList("write"), I.$encoding);
         } catch (IOException e) {
             throw I.quiet(e);
         }

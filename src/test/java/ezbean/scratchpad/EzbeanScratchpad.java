@@ -86,7 +86,7 @@ public class EzbeanScratchpad {
 
     public static <M> M xml(Path input, Class<M> model) {
         try {
-            return xml(Files.newBufferedReader(input, I.getEncoding()), model);
+            return xml(Files.newBufferedReader(input, I.$encoding), model);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -107,7 +107,7 @@ public class EzbeanScratchpad {
                 Files.createFile(output);
             }
 
-            xml(input, Files.newBufferedWriter(output, I.getEncoding()), xml);
+            xml(input, Files.newBufferedWriter(output, I.$encoding), xml);
         } catch (IOException e) {
             throw I.quiet(e);
         }

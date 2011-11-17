@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.script.ScriptEngine;
@@ -125,60 +126,20 @@ import ezbean.xml.XMLWriter;
  * </ul>
  * </dd>
  * </dl>
- * <h1 id="ConfigurationService">Configuration Service</h1>
+ * <h1 id="ConfigurableEnvironment">Configurable Environment</h1>
  * <p>
  * Ezbean provides some enviroment variables that you can configure.
  * </p>
  * <ul>
  * <li><a href="#encoding">Character Encoding</a></li>
- * <li><a href="#classloader">Parent Class Loader</a></li>
- * <li><a href="#workingDirectory">Working Directory</a></li>
+ * <li><a href="#loader">Parent Class Loader</a></li>
+ * <li><a href="#working">Working Directory</a></li>
  * </ul>
  * <p>
  * When you want to initialize these enviroment variables and your application environment related
- * to Ezbean, dynamic class loading by {@link #load(Path)}), you must implement subclass of Ezbean
- * and declare as <a
- * href="http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider">service
- * provider</a>.
+ * to Ezbean, you have to manipulate these variables at static initialization phase of your
+ * application class.
  * </p>
- * <p>
- * A service provider is identified by placing a <em>provider-configuration file</em> in the
- * resource directory META-INF/services. The file's name is the fully-qualified binary name of the
- * service's type (in this case, "ezbean.Ezbean"). The file contains a list of fully-qualified of
- * concrete provider classes, one per line. Space and tab characters surrounding each name, as well
- * as blank lines, are ignored. The comment character is '#' ('&#92;u0023', NUMBER SIGN); on each
- * line all characters following the first comment character are ignored. The file must be encoded
- * in UTF-8.
- * </p>
- * <p>
- * For more details on declaring service providers, and the JAR format in general, see the <a
- * href="http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html">JAR File
- * Specification</a>.
- * </p>
- * <h2>Example</h2>
- * <p>
- * If <code>your.application.Config</code> class is a provider of Ezbean configuration service then
- * its jar file would contain the file <code>META-INF/services/ezbean.I</code>. This file would
- * contain the single line like the following:
- * </p>
- * 
- * <pre>
- * your.application.Config
- * </pre>
- * <p>
- * and <code>our.application.Config</code> class would be like the following:
- * </p>
- * 
- * <pre>
- * public class Config extend I {
- *   
- *   public Config() {
- *     // initialize Ezbean environment variables for your application
- *     workingDirectory = new File("path/to/directory");
- *   }
- * }
- * </pre>
- * 
  * <h2 id="Patterns">Include/Exclude Patterns</h2>
  * <p>
  * Ezbean adopts "glob" pattern matching instead of "regex". * The case-insensitivity is platform
@@ -213,7 +174,7 @@ import ezbean.xml.XMLWriter;
  * @see ServiceLoader
  * @version 2011/03/31 17:38:41
  */
-public class I implements ClassListener<Extensible> {
+public class I implements ClassListener<Extensible>, ThreadFactory {
 
     // Candidates of Method Name
     //
@@ -250,36 +211,24 @@ public class I implements ClassListener<Extensible> {
      * encouraged to use this encoding instead of platform default encoding when file I/O under the
      * Ezbean environment.
      * </p>
-     * <p>
-     * You can retrieve this value by using the method {@link #getEncoding()}. You can configure
-     * this value by using <a href="#ConfigurationService">Configuration Service</a>.
-     * </p>
      */
-    protected static Charset encoding = Charset.forName("UTF-8");
+    public static Charset $encoding = Charset.forName("UTF-8");
 
     /**
      * <p>
      * The configuration of parent class loader in Ezbean, default value is
      * <code><em>I.class.getClassLoader()</em></code>.
      * </p>
-     * <p>
-     * You can retrieve this value by using the method {@link #getClassLoader()}. You can configure
-     * this value by using <a href="#ConfigurationService">Configuration Service</a>.
-     * </p>
      */
-    protected static ClassLoader loader = I.class.getClassLoader();
+    public static ClassLoader $loader = I.class.getClassLoader();
 
     /**
      * <p>
      * The configuration of working directory in Ezbean, default value is <em>current directory</em>
      * .
      * </p>
-     * <p>
-     * You can retrieve this value by using the method {@link #getWorkingDirectory()}. You can
-     * configure this value by using <a href="#ConfigurationService">Configuration Service</a>.
-     * </p>
      */
-    protected static Path working = Paths.get(""); // Poplar Taneshima
+    public static Path $working = Paths.get(""); // Poplar Taneshima
 
     /** The namespace uri of Ezbean. */
     static final String URI = "http://ez.bean/";
@@ -330,17 +279,10 @@ public class I implements ClassListener<Extensible> {
     private static final Path temporary;
 
     /** The reusable thread pool for Ezbean. */
-    private static final ExecutorService threads = Executors.newCachedThreadPool();
+    private static final ExecutorService threads = Executors.newCachedThreadPool(new I());
 
     // initialization
     static {
-        // load all Ezbean configuration service providers
-        for (@SuppressWarnings("unused")
-        I config : ServiceLoader.load(I.class)) {
-            // each configuration classes (subclass of Ezbean) are instantiated and configure
-            // itself in it's constructor, so we do nothing here.
-        }
-
         // built-in lifestyles
         lifestyles.put(List.class, new Prototype(ArrayList.class));
         lifestyles.put(Map.class, new Prototype(HashMap.class));
@@ -392,20 +334,19 @@ public class I implements ClassListener<Extensible> {
         }
 
         // configure javascript engine
-        script = new ScriptEngineManager(loader).getEngineByName("js");
+        script = new ScriptEngineManager($loader).getEngineByName("js");
 
         // Load myself as module. All built-in classload listeners and extension points will be
         // loaded and activated.
-        loader = load(ClassUtil.getArchive(I.class));
+        $loader = load(ClassUtil.getArchive(I.class));
     }
 
     /**
      * <p>
-     * Subclass of Ezbean can use the constructor to initialize environment.
+     * Initialize environment.
      * </p>
      */
-    protected I() {
-        // do nothing here for environment initialization by subclass
+    private I() {
     }
 
     /**
@@ -658,45 +599,6 @@ public class I implements ClassListener<Extensible> {
         Class<E> clazz = keys.find(Objects.hash(extensionPoint, key));
 
         return clazz == null ? null : make(clazz);
-    }
-
-    /**
-     * <p>
-     * Retrieve the specified character encoding under the user environment. You can configure this
-     * value by using <a href="#ConfigurationService">Configuration Service</a>.
-     * </p>
-     * 
-     * @return A character encoding.
-     * @see #encoding
-     */
-    public static Charset getEncoding() {
-        return encoding;
-    }
-
-    /**
-     * <p>
-     * Retrieve the specified parent class loader under the user environment. You can configure this
-     * value by using <a href="#ConfigurationService">Configuration Service</a>.
-     * </p>
-     * 
-     * @return A parent class loader.
-     * @see #loader
-     */
-    public static ClassLoader getClassLoader() {
-        return loader;
-    }
-
-    /**
-     * <p>
-     * Retrieve the specified working directory under the user environment. You can configure this
-     * value by using <a href="#ConfigurationService">Configuration Service</a>.
-     * </p>
-     * 
-     * @return A working directory.
-     * @see #working
-     */
-    public static Path getWorkingDirectory() {
-        return working;
     }
 
     /**
@@ -1070,7 +972,7 @@ public class I implements ClassListener<Extensible> {
         ClassLoader loader = model.type.getClassLoader();
 
         if (!(loader instanceof Module)) {
-            loader = I.loader;
+            loader = I.$loader;
         }
         return ((Module) loader).define(model, trace);
     }
@@ -1236,7 +1138,7 @@ public class I implements ClassListener<Extensible> {
      */
     public static void parse(Path source, XMLFilter... filters) {
         InputSource input = new InputSource(source.toUri().toString());
-        input.setEncoding(encoding.name());
+        input.setEncoding($encoding.name());
         input.setPublicId(source.toString());
 
         parse(input, filters);
@@ -1415,7 +1317,7 @@ public class I implements ClassListener<Extensible> {
      */
     public static <M> M read(Path input, M output) {
         try {
-            return read(Files.newBufferedReader(input, encoding), output);
+            return read(Files.newBufferedReader(input, $encoding), output);
         } catch (Exception e) {
             throw quiet(e);
         }
@@ -1687,7 +1589,7 @@ public class I implements ClassListener<Extensible> {
                 Files.createDirectories(output.getParent());
             }
 
-            I.write(input, Files.newBufferedWriter(output, encoding), json);
+            I.write(input, Files.newBufferedWriter(output, $encoding), json);
         } catch (Exception e) {
             throw quiet(e);
         }
@@ -1866,5 +1768,16 @@ public class I implements ClassListener<Extensible> {
                 }
             }
         }
+    }
+
+    /**
+     * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
+     */
+    @Override
+    public final Thread newThread(Runnable r) {
+        Thread thread = new Thread(r);
+        thread.setDaemon(true);
+
+        return thread;
     }
 }

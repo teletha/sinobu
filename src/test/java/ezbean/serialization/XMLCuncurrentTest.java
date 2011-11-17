@@ -110,7 +110,7 @@ public class XMLCuncurrentTest {
          * @see java.util.concurrent.Callable#call()
          */
         public StringListProperty call() throws Exception {
-            return I.read(Files.newBufferedReader(testFile, I.getEncoding()), I.make(StringListProperty.class));
+            return I.read(Files.newBufferedReader(testFile, I.$encoding), I.make(StringListProperty.class));
         }
     }
 
@@ -135,7 +135,7 @@ public class XMLCuncurrentTest {
          */
         public void run() {
             try {
-                I.write(bean, Files.newBufferedWriter(testFile, I.getEncoding()), false);
+                I.write(bean, Files.newBufferedWriter(testFile, I.$encoding), false);
             } catch (IOException e) {
                 throw I.quiet(e);
             }

@@ -163,7 +163,7 @@ public class Ezunit {
      * @throws IOException if an I/O error occurs
      */
     public static String readLine(Path path, Charset... charset) {
-        List<String> lines = readLines(path, option(charset, I.getEncoding()), false);
+        List<String> lines = readLines(path, option(charset, I.$encoding), false);
 
         return lines.size() == 0 ? "" : lines.get(0);
     }
@@ -181,7 +181,7 @@ public class Ezunit {
      * @throws IOException if an I/O error occurs
      */
     public static List<String> readLines(Path path, Charset... charset) {
-        return readLines(path, option(charset, I.getEncoding()), true);
+        return readLines(path, option(charset, I.$encoding), true);
     }
 
     /**
@@ -256,7 +256,7 @@ public class Ezunit {
      */
     public static final InputSource locateSource(Path file) {
         InputSource source = new InputSource(file.toUri().toString());
-        source.setEncoding(I.getEncoding().name());
+        source.setEncoding(I.$encoding.name());
         source.setPublicId(file.toString());
 
         // API definition
