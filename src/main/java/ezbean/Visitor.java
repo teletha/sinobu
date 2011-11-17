@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * @version 2011/04/05 16:13:31
+ * @version 2011/11/17 15:23:56
  */
 @SuppressWarnings("serial")
 class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
@@ -48,13 +48,13 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
     private final FileVisitor<Path> visitor;
 
     /** The include file patterns. */
-    private final PathMatcher[] includes;
+    final PathMatcher[] includes;
 
     /** The exclude file patterns. */
-    private final PathMatcher[] excludes;
+    final PathMatcher[] excludes;
 
     /** The exclude directory pattern. */
-    private final PathMatcher[] directories;
+    final PathMatcher[] directories;
 
     /** We must skip root directory? */
     private boolean root = false;
@@ -86,7 +86,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
 
             // Default file system doesn't support close method, so we can ignore to release
             // resource.
-            @SuppressWarnings("resource")
             FileSystem system = from.getFileSystem();
             ArrayList<PathMatcher> includes = new ArrayList();
             ArrayList<PathMatcher> excludes = new ArrayList();
@@ -158,6 +157,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             // fall-through to reduce footprint
 
         case 3: // walk file
+        case 6: // observe dirctory
             return CONTINUE;
 
         default:
