@@ -15,6 +15,7 @@
  */
 package ezbean;
 
+import static java.nio.file.FileVisitResult.*;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 import java.nio.file.ClosedWatchServiceException;
@@ -25,7 +26,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 /**
- * @version 2011/04/08 17:40:16
+ * @version 2011/11/17 15:23:49
  */
 class Watch implements Disposable, Runnable {
 
@@ -47,14 +48,14 @@ class Watch implements Disposable, Runnable {
      * @param listener A event listener.
      * @param visitor Name matching patterns.
      */
-    Watch(Path path, PathListener listener, Visitor visitor) {
+    Watch(Path path, PathListener listener, Visitor visitor, String[] patterns) {
         try {
             this.listener = listener;
             this.visitor = visitor;
             this.service = path.getFileSystem().newWatchService();
 
             // register
-            for (Path dir : I.walkDirectory(path)) {
+            for (Path dir : I.walkDirectory(path, patterns)) {
                 dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
             }
         } catch (Exception e) {
@@ -92,7 +93,7 @@ class Watch implements Disposable, Runnable {
                         if (event.kind() == ENTRY_CREATE) {
                             listener.create(path); // fire event
 
-                            if (Files.isDirectory(path)) {
+                            if (Files.isDirectory(path) && visitor.preVisitDirectory(path, null) == CONTINUE) {
                                 for (Path dir : I.walkDirectory(path)) {
                                     dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                                 }

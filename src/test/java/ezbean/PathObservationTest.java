@@ -350,6 +350,71 @@ public class PathObservationTest {
         verify(path, Modified);
     }
 
+    @Test
+    public void pattern() throws Exception {
+        Path path = room.locateDirectory("directory");
+
+        // observe
+        observe(path, "match");
+
+        // create
+        create(path.resolve("not-match"));
+
+        // verify events
+        verifyNone();
+
+        // create
+        Path file = path.resolve("match");
+        create(file);
+
+        // verify events
+        verify(file, Created);
+    }
+
+    @Test
+    public void patternWildcard() throws Exception {
+        Path root = room.locateDirectory("directory");
+        Path child = room.locateDirectory("directory/child");
+
+        // observe
+        observe(root, "*");
+
+        // create
+        Path file = root.resolve("match");
+        create(file);
+
+        // verify events
+        verify(file, Created);
+
+        // create
+        create(child.resolve("not-match"));
+
+        // verify events
+        verifyNone();
+
+        // write
+        write(file);
+
+        // verify events
+        verify(file, Modified);
+
+        // create directory
+        Path dir = root.resolve("dynamic-child");
+        Files.createDirectory(dir);
+        verify(dir, Created);
+
+        // create file in created directory
+        Path deep = dir.resolve("deep");
+        create(deep);
+        verifyNone();
+
+        // delete
+        delete(child);
+
+        // verify events
+        verify(child, Deleted);
+    }
+
     /**
      * <p>
      * Helper method to observe the specified path.
@@ -359,6 +424,21 @@ public class PathObservationTest {
      */
     private Disposable observe(Path path) {
         Disposable disposable = I.observe(path, queue);
+
+        disposables.add(disposable);
+
+        return disposable;
+    }
+
+    /**
+     * <p>
+     * Helper method to observe the specified path.
+     * </p>
+     * 
+     * @param path
+     */
+    private Disposable observe(Path path, String pattern) {
+        Disposable disposable = I.observe(path, queue, pattern);
 
         disposables.add(disposable);
 
@@ -421,13 +501,7 @@ public class PathObservationTest {
      * @param path
      */
     private void delete(Path path) {
-        if (Files.exists(path)) {
-            try {
-                Files.delete(path);
-            } catch (IOException e) {
-                throw I.quiet(e);
-            }
-        }
+        I.delete(path);
     }
 
     /**

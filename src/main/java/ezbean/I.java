@@ -1101,7 +1101,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         }
 
         // Create logical file system watch service.
-        Watch watch = new Watch(path, listener, new Visitor(path, null, 6, null, patterns));
+        Watch watch = new Watch(path, listener, new Visitor(path, null, 6, null, patterns), patterns);
 
         // Run in anothor thread.
         threads.execute(watch);
