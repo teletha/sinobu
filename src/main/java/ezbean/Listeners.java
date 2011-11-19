@@ -63,7 +63,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version 2010/02/19 2:30:56
  */
 @SuppressWarnings("serial")
-public class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
+class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
 
     /**
      * <p>

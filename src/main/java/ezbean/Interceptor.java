@@ -23,7 +23,11 @@ import ezbean.model.Model;
 import ezbean.model.Property;
 
 /**
- * @version 2010/11/12 9:28:46
+ * <p>
+ * This is property access interceptor.
+ * </p>
+ * 
+ * @version 2011/11/19 19:03:23
  */
 public class Interceptor<P extends Annotation> implements Extensible {
 
@@ -42,7 +46,7 @@ public class Interceptor<P extends Annotation> implements Extensible {
     }
 
     /** The actual object. */
-    protected Accessible that;
+    protected Object that;
 
     /** The associated annotation. */
     protected P annotation;
@@ -72,7 +76,7 @@ public class Interceptor<P extends Annotation> implements Extensible {
                 lookup.unreflectSpecial(property.getAccessor(true), that.getClass()).invoke(that, param);
 
                 // Notify to all listeners.
-                that.context().notify(that, property.name, old, param);
+                Enhancer.context(that).notify(that, property.name, old, param);
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
@@ -85,11 +89,10 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * </p>
      * 
      * @param that A current processing object.
-     * @param id A property id.
      * @param name A property name.
      * @param param A new value.
      */
-    public static final void invoke(Accessible that, int id, String name, Object param) {
+    public static final void invoke(Object that, String name, Object param) {
         Property property = Model.load(that.getClass()).getProperty(name);
         Interceptor current = new Interceptor();
         current.property = property;

@@ -53,7 +53,7 @@ import ezbean.model.Model;
  * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
  * </p>
  * 
- * @version 2011/03/07 15:45:35
+ * @version 2011/11/19 19:06:03
  */
 class Module extends URLClassLoader {
 

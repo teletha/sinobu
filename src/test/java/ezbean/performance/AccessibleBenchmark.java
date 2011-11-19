@@ -23,7 +23,6 @@ import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
-import ezbean.Accessible;
 import ezbean.I;
 import ezbean.model.Model;
 import ezbean.model.Property;
@@ -58,7 +57,6 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
         });
     }
 
-
     /**
      * Direct access.
      */
@@ -66,7 +64,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
     public void set() {
         benchmark(new Callable() {
 
-            private Accessible person = (Accessible) I.make(Person.class);
+            private Person person = I.make(Person.class);
 
             private Model model = Model.load(Person.class);
 
@@ -91,7 +89,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
     public void reflection() {
         benchmark(new Callable() {
 
-            private Accessible person = (Accessible) I.make(Person.class);
+            private Person person = I.make(Person.class);
 
             private Method method;
 
