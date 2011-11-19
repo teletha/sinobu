@@ -20,7 +20,6 @@ import static org.objectweb.asm.Opcodes.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -45,7 +44,7 @@ import ezbean.model.Property;
  * 
  * @version 2009/08/31 4:55:41
  */
-public class Enhancer extends ClassAdapter implements Extensible {
+public class Enhancer extends ClassVisitor implements Extensible {
 
     /**
      * The class name for the implemented class. This name conforms to not Fully Qualified Class
@@ -68,7 +67,7 @@ public class Enhancer extends ClassAdapter implements Extensible {
      * </p>
      */
     protected Enhancer() {
-        super(null); // delayed setup
+        super(ASM4); // delayed setup
     }
 
     /**
