@@ -15,38 +15,19 @@
  */
 package ezbean;
 
-import static java.nio.file.FileVisitResult.*;
-import static org.objectweb.asm.ClassReader.*;
-import static org.objectweb.asm.Opcodes.*;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
 
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
@@ -74,22 +55,13 @@ import ezbean.model.Model;
  * 
  * @version 2011/03/07 15:45:35
  */
-class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
-
-    /** The dirty process management. */
-    private static final IllegalStateException STOP = new IllegalStateException();
+class Module extends URLClassLoader {
 
     /** The root of this module. */
     final Path path;
 
-    /** The root of this module. */
-    private final Path base;
-
-    /** The list of service provider classes (by class and interface). [java.lang.String, int[]] */
-    private final List<Object[]> infos = new CopyOnWriteArrayList();
-
-    /** The expected internal form fully qualified class name. */
-    private String fqcn;
+    /** The class scanner. */
+    private ModuleVisitor visitor;
 
     /**
      * <p>
@@ -107,80 +79,7 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
 
         // Store original module path for unloading.
         this.path = path;
-
-        // start scanning class files
-        try {
-            // At first, we must scan the specified directory or archive. If the module file is
-            // archive, Ezbean automatically try to switch to other file system (e.g.
-            // ZipFileSystem).
-            if (Files.isRegularFile(path)) {
-                path = FileSystems.newFileSystem(path, this).getPath("/");
-            }
-
-            this.base = path;
-
-            // Then, we can scan module transparently.
-            I.walk(path, this, "**.class");
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object,
-     *      java.nio.file.attribute.BasicFileAttributes)
-     */
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-        return CONTINUE;
-    }
-
-    /**
-     * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
-     */
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        return CONTINUE;
-    }
-
-    /**
-     * @see java.nio.file.FileVisitor#visitFile(java.lang.Object,
-     *      java.nio.file.attribute.BasicFileAttributes)
-     */
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        // exclude non-class file
-        InputStream input = Files.newInputStream(file);
-        String name = base.relativize(file).toString();
-
-        // Don't write the following because "fqnc" field requires actual class name. If a
-        // module returns a non-class file (e.g. properties, xml, txt) at the end, there is
-        // a possibility that the module can't distinguish between system and Ezbean
-        // module correctly.
-        //
-        // this.fqcn = name;
-        //
-        // compute fully qualified class name
-        this.fqcn = name.substring(0, name.length() - 6).replace(File.separatorChar, '.').replace('/', '.');
-
-        // try to read class file and check it
-        try {
-            // static field reference will be inlined by compiler, so we should pass all
-            // flags to ClassReader (it doesn't increase byte code size)
-            new ClassReader(input).accept(this, SKIP_CODE | SKIP_DEBUG | SKIP_FRAMES);
-        } catch (FileNotFoundException e) {
-            // this exception means that the given class name may indicate some external
-            // extension class or interface, so we can ignore it
-        } catch (IllegalStateException e) {
-            // scanning was stoped normally
-        } finally {
-            input.close();
-        }
-        return CONTINUE;
-    }
-
-    /**
-     * @see java.nio.file.FileVisitor#visitFileFailed(java.lang.Object, java.io.IOException)
-     */
-    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-        return CONTINUE;
+        this.visitor = new ModuleVisitor(this);
     }
 
     /**
@@ -253,7 +152,7 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
         List list = new ArrayList(4);
 
         // try to find all service providers
-        for (Object[] info : infos) {
+        for (Object[] info : visitor.infos) {
             try {
                 if (test(hash, info)) {
                     list.add(loadClass((String) info[0]));
@@ -290,7 +189,7 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
 
         // stealth class must be hidden from module
         if (ClassUtil.getMiniConstructor(clazz) == null) {
-            return !infos.remove(info); // test method requires false for stealth classs
+            return !visitor.infos.remove(info); // test method requires false for stealth classs
         }
 
         Set<Class> set = ClassUtil.getTypes(clazz);
@@ -318,133 +217,4 @@ class Module extends URLClassLoader implements ClassVisitor, FileVisitor<Path> {
         return test(hash, info);
     }
 
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visit(int, int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String[])
-     */
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        // exclude a class file which is in invalid location
-        if (!name.equals(fqcn.replace('.', '/'))) {
-            throw STOP;
-        }
-
-        // must be public class (annotation is classified as interface)
-        // must be non-abstract
-        // must be non-enum
-        // must be non-deprecated
-        if ((ACC_SUPER & access) == 0 || ((ACC_ABSTRACT | ACC_ENUM | ACC_DEPRECATED) & access) != 0) {
-            throw STOP;
-        }
-
-        // verify super class
-        if (verify(superName)) {
-            infos.add(new Object[] {fqcn, null});
-
-            // this class may be extention point, we can stop scanning
-            throw STOP;
-        }
-
-        // verify interfaces
-        for (String interfaceClassName : interfaces) {
-            if (verify(interfaceClassName)) {
-                infos.add(new Object[] {fqcn, null});
-
-                // this class may be extention point, we can stop scanning
-                throw STOP;
-            }
-        }
-    }
-
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visitAnnotation(java.lang.String, boolean)
-     */
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        // exclude runtime invisible
-        if (visible) {
-            // verify annotation
-            if (verify(desc.substring(1, desc.length() - 1))) {
-                infos.add(new Object[] {fqcn, null});
-
-                // this class may be extention point, we can stop scanning
-                throw STOP;
-            }
-        }
-
-        // continue scan process
-        return null;
-    }
-
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visitField(int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.Object)
-     */
-    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        // all needed information was scanned, stop parsing
-        throw STOP;
-    }
-
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visitMethod(int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String[])
-     */
-    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        // all needed information was scanned, stop parsing
-        throw STOP;
-    }
-
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visitInnerClass(java.lang.String, java.lang.String,
-     *      java.lang.String, int)
-     */
-    public void visitInnerClass(String name, String outerName, String innerName, int access) {
-        // all needed information was scanned, stop parsing
-        throw STOP;
-    }
-
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visitOuterClass(java.lang.String, java.lang.String,
-     *      java.lang.String)
-     */
-    public void visitOuterClass(String owner, String name, String desc) {
-        // skip for annotation
-    }
-
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visitEnd()
-     */
-    public void visitEnd() {
-        // finish scanning
-    }
-
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visitSource(java.lang.String, java.lang.String)
-     */
-    public void visitSource(String source, String debug) {
-        // skip for annotation
-    }
-
-    /**
-     * @see org.objectweb.asm.ClassAdapter#visitAttribute(org.objectweb.asm.Attribute)
-     */
-    public void visitAttribute(Attribute attr) {
-        // skip for annotation
-    }
-
-    /**
-     * Helper method to check whether the given class is non system class or not.
-     * 
-     * @param className A class name.
-     * @return A result.
-     */
-    private static final boolean verify(String className) {
-        if (className.startsWith("java")) {
-            char c = className.charAt(4);
-            return c != '/' && (c != 'x' || className.charAt(5) != '/');
-        }
-
-        if (className.startsWith("org/w3c/") || className.startsWith("org/xml/")) {
-            return false;
-        }
-        return true;
-    }
 }
