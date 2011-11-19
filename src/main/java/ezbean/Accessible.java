@@ -29,15 +29,6 @@ package ezbean;
 public interface Accessible {
 
     /**
-     * Access a property by the specified identifier.
-     * 
-     * @param id A property identifier.
-     * @param value A new value.
-     * @return A property.
-     */
-    Object access(int id, Object value);
-
-    /**
      * Retrieve the assosiated context with this accessible object.
      * 
      * @return An assosiated context.

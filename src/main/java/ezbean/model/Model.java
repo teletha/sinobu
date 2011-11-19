@@ -279,10 +279,6 @@ public class Model {
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public Object get(Object object, Property property) {
-        if (object instanceof Accessible) {
-            return ((Accessible) object).access(property.id, null);
-        }
-
         try {
             return property.accessors[0].invoke(object);
         } catch (Exception e) {
@@ -300,14 +296,10 @@ public class Model {
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public void set(Object object, Property property, Object propertyValue) {
-        if (object instanceof Accessible) {
-            ((Accessible) object).access(property.id + 1, propertyValue);
-        } else {
-            try {
-                property.accessors[1].invoke(object, propertyValue);
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
+        try {
+            property.accessors[1].invoke(object, propertyValue);
+        } catch (Exception e) {
+            throw I.quiet(e);
         }
     }
 

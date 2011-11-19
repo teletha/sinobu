@@ -16,13 +16,30 @@
 package ezbean;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
 
 import ezbean.model.Model;
+import ezbean.model.Property;
 
 /**
  * @version 2010/11/12 9:28:46
  */
 public class Interceptor<P extends Annotation> implements Extensible {
+
+    /** The trusted loojup. */
+    private static Lookup lookup;
+
+    static {
+        try {
+            Field field = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            field.setAccessible(true);
+
+            lookup = (Lookup) field.get(null);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
 
     /** The actual object. */
     protected Accessible that;
@@ -30,11 +47,8 @@ public class Interceptor<P extends Annotation> implements Extensible {
     /** The associated annotation. */
     protected P annotation;
 
-    /** The property identifier. */
-    private int id;
-
-    /** The property name. */
-    private String name;
+    /** The property. */
+    private Property property;
 
     /** The parent interceptor to chain. */
     private Interceptor parent;
@@ -50,14 +64,18 @@ public class Interceptor<P extends Annotation> implements Extensible {
         if (parent != null) {
             parent.invoke(param);
         } else {
-            // Retrieve old value.
-            Object old = that.access(id, null);
+            try {
+                // Retrieve old value.
+                Object old = lookup.unreflect(property.getAccessor(false)).invoke(that);
 
-            // Apply new value.
-            that.access(id + 2, param);
+                // Apply new value.
+                lookup.unreflectSpecial(property.getAccessor(true), that.getClass()).invoke(that, param);
 
-            // Notify to all listeners.
-            that.context().notify(that, name, old, param);
+                // Notify to all listeners.
+                that.context().notify(that, property.name, old, param);
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
         }
     }
 
@@ -72,12 +90,12 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * @param param A new value.
      */
     public static final void invoke(Accessible that, int id, String name, Object param) {
+        Property property = Model.load(that.getClass()).getProperty(name);
         Interceptor current = new Interceptor();
-        current.id = id;
-        current.name = name;
+        current.property = property;
         current.that = that;
 
-        Annotation[] annotations = Model.load(that.getClass()).getProperty(name).getAccessor(true).getAnnotations();
+        Annotation[] annotations = property.getAccessor(true).getAnnotations();
 
         for (int i = annotations.length - 1; 0 <= i; --i) {
             Interceptor interceptor = I.find(Interceptor.class, annotations[i].annotationType());

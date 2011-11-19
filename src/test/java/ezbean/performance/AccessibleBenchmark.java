@@ -58,28 +58,6 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
         });
     }
 
-    /**
-     * Accessible access.
-     */
-    @Test
-    public void accessible() {
-        benchmark(new Callable() {
-
-            private int name = 3;
-
-            private String value = "test";
-
-            private Accessible person = (Accessible) I.make(Person.class);
-
-            /**
-             * @see java.util.concurrent.Callable#call()
-             */
-            public Object call() {
-                person.access(name, value);
-                return person;
-            }
-        });
-    }
 
     /**
      * Direct access.
