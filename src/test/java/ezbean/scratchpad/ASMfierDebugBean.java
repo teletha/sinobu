@@ -62,34 +62,6 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
         }
     }
 
-    /**
-     * @see ezbean.Accessible#access(int, java.lang.Object)
-     */
-    public Object access(int id, Object params) {
-        switch (id) {
-        default:
-            throw new IllegalArgumentException();
-
-        case 0:
-            return getAge();
-
-        case 1:
-            setAge((Integer) params);
-            return null;
-
-        case 2:
-            return getName();
-
-        case 3:
-            setName((String) params);
-            return null;
-
-        case 4:
-            System.out.println("super");
-            super.setName((String) params);
-            return null;
-        }
-    }
 
     /**
      * @see ezbean.Accessible#ezCall(int, boolean, java.lang.Object[])
