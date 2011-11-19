@@ -31,12 +31,11 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import ezbean.I;
 
@@ -285,13 +284,13 @@ public class PrivateModule extends ReusableRule {
     /**
      * @version 2010/02/04 0:28:39
      */
-    private final class ClassConverter extends ClassAdapter {
+    private final class ClassConverter extends ClassVisitor {
 
         /**
          * @param visiter
          */
         public ClassConverter(ClassVisitor visiter) {
-            super(visiter);
+            super(Opcodes.ASM4, visiter);
         }
 
         /**
@@ -316,13 +315,13 @@ public class PrivateModule extends ReusableRule {
     /**
      * @version 2010/02/04 0:28:33
      */
-    private final class MethodConverter extends MethodAdapter {
+    private final class MethodConverter extends MethodVisitor {
 
         /**
          * @param paramMethodVisitor
          */
         public MethodConverter(MethodVisitor paramMethodVisitor) {
-            super(paramMethodVisitor);
+            super(Opcodes.ASM4, paramMethodVisitor);
         }
 
         /**
