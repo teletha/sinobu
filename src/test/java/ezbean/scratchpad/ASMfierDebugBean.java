@@ -15,16 +15,10 @@
  */
 package ezbean.scratchpad;
 
-import ezbean.Accessible;
-import ezbean.Interceptor;
-import ezbean.Listeners;
-
 /**
- * @version 2009/12/27 17:21:35
+ * @version 2011/11/19 18:40:08
  */
-public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
-
-    private Listeners ezContext;
+public class ASMfierDebugBean extends ASMfierDebugBase {
 
     /**
      * @see ezbean.scratchpad.ASMfierDebugBase#getAge()
@@ -55,16 +49,13 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
      */
     @Override
     public void setName(String name) {
-        if (ezContext == null) {
-            super.setName(name);
-        } else {
-            Interceptor.invoke(this, 11, "name", name);
-        }
+
     }
 
-
     /**
-     * @see ezbean.Accessible#ezCall(int, boolean, java.lang.Object[])
+     * @param id
+     * @param params
+     * @return
      */
     public Object ezCall(int id, Object... params) {
         switch (id) {
@@ -92,12 +83,5 @@ public class ASMfierDebugBean extends ASMfierDebugBase implements Accessible {
             super.talk((String) params[0], (Integer) params[1]);
             return null;
         }
-    }
-
-    /**
-     * @see ezbean.Accessible#context()
-     */
-    public Listeners context() {
-        return null;
     }
 }

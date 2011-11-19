@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import ezbean.Accessible;
 import ezbean.I;
 
 /**
@@ -344,7 +343,7 @@ public class Model {
      */
     public static Model load(Class modelClass) {
         // check whether the specified model class is enhanced or not
-        if (Accessible.class.isAssignableFrom(modelClass)) {
+        if (modelClass.isSynthetic()) {
             modelClass = modelClass.getSuperclass();
         } else if (Path.class.isAssignableFrom(modelClass)) {
             modelClass = Path.class;

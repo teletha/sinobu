@@ -38,7 +38,7 @@ import org.objectweb.asm.Opcodes;
 /**
  * @version 2011/11/19 9:11:22
  */
-public class ModuleVisitor extends ClassVisitor {
+class ModuleVisitor extends ClassVisitor {
 
     /** The dirty process management. */
     private static final IllegalStateException STOP = new IllegalStateException();
@@ -52,7 +52,7 @@ public class ModuleVisitor extends ClassVisitor {
     /**
      * 
      */
-    public ModuleVisitor(Module module) {
+    ModuleVisitor(Module module) {
         super(Opcodes.ASM4);
 
         Path base = module.path;

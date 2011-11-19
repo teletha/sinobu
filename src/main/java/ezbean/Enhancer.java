@@ -18,6 +18,7 @@ package ezbean;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.objectweb.asm.ClassVisitor;
@@ -42,7 +43,7 @@ import ezbean.model.Property;
  * {@link Enhancer}. So you only have to implement the class which extends {@link Enhancer} class.
  * </p>
  * 
- * @version 2009/08/31 4:55:41
+ * @version 2011/11/19 18:55:44
  */
 public class Enhancer extends ClassVisitor implements Extensible {
 
@@ -125,8 +126,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
         // Define Class
         // -----------------------------------------------------------------------------------
         // public class GeneratedClass extends SuperClass implements Inteface1, Interface2....
-        visit(V1_5, ACC_PUBLIC | ACC_SUPER, className, null, modelType.getInternalName(), new String[] {
-                "ezbean/Accessible", "java/io/Serializable"});
+        visit(V1_5, ACC_PUBLIC | ACC_SUPER | ACC_SYNTHETIC, className, null, modelType.getInternalName(), new String[] {"java/io/Serializable"});
 
         // don't use visitSource method because this generated source is unknown
         // visitSource(className, null);
@@ -227,7 +227,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
              * if (context == null) {
              *     super.setProperty(newValue);
              * } else {
-             *     Interceptor.invoke(this, propertyID, &quot;propertyName&quot;, newValue);
+             *     Interceptor.invoke(this, &quot;propertyName&quot;, newValue);
              * }
              * </pre>
              * 
@@ -256,13 +256,12 @@ public class Enhancer extends ClassVisitor implements Extensible {
                     mv.visitLabel(invoke);
                 }
 
-                // Interceptor.invoke(this, propertyID, "propertyName", param);
+                // Interceptor.invoke(this, "propertyName", param);
                 mv.visitVarInsn(ALOAD, 0); // this
-                mv.visitIntInsn(BIPUSH, i * 3); // property id
                 mv.visitLdcInsn(property.name); // property name
                 mv.visitVarInsn(type.getOpcode(ILOAD), 1); // new value
                 wrap(property.model.type); // warp to none-primitive type
-                mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Lezbean/Accessible;ILjava/lang/String;Ljava/lang/Object;)V");
+                mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V");
 
                 // }
                 if (may) mv.visitLabel(end);
@@ -272,49 +271,18 @@ public class Enhancer extends ClassVisitor implements Extensible {
             }
         }
 
-        // -----------------------------------------------------------------------------------
-        // Implement Accessible Interfaces
-        // -----------------------------------------------------------------------------------
         if (trace == '+') {
             /**
              * <p>
-             * Implement the method {@link Accessible#context()}.
-             * </p>
-             * <p>
-             * Make field and method.
+             * Make field.
              * </p>
              * 
              * <pre>
              * private transient Context context;
-             * 
-             * public Context context() {
-             *     if (context == null) {
-             *         context = new Context();
-             *     }
-             *     return context;
-             * }
              * </pre>
              */
-            // make field
+            // make context field
             field(NEW, context, "context");
-
-            // make method
-            mv = visitMethod(ACC_PUBLIC | ACC_TRANSIENT, "context", "()" + context.getDescriptor(), null, null);
-            mv.visitCode();
-            field(GETFIELD, context, "context");
-            Label branch = new Label();
-            mv.visitJumpInsn(IFNONNULL, branch);
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitTypeInsn(NEW, context.getInternalName());
-            mv.visitInsn(DUP);
-
-            mv.visitMethodInsn(INVOKESPECIAL, context.getInternalName(), "<init>", "()V");
-            field(PUTFIELD, context, "context");
-            mv.visitLabel(branch);
-            field(GETFIELD, context, "context");
-            mv.visitInsn(ARETURN);
-            mv.visitMaxs(3, 1);
-            mv.visitEnd();
         }
 
         // -----------------------------------------------------------------------------------
@@ -425,12 +393,35 @@ public class Enhancer extends ClassVisitor implements Extensible {
      */
     protected final void field(int operation, Type type, String name) {
         if (operation == NEW) {
-            visitField(ACC_PRIVATE | ACC_TRANSIENT, name, type.getDescriptor(), null, null).visitEnd();
+            visitField(ACC_PUBLIC | ACC_TRANSIENT, name, type.getDescriptor(), null, null).visitEnd();
         } else {
             if (operation == GETFIELD) {
                 mv.visitVarInsn(ALOAD, 0); // load 'this' variable
             }
             mv.visitFieldInsn(operation, className, name, type.getDescriptor());
+        }
+    }
+
+    /**
+     * <p>
+     * Helper method to access property listener context.
+     * </p>
+     * 
+     * @param object A target bean.
+     * @return An associated context.
+     */
+    static final Listeners<String, PropertyListener> context(Object object) {
+        try {
+            Field field = object.getClass().getField("context");
+            Object value = field.get(object);
+
+            if (value == null) {
+                value = new Listeners();
+                field.set(object, value);
+            }
+            return (Listeners<String, PropertyListener>) value;
+        } catch (Exception e) {
+            throw I.quiet(e);
         }
     }
 }
