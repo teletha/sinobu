@@ -201,6 +201,9 @@ public class Model {
                     Model model = load(methods[0].getGenericReturnType(), type);
 
                     if (model.type == load(methods[1].getGenericParameterTypes()[0], type).type) {
+                        methods[0].setAccessible(true);
+                        methods[1].setAccessible(true);
+
                         // this property is valid
                         Property property = new Property(model, entry.getKey());
                         property.accessors = methods;
@@ -357,7 +360,6 @@ public class Model {
             if (List.class.isAssignableFrom(modelClass)) {
                 model = new ListModel(modelClass, ClassUtil.getParameter(modelClass, List.class)[0], List.class);
             } else if (Map.class.isAssignableFrom(modelClass)) {
-                System.out.println(modelClass);
                 model = new MapModel(modelClass, ClassUtil.getParameter(modelClass, Map.class), Map.class);
             } else {
                 model = new Model(modelClass);

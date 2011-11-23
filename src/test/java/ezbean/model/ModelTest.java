@@ -170,6 +170,24 @@ public class ModelTest {
         assert String.class == model.type;
     }
 
+    @Test
+    public void protectedAccessor() {
+        Model model = Model.load(ProtectedAccessor.class);
+        assert model != null;
+
+        List<Property> list = model.properties;
+        assert 3 == list.size();
+
+        ProtectedAccessor accessor = I.make(ProtectedAccessor.class);
+        Property property = model.getProperty("getter");
+        accessor.setGetter("test");
+        assert model.get(accessor, property).equals("test");
+
+        property = model.getProperty("setter");
+        model.set(accessor, property, "aaa");
+        assert accessor.getSetter().equals("aaa");
+    }
+
     /**
      * Test {@link Map} model with the key which can convert to string.
      */
@@ -453,18 +471,6 @@ public class ModelTest {
 
         List<Property> list = model.properties;
         assert 0 == list.size();
-    }
-
-    /**
-     * Test the class which has no property.
-     */
-    @Test
-    public void testInvalidBean05() {
-        Model model = Model.load(ProtectedAccessor.class);
-        assert model != null;
-
-        List<Property> list = model.properties;
-        assert 3 == list.size();
     }
 
     /**
