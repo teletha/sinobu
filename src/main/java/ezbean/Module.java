@@ -107,7 +107,7 @@ class Module extends URLClassLoader {
 
         if (clazz == null) {
             // start writing byte code
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 
             // build interceptor chain
             ClassVisitor current = writer;

@@ -125,7 +125,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
         // Define Class
         // -----------------------------------------------------------------------------------
         // public class GeneratedClass extends SuperClass implements Inteface1, Interface2....
-        visit(V1_5, ACC_PUBLIC | ACC_SUPER | ACC_SYNTHETIC, className, null, modelType.getInternalName(), new String[] {"java/io/Serializable"});
+        visit(V1_7, ACC_PUBLIC | ACC_SUPER | ACC_SYNTHETIC, className, null, modelType.getInternalName(), new String[] {"java/io/Serializable"});
 
         // don't use visitSource method because this generated source is unknown
         // visitSource(className, null);
