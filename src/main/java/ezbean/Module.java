@@ -90,13 +90,13 @@ class Module extends URLClassLoader {
      *            object, otherwise for normal bean object.
      * @return A generated {@link Class} object.
      */
-    synchronized Class define(Model model, char trace) {
+    synchronized Class define(Model model) {
         // Compute fully qualified class name for the generated class.
         // The coder class name is prefix to distinguish enhancer type by a name and make core
         // package classes (e.g. swing components) enhance.
         // The statement "String name = coder.getName() + model.type.getName();" produces larger
         // byte code and more objects. To reduce them, we should use the method "concat".
-        String name = model.type.getName().concat(String.valueOf(trace));
+        String name = model.type.getName().concat("+");
 
         if (name.startsWith("java.")) {
             name = "$".concat(name);
@@ -117,7 +117,7 @@ class Module extends URLClassLoader {
             }
 
             // write code actually
-            ((Enhancer) current).write(trace);
+            ((Enhancer) current).write();
 
             // retrieve byte code
             byte[] bytes = writer.toByteArray();

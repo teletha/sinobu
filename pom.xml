@@ -19,7 +19,7 @@
   <groupId>ezbean</groupId>
   <artifactId>ezbean</artifactId>
   <name>Ezbean</name>
-  <version>0.8.4</version>
+  <version>0.9</version>
   <description>Ezbean is extremely-condensed facade to manipulate objects.</description>
 
   <dependencies>

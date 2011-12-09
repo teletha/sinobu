@@ -69,14 +69,9 @@ public class Interceptor<P extends Annotation> implements Extensible {
             parent.invoke(param);
         } else {
             try {
-                // Retrieve old value.
-                Object old = lookup.unreflect(property.getAccessor(false)).invoke(that);
-
                 // Apply new value.
                 lookup.unreflectSpecial(property.getAccessor(true), that.getClass()).invoke(that, param);
 
-                // Notify to all listeners.
-                Enhancer.context(that).notify(that, property.name, old, param);
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
