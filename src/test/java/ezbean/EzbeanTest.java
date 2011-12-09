@@ -28,14 +28,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+import ezbean.sample.bean.FinalBean;
 import ezbean.sample.bean.Primitive;
 import ezbean.sample.modifier.Abstract;
+import ezbean.sample.modifier.Final;
 import ezbean.sample.modifier.Nested.PublicStatic;
 import ezbean.sample.modifier.Public;
 import ezbean.xml.Encloser;
 
 /**
- * @version 2011/03/22 16:45:04
+ * @version 2011/12/09 20:31:05
  */
 public class EzbeanTest {
 
@@ -133,16 +135,26 @@ public class EzbeanTest {
         assert I.make(clazz) != null;
     }
 
+    @Test
+    public void instatiateFinal() throws Exception {
+        assert I.make(Final.class) != null;
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void instatiateFinalBean() throws Exception {
+        I.make(FinalBean.class);
+    }
+
     @Test(expected = InstantiationException.class)
-    public void testInstantiate11() throws Exception {
-        assert I.make(Abstract.class) != null;
+    public void instatiateAbstract() throws Exception {
+        I.make(Abstract.class);
     }
 
     /**
      * Test runtime exception.
      */
     @Test(expected = RuntimeExceptionClass.E.class)
-    public void testInstantiate12() throws Exception {
+    public void instatiateRuntimeExceptionThrower() throws Exception {
         I.make(RuntimeExceptionClass.class);
     }
 
@@ -150,7 +162,7 @@ public class EzbeanTest {
      * Test error.
      */
     @Test(expected = ErrorClass.E.class)
-    public void testInstantiate13() throws Exception {
+    public void instatiateErrorThrower() throws Exception {
         I.make(ErrorClass.class);
     }
 
@@ -158,7 +170,7 @@ public class EzbeanTest {
      * Test exception.
      */
     @Test(expected = ExceptionClass.E.class)
-    public void testInstantiate14() throws Exception {
+    public void instatiateExceptionThrower() throws Exception {
         I.make(ExceptionClass.class);
     }
 

@@ -16,7 +16,7 @@
 package ezbean.sample.modifier;
 
 /**
- * @version 2010/01/21 11:17:35
+ * @version 2011/12/09 20:30:54
  */
 public final class Final {
 }
