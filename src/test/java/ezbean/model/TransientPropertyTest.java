@@ -17,12 +17,19 @@ package ezbean.model;
 
 import org.junit.Test;
 
+import ezbean.I;
 import ezbean.sample.bean.TransientBean;
 
 /**
  * @version 2011/03/22 16:56:26
  */
 public class TransientPropertyTest {
+
+    static {
+        // When we activates only this test, it throws initialization error, so we have to load I
+        // class at first.
+        I.locate("");
+    }
 
     @Test
     public void transientGetter() throws Exception {

@@ -17,6 +17,7 @@ package ezbean.model;
 
 import org.junit.Test;
 
+import ezbean.I;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.Primitive;
 
@@ -24,6 +25,12 @@ import ezbean.sample.bean.Primitive;
  * @version 2011/03/22 17:05:12
  */
 public class AccessorNameTest {
+
+    static {
+        // When we activates only this test, it throws initialization error, so we have to load I
+        // class at first.
+        I.locate("");
+    }
 
     /**
      * Decide a name of accessor method.
