@@ -764,12 +764,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         // If this model is non-accessible or final class, we can not extend it for bean
         // enhancement. So we must throw some exception.
         if (model.properties.size() != 0) {
-            if (((Modifier.PUBLIC | Modifier.PROTECTED) & modifier) == 0) {
-                throw new IllegalArgumentException(actualClass + " is not declared as public or protected.");
-            }
-
-            if ((Modifier.FINAL & modifier) != 0) {
-                throw new IllegalArgumentException(actualClass + " is declared as final.");
+            if (((Modifier.PUBLIC | Modifier.PROTECTED) & modifier) == 0 || (Modifier.FINAL & modifier) != 0) {
+                throw new IllegalArgumentException(actualClass + " must be declared as public, protected, or non-final.");
             }
 
             // Enhance the actual model class if needed.
