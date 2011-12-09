@@ -351,6 +351,41 @@ public class PathObservationTest {
     }
 
     @Test
+    public void dispose() throws Exception {
+        Path path = room.locateFile("test");
+
+        // observe
+        Disposable disposable = observe(path);
+
+        // dispose
+        disposable.dispose();
+
+        // modify
+        write(path);
+
+        // verify events
+        verifyNone();
+    }
+
+    @Test
+    public void disposeTwice() throws Exception {
+        Path path = room.locateFile("test");
+
+        // observe
+        Disposable disposable = observe(path);
+
+        // dispose
+        disposable.dispose();
+        disposable.dispose();
+
+        // modify
+        write(path);
+
+        // verify events
+        verifyNone();
+    }
+
+    @Test
     public void pattern() throws Exception {
         Path path = room.locateDirectory("directory");
 
