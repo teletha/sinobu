@@ -18,7 +18,6 @@ package ezbean;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.objectweb.asm.ClassVisitor;
@@ -99,7 +98,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
      * @param trace If trace is <code>true</code>, this class generate the byte code for mock
      *            object. Otherwise for bean object.
      */
-    final void write(char trace) {
+    final void write() {
         Type context = Type.getType(Listeners.class);
 
         // ================================================
@@ -160,67 +159,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
             String[] infos = info(property);
 
             /**
-             * <p>
-             * Define getter method.
-             * </p>
-             * <p>
-             * This is an example about attribute property.
-             * </p>
-             * 
-             * <pre>
-             * public int getSome() {
-             *     // track property path
-             *     I.mock(&quot;some&quot;);
-             * 
-             *     return super.getSome();
-             * }
-             * </pre>
-             * <p>
-             * This is an example about none attribute property.
-             * </p>
-             * 
-             * <pre>
-             * public Some getSome() {
-             *     // track property path
-             *     I.mock(&quot;some&quot;);
-             * 
-             *     // return the trackable mock object
-             *     return I.mock(Some.class);
-             * }
-             * </pre>
-             * 
-             * @see ezbean.graph.Coder#getter(ezbean.model.Property, org.objectweb.asm.Type)
-             */
-            if (trace != '+') {
-                mv = visitMethod(ACC_PUBLIC, infos[0], infos[1], null, null);
-                mv.visitCode();
-                // invoke Ezbean mock method with property name
-                mv.visitLdcInsn(property.name); // load 1st arguments
-                mv.visitMethodInsn(INVOKESTATIC, "ezbean/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;");
-                mv.visitInsn(POP);
-
-                if (property.isAttribute()) {
-                    // This code is tricky because of footprint shurinking.
-                    //
-                    // Type.getOpcode(0) returns 1(long), 2(float), 3(double), 4(object array) or
-                    // 0(other). The current type's sort is 7(long), 6(float), 8(double), 9(array),
-                    // 10(object) or 1-5 (other). So the following code returns 10(long), 11(float),
-                    // 15(double), 1(object array) or 2-6(other). These values are equivalent to the
-                    // constant value code of itself.
-                    mv.visitInsn((type.getOpcode(0) * 2 + 1 + Math.min(type.getSort(), 9)) % 17);
-                } else {
-                    mv.visitLdcInsn(type); // load 1st arguments
-                    mv.visitMethodInsn(INVOKESTATIC, "ezbean/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;");
-                    mv.visitTypeInsn(CHECKCAST, type.getInternalName());
-                }
-
-                // end method
-                mv.visitInsn(type.getOpcode(IRETURN));
-                mv.visitMaxs(0, 0); // compute by ASM
-                mv.visitEnd();
-            }
-
-            /**
              * Define setter method.
              * 
              * <pre>
@@ -233,57 +171,54 @@ public class Enhancer extends ClassVisitor implements Extensible {
              * 
              * @see ezbean.module.Coder#setter()
              */
-            if (trace == '+') {
-                mv = visitMethod(ACC_PUBLIC, infos[2], infos[3], null, null);
-                mv.visitCode();
 
-                Label invoke = new Label();
-                Label end = new Label();
-                boolean may = property.getAccessor(true).getAnnotations().length == 0;
+            mv = visitMethod(ACC_PUBLIC, infos[2], infos[3], null, null);
+            mv.visitCode();
 
-                if (may) {
-                    // if (context == null) {
-                    field(GETFIELD, context, "context");
-                    mv.visitJumpInsn(IFNONNULL, invoke);
+            Label invoke = new Label();
+            Label end = new Label();
+            boolean may = property.getAccessor(true).getAnnotations().length == 0;
 
-                    // super.setter(param);
-                    mv.visitVarInsn(ALOAD, 0);
-                    mv.visitVarInsn(type.getOpcode(ILOAD), 1);
-                    mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[2], infos[3]);
+            if (may) {
+                // if (context == null) {
+                field(GETFIELD, context, "context");
+                mv.visitJumpInsn(IFNONNULL, invoke);
 
-                    // } else {
-                    mv.visitJumpInsn(GOTO, end);
-                    mv.visitLabel(invoke);
-                }
+                // super.setter(param);
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitVarInsn(type.getOpcode(ILOAD), 1);
+                mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[2], infos[3]);
 
-                // Interceptor.invoke(this, "propertyName", param);
-                mv.visitVarInsn(ALOAD, 0); // this
-                mv.visitLdcInsn(property.name); // property name
-                mv.visitVarInsn(type.getOpcode(ILOAD), 1); // new value
-                wrap(property.model.type); // warp to none-primitive type
-                mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V");
-
-                // }
-                if (may) mv.visitLabel(end);
-                mv.visitInsn(RETURN);
-                mv.visitMaxs(0, 0); // compute by ASM
-                mv.visitEnd();
+                // } else {
+                mv.visitJumpInsn(GOTO, end);
+                mv.visitLabel(invoke);
             }
+
+            // Interceptor.invoke(this, "propertyName", param);
+            mv.visitVarInsn(ALOAD, 0); // this
+            mv.visitLdcInsn(property.name); // property name
+            mv.visitVarInsn(type.getOpcode(ILOAD), 1); // new value
+            wrap(property.model.type); // warp to none-primitive type
+            mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V");
+
+            // }
+            if (may) mv.visitLabel(end);
+            mv.visitInsn(RETURN);
+            mv.visitMaxs(0, 0); // compute by ASM
+            mv.visitEnd();
         }
 
-        if (trace == '+') {
-            /**
-             * <p>
-             * Make field.
-             * </p>
-             * 
-             * <pre>
+        /**
+         * <p>
+         * Make field.
+         * </p>
+         * 
+         * <pre>
              * private transient Context context;
              * </pre>
-             */
-            // make context field
-            field(NEW, context, "context");
-        }
+         */
+        // make context field
+        field(NEW, context, "context");
 
         // -----------------------------------------------------------------------------------
         // Finish Writing Source Code
@@ -399,29 +334,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
                 mv.visitVarInsn(ALOAD, 0); // load 'this' variable
             }
             mv.visitFieldInsn(operation, className, name, type.getDescriptor());
-        }
-    }
-
-    /**
-     * <p>
-     * Helper method to access property listener context.
-     * </p>
-     * 
-     * @param object A target bean.
-     * @return An associated context.
-     */
-    static final Listeners<String, PropertyListener> context(Object object) {
-        try {
-            Field field = object.getClass().getField("context");
-            Object value = field.get(object);
-
-            if (value == null) {
-                value = new Listeners();
-                field.set(object, value);
-            }
-            return (Listeners<String, PropertyListener>) value;
-        } catch (Exception e) {
-            throw I.quiet(e);
         }
     }
 }

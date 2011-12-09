@@ -201,26 +201,4 @@ class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
     // }
     // }
     // }
-
-    /**
-     * <p>
-     * Fire property change event to all {@link PropertyListener}s.
-     * </p>
-     * 
-     * @param object An event source. (not be <code>null</code>)
-     * @param name A name of chenged property. (not be <code>null</code>)
-     * @param oldValue The old value. (may be <code>null</code>)
-     * @param newValue The new value. (may be <code>null</code>)
-     */
-    public void notify(Object object, String name, Object oldValue, Object newValue) {
-        // check diff
-        if (object != null && oldValue != newValue) {
-            // fire event
-            for (Object listener : get(name)) {
-                if (listener instanceof PropertyListener) {
-                    ((PropertyListener) listener).change(object, name, oldValue, newValue);
-                }
-            }
-        }
-    }
 }

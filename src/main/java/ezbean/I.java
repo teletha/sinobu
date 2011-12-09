@@ -72,7 +72,6 @@ import org.xml.sax.helpers.AttributesImpl;
 import sun.org.mozilla.javascript.internal.IdScriptableObject;
 import sun.org.mozilla.javascript.internal.NativeArray;
 import sun.org.mozilla.javascript.internal.NativeObject;
-import sun.reflect.ReflectionFactory;
 import ezbean.model.ClassUtil;
 import ezbean.model.Codec;
 import ezbean.model.Model;
@@ -248,13 +247,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /** The mapping from extension point to assosiated extension mapping. */
     private static final Listeners<Integer, Class> keys = new Listeners();
 
-    /**
-     * The tracer context per thread. The tracer context consists of the following. The first
-     * element is must be a source object that you want to trace the property paths. The other
-     * elements are property names as {@link java.lang.String}.
-     */
-    private static final ThreadSpecific<Deque<List>> tracers = new ThreadSpecific(ArrayDeque.class);
-
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -266,11 +258,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     // /** The locale name resolver. */
     // private static final Control control = Control.getControl(Control.FORMAT_CLASS);
-
-    /**
-     * This instantiator instantiates an object with out any side effects caused by the constructor.
-     */
-    private static final Constructor instantiator;
 
     /** The root temporary directory for Ezbean. */
     private static final Path temporaries;
@@ -290,10 +277,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         lifestyles.put(Attributes.class, new Prototype(AttributesImpl.class));
 
         try {
-            // This instantiator instantiates an object with out any side effects caused by the
-            // constructor.
-            instantiator = Object.class.getConstructor();
-
             // configure sax parser
             sax.setNamespaceAware(true);
             sax.setXIncludeAware(true);
@@ -369,61 +352,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
         // API definition
         return map;
-    }
-
-    /**
-     * <p>
-     * Bind between two properties. You can specify the binding type (one-way and two-way). This
-     * binding supports the following binding types :
-     * </p>
-     * <dl>
-     * <dt>Oneway</dt>
-     * <dd>The change to the target property is not transmitted to the data source though the value
-     * with a new data source is forwarded to the target property.</dd>
-     * <dt>Twoway</dt>
-     * <dd>The change on source and target is interactively transmitted.</dd>
-     * </dl>
-     * 
-     * @param sourcePath A property path from the source object. Multiple path (e.g. parent.name) is
-     *            acceptable.
-     * @param targetPath A property path from the target object. Multiple path (e.g. parent.name) is
-     *            acceptable.
-     * @param twoway A flag for binding type. If <code>true</code> is specified, source and target
-     *            properties bind each other. If <code>false</code> is specified, only the source
-     *            property binds to the target property.
-     * @return A {@link Disposable} object for this binding. You can unbind this binding to call the
-     *         method {@link Disposable#dispose()} of the returned object.
-     * @throws NullPointerException If the specified source's path or target's path is
-     *             <code>null</code>.
-     * @throws IndexOutOfBoundsException If the specified source's path or target's path is empty.
-     */
-    public static <S> Disposable bind(S sourcePath, S targetPath, boolean twoway) {
-        // retrieve a tracer of the current processing thread
-        Deque<List> tracer = tracers.resolve();
-
-        try {
-            // create target binding
-            Observer targetBind = new Observer(tracer.poll(), null);
-
-            // create source binding
-            Observer subjectBind = new Observer(tracer.poll(), targetBind);
-
-            if (twoway) {
-                // bind each other
-                targetBind.listener = subjectBind;
-            } else {
-                // dispose target binding
-                targetBind.dispose();
-            }
-
-            // initial property binding
-            subjectBind.change(null, subjectBind.path.get(0), null, null);
-
-            // API definition
-            return subjectBind;
-        } finally {
-            tracer.clear(); // clean up property path tracing context
-        }
     }
 
     /**
@@ -845,7 +773,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             }
 
             // Enhance the actual model class if needed.
-            actualClass = make(model, '+');
+            actualClass = make(model);
         }
 
         // Construct dependency graph for the current thred.
@@ -899,68 +827,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /**
      * <p>
-     * Create a mock object which can trace the property paths with calling accessor methods.
-     * </p>
-     * 
-     * @param <M> A model object to trace property paths.
-     * @param model A model class to trace.
-     * @return A tracing object.
-     * @throws NullPointerException If the specified tracer is <code>null</code>.
-     */
-    public static <M> M mock(M model) {
-        if (model instanceof String) {
-            // Enhancer which is an internal class of Ezbean uses this process.
-            // The specified model object indicates the property path.
-            tracers.resolve().peek().add(model);
-
-            return null; // the returned value will not be used by Ezbean
-        }
-
-        // compute model class
-        Class modelClass;
-
-        if (model instanceof Class) {
-            // Enhancer which is an internal class of Ezbean uses this process.
-            // The specified model object indicates the model class itself.
-            modelClass = (Class) model;
-        } else {
-            // Ezbean user uses this process with calling mock method from external.
-            // The specified model object indicates the actual bean, so we must create new trace
-            // context.
-            modelClass = model.getClass();
-
-            // retrieve the tracer context for current thread
-            Deque<List> tracer = tracers.resolve();
-
-            // for tracing, maximum necessary capacity is 2 (bind method needs it)
-            if (1 < tracer.size()) {
-                tracer.removeLast();
-            }
-
-            // create new tracer context for property path tracing
-            tracer.addFirst(new ArrayList(4));
-
-            // tracer context must have the source object at first element
-            tracer.peek().add(model);
-        }
-
-        try {
-            /*
-             * The ReflectionFactory instantiates an object with out any side effects caused by the
-             * constructor. In GAE environment, we can't use ReflectionFactory but it is no problem.
-             * Because the way to type-safe property access is not used usually in servlet
-             * environment. If you need another way, see {@link BypassConstructorTest}.
-             */
-            return (M) ReflectionFactory.getReflectionFactory()
-                    .newConstructorForSerialization(make(Model.load(modelClass), '-'), instantiator)
-                    .newInstance();
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * <p>
      * Make enhanced class in the suitable classloader of the specified {@link Model}.
      * </p>
      * 
@@ -968,13 +834,13 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param trace A optional marker.
      * @return A enhanced class.
      */
-    private static Class make(Model model, char trace) {
+    private static Class make(Model model) {
         ClassLoader loader = model.type.getClassLoader();
 
         if (!(loader instanceof Module)) {
             loader = I.$loader;
         }
-        return ((Module) loader).define(model, trace);
+        return ((Module) loader).define(model);
     }
 
     /**
@@ -1026,35 +892,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     public static void move(Path input, Path output, String... patterns) {
         new Visitor(input, output, 1, null, patterns);
-    }
-
-    /**
-     * <p>
-     * Observe the property change event of the specified property path.
-     * </p>
-     * 
-     * @param sourcePath A property path from the source object. Multiple path (e.g. parent.name) is
-     *            acceptable.
-     * @param listener A property change event listener. This value must not be <code>null</code>.
-     * @return A {@link Disposable} object for this observation. You can stop observing to call the
-     *         method {@link Disposable#dispose()} of the returned object.
-     * @throws NullPointerException If the specified source's path or the specified listener is
-     *             <code>null</code>.
-     * @throws IndexOutOfBoundsException If the specified source's path is empty.
-     */
-    public static <M> Disposable observe(M sourcePath, PropertyListener<M> listener) {
-        if (listener == null) {
-            throw new NullPointerException();
-        }
-
-        Deque<List> tracer = tracers.resolve();
-
-        try {
-            // API definition
-            return new Observer(tracer.poll(), listener);
-        } finally {
-            tracer.clear(); // clean up property path tracing context
-        }
     }
 
     /**
