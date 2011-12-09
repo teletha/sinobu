@@ -773,7 +773,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             }
 
             // Enhance the actual model class if needed.
-            actualClass = make(model);
+            ClassLoader loader = model.type.getClassLoader();
+
+            if (!(loader instanceof Module)) {
+                loader = I.$loader;
+            }
+            actualClass = ((Module) loader).define(model);
         }
 
         // Construct dependency graph for the current thred.
@@ -823,24 +828,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         } finally {
             dependency.pollLast();
         }
-    }
-
-    /**
-     * <p>
-     * Make enhanced class in the suitable classloader of the specified {@link Model}.
-     * </p>
-     * 
-     * @param model A target model class.
-     * @param trace A optional marker.
-     * @return A enhanced class.
-     */
-    private static Class make(Model model) {
-        ClassLoader loader = model.type.getClassLoader();
-
-        if (!(loader instanceof Module)) {
-            loader = I.$loader;
-        }
-        return ((Module) loader).define(model);
     }
 
     /**
