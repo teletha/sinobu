@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import ezbean.I;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
 
@@ -28,6 +29,12 @@ import ezbean.sample.bean.School;
  * @version 2011/03/22 16:56:52
  */
 public class PropertyComparatorTest {
+
+    static {
+        // When we activates only this test, it throws initialization error, so we have to load I
+        // class at first.
+        I.locate("");
+    }
 
     /**
      * Test order.
