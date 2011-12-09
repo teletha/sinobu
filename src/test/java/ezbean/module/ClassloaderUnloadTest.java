@@ -21,6 +21,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.util.List;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -44,6 +46,16 @@ public class ClassloaderUnloadTest {
     /** The system garbage collectors. */
     private static List<GarbageCollectorMXBean> gcs = ManagementFactory.getGarbageCollectorMXBeans();
 
+    @BeforeClass
+    public static void before() {
+        classLoading.setVerbose(true);
+    }
+
+    @AfterClass
+    public static void b2efore() {
+        classLoading.setVerbose(false);
+    }
+
     @Test
     public void count() throws Exception {
         // use module class
@@ -63,7 +75,8 @@ public class ClassloaderUnloadTest {
         // create snapshot
         int loaded = classLoading.getLoadedClassCount();
         long unloaded = classLoading.getUnloadedClassCount();
-        assert 2 == loaded - initialLoaded;
+
+        assert 2 <= loaded - initialLoaded;
         assert 0 == unloaded - initialUnloaded;
 
         // reload module and execute gc if possible
