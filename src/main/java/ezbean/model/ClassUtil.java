@@ -15,14 +15,18 @@
  */
 package ezbean.model;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import ezbean.I;
@@ -32,7 +36,7 @@ import ezbean.I;
  * This utility provides methods to collect information form the specified class.
  * </p>
  * 
- * @version 2009/12/30 0:23:53
+ * @version 2011/12/11 20:16:03
  */
 public final class ClassUtil {
 
@@ -48,6 +52,42 @@ public final class ClassUtil {
      * Avoid construction.
      */
     private ClassUtil() {
+    }
+
+    /**
+     * <p>
+     * Helper method to collect all annotations which annotates the target method and its overridden
+     * methods.
+     * </p>
+     * 
+     * @param method A target method.
+     * @return A set of annotations, with predictable bottom-up iteration order.
+     */
+    public static List<Annotation> getAnnotation(Method method) {
+        // check null
+        if (method == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<Annotation> annotations = new ArrayList();
+
+        for (Class clazz : getTypes(method.getDeclaringClass())) {
+            try {
+                Method candidate = clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
+
+                check: for (Annotation annotation : candidate.getAnnotations()) {
+                    for (Annotation previous : annotations) {
+                        if (previous.annotationType() == annotation.annotationType()) {
+                            continue check;
+                        }
+                    }
+                    annotations.add(annotation);
+                }
+            } catch (Exception e) {
+                // no suck method
+            }
+        }
+        return annotations;
     }
 
     /**
@@ -69,7 +109,9 @@ public final class ClassUtil {
     }
 
     /**
+     * <p>
      * Helper method to collect all classes which are extended or implemented by the target class.
+     * </p>
      * 
      * @param clazz A target class. <code>null</code> will be return the empty set.
      * @return A set of classes, with predictable bottom-up iteration order.

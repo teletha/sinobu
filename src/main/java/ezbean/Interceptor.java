@@ -16,34 +16,17 @@
 package ezbean;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Field;
-
-import ezbean.model.Model;
-import ezbean.model.Property;
+import java.lang.invoke.MethodHandle;
+import java.util.List;
 
 /**
  * <p>
- * This is property access interceptor.
+ * This is generic method interceptor.
  * </p>
  * 
- * @version 2011/11/19 19:03:23
+ * @version 2011/12/11 19:57:33
  */
 public class Interceptor<P extends Annotation> implements Extensible {
-
-    /** The trusted loojup. */
-    private static Lookup lookup;
-
-    static {
-        try {
-            Field field = Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            field.setAccessible(true);
-
-            lookup = (Lookup) field.get(null);
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
 
     /** The actual object. */
     protected Object that;
@@ -51,11 +34,17 @@ public class Interceptor<P extends Annotation> implements Extensible {
     /** The associated annotation. */
     protected P annotation;
 
-    /** The property. */
-    private Property property;
+    /** The delegation method. */
+    private MethodHandle handle;
 
     /** The parent interceptor to chain. */
     private Interceptor parent;
+
+    /**
+     * Hide constructor.
+     */
+    protected Interceptor() {
+    }
 
     /**
      * <p>
@@ -64,14 +53,12 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * 
      * @param param A new value.
      */
-    protected void invoke(Object param) {
+    protected Object invoke(Object... param) {
         if (parent != null) {
-            parent.invoke(param);
+            return parent.invoke(param);
         } else {
             try {
-                // Apply new value.
-                lookup.unreflectSpecial(property.getAccessor(true), that.getClass()).invoke(that, param);
-
+                return handle.bindTo(that).invokeWithArguments(param);
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
@@ -83,31 +70,29 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * NOTE : This is internal method. A user of Ezbean <em>does not have to use</em> this method.
      * </p>
      * 
+     * @param handle A delegation method.
      * @param that A current processing object.
-     * @param name A property name.
-     * @param param A new value.
+     * @param parames A current method parameters.
+     * @param annotations A interceptable annotation list.
      */
-    public static final void invoke(Object that, String name, Object param) {
-        Property property = Model.load(that.getClass()).getProperty(name);
+    public static Object invoke(MethodHandle handle, Object that, Object[] params, List<Annotation> annotations) {
         Interceptor current = new Interceptor();
-        current.property = property;
+        current.handle = handle;
         current.that = that;
 
-        Annotation[] annotations = property.getAccessor(true).getAnnotations();
-
-        for (int i = annotations.length - 1; 0 <= i; --i) {
-            Interceptor interceptor = I.find(Interceptor.class, annotations[i].annotationType());
+        for (int i = annotations.size() - 1; 0 <= i; --i) {
+            Interceptor interceptor = I.find(Interceptor.class, annotations.get(i).annotationType());
 
             if (interceptor != null) {
                 interceptor.that = that;
                 interceptor.parent = current;
-                interceptor.annotation = annotations[i];
+                interceptor.annotation = annotations.get(i);
 
                 current = interceptor;
             }
         }
 
         // Invoke chain of interceptors.
-        current.invoke(param);
+        return current.invoke(params);
     }
 }
