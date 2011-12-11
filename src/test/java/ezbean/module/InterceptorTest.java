@@ -192,11 +192,17 @@ public class InterceptorTest {
          * @see ezbean.Interceptor#invoke(java.lang.Object)
          */
         @Override
-        protected void invoke(Object param) {
-            if (param == null) {
+        protected Object invoke(Object... params) {
+            if (params == null || params.length == 0) {
                 throw new IllegalArgumentException();
             }
-            super.invoke(param);
+
+            for (Object param : params) {
+                if (param == null) {
+                    throw new IllegalArgumentException();
+                }
+            }
+            return super.invoke(params);
         }
     }
 
@@ -223,12 +229,13 @@ public class InterceptorTest {
          * @see ezbean.Interceptor#invoke(java.lang.Object)
          */
         @Override
-        protected void invoke(Object param) {
+        protected Object invoke(Object... param) {
             InterceptedBean bean = (InterceptedBean) that;
 
             bean.order.add(11);
-            super.invoke(param);
+            Object result = super.invoke(param);
             bean.order.add(12);
+            return result;
         }
     }
 
@@ -241,12 +248,13 @@ public class InterceptorTest {
          * @see ezbean.Interceptor#invoke(java.lang.Object)
          */
         @Override
-        protected void invoke(Object param) {
+        protected Object invoke(Object... param) {
             InterceptedBean bean = (InterceptedBean) that;
 
             bean.order.add(21);
-            super.invoke(param);
+            Object result = super.invoke(param);
             bean.order.add(22);
+            return result;
         }
     }
 
@@ -268,8 +276,8 @@ public class InterceptorTest {
          * @see ezbean.Interceptor#invoke(java.lang.Object)
          */
         @Override
-        protected void invoke(Object param) {
-            super.invoke(annotation.number());
+        protected Object invoke(Object... param) {
+            return super.invoke(annotation.number());
         }
     }
 }

@@ -15,19 +15,25 @@
  */
 package ezbean;
 
+import static java.lang.reflect.Modifier.*;
 import static org.objectweb.asm.Opcodes.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 import ezbean.model.ClassUtil;
 import ezbean.model.Model;
-import ezbean.model.Property;
 
 /**
  * <p>
@@ -42,7 +48,7 @@ import ezbean.model.Property;
  * {@link Enhancer}. So you only have to implement the class which extends {@link Enhancer} class.
  * </p>
  * 
- * @version 2011/11/19 18:55:44
+ * @version 2011/12/11 20:27:13
  */
 public class Enhancer extends ClassVisitor implements Extensible {
 
@@ -99,8 +105,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
      *            object. Otherwise for bean object.
      */
     final void write() {
-        Type context = Type.getType(Listeners.class);
-
         // ================================================
         // START CODING
         // ================================================
@@ -151,74 +155,142 @@ public class Enhancer extends ClassVisitor implements Extensible {
         // -----------------------------------------------------------------------------------
         // Define Properties
         // -----------------------------------------------------------------------------------
-        for (int i = 0; i < model.properties.size(); i++) {
-            Property property = model.properties.get(i);
-            Type type = Type.getType(property.model.type);
 
-            // The current processing accesser information (name and descriptor).
-            String[] infos = info(property);
+        // -----------------------------------------------------------------------------------
+        // Collect Annotation Information
+        // -----------------------------------------------------------------------------------
+        Listeners<Method, Annotation> map = new Listeners();
 
-            /**
-             * Define setter method.
-             * 
-             * <pre>
-             * if (context == null) {
-             *     super.setProperty(newValue);
-             * } else {
-             *     Interceptor.invoke(this, &quot;propertyName&quot;, newValue);
-             * }
-             * </pre>
-             * 
-             * @see ezbean.module.Coder#setter()
-             */
+        for (Class clazz : ClassUtil.getTypes(model.type)) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                // exclude the method which modifier is final, static, private or native
+                if (((STATIC | PRIVATE | NATIVE | FINAL) & method.getModifiers()) != 0) {
+                    continue;
+                }
 
-            mv = visitMethod(ACC_PUBLIC, infos[2], infos[3], null, null);
-            mv.visitCode();
+                // exclude the method which is created by compiler
+                if (method.isBridge() || method.isSynthetic()) {
+                    continue;
+                }
 
-            Label invoke = new Label();
-            Label end = new Label();
-            boolean may = property.getAccessor(true).getAnnotations().length == 0;
+                Annotation[] annotations = method.getAnnotations();
 
-            if (may) {
-                // if (context == null) {
-                field(GETFIELD, context, "context");
-                mv.visitJumpInsn(IFNONNULL, invoke);
+                if (annotations.length != 0) {
+                    // check method overriding
+                    for (Method candidate : map.keySet()) {
+                        if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
+                            method = candidate; // detect overriding
+                            break;
+                        }
+                    }
 
-                // super.setter(param);
-                mv.visitVarInsn(ALOAD, 0);
-                mv.visitVarInsn(type.getOpcode(ILOAD), 1);
-                mv.visitMethodInsn(INVOKESPECIAL, modelType.getInternalName(), infos[2], infos[3]);
-
-                // } else {
-                mv.visitJumpInsn(GOTO, end);
-                mv.visitLabel(invoke);
+                    for (Annotation annotation : annotations) {
+                        if (!(annotation instanceof Deprecated)) {
+                            map.push(method, annotation);
+                        }
+                    }
+                }
             }
+        }
 
-            // Interceptor.invoke(this, "propertyName", param);
-            mv.visitVarInsn(ALOAD, 0); // this
-            mv.visitLdcInsn(property.name); // property name
-            mv.visitVarInsn(type.getOpcode(ILOAD), 1); // new value
-            wrap(property.model.type); // warp to none-primitive type
-            mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V");
+        int counter = 0;
 
-            // }
-            if (may) mv.visitLabel(end);
+        for (; counter < map.size();) {
+            FieldVisitor fv = visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "a".concat(String.valueOf(counter++)), "Ljava/util/List;", null, null);
+            fv.visitEnd();
+        }
+
+        // -----------------------------------------------------------------------------------
+        // Define Annotation Pool
+        // -----------------------------------------------------------------------------------
+        if (map.size() != 0) {
+            mv = visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+            mv.visitCode();
+            Label start = new Label();
+            Label end = new Label();
+            Label error = new Label();
+            mv.visitTryCatchBlock(start, end, error, "java/lang/Exception");
+            mv.visitLabel(start);
+
+            counter = 0;
+
+            for (Method method : map.keySet()) {
+                mv.visitLdcInsn(Type.getType(method.getDeclaringClass()));
+                mv.visitLdcInsn(method.getName());
+
+                Class[] params = method.getParameterTypes();
+                mv.visitIntInsn(BIPUSH, params.length);
+                mv.visitTypeInsn(ANEWARRAY, "java/lang/Class");
+
+                for (int i = 0; i < params.length; i++) {
+                    mv.visitInsn(DUP);
+                    mv.visitIntInsn(BIPUSH, i);
+
+                    if (params[i].isPrimitive()) {
+                        mv.visitFieldInsn(GETSTATIC, ClassUtil.wrap(params[i]).getName().replace('.', '/'), "TYPE", "Ljava/lang/Class;");
+                    } else {
+                        mv.visitLdcInsn(Type.getType(params[i]));
+                    }
+                    mv.visitInsn(AASTORE);
+                }
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethod", "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
+                mv.visitMethodInsn(INVOKESTATIC, "ezbean/model/ClassUtil", "getAnnotation", "(Ljava/lang/reflect/Method;)Ljava/util/List;");
+                mv.visitFieldInsn(PUTSTATIC, className, "a".concat(String.valueOf(counter++)), "Ljava/util/List;");
+            }
+            mv.visitJumpInsn(GOTO, end);
+            mv.visitLabel(error);
+            mv.visitFrame(F_SAME1, 0, null, 1, new Object[] {"java/lang/Exception"});
+            mv.visitVarInsn(ASTORE, 0);
+            mv.visitLabel(end);
             mv.visitInsn(RETURN);
-            mv.visitMaxs(0, 0); // compute by ASM
+            mv.visitMaxs(0, 0);
             mv.visitEnd();
         }
 
-        /**
-         * <p>
-         * Make field.
-         * </p>
-         * 
-         * <pre>
-             * private transient Context context;
-             * </pre>
-         */
-        // make context field
-        field(NEW, context, "context");
+        // -----------------------------------------------------------------------------------
+        // Define Interceptable Methods
+        // -----------------------------------------------------------------------------------
+        counter = 0;
+
+        for (Entry<Method, List<Annotation>> entry : map.entrySet()) {
+            Method method = entry.getKey();
+            Type methodType = Type.getType(method);
+
+            mv = visitMethod(ACC_PUBLIC, method.getName(), methodType.getDescriptor(), null, null);
+            mv.visitCode();
+
+            // First parameter : Method delegation
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
+            mv.visitLdcInsn(handle);
+
+            // Second parameter : Callee instance
+            mv.visitVarInsn(ALOAD, 0);
+
+            // Third parameter : Method parameter delegation
+            Class[] params = method.getParameterTypes();
+
+            mv.visitIntInsn(BIPUSH, params.length);
+            mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+
+            // objects[0] ~ [n] are method parameter
+            for (int i = 0; i < params.length; i++) {
+                mv.visitInsn(DUP);
+                mv.visitIntInsn(BIPUSH, i);
+                mv.visitVarInsn(Type.getType(params[i]).getOpcode(ILOAD), i + 1);
+                wrap(params[i]);
+                mv.visitInsn(AASTORE);
+            }
+
+            // Fourth parameter : Pass annotation information
+            mv.visitFieldInsn(GETSTATIC, className, "a".concat(String.valueOf(counter++)), "Ljava/util/List;");
+
+            // Invoke interceptor method
+            mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;Ljava/util/List;)Ljava/lang/Object;");
+            cast(method.getReturnType());
+            mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
+            mv.visitMaxs(0, 0); // compute by ASM
+            mv.visitEnd();
+        }
 
         // -----------------------------------------------------------------------------------
         // Finish Writing Source Code
@@ -251,35 +323,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
         wrap(returnType);
         if (returnType == Void.TYPE) mv.visitInsn(ACONST_NULL);
         mv.visitInsn(ARETURN);
-    }
-
-    /**
-     * <p>
-     * Helper method to compute accessors information.
-     * </p>
-     * <ol>
-     * <li>A getter method name</li>
-     * <li>A getter method description</li>
-     * <li>A setter method name</li>
-     * <li>A setter method description</li>
-     * </ol>
-     * 
-     * @param property
-     * @return
-     */
-    protected final String[] info(Property property) {
-        String[] info = new String[4];
-
-        // Getter name and description
-        info[0] = property.getAccessor(false).getName();
-        info[1] = Type.getMethodDescriptor(property.getAccessor(false));
-
-        // Setter name and description
-        info[2] = property.getAccessor(true).getName();
-        info[3] = Type.getMethodDescriptor(property.getAccessor(true));
-
-        // API definition
-        return info;
     }
 
     /**
