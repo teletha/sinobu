@@ -70,8 +70,6 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 import sun.org.mozilla.javascript.internal.IdScriptableObject;
-import sun.org.mozilla.javascript.internal.NativeArray;
-import sun.org.mozilla.javascript.internal.NativeObject;
 import ezbean.model.ClassUtil;
 import ezbean.model.Codec;
 import ezbean.model.Model;
@@ -1233,8 +1231,14 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
                 if (property != null) {
                     // calculate value
-                    Object value = model.type == List.class ? ((NativeArray) js).get((Integer) id, null)
-                            : ((NativeObject) js).get((String) id, null);
+
+                    // The JDK 7 release is co-bundled with the Mozilla Rhino JavaScript engine
+                    // based on version 1.7R3 pre-release sources with Oracle modifications. From
+                    // Rhino 1.7R3, JavaScript Objects now implement the java.util.Map interface
+                    // while Arrays implement java.util.List. This means that JavaScript objects can
+                    // be passed seamlessly to Java methods expecting a Map while arrays can be
+                    // passed to methods expecting a List or java.util.Collection.
+                    Object value = js instanceof List ? ((List) js).get((int) id) : ((Map) js).get(id);
 
                     // convert value
                     if (property.isAttribute()) {
