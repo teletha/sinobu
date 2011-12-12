@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class Interceptor<P extends Annotation> implements Extensible {
 
-    /** The actual object. */
+    /** The callee instance. */
     protected Object that;
 
     /** The associated annotation. */
@@ -48,17 +48,29 @@ public class Interceptor<P extends Annotation> implements Extensible {
 
     /**
      * <p>
-     * Intercept property access.
+     * Intercept non-static method invocation.
+     * </p>
+     * <p>
+     * You can invoke original method by using super call like the following.
      * </p>
      * 
-     * @param param A new value.
+     * <pre>
+     * public class YourInterceptor extends Interceptor<YourAnnotation> {
+     *     
+     *     protected Object invoke(Object... params) {
+     *         return super.invoke(params);
+     *     }
+     * }
+     * </pre>
+     * 
+     * @param params Parameters.
      */
-    protected Object invoke(Object... param) {
+    protected Object invoke(Object... params) {
         if (parent != null) {
-            return parent.invoke(param);
+            return parent.invoke(params);
         } else {
             try {
-                return handle.bindTo(that).invokeWithArguments(param);
+                return handle.bindTo(that).invokeWithArguments(params);
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
