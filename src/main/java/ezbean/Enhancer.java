@@ -262,7 +262,9 @@ public class Enhancer extends ClassVisitor implements Extensible {
 
             // Write annotations
             for (Annotation annotation : entry.getValue()) {
-                annotation(null, null, annotation);
+                annotation(mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true), annotation);
+                // meta(mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true),
+                // annotation);
             }
 
             // Write code
@@ -307,43 +309,43 @@ public class Enhancer extends ClassVisitor implements Extensible {
         visitEnd();
     }
 
-    private void annotation(AnnotationVisitor av, String name, Annotation annotation) {
-        Class clazz = annotation.annotationType();
-
-        if (av == null) {
-            av = mv.visitAnnotation(Type.getDescriptor(clazz), true);
-        } else {
-            av = av.visitAnnotation(name, Type.getDescriptor(clazz));
-        }
-
+    private void annotation(AnnotationVisitor av, Annotation annotation) {
         // For access non-public annotation class.
-        for (Method method : clazz.getDeclaredMethods()) {
+        for (Method method : annotation.annotationType().getDeclaredMethods()) {
             method.setAccessible(true);
 
             try {
-                Class type = method.getReturnType();
+                Class clazz = method.getReturnType();
+                String name = method.getName();
                 Object value = method.invoke(annotation);
 
-                if (type.isAnnotation()) {
-                    annotation(av, method.getName(), (Annotation) value);
-                } else if (type.isArray()) {
-                    Class arrayType = type.getComponentType();
-                    AnnotationVisitor visitor = av.visitArray(method.getName());
+                if (clazz.isAnnotation()) {
+                    // Annotation
+                    annotation(av.visitAnnotation(name, Type.getDescriptor(clazz)), (Annotation) value);
+                } else if (clazz.isArray()) {
+                    // Array
+                    Class type = clazz.getComponentType();
+                    AnnotationVisitor visitor = av.visitArray(name);
 
                     for (int i = 0; i < Array.getLength(value); i++) {
-                        Object arrayValue = Array.get(value, i);
-
-                        if (arrayType.isAnnotation()) {
-                            annotation(visitor, null, (Annotation) arrayValue);
-                        } else if (arrayType == Class.class) {
-                            visitor.visit(null, Type.getType((Class) arrayValue));
+                        if (type.isAnnotation()) {
+                            // Annotation Array
+                            annotation(visitor.visitAnnotation(null, Type.getDescriptor(type)), (Annotation) Array.get(value, i));
+                        } else if (type == Class.class) {
+                            // Class Array
+                            visitor.visit(null, Type.getType((Class) Array.get(value, i)));
                         } else {
-                            visitor.visit(null, arrayValue);
+                            // Other Type Array
+                            visitor.visit(null, Array.get(value, i));
                         }
                     }
                     visitor.visitEnd();
+                } else if (clazz == Class.class) {
+                    // Class
+                    av.visit(method.getName(), Type.getType((Class) value));
                 } else {
-                    av.visit(method.getName(), value instanceof Class ? Type.getType((Class) value) : value);
+                    // Other Type
+                    av.visit(method.getName(), value);
                 }
             } catch (Exception e) {
                 throw I.quiet(e);
