@@ -19,12 +19,14 @@ import static java.lang.reflect.Modifier.*;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Handle;
@@ -257,6 +259,13 @@ public class Enhancer extends ClassVisitor implements Extensible {
             Type methodType = Type.getType(method);
 
             mv = visitMethod(ACC_PUBLIC, method.getName(), methodType.getDescriptor(), null, null);
+
+            // Write annotations
+            for (Annotation annotation : entry.getValue()) {
+                annotation(null, null, annotation);
+            }
+
+            // Write code
             mv.visitCode();
 
             // First parameter : Method delegation
@@ -296,6 +305,52 @@ public class Enhancer extends ClassVisitor implements Extensible {
         // Finish Writing Source Code
         // -----------------------------------------------------------------------------------
         visitEnd();
+    }
+
+    private void annotation(AnnotationVisitor av, String name, Annotation annotation) {
+        Class clazz = annotation.annotationType();
+
+        if (av == null) {
+            av = mv.visitAnnotation(Type.getDescriptor(clazz), true);
+        } else {
+            av = av.visitAnnotation(name, Type.getDescriptor(clazz));
+        }
+
+        // For access non-public annotation class.
+        for (Method method : clazz.getDeclaredMethods()) {
+            method.setAccessible(true);
+
+            try {
+                Class type = method.getReturnType();
+                Object value = method.invoke(annotation);
+
+                if (type.isAnnotation()) {
+                    annotation(av, method.getName(), (Annotation) value);
+                } else if (type.isArray()) {
+                    Class arrayType = type.getComponentType();
+                    AnnotationVisitor visitor = av.visitArray(method.getName());
+
+                    for (int i = 0; i < Array.getLength(value); i++) {
+                        Object arrayValue = Array.get(value, i);
+
+                        if (arrayType.isAnnotation()) {
+                            annotation(visitor, null, (Annotation) arrayValue);
+                        } else if (arrayType == Class.class) {
+                            visitor.visit(null, Type.getType((Class) arrayValue));
+                        } else {
+                            visitor.visit(null, arrayValue);
+                        }
+                    }
+                    visitor.visitEnd();
+                } else {
+                    av.visit(method.getName(), value instanceof Class ? Type.getType((Class) value) : value);
+                }
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }
+
+        av.visitEnd();
     }
 
     /**
