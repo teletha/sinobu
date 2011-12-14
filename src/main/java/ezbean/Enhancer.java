@@ -310,22 +310,27 @@ public class Enhancer extends ClassVisitor implements Extensible {
     }
 
     private void annotation(AnnotationVisitor av, Annotation annotation) {
-        // For access non-public annotation class.
+        // For access non-public annotation class, use "getDeclaredMethods" instead of "getMethods".
         for (Method method : annotation.annotationType().getDeclaredMethods()) {
             method.setAccessible(true);
 
             try {
                 Class clazz = method.getReturnType();
-                String name = method.getName();
                 Object value = method.invoke(annotation);
 
-                if (clazz.isAnnotation()) {
+                if (clazz == Class.class) {
+                    // Class
+                    av.visit(method.getName(), Type.getType((Class) value));
+                } else if (clazz.isEnum()) {
+                    // Enum
+                    av.visitEnum(method.getName(), Type.getDescriptor(clazz), ((Enum) value).name());
+                } else if (clazz.isAnnotation()) {
                     // Annotation
-                    annotation(av.visitAnnotation(name, Type.getDescriptor(clazz)), (Annotation) value);
+                    annotation(av.visitAnnotation(method.getName(), Type.getDescriptor(clazz)), (Annotation) value);
                 } else if (clazz.isArray()) {
                     // Array
                     Class type = clazz.getComponentType();
-                    AnnotationVisitor visitor = av.visitArray(name);
+                    AnnotationVisitor visitor = av.visitArray(method.getName());
 
                     for (int i = 0; i < Array.getLength(value); i++) {
                         if (type.isAnnotation()) {
@@ -334,15 +339,15 @@ public class Enhancer extends ClassVisitor implements Extensible {
                         } else if (type == Class.class) {
                             // Class Array
                             visitor.visit(null, Type.getType((Class) Array.get(value, i)));
+                        } else if (type.isEnum()) {
+                            // Enum Array
+                            visitor.visitEnum(null, Type.getDescriptor(type), ((Enum) Array.get(value, i)).name());
                         } else {
                             // Other Type Array
                             visitor.visit(null, Array.get(value, i));
                         }
                     }
                     visitor.visitEnd();
-                } else if (clazz == Class.class) {
-                    // Class
-                    av.visit(method.getName(), Type.getType((Class) value));
                 } else {
                     // Other Type
                     av.visit(method.getName(), value);
