@@ -59,6 +59,17 @@ public class AnnotatonInheritanceTest {
     }
 
     @Test
+    public void primitiveArray() throws Exception {
+        HalfPricerClub club = I.make(HalfPricerClub.class);
+        PrimitiveArray annotation = club.getClass().getDeclaredMethod("test").getAnnotation(PrimitiveArray.class);
+        assert annotation != null;
+        int[] values = annotation.value();
+        assert values[0] == 1;
+        assert values[1] == 2;
+        assert values[2] == 3;
+    }
+
+    @Test
     public void string() throws Exception {
         HalfPricerClub club = I.make(HalfPricerClub.class);
         ObjectString annotation = club.getClass().getDeclaredMethod("test").getAnnotation(ObjectString.class);
@@ -135,6 +146,7 @@ public class AnnotatonInheritanceTest {
         @PrimitiveInt(3)
         @PrimitiveDouble(0.2d)
         @PrimitiveBoolean(false)
+        @PrimitiveArray({1, 2, 3})
         @ObjectString("name")
         @ObjectClass(HalfPricerClub.class)
         @ObjectAnnotation(@ObjectString("nest"))
@@ -196,6 +208,15 @@ public class AnnotatonInheritanceTest {
     private static @interface PrimitiveBoolean {
 
         boolean value();
+    }
+
+    /**
+     * @version 2011/12/13 13:20:56
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    private static @interface PrimitiveArray {
+
+        int[] value();
     }
 
     /**

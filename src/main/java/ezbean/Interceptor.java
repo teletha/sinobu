@@ -35,7 +35,7 @@ public class Interceptor<P extends Annotation> implements Extensible {
     protected P annotation;
 
     /** The delegation method. */
-    private MethodHandle handle;
+    private MethodHandle method;
 
     /** The parent interceptor to chain. */
     private Interceptor parent;
@@ -70,7 +70,7 @@ public class Interceptor<P extends Annotation> implements Extensible {
             return parent.invoke(params);
         } else {
             try {
-                return handle.bindTo(that).invokeWithArguments(params);
+                return method.bindTo(that).invokeWithArguments(params);
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
@@ -82,14 +82,14 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * NOTE : This is internal method. A user of Ezbean <em>does not have to use</em> this method.
      * </p>
      * 
-     * @param handle A delegation method.
+     * @param method A delegation method.
      * @param that A current processing object.
      * @param parames A current method parameters.
      * @param annotations A interceptable annotation list.
      */
-    public static Object invoke(MethodHandle handle, Object that, Object[] params, List<Annotation> annotations) {
+    public static Object invoke(MethodHandle method, Object that, Object[] params, List<Annotation> annotations) {
         Interceptor current = new Interceptor();
-        current.handle = handle;
+        current.method = method;
         current.that = that;
 
         for (int i = annotations.size() - 1; 0 <= i; --i) {

@@ -262,7 +262,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
 
             // Write annotations
             for (Annotation annotation : entry.getValue()) {
-                annotation(mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true), annotation);
+                annotation(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
                 // meta(mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true),
                 // annotation);
             }
@@ -309,7 +309,15 @@ public class Enhancer extends ClassVisitor implements Extensible {
         visitEnd();
     }
 
-    private void annotation(AnnotationVisitor av, Annotation annotation) {
+    /**
+     * <p>
+     * Helper method to write annotation.
+     * </p>
+     * 
+     * @param annotation
+     * @param visitor
+     */
+    private void annotation(Annotation annotation, AnnotationVisitor visitor) {
         // For access non-public annotation class, use "getDeclaredMethods" instead of "getMethods".
         for (Method method : annotation.annotationType().getDeclaredMethods()) {
             method.setAccessible(true);
@@ -320,44 +328,43 @@ public class Enhancer extends ClassVisitor implements Extensible {
 
                 if (clazz == Class.class) {
                     // Class
-                    av.visit(method.getName(), Type.getType((Class) value));
+                    visitor.visit(method.getName(), Type.getType((Class) value));
                 } else if (clazz.isEnum()) {
                     // Enum
-                    av.visitEnum(method.getName(), Type.getDescriptor(clazz), ((Enum) value).name());
+                    visitor.visitEnum(method.getName(), Type.getDescriptor(clazz), ((Enum) value).name());
                 } else if (clazz.isAnnotation()) {
                     // Annotation
-                    annotation(av.visitAnnotation(method.getName(), Type.getDescriptor(clazz)), (Annotation) value);
+                    annotation((Annotation) value, visitor.visitAnnotation(method.getName(), Type.getDescriptor(clazz)));
                 } else if (clazz.isArray()) {
                     // Array
-                    Class type = clazz.getComponentType();
-                    AnnotationVisitor visitor = av.visitArray(method.getName());
+                    clazz = clazz.getComponentType();
+                    AnnotationVisitor array = visitor.visitArray(method.getName());
 
                     for (int i = 0; i < Array.getLength(value); i++) {
-                        if (type.isAnnotation()) {
+                        if (clazz.isAnnotation()) {
                             // Annotation Array
-                            annotation(visitor.visitAnnotation(null, Type.getDescriptor(type)), (Annotation) Array.get(value, i));
-                        } else if (type == Class.class) {
+                            annotation((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
+                        } else if (clazz == Class.class) {
                             // Class Array
-                            visitor.visit(null, Type.getType((Class) Array.get(value, i)));
-                        } else if (type.isEnum()) {
+                            array.visit(null, Type.getType((Class) Array.get(value, i)));
+                        } else if (clazz.isEnum()) {
                             // Enum Array
-                            visitor.visitEnum(null, Type.getDescriptor(type), ((Enum) Array.get(value, i)).name());
+                            array.visitEnum(null, Type.getDescriptor(clazz), ((Enum) Array.get(value, i)).name());
                         } else {
                             // Other Type Array
-                            visitor.visit(null, Array.get(value, i));
+                            array.visit(null, Array.get(value, i));
                         }
                     }
-                    visitor.visitEnd();
+                    array.visitEnd();
                 } else {
                     // Other Type
-                    av.visit(method.getName(), value);
+                    visitor.visit(method.getName(), value);
                 }
             } catch (Exception e) {
                 throw I.quiet(e);
             }
         }
-
-        av.visitEnd();
+        visitor.visitEnd();
     }
 
     /**
