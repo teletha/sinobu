@@ -25,7 +25,7 @@ import ezbean.I;
 /**
  * @version 2011/12/13 13:19:17
  */
-public class AnnotatonInheritanceTest {
+public class AnnotationInheritanceTest {
 
     @Test
     public void novalue() throws Exception {
@@ -158,7 +158,7 @@ public class AnnotatonInheritanceTest {
         }
 
         /**
-         * Get the name property of this {@link AnnotatonInheritanceTest.HalfPricerClub}.
+         * Get the name property of this {@link AnnotationInheritanceTest.HalfPricerClub}.
          * 
          * @return The name property.
          */
@@ -167,7 +167,7 @@ public class AnnotatonInheritanceTest {
         }
 
         /**
-         * Set the name property of this {@link AnnotatonInheritanceTest.HalfPricerClub}.
+         * Set the name property of this {@link AnnotationInheritanceTest.HalfPricerClub}.
          * 
          * @param name The name value to set.
          */
