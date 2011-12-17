@@ -27,7 +27,7 @@ import org.junit.Test;
 /**
  * @version 2011/12/11 20:02:56
  */
-public class CollectAnnotaionTest {
+public class CollectAnnotationTest {
 
     @Test
     public void single() throws Exception {
