@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandle;
  * This is generic method interceptor.
  * </p>
  * 
- * @version 2011/12/11 19:57:33
+ * @version 2011/12/19 2:20:56
  */
 public class Interceptor<P extends Annotation> implements Extensible {
 
