@@ -194,64 +194,59 @@ public class Enhancer extends ClassVisitor implements Extensible {
             }
         }
 
-        int counter = 0;
-
-        for (; counter < map.size();) {
-            visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "a".concat(String.valueOf(counter++)), "Ljava/util/List;", null, null).visitEnd();
-        }
-
         // -----------------------------------------------------------------------------------
         // Define Annotation Pool
         // -----------------------------------------------------------------------------------
         if (map.size() != 0) {
+            visitField(ACC_PRIVATE + ACC_STATIC, "pool", "Ljava/util/Map;", null, null).visitEnd();
+
+            Label end = new Label();
+            Label loop = new Label();
+
             mv = visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
             mv.visitCode();
-            Label start = new Label();
-            Label end = new Label();
-            Label error = new Label();
-            mv.visitTryCatchBlock(start, end, error, "java/lang/Exception");
-            mv.visitLabel(start);
-
-            counter = 0;
-
-            for (Method method : map.keySet()) {
-                mv.visitLdcInsn(Type.getType(method.getDeclaringClass()));
-                mv.visitLdcInsn(method.getName());
-
-                Class[] params = method.getParameterTypes();
-                mv.visitIntInsn(BIPUSH, params.length);
-                mv.visitTypeInsn(ANEWARRAY, "java/lang/Class");
-
-                for (int i = 0; i < params.length; i++) {
-                    mv.visitInsn(DUP);
-                    mv.visitIntInsn(BIPUSH, i);
-
-                    if (params[i].isPrimitive()) {
-                        mv.visitFieldInsn(GETSTATIC, ClassUtil.wrap(params[i]).getName().replace('.', '/'), "TYPE", "Ljava/lang/Class;");
-                    } else {
-                        mv.visitLdcInsn(Type.getType(params[i]));
-                    }
-                    mv.visitInsn(AASTORE);
-                }
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethod", "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
-                mv.visitMethodInsn(INVOKESTATIC, "ezbean/model/ClassUtil", "getAnnotation", "(Ljava/lang/reflect/Method;)Ljava/util/List;");
-                mv.visitFieldInsn(PUTSTATIC, className, "a".concat(String.valueOf(counter++)), "Ljava/util/List;");
-            }
+            mv.visitTypeInsn(NEW, "java/util/HashMap");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V");
+            mv.visitFieldInsn(PUTSTATIC, className, "pool", "Ljava/util/Map;");
+            mv.visitLdcInsn(Type.getType("L" + className + ";"));
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;");
+            mv.visitInsn(DUP);
+            mv.visitVarInsn(ASTORE, 3);
+            mv.visitInsn(ARRAYLENGTH);
+            mv.visitVarInsn(ISTORE, 2);
+            mv.visitInsn(ICONST_0);
+            mv.visitVarInsn(ISTORE, 1);
             mv.visitJumpInsn(GOTO, end);
-            mv.visitLabel(error);
-            mv.visitFrame(F_SAME1, 0, null, 1, new Object[] {"java/lang/Exception"});
+            mv.visitLabel(loop);
+            mv.visitVarInsn(ALOAD, 3);
+            mv.visitVarInsn(ILOAD, 1);
+            mv.visitInsn(AALOAD);
             mv.visitVarInsn(ASTORE, 0);
+            mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getName", "()Ljava/lang/String;");
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;");
+            mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;");
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;");
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+            mv.visitInsn(POP);
+            mv.visitIincInsn(1, 1); // increment counter
             mv.visitLabel(end);
+            mv.visitVarInsn(ILOAD, 1);
+            mv.visitVarInsn(ILOAD, 2);
+            mv.visitJumpInsn(IF_ICMPLT, loop);
             mv.visitInsn(RETURN);
-            mv.visitMaxs(0, 0);
+            mv.visitMaxs(5, 4);
             mv.visitEnd();
         }
 
         // -----------------------------------------------------------------------------------
         // Define Interceptable Methods
         // -----------------------------------------------------------------------------------
-        counter = 0;
-
         for (Entry<Method, List<Annotation>> entry : map.entrySet()) {
             Method method = entry.getKey();
             Type methodType = Type.getType(method);
@@ -291,10 +286,13 @@ public class Enhancer extends ClassVisitor implements Extensible {
             }
 
             // Fourth parameter : Pass annotation information
-            mv.visitFieldInsn(GETSTATIC, className, "a".concat(String.valueOf(counter++)), "Ljava/util/List;");
+            mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
+            mv.visitLdcInsn(method.getName().concat(Arrays.toString(method.getParameterTypes())));
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+            mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
 
             // Invoke interceptor method
-            mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;Ljava/util/List;)Ljava/lang/Object;");
+            mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;");
             cast(method.getReturnType());
             mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
             mv.visitMaxs(0, 0); // compute by ASM
