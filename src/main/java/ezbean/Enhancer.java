@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -198,8 +197,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
         int counter = 0;
 
         for (; counter < map.size();) {
-            FieldVisitor fv = visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "a".concat(String.valueOf(counter++)), "Ljava/util/List;", null, null);
-            fv.visitEnd();
+            visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "a".concat(String.valueOf(counter++)), "Ljava/util/List;", null, null).visitEnd();
         }
 
         // -----------------------------------------------------------------------------------
@@ -262,7 +260,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
 
             // Write annotations
             for (Annotation annotation : entry.getValue()) {
-                annotation(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
+                annotate(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
                 // meta(mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true),
                 // annotation);
             }
@@ -311,13 +309,13 @@ public class Enhancer extends ClassVisitor implements Extensible {
 
     /**
      * <p>
-     * Helper method to write annotation.
+     * Helper method to write annotation code.
      * </p>
      * 
-     * @param annotation
-     * @param visitor
+     * @param annotation An annotation you want to write.
+     * @param visitor An annotation target.
      */
-    private void annotation(Annotation annotation, AnnotationVisitor visitor) {
+    protected final void annotate(Annotation annotation, AnnotationVisitor visitor) {
         // For access non-public annotation class, use "getDeclaredMethods" instead of "getMethods".
         for (Method method : annotation.annotationType().getDeclaredMethods()) {
             method.setAccessible(true);
@@ -334,7 +332,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
                     visitor.visitEnum(method.getName(), Type.getDescriptor(clazz), ((Enum) value).name());
                 } else if (clazz.isAnnotation()) {
                     // Annotation
-                    annotation((Annotation) value, visitor.visitAnnotation(method.getName(), Type.getDescriptor(clazz)));
+                    annotate((Annotation) value, visitor.visitAnnotation(method.getName(), Type.getDescriptor(clazz)));
                 } else if (clazz.isArray()) {
                     // Array
                     clazz = clazz.getComponentType();
@@ -343,7 +341,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
                     for (int i = 0; i < Array.getLength(value); i++) {
                         if (clazz.isAnnotation()) {
                             // Annotation Array
-                            annotation((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
+                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
                         } else if (clazz == Class.class) {
                             // Class Array
                             array.visit(null, Type.getType((Class) Array.get(value, i)));
@@ -365,33 +363,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
             }
         }
         visitor.visitEnd();
-    }
-
-    /**
-     * <p>
-     * Helper method to write method invocation code for property accessor.
-     * </p>
-     * 
-     * @param method A target property accessor.
-     * @param type A invocation type.
-     */
-    protected final void write(Method method, int type) {
-        Class[] params = method.getParameterTypes();
-        Class returnType = method.getReturnType();
-
-        mv.visitVarInsn(ALOAD, 0);
-
-        // Write method invocation.
-        for (int i = 0; i < params.length; i++) {
-            mv.visitVarInsn(ALOAD, 2);
-            cast(params[i]);
-        }
-        mv.visitMethodInsn(type, type == INVOKESPECIAL ? modelType.getInternalName() : className, method.getName(), Type.getMethodDescriptor(method));
-
-        // write return type.
-        wrap(returnType);
-        if (returnType == Void.TYPE) mv.visitInsn(ACONST_NULL);
-        mv.visitInsn(ARETURN);
     }
 
     /**
@@ -429,23 +400,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
             Type wrapper = Type.getType(ClassUtil.wrap(clazz));
             mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type.getType(clazz)
                     .getDescriptor() + ")" + wrapper.getDescriptor());
-        }
-    }
-
-    /**
-     * Helper method to make field operation.
-     * 
-     * @param operation
-     * @param type
-     */
-    protected final void field(int operation, Type type, String name) {
-        if (operation == NEW) {
-            visitField(ACC_PUBLIC | ACC_TRANSIENT, name, type.getDescriptor(), null, null).visitEnd();
-        } else {
-            if (operation == GETFIELD) {
-                mv.visitVarInsn(ALOAD, 0); // load 'this' variable
-            }
-            mv.visitFieldInsn(operation, className, name, type.getDescriptor());
         }
     }
 }
