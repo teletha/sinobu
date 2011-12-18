@@ -160,7 +160,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
         // -----------------------------------------------------------------------------------
         // Collect Annotation Information
         // -----------------------------------------------------------------------------------
-        Listeners<Method, Annotation> map = new Listeners();
+        Cache<Method, Annotation> map = new Cache();
 
         for (Class clazz : ClassUtil.getTypes(model.type)) {
             for (Method method : clazz.getDeclaredMethods()) {

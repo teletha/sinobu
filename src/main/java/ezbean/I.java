@@ -240,10 +240,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = I.aware(new ConcurrentHashMap<Class, Lifestyle>());
 
     /** The mapping from extension point to extensions. */
-    private static final Listeners<Class, Class> extensions = new Listeners();
+    private static final Cache<Class, Class> extensions = new Cache();
 
     /** The mapping from extension point to assosiated extension mapping. */
-    private static final Listeners<Integer, Class> keys = new Listeners();
+    private static final Cache<Integer, Class> keys = new Cache();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
