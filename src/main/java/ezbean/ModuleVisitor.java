@@ -33,7 +33,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 /**
  * @version 2011/11/19 9:11:22
@@ -53,7 +52,7 @@ class ModuleVisitor extends ClassVisitor {
      * 
      */
     ModuleVisitor(Module module) {
-        super(Opcodes.ASM4);
+        super(ASM4);
 
         Path base = module.path;
 
