@@ -96,6 +96,14 @@ public class AnnotationInheritanceTest {
     }
 
     @Test
+    public void enumuration() throws Exception {
+        HalfPricerClub club = I.make(HalfPricerClub.class);
+        ObjectEnum annotation = club.getClass().getDeclaredMethod("test").getAnnotation(ObjectEnum.class);
+        assert annotation != null;
+        assert annotation.value() == RetentionPolicy.RUNTIME;
+    }
+
+    @Test
     public void array() throws Exception {
         HalfPricerClub club = I.make(HalfPricerClub.class);
         ObjectArray annotation = club.getClass().getDeclaredMethod("test").getAnnotation(ObjectArray.class);
@@ -116,6 +124,16 @@ public class AnnotationInheritanceTest {
         ObjectString[] array = annotation.value();
         assert array[0].value().equals("1");
         assert array[1].value().equals("2");
+    }
+
+    @Test
+    public void arrayEnum() throws Exception {
+        HalfPricerClub club = I.make(HalfPricerClub.class);
+        ObjectEnumArray annotation = club.getClass().getDeclaredMethod("test").getAnnotation(ObjectEnumArray.class);
+        assert annotation != null;
+        RetentionPolicy[] array = annotation.value();
+        assert array[0] == RetentionPolicy.RUNTIME;
+        assert array[1] == RetentionPolicy.CLASS;
     }
 
     @Test
@@ -150,8 +168,10 @@ public class AnnotationInheritanceTest {
         @ObjectString("name")
         @ObjectClass(HalfPricerClub.class)
         @ObjectAnnotation(@ObjectString("nest"))
+        @ObjectEnum(RetentionPolicy.RUNTIME)
         @ObjectArray({"1", "2", "3"})
         @ObjectAnnotationArray({@ObjectString("1"), @ObjectString("2")})
+        @ObjectEnumArray({RetentionPolicy.RUNTIME, RetentionPolicy.CLASS})
         @DefaultValue
         @MultiValue(one = 0.1f, two = 't')
         protected void test() {
@@ -259,9 +279,27 @@ public class AnnotationInheritanceTest {
      * @version 2011/12/13 13:20:56
      */
     @Retention(RetentionPolicy.RUNTIME)
+    private static @interface ObjectEnum {
+
+        RetentionPolicy value();
+    }
+
+    /**
+     * @version 2011/12/13 13:20:56
+     */
+    @Retention(RetentionPolicy.RUNTIME)
     private static @interface ObjectAnnotationArray {
 
         ObjectString[] value();
+    }
+
+    /**
+     * @version 2011/12/13 13:20:56
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    private static @interface ObjectEnumArray {
+
+        RetentionPolicy[] value();
     }
 
     /**
