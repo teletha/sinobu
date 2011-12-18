@@ -23,7 +23,7 @@ import org.junit.Test;
 /**
  * @version 2011/12/19 0:50:10
  */
-public class MethodHash {
+public class OverloadMethodHash {
 
     @Test
     public void hash() throws Exception {
