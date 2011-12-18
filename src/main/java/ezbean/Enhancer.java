@@ -256,8 +256,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
             // Write annotations
             for (Annotation annotation : entry.getValue()) {
                 annotate(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
-                // meta(mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true),
-                // annotation);
             }
 
             // Write code
