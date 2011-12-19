@@ -332,8 +332,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /**
      * <p>
-     * Make the {@link Map} which has any key be recognized to the module unloading event and
-     * disposes the key which is associated with the module automatically.
+     * Make the {@link Map} which has {@link Class} key be recognized to the module unloading event
+     * and disposes the key which is associated with the module automatically.
      * </p>
      * <p>
      * This method has same syntax of {@link Collections#synchronizedMap(Map)}.
@@ -342,7 +342,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param map A target {@link Map} object to be aware of module unloading event.
      * @return The given {@link Map} object.
      */
-    public static <M extends Map> M aware(M map) {
+    public static <M extends Map<Class, ?>> M aware(M map) {
         // We don't need to check whether the given map is already passed or not.
         // Because this method will be not called so frequently and duplicated item
         // will rise no problem except for amount of memory usage.
