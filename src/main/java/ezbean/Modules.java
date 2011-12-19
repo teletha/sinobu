@@ -74,7 +74,7 @@ class Modules implements ClassListener {
      * @see ezbean.ClassListener#load(java.lang.Class)
      */
     public void load(Class clazz) {
-        if (clazz != Modules.class && clazz != Module.class) {
+        if (clazz != Modules.class) {
             Object[] types = {I.make(clazz), Object.class};
             Class[] params = ClassUtil.getParameter(clazz, ClassListener.class);
 

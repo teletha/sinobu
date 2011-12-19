@@ -44,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * only one thread at a time.
  * </p>
  * <p>
- * Implementation of {@link Listeners} that uses an {@link java.util.List} to store the values for a
+ * Implementation of {@link Cache} that uses an {@link java.util.List} to store the values for a
  * given key. A {@link ConcurrentHashMap} associates each key with an {@link CopyOnWriteArrayList}
  * of values.
  * </p>
@@ -63,7 +63,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version 2010/02/19 2:30:56
  */
 @SuppressWarnings("serial")
-class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
+class Cache<K, V> extends ConcurrentHashMap<K, List<V>> {
 
     /**
      * <p>
@@ -124,7 +124,7 @@ class Listeners<K, V> extends ConcurrentHashMap<K, List<V>> {
      * </p>
      * <p>
      * This method prohibits duplicates, and storing a key-value pair that's already in the
-     * {@link Listeners} has no effect.
+     * {@link Cache} has no effect.
      * </p>
      * 
      * @param key A key to store in the multimap.

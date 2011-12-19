@@ -17,14 +17,13 @@ package ezbean;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 
 /**
  * <p>
  * This is generic method interceptor.
  * </p>
  * 
- * @version 2011/12/11 19:57:33
+ * @version 2011/12/19 2:20:56
  */
 public class Interceptor<P extends Annotation> implements Extensible {
 
@@ -87,18 +86,18 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * @param parames A current method parameters.
      * @param annotations A interceptable annotation list.
      */
-    public static Object invoke(MethodHandle method, Object that, Object[] params, List<Annotation> annotations) {
+    public static Object invoke(MethodHandle method, Object that, Object[] params, Annotation[] annotations) {
         Interceptor current = new Interceptor();
         current.method = method;
         current.that = that;
 
-        for (int i = annotations.size() - 1; 0 <= i; --i) {
-            Interceptor interceptor = I.find(Interceptor.class, annotations.get(i).annotationType());
+        for (int i = annotations.length - 1; 0 <= i; --i) {
+            Interceptor interceptor = I.find(Interceptor.class, annotations[i].annotationType());
 
             if (interceptor != null) {
                 interceptor.that = that;
                 interceptor.parent = current;
-                interceptor.annotation = annotations.get(i);
+                interceptor.annotation = annotations[i];
 
                 current = interceptor;
             }

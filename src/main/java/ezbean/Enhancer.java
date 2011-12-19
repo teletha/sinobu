@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -161,7 +160,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
         // -----------------------------------------------------------------------------------
         // Collect Annotation Information
         // -----------------------------------------------------------------------------------
-        Listeners<Method, Annotation> map = new Listeners();
+        Cache<Method, Annotation> map = new Cache();
 
         for (Class clazz : ClassUtil.getTypes(model.type)) {
             for (Method method : clazz.getDeclaredMethods()) {
@@ -195,65 +194,59 @@ public class Enhancer extends ClassVisitor implements Extensible {
             }
         }
 
-        int counter = 0;
-
-        for (; counter < map.size();) {
-            FieldVisitor fv = visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "a".concat(String.valueOf(counter++)), "Ljava/util/List;", null, null);
-            fv.visitEnd();
-        }
-
         // -----------------------------------------------------------------------------------
         // Define Annotation Pool
         // -----------------------------------------------------------------------------------
         if (map.size() != 0) {
+            visitField(ACC_PRIVATE + ACC_STATIC, "pool", "Ljava/util/Map;", null, null).visitEnd();
+
+            Label end = new Label();
+            Label loop = new Label();
+
             mv = visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
             mv.visitCode();
-            Label start = new Label();
-            Label end = new Label();
-            Label error = new Label();
-            mv.visitTryCatchBlock(start, end, error, "java/lang/Exception");
-            mv.visitLabel(start);
-
-            counter = 0;
-
-            for (Method method : map.keySet()) {
-                mv.visitLdcInsn(Type.getType(method.getDeclaringClass()));
-                mv.visitLdcInsn(method.getName());
-
-                Class[] params = method.getParameterTypes();
-                mv.visitIntInsn(BIPUSH, params.length);
-                mv.visitTypeInsn(ANEWARRAY, "java/lang/Class");
-
-                for (int i = 0; i < params.length; i++) {
-                    mv.visitInsn(DUP);
-                    mv.visitIntInsn(BIPUSH, i);
-
-                    if (params[i].isPrimitive()) {
-                        mv.visitFieldInsn(GETSTATIC, ClassUtil.wrap(params[i]).getName().replace('.', '/'), "TYPE", "Ljava/lang/Class;");
-                    } else {
-                        mv.visitLdcInsn(Type.getType(params[i]));
-                    }
-                    mv.visitInsn(AASTORE);
-                }
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethod", "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
-                mv.visitMethodInsn(INVOKESTATIC, "ezbean/model/ClassUtil", "getAnnotation", "(Ljava/lang/reflect/Method;)Ljava/util/List;");
-                mv.visitFieldInsn(PUTSTATIC, className, "a".concat(String.valueOf(counter++)), "Ljava/util/List;");
-            }
+            mv.visitTypeInsn(NEW, "java/util/HashMap");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V");
+            mv.visitFieldInsn(PUTSTATIC, className, "pool", "Ljava/util/Map;");
+            mv.visitLdcInsn(Type.getType("L" + className + ";"));
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;");
+            mv.visitInsn(DUP);
+            mv.visitVarInsn(ASTORE, 3);
+            mv.visitInsn(ARRAYLENGTH);
+            mv.visitVarInsn(ISTORE, 2);
+            mv.visitInsn(ICONST_0);
+            mv.visitVarInsn(ISTORE, 1);
             mv.visitJumpInsn(GOTO, end);
-            mv.visitLabel(error);
-            mv.visitFrame(F_SAME1, 0, null, 1, new Object[] {"java/lang/Exception"});
+            mv.visitLabel(loop);
+            mv.visitVarInsn(ALOAD, 3);
+            mv.visitVarInsn(ILOAD, 1);
+            mv.visitInsn(AALOAD);
             mv.visitVarInsn(ASTORE, 0);
+            mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getName", "()Ljava/lang/String;");
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;");
+            mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;");
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;");
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+            mv.visitInsn(POP);
+            mv.visitIincInsn(1, 1); // increment counter
             mv.visitLabel(end);
+            mv.visitVarInsn(ILOAD, 1);
+            mv.visitVarInsn(ILOAD, 2);
+            mv.visitJumpInsn(IF_ICMPLT, loop);
             mv.visitInsn(RETURN);
-            mv.visitMaxs(0, 0);
+            mv.visitMaxs(5, 4);
             mv.visitEnd();
         }
 
         // -----------------------------------------------------------------------------------
         // Define Interceptable Methods
         // -----------------------------------------------------------------------------------
-        counter = 0;
-
         for (Entry<Method, List<Annotation>> entry : map.entrySet()) {
             Method method = entry.getKey();
             Type methodType = Type.getType(method);
@@ -262,9 +255,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
 
             // Write annotations
             for (Annotation annotation : entry.getValue()) {
-                annotation(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
-                // meta(mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true),
-                // annotation);
+                annotate(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
             }
 
             // Write code
@@ -293,10 +284,13 @@ public class Enhancer extends ClassVisitor implements Extensible {
             }
 
             // Fourth parameter : Pass annotation information
-            mv.visitFieldInsn(GETSTATIC, className, "a".concat(String.valueOf(counter++)), "Ljava/util/List;");
+            mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
+            mv.visitLdcInsn(method.getName().concat(Arrays.toString(method.getParameterTypes())));
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+            mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
 
             // Invoke interceptor method
-            mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;Ljava/util/List;)Ljava/lang/Object;");
+            mv.visitMethodInsn(INVOKESTATIC, "ezbean/Interceptor", "invoke", "(Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;");
             cast(method.getReturnType());
             mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
             mv.visitMaxs(0, 0); // compute by ASM
@@ -311,13 +305,13 @@ public class Enhancer extends ClassVisitor implements Extensible {
 
     /**
      * <p>
-     * Helper method to write annotation.
+     * Helper method to write annotation code.
      * </p>
      * 
-     * @param annotation
-     * @param visitor
+     * @param annotation An annotation you want to write.
+     * @param visitor An annotation target.
      */
-    private void annotation(Annotation annotation, AnnotationVisitor visitor) {
+    protected final void annotate(Annotation annotation, AnnotationVisitor visitor) {
         // For access non-public annotation class, use "getDeclaredMethods" instead of "getMethods".
         for (Method method : annotation.annotationType().getDeclaredMethods()) {
             method.setAccessible(true);
@@ -334,7 +328,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
                     visitor.visitEnum(method.getName(), Type.getDescriptor(clazz), ((Enum) value).name());
                 } else if (clazz.isAnnotation()) {
                     // Annotation
-                    annotation((Annotation) value, visitor.visitAnnotation(method.getName(), Type.getDescriptor(clazz)));
+                    annotate((Annotation) value, visitor.visitAnnotation(method.getName(), Type.getDescriptor(clazz)));
                 } else if (clazz.isArray()) {
                     // Array
                     clazz = clazz.getComponentType();
@@ -343,7 +337,7 @@ public class Enhancer extends ClassVisitor implements Extensible {
                     for (int i = 0; i < Array.getLength(value); i++) {
                         if (clazz.isAnnotation()) {
                             // Annotation Array
-                            annotation((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
+                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
                         } else if (clazz == Class.class) {
                             // Class Array
                             array.visit(null, Type.getType((Class) Array.get(value, i)));
@@ -365,33 +359,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
             }
         }
         visitor.visitEnd();
-    }
-
-    /**
-     * <p>
-     * Helper method to write method invocation code for property accessor.
-     * </p>
-     * 
-     * @param method A target property accessor.
-     * @param type A invocation type.
-     */
-    protected final void write(Method method, int type) {
-        Class[] params = method.getParameterTypes();
-        Class returnType = method.getReturnType();
-
-        mv.visitVarInsn(ALOAD, 0);
-
-        // Write method invocation.
-        for (int i = 0; i < params.length; i++) {
-            mv.visitVarInsn(ALOAD, 2);
-            cast(params[i]);
-        }
-        mv.visitMethodInsn(type, type == INVOKESPECIAL ? modelType.getInternalName() : className, method.getName(), Type.getMethodDescriptor(method));
-
-        // write return type.
-        wrap(returnType);
-        if (returnType == Void.TYPE) mv.visitInsn(ACONST_NULL);
-        mv.visitInsn(ARETURN);
     }
 
     /**
@@ -429,23 +396,6 @@ public class Enhancer extends ClassVisitor implements Extensible {
             Type wrapper = Type.getType(ClassUtil.wrap(clazz));
             mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type.getType(clazz)
                     .getDescriptor() + ")" + wrapper.getDescriptor());
-        }
-    }
-
-    /**
-     * Helper method to make field operation.
-     * 
-     * @param operation
-     * @param type
-     */
-    protected final void field(int operation, Type type, String name) {
-        if (operation == NEW) {
-            visitField(ACC_PUBLIC | ACC_TRANSIENT, name, type.getDescriptor(), null, null).visitEnd();
-        } else {
-            if (operation == GETFIELD) {
-                mv.visitVarInsn(ALOAD, 0); // load 'this' variable
-            }
-            mv.visitFieldInsn(operation, className, name, type.getDescriptor());
         }
     }
 }
