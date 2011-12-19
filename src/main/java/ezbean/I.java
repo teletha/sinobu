@@ -240,10 +240,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = I.aware(new ConcurrentHashMap<Class, Lifestyle>());
 
     /** The mapping from extension point to extensions. */
-    private static final Listeners<Class, Class> extensions = new Listeners();
+    private static final Cache<Class, Class> extensions = new Cache();
 
     /** The mapping from extension point to assosiated extension mapping. */
-    private static final Listeners<Integer, Class> keys = new Listeners();
+    private static final Cache<Integer, Class> keys = new Cache();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -332,8 +332,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /**
      * <p>
-     * Make the {@link Map} which has any key be recognized to the module unloading event and
-     * disposes the key which is associated with the module automatically.
+     * Make the {@link Map} which has {@link Class} key be recognized to the module unloading event
+     * and disposes the key which is associated with the module automatically.
      * </p>
      * <p>
      * This method has same syntax of {@link Collections#synchronizedMap(Map)}.
@@ -342,7 +342,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param map A target {@link Map} object to be aware of module unloading event.
      * @return The given {@link Map} object.
      */
-    public static <M extends Map> M aware(M map) {
+    public static <M extends Map<Class, ?>> M aware(M map) {
         // We don't need to check whether the given map is already passed or not.
         // Because this method will be not called so frequently and duplicated item
         // will rise no problem except for amount of memory usage.
