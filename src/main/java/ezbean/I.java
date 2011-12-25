@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -168,7 +167,6 @@ import ezbean.xml.XMLWriter;
  * for example.
  * </p>
  * 
- * @see ServiceLoader
  * @version 2011/03/31 17:38:41
  */
 public class I implements ClassListener<Extensible>, ThreadFactory {
@@ -767,7 +765,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             }
 
             // Enhance the actual model class if needed.
-            ClassLoader loader = model.type.getClassLoader();
+            ClassLoader loader = actualClass.getClassLoader();
 
             if (!(loader instanceof Module)) {
                 loader = I.$loader;
@@ -797,7 +795,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             if (lifestyle == null) {
                 // If the actual model class doesn't provide its lifestyle explicitly, we use
                 // Prototype lifestyle which is default lifestyle in Ezbean.
-                Manageable manageable = (Manageable) model.type.getAnnotation(Manageable.class);
+                Manageable manageable = (Manageable) actualClass.getAnnotation(Manageable.class);
 
                 // Create new lifestyle for the actual model class
                 lifestyle = make(manageable == null ? Prototype.class : manageable.lifestyle());
@@ -1282,8 +1280,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             return (M) input;
         }
 
-        Codec inputCodec = inputModel.getCodec();
-        Codec<M> outputCodec = outputModel.getCodec();
+        Codec inputCodec = inputModel.codec;
+        Codec<M> outputCodec = outputModel.codec;
 
         // check whether each model are attribute model or not
         if (inputCodec == null && outputCodec == null) {

@@ -93,7 +93,7 @@ class XMLIn extends XMLScanner {
             Object object = null;
 
             // check attribute model
-            Codec codec = property.model.getCodec();
+            Codec codec = property.model.codec;
 
             if (codec != null) {
                 String value = attributes.getValue("value");
@@ -139,7 +139,7 @@ class XMLIn extends XMLScanner {
                 // ignore deprecated property
                 if (property != null) {
                     // restore a property value form an attribute value
-                    Codec codec = property.model.getCodec();
+                    Codec codec = property.model.codec;
 
                     if (codec != null) {
                         state.model.set(state.object, property, codec.decode(attributes.getValue(i)));

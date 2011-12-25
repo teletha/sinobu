@@ -64,7 +64,7 @@ public class Property implements Comparable<Property> {
      * @return A result.
      */
     public boolean isAttribute() {
-        return model.getCodec() != null || model.type.isArray();
+        return model.codec != null || model.type.isArray();
     }
 
     /**
@@ -74,19 +74,6 @@ public class Property implements Comparable<Property> {
      */
     public boolean isTransient() {
         return type;
-    }
-
-    /**
-     * <p>
-     * Utility method to retrieve an accessor method.
-     * </p>
-     * 
-     * @param setter If this is true, return the setter name. Otherwise getter name.
-     * @return An accessor name. <code>null</code> will be returned if the suitable accessor method
-     *         is not found.
-     */
-    public Method getAccessor(boolean setter) {
-        return setter ? accessors[1] : accessors[0];
     }
 
     /**

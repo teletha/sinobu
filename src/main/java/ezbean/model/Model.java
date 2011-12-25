@@ -66,7 +66,7 @@ import ezbean.I;
 public class Model {
 
     /** The model repository. */
-    static final Map<Class, Model> models = I.aware(new ConcurrentHashMap());
+    private static final Map<Class, Model> models = I.aware(new ConcurrentHashMap());
 
     /** The repository of built-in codecs. */
     private static final ArrayList<Class> codecs = new ArrayList();
@@ -107,7 +107,7 @@ public class Model {
     public final List<Property> properties;
 
     /** The built-in codec. */
-    private Codec codec = null;
+    public final Codec codec;
 
     // public final List<Method> intercepts = new ArrayList();
 
@@ -129,7 +129,7 @@ public class Model {
         models.put(type, this);
 
         // search from built-in codecs
-        if (codecs.contains(type) || type.isEnum()) codec = new Codec(type);
+        codec = codecs.contains(type) || type.isEnum() ? new Codec(type) : I.find(Codec.class, type);
 
         // examine all methods without private, final, static or native
         Map<String, Method[]> candidates = new HashMap();
@@ -240,7 +240,7 @@ public class Model {
      */
     public Property getProperty(String propertyIName) {
         // check whether this model is attribute or not.
-        if (getCodec() == null) {
+        if (codec == null) {
             for (Property property : properties) {
                 if (property.name.equals(propertyIName)) {
                     return property;
@@ -250,17 +250,6 @@ public class Model {
 
         // API definition
         return null;
-    }
-
-    /**
-     * <p>
-     * Find the {@link Codec} for this model.
-     * </p>
-     * 
-     * @return A suitable codec or <code>null</code>.
-     */
-    public Codec getCodec() {
-        return codec != null ? codec : I.find(Codec.class, type);
     }
 
     /**
@@ -315,7 +304,7 @@ public class Model {
      */
     public void walk(Object object, PropertyWalker walker) {
         // check whether this model is attribute or not.
-        if (walker != null && getCodec() == null) {
+        if (walker != null && codec == null) {
             for (Property property : properties) {
                 Object value = get(object, property);
 

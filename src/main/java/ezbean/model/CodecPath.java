@@ -16,10 +16,11 @@
 package ezbean.model;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import ezbean.I;
 
 /**
- * @version 2011/03/09 22:28:51
+ * @version 2011/12/25 17:29:44
  */
 class CodecPath extends Codec<Path> {
 
@@ -36,6 +37,6 @@ class CodecPath extends Codec<Path> {
      */
     @Override
     public Path decode(String value) {
-        return Paths.get(value);
+        return I.locate(value);
     }
 }

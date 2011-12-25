@@ -25,7 +25,7 @@ import java.util.Date;
  * Codec for {@link Date}.
  * </p>
  * 
- * @version 2008/11/17 3:25:38
+ * @version 2011/12/25 17:29:11
  */
 class CodecDate extends Codec<Date> {
 
@@ -43,7 +43,7 @@ class CodecDate extends Codec<Date> {
         try {
             return format.parse(value);
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Unable to parse the date.'" + value + "'", e);
+            throw new IllegalArgumentException(e);
         }
     }
 

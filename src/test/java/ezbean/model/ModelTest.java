@@ -160,7 +160,7 @@ public class ModelTest {
         assert Map.class == model.type;
         assert 0 == model.properties.size();
         assert true == model.isCollection();
-        assert model.getCodec() == null;
+        assert model.codec == null;
 
         property = model.getProperty("test");
         assert property != null;
@@ -204,7 +204,7 @@ public class ModelTest {
         assert Map.class == model.type;
         assert 0 == model.properties.size();
         assert true == model.isCollection();
-        assert model.getCodec() == null;
+        assert model.codec == null;
 
         property = model.getProperty("1");
         assert property != null;
@@ -230,7 +230,7 @@ public class ModelTest {
         assert Map.class == model.type;
         assert 0 == model.properties.size();
         assert !model.isCollection();
-        assert model.getCodec() == null;
+        assert model.codec == null;
     }
 
     /**
