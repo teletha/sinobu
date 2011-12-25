@@ -46,18 +46,10 @@ public abstract class ModelWalker implements PropertyWalker {
         Model model = Model.load(node.getClass());
 
         // traverse all nodes
-        traverse(model, new Property(model, model.name), node);
+        walk(model, new Property(model, model.name), node);
 
         // clear walker information
         nodes.clear();
-    }
-
-    /**
-     * @see ezbean.model.PropertyWalker#walk(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object)
-     */
-    public final void walk(Model model, Property property, Object node) {
-        traverse(model, property, node);
     }
 
     /**
@@ -71,8 +63,10 @@ public abstract class ModelWalker implements PropertyWalker {
      * @param property An arc in object graph. This value must not be <code>null</code>. If the
      *            visited node is root, this value will be a object property of the root node.
      * @param node A current node that {@link ModelWalker} arrives at.
+     * @see ezbean.model.PropertyWalker#walk(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
      */
-    private void traverse(Model model, Property property, Object node) {
+    public final void walk(Model model, Property property, Object node) {
         if (!property.isTransient()) {
             // enter node
             enter(model, property, node);
