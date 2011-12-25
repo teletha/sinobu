@@ -42,7 +42,7 @@ public class ModelWalkerTest {
         Collector collector = new Collector();
 
         // traverse
-        collector.traverse(person);
+        collector.walk(person);
 
         // assert
         assert 2 == collector.enterNodes.size();
@@ -64,7 +64,7 @@ public class ModelWalkerTest {
         Collector collector = new Collector();
 
         // traverse
-        collector.traverse(person);
+        collector.walk(person);
 
         // assert
         assert 4 == collector.enterNodes.size();
@@ -98,14 +98,14 @@ public class ModelWalkerTest {
         Collector collector = new Collector();
 
         // traverse
-        collector.traverse(student);
+        collector.walk(student);
 
         // assert
         assert 8 == collector.enterNodes.size();
 
         // reuse
         collector.enterNodes.clear();
-        collector.traverse(student);
+        collector.walk(student);
 
         // assert
         assert 8 == collector.enterNodes.size();

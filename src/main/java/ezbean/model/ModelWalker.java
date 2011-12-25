@@ -42,7 +42,7 @@ public abstract class ModelWalker implements PropertyWalker {
      * 
      * @param node A point of departure.
      */
-    public void traverse(Object node) {
+    public void walk(Object node) {
         Model model = Model.load(node.getClass());
 
         // traverse all nodes

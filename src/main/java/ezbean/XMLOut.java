@@ -66,13 +66,13 @@ class XMLOut extends ModelWalker {
     }
 
     /**
-     * @see ezbean.model.ModelWalker#traverse(java.lang.Object)
+     * @see ezbean.model.ModelWalker#walk(java.lang.Object)
      */
     @Override
-    public void traverse(Object node) {
-        super.traverse(node);
+    public void walk(Object node) {
+        super.walk(node);
         mode = false;
-        super.traverse(node);
+        super.walk(node);
     }
 
     /**
