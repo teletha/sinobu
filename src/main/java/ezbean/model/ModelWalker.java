@@ -72,26 +72,19 @@ public abstract class ModelWalker implements PropertyWalker {
      *            visited node is root, this value will be a object property of the root node.
      * @param node A current node that {@link ModelWalker} arrives at.
      */
-    private Object traverse(Model model, Property property, Object node) {
-        if (property.isTransient()) {
-            return node;
+    private void traverse(Model model, Property property, Object node) {
+        if (!property.isTransient()) {
+            // enter node
+            enter(model, property, node);
+
+            if (node != null) {
+                // check cyclic node
+                if (nodes.add(node)) property.model.walk(node, this);
+            }
+
+            // leave node
+            leave(model, property, node);
         }
-        // enter node
-        enter(model, property, node);
-
-        // traverse
-        Object value = node;
-
-        if (node != null) {
-            // check cyclic node
-            if (nodes.add(node)) property.model.walk(value, this);
-        }
-
-        // leave node
-        leave(model, property, node);
-
-        // API definition
-        return value;
     }
 
     /**
