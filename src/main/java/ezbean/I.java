@@ -1441,7 +1441,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             if (json) {
                 // traverse configuration as json
-                new JSON(output).traverse(input);
+                new JSON(output).walk(input);
             } else {
                 XMLWriter xml = new XMLWriter(output);
 
@@ -1450,7 +1450,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 xml.startPrefixMapping("ez", URI);
 
                 // traverse configuration as xml
-                new XMLOut(xml).traverse(input);
+                new XMLOut(xml).walk(input);
 
                 xml.endDocument();
                 // xml end

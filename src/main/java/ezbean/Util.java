@@ -29,7 +29,7 @@ import ezbean.model.PropertyWalker;
  * </p>
  * <ul>
  * <li>State recorder for XML serialization ({@link XMLIn})</li>
- * <li>{@link PropertyListener} implementation for {@link I#transform(Object, Class)}</li>
+ * <li>{@link PropertyWalker} implementation for {@link I#transform(Object, Class)}</li>
  * <li>{@link Reader} implementation for {@link I#read(Readable, Object)}</li>
  * </ul>
  * 
@@ -64,8 +64,7 @@ final class Util extends Reader implements PropertyWalker {
     }
 
     /**
-     * @see ezbean.model.PropertyWalker#walk(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object)
+     * {@inheritDoc}
      */
     public void walk(Model model, Property property, Object node) {
         Property dest = this.model.getProperty(property.name);
