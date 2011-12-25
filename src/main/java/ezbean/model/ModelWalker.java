@@ -15,9 +15,7 @@
  */
 package ezbean.model;
 
-import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,29 +46,10 @@ public abstract class ModelWalker implements PropertyWalker {
         Model model = Model.load(node.getClass());
 
         // traverse all nodes
-        traverse(model, new Property(model, model.name), node, null);
+        traverse(model, new Property(model, model.name), node);
 
         // clear walker information
         nodes.clear();
-    }
-
-    /**
-     * <p>
-     * Traverse this object graph and process each object, then retrieve the object in a point of
-     * arraival. If the specified property path indicates nonexistent property, <code>null</code>
-     * will be returned.
-     * </p>
-     * 
-     * @param node A point of departure.
-     * @param path A list of property paths to traverse.
-     * @return A point of arrival.
-     * @throws NullPointerException If the specified path is <code>null</code>.
-     */
-    public Object traverse(Object node, List<String> path) {
-        Model model = Model.load(node.getClass());
-
-        // start traversing along the path
-        return traverse(model, new Property(model, model.name), node, path.iterator());
     }
 
     /**
@@ -78,7 +57,7 @@ public abstract class ModelWalker implements PropertyWalker {
      *      java.lang.Object)
      */
     public final void walk(Model model, Property property, Object node) {
-        traverse(model, property, node, null);
+        traverse(model, property, node);
     }
 
     /**
@@ -92,9 +71,8 @@ public abstract class ModelWalker implements PropertyWalker {
      * @param property An arc in object graph. This value must not be <code>null</code>. If the
      *            visited node is root, this value will be a object property of the root node.
      * @param node A current node that {@link ModelWalker} arrives at.
-     * @param path A iterator of property names.
      */
-    private Object traverse(Model model, Property property, Object node, Iterator<String> path) {
+    private Object traverse(Model model, Property property, Object node) {
         if (property.isTransient()) {
             return node;
         }
@@ -105,21 +83,8 @@ public abstract class ModelWalker implements PropertyWalker {
         Object value = node;
 
         if (node != null) {
-            if (path == null) {
-                // check cyclic node
-                if (nodes.add(node)) property.model.walk(value, this);
-            } else {
-                if (path.hasNext()) {
-                    Model nextModel = property.model;
-                    Property nextProperty = nextModel.getProperty(path.next());
-
-                    if (nextProperty == null) {
-                        value = null;
-                    } else {
-                        value = traverse(nextModel, nextProperty, nextModel.get(node, nextProperty), path);
-                    }
-                }
-            }
+            // check cyclic node
+            if (nodes.add(node)) property.model.walk(value, this);
         }
 
         // leave node

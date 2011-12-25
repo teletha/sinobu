@@ -16,21 +16,17 @@
 package ezbean.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 
 import ezbean.I;
 import ezbean.sample.bean.Person;
 import ezbean.sample.bean.School;
-import ezbean.sample.bean.StringMapProperty;
 import ezbean.sample.bean.Student;
 
 /**
- * @version 2011/03/22 16:58:45
+ * @version 2011/12/26 0:11:11
  */
 public class ModelWalkerTest {
 
@@ -38,7 +34,7 @@ public class ModelWalkerTest {
      * Test simple traverse.
      */
     @Test
-    public void testTraverse1() throws Exception {
+    public void traverse1() throws Exception {
         // root
         Person person = I.make(Person.class);
 
@@ -57,7 +53,7 @@ public class ModelWalkerTest {
      * Test simple traverse.
      */
     @Test
-    public void testTraverse2() throws Exception {
+    public void traverse2() throws Exception {
         // root
         Person person = I.make(Person.class);
         person.setFirstName("Mizuho");
@@ -81,78 +77,10 @@ public class ModelWalkerTest {
     }
 
     /**
-     * Test traverse with property path.
-     */
-    @Test
-    public void testTraverseWithRoute01() throws Exception {
-        // root
-        Person person = I.make(Person.class);
-        person.setFirstName("Sion");
-        person.setLastName("Jujo");
-        person.setAge(19);
-
-        // result collector
-        Collector collector = new Collector();
-
-        // traverse
-        collector.traverse(person, Arrays.asList("age"));
-
-        // assert
-        assert 2 == collector.enterNodes.size();
-        assert 2 == collector.leaveNodes.size();
-    }
-
-    /**
-     * Test without listeners.
-     */
-    @Test
-    public void testTraverseWitthoutListener1() throws Exception {
-        Person person = I.make(Person.class);
-        person.setFirstName("Itiko");
-        person.setLastName("Takasima");
-        person.setAge(-1);
-
-        Walker walker = new Walker();
-        assert "Itiko" == walker.traverse(person, Arrays.asList("firstName"));
-        assert "Takasima" == walker.traverse(person, Arrays.asList("lastName"));
-        assert walker.traverse(person, Arrays.asList("age")).equals(-1);
-    }
-
-    /**
-     * Test unexpected property name.
-     */
-    @Test
-    public void testTraverseWithUnexpectedPropertyName() throws Exception {
-        Person person = I.make(Person.class);
-
-        Walker walker = new Walker();
-        assert null == walker.traverse(person, Arrays.asList("unexpected"));
-    }
-
-    /**
-     * Test without listeners.
-     */
-    @Test
-    public void testTraverseWitthoutListener2() throws Exception {
-        Map map = new HashMap();
-        map.put("item1", "1");
-        map.put("item2", "2");
-        map.put("item3", "3");
-
-        StringMapProperty stringMap = new StringMapProperty();
-        stringMap.setMap(map);
-
-        Walker walker = new Walker();
-        assert "1" == walker.traverse(stringMap, Arrays.asList("map", "item1"));
-        assert "2" == walker.traverse(stringMap, Arrays.asList("map", "item2"));
-        assert "3" == walker.traverse(stringMap, Arrays.asList("map", "item3"));
-    }
-
-    /**
      * Reuse {@link ModelWalker} with cyclick nodes.
      */
     @Test
-    public void testReuse() {
+    public void reusablility() {
         School school = I.make(School.class);
         school.setName("OtoTatibana");
 
@@ -237,30 +165,6 @@ public class ModelWalkerTest {
         @Override
         public String toString() {
             return "Info [" + model.name + ", " + property.name + ", " + value + "]";
-        }
-    }
-
-    /**
-     * @version 2010/01/10 8:35:41
-     */
-    private static class Walker extends ModelWalker {
-
-        /**
-         * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
-         *      java.lang.Object)
-         */
-        @Override
-        protected void enter(Model model, Property property, Object node) {
-            // do nothing
-        }
-
-        /**
-         * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
-         *      java.lang.Object)
-         */
-        @Override
-        protected void leave(Model model, Property property, Object node) {
-            // do nothing
         }
     }
 }
