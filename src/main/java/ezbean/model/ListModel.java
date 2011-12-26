@@ -18,6 +18,8 @@ package ezbean.model;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import ezbean.PropertyWalker;
+
 /**
  * @version 2009/07/22 23:37:56
  */
@@ -96,7 +98,7 @@ class ListModel extends Model {
     }
 
     /**
-     * @see ezbean.model.Model#walk(java.lang.Object, ezbean.model.PropertyWalker)
+     * @see ezbean.model.Model#walk(java.lang.Object, ezbean.PropertyWalker)
      */
     @Override
     public void walk(Object object, PropertyWalker walker) {

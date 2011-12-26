@@ -42,6 +42,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ezbean.I;
+import ezbean.PropertyWalker;
 
 /**
  * <p>

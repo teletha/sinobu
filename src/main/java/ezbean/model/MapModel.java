@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import ezbean.I;
+import ezbean.PropertyWalker;
 
 /**
  * @version 2010/01/10 17:10:23
@@ -92,7 +93,7 @@ class MapModel extends Model {
     }
 
     /**
-     * @see ezbean.model.Model#walk(java.lang.Object, ezbean.model.PropertyWalker)
+     * @see ezbean.model.Model#walk(java.lang.Object, ezbean.PropertyWalker)
      */
     @Override
     public void walk(Object object, PropertyWalker walker) {

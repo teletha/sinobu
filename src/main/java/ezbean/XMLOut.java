@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.xml.sax.helpers.AttributesImpl;
 
 import ezbean.model.Model;
-import ezbean.model.ModelWalker;
 import ezbean.model.Property;
 import ezbean.xml.XMLWriter;
 
@@ -39,7 +38,7 @@ import ezbean.xml.XMLWriter;
  * 
  * @version 2010/12/14 0:23:59
  */
-class XMLOut extends ModelWalker {
+class XMLOut extends JSON {
 
     /** The content handler. */
     private final XMLWriter writer;
@@ -48,7 +47,7 @@ class XMLOut extends ModelWalker {
     private ConcurrentHashMap<Object, Integer> objects = new ConcurrentHashMap();
 
     /** The current traversing mode. */
-    private boolean mode = true;
+    boolean mode = true;
 
     /** The current stored node name. */
     private String name;
@@ -62,21 +61,12 @@ class XMLOut extends ModelWalker {
      * @param writer An actual XML writer.
      */
     XMLOut(XMLWriter writer) {
+        super(null);
         this.writer = writer;
     }
 
     /**
-     * @see ezbean.model.ModelWalker#walk(java.lang.Object)
-     */
-    @Override
-    public void walk(Object node) {
-        super.walk(node);
-        mode = false;
-        super.walk(node);
-    }
-
-    /**
-     * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
+     * @see ezbean.model.PropertyWalker#enter(ezbean.model.Model, ezbean.model.Property,
      *      java.lang.Object)
      */
     protected void enter(Model model, Property property, Object node) {
@@ -121,7 +111,7 @@ class XMLOut extends ModelWalker {
     }
 
     /**
-     * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
+     * @see ezbean.model.PropertyWalker#leave(ezbean.model.Model, ezbean.model.Property,
      *      java.lang.Object)
      */
     protected void leave(Model model, Property property, Object node) {

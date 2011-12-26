@@ -21,7 +21,6 @@ import java.nio.CharBuffer;
 
 import ezbean.model.Model;
 import ezbean.model.Property;
-import ezbean.model.PropertyWalker;
 
 /**
  * <p>

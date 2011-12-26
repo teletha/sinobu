@@ -53,7 +53,7 @@ public class Property implements Comparable<Property> {
      * @param model A model that this property belongs to.
      * @param name A property name.
      */
-    Property(Model model, String name) {
+    public Property(Model model, String name) {
         this.model = model;
         this.name = name;
     }
