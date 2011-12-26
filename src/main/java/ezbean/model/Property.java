@@ -38,9 +38,6 @@ public class Property implements Comparable<Property> {
     /** The human readable identifier of this property. */
     public final String name;
 
-    /** The machine readable identifier of this property. */
-    int id;
-
     /** The actual accessor methods. */
     Method[] accessors;
 

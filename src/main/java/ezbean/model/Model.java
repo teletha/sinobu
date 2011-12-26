@@ -223,11 +223,6 @@ public class Model {
         properties.trimToSize();
         Collections.sort(properties);
 
-        // reorder property index
-        for (int i = 0; i < properties.size(); i++) {
-            ((Property) properties.get(i)).id = i * 3;
-        }
-
         // exposed property list must be unmodifiable
         this.properties = Collections.unmodifiableList(properties);
     }
