@@ -1439,9 +1439,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // aquire lock
             lock.writeLock().lock();
 
+            Model model = Model.load(input.getClass());
+            Property property = new Property(model, model.name);
+
             if (json) {
                 // traverse configuration as json
-                new JSON(output).walk(input);
+                new JSON(output).walk(model, property, input);
             } else {
                 XMLWriter xml = new XMLWriter(output);
 
@@ -1450,7 +1453,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 xml.startPrefixMapping("ez", URI);
 
                 // traverse configuration as xml
-                new XMLOut(xml).walk(input);
+                XMLOut out = new XMLOut(xml);
+                out.walk(model, property, input);
+                out.mode = false;
+                out.nodes.clear();
+                out.walk(model, property, input);
 
                 xml.endDocument();
                 // xml end

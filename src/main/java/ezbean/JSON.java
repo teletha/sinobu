@@ -16,10 +16,11 @@
 package ezbean;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import ezbean.model.Model;
-import ezbean.model.ModelWalker;
 import ezbean.model.Property;
 
 /**
@@ -30,7 +31,10 @@ import ezbean.model.Property;
  * 
  * @version 2010/01/12 20:32:11
  */
-class JSON extends ModelWalker {
+class JSON implements PropertyWalker {
+
+    /** The record for traversed objects. */
+    final Set nodes = new LinkedHashSet();
 
     /** The charcter sequence for output as JSON. */
     private final Appendable out;
@@ -48,8 +52,40 @@ class JSON extends ModelWalker {
     }
 
     /**
-     * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object)
+     * <p>
+     * Traverse this object graph actually.
+     * </p>
+     * 
+     * @param model A object model of the base node that {@link PropertyWalker} started from. This
+     *            value must not be <code>null</code>. If the visited node is root, this value will
+     *            be a object model of the root node.
+     * @param property An arc in object graph. This value must not be <code>null</code>. If the
+     *            visited node is root, this value will be a object property of the root node.
+     * @param node A current node that {@link PropertyWalker} arrives at.
+     * @see ezbean.PropertyWalker#walk(ezbean.model.Model, ezbean.model.Property, java.lang.Object)
+     */
+    public final void walk(Model model, Property property, Object node) {
+        if (!property.isTransient()) {
+            // enter node
+            enter(model, property, node);
+
+            // check cyclic node
+            if (node != null && nodes.add(node)) property.model.walk(node, this);
+
+            // leave node
+            leave(model, property, node);
+        }
+    }
+
+    /**
+     * This method is called whenever the {@link PropertyWalker} visits a node in object graph.
+     * 
+     * @param model A object model of the base node that {@link PropertyWalker} started from. This
+     *            value must not be <code>null</code>. If the visited node is root, this value will
+     *            be a object model of the root node.
+     * @param property An arc in object graph. This value must not be <code>null</code>. If the
+     *            visited node is root, this value will be a object property of the root node.
+     * @param node A current node that {@link PropertyWalker} arrives at.
      */
     protected void enter(Model model, Property property, Object node) {
         try {
@@ -89,8 +125,14 @@ class JSON extends ModelWalker {
     }
 
     /**
-     * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object)
+     * This method is called whenever the {@link PropertyWalker} leaves a node in object graph.
+     * 
+     * @param model A object model of the base node that {@link PropertyWalker} started from. This
+     *            value must not be <code>null</code>. If the visited node is root, this value will
+     *            be a object model of the root node.
+     * @param property An arc in object graph. This value must not be <code>null</code>. If the
+     *            visited node is root, this value will be a object property of the root node.
+     * @param node A current node that {@link PropertyWalker} arrives at.
      */
     protected void leave(Model model, Property property, Object node) {
         try {
