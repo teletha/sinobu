@@ -20,12 +20,12 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
 import ezbean.scratchpad.Wildcard;
 import ezunit.AbstractMicroBenchmarkTest;
+import ezunit.BenchmarkCode;
 
 /**
  * @version 2011/02/19 14:15:17
@@ -36,14 +36,14 @@ public class WildcardBenchmark extends AbstractMicroBenchmarkTest {
 
     @Test
     public void wild() throws Exception {
-        benchmark(new Callable<Boolean>() {
+        benchmark(new BenchmarkCode() {
 
             private Wildcard wildcard = new Wildcard("**.java");
 
             /**
              * @see java.util.concurrent.Callable#call()
              */
-            public Boolean call() throws Exception {
+            public Boolean call() throws Throwable {
                 return wildcard.match(path.toString());
             }
         });
@@ -51,14 +51,14 @@ public class WildcardBenchmark extends AbstractMicroBenchmarkTest {
 
     @Test
     public void system() throws Exception {
-        benchmark(new Callable<Boolean>() {
+        benchmark(new BenchmarkCode() {
 
             private PathMatcher wildcard = FileSystems.getDefault().getPathMatcher("glob:*.java");
 
             /**
              * @see java.util.concurrent.Callable#call()
              */
-            public Boolean call() throws Exception {
+            public Boolean call() throws Throwable {
                 return wildcard.matches(path);
             }
         });

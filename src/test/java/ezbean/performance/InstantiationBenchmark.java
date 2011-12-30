@@ -15,13 +15,12 @@
  */
 package ezbean.performance;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
 import ezbean.I;
 import ezbean.sample.bean.Person;
 import ezunit.AbstractMicroBenchmarkTest;
+import ezunit.BenchmarkCode;
 
 /**
  * DOCUMENT.
@@ -32,12 +31,12 @@ public class InstantiationBenchmark extends AbstractMicroBenchmarkTest {
 
     @Test
     public void instantiate() {
-        benchmark(new Callable() {
+        benchmark(new BenchmarkCode() {
 
             /**
              * @see java.util.concurrent.Callable#call()
              */
-            public Object call() throws Exception {
+            public Object call() throws Throwable {
                 return I.make(Person.class);
             }
         });

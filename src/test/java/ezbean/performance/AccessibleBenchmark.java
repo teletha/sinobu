@@ -17,17 +17,18 @@ package ezbean.performance;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ezbean.I;
-import ezbean.model.Model;
-import ezbean.model.Property;
 import ezbean.sample.bean.Person;
 import ezunit.AbstractMicroBenchmarkTest;
+import ezunit.BenchmarkCode;
 
 /**
  * DOCUMENT.
@@ -40,43 +41,19 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
      * Normal access.
      */
     @Test
+    @Ignore
     public void method() {
-        benchmark(new Callable() {
+        benchmark(new BenchmarkCode() {
 
             private String value = "test";
 
             private Person person = I.make(Person.class);
 
             /**
-             * @see java.util.concurrent.Callable#call()
+             * {@inheritDoc}
              */
-            public Object call() throws Exception {
+            public Object call() throws Throwable {
                 person.setFirstName(value);
-                return person;
-            }
-        });
-    }
-
-    /**
-     * Direct access.
-     */
-    @Test
-    public void set() {
-        benchmark(new Callable() {
-
-            private Person person = I.make(Person.class);
-
-            private Model model = Model.load(Person.class);
-
-            private Property property = model.getProperty("firstName");
-
-            private String value = "test";
-
-            /**
-             * @see java.util.concurrent.Callable#call()
-             */
-            public Object call() throws Exception {
-                model.set(person, property, value);
                 return person;
             }
         });
@@ -87,7 +64,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
      */
     @Test
     public void reflection() {
-        benchmark(new Callable() {
+        benchmark(new BenchmarkCode() {
 
             private Person person = I.make(Person.class);
 
@@ -97,7 +74,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
 
             {
                 try {
-                    method = person.getClass().getDeclaredMethod("setFirstName", new Class[] {String.class});
+                    method = Person.class.getDeclaredMethod("setFirstName", new Class[] {String.class});
                     method.setAccessible(true);
                 } catch (SecurityException e) {
                     throw new RuntimeException(e);
@@ -107,9 +84,9 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
             }
 
             /**
-             * @see java.util.concurrent.Callable#call()
+             * {@inheritDoc}
              */
-            public Object call() throws Exception {
+            public Object call() throws Throwable {
                 method.invoke(person, param);
                 return person;
             }
@@ -121,7 +98,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
      */
     @Test
     public void methodHandle() {
-        benchmark(new Callable() {
+        benchmark(new BenchmarkCode() {
 
             private Person person = I.make(Person.class);
 
@@ -139,15 +116,48 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
             }
 
             /**
-             * @see java.util.concurrent.Callable#call()
+             * {@inheritDoc}
              */
-            public Object call() throws Exception {
+            public Object call() throws Throwable {
+                method.invoke(person, param);
+                return person;
+            }
+        });
+    }
+
+    /**
+     * MH access.
+     */
+    @Test
+    public void methodHandleExact() {
+        benchmark(new BenchmarkCode() {
+
+            private Person person = I.make(Person.class);
+
+            private MethodHandle method;
+
+            private String param = "test";
+
+            {
                 try {
-                    method.invokeExact(person, param);
-                    return person;
+                    Field field = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+                    field.setAccessible(true);
+                    Lookup lookup = (Lookup) field.get(null);
+
+                    MethodType type = MethodType.methodType(void.class, String.class);
+                    method = lookup.findVirtual(Person.class, "setFirstName", type);
+                    method = method.bindTo(person);
                 } catch (Throwable e) {
-                    throw I.quiet(e);
+                    throw new RuntimeException(e);
                 }
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public Object call() throws Throwable {
+                method.invoke(param);
+                return person;
             }
         });
     }
