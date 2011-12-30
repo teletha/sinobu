@@ -20,7 +20,6 @@ import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 import java.text.DecimalFormat;
-import java.util.concurrent.Callable;
 
 import ezbean.I;
 
@@ -68,7 +67,7 @@ public final class MicroBenchmark<T> {
     static final BigInteger G = new BigInteger("1000000000");
 
     /** The task to estimate execution time. */
-    private final Callable<T> task;
+    private final BenchmarkCode task;
 
     /** The frequency of measurement. */
     private final int frequency;
@@ -85,7 +84,7 @@ public final class MicroBenchmark<T> {
      * @param task A task to benchmark.
      * @param frequency A frequency of measurement.
      */
-    public MicroBenchmark(Callable<T> task) {
+    public MicroBenchmark(BenchmarkCode task) {
         this(task, 30);
     }
 
@@ -95,7 +94,7 @@ public final class MicroBenchmark<T> {
      * @param task A task to benchmark.
      * @param frequency A frequency of measurement.
      */
-    public MicroBenchmark(Callable<T> task, int frequency) {
+    public MicroBenchmark(BenchmarkCode task, int frequency) {
         this(task, frequency, 5);
     }
 
@@ -106,12 +105,12 @@ public final class MicroBenchmark<T> {
      * @param frequency A frequency of measurement.
      * @param warmup A time of JVM warmup. (unit: second)
      */
-    public MicroBenchmark(Callable<T> task, int frequency, int warmup) {
+    public MicroBenchmark(BenchmarkCode task, int frequency, int warmup) {
         this.task = task;
         this.frequency = frequency;
         this.warmup = warmup;
 
-        if (frequency < 10) {
+        if (frequency < 5) {
             fail("There is too few measurement number of times. (minimus is 10)");
         }
 
@@ -188,7 +187,7 @@ public final class MicroBenchmark<T> {
 
             // calculate execution time
             return new MeasurementResult(frequency, end - start, hash);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw I.quiet(e);
         }
     }
