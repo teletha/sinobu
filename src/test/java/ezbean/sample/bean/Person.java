@@ -15,6 +15,8 @@
  */
 package ezbean.sample.bean;
 
+import ezbean.sample.RuntimeAnnotation1;
+
 /**
  * @version 2009/04/12 16:26:19
  */
@@ -40,6 +42,7 @@ public class Person {
      * 
      * @param age The age value to set.
      */
+    @RuntimeAnnotation1
     public void setAge(int age) {
         this.age = age;
     }

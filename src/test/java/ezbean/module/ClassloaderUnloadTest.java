@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ezbean.I;
+import ezbean.sample.RuntimeAnnotation1;
 import ezunit.PrivateModule;
 
 /**
@@ -139,6 +140,7 @@ public class ClassloaderUnloadTest {
          * 
          * @return The name property.
          */
+        @RuntimeAnnotation1
         public String getName() {
             return name;
         }
