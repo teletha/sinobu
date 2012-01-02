@@ -16,16 +16,15 @@
 package ezbean.scratchpad;
 
 /**
+ * <pre>
  * TODO Continuation with bytecode enhance.
- * TODO GraphAware Collection.
  * TODO Bean XPath Access
  * TODO Beans Validation by Annotation
- * TODO Persistence API
- * TODO Integration Persistence and Configuration
- * TODO Bundle supoort? (i18n)
  * TODO Annotate the external class
  * TODO Create annotation implementation at runtime and use it
- *
+ * TODO Use Attach API to runtime class redefinition
+ *</pre>
+ * 
  * @version 2008/06/08 10:55:14
  */
 public class TODO {
