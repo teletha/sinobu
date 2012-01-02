@@ -33,7 +33,7 @@ public class SystemPackageTest {
     public void defineClassInCoreSystemPackage1() throws Exception {
         Date date = I.make(Date.class);
         assert date != null;
-        assert Date.class != date.getClass();
+        assert Date.class == date.getClass();
     }
 
     @Test

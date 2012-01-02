@@ -15,15 +15,18 @@
  */
 package ezbean;
 
+import static java.lang.reflect.Modifier.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
@@ -745,7 +748,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         // model class. If the actual model class is a concreate, we can use it directly.
         Class<M> actualClass = modelClass;
 
-        if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
+        if (((ABSTRACT | INTERFACE) & modifier) != 0) {
             // TODO model provider finding strategy
             // This strategy is decided at execution phase.
             actualClass = make(Modules.class).find(modelClass);
@@ -754,23 +757,51 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             modifier = actualClass.getModifiers();
         }
 
-        // We can obtain the model about the actual model class.
-        Model model = Model.load(actualClass);
+        // If this model is non-private or final class, we can extend it for interceptor mechanism.
+        if (((PRIVATE | FINAL) & modifier) == 0) {
+            Cache<Method, Annotation> interceptables = new Cache();
 
-        // If this model is non-accessible or final class, we can not extend it for bean
-        // enhancement. So we must throw some exception.
-        if (model.properties.size() != 0) {
-            if (((Modifier.PUBLIC | Modifier.PROTECTED) & modifier) == 0 || (Modifier.FINAL & modifier) != 0) {
-                throw new IllegalArgumentException(actualClass + " must be declared as public, protected, or non-final.");
+            for (Class clazz : ClassUtil.getTypes(actualClass)) {
+                for (Method method : clazz.getDeclaredMethods()) {
+                    // exclude the method which modifier is final, static, private or native
+                    if (((STATIC | PRIVATE | NATIVE | FINAL) & method.getModifiers()) != 0) {
+                        continue;
+                    }
+
+                    // exclude the method which is created by compiler
+                    if (method.isBridge() || method.isSynthetic()) {
+                        continue;
+                    }
+
+                    Annotation[] annotations = method.getAnnotations();
+
+                    if (annotations.length != 0) {
+                        // check method overriding
+                        for (Method candidate : interceptables.keySet()) {
+                            if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
+                                method = candidate; // detect overriding
+                                break;
+                            }
+                        }
+
+                        for (Annotation annotation : annotations) {
+                            if (!(annotation instanceof Deprecated)) {
+                                interceptables.push(method, annotation);
+                            }
+                        }
+                    }
+                }
             }
 
             // Enhance the actual model class if needed.
-            ClassLoader loader = actualClass.getClassLoader();
+            if (!interceptables.isEmpty()) {
+                ClassLoader loader = actualClass.getClassLoader();
 
-            if (!(loader instanceof Module)) {
-                loader = I.$loader;
+                if (!(loader instanceof Module)) {
+                    loader = I.$loader;
+                }
+                actualClass = ((Module) loader).define(actualClass, interceptables);
             }
-            actualClass = ((Module) loader).define(model);
         }
 
         // Construct dependency graph for the current thred.
