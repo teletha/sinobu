@@ -109,12 +109,12 @@ public class PathPatternMatchingTest {
     }
 
     @Test
-    public void mix() {
+    public void multiple() {
         assertCount(2, "**.txt", "!directory**");
     }
 
     @Test
-    public void mix2() {
+    public void deep() {
         assertCount(3, "directory1/**");
     }
 
@@ -139,8 +139,48 @@ public class PathPatternMatchingTest {
     }
 
     @Test
-    public void directoryPattern() throws Exception {
+    public void directoryPatternTopLevelPartialWildcard() throws Exception {
+        assertDirectoryCount(2, test02, "directory*");
+    }
+
+    @Test
+    public void directoryPatternTopLevelWildcard() throws Exception {
         assertDirectoryCount(2, test02, "*");
+    }
+
+    @Test
+    public void directoryPatternWildcard() throws Exception {
+        assertDirectoryCount(9, test02, "**");
+    }
+
+    @Test
+    public void directoryPattern() throws Exception {
+        assertDirectoryCount(1, test02, "directory1");
+    }
+
+    @Test
+    public void directoryPatternDeepWildcard() throws Exception {
+        assertDirectoryCount(2, test02, "**/child1");
+    }
+
+    @Test
+    public void directoryPatternWildcardRight() throws Exception {
+        assertDirectoryCount(2, test02, "**/d*");
+    }
+
+    @Test
+    public void directoryPatternWildcardLeft() throws Exception {
+        assertDirectoryCount(3, test02, "**/*2");
+    }
+
+    @Test
+    public void directoryPatternWildcardBoth() throws Exception {
+        assertDirectoryCount(3, test02, "**/*e*");
+    }
+
+    @Test
+    public void directoryPatternNegative() throws Exception {
+        assertDirectoryCount(1, test02, "!directory1/**");
     }
 
     /**
