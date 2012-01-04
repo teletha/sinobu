@@ -93,13 +93,14 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             ArrayList<PathMatcher> directories = new ArrayList();
 
             for (String pattern : patterns) {
-                if (type == 4) {
-                    pattern = "!" + pattern + "/**";
-                }
-                System.out.println("pattern " + pattern);
                 // convert pattern to reduce unnecessary file system scanning
                 if (pattern.equals("*")) {
-                    pattern = "!*/**";
+                    if (type == 4) {
+                        this.from = from;
+                        this.root = true;
+                    } else {
+                        pattern = "!*/**";
+                    }
                 } else if (pattern.equals("**")) {
                     this.from = from;
                     this.root = true;
@@ -159,7 +160,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             return CONTINUE;
 
         case 4: // walk directory
-            add(path);
+            if ((!root || from != path) && accept(relative)) add(path);
             // fall-through to reduce footprint
 
         case 3: // walk file
@@ -206,44 +207,42 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-        // Retrieve relative path from base.
-        Path relative = from.relativize(path);
+        if (type != 4) {
+            // Retrieve relative path from base.
+            Path relative = from.relativize(path);
 
-        if (accept(relative)) {
-            switch (type) {
-            case 0: // copy
-                Path dest = to.resolve(relative);
+            if (accept(relative)) {
+                switch (type) {
+                case 0: // copy
+                    Path dest = to.resolve(relative);
 
-                if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
-                    Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
-                }
-                return CONTINUE;
-
-            case 1: // move
-                dest = to.resolve(relative);
-
-                if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
-                    Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
+                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                        Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
+                    }
                     return CONTINUE;
+
+                case 1: // move
+                    dest = to.resolve(relative);
+
+                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                        Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
+                        return CONTINUE;
+                    }
+
+                case 2: // delete
+                    Files.delete(path);
+                    return CONTINUE;
+
+                case 3: // walk file
+                    add(path);
+                    return CONTINUE;
+
+                default:
+                    return visitor.visitFile(path, attrs);
                 }
-
-            case 2: // delete
-                Files.delete(path);
-                return CONTINUE;
-
-            case 3: // walk file
-                add(path);
-                // fall-through to reduce footprint
-
-            case 4: // walk directory
-                return CONTINUE;
-
-            default:
-                return visitor.visitFile(path, attrs);
             }
-        } else {
-            return CONTINUE;
         }
+        return CONTINUE;
     }
 
     /**

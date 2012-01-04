@@ -291,7 +291,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             // Clean up any old temporary directories by listing all of the files, using a prefix
             // filter and that don't have a lock file.
-            for (Path path : walkDirectory(temporaries, "temporary*")) {
+            for (Path path : Files.newDirectoryStream(temporaries, "temporary*")) {
                 System.out.println(path);
 
                 if (path.endsWith("Ezbean")) {
