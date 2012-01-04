@@ -93,6 +93,10 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             ArrayList<PathMatcher> directories = new ArrayList();
 
             for (String pattern : patterns) {
+                if (type == 4) {
+                    pattern = "!" + pattern + "/**";
+                }
+                System.out.println("pattern " + pattern);
                 // convert pattern to reduce unnecessary file system scanning
                 if (pattern.equals("*")) {
                     pattern = "!*/**";
@@ -137,6 +141,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         // Skip root directory.
         // Directory exclusion make fast traversing file tree.
         for (PathMatcher matcher : directories) {
+            System.out.println(matcher.matches(relative) + "  " + relative);
             // Normally, we can't use identical equal against path object. But only root path object
             // is passed as parameter value, so we can use identical equal here.
             if (from != path && matcher.matches(relative)) {

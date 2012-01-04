@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
+import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.FileVisitResult;
@@ -290,17 +291,24 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             // Clean up any old temporary directories by listing all of the files, using a prefix
             // filter and that don't have a lock file.
-            for (Path path : Files.newDirectoryStream(temporaries, "temporary*")) {
-                // create a file to represent the lock and test
-                RandomAccessFile lock = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
+            for (Path path : walkDirectory(temporaries, "temporary*")) {
+                System.out.println(path);
 
-                // delete the contents of the temporary directory since it can retrieve a
+                if (path.endsWith("Ezbean")) {
+                    continue;
+                }
+                // create a file to represent the lock
+                RandomAccessFile file = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
+
+                // test whether we can acquire lock or not
+                FileLock lock = file.getChannel().tryLock();
+
+                // release lock immediately
+                file.close();
+
+                // delete the all contents in the temporary directory since we could acquire a
                 // exclusive lock
-                if (lock.getChannel().tryLock() != null) {
-                    // release lock at first
-                    lock.close();
-
-                    // delete actually
+                if (lock != null) {
                     I.delete(path);
                 }
             }

@@ -15,11 +15,15 @@
  */
 package ezbean;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -134,6 +138,11 @@ public class PathPatternMatchingTest {
         assertDirectoryCount(10, test02);
     }
 
+    @Test
+    public void directoryPattern() throws Exception {
+        assertDirectoryCount(2, test02, "*");
+    }
+
     /**
      * Helper method to test.
      * 
@@ -163,7 +172,9 @@ public class PathPatternMatchingTest {
      */
     private void assertDirectoryCount(int expected, CleanRoom room, String... patterns) {
         try {
-            assert expected == I.walkDirectory(room.root, patterns).size();
+            List list = I.walkDirectory(room.root, patterns);
+            System.out.println(list);
+            assertThat(list.size(), equalTo(expected));
         } finally {
             counter.count = 0;
         }
