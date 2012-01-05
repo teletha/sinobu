@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.file;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -28,18 +28,19 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.I;
 import ezunit.CleanRoom;
 
 /**
- * @version 2011/03/10 17:57:17
+ * @version 2012/01/05 9:20:57
  */
 public class PathPatternMatchingTest {
 
     @Rule
-    public static final CleanRoom test01 = new CleanRoom("file/test01");
+    public static final CleanRoom test01 = new CleanRoom("test01");
 
     @Rule
-    public static final CleanRoom test02 = new CleanRoom("file/test02");
+    public static final CleanRoom test02 = new CleanRoom("test02");
 
     private Counter counter = new Counter();
 
@@ -180,7 +181,7 @@ public class PathPatternMatchingTest {
 
     @Test
     public void directoryPatternNegative() throws Exception {
-        assertDirectoryCount(1, test02, "!directory1/**");
+        assertDirectoryCount(4, test02, "!directory1");
     }
 
     /**
@@ -193,7 +194,8 @@ public class PathPatternMatchingTest {
         try {
             // by user
             I.walk(test01.root, counter, patterns);
-            assert expected == counter.count;
+
+            assertThat(counter.count, equalTo(expected));
 
             // by walker
             assert expected == I.walk(test01.root, patterns).size();
@@ -212,9 +214,9 @@ public class PathPatternMatchingTest {
      */
     private void assertDirectoryCount(int expected, CleanRoom room, String... patterns) {
         try {
-            List list = I.walkDirectory(room.root, patterns);
-            System.out.println(list);
-            assertThat(list.size(), equalTo(expected));
+            List result = I.walkDirectory(room.root, patterns);
+
+            assertThat(result.size(), equalTo(expected));
         } finally {
             counter.count = 0;
         }

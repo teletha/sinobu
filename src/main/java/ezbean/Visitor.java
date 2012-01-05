@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * @version 2011/11/17 15:23:56
+ * @version 2012/01/05 9:21:06
  */
 @SuppressWarnings("serial")
 class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
@@ -68,6 +68,10 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         this.type = type;
         this.visitor = visitor;
 
+        if (patterns == null) {
+            patterns = new String[0];
+        }
+
         try {
             boolean directory = Files.isDirectory(from);
 
@@ -95,11 +99,11 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             for (String pattern : patterns) {
                 // convert pattern to reduce unnecessary file system scanning
                 if (pattern.equals("*")) {
-                    if (type == 4) {
+                    if (type < 5) {
+                        pattern = "!*/**";
+                    } else {
                         this.from = from;
                         this.root = true;
-                    } else {
-                        pattern = "!*/**";
                     }
                 } else if (pattern.equals("**")) {
                     this.from = from;
@@ -112,7 +116,11 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
                     includes.add(system.getPathMatcher("glob:".concat(pattern)));
                 } else if (!pattern.endsWith("/**")) {
                     // exclude files
-                    excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                    if (type < 5) {
+                        excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                    } else {
+                        directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                    }
                 } else {
                     // exclude directory
                     directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
@@ -142,7 +150,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         // Skip root directory.
         // Directory exclusion make fast traversing file tree.
         for (PathMatcher matcher : directories) {
-            System.out.println(matcher.matches(relative) + "  " + relative);
             // Normally, we can't use identical equal against path object. But only root path object
             // is passed as parameter value, so we can use identical equal here.
             if (from != path && matcher.matches(relative)) {
@@ -159,7 +166,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
         case 2: // delete
             return CONTINUE;
 
-        case 4: // walk directory
+        case 5: // walk directory
             if ((!root || from != path) && accept(relative)) add(path);
             // fall-through to reduce footprint
 
@@ -193,7 +200,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             // fall-through to reduce footprint
 
         case 3: // walk file
-        case 4: // walk directory
+        case 5: // walk directory
             return CONTINUE;
 
         default:
@@ -207,7 +214,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      *      java.nio.file.attribute.BasicFileAttributes)
      */
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-        if (type != 4) {
+        if (type < 5) {
             // Retrieve relative path from base.
             Path relative = from.relativize(path);
 
