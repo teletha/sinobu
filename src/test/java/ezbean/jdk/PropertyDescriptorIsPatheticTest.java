@@ -47,7 +47,7 @@ public class PropertyDescriptorIsPatheticTest {
         assert method.getName().equals("isBoolean");
     }
 
-    @Test
+    @Test(expected = IntrospectionException.class)
     public void generic() throws Exception {
         PropertyDescriptor descriptor = new PropertyDescriptor("generic", GenericGetterBean.class);
         Method getter = descriptor.getReadMethod();
