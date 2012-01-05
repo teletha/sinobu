@@ -23,9 +23,9 @@ package ezbean.scratchpad;
  * TODO Annotate the external class
  * TODO Create annotation implementation at runtime and use it
  * TODO Use Attach API to runtime class redefinition
+ * TODO Constructor interceptor
+ * TODO Static Initialization Hook for Class
  *</pre>
- * 
- * @version 2008/06/08 10:55:14
  */
 public class TODO {
 
