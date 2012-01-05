@@ -44,10 +44,10 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     // For Pattern Matching Facility
     // =======================================================
     /** The source. */
-    Path from;
+    private Path from;
 
     /** The destination. */
-    Path to;
+    private Path to;
 
     /** The operation type. */
     private int type;
@@ -293,7 +293,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     }
 
     // =======================================================
-    // For Watching Facility
+    // For File Watching Facility
     // =======================================================
     /** The actual file event notification facility. */
     private WatchService service;
