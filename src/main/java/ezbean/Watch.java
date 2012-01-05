@@ -26,7 +26,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 /**
- * @version 2011/11/17 15:23:49
+ * @version 2012/01/05 15:12:45
  */
 class Watch implements Disposable, Runnable {
 
@@ -48,7 +48,7 @@ class Watch implements Disposable, Runnable {
      * @param listener A event listener.
      * @param visitor Name matching patterns.
      */
-    Watch(Path path, PathListener listener, Visitor visitor, String[] patterns) {
+    Watch(Path path, PathListener listener, Visitor visitor) {
         try {
             this.listener = listener;
             this.visitor = visitor;

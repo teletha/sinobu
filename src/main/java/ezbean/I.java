@@ -945,15 +945,14 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @see PathListener
      */
     public static Disposable observe(Path path, PathListener listener, String... patterns) {
-        // Create logical file system watch service.
-        Watch watch;
-
         if (!Files.isDirectory(path)) {
-            watch = new Watch(path.getParent(), listener, new Visitor(path.getParent(), null, 6, null, new String[] {path.getFileName()
-                    .toString()}), null);
-        } else {
-            watch = new Watch(path, listener, new Visitor(path, null, 6, null, patterns), patterns);
+            patterns = new String[] {path.getFileName().toString()};
+            path = path.getParent();
+
         }
+
+        // Create logical file system watch service.
+        Watch watch = new Watch(path, listener, new Visitor(path, null, 6, null, patterns));
 
         // Run in anothor thread.
         threads.execute(watch);
