@@ -17,14 +17,19 @@ package ezbean;
 
 import static java.nio.file.FileVisitResult.*;
 import static java.nio.file.StandardCopyOption.*;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 import java.io.IOException;
+import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,8 +38,11 @@ import java.util.Collections;
  * @version 2012/01/05 15:12:52
  */
 @SuppressWarnings("serial")
-class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
+class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, Runnable {
 
+    // =======================================================
+    // For Pattern Matching Facility
+    // =======================================================
     /** The source. */
     Path from;
 
@@ -42,19 +50,19 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
     Path to;
 
     /** The operation type. */
-    private final int type;
+    private int type;
 
     /** The actual {@link FileVisitor} to delegate. */
-    private final FileVisitor<Path> visitor;
+    private FileVisitor<Path> visitor;
 
     /** The include file patterns. */
-    final PathMatcher[] includes;
+    private PathMatcher[] includes;
 
     /** The exclude file patterns. */
-    final PathMatcher[] excludes;
+    private PathMatcher[] excludes;
 
     /** The exclude directory pattern. */
-    final PathMatcher[] directories;
+    private PathMatcher[] directories;
 
     /** We must skip root directory? */
     private boolean root = false;
@@ -267,7 +275,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
      * @param path A target path.
      * @return A result.
      */
-    boolean accept(Path path) {
+    private boolean accept(Path path) {
         // File exclusion
         for (PathMatcher matcher : excludes) {
             if (matcher.matches(path)) {
@@ -282,5 +290,92 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path> {
             }
         }
         return includes.length == 0;
+    }
+
+    // =======================================================
+    // For Watching Facility
+    // =======================================================
+    /** The actual file event notification facility. */
+    private WatchService service;
+
+    /** The user speecified event listener. */
+    private PathListener listener;
+
+    /**
+     * <p>
+     * Ezbean's file event notification facility.
+     * </p>
+     * 
+     * @param path A target directory.
+     * @param listener A event listener.
+     * @param visitor Name matching patterns.
+     */
+    Visitor(Path path, PathListener listener, String... patterns) {
+        this(path, null, 6, null, patterns);
+
+        try {
+            this.listener = listener;
+            this.service = path.getFileSystem().newWatchService();
+
+            // register
+            for (Path dir : I.walkDirectory(path)) {
+                dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            }
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * @see java.lang.Runnable#run()
+     */
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                WatchKey key = service.take();
+
+                for (WatchEvent event : key.pollEvents()) {
+                    // make current modified path
+                    Path path = ((Path) key.watchable()).resolve((Path) event.context());
+
+                    // pattern matching
+                    if (accept(from.relativize(path))) {
+                        if (event.kind() == ENTRY_CREATE) {
+                            listener.create(path); // fire event
+
+                            if (Files.isDirectory(path) && preVisitDirectory(path, null) == CONTINUE) {
+                                for (Path dir : I.walkDirectory(path)) {
+                                    dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+                                }
+                            }
+                        } else if (event.kind() == ENTRY_DELETE) {
+                            listener.delete(path); // fire event
+                        } else {
+                            listener.modify(path); // fire event
+                        }
+                    }
+                }
+
+                // reset key
+                key.reset();
+            } catch (ClosedWatchServiceException e) {
+                break; // Dispose this file watching service.
+            } catch (Exception e) {
+                continue;
+            }
+        }
+    }
+
+    /**
+     * @see ezbean.Disposable#dispose()
+     */
+    @Override
+    public void dispose() {
+        try {
+            service.close();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 }

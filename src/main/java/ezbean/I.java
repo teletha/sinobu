@@ -948,11 +948,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         if (!Files.isDirectory(path)) {
             patterns = new String[] {path.getFileName().toString()};
             path = path.getParent();
-
         }
 
         // Create logical file system watch service.
-        Watch watch = new Watch(path, listener, new Visitor(path, null, 6, null, patterns));
+        Visitor watch = new Visitor(path, listener, patterns);
 
         // Run in anothor thread.
         threads.execute(watch);
