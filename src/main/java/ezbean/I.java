@@ -291,12 +291,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             // Clean up any old temporary directories by listing all of the files, using a prefix
             // filter and that don't have a lock file.
-            for (Path path : Files.newDirectoryStream(temporaries, "temporary*")) {
-                System.out.println(path);
-
-                if (path.endsWith("Ezbean")) {
-                    continue;
-                }
+            for (Path path : walkDirectory(temporaries, "temporary*")) {
                 // create a file to represent the lock
                 RandomAccessFile file = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
 
@@ -950,13 +945,15 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @see PathListener
      */
     public static Disposable observe(Path path, PathListener listener, String... patterns) {
-        if (!Files.isDirectory(path)) {
-            patterns = new String[] {path.getFileName().toString()};
-            path = path.getParent();
-        }
-
         // Create logical file system watch service.
-        Watch watch = new Watch(path, listener, new Visitor(path, null, 6, null, patterns), patterns);
+        Watch watch;
+
+        if (!Files.isDirectory(path)) {
+            watch = new Watch(path.getParent(), listener, new Visitor(path.getParent(), null, 6, null, new String[] {path.getFileName()
+                    .toString()}), null);
+        } else {
+            watch = new Watch(path, listener, new Visitor(path, null, 6, null, patterns), patterns);
+        }
 
         // Run in anothor thread.
         threads.execute(watch);
@@ -1370,7 +1367,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @return All matched directories. (<em>not</em> including file)
      */
     public static List<Path> walkDirectory(Path start, String... patterns) {
-        return new Visitor(start, null, 4, null, patterns);
+        return new Visitor(start, null, 5, null, patterns);
     }
 
     /**
@@ -1420,7 +1417,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      */
     public static void walk(Path start, FileVisitor visitor, String... patterns) {
-        new Visitor(start, null, 5, visitor, patterns);
+        new Visitor(start, null, 4, visitor, patterns);
     }
 
     /**

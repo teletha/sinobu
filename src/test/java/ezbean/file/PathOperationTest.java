@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.file;
 
 import java.net.URL;
 import java.nio.file.Files;
@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.I;
 import ezunit.CleanRoom;
 import ezunit.Synchrotron;
 

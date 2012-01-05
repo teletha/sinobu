@@ -55,7 +55,7 @@ class Watch implements Disposable, Runnable {
             this.service = path.getFileSystem().newWatchService();
 
             // register
-            for (Path dir : I.walkDirectory(path, patterns)) {
+            for (Path dir : I.walkDirectory(path)) {
                 dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
             }
         } catch (Exception e) {

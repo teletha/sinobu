@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ezbean;
+package ezbean.file;
 
 import static java.util.concurrent.TimeUnit.*;
 
@@ -31,6 +31,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ezbean.Disposable;
+import ezbean.I;
+import ezbean.PathListener;
 import ezunit.CleanRoom;
 
 /**
