@@ -170,6 +170,26 @@ import ezbean.xml.XMLWriter;
  * special characters. The expression \\ matches a single backslash and "\{" matches a left brace
  * for example.
  * </p>
+ * <p>
+ * The frequently used patterns are the followings:
+ * </p>
+ * <dl>
+ * <dt>*</dt>
+ * <dd>All children paths which are under the user specified path are matched. (descendant paths
+ * will not match, root path will not match)</dd>
+ * <dt>**</dt>
+ * <dd>All descendant paths which are under the user specified path are matched. (root path will not
+ * match)</dd>
+ * <dt>*.txt</dt>
+ * <dd>All children paths which are under the user specified path and have ".txt" suffix are
+ * matched. (descendant paths will not match, root path will not match)</dd>
+ * <dt>image*</dt>
+ * <dd>All children paths which are under the user specified path and have "image" prefix are
+ * matched. (descendant paths will not match, root path will not match)</dd>
+ * <dt>**.html</dt>
+ * <dd>All descendant paths which are under the user specified path and have ".html" suffix are
+ * matched. (root path will not match)</dd>
+ * </dl>
  * 
  * @version 2011/03/31 17:38:41
  */
@@ -951,13 +971,13 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         }
 
         // Create logical file system watch service.
-        Visitor watch = new Visitor(path, listener, patterns);
+        Visitor watcher = new Visitor(path, listener, patterns);
 
         // Run in anothor thread.
-        threads.execute(watch);
+        threads.execute(watcher);
 
         // API definition
-        return watch;
+        return watcher;
     }
 
     /**
