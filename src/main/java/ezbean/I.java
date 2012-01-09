@@ -809,9 +809,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                         }
 
                         for (Annotation annotation : annotations) {
-                            if (!(annotation instanceof Deprecated)) {
-                                interceptables.push(method, annotation);
-                            }
+                            interceptables.push(method, annotation);
                         }
                     }
                 }
