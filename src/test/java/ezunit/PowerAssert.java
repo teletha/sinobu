@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.junit.Rule;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodNode;
 
 import ezunit.Agent.Translator;
@@ -66,13 +67,37 @@ public class PowerAssert extends ReusableRule {
          */
         @Override
         public void translate(ClassNode ast) {
-            for (MethodNode node : (List<MethodNode>) ast.methods) {
-                System.out.println(node.localVariables);
+            for (MethodNode methodNode : (List<MethodNode>) ast.methods) {
+                if (methodNode.name.equals("testname")) {
+                    Method method = new Method(methodNode.instructions);
+                    method.search();
+                }
             }
         }
     }
 
-    public static final void validate() {
+    /**
+     * <p>
+     * Helper class.
+     * </p>
+     * 
+     * @version 2012/01/10 20:32:53
+     */
+    private final class Method {
 
+        /** The actual code. */
+        private final InsnList code;
+
+        /**
+         * @param code
+         */
+        private Method(InsnList code) {
+            this.code = code;
+        }
+
+        private int search() {
+
+            return -1;
+        }
     }
 }
