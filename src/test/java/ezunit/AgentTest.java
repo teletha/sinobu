@@ -30,7 +30,7 @@ public class AgentTest {
     private static boolean called = false;
 
     @Rule
-    public static final Agent agent = new Agent(Transformer.class);
+    public static final Agent agent = new Agent(new Transformer());
 
     @Test
     public void agentable() throws Exception {

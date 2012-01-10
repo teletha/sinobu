@@ -178,11 +178,6 @@ public abstract class ReusableRule implements TestRule {
                     }
 
                     if (error != null) {
-                        // custom error message
-                        if (error instanceof AssertionError) {
-                            error = customError((AssertionError) error);
-                        }
-
                         throw error;
                     }
                 }
@@ -240,15 +235,6 @@ public abstract class ReusableRule implements TestRule {
      * </p>
      */
     protected void afterClass() {
-    }
-
-    /**
-     * <p>
-     * This method is invoked whenever error is thrown.
-     * </p>
-     */
-    protected AssertionError customError(AssertionError error) {
-        return error;
     }
 
     /**
