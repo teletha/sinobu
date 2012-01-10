@@ -34,7 +34,8 @@ public class PowerAssertTest {
 
     public void teaaa() {
         int value = 2;
-        assert value != 20;
+        float te = 22;
+        assert value != te;
         assert value != 5;
     }
 }

@@ -17,12 +17,18 @@ package ezunit;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.ProtectionDomain;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.ClassNode;
 
 import com.sun.tools.attach.VirtualMachine;
 
@@ -48,23 +54,46 @@ public class Agent extends ReusableRule {
      * Create dynamic Agent.
      * </p>
      * 
+     * @param translator
+     */
+    public Agent(Translator translator) {
+        this(new TranslatorTransformer(translator));
+    }
+
+    /**
+     * <p>
+     * Create dynamic Agent.
+     * </p>
+     * 
      * @param agent
      */
-    public Agent(Class<? extends ClassFileTransformer> agent) {
+    public Agent(ClassFileTransformer agent) {
         synchronized (Agent.class) {
             if (tool == null) {
                 createTool();
             }
         }
-        this.agent = I.make(agent);
+
+        // store agent
+        this.agent = agent;
+
+        // register agent
+        tool.addTransformer(agent, true);
     }
 
     /**
-     * {@inheritDoc}
+     * <p>
+     * Force to transform the target class.
+     * </p>
+     * 
+     * @param target
      */
-    @Override
-    protected void beforeClass() throws Exception {
-        tool.addTransformer(agent, true);
+    public void transform(Class target) {
+        try {
+            tool.retransformClasses(target);
+        } catch (UnmodifiableClassException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -109,5 +138,70 @@ public class Agent extends ReusableRule {
     @SuppressWarnings("unused")
     private static void agentmain(String args, Instrumentation instrumentation) throws Exception {
         tool = instrumentation;
+    }
+
+    /**
+     * @version 2012/01/10 19:59:03
+     */
+    public static interface Translator {
+
+        /**
+         * <p>
+         * Chech whether the specified class should translate or not.
+         * </p>
+         * 
+         * @param internalName A internal class name.
+         * @return A result.
+         */
+        boolean canTranslate(String internalName);
+
+        /**
+         * <p>
+         * Translate class file.
+         * </p>
+         * 
+         * @param node An abstract syntax tree.
+         */
+        void translate(ClassNode ast);
+    }
+
+    /**
+     * @version 2012/01/10 11:51:03
+     */
+    private static final class TranslatorTransformer implements ClassFileTransformer {
+
+        /** The delegator. */
+        private final Translator translator;
+
+        /**
+         * @param translator
+         */
+        private TranslatorTransformer(Translator translator) {
+            this.translator = translator;
+        }
+
+        /**
+         * @see java.lang.instrument.ClassFileTransformer#transform(java.lang.ClassLoader,
+         *      java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])
+         */
+        @Override
+        public byte[] transform(ClassLoader loader, String name, Class<?> clazz, ProtectionDomain domain, byte[] bytes) {
+            if (!translator.canTranslate(name)) {
+                return bytes;
+            }
+
+            ClassNode ast = new ClassNode();
+
+            // build abstract syntax tree
+            new ClassReader(bytes).accept(ast, ClassReader.EXPAND_FRAMES);
+
+            // translate
+            translator.translate(ast);
+
+            // write translated byte code
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+            ast.accept(writer);
+            return writer.toByteArray();
+        }
     }
 }
