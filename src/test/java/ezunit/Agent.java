@@ -1,0 +1,113 @@
+/*
+ * Copyright (C) 2011 Nameless Production Committee.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package ezunit;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
+import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+
+import com.sun.tools.attach.VirtualMachine;
+
+import ezbean.I;
+
+/**
+ * <p>
+ * Provide functionality to transform bytecode.
+ * </p>
+ * 
+ * @version 2012/01/10 19:09:14
+ */
+public class Agent extends ReusableRule {
+
+    /** The Instrumentation tool. */
+    private volatile static Instrumentation tool;
+
+    /** The actual agent. */
+    private final ClassFileTransformer agent;
+
+    /**
+     * <p>
+     * Create dynamic Agent.
+     * </p>
+     * 
+     * @param agent
+     */
+    public Agent(Class<? extends ClassFileTransformer> agent) {
+        synchronized (Agent.class) {
+            if (tool == null) {
+                createTool();
+            }
+        }
+        this.agent = I.make(agent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void beforeClass() throws Exception {
+        tool.addTransformer(agent, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void afterClass() {
+        tool.removeTransformer(agent);
+    }
+
+    /**
+     * <p>
+     * Create instrumentation tool.
+     * </p>
+     */
+    private static void createTool() {
+        // Build manifest.
+        Manifest manifest = new Manifest();
+        Attributes attributes = manifest.getMainAttributes();
+        attributes.putValue("Manifest-Version", "1.0");
+        attributes.putValue("Agent-Class", Agent.class.getName());
+        attributes.putValue("Can-Redefine-Classes", "true");
+        attributes.putValue("Can-Retransform-Classes", "true");
+        attributes.putValue("Can-Set-Native-Method-Prefix", "true");
+
+        try {
+            // Build temporary agent jar.
+            Path jar = I.locateTemporary();
+            new JarOutputStream(Files.newOutputStream(jar), manifest).close();
+
+            // Load agent dynamically.
+            String name = ManagementFactory.getRuntimeMXBean().getName();
+            VirtualMachine.attach(name.substring(0, name.indexOf('@'))).loadAgent(jar.toString());
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * Agent entry point.
+     */
+    @SuppressWarnings("unused")
+    private static void agentmain(String args, Instrumentation instrumentation) throws Exception {
+        tool = instrumentation;
+    }
+}
