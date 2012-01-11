@@ -178,7 +178,11 @@ public abstract class ReusableRule implements TestRule {
                     }
 
                     if (error != null) {
-                        throw error;
+                        error = validateError(error);
+
+                        if (error != null) {
+                            throw error;
+                        }
                     }
                 }
             }
@@ -235,6 +239,18 @@ public abstract class ReusableRule implements TestRule {
      * </p>
      */
     protected void afterClass() {
+    }
+
+    /**
+     * <p>
+     * Validate test error. You can ignore error by returning <code>null</code>.
+     * </p>
+     * 
+     * @param throwable A curret test error.
+     * @return A validated error.
+     */
+    protected Throwable validateError(Throwable throwable) {
+        return throwable;
     }
 
     /**
