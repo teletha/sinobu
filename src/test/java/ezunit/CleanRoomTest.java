@@ -15,8 +15,8 @@ import java.nio.file.Path;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.I;
-import ezbean.model.ClassUtil;
+import kiss.I;
+import kiss.model.ClassUtil;
 
 /**
  * @version 2011/03/08 18:35:36

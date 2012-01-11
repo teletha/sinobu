@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import sun.reflect.Reflection;
 import sun.reflect.ReflectionFactory;
-import ezbean.I;
+import kiss.I;
 
 /**
  * @version 2010/02/12 15:53:22

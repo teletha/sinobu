@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import ezbean.I;
+import kiss.I;
 
 /**
  * <p>

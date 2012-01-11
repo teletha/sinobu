@@ -21,7 +21,7 @@ import java.security.AccessControlException;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.I;
+import kiss.I;
 
 /**
  * @version 2010/02/09 11:23:23

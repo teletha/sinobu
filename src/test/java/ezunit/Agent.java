@@ -26,7 +26,7 @@ import org.objectweb.asm.tree.ClassNode;
 
 import com.sun.tools.attach.VirtualMachine;
 
-import ezbean.I;
+import kiss.I;
 
 /**
  * <p>

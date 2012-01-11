@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezbean.I;
+import kiss.I;
 
 /**
  * @version 2011/09/22 16:22:02

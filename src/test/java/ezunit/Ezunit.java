@@ -36,6 +36,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import kiss.I;
+import kiss.xml.XMLWriter;
+
 import org.custommonkey.xmlunit.Diff;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
@@ -44,9 +47,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
-
-import ezbean.I;
-import ezbean.xml.XMLWriter;
 
 /**
  * @version 2011/03/23 7:51:19
@@ -504,8 +504,8 @@ public class Ezunit {
          * @see javax.xml.namespace.NamespaceContext#getNamespaceURI(java.lang.String)
          */
         public String getNamespaceURI(String prefix) {
-            if (prefix.equals("ez")) {
-                return "http://ez.bean/";
+            if (prefix.equals("ss")) {
+                return "http://ki.ss/";
             }
             return null;
         }
