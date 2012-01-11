@@ -15,6 +15,7 @@
  */
 package ezunit;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ public class PowerAssertTest {
     public static final PowerAssert test = new PowerAssert();
 
     @Test
+    @Ignore
     public void testname() throws Exception {
         int value = 2;
         assert 1 == value;

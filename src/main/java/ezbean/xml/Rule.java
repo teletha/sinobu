@@ -22,10 +22,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * DOCUMENT.
+ * <p>
+ * Pattern matching descriptor.
+ * </p>
  * 
  * @see XMLScanner
- * @version 2008/11/01 12:05:16
+ * @version 2012/01/11 9:55:27
  */
 @Documented
 @Target(ElementType.METHOD)
@@ -37,6 +39,14 @@ public @interface Rule {
      * Describe the location path you want to search. If you don't specify it, Ezbean uses the name
      * of the annotated method.
      * </p>
+     * <p>
+     * You can specify multiple values with whitespace separator. The following example will Match
+     * both "one" element and "anothor" element.
+     * </p>
+     * 
+     * <pre>
+     * @Rule(match = "one anothor")
+     * </pre>
      * 
      * @return A simple pattern value like XPath.
      */
