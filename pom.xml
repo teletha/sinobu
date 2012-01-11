@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (C) 2010 Nameless Production Committee.
+  Copyright (C) 2011 Nameless Production Committee.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ezbean</groupId>
-  <artifactId>ezbean</artifactId>
-  <name>Ezbean</name>
-  <version>0.9</version>
-  <description>Ezbean is extremely-condensed facade to manipulate objects.</description>
+  <groupId>YumeChronicle</groupId>
+  <artifactId>sinobu</artifactId>
+  <name>忍</name>
+  <version>0.9.1</version>
+  <description>Shinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.</description>
 
   <dependencies>
     <dependency>
