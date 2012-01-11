@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 
-import ezbean.I;
+import kiss.I;
 
 /**
  * <p>

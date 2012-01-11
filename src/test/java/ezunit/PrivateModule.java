@@ -31,7 +31,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import ezbean.I;
+import kiss.I;
 
 /**
  * @version 2011/03/22 8:51:40

@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import ezbean.xml.XMLScanner;
+import kiss.xml.XMLScanner;
 
 /**
  * @version 2011/03/22 17:23:36
@@ -24,7 +24,7 @@ import ezbean.xml.XMLScanner;
 public class SAXBuilderTest {
 
     /**
-     * Test method for {@link ezbean.xml2.SAXBuilder#getDocument()}.
+     * Test method for {@link kiss.xml2.SAXBuilder#getDocument()}.
      */
     @Test
     public void testGetDocument1() throws SAXException {
@@ -44,7 +44,7 @@ public class SAXBuilderTest {
     }
 
     /**
-     * Test method for {@link ezbean.xml2.SAXBuilder#getDocument()}.
+     * Test method for {@link kiss.xml2.SAXBuilder#getDocument()}.
      */
     @Test
     public void testGetDocument2() throws SAXException {
@@ -65,7 +65,7 @@ public class SAXBuilderTest {
     }
 
     /**
-     * Test method for {@link ezbean.xml2.SAXBuilder#getDocument()}.
+     * Test method for {@link kiss.xml2.SAXBuilder#getDocument()}.
      */
     @Test
     public void testGetDocument3() throws SAXException {
@@ -115,7 +115,7 @@ public class SAXBuilderTest {
     }
 
     /**
-     * Test method for {@link ezbean.xml2.SAXBuilder#getDocument()}.
+     * Test method for {@link kiss.xml2.SAXBuilder#getDocument()}.
      */
     @Test
     public void testInvalidGetDocument1() throws SAXException {

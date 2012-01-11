@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package ezbean;
+package kiss;
 
 import java.util.Collections;
 import java.util.List;
