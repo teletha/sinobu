@@ -69,15 +69,23 @@ public class PowerAssertTest {
     public void shortConstantAndVariable() throws Exception {
         short value = 2;
 
-        test.willCapture("1", (short) 1);
+        test.willCapture("1", 1);
         test.willCapture("value", value);
         assert (short) 1 == value;
     }
 
+    @Test
+    public void booleanConstantAndVariable() throws Exception {
+        boolean value = false;
+
+        test.willCapture("value", value);
+        assert value;
+    }
+
     public void asm() {
         PowerAssertionContext context = new PowerAssertionContext();
-        short value = 2;
-        context.add((short) 1);
+        boolean value = true;
+        context.add(false);
         context.addVariable(value, "value");
         context.addExpression("==");
 

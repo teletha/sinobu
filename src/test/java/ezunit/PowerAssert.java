@@ -230,6 +230,7 @@ public class PowerAssert extends ReusableRule {
             switch (node.getType()) {
             case AbstractInsnNode.INSN:
                 switch (node.getOpcode()) {
+                case ICONST_M1:
                 case ICONST_0:
                 case ICONST_1:
                 case ICONST_2:
@@ -266,13 +267,15 @@ public class PowerAssert extends ReusableRule {
                 break;
 
             case AbstractInsnNode.VAR_INSN:
+                LocalVariableNode localVariable = (LocalVariableNode) methodNode.localVariables.get(((VarInsnNode) node).var);
+
                 build(new VarInsnNode(ALOAD, position));
                 build(node.clone(null));
-                build(new LdcInsnNode(((LocalVariableNode) methodNode.localVariables.get(((VarInsnNode) node).var)).name));
+                build(new LdcInsnNode(localVariable.name));
 
                 switch (node.getOpcode()) {
                 case ILOAD:
-                    build(new MethodInsnNode(INVOKEVIRTUAL, context, "addVariable", "(ILjava/lang/String;)V"));
+                    build(new MethodInsnNode(INVOKEVIRTUAL, context, "addVariable", "(" + localVariable.desc + "Ljava/lang/String;)V"));
                     break;
 
                 case LLOAD:
@@ -297,6 +300,10 @@ public class PowerAssert extends ReusableRule {
                 case IF_ICMPEQ:
                 case IFEQ:
                     build(new LdcInsnNode("=="));
+                    break;
+
+                case IFNE:
+                    build(new LdcInsnNode("!="));
                     break;
                 }
                 build(new MethodInsnNode(INVOKEVIRTUAL, context, "addExpression", "(Ljava/lang/String;)V"));
@@ -367,6 +374,12 @@ public class PowerAssert extends ReusableRule {
             operands.add(operand);
         }
 
+        public void add(boolean value) {
+            Operand operand = new Operand(value);
+            stack.add(operand);
+            operands.add(operand);
+        }
+
         public void addVariable(int value, String name) {
             Operand operand = new Operand(name, value);
             stack.add(operand);
@@ -392,6 +405,12 @@ public class PowerAssert extends ReusableRule {
         }
 
         public void addVariable(short value, String name) {
+            Operand operand = new Operand(name, value);
+            stack.add(operand);
+            operands.add(operand);
+        }
+
+        public void addVariable(boolean value, String name) {
             Operand operand = new Operand(name, value);
             stack.add(operand);
             operands.add(operand);
