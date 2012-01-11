@@ -311,6 +311,11 @@ public class PowerAssert extends ReusableRule {
      */
     public static class PowerAssertionError extends AssertionError {
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 4801744854945741947L;
+
         /** The error context. */
         private final PowerAssertionContext context;
 
