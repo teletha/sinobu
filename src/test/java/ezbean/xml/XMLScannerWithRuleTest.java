@@ -803,6 +803,24 @@ public class XMLScannerWithRuleTest {
     }
 
     @Test
+    public void multipleValue() throws Exception {
+        final List<String> events = new ArrayList();
+
+        XMLScanner scanner = new XMLScanner() {
+
+            @SuppressWarnings("unused")
+            @Rule(match = "item1 item2")
+            public void root() throws SAXException {
+                events.add("matched");
+            }
+        };
+
+        I.parse(locateSource("rule/test06.xml"), scanner);
+
+        assert events.size() == 2;
+    }
+
+    @Test
     public void bits() throws Exception {
         final List events = new ArrayList();
 

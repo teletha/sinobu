@@ -74,9 +74,9 @@ class RuleMethod implements Comparable<RuleMethod> {
      * @param rule A current processing rule.
      * @param scanner A {@link XMLScanner} to provide a namespace resolving method.
      */
-    RuleMethod(Method method, Rule rule, XMLScanner scanner) {
+    RuleMethod(Method method, String rule, XMLScanner scanner) {
         // compile matching pattern
-        String[] paths = (rule.match().length() == 0 ? method.getName() : rule.match()).split("/");
+        String[] paths = (rule.length() == 0 ? method.getName() : rule).split("/");
         uris = new int[paths.length];
         names = new int[paths.length];
 

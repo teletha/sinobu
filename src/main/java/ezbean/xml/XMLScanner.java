@@ -152,7 +152,9 @@ public class XMLScanner extends XMLFilterImpl {
                 Rule rule = method.getAnnotation(Rule.class);
 
                 if (rule != null) {
-                    methods.add(new RuleMethod(method, rule, this));
+                    for (String match : rule.match().split(" ")) {
+                        methods.add(new RuleMethod(method, match, this));
+                    }
                 }
             }
 
