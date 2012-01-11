@@ -200,7 +200,14 @@ public class Agent extends ReusableRule {
 
             // write translated byte code
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-            ast.accept(writer);
+            try {
+                ast.accept(writer);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+
+            // ast.accept(new TraceClassVisitor(new PrintWriter(System.out)));
+
             return writer.toByteArray();
         }
     }

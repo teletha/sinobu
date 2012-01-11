@@ -15,9 +15,11 @@
  */
 package ezunit;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import ezunit.PowerAssert.PowerAssertionContext;
+import ezunit.PowerAssert.PowerAssertionError;
 
 /**
  * @version 2012/01/10 9:53:52
@@ -25,19 +27,60 @@ import org.junit.Test;
 public class PowerAssertTest {
 
     @Rule
-    public static final PowerAssert test = new PowerAssert();
+    public static final PowerAssert test = new PowerAssert(true);
 
     @Test
-    @Ignore
-    public void testname() throws Exception {
+    public void intConstantAndVariable() throws Exception {
         int value = 2;
+
+        test.willCapture("1", 1);
+        test.willCapture("value", value);
         assert 1 == value;
     }
 
-    public void teaaa() {
-        int value = 2;
-        float te = 22;
-        assert value != te;
-        assert value != 5;
+    @Test
+    public void longConstantAndVariable() throws Exception {
+        long value = 2;
+
+        test.willCapture("1", 1L);
+        test.willCapture("value", value);
+        assert 1L == value;
+    }
+
+    @Test
+    public void floatConstantAndVariable() throws Exception {
+        float value = 2;
+
+        test.willCapture("1.0", 1f);
+        test.willCapture("value", value);
+        assert 1f == value;
+    }
+
+    @Test
+    public void doubleConstantAndVariable() throws Exception {
+        double value = 2;
+
+        test.willCapture("1.0", 1d);
+        test.willCapture("value", value);
+        assert 1d == value;
+    }
+
+    @Test
+    public void shortConstantAndVariable() throws Exception {
+        short value = 2;
+
+        test.willCapture("1", (short) 1);
+        test.willCapture("value", value);
+        assert (short) 1 == value;
+    }
+
+    public void asm() {
+        PowerAssertionContext context = new PowerAssertionContext();
+        short value = 2;
+        context.add((short) 1);
+        context.addVariable(value, "value");
+        context.addExpression("==");
+
+        throw new PowerAssertionError(context);
     }
 }
