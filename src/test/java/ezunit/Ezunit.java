@@ -505,7 +505,7 @@ public class Ezunit {
          */
         public String getNamespaceURI(String prefix) {
             if (prefix.equals("ss")) {
-                return "http://ki.ss/";
+                return "sinobu";
             }
             return null;
         }
