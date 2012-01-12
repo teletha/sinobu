@@ -88,9 +88,9 @@ import sun.org.mozilla.javascript.internal.IdScriptableObject;
  * </p>
  * <p>
  * When many containers which manage objects provide the functionality like this, they use the
- * method which name starts with "get". But Sinobu uses the method {@link #make(Class)}. We attribute
- * this difference to the thought to the object management. This difference has much effect on the
- * default lifestyle (many other containers call as Scope) too.
+ * method which name starts with "get". But Sinobu uses the method {@link #make(Class)}. We
+ * attribute this difference to the thought to the object management. This difference has much
+ * effect on the default lifestyle (many other containers call as Scope) too.
  * </p>
  * <p>
  * Sinobu doesn't provide any features for the object lifecycle because we stand by the principles
@@ -246,7 +246,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     public static Path $working = Paths.get(""); // Poplar Taneshima
 
     /** The namespace uri of Sinobu. */
-    static final String URI = "http://ki.ss/";
+    static final String URI = "sinobu";
 
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
