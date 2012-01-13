@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import hub.PrivateModule;
+
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +35,6 @@ import kiss.sample.MarkerInterface2;
 import kiss.sample.RuntimeAnnotation1;
 import kiss.sample.RuntimeAnnotation2;
 import kiss.sample.SourceAnnotation;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 16:37:20

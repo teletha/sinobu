@@ -9,7 +9,9 @@
  */
 package kiss.xml;
 
-import static ezunit.Ezunit.*;
+import static hub.Ezunit.*;
+
+import hub.SAXBuilder;
 
 import java.io.IOException;
 
@@ -23,7 +25,6 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import kiss.I;
-import ezunit.SAXBuilder;
 
 /**
  * @version 2010/02/05 1:31:37

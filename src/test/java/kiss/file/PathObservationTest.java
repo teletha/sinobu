@@ -11,6 +11,8 @@ package kiss.file;
 
 import static java.util.concurrent.TimeUnit.*;
 
+import hub.CleanRoom;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +30,6 @@ import org.junit.Test;
 import kiss.Disposable;
 import kiss.I;
 import kiss.PathListener;
-import ezunit.CleanRoom;
 
 /**
  * @version 2011/04/09 7:09:37

@@ -9,11 +9,12 @@
  */
 package kiss.module;
 
+import hub.PrivateModule;
+
 import org.junit.Rule;
 import org.junit.Test;
 
 import kiss.I;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 17:07:32

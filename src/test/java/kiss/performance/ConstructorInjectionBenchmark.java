@@ -9,13 +9,14 @@
  */
 package kiss.performance;
 
+import hub.AbstractMicroBenchmarkTest;
+import hub.BenchmarkCode;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kiss.I;
 import kiss.model.ClassUtil;
-import ezunit.AbstractMicroBenchmarkTest;
-import ezunit.BenchmarkCode;
 
 /**
  * DOCUMENT.

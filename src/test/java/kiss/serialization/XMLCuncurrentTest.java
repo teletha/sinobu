@@ -9,6 +9,8 @@
  */
 package kiss.serialization;
 
+import hub.CleanRoom;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +28,6 @@ import org.junit.Test;
 
 import kiss.I;
 import kiss.sample.bean.StringListProperty;
-import ezunit.CleanRoom;
 
 /**
  * @version 2011/03/29 12:37:35

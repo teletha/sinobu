@@ -9,7 +9,9 @@
  */
 package kiss.serialization;
 
-import static ezunit.Ezunit.*;
+import static hub.Ezunit.*;
+
+import hub.CleanRoom;
 
 import java.io.File;
 import java.io.Serializable;
@@ -42,7 +44,6 @@ import kiss.sample.bean.TransientBean;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezunit.CleanRoom;
 
 /**
  * @version 2011/03/22 17:17:16

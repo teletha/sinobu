@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import hub.PrivateModule;
+
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -18,7 +20,6 @@ import org.junit.Test;
 
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Student;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 16:32:28

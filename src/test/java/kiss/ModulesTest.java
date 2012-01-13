@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import hub.PrivateModule;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -22,7 +24,6 @@ import org.junit.Test;
 import kiss.module.external.ExtendedClass1;
 import kiss.sample.MarkerInterface1;
 import kiss.sample.bean.Person;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 16:36:07

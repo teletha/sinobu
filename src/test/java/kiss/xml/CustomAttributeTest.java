@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static ezunit.Ezunit.*;
+import static hub.Ezunit.*;
 
 import org.junit.Test;
 import org.xml.sax.SAXException;

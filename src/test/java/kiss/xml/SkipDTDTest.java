@@ -9,10 +9,11 @@
  */
 package kiss.xml;
 
+import hub.Ezunit;
+
 import org.junit.Test;
 
 import kiss.I;
-import ezunit.Ezunit;
 
 /**
  * @version 2010/02/04 23:09:21
