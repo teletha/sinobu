@@ -45,7 +45,7 @@ public class UnsafeUtility {
 
             try {
                 // load tools.jar
-                URLClassLoader loader = new URLClassLoader(new URL[] {home.resolve("lib/tools.jar").toUri().toURL()});
+                URLClassLoader loader = new URLClassLoader(new URL[] {home.resolve("lib/tools.jar").toUri().toURL()}, ClassLoader.getSystemClassLoader());
 
                 return Class.forName(toolClassName, false, loader);
             } catch (Exception e) {

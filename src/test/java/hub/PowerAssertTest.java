@@ -12,9 +12,11 @@ package hub;
 import hub.PowerAssert.PowerAssertionContext;
 import hub.PowerAssert.PowerAssertionError;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Rule;
 import org.junit.Test;
-
 
 /**
  * @version 2012/01/10 9:53:52
@@ -77,12 +79,53 @@ public class PowerAssertTest {
         assert value;
     }
 
+    @Test
+    public void objectConstantAndVariable() throws Exception {
+        String value = "test";
+
+        test.willCapture("value", value);
+        assert value == "test";
+    }
+
+    @Test
+    public void methodCall() throws Exception {
+        String value = "test";
+
+        test.willCapture("value", value);
+        test.willCapture("value.equals(\"a\")", false);
+        assert value.equals("a");
+    }
+
+    @Test
+    public void methodCalls() throws Exception {
+        String value = "test";
+
+        test.willCapture("value", value);
+        test.willCapture("value.substring(2)", "st");
+        test.willCapture("value.substring(2).equals(\"xx\")", false);
+        assert value.substring(2).equals("xx");
+    }
+
+    @Test
+    public void methodCallInt() throws Exception {
+        List list = new ArrayList();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+
+        test.willCapture("list", list);
+        test.willCapture("list.size()", 3);
+        assert list.size() == 34;
+    }
+
     public void asm() {
         PowerAssertionContext context = new PowerAssertionContext();
-        boolean value = true;
-        context.add(false);
-        context.addVariable(value, "value");
+        String value = "test";
+        context.addMethod("equals", "test", false);
         context.addExpression("==");
+
+        Object aaa = "test".substring(1);
+        Character.valueOf('c');
 
         throw new PowerAssertionError(context);
     }
