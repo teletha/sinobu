@@ -9,6 +9,8 @@
  */
 package kiss.instantiation;
 
+import hub.UnsafeUtility;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -24,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import kiss.I;
-import ezunit.UnsafeUtility;
 
 /**
  * @version 2011/03/22 16:54:33

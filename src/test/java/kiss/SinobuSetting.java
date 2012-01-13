@@ -9,10 +9,11 @@
  */
 package kiss;
 
+import hub.ReusableRule;
+
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 
-import ezunit.ReusableRule;
 
 /**
  * <p>
@@ -38,7 +39,7 @@ public class SinobuSetting extends ReusableRule {
     }
 
     /**
-     * @see ezunit.ReusableRule#before(java.lang.reflect.Method)
+     * @see hub.ReusableRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -46,7 +47,7 @@ public class SinobuSetting extends ReusableRule {
     }
 
     /**
-     * @see ezunit.ReusableRule#after(java.lang.reflect.Method)
+     * @see hub.ReusableRule#after(java.lang.reflect.Method)
      */
     @Override
     protected void after(Method method) {

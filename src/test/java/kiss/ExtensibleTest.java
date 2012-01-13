@@ -9,13 +9,14 @@
  */
 package kiss;
 
+import hub.PrivateModule;
+
 import org.junit.Rule;
 import org.junit.Test;
 
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
 import kiss.sample.bean.Student;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 16:44:14

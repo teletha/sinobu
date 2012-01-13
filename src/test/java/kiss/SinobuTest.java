@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static ezunit.Ezunit.*;
+import static hub.Ezunit.*;
 
 import java.io.IOException;
 import java.nio.file.Path;

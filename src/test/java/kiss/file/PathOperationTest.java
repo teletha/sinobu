@@ -9,6 +9,9 @@
  */
 package kiss.file;
 
+import hub.CleanRoom;
+import hub.Synchrotron;
+
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -18,8 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import kiss.I;
-import ezunit.CleanRoom;
-import ezunit.Synchrotron;
 
 /**
  * @version 2011/03/22 16:40:43

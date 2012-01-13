@@ -9,13 +9,14 @@
  */
 package kiss;
 
+import hub.MultiThreadTestCase;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
 
-import ezunit.MultiThreadTestCase;
 
 /**
  * @version 2011/03/22 16:28:30

@@ -9,12 +9,13 @@
  */
 package kiss;
 
+import hub.PrivateModule;
+
 import java.util.Locale;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 16:31:23

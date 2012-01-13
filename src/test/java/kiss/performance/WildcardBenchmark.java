@@ -9,6 +9,9 @@
  */
 package kiss.performance;
 
+import hub.AbstractMicroBenchmarkTest;
+import hub.BenchmarkCode;
+
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -18,8 +21,6 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 import kiss.scratchpad.Wildcard;
-import ezunit.AbstractMicroBenchmarkTest;
-import ezunit.BenchmarkCode;
 
 /**
  * @version 2011/02/19 14:15:17

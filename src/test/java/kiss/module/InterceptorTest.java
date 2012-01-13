@@ -9,6 +9,8 @@
  */
 package kiss.module;
 
+import hub.PrivateModule;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ import org.junit.Test;
 
 import kiss.I;
 import kiss.Interceptor;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 17:06:39

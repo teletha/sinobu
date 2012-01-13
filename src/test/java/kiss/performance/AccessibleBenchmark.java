@@ -9,6 +9,9 @@
  */
 package kiss.performance;
 
+import hub.AbstractMicroBenchmarkTest;
+import hub.BenchmarkCode;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -21,8 +24,6 @@ import org.junit.Test;
 
 import kiss.I;
 import kiss.sample.bean.Person;
-import ezunit.AbstractMicroBenchmarkTest;
-import ezunit.BenchmarkCode;
 
 /**
  * DOCUMENT.

@@ -9,6 +9,8 @@
  */
 package kiss.serialization;
 
+import hub.CleanRoom;
+
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -21,7 +23,6 @@ import org.junit.Test;
 
 import kiss.I;
 import kiss.sample.bean.Person;
-import ezunit.CleanRoom;
 
 /**
  * @version 2011/03/31 17:29:31

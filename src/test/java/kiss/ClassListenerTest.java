@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import hub.PrivateModule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,7 +18,6 @@ import org.junit.Test;
 import kiss.sample.MarkerInterface1;
 import kiss.sample.MarkerInterface2;
 import kiss.sample.RuntimeAnnotation1;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/04/09 7:09:57

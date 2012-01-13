@@ -9,6 +9,8 @@
  */
 package kiss.module;
 
+import hub.PrivateModule;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +21,6 @@ import kiss.I;
 import kiss.model.Model;
 import kiss.module.external.ExtendedClass1;
 import kiss.module.external.SingletonClass;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 17:08:49

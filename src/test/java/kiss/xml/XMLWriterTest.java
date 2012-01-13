@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static ezunit.Ezunit.*;
+import static hub.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;

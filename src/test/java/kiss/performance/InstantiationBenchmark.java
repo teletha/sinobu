@@ -9,12 +9,13 @@
  */
 package kiss.performance;
 
+import hub.AbstractMicroBenchmarkTest;
+import hub.BenchmarkCode;
+
 import org.junit.Test;
 
 import kiss.I;
 import kiss.sample.bean.Person;
-import ezunit.AbstractMicroBenchmarkTest;
-import ezunit.BenchmarkCode;
 
 /**
  * DOCUMENT.

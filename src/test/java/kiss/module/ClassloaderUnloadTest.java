@@ -9,6 +9,8 @@
  */
 package kiss.module;
 
+import hub.PrivateModule;
+
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
@@ -20,7 +22,6 @@ import org.junit.Test;
 
 import kiss.I;
 import kiss.sample.RuntimeAnnotation1;
-import ezunit.PrivateModule;
 
 /**
  * @version 2011/03/22 17:08:02
