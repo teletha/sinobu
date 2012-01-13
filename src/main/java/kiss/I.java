@@ -240,7 +240,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /**
      * <p>
      * The configuration of working directory in Sinobu, default value is <em>current directory</em>
-     * .
+     * of JVM .
      * </p>
      */
     public static Path $working = Paths.get(""); // Poplar Taneshima
