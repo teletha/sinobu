@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.Transformer;
@@ -439,9 +440,20 @@ public class Ezunit {
      * @param xpath A XPath expression.
      */
     public static final void assertXPathEqual(String expected, Path testedXMLFile, String xpath) {
+        assertXPathEqual(expected, testedXMLFile, xpath, null);
+    }
+
+    /**
+     * Assert that the XML documents has the expected value which is result of XPath evaluation.
+     * 
+     * @param expected A expected value.
+     * @param tested A XML to be tested.
+     * @param xpath A XPath expression.
+     */
+    public static final void assertXPathEqual(String expected, Path testedXMLFile, String xpath, Map<String, String> namespaces) {
         try {
             XPath context = XPathFactory.newInstance().newXPath();
-            context.setNamespaceContext(new Namespaces());
+            context.setNamespaceContext(new Namespaces(namespaces));
             String result = context.evaluate(xpath, locateSource(testedXMLFile));
 
             assertEquals(expected, result);
@@ -496,18 +508,25 @@ public class Ezunit {
     }
 
     /**
-     * @version 2010/01/08 15:56:46
+     * @version 2012/01/13 11:56:03
      */
     private static class Namespaces implements NamespaceContext {
+
+        /** The actual mapping. */
+        private final Map<String, String> mapping;
+
+        /**
+         * @param mapping
+         */
+        private Namespaces(Map<String, String> mapping) {
+            this.mapping = mapping == null ? Collections.EMPTY_MAP : mapping;
+        }
 
         /**
          * @see javax.xml.namespace.NamespaceContext#getNamespaceURI(java.lang.String)
          */
         public String getNamespaceURI(String prefix) {
-            if (prefix.equals("ss")) {
-                return "sinobu";
-            }
-            return null;
+            return mapping.get(prefix);
         }
 
         /**

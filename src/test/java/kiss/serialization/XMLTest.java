@@ -10,7 +10,6 @@
 package kiss.serialization;
 
 import static hub.Ezunit.*;
-
 import hub.CleanRoom;
 
 import java.io.File;
@@ -22,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kiss.SinobuTest;
 import kiss.I;
+import kiss.SinobuTest;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.GenericPersonBean;
@@ -44,7 +43,6 @@ import kiss.sample.bean.TransientBean;
 import org.junit.Rule;
 import org.junit.Test;
 
-
 /**
  * @version 2011/03/22 17:17:16
  */
@@ -56,6 +54,13 @@ public class XMLTest {
 
     /** The serialization file. */
     private static final Path config = room.locateFile("config.xml");
+
+    /** The namespace definition for xpath. */
+    private static Map<String, String> namespaces = new HashMap();
+
+    static {
+        namespaces.put("ss", "sinobu");
+    }
 
     @Test
     public void list() throws Exception {
@@ -530,7 +535,7 @@ public class XMLTest {
 
         // list must not have ez:key attribute
         assertXPathEqual("String", config, "local-name(//String[1])");
-        assertXPathEqual("", config, "//String[1]/@ss:key");
+        assertXPathEqual("", config, "//String[1]/@ss:key", namespaces);
     }
 
     @Test
@@ -590,7 +595,7 @@ public class XMLTest {
         assert map.get("three").equals("three");
 
         // map must have ez:key attribute
-        assertXPathEqual("two", config, "//String[1]/@ss:key");
+        assertXPathEqual("two", config, "//String[1]/@ss:key", namespaces);
     }
 
     @Test
