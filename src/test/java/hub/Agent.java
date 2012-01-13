@@ -217,9 +217,6 @@ public class Agent extends ReusableRule {
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-
-            // ast.accept(new TraceClassVisitor(new PrintWriter(System.out)));
-
             return writer.toByteArray();
         }
     }
