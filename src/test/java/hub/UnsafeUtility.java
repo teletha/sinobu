@@ -10,15 +10,49 @@
 package hub;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
 
+import kiss.I;
 import sun.reflect.Reflection;
 import sun.reflect.ReflectionFactory;
-import kiss.I;
 
 /**
  * @version 2010/02/12 15:53:22
  */
 public class UnsafeUtility {
+
+    /**
+     * <p>
+     * Load the specified class in tools.jar.
+     * </p>
+     * 
+     * @param toolClassName A target tool class name.
+     * @return A loaded tool class.
+     */
+    public static Class getTool(String toolClassName) {
+        try {
+            // Try loading class directly, in case tool is on the bootclasspath.
+            return Class.forName(toolClassName, false, null);
+        } catch (ClassNotFoundException ignore) {
+            // search JAVA_HOME
+            Path home = I.locate(System.getProperty("java.home"));
+
+            if (home.getFileName().toString().equalsIgnoreCase("jre")) {
+                home = home.getParent();
+            }
+
+            try {
+                // load tools.jar
+                URLClassLoader loader = new URLClassLoader(new URL[] {home.resolve("lib/tools.jar").toUri().toURL()});
+
+                return Class.forName(toolClassName, false, loader);
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }
+    }
 
     /**
      * <p>

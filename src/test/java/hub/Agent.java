@@ -13,6 +13,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.ProtectionDomain;
@@ -20,13 +21,11 @@ import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import kiss.I;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
-
-import com.sun.tools.attach.VirtualMachine;
-
-import kiss.I;
 
 /**
  * <p>
@@ -36,6 +35,25 @@ import kiss.I;
  * @version 2012/01/10 19:09:14
  */
 public class Agent extends ReusableRule {
+
+    /** The entry point for Attach API. */
+    private static Method attach;
+
+    /** The entry point for Attach API. */
+    private static Method loadAgent;
+
+    // load Attach API
+    static {
+        // search attach method
+        try {
+            Class clazz = UnsafeUtility.getTool("com.sun.tools.attach.VirtualMachine");
+
+            attach = clazz.getMethod("attach", String.class);
+            loadAgent = clazz.getMethod("loadAgent", String.class);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
 
     /** The Instrumentation tool. */
     private volatile static Instrumentation tool;
@@ -120,7 +138,7 @@ public class Agent extends ReusableRule {
 
             // Load agent dynamically.
             String name = ManagementFactory.getRuntimeMXBean().getName();
-            VirtualMachine.attach(name.substring(0, name.indexOf('@'))).loadAgent(jar.toString());
+            loadAgent.invoke(attach.invoke(null, name.substring(0, name.indexOf('@'))), jar.toString());
         } catch (Exception e) {
             throw I.quiet(e);
         }
