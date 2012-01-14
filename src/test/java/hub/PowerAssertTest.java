@@ -10,7 +10,6 @@
 package hub;
 
 import hub.PowerAssert.PowerAssertionContext;
-import hub.PowerAssert.PowerAssertionError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +122,6 @@ public class PowerAssertTest {
         boolean value = false;
         PowerAssertionContext.get().recodeConstant("tes");
 
-        throw new PowerAssertionError();
+        throw new AssertionError();
     }
 }
