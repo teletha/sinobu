@@ -67,7 +67,7 @@ public class PowerAssertTest {
         short value = 2;
 
         test.willCapture("1", 1);
-        test.willCapture("value", value);
+        test.willCapture("value", (int) value);
         assert (short) 1 == value;
     }
 
@@ -120,9 +120,10 @@ public class PowerAssertTest {
 
     public void asm() {
         PowerAssertionContext context = new PowerAssertionContext();
-        String value = "test";
+        boolean value = false;
         context.addMethod("equals", "test", false);
         context.addExpression("==");
+        context.recodeLocalVariable(null, null, null, null, 1);
 
         Object aaa = "test".substring(1);
         Character.valueOf('c');
