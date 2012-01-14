@@ -9,9 +9,6 @@
  */
 package hub;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -25,11 +22,8 @@ public class PowerAssertUserTest {
 
     @Test
     public void testname() throws Exception {
-        List list = new ArrayList();
-        list.add("a");
-        list.add("b");
-        list.add("c");
+        boolean value = false;
 
-        assert list.size() == 34;
+        assert value;
     }
 }
