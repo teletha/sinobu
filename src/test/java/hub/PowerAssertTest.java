@@ -119,15 +119,10 @@ public class PowerAssertTest {
     }
 
     public void asm() {
-        PowerAssertionContext context = new PowerAssertionContext();
+
         boolean value = false;
-        context.addMethod("equals", "test", false);
-        context.recodeExpression("==");
-        context.recodeLocalVariable(null, null, null, null, 1);
+        PowerAssertionContext.get().recodeConstant("tes");
 
-        Object aaa = "test".substring(1);
-        Character.valueOf('c');
-
-        throw new PowerAssertionError(context);
+        throw new PowerAssertionError();
     }
 }

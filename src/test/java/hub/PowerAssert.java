@@ -20,7 +20,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+
+import kiss.I;
+import kiss.Manageable;
+import kiss.ThreadSpecific;
 
 import org.junit.Rule;
 import org.objectweb.asm.Type;
@@ -163,10 +166,7 @@ public class PowerAssert extends ReusableRule {
 
                                 MethodInsnNode thrower = (MethodInsnNode) node.getNext().getNext();
                                 thrower.owner = "hub/PowerAssert$PowerAssertionError";
-                                thrower.desc = "(Lhub/PowerAssert$PowerAssertionContext;)V";
-
-                                // load context
-                                methodNode.instructions.insertBefore(thrower, new VarInsnNode(ALOAD, methodNode.localVariables.size() + 1));
+                                thrower.desc = "()V";
                             }
                         }
 
@@ -197,15 +197,12 @@ public class PowerAssert extends ReusableRule {
      * @version 2012/01/11 10:48:47
      */
     private static final class BytecodeWriter
-            implements Constant<Type>, Variable<Type>, LocalVariable<Type>, Expression<Type> {
+            implements Constant<Type>, Variable<Type>, LocalVariable<Type>, Expression<Type>, MethodCall<Type> {
 
         private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
         /** The method bytecode. */
         private final MethodNode methodNode;
-
-        /** The local variable for context. */
-        private final LocalVariableInfo context;
 
         /** The declared local variable index. */
         private int declaredLocalVariableIndex;
@@ -220,37 +217,11 @@ public class PowerAssert extends ReusableRule {
             this.methodNode = methodNode;
             this.declaredLocalVariableIndex = methodNode.localVariables.size() + 1;
 
-            this.context = createVariable(PowerAssertionContext.class);
-
             for (LocalVariableNode local : (List<LocalVariableNode>) methodNode.localVariables) {
-                Integer key = Objects.hash("classname", methodNode.name, methodNode.desc, local.index);
-                System.out.println(key + "  " + local.name + "   " + methodNode.desc);
+                String id = PowerAssertionContext.computeLocalVariableId("class", methodNode.name, methodNode.desc, String.valueOf(local.index));
 
-                LocalVariableInfo2 info = LocalVariableInfo2.get("classname", methodNode.name, methodNode.desc, local.index);
-                info.name = local.name;
-                info.type = Type.getType(local.desc);
+                PowerAssertionContext.getLocalVariable(id, local);
             }
-        }
-
-        /**
-         * <p>
-         * Declare new local variable.
-         * </p>
-         * 
-         * @param clazz
-         * @return
-         */
-        private LocalVariableInfo createVariable(Class clazz) {
-            Type type = Type.getType(clazz);
-
-            // methodNode.instructions.add(new TypeInsnNode(NEW, type.getInternalName()));
-            // methodNode.instructions.add(new InsnNode(DUP));
-            // methodNode.instructions.add(new MethodInsnNode(INVOKESPECIAL, type.getInternalName(),
-            // "<init>", "()V"));
-            // methodNode.instructions.add(new VarInsnNode(ASTORE, declaredLocalVariableIndex));
-
-            // API definition
-            return new LocalVariableInfo(type, declaredLocalVariableIndex++);
         }
 
         /**
@@ -315,7 +286,7 @@ public class PowerAssert extends ReusableRule {
         public void recodeConstant(Type type) {
             AbstractInsnNode copy = index.clone(null);
 
-            read(context);
+            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
             write(copy);
             wrap(type);
             write(RecodableMethod.get(Constant.class).toNode());
@@ -328,7 +299,7 @@ public class PowerAssert extends ReusableRule {
         public void recodeVariable(Type type, String expression) {
             AbstractInsnNode copy = index.clone(null);
 
-            read(context);
+            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
             write(copy);
             wrap(type);
             write(new LdcInsnNode(expression));
@@ -336,20 +307,16 @@ public class PowerAssert extends ReusableRule {
         }
 
         /**
-         * @see hub.PowerAssert.LocalVariable#recodeLocalVariable(java.lang.Object,
-         *      java.lang.String, java.lang.String, java.lang.String, int)
+         * {@inheritDoc}
          */
         @Override
-        public void recodeLocalVariable(Type type, String className, String methodName, String methodDescription, int position) {
+        public void recodeLocalVariable(String id, Type type) {
             AbstractInsnNode copy = index.clone(null);
 
-            read(context);
+            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
+            write(new LdcInsnNode(PowerAssertionContext.computeLocalVariableId("class", methodNode.name, methodNode.desc, id)));
             write(copy);
             wrap(type);
-            write(new LdcInsnNode(className));
-            write(new LdcInsnNode(methodName));
-            write(new LdcInsnNode(methodDescription));
-            write(new IntInsnNode(BIPUSH, position));
             write(RecodableMethod.get(LocalVariable.class).toNode());
         }
 
@@ -358,9 +325,29 @@ public class PowerAssert extends ReusableRule {
          */
         @Override
         public void recodeExpression(String expression) {
-            read(context);
+            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
             write(new LdcInsnNode(expression));
             write(RecodableMethod.get(Expression.class).toNode());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void recodeMethod(String name, int paramsSize, Type type) {
+            Type returnType = type.getReturnType();
+
+            write(new InsnNode(DUP));
+            write(new VarInsnNode(returnType.getOpcode(ISTORE), declaredLocalVariableIndex + 1));
+
+            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
+            write(new LdcInsnNode(name));
+            write(new IntInsnNode(BIPUSH, paramsSize));
+            write(new VarInsnNode(returnType.getOpcode(ILOAD), declaredLocalVariableIndex + 1));
+
+            // warp primitive type if needed
+            wrap(returnType);
+            write(RecodableMethod.get(MethodCall.class).toNode());
         }
 
         /**
@@ -373,17 +360,6 @@ public class PowerAssert extends ReusableRule {
         private void write(AbstractInsnNode node) {
             methodNode.instructions.insert(index, node);
             index = node;
-        }
-
-        /**
-         * <p>
-         * Helper method to write bytecode in current location.
-         * </p>
-         * 
-         * @param node A code to write.
-         */
-        private void read(LocalVariableInfo node) {
-            write(new VarInsnNode(node.type.getOpcode(ILOAD), node.index));
         }
 
         private void add(AbstractInsnNode node) {
@@ -431,22 +407,9 @@ public class PowerAssert extends ReusableRule {
 
             case AbstractInsnNode.METHOD_INSN:
                 MethodInsnNode method = (MethodInsnNode) node;
-                Type returnType = Type.getReturnType(method.desc);
-                write(new InsnNode(DUP));
-                write(new VarInsnNode(returnType.getOpcode(ISTORE), declaredLocalVariableIndex + 1));
+                Type methodType = Type.getMethodType(method.desc);
 
-                read(context);
-                write(new LdcInsnNode(method.name));
-                write(new LdcInsnNode(method.desc));
-                write(new VarInsnNode(returnType.getOpcode(ILOAD), declaredLocalVariableIndex + 1));
-
-                // warp primitive type if needed
-                if (returnType == Type.BOOLEAN_TYPE) {
-                    write(new MethodInsnNode(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"));
-                } else if (returnType == Type.INT_TYPE) {
-                    write(new MethodInsnNode(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;"));
-                }
-                write(new MethodInsnNode(INVOKEVIRTUAL, context.type.getDescriptor(), "addMethod", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V"));
+                recodeMethod(method.name, methodType.getArgumentTypes().length, methodType);
                 break;
 
             case AbstractInsnNode.VAR_INSN:
@@ -470,8 +433,7 @@ public class PowerAssert extends ReusableRule {
                     localVariableType = OBJECT_TYPE;
                     break;
                 }
-
-                recodeLocalVariable(localVariableType, "classname", methodNode.name, methodNode.desc, localVariableNode.var);
+                recodeLocalVariable(String.valueOf(localVariableNode.var), localVariableType);
                 break;
 
             case AbstractInsnNode.JUMP_INSN:
@@ -492,31 +454,6 @@ public class PowerAssert extends ReusableRule {
                 break;
             }
         }
-
-        /**
-         * <p>
-         * Represention for local variable.
-         * </p>
-         * 
-         * @version 2012/01/14 10:02:55
-         */
-        public static class LocalVariableInfo {
-
-            /** The variable type. */
-            public Type type;
-
-            /** The variable index. */
-            public int index;
-
-            /**
-             * @param type
-             * @param index
-             */
-            public LocalVariableInfo(Type type, int index) {
-                this.type = type;
-                this.index = index;
-            }
-        }
     }
 
     /**
@@ -535,55 +472,21 @@ public class PowerAssert extends ReusableRule {
         /**
          * @param context
          */
-        public PowerAssertionError(PowerAssertionContext context) {
-            super(context.toString());
+        public PowerAssertionError() {
+            super(PowerAssertionContext.get().toString());
 
-            this.context = context;
-        }
-    }
-
-    /**
-     * <p>
-     * Represention for local variable.
-     * </p>
-     * 
-     * @version 2012/01/14 10:02:55
-     */
-    public static class LocalVariableInfo2 {
-
-        /** The local variable name mapping. */
-        private static final Map<Integer, LocalVariableInfo2> locals = new HashMap();
-
-        /** The variable type. */
-        public Type type;
-
-        /** The variable name. */
-        public String name;
-
-        /** The variable id. */
-        public Integer key;
-
-        private int index;
-
-        public static LocalVariableInfo2 get(String className, String methodName, String descriptor, int index) {
-            Integer key = Objects.hash(className, methodName, descriptor, index);
-            LocalVariableInfo2 local = locals.get(key);
-
-            if (local == null) {
-                local = new LocalVariableInfo2();
-                local.key = key;
-                local.index = index;
-
-                locals.put(key, local);
-            }
-            return local;
+            this.context = PowerAssertionContext.get();
         }
     }
 
     /**
      * @version 2012/01/11 11:27:35
      */
-    public static class PowerAssertionContext implements Constant, Variable, LocalVariable, Expression {
+    @Manageable(lifestyle = ThreadSpecific.class)
+    public static class PowerAssertionContext implements Constant, Variable, LocalVariable, Expression, MethodCall {
+
+        /** The local variable name mapping. */
+        private static final Map<String, Local> locals = new HashMap();
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
@@ -612,24 +515,24 @@ public class PowerAssert extends ReusableRule {
             Operand operand = new Operand(expression, variable);
             stack.add(operand);
             operands.add(operand);
+
         }
 
         /**
-         * @see hub.PowerAssert.LocalVariable#recodeLocalVariable(java.lang.Object,
-         *      java.lang.String, java.lang.String, int)
+         * {@inheritDoc}
          */
         @Override
-        public void recodeLocalVariable(Object variable, String className, String methodName, String methodDescription, int index) {
+        public void recodeLocalVariable(String id, Object variable) {
             Operand operand;
-            LocalVariableInfo2 info = LocalVariableInfo2.get(className, methodName, methodDescription, index);
+            Local local = getLocalVariable(id, null);
 
-            switch (info.type.getSort()) {
+            switch (local.type.getSort()) {
             case BOOLEAN:
-                operand = new Operand(info.name, (int) variable == 1);
+                operand = new Operand(local.name, (int) variable == 1);
                 break;
 
             default:
-                operand = new Operand(info.name, variable);
+                operand = new Operand(local.name, variable);
                 break;
             }
 
@@ -656,16 +559,18 @@ public class PowerAssert extends ReusableRule {
             }
         }
 
-        public void addMethod(String name, String description, Object value) {
-            Type type = Type.getMethodType(description);
-
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void recodeMethod(String name, int paramsSize, Object value) {
             // build method invocation
             StringBuilder invocation = new StringBuilder("()");
 
-            for (int i = 0, length = type.getArgumentTypes().length; i < length; i++) {
+            for (int i = 0; i < paramsSize; i++) {
                 invocation.insert(1, stack.pollLast());
 
-                if (i + 1 != length) {
+                if (i + 1 != paramsSize) {
                     invocation.insert(1, ", ");
                 }
             }
@@ -690,6 +595,57 @@ public class PowerAssert extends ReusableRule {
                 }
             }
             return builder.toString();
+        }
+
+        public static PowerAssertionContext get() {
+            return I.make(PowerAssertionContext.class);
+        }
+
+        /**
+         * @param id
+         * @param node
+         */
+        public static Local getLocalVariable(String id, LocalVariableNode node) {
+            Local local = locals.get(id);
+
+            if (local == null) {
+                local = new Local();
+
+                locals.put(id, local);
+            }
+
+            if (local.name == null && node != null) {
+                local.name = node.name;
+                local.type = Type.getType(node.desc);
+            }
+            return local;
+        }
+
+        /**
+         * <p>
+         * Compute identifier for local variable.
+         * </p>
+         * 
+         * @param className
+         * @param methodName
+         * @param methodDescriptor
+         * @param position
+         * @return
+         */
+        public static String computeLocalVariableId(String className, String methodName, String methodDescriptor, String position) {
+            return className + methodName + methodDescriptor + position;
+        }
+
+        /**
+         * @version 2012/01/14 20:50:07
+         */
+        private static class Local {
+
+            /** The variable type. */
+            public Type type;
+
+            /** The variable name. */
+            public String name;
         }
     }
 
@@ -802,7 +758,7 @@ public class PowerAssert extends ReusableRule {
          * @param variable
          * @param expression
          */
-        void recodeLocalVariable(T variable, String className, String methodName, String methodDescription, int index);
+        void recodeLocalVariable(String id, T variable);
     }
 
     /**
@@ -835,6 +791,22 @@ public class PowerAssert extends ReusableRule {
          * @param expression
          */
         void recodeExpression(String expression);
+    }
+
+    /**
+     * @version 2012/01/14 14:42:28
+     */
+    private static interface MethodCall<T> extends Recodable {
+
+        /**
+         * <p>
+         * Recode constant.
+         * </p>
+         * 
+         * @param variable
+         * @param expression
+         */
+        void recodeMethod(String name, int paramsSize, T value);
     }
 
     /**
