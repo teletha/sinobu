@@ -24,7 +24,10 @@ import java.util.jar.Manifest;
 import kiss.I;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 /**
@@ -70,6 +73,17 @@ public class Agent extends ReusableRule {
      */
     public Agent(Translator translator) {
         this(new TranslatorTransformer(translator));
+    }
+
+    /**
+     * <p>
+     * Create dynamic Agent.
+     * </p>
+     * 
+     * @param translator
+     */
+    public Agent(MethodTranslator translator) {
+        this(new MethodTranslatorTransformer(translator));
     }
 
     /**
@@ -153,6 +167,33 @@ public class Agent extends ReusableRule {
     }
 
     /**
+     * @version 2012/01/14 13:08:33
+     */
+    public static abstract class MethodTranslator extends MethodVisitor {
+
+        /**
+         * 
+         */
+        protected MethodTranslator() {
+            super(Opcodes.ASM4, null);
+        }
+
+        void set(MethodVisitor visitor) {
+            mv = visitor;
+        }
+
+        /**
+         * <p>
+         * Chech whether the specified class should translate or not.
+         * </p>
+         * 
+         * @param internalName A internal class name.
+         * @return A result.
+         */
+        public abstract boolean canTranslate(String internalName);
+    }
+
+    /**
      * @version 2012/01/10 19:59:03
      */
     public static interface Translator {
@@ -175,6 +216,64 @@ public class Agent extends ReusableRule {
          * @param node An abstract syntax tree.
          */
         void translate(ClassNode ast);
+    }
+
+    /**
+     * @version 2012/01/14 13:09:23
+     */
+    private static final class MethodTranslatorTransformer implements ClassFileTransformer {
+
+        /** The delegator. */
+        private final MethodTranslator translator;
+
+        /**
+         * @param translator
+         */
+        private MethodTranslatorTransformer(MethodTranslator translator) {
+            this.translator = translator;
+        }
+
+        /**
+         * @see java.lang.instrument.ClassFileTransformer#transform(java.lang.ClassLoader,
+         *      java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])
+         */
+        @Override
+        public byte[] transform(ClassLoader loader, String name, Class<?> clazz, ProtectionDomain domain, byte[] bytes) {
+            if (!translator.canTranslate(name)) {
+                return bytes;
+            }
+
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+            ClassTranslator visitor = new ClassTranslator(writer);
+            ClassReader reader = new ClassReader(bytes);
+            reader.accept(visitor, ClassReader.EXPAND_FRAMES);
+
+            return writer.toByteArray();
+        }
+
+        /**
+         * @version 2012/01/14 13:16:21
+         */
+        private class ClassTranslator extends ClassVisitor {
+
+            /**
+             * @param arg0
+             */
+            private ClassTranslator(ClassWriter writer) {
+                super(Opcodes.ASM4, writer);
+            }
+
+            /**
+             * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String,
+             *      java.lang.String, java.lang.String, java.lang.String[])
+             */
+            @Override
+            public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+                translator.set(super.visitMethod(access, name, desc, signature, exceptions));
+
+                return translator;
+            }
+        }
     }
 
     /**

@@ -196,7 +196,8 @@ public class PowerAssert extends ReusableRule {
     /**
      * @version 2012/01/11 10:48:47
      */
-    private static final class BytecodeWriter implements Constant<Type>, Variable<Type>, LocalVariable<Type> {
+    private static final class BytecodeWriter
+            implements Constant<Type>, Variable<Type>, LocalVariable<Type>, Expression<Type> {
 
         private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
@@ -353,6 +354,16 @@ public class PowerAssert extends ReusableRule {
         }
 
         /**
+         * @see hub.PowerAssert.Expression#recodeExpression(java.lang.String)
+         */
+        @Override
+        public void recodeExpression(String expression) {
+            read(context);
+            write(new LdcInsnNode(expression));
+            write(RecodableMethod.get(Expression.class).toNode());
+        }
+
+        /**
          * <p>
          * Helper method to write bytecode in current location.
          * </p>
@@ -464,22 +475,20 @@ public class PowerAssert extends ReusableRule {
                 break;
 
             case AbstractInsnNode.JUMP_INSN:
-                read(context);
-
                 switch (node.getOpcode()) {
                 case IFEQ:
                 case IF_ICMPEQ:
                 case IF_ACMPEQ:
-                    write(new LdcInsnNode("=="));
+                    recodeExpression("==");
                     break;
 
                 case IFNE:
                 case IF_ICMPNE:
                 case IF_ACMPNE:
-                    write(new LdcInsnNode("!="));
+                    recodeExpression("!=");
                     break;
                 }
-                write(new MethodInsnNode(INVOKEVIRTUAL, context.type.getDescriptor(), "addExpression", "(Ljava/lang/String;)V"));
+
                 break;
             }
         }
@@ -554,6 +563,8 @@ public class PowerAssert extends ReusableRule {
         /** The variable id. */
         public Integer key;
 
+        private int index;
+
         public static LocalVariableInfo2 get(String className, String methodName, String descriptor, int index) {
             Integer key = Objects.hash(className, methodName, descriptor, index);
             LocalVariableInfo2 local = locals.get(key);
@@ -561,6 +572,7 @@ public class PowerAssert extends ReusableRule {
             if (local == null) {
                 local = new LocalVariableInfo2();
                 local.key = key;
+                local.index = index;
 
                 locals.put(key, local);
             }
@@ -571,7 +583,7 @@ public class PowerAssert extends ReusableRule {
     /**
      * @version 2012/01/11 11:27:35
      */
-    public static class PowerAssertionContext implements Constant, Variable, LocalVariable {
+    public static class PowerAssertionContext implements Constant, Variable, LocalVariable, Expression {
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
@@ -625,49 +637,11 @@ public class PowerAssert extends ReusableRule {
             operands.add(operand);
         }
 
-        public void addVariable(int value, String name) {
-            Operand operand = new Operand(name, value);
-            stack.add(operand);
-            operands.add(operand);
-        }
-
-        public void addVariable(long value, String name) {
-            Operand operand = new Operand(name, value);
-            stack.add(operand);
-            operands.add(operand);
-        }
-
-        public void addVariable(float value, String name) {
-            Operand operand = new Operand(name, value);
-            stack.add(operand);
-            operands.add(operand);
-        }
-
-        public void addVariable(double value, String name) {
-            Operand operand = new Operand(name, value);
-            stack.add(operand);
-            operands.add(operand);
-        }
-
-        public void addVariable(short value, String name) {
-            Operand operand = new Operand(name, value);
-            stack.add(operand);
-            operands.add(operand);
-        }
-
-        public void addVariable(boolean value, String name) {
-            Operand operand = new Operand(name, value);
-            stack.add(operand);
-            operands.add(operand);
-        }
-
-        public void addVariable(Object value, String name) {
-            Operand operand = new Operand(name, value);
-            stack.add(operand);
-            operands.add(operand);
-        }
-
-        public void addExpression(String expression) {
+        /**
+         * @see hub.PowerAssert.Expression#recodeExpression(java.lang.String)
+         */
+        @Override
+        public void recodeExpression(String expression) {
             switch (stack.size()) {
             case 0:
                 break;
@@ -696,8 +670,6 @@ public class PowerAssert extends ReusableRule {
                 }
             }
             invocation.insert(0, name).insert(0, '.').insert(0, stack.pollLast());
-
-            // code.append(invocation);
 
             Operand operand = new Operand(invocation.toString(), value);
             stack.add(operand);
@@ -847,6 +819,22 @@ public class PowerAssert extends ReusableRule {
          * @param expression
          */
         void recodeVariable(T variable, String expression);
+    }
+
+    /**
+     * @version 2012/01/14 14:42:28
+     */
+    private static interface Expression<T> extends Recodable {
+
+        /**
+         * <p>
+         * Recode constant.
+         * </p>
+         * 
+         * @param variable
+         * @param expression
+         */
+        void recodeExpression(String expression);
     }
 
     /**
