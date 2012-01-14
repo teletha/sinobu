@@ -30,7 +30,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
@@ -105,11 +104,11 @@ public class PowerAssert extends ReusableRule {
      */
     @Override
     protected Throwable validateError(Throwable throwable) {
-        if (selfTest && throwable instanceof PowerAssertionError) {
-            PowerAssertionError error = (PowerAssertionError) throwable;
+        if (selfTest && throwable instanceof AssertionError) {
+            PowerAssertionContext context = PowerAssertionContext.get();
 
             for (Operand expected : expecteds) {
-                if (!error.context.operands.contains(expected)) {
+                if (!context.operands.contains(expected)) {
                     return new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value);
                 }
             }
@@ -139,12 +138,6 @@ public class PowerAssert extends ReusableRule {
         public void translate(ClassNode ast) {
             for (MethodNode methodNode : (List<MethodNode>) ast.methods) {
                 // create context
-                InsnList context = new InsnList();
-                context.add(new TypeInsnNode(NEW, "hub/PowerAssert$PowerAssertionContext"));
-                context.add(new InsnNode(DUP));
-                context.add(new MethodInsnNode(INVOKESPECIAL, "hub/PowerAssert$PowerAssertionContext", "<init>", "()V"));
-                context.add(new VarInsnNode(ASTORE, methodNode.localVariables.size() + 1));
-
                 boolean underAssertion = false;
                 BytecodeWriter builder = new BytecodeWriter(methodNode);
 
@@ -162,11 +155,12 @@ public class PowerAssert extends ReusableRule {
                                 underAssertion = false;
 
                                 // replace error
-                                type.desc = "hub/PowerAssert$PowerAssertionError";
 
                                 MethodInsnNode thrower = (MethodInsnNode) node.getNext().getNext();
-                                thrower.owner = "hub/PowerAssert$PowerAssertionError";
-                                thrower.desc = "()V";
+                                thrower.owner = "java/lang/AssertionError";
+                                thrower.desc = "(Ljava/lang/Object;)V";
+
+                                methodNode.instructions.insertBefore(thrower, new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
                             }
                         }
 
@@ -187,8 +181,6 @@ public class PowerAssert extends ReusableRule {
                         }
                     }
                 }
-
-                methodNode.instructions.insert(context);
             }
         }
     }
@@ -453,29 +445,6 @@ public class PowerAssert extends ReusableRule {
 
                 break;
             }
-        }
-    }
-
-    /**
-     * @version 2012/01/11 11:15:09
-     */
-    public static class PowerAssertionError extends AssertionError {
-
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 4801744854945741947L;
-
-        /** The error context. */
-        private final PowerAssertionContext context;
-
-        /**
-         * @param context
-         */
-        public PowerAssertionError() {
-            super(PowerAssertionContext.get().toString());
-
-            this.context = PowerAssertionContext.get();
         }
     }
 
