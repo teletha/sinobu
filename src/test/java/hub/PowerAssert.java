@@ -155,9 +155,7 @@ public class PowerAssert extends ReusableRule {
                                 underAssertion = false;
 
                                 // replace error
-
                                 MethodInsnNode thrower = (MethodInsnNode) node.getNext().getNext();
-                                thrower.owner = "java/lang/AssertionError";
                                 thrower.desc = "(Ljava/lang/Object;)V";
 
                                 methodNode.instructions.insertBefore(thrower, new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
