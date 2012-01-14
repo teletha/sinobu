@@ -122,7 +122,7 @@ public class PowerAssertTest {
         PowerAssertionContext context = new PowerAssertionContext();
         boolean value = false;
         context.addMethod("equals", "test", false);
-        context.addExpression("==");
+        context.recodeExpression("==");
         context.recodeLocalVariable(null, null, null, null, 1);
 
         Object aaa = "test".substring(1);
