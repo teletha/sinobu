@@ -17,7 +17,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,18 +25,8 @@ import kiss.Manageable;
 import kiss.ThreadSpecific;
 
 import org.junit.Rule;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.IntInsnNode;
-import org.objectweb.asm.tree.LdcInsnNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.TypeInsnNode;
-import org.objectweb.asm.tree.VarInsnNode;
 
 /**
  * @version 2012/01/10 9:52:42
@@ -45,13 +34,10 @@ import org.objectweb.asm.tree.VarInsnNode;
 public class PowerAssert extends ReusableRule {
 
     @Rule
-    private final Agent agent = new Agent(new PowerAssertTranslator());
+    private final Agent agent = new Agent(PowerAssertTranslator.class);
 
     /** The caller class. */
     private final Class caller;
-
-    /** The internal name of caller class. */
-    private final String internalName;
 
     /** The tester flag. */
     private final boolean selfTest;
@@ -64,7 +50,6 @@ public class PowerAssert extends ReusableRule {
      */
     public PowerAssert() {
         this.caller = UnsafeUtility.getCaller(1);
-        this.internalName = caller.getName().replace('.', '/');
         this.selfTest = false;
 
         // force to transform
@@ -76,7 +61,6 @@ public class PowerAssert extends ReusableRule {
      */
     PowerAssert(boolean selfTest) {
         this.caller = UnsafeUtility.getCaller(1);
-        this.internalName = caller.getName().replace('.', '/');
         this.selfTest = selfTest;
 
         // force to transform
@@ -109,7 +93,7 @@ public class PowerAssert extends ReusableRule {
 
             for (Operand expected : expecteds) {
                 if (!context.operands.contains(expected)) {
-                    return new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value);
+                    return new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n\r\n" + context);
                 }
             }
             return null;
@@ -118,100 +102,33 @@ public class PowerAssert extends ReusableRule {
         }
     }
 
+    private static final Type OBJECT_TYPE = Type.getType(Object.class);
+
     /**
-     * @version 2012/01/10 11:51:03
+     * @version 2012/01/14 22:48:47
      */
-    private final class PowerAssertTranslator implements Translator {
+    private final class PowerAssertTranslator extends Translator {
+
+        /** The state. */
+        private boolean startAssertion = false;
+
+        /** The state. */
+        private boolean skipNextJump = false;
+
+        /** The state. */
+        private boolean processAssertion = false;
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public boolean canTranslate(String name) {
-            return name.equals(internalName);
-        }
+        public void visitCode() {
+            super.visitCode();
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void translate(ClassNode ast) {
-            for (MethodNode methodNode : (List<MethodNode>) ast.methods) {
-                // create context
-                boolean underAssertion = false;
-                BytecodeWriter builder = new BytecodeWriter(methodNode);
-
-                Iterator<AbstractInsnNode> nodes = methodNode.instructions.iterator();
-
-                while (nodes.hasNext()) {
-                    AbstractInsnNode node = nodes.next();
-
-                    if (underAssertion) {
-                        // check end
-                        if (node.getType() == AbstractInsnNode.TYPE_INSN) {
-                            TypeInsnNode type = (TypeInsnNode) node;
-
-                            if (type.getOpcode() == NEW && type.desc.equals("java/lang/AssertionError")) {
-                                underAssertion = false;
-
-                                // replace error
-                                MethodInsnNode thrower = (MethodInsnNode) node.getNext().getNext();
-                                thrower.desc = "(Ljava/lang/Object;)V";
-
-                                methodNode.instructions.insertBefore(thrower, new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
-                            }
-                        }
-
-                        // construct assert statement
-                        builder.add(node);
-                    } else if (node.getType() == AbstractInsnNode.FIELD_INSN) {
-                        FieldInsnNode field = (FieldInsnNode) node;
-
-                        if (field.getOpcode() == GETSTATIC && field.name.equals("$assertionsDisabled")) {
-                            underAssertion = true;
-
-                            // reset stack frame depth
-                            methodNode.maxStack = 0;
-                            methodNode.maxLocals = 0;
-
-                            // skip next jump
-                            nodes.next();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * @version 2012/01/11 10:48:47
-     */
-    private static final class BytecodeWriter
-            implements Constant<Type>, Variable<Type>, LocalVariable<Type>, Expression<Type>, MethodCall<Type> {
-
-        private static final Type OBJECT_TYPE = Type.getType(Object.class);
-
-        /** The method bytecode. */
-        private final MethodNode methodNode;
-
-        /** The declared local variable index. */
-        private int declaredLocalVariableIndex;
-
-        /** The index node to insert. */
-        private AbstractInsnNode index;
-
-        /**
-         * @param methodNode
-         */
-        private BytecodeWriter(MethodNode methodNode) {
-            this.methodNode = methodNode;
-            this.declaredLocalVariableIndex = methodNode.localVariables.size() + 1;
-
-            for (LocalVariableNode local : (List<LocalVariableNode>) methodNode.localVariables) {
-                String id = PowerAssertionContext.computeLocalVariableId("class", methodNode.name, methodNode.desc, String.valueOf(local.index));
-
-                PowerAssertionContext.getLocalVariable(id, local);
-            }
+            // reset
+            startAssertion = false;
+            skipNextJump = false;
+            processAssertion = false;
         }
 
         /**
@@ -226,7 +143,7 @@ public class PowerAssert extends ReusableRule {
             Type wrapper = getWrapperType(type);
 
             if (wrapper != type) {
-                write(new MethodInsnNode(INVOKESTATIC, wrapper.getInternalName(), "valueOf", Type.getMethodDescriptor(wrapper, type)));
+                super.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", Type.getMethodDescriptor(wrapper, type));
             }
         }
 
@@ -269,100 +186,125 @@ public class PowerAssert extends ReusableRule {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void recodeConstant(Type type) {
-            AbstractInsnNode copy = index.clone(null);
-
-            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
-            write(copy);
-            wrap(type);
-            write(RecodableMethod.get(Constant.class).toNode());
+        private void context() {
+            super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;");
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void recodeVariable(Type type, String expression) {
-            AbstractInsnNode copy = index.clone(null);
+        public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+            if (!startAssertion && opcode == GETSTATIC && name.equals("$assertionsDisabled")) {
+                startAssertion = true;
+                skipNextJump = true;
 
-            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
-            write(copy);
-            wrap(type);
-            write(new LdcInsnNode(expression));
-            write(RecodableMethod.get(Variable.class).toNode());
+                super.visitFieldInsn(opcode, owner, name, desc);
+            } else {
+                super.visitFieldInsn(opcode, owner, name, desc);
+            }
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void recodeLocalVariable(String id, Type type) {
-            AbstractInsnNode copy = index.clone(null);
+        public void visitJumpInsn(int opcode, Label label) {
+            if (skipNextJump) {
+                skipNextJump = false;
+                processAssertion = true;
 
-            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
-            write(new LdcInsnNode(PowerAssertionContext.computeLocalVariableId("class", methodNode.name, methodNode.desc, id)));
-            write(copy);
-            wrap(type);
-            write(RecodableMethod.get(LocalVariable.class).toNode());
-        }
+                super.visitJumpInsn(opcode, label);
+            } else if (!processAssertion) {
+                super.visitJumpInsn(opcode, label);
+            } else {
+                super.visitJumpInsn(opcode, label);
 
-        /**
-         * @see hub.PowerAssert.Expression#recodeExpression(java.lang.String)
-         */
-        @Override
-        public void recodeExpression(String expression) {
-            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
-            write(new LdcInsnNode(expression));
-            write(RecodableMethod.get(Expression.class).toNode());
+                switch (opcode) {
+                case IFEQ:
+                case IF_ICMPEQ:
+                case IF_ACMPEQ:
+                    super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;");
+                    super.visitLdcInsn("==");
+                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeExpression", "(Ljava/lang/String;)V");
+                    break;
+
+                case IFNE:
+                case IF_ICMPNE:
+                case IF_ACMPNE:
+                    super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;");
+                    super.visitLdcInsn("!=");
+                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeExpression", "(Ljava/lang/String;)V");
+                    break;
+                }
+            }
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void recodeMethod(String name, int paramsSize, Type type) {
-            Type returnType = type.getReturnType();
+        public void visitTypeInsn(int opcode, String type) {
+            if (processAssertion && opcode == NEW && type.equals("java/lang/AssertionError")) {
+                processAssertion = false;
 
-            write(new InsnNode(DUP));
-            write(new VarInsnNode(returnType.getOpcode(ISTORE), declaredLocalVariableIndex + 1));
-
-            write(new MethodInsnNode(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;"));
-            write(new LdcInsnNode(name));
-            write(new IntInsnNode(BIPUSH, paramsSize));
-            write(new VarInsnNode(returnType.getOpcode(ILOAD), declaredLocalVariableIndex + 1));
-
-            // warp primitive type if needed
-            wrap(returnType);
-            write(RecodableMethod.get(MethodCall.class).toNode());
+                super.visitTypeInsn(opcode, type);
+            } else {
+                super.visitTypeInsn(opcode, type);
+            }
         }
 
         /**
-         * <p>
-         * Helper method to write bytecode in current location.
-         * </p>
-         * 
-         * @param node A code to write.
+         * {@inheritDoc}
          */
-        private void write(AbstractInsnNode node) {
-            methodNode.instructions.insert(index, node);
-            index = node;
+        @Override
+        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+            if (opcode == INVOKESPECIAL && owner.equals("java/lang/AssertionError")) {
+                super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;");
+                super.visitMethodInsn(opcode, owner, name, "(Ljava/lang/Object;)V");
+            } else if (!processAssertion) {
+                super.visitMethodInsn(opcode, owner, name, desc);
+            } else {
+                Type methodType = Type.getType(desc);
+                Type returnType = methodType.getReturnType();
+
+                super.visitMethodInsn(opcode, owner, name, desc);
+                super.visitInsn(DUP);
+                super.visitVarInsn(returnType.getOpcode(ISTORE), 0);
+
+                context();
+                super.visitLdcInsn(name);
+                super.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
+                super.visitVarInsn(returnType.getOpcode(ILOAD), 0);
+                wrap(returnType);
+                super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeMethod", "(Ljava/lang/String;ILjava/lang/Object;)V");
+            }
         }
 
-        private void add(AbstractInsnNode node) {
-            // update index
-            index = node;
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visitIntInsn(int opcode, int operand) {
+            super.visitIntInsn(opcode, operand);
 
-            switch (node.getType()) {
-            case AbstractInsnNode.INT_INSN:
-                recodeConstant(INT_TYPE);
-                break;
+            if (processAssertion) {
+                context();
+                super.visitIntInsn(opcode, operand);
+                wrap(INT_TYPE);
+                super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeConstant", "(Ljava/lang/Object;)V");
+            }
+        }
 
-            case AbstractInsnNode.INSN:
-                switch (node.getOpcode()) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visitInsn(int opcode) {
+            super.visitInsn(opcode);
+
+            if (processAssertion) {
+                switch (opcode) {
                 case ICONST_M1:
                 case ICONST_0:
                 case ICONST_1:
@@ -370,43 +312,66 @@ public class PowerAssert extends ReusableRule {
                 case ICONST_3:
                 case ICONST_4:
                 case ICONST_5:
-                    recodeConstant(INT_TYPE);
+                    context();
+                    super.visitInsn(opcode);
+                    wrap(INT_TYPE);
+                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeConstant", "(Ljava/lang/Object;)V");
                     break;
 
                 case LCONST_0:
                 case LCONST_1:
-                    recodeConstant(LONG_TYPE);
+                    context();
+                    super.visitInsn(opcode);
+                    wrap(LONG_TYPE);
+                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeConstant", "(Ljava/lang/Object;)V");
                     break;
 
                 case FCONST_0:
                 case FCONST_1:
                 case FCONST_2:
-                    recodeConstant(FLOAT_TYPE);
+                    context();
+                    super.visitInsn(opcode);
+                    wrap(FLOAT_TYPE);
+                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeConstant", "(Ljava/lang/Object;)V");
                     break;
 
                 case DCONST_0:
                 case DCONST_1:
-                    recodeConstant(DOUBLE_TYPE);
+                    context();
+                    super.visitInsn(opcode);
+                    wrap(DOUBLE_TYPE);
+                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeConstant", "(Ljava/lang/Object;)V");
                     break;
                 }
-                break;
+            }
+        }
 
-            case AbstractInsnNode.LDC_INSN:
-                recodeConstant(Type.getType(((LdcInsnNode) node).cst.getClass()));
-                break;
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visitLdcInsn(Object value) {
+            super.visitLdcInsn(value);
 
-            case AbstractInsnNode.METHOD_INSN:
-                MethodInsnNode method = (MethodInsnNode) node;
-                Type methodType = Type.getMethodType(method.desc);
+            if (processAssertion) {
+                context();
+                super.visitLdcInsn(value);
+                wrap(Type.getType(value.getClass()));
+                super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeConstant", "(Ljava/lang/Object;)V");
+            }
+        }
 
-                recodeMethod(method.name, methodType.getArgumentTypes().length, methodType);
-                break;
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visitVarInsn(int opcode, int var) {
+            super.visitVarInsn(opcode, var);
 
-            case AbstractInsnNode.VAR_INSN:
-                VarInsnNode localVariableNode = (VarInsnNode) node;
+            if (processAssertion) {
                 Type localVariableType = Type.INT_TYPE;
 
-                switch (localVariableNode.getOpcode()) {
+                switch (opcode) {
                 case LLOAD:
                     localVariableType = Type.LONG_TYPE;
                     break;
@@ -423,27 +388,27 @@ public class PowerAssert extends ReusableRule {
                     localVariableType = OBJECT_TYPE;
                     break;
                 }
-                recodeLocalVariable(String.valueOf(localVariableNode.var), localVariableType);
-                break;
 
-            case AbstractInsnNode.JUMP_INSN:
-                switch (node.getOpcode()) {
-                case IFEQ:
-                case IF_ICMPEQ:
-                case IF_ACMPEQ:
-                    recodeExpression("==");
-                    break;
-
-                case IFNE:
-                case IF_ICMPNE:
-                case IF_ACMPNE:
-                    recodeExpression("!=");
-                    break;
-                }
-
-                break;
+                super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertionContext", "get", "()Lhub/PowerAssert$PowerAssertionContext;");
+                super.visitLdcInsn(PowerAssertionContext.computeLocalVariableId("class", methodName, methodType.getDescriptor(), String.valueOf(var)));
+                super.visitVarInsn(opcode, var);
+                wrap(localVariableType);
+                super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertionContext", "recodeLocalVariable", "(Ljava/lang/String;Ljava/lang/Object;)V");
             }
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+            super.visitLocalVariable(name, desc, signature, start, end, index);
+
+            String id = PowerAssertionContext.computeLocalVariableId("class", methodName, methodType.getDescriptor(), String.valueOf(index));
+
+            PowerAssertionContext.getLocalVariable(id, name, Type.getType(desc));
+        }
+
     }
 
     /**
@@ -472,6 +437,7 @@ public class PowerAssert extends ReusableRule {
             Operand operand = new Operand(constant);
             stack.add(operand);
             operands.add(operand);
+
         }
 
         /**
@@ -482,7 +448,6 @@ public class PowerAssert extends ReusableRule {
             Operand operand = new Operand(expression, variable);
             stack.add(operand);
             operands.add(operand);
-
         }
 
         /**
@@ -491,10 +456,11 @@ public class PowerAssert extends ReusableRule {
         @Override
         public void recodeLocalVariable(String id, Object variable) {
             Operand operand;
-            Local local = getLocalVariable(id, null);
+            Local local = locals.get(id);
 
             switch (local.type.getSort()) {
             case BOOLEAN:
+
                 operand = new Operand(local.name, (int) variable == 1);
                 break;
 
@@ -572,7 +538,7 @@ public class PowerAssert extends ReusableRule {
          * @param id
          * @param node
          */
-        public static Local getLocalVariable(String id, LocalVariableNode node) {
+        public static Local getLocalVariable(String id, String name, Type type) {
             Local local = locals.get(id);
 
             if (local == null) {
@@ -581,9 +547,9 @@ public class PowerAssert extends ReusableRule {
                 locals.put(id, local);
             }
 
-            if (local.name == null && node != null) {
-                local.name = node.name;
-                local.type = Type.getType(node.desc);
+            if (local.name == null && name != null) {
+                local.name = name;
+                local.type = type;
             }
             return local;
         }
@@ -805,17 +771,6 @@ public class PowerAssert extends ReusableRule {
             this.type = Type.getType(method);
             this.descriptor = type.getDescriptor();
             this.owner = Type.getType(method.getDeclaringClass()).getInternalName();
-        }
-
-        /**
-         * <p>
-         * Convert to method node.
-         * </p>
-         * 
-         * @return
-         */
-        private MethodInsnNode toNode() {
-            return new MethodInsnNode(INVOKEINTERFACE, owner, name, descriptor);
         }
 
         /**
