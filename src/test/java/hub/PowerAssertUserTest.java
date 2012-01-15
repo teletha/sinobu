@@ -32,4 +32,14 @@ public class PowerAssertUserTest {
 
         assert list.size() == 2;
     }
+
+    @Test
+    public void testname1() throws Exception {
+        List list = new ArrayList();
+        list.add(1);
+        list.add(3);
+        list.add("test");
+
+        assert list.size() == 2;
+    }
 }

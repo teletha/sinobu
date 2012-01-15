@@ -120,7 +120,7 @@ public class PowerAssertTest {
     public void asm() {
 
         boolean value = false;
-        PowerAssertionContext.get().recodeConstant("tes");
+        PowerAssertionContext.get().recodeMethod(null, 1, null);
 
         throw new AssertionError();
     }

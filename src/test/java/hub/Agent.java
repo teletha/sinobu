@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -28,7 +30,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.Type;
 
 /**
  * <p>
@@ -58,6 +60,9 @@ public class Agent extends ReusableRule {
         }
     }
 
+    /** The redefined classes. */
+    private static final Set<String> redefines = new HashSet();
+
     /** The Instrumentation tool. */
     private volatile static Instrumentation tool;
 
@@ -71,19 +76,8 @@ public class Agent extends ReusableRule {
      * 
      * @param translator
      */
-    public Agent(Translator translator) {
+    public Agent(Class<? extends Translator> translator) {
         this(new TranslatorTransformer(translator));
-    }
-
-    /**
-     * <p>
-     * Create dynamic Agent.
-     * </p>
-     * 
-     * @param translator
-     */
-    public Agent(MethodTranslator translator) {
-        this(new MethodTranslatorTransformer(translator));
     }
 
     /**
@@ -116,6 +110,7 @@ public class Agent extends ReusableRule {
      */
     public void transform(Class target) {
         try {
+            redefines.add(target.getName().replace('.', '/'));
             tool.retransformClasses(target);
         } catch (UnmodifiableClassException e) {
             throw I.quiet(e);
@@ -169,67 +164,49 @@ public class Agent extends ReusableRule {
     /**
      * @version 2012/01/14 13:08:33
      */
-    public static abstract class MethodTranslator extends MethodVisitor {
+    public static abstract class Translator extends MethodVisitor {
+
+        /** The internal class name. */
+        protected String className;
+
+        /** The internal method name. */
+        protected String methodName;
+
+        /** The internal method type. */
+        protected Type methodType;
 
         /**
          * 
          */
-        protected MethodTranslator() {
+        protected Translator() {
             super(Opcodes.ASM4, null);
         }
 
-        void set(MethodVisitor visitor) {
+        /**
+         * <p>
+         * Lazy set up.
+         * </p>
+         */
+        final void set(MethodVisitor visitor, String className, String methodName, Type methodDescriptor) {
             mv = visitor;
+            this.className = className;
+            this.methodName = methodName;
+            this.methodType = methodDescriptor;
         }
-
-        /**
-         * <p>
-         * Chech whether the specified class should translate or not.
-         * </p>
-         * 
-         * @param internalName A internal class name.
-         * @return A result.
-         */
-        public abstract boolean canTranslate(String internalName);
-    }
-
-    /**
-     * @version 2012/01/10 19:59:03
-     */
-    public static interface Translator {
-
-        /**
-         * <p>
-         * Chech whether the specified class should translate or not.
-         * </p>
-         * 
-         * @param internalName A internal class name.
-         * @return A result.
-         */
-        boolean canTranslate(String internalName);
-
-        /**
-         * <p>
-         * Translate class file.
-         * </p>
-         * 
-         * @param node An abstract syntax tree.
-         */
-        void translate(ClassNode ast);
     }
 
     /**
      * @version 2012/01/14 13:09:23
      */
-    private static final class MethodTranslatorTransformer implements ClassFileTransformer {
+    private static final class TranslatorTransformer implements ClassFileTransformer {
 
         /** The delegator. */
-        private final MethodTranslator translator;
+        private final Class<? extends Translator> translator;
 
         /**
          * @param translator
          */
-        private MethodTranslatorTransformer(MethodTranslator translator) {
+        private TranslatorTransformer(Class<? extends Translator> translator) {
             this.translator = translator;
         }
 
@@ -239,12 +216,12 @@ public class Agent extends ReusableRule {
          */
         @Override
         public byte[] transform(ClassLoader loader, String name, Class<?> clazz, ProtectionDomain domain, byte[] bytes) {
-            if (!translator.canTranslate(name)) {
+            if (!redefines.contains(name)) {
                 return bytes;
             }
-
+            System.out.println("refine");
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-            ClassTranslator visitor = new ClassTranslator(writer);
+            ClassTranslator visitor = new ClassTranslator(writer, name);
             ClassReader reader = new ClassReader(bytes);
             reader.accept(visitor, ClassReader.EXPAND_FRAMES);
 
@@ -256,11 +233,16 @@ public class Agent extends ReusableRule {
          */
         private class ClassTranslator extends ClassVisitor {
 
+            /** The internal class name. */
+            private final String className;
+
             /**
              * @param arg0
              */
-            private ClassTranslator(ClassWriter writer) {
+            private ClassTranslator(ClassWriter writer, String className) {
                 super(Opcodes.ASM4, writer);
+
+                this.className = className;
             }
 
             /**
@@ -269,54 +251,12 @@ public class Agent extends ReusableRule {
              */
             @Override
             public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-                translator.set(super.visitMethod(access, name, desc, signature, exceptions));
+                MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
+                Translator translator = I.make(TranslatorTransformer.this.translator);
+                translator.set(visitor, className, name, Type.getMethodType(desc));
 
                 return translator;
             }
-        }
-    }
-
-    /**
-     * @version 2012/01/10 11:51:03
-     */
-    private static final class TranslatorTransformer implements ClassFileTransformer {
-
-        /** The delegator. */
-        private final Translator translator;
-
-        /**
-         * @param translator
-         */
-        private TranslatorTransformer(Translator translator) {
-            this.translator = translator;
-        }
-
-        /**
-         * @see java.lang.instrument.ClassFileTransformer#transform(java.lang.ClassLoader,
-         *      java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])
-         */
-        @Override
-        public byte[] transform(ClassLoader loader, String name, Class<?> clazz, ProtectionDomain domain, byte[] bytes) {
-            if (!translator.canTranslate(name)) {
-                return bytes;
-            }
-
-            ClassNode ast = new ClassNode();
-
-            // build abstract syntax tree
-            new ClassReader(bytes).accept(ast, ClassReader.EXPAND_FRAMES);
-
-            // translate
-            translator.translate(ast);
-
-            // write translated byte code
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-            try {
-                ast.accept(writer);
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-            return writer.toByteArray();
         }
     }
 }
