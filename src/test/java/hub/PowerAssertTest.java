@@ -9,7 +9,7 @@
  */
 package hub;
 
-import hub.PowerAssert.PowerAssertionContext;
+import hub.PowerAssert.PowerAssertContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public class PowerAssertTest {
     public void asm() {
 
         boolean value = false;
-        PowerAssertionContext.get().recodeMethod(null, 1, null);
+        PowerAssertContext.get().recodeLocalVariable(23990546, null);
 
         throw new AssertionError();
     }
