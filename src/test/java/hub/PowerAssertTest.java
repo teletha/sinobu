@@ -12,6 +12,7 @@ package hub;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -344,6 +345,18 @@ public class PowerAssertTest {
     }
 
     @Test
+    public void negative() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("-");
+        test.willUseOperator("==");
+        assert -one == other;
+    }
+
+    @Test
     public void leftShift() {
         int one = 10;
         int other = 20;
@@ -380,6 +393,42 @@ public class PowerAssertTest {
     }
 
     @Test
+    public void or() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("|");
+        test.willUseOperator("==");
+        assert (one | other) == other;
+    }
+
+    @Test
+    public void xor() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("^");
+        test.willUseOperator("==");
+        assert (one ^ other) == other;
+    }
+
+    @Test
+    public void and() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("&");
+        test.willUseOperator("==");
+        assert (one & other) == other;
+    }
+
+    @Test
     public void increment() {
         int one = 10;
         int other = 20;
@@ -396,7 +445,7 @@ public class PowerAssertTest {
         int one = 10;
         int other = 20;
 
-        test.willCapture("one", one);
+        test.willCapture("one", one + 1);
         test.willCapture("other", other);
         test.willUseOperator("++");
         test.willUseOperator("==");
@@ -413,5 +462,26 @@ public class PowerAssertTest {
         test.willUseOperator("--");
         test.willUseOperator("==");
         assert one-- == other;
+    }
+
+    @Test
+    public void decrementPre() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one - 1);
+        test.willCapture("other", other);
+        test.willUseOperator("--");
+        test.willUseOperator("==");
+        assert --one == other;
+    }
+
+    @Test
+    public void instanceOf() {
+        Object value = "test";
+
+        test.willCapture("value", value);
+        test.willUseOperator("instanceof");
+        assert value instanceof Map;
     }
 }

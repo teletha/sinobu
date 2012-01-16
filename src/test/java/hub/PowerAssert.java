@@ -289,10 +289,16 @@ public class PowerAssert extends ReusableRule {
         public void visitTypeInsn(int opcode, String type) {
             if (processAssertion && opcode == NEW && type.equals("java/lang/AssertionError")) {
                 processAssertion = false;
+            }
 
-                super.visitTypeInsn(opcode, type);
-            } else {
-                super.visitTypeInsn(opcode, type);
+            super.visitTypeInsn(opcode, type);
+
+            if (processAssertion) {
+                if (opcode == INSTANCEOF) {
+                    loadContext();
+                    mv.visitLdcInsn(computeClassName(type));
+                    invokeVirtual(PowerAssertContext.class, Instanceof.class);
+                }
             }
         }
 
@@ -349,6 +355,7 @@ public class PowerAssert extends ReusableRule {
 
             if (processAssertion) {
                 loadContext();
+                mv.visitLdcInsn(new Integer(hashCode() + index));
                 mv.visitIntInsn(BIPUSH, increment);
                 invokeVirtual(PowerAssertContext.class, Increment.class);
             }
@@ -417,35 +424,76 @@ public class PowerAssert extends ReusableRule {
                     break;
 
                 case IADD:
+                case LADD:
+                case FADD:
+                case DADD:
                     recodeOperator("+");
                     break;
 
                 case ISUB:
+                case LSUB:
+                case FSUB:
+                case DSUB:
                     recodeOperator("-");
                     break;
 
                 case IMUL:
+                case LMUL:
+                case FMUL:
+                case DMUL:
                     recodeOperator("*");
                     break;
 
                 case IDIV:
+                case LDIV:
+                case FDIV:
+                case DDIV:
                     recodeOperator("/");
                     break;
 
                 case IREM:
+                case LREM:
+                case FREM:
+                case DREM:
                     recodeOperator("%");
                     break;
 
+                case INEG:
+                case LNEG:
+                case FNEG:
+                case DNEG:
+                    loadContext();
+                    invokeVirtual(PowerAssertContext.class, Negative.class);
+                    break;
+
                 case ISHL:
+                case LSHL:
                     recodeOperator("<<");
                     break;
 
                 case ISHR:
+                case LSHR:
                     recodeOperator(">>");
                     break;
 
                 case IUSHR:
+                case LUSHR:
                     recodeOperator(">>>");
+                    break;
+
+                case IOR:
+                case LOR:
+                    recodeOperator("|");
+                    break;
+
+                case IXOR:
+                case LXOR:
+                    recodeOperator("^");
+                    break;
+
+                case IAND:
+                case LAND:
+                    recodeOperator("&");
                     break;
                 }
             }
@@ -520,13 +568,16 @@ public class PowerAssert extends ReusableRule {
     @Manageable(lifestyle = ThreadSpecific.class)
     public static class PowerAssertContext
             implements Constant, FieldAccess, LocalVariable, Operator, MethodCall, StaticFieldAccess, StaticMethodCall,
-            Increment {
+            Increment, Negative, Instanceof {
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
 
         /** The using operand list. */
         private ArrayList<Operand> operands = new ArrayList();
+
+        /** The incremetn state. */
+        private String nextIncrement;
 
         /**
          * {@inheritDoc}
@@ -545,6 +596,13 @@ public class PowerAssert extends ReusableRule {
         public void recodeLocalVariable(int id, Object variable) {
             Operand operand;
             String[] localVariable = localVariables.get(id);
+            String name = localVariable[0];
+
+            if (nextIncrement != null) {
+                name = nextIncrement.concat(name);
+
+                nextIncrement = null;
+            }
 
             if (localVariable[1].equals("Z")) {
                 operand = new Operand(localVariable[0], (int) variable == 1);
@@ -552,7 +610,7 @@ public class PowerAssert extends ReusableRule {
                 operand = new Operand(localVariable[0], variable);
             }
 
-            stack.add(operand);
+            stack.add(new Operand(name, null));
             operands.add(operand);
         }
 
@@ -569,20 +627,52 @@ public class PowerAssert extends ReusableRule {
         }
 
         /**
-         * @see hub.PowerAssert.Increment#recodeIncrement(int)
+         * @see hub.PowerAssert.Increment#recodeIncrement(int, int)
          */
         @Override
-        public void recodeIncrement(int increment) {
-            switch (increment) {
-            case 1:
-                stack.add(new Operand(stack.pollLast() + "++", null));
-                break;
+        public void recodeIncrement(int id, int increment) {
+            String[] localVariable = localVariables.get(id);
+            Operand latest = stack.peekLast();
 
-            case -1:
-                stack.add(new Operand(stack.pollLast() + "--", null));
-                break;
+            if (latest == null || !latest.name.equals(localVariable[0])) {
+                // pre increment
+                switch (increment) {
+                case 1:
+                    nextIncrement = "++";
+                    break;
+
+                case -1:
+                    nextIncrement = "--";
+                    break;
+                }
+            } else {
+                // post increment
+                switch (increment) {
+                case 1:
+                    stack.add(new Operand(stack.pollLast() + "++", null));
+                    break;
+
+                case -1:
+                    stack.add(new Operand(stack.pollLast() + "--", null));
+                    break;
+                }
             }
+        }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void recodeNegative() {
+            stack.add(new Operand("-" + stack.pollLast(), null));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void recodeInstanceof(String className) {
+            stack.add(new Operand(stack.pollLast() + " instanceof " + className, null));
         }
 
         /**
@@ -879,8 +969,36 @@ public class PowerAssert extends ReusableRule {
          * <p>
          * Recode constant.
          * </p>
+         * 
+         * @param id
          */
-        void recodeIncrement(int increment);
+        void recodeIncrement(int id, int increment);
+    }
+
+    /**
+     * @version 2012/01/14 14:42:28
+     */
+    private static interface Negative extends Recodable {
+
+        /**
+         * <p>
+         * Recode constant.
+         * </p>
+         */
+        void recodeNegative();
+    }
+
+    /**
+     * @version 2012/01/14 14:42:28
+     */
+    private static interface Instanceof extends Recodable {
+
+        /**
+         * <p>
+         * Recode constant.
+         * </p>
+         */
+        void recodeInstanceof(String className);
     }
 
     /**

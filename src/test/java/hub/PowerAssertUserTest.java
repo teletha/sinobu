@@ -9,6 +9,8 @@
  */
 package hub;
 
+import java.util.Map;
+
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -28,9 +30,8 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAccess() throws Exception {
-        int one = 10;
-        int other = 20;
+        Object value = "test";
 
-        assert other < one;
+        assert value instanceof Map;
     }
 }
