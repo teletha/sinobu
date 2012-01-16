@@ -11,6 +11,7 @@ package hub;
 
 import hub.PowerAssert.PowerAssertContext;
 
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +88,22 @@ public class PowerAssertTest {
     }
 
     @Test
+    public void nullLiteral() throws Exception {
+        String value = "";
+
+        test.willCapture("value", value);
+        assert value == null;
+    }
+
+    @Test
+    public void nullValue() throws Exception {
+        String value = null;
+
+        test.willCapture("value", value);
+        assert value == "test";
+    }
+
+    @Test
     public void classLiteral() throws Exception {
         Class value = int.class;
 
@@ -99,6 +116,15 @@ public class PowerAssertTest {
     public void classLiteralWithMethodCall() throws Exception {
         test.willCapture("Integer.class.getName()", "java.lang.Integer");
         assert Integer.class.getName() == "fail";
+    }
+
+    @Test
+    public void enumLiteral() throws Exception {
+        RetentionPolicy value = RetentionPolicy.CLASS;
+
+        test.willCapture("value", RetentionPolicy.CLASS);
+        test.willCapture("RetentionPolicy.RUNTIME", RetentionPolicy.RUNTIME);
+        assert RetentionPolicy.RUNTIME == value;
     }
 
     @Test
