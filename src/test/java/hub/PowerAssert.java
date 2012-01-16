@@ -48,6 +48,9 @@ public class PowerAssert extends ReusableRule {
     /** The expected operands. */
     private final List<Operand> expecteds = new ArrayList();
 
+    /** The expected operands. */
+    private final List<String> operators = new ArrayList();
+
     /**
      * Assertion Utility.
      */
@@ -79,11 +82,19 @@ public class PowerAssert extends ReusableRule {
     }
 
     /**
+     * @param operator
+     */
+    void willUseOperator(String operator) {
+        operators.add(operator);
+    }
+
+    /**
      * @see hub.ReusableRule#before(java.lang.reflect.Method)
      */
     @Override
     protected void before(Method method) throws Exception {
         expecteds.clear();
+        operators.clear();
         PowerAssertContext.get().clear();
     }
 
@@ -98,6 +109,12 @@ public class PowerAssert extends ReusableRule {
             for (Operand expected : expecteds) {
                 if (!context.operands.contains(expected)) {
                     return new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n" + context);
+                }
+            }
+
+            for (String operator : operators) {
+                if (context.stack.peek().name.indexOf(operator) == -1) {
+                    return new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n" + context);
                 }
             }
             return null;
@@ -204,17 +221,29 @@ public class PowerAssert extends ReusableRule {
                 case IFEQ:
                 case IF_ICMPEQ:
                 case IF_ACMPEQ:
-                    loadContext();
-                    mv.visitLdcInsn("==");
-                    invokeVirtual(PowerAssertContext.class, Expression.class);
+                    recodeOperator("==");
                     break;
 
                 case IFNE:
                 case IF_ICMPNE:
                 case IF_ACMPNE:
-                    loadContext();
-                    mv.visitLdcInsn("!=");
-                    invokeVirtual(PowerAssertContext.class, Expression.class);
+                    recodeOperator("!=");
+                    break;
+
+                case IF_ICMPLT:
+                    recodeOperator("<");
+                    break;
+
+                case IF_ICMPLE:
+                    recodeOperator("<=");
+                    break;
+
+                case IF_ICMPGT:
+                    recodeOperator(">");
+                    break;
+
+                case IF_ICMPGE:
+                    recodeOperator(">=");
                     break;
 
                 case IFNULL:
@@ -224,9 +253,7 @@ public class PowerAssert extends ReusableRule {
                     invokeVirtual(PowerAssertContext.class, Constant.class);
 
                     // recode == expression
-                    loadContext();
-                    mv.visitLdcInsn("==");
-                    invokeVirtual(PowerAssertContext.class, Expression.class);
+                    recodeOperator("==");
                     break;
 
                 case IFNONNULL:
@@ -236,12 +263,23 @@ public class PowerAssert extends ReusableRule {
                     invokeVirtual(PowerAssertContext.class, Constant.class);
 
                     // recode != expression
-                    loadContext();
-                    mv.visitLdcInsn("!=");
-                    invokeVirtual(PowerAssertContext.class, Expression.class);
+                    recodeOperator("!=");
                     break;
                 }
             }
+        }
+
+        /**
+         * <p>
+         * Helper method to write operator code.
+         * </p>
+         * 
+         * @param operator
+         */
+        private void recodeOperator(String operator) {
+            loadContext();
+            mv.visitLdcInsn(operator);
+            invokeVirtual(PowerAssertContext.class, Operator.class);
         }
 
         /**
@@ -299,6 +337,20 @@ public class PowerAssert extends ReusableRule {
                     invokeVirtual(PowerAssertContext.class, MethodCall.class);
                     break;
                 }
+            }
+        }
+
+        /**
+         * @see org.objectweb.asm.MethodVisitor#visitIincInsn(int, int)
+         */
+        @Override
+        public void visitIincInsn(int index, int increment) {
+            super.visitIincInsn(index, increment);
+
+            if (processAssertion) {
+                loadContext();
+                mv.visitIntInsn(BIPUSH, increment);
+                invokeVirtual(PowerAssertContext.class, Increment.class);
             }
         }
 
@@ -362,6 +414,38 @@ public class PowerAssert extends ReusableRule {
                     mv.visitInsn(opcode);
                     wrap(DOUBLE_TYPE);
                     invokeVirtual(PowerAssertContext.class, Constant.class);
+                    break;
+
+                case IADD:
+                    recodeOperator("+");
+                    break;
+
+                case ISUB:
+                    recodeOperator("-");
+                    break;
+
+                case IMUL:
+                    recodeOperator("*");
+                    break;
+
+                case IDIV:
+                    recodeOperator("/");
+                    break;
+
+                case IREM:
+                    recodeOperator("%");
+                    break;
+
+                case ISHL:
+                    recodeOperator("<<");
+                    break;
+
+                case ISHR:
+                    recodeOperator(">>");
+                    break;
+
+                case IUSHR:
+                    recodeOperator(">>>");
                     break;
                 }
             }
@@ -435,17 +519,14 @@ public class PowerAssert extends ReusableRule {
      */
     @Manageable(lifestyle = ThreadSpecific.class)
     public static class PowerAssertContext
-            implements Constant, FieldAccess, LocalVariable, Expression, MethodCall, StaticFieldAccess,
-            StaticMethodCall {
+            implements Constant, FieldAccess, LocalVariable, Operator, MethodCall, StaticFieldAccess, StaticMethodCall,
+            Increment {
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
 
         /** The using operand list. */
         private ArrayList<Operand> operands = new ArrayList();
-
-        /** The source code representation. */
-        private StringBuilder code = new StringBuilder("\r\n");
 
         /**
          * {@inheritDoc}
@@ -476,22 +557,32 @@ public class PowerAssert extends ReusableRule {
         }
 
         /**
-         * @see hub.PowerAssert.Expression#recodeExpression(java.lang.String)
+         * @see hub.PowerAssert.Operator#recodeOperator(java.lang.String)
          */
         @Override
-        public void recodeExpression(String expression) {
-            switch (stack.size()) {
-            case 0:
-                break;
+        public void recodeOperator(String expression) {
+            if (1 < stack.size()) {
+                Operand right = stack.pollLast();
+                Operand left = stack.pollLast();
+                stack.add(new Operand(left + " " + expression + " " + right, null));
+            }
+        }
 
+        /**
+         * @see hub.PowerAssert.Increment#recodeIncrement(int)
+         */
+        @Override
+        public void recodeIncrement(int increment) {
+            switch (increment) {
             case 1:
-                code.append(stack.pollLast());
+                stack.add(new Operand(stack.pollLast() + "++", null));
                 break;
 
-            default:
-                code.append(stack.pollLast()).append(' ').append(expression).append(' ').append(stack.pollLast());
+            case -1:
+                stack.add(new Operand(stack.pollLast() + "--", null));
                 break;
             }
+
         }
 
         /**
@@ -568,7 +659,6 @@ public class PowerAssert extends ReusableRule {
         public void clear() {
             stack.clear();
             operands.clear();
-            code = new StringBuilder();
         }
 
         /**
@@ -577,7 +667,7 @@ public class PowerAssert extends ReusableRule {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder("\r\n");
-            builder.append(code).append("\r\n");
+            builder.append(stack.peek()).append("\r\n");
 
             for (Operand operand : operands) {
                 if (!operand.constant) {
@@ -767,7 +857,7 @@ public class PowerAssert extends ReusableRule {
     /**
      * @version 2012/01/14 14:42:28
      */
-    private static interface Expression<T> extends Recodable {
+    private static interface Operator<T> extends Recodable {
 
         /**
          * <p>
@@ -777,7 +867,20 @@ public class PowerAssert extends ReusableRule {
          * @param variable
          * @param expression
          */
-        void recodeExpression(String expression);
+        void recodeOperator(String expression);
+    }
+
+    /**
+     * @version 2012/01/14 14:42:28
+     */
+    private static interface Increment extends Recodable {
+
+        /**
+         * <p>
+         * Recode constant.
+         * </p>
+         */
+        void recodeIncrement(int increment);
     }
 
     /**
