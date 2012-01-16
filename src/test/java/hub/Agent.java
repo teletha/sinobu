@@ -19,10 +19,8 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -265,12 +263,6 @@ public class Agent extends ReusableRule {
             this.methodType = methodDescriptor;
         }
 
-        protected T insn(int opcode) {
-            mv.visitInsn(opcode);
-
-            return (T) this;
-        }
-
         /**
          * <p>
          * Write code for invokevirtual.
@@ -286,18 +278,16 @@ public class Agent extends ReusableRule {
 
         /**
          * <p>
-         * Write code for the specified instruction.
+         * Helper method to write bytecode which wrap the primitive value.
          * </p>
          * 
-         * @param instruction A code to write.
+         * @param type
          */
-        protected final void write(Instruction... instructions) {
-            for (Instruction instruction : instructions) {
-                instruction.toBytecode(mv);
+        protected final void wrap(Type type) {
+            Type wrapper = getWrapperType(type);
 
-                for (Instruction next : instruction.list) {
-                    next.toBytecode(mv);
-                }
+            if (wrapper != type) {
+                mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", Type.getMethodDescriptor(wrapper, type));
             }
         }
 
@@ -337,105 +327,6 @@ public class Agent extends ReusableRule {
 
             default:
                 return type;
-            }
-        }
-
-        /**
-         * @version 2012/01/15 11:56:30
-         */
-        public static abstract class Instruction {
-
-            /** The instruction sequence. */
-            private List<Instruction> list = new ArrayList(2);
-
-            /**
-             * <p>
-             * Helper method to write bytecode which wrap the primitive value.
-             * </p>
-             * 
-             * @param type
-             * @return
-             */
-            public final Instruction wrap(Type type) {
-                Type wrapper = getWrapperType(type);
-
-                if (wrapper != type) {
-                    list.add(new Method(INVOKESTATIC, wrapper.getInternalName(), "valueOf", Type.getMethodDescriptor(wrapper, type)));
-                }
-                return this;
-            }
-
-            /**
-             * <p>
-             * Produce bytecode for this instruction.
-             * </p>
-             * 
-             * @param visitor
-             */
-            abstract void toBytecode(MethodVisitor visitor);
-
-        }
-
-        /**
-         * @version 2012/01/15 11:58:06
-         */
-        public static class Insn extends Instruction {
-
-            /** The operation code. */
-            public int opecode;
-
-            /**
-             * @param opecode
-             */
-            public Insn(int opecode) {
-                this.opecode = opecode;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            void toBytecode(MethodVisitor visitor) {
-                visitor.visitInsn(opecode);
-            }
-        }
-
-        /**
-         * @version 2012/01/15 23:15:47
-         */
-        public static class Method extends Instruction {
-
-            /** The operation code. */
-            public int opcode;
-
-            /** The method invoker internal name. */
-            public String owner;
-
-            /** The method name. */
-            public String name;
-
-            /** The method descriptor. */
-            public String descriptor;
-
-            /**
-             * @param opcode
-             * @param owner
-             * @param name
-             * @param descriptor
-             */
-            public Method(int opcode, String owner, String name, String descriptor) {
-                this.opcode = opcode;
-                this.owner = owner;
-                this.name = name;
-                this.descriptor = descriptor;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            void toBytecode(MethodVisitor visitor) {
-                visitor.visitMethodInsn(opcode, owner, name, descriptor);
             }
         }
     }
