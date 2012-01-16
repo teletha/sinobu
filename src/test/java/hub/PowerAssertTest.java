@@ -88,11 +88,19 @@ public class PowerAssertTest {
     }
 
     @Test
-    public void nullLiteral() throws Exception {
+    public void nullLiteral1() throws Exception {
         String value = "";
 
         test.willCapture("value", value);
         assert value == null;
+    }
+
+    @Test
+    public void nullLiteral2() throws Exception {
+        String value = null;
+
+        test.willCapture("value", value);
+        assert value != null;
     }
 
     @Test
