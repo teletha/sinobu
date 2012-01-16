@@ -9,9 +9,6 @@
  */
 package hub;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -21,25 +18,18 @@ import org.junit.Test;
 public class PowerAssertUserTest {
 
     @Rule
-    public static final PowerAssert rule = new PowerAssert();
+    public static PowerAssert powerAssert = new PowerAssert();
+
+    /** The tester. */
+    private int intField = 11;
+
+    /** The tester. */
+    private static int intFieldStatic = 11;
 
     @Test
-    public void testname() throws Exception {
-        List list = new ArrayList();
-        list.add(1);
-        list.add(3);
-        list.add("test");
+    public void fieldIntStaticAccess() throws Exception {
+        Class value = int.class;
 
-        assert list.size() == 2;
-    }
-
-    @Test
-    public void testname1() throws Exception {
-        List list = new ArrayList();
-        list.add(1);
-        list.add(3);
-        list.add("test");
-
-        assert list.size() == 2;
+        assert Integer.class == value;
     }
 }

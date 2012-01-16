@@ -84,6 +84,7 @@ public class PowerAssert extends ReusableRule {
     @Override
     protected void before(Method method) throws Exception {
         expecteds.clear();
+        PowerAssertContext.get().clear();
     }
 
     /**
@@ -96,7 +97,7 @@ public class PowerAssert extends ReusableRule {
 
             for (Operand expected : expecteds) {
                 if (!context.operands.contains(expected)) {
-                    return new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n\r\n" + context);
+                    return new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n" + context);
                 }
             }
             return null;
@@ -121,8 +122,29 @@ public class PowerAssert extends ReusableRule {
         /** The state. */
         private boolean processAssertion = false;
 
+        /**
+         * <p>
+         * Helper method to write code which load {@link PowerAssertContext}.
+         * </p>
+         */
         private void loadContext() {
-            super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
+            mv.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
+        }
+
+        /**
+         * <p>
+         * Compute simple class name.
+         * </p>
+         * 
+         * @return
+         */
+        private String computeClassName(String internalName) {
+            int index = internalName.lastIndexOf('$');
+
+            if (index == -1) {
+                index = internalName.lastIndexOf('/');
+            }
+            return index == -1 ? internalName : internalName.substring(index + 1);
         }
 
         /**
@@ -135,8 +157,30 @@ public class PowerAssert extends ReusableRule {
                 skipNextJump = true;
 
                 super.visitFieldInsn(opcode, owner, name, desc);
-            } else {
-                super.visitFieldInsn(opcode, owner, name, desc);
+                return;
+            }
+
+            super.visitFieldInsn(opcode, owner, name, desc);
+
+            if (processAssertion) {
+                loadContext();
+
+                switch (opcode) {
+                case GETFIELD:
+                    mv.visitLdcInsn(name);
+                    mv.visitVarInsn(ALOAD, 0);
+                    mv.visitFieldInsn(opcode, owner, name, desc);
+                    wrap(Type.getType(desc));
+                    invokeVirtual(PowerAssertContext.class, FieldAccess.class);
+                    break;
+
+                case GETSTATIC:
+                    mv.visitLdcInsn(computeClassName(owner) + '.' + name);
+                    mv.visitFieldInsn(opcode, owner, name, desc);
+                    wrap(Type.getType(desc));
+                    invokeVirtual(PowerAssertContext.class, StaticFieldAccess.class);
+                    break;
+                }
             }
         }
 
@@ -150,26 +194,27 @@ public class PowerAssert extends ReusableRule {
                 processAssertion = true;
 
                 super.visitJumpInsn(opcode, label);
-            } else if (!processAssertion) {
-                super.visitJumpInsn(opcode, label);
-            } else {
-                super.visitJumpInsn(opcode, label);
+                return;
+            }
 
+            super.visitJumpInsn(opcode, label);
+
+            if (processAssertion) {
                 switch (opcode) {
                 case IFEQ:
                 case IF_ICMPEQ:
                 case IF_ACMPEQ:
-                    super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
-                    super.visitLdcInsn("==");
-                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeExpression", "(Ljava/lang/String;)V");
+                    loadContext();
+                    mv.visitLdcInsn("==");
+                    invokeVirtual(PowerAssertContext.class, Expression.class);
                     break;
 
                 case IFNE:
                 case IF_ICMPNE:
                 case IF_ACMPNE:
-                    super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
-                    super.visitLdcInsn("!=");
-                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeExpression", "(Ljava/lang/String;)V");
+                    loadContext();
+                    mv.visitLdcInsn("!=");
+                    invokeVirtual(PowerAssertContext.class, Expression.class);
                     break;
                 }
             }
@@ -211,12 +256,25 @@ public class PowerAssert extends ReusableRule {
                 mv.visitInsn(DUP);
                 mv.visitVarInsn(returnType.getOpcode(ISTORE), 0);
 
-                loadContext();
-                mv.visitLdcInsn(name);
-                mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
-                mv.visitVarInsn(returnType.getOpcode(ILOAD), 0);
-                wrap(returnType);
-                mv.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeMethod", "(Ljava/lang/String;ILjava/lang/Object;)V");
+                switch (opcode) {
+                case INVOKESTATIC:
+                    loadContext();
+                    mv.visitLdcInsn(computeClassName(owner) + '.' + name);
+                    mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
+                    mv.visitVarInsn(returnType.getOpcode(ILOAD), 0);
+                    wrap(returnType);
+                    invokeVirtual(PowerAssertContext.class, StaticMethodCall.class);
+                    break;
+
+                default:
+                    loadContext();
+                    mv.visitLdcInsn(name);
+                    mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
+                    mv.visitVarInsn(returnType.getOpcode(ILOAD), 0);
+                    wrap(returnType);
+                    invokeVirtual(PowerAssertContext.class, MethodCall.class);
+                    break;
+                }
             }
         }
 
@@ -328,11 +386,11 @@ public class PowerAssert extends ReusableRule {
                     break;
                 }
 
-                super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
-                super.visitLdcInsn(new Integer(hashCode() + index));
-                super.visitVarInsn(opcode, index);
+                loadContext();
+                mv.visitLdcInsn(new Integer(hashCode() + index));
+                mv.visitVarInsn(opcode, index);
                 wrap(localVariableType);
-                super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeLocalVariable", "(ILjava/lang/Object;)V");
+                invokeVirtual(PowerAssertContext.class, LocalVariable.class);
             }
         }
 
@@ -352,7 +410,9 @@ public class PowerAssert extends ReusableRule {
      * @version 2012/01/11 11:27:35
      */
     @Manageable(lifestyle = ThreadSpecific.class)
-    public static class PowerAssertContext implements Constant, Variable, LocalVariable, Expression, MethodCall {
+    public static class PowerAssertContext
+            implements Constant, FieldAccess, LocalVariable, Expression, MethodCall, StaticFieldAccess,
+            StaticMethodCall {
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
@@ -369,17 +429,6 @@ public class PowerAssert extends ReusableRule {
         @Override
         public void recodeConstant(Object constant) {
             Operand operand = new Operand(constant);
-            stack.add(operand);
-            operands.add(operand);
-
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void recodeVariable(Object variable, String expression) {
-            Operand operand = new Operand(expression, variable);
             stack.add(operand);
             operands.add(operand);
         }
@@ -425,6 +474,27 @@ public class PowerAssert extends ReusableRule {
          * {@inheritDoc}
          */
         @Override
+        public void recodeField(String expression, Object variable) {
+            Operand operand = new Operand(stack.pollLast() + "." + expression, variable);
+            stack.add(operand);
+            operands.add(operand);
+        }
+
+        /**
+         * @see hub.PowerAssert.StaticFieldAccess#recodeStaticField(java.lang.String,
+         *      java.lang.Object)
+         */
+        @Override
+        public void recodeStaticField(String expression, Object variable) {
+            Operand operand = new Operand(expression, variable);
+            stack.add(operand);
+            operands.add(operand);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void recodeMethod(String name, int paramsSize, Object value) {
             // build method invocation
             StringBuilder invocation = new StringBuilder("()");
@@ -444,16 +514,50 @@ public class PowerAssert extends ReusableRule {
         }
 
         /**
+         * @see hub.PowerAssert.StaticMethodCall#recodeStaticMethod(java.lang.String, int,
+         *      java.lang.Object)
+         */
+        @Override
+        public void recodeStaticMethod(String name, int paramsSize, Object value) {
+            // build method invocation
+            StringBuilder invocation = new StringBuilder("()");
+
+            for (int i = 0; i < paramsSize; i++) {
+                invocation.insert(1, stack.pollLast());
+
+                if (i + 1 != paramsSize) {
+                    invocation.insert(1, ", ");
+                }
+            }
+            invocation.insert(0, name);
+
+            Operand operand = new Operand(invocation.toString(), value);
+            stack.add(operand);
+            operands.add(operand);
+        }
+
+        /**
+         * <p>
+         * Clear current context.
+         * </p>
+         */
+        public void clear() {
+            stack.clear();
+            operands.clear();
+            code = new StringBuilder();
+        }
+
+        /**
          * @see java.lang.Object#toString()
          */
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder(code);
-            builder.append("\r\n");
+            StringBuilder builder = new StringBuilder("\r\n");
+            builder.append(code).append("\r\n");
 
             for (Operand operand : operands) {
                 if (!operand.constant) {
-                    builder.append("\r\n").append(operand.name).append(" : ").append(operand.value);
+                    builder.append("\r\n").append(operand.name).append(" : ").append(operand.toValueExpression());
                 }
             }
             return builder.toString();
@@ -482,7 +586,13 @@ public class PowerAssert extends ReusableRule {
          * 
          */
         private Operand(Object value) {
-            this.name = value instanceof String ? "\"" + value + "\"" : String.valueOf(value);
+            if (value instanceof String) {
+                this.name = "\"" + value + "\"";
+            } else if (value instanceof Class) {
+                this.name = ((Class) value).getSimpleName() + ".class";
+            } else {
+                this.name = String.valueOf(value);
+            }
             this.value = value;
             this.constant = true;
         }
@@ -524,6 +634,21 @@ public class PowerAssert extends ReusableRule {
                 if (other.value != null) return false;
             } else if (!value.equals(other.value)) return false;
             return true;
+        }
+
+        /**
+         * <p>
+         * Compute human-readable expression of value.
+         * </p>
+         * 
+         * @return
+         */
+        private String toValueExpression() {
+            if (value instanceof Class) {
+                return ((Class) value).getSimpleName() + ".class";
+            } else {
+                return value.toString();
+            }
         }
 
         /**
@@ -579,17 +704,33 @@ public class PowerAssert extends ReusableRule {
     /**
      * @version 2012/01/14 1:51:05
      */
-    private static interface Variable<T> extends Recodable {
+    private static interface FieldAccess<T> extends Recodable {
 
         /**
          * <p>
          * Recode constant.
          * </p>
          * 
-         * @param variable
          * @param expression
+         * @param variable
          */
-        void recodeVariable(T variable, String expression);
+        void recodeField(String expression, T variable);
+    }
+
+    /**
+     * @version 2012/01/14 1:51:05
+     */
+    private static interface StaticFieldAccess<T> extends Recodable {
+
+        /**
+         * <p>
+         * Recode constant.
+         * </p>
+         * 
+         * @param expression
+         * @param variable
+         */
+        void recodeStaticField(String expression, T variable);
     }
 
     /**
@@ -622,5 +763,21 @@ public class PowerAssert extends ReusableRule {
          * @param expression
          */
         void recodeMethod(String name, int paramsSize, T value);
+    }
+
+    /**
+     * @version 2012/01/14 14:42:28
+     */
+    private static interface StaticMethodCall<T> extends Recodable {
+
+        /**
+         * <p>
+         * Recode constant.
+         * </p>
+         * 
+         * @param variable
+         * @param expression
+         */
+        void recodeStaticMethod(String name, int paramsSize, T value);
     }
 }
