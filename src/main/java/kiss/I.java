@@ -76,7 +76,7 @@ import sun.org.mozilla.javascript.internal.IdScriptableObject;
 
 /**
  * <p>
- * Shinobu is not obsolete framework but utility, which can manipulate objects as a
+ * Sinobu is not obsolete framework but utility, which can manipulate objects as a
  * extremely-condensed facade.
  * </p>
  * <dl>
