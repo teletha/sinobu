@@ -121,62 +121,7 @@ public class PowerAssert extends ReusableRule {
         /** The state. */
         private boolean processAssertion = false;
 
-        /**
-         * <p>
-         * Helper method to write bytecode which wrap the primitive value which is last on operand
-         * stack to its wrapper value.
-         * </p>
-         * 
-         * @param type
-         */
-        private void wrap(Type type) {
-            Type wrapper = getWrapperType(type);
-
-            if (wrapper != type) {
-                super.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", Type.getMethodDescriptor(wrapper, type));
-            }
-        }
-
-        /**
-         * <p>
-         * Search wrapper type of the specified primitive type.
-         * </p>
-         * 
-         * @param type
-         * @return
-         */
-        private Type getWrapperType(Type type) {
-            switch (type.getSort()) {
-            case Type.BOOLEAN:
-                return Type.getType(Boolean.class);
-
-            case Type.INT:
-                return Type.getType(Integer.class);
-
-            case Type.LONG:
-                return Type.getType(Long.class);
-
-            case Type.FLOAT:
-                return Type.getType(Float.class);
-
-            case Type.DOUBLE:
-                return Type.getType(Double.class);
-
-            case Type.CHAR:
-                return Type.getType(Character.class);
-
-            case Type.BYTE:
-                return Type.getType(Byte.class);
-
-            case Type.SHORT:
-                return Type.getType(Short.class);
-
-            default:
-                return type;
-            }
-        }
-
-        private void context() {
+        private void loadContext() {
             super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
         }
 
@@ -249,25 +194,29 @@ public class PowerAssert extends ReusableRule {
          */
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+            // replace invocation of AssertionError constructor.
             if (opcode == INVOKESPECIAL && owner.equals("java/lang/AssertionError")) {
-                super.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
-                super.visitMethodInsn(opcode, owner, name, "(Ljava/lang/Object;)V");
-            } else if (!processAssertion) {
-                super.visitMethodInsn(opcode, owner, name, desc);
-            } else {
+                loadContext(); // first parameter
+                mv.visitMethodInsn(opcode, owner, name, "(Ljava/lang/Object;)V"); // replace
+                return;
+            }
+
+            super.visitMethodInsn(opcode, owner, name, desc);
+
+            if (processAssertion) {
+                // recode method invocation
                 Type methodType = Type.getType(desc);
                 Type returnType = methodType.getReturnType();
 
-                super.visitMethodInsn(opcode, owner, name, desc);
-                super.visitInsn(DUP);
-                super.visitVarInsn(returnType.getOpcode(ISTORE), 0);
+                mv.visitInsn(DUP);
+                mv.visitVarInsn(returnType.getOpcode(ISTORE), 0);
 
-                context();
-                super.visitLdcInsn(name);
-                super.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
-                super.visitVarInsn(returnType.getOpcode(ILOAD), 0);
+                loadContext();
+                mv.visitLdcInsn(name);
+                mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
+                mv.visitVarInsn(returnType.getOpcode(ILOAD), 0);
                 wrap(returnType);
-                super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeMethod", "(Ljava/lang/String;ILjava/lang/Object;)V");
+                mv.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeMethod", "(Ljava/lang/String;ILjava/lang/Object;)V");
             }
         }
 
@@ -279,18 +228,11 @@ public class PowerAssert extends ReusableRule {
             super.visitIntInsn(opcode, operand);
 
             if (processAssertion) {
-                context();
-                super.visitIntInsn(opcode, operand);
+                loadContext();
+                mv.visitIntInsn(opcode, operand);
                 wrap(INT_TYPE);
-                super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeConstant", "(Ljava/lang/Object;)V");
+                invokeVirtual(PowerAssertContext.class, Constant.class);
             }
-        }
-
-        private void recodeConstant(Instruction instruction, Type type) {
-            context();
-
-            write(instruction.wrap(type));
-            invokeVirtual(PowerAssertContext.class, Constant.class);
         }
 
         /**
@@ -309,32 +251,35 @@ public class PowerAssert extends ReusableRule {
                 case ICONST_3:
                 case ICONST_4:
                 case ICONST_5:
-                    recodeConstant(new Insn(opcode), INT_TYPE);
+                    loadContext();
+                    mv.visitInsn(opcode);
+                    wrap(INT_TYPE);
+                    invokeVirtual(PowerAssertContext.class, Constant.class);
                     break;
 
                 case LCONST_0:
                 case LCONST_1:
-                    context();
-                    super.visitInsn(opcode);
+                    loadContext();
+                    mv.visitInsn(opcode);
                     wrap(LONG_TYPE);
-                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeConstant", "(Ljava/lang/Object;)V");
+                    invokeVirtual(PowerAssertContext.class, Constant.class);
                     break;
 
                 case FCONST_0:
                 case FCONST_1:
                 case FCONST_2:
-                    context();
-                    super.visitInsn(opcode);
+                    loadContext();
+                    mv.visitInsn(opcode);
                     wrap(FLOAT_TYPE);
-                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeConstant", "(Ljava/lang/Object;)V");
+                    invokeVirtual(PowerAssertContext.class, Constant.class);
                     break;
 
                 case DCONST_0:
                 case DCONST_1:
-                    context();
-                    super.visitInsn(opcode);
+                    loadContext();
+                    mv.visitInsn(opcode);
                     wrap(DOUBLE_TYPE);
-                    super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeConstant", "(Ljava/lang/Object;)V");
+                    invokeVirtual(PowerAssertContext.class, Constant.class);
                     break;
                 }
             }
@@ -348,10 +293,10 @@ public class PowerAssert extends ReusableRule {
             super.visitLdcInsn(value);
 
             if (processAssertion) {
-                context();
-                super.visitLdcInsn(value);
+                loadContext();
+                mv.visitLdcInsn(value);
                 wrap(Type.getType(value.getClass()));
-                super.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "recodeConstant", "(Ljava/lang/Object;)V");
+                invokeVirtual(PowerAssertContext.class, Constant.class);
             }
         }
 
