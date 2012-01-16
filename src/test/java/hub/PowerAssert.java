@@ -318,14 +318,15 @@ public class PowerAssert extends ReusableRule {
 
             if (processAssertion) {
                 // recode method invocation
+                Type ownerType = Type.getType(owner);
                 Type methodType = Type.getType(desc);
                 Type returnType = methodType.getReturnType();
 
                 mv.visitInsn(DUP);
-                mv.visitVarInsn(returnType.getOpcode(ISTORE), 0);
 
                 switch (opcode) {
                 case INVOKESTATIC:
+                    mv.visitVarInsn(returnType.getOpcode(ISTORE), 0);
                     loadContext();
                     mv.visitLdcInsn(computeClassName(owner) + '.' + name);
                     mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
@@ -334,7 +335,18 @@ public class PowerAssert extends ReusableRule {
                     invokeVirtual(PowerAssertContext.class, StaticMethodCall.class);
                     break;
 
+                case INVOKESPECIAL:
+                    mv.visitVarInsn(ownerType.getOpcode(ISTORE), 0);
+                    loadContext();
+                    mv.visitLdcInsn(computeClassName(owner));
+                    mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
+                    mv.visitVarInsn(ownerType.getOpcode(ILOAD), 0);
+                    wrap(returnType);
+                    invokeVirtual(PowerAssertContext.class, ConstructorCall.class);
+                    break;
+
                 default:
+                    mv.visitVarInsn(returnType.getOpcode(ISTORE), 0);
                     loadContext();
                     mv.visitLdcInsn(name);
                     mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
@@ -568,7 +580,7 @@ public class PowerAssert extends ReusableRule {
     @Manageable(lifestyle = ThreadSpecific.class)
     public static class PowerAssertContext
             implements Constant, FieldAccess, LocalVariable, Operator, MethodCall, StaticFieldAccess, StaticMethodCall,
-            Increment, Negative, Instanceof {
+            Increment, Negative, Instanceof, ConstructorCall {
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
@@ -692,6 +704,28 @@ public class PowerAssert extends ReusableRule {
         @Override
         public void recodeStaticField(String expression, Object variable) {
             Operand operand = new Operand(expression, variable);
+            stack.add(operand);
+            operands.add(operand);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void recodeConstructor(String name, int paramsSize, Object value) {
+            // build method invocation
+            StringBuilder invocation = new StringBuilder("()");
+
+            for (int i = 0; i < paramsSize; i++) {
+                invocation.insert(1, stack.pollLast());
+
+                if (i + 1 != paramsSize) {
+                    invocation.insert(1, ", ");
+                }
+            }
+            invocation.insert(0, name).insert(0, "new ");
+
+            Operand operand = new Operand(invocation.toString(), value);
             stack.add(operand);
             operands.add(operand);
         }
@@ -1032,4 +1066,21 @@ public class PowerAssert extends ReusableRule {
          */
         void recodeStaticMethod(String name, int paramsSize, T value);
     }
+
+    /**
+     * @version 2012/01/14 14:42:28
+     */
+    private static interface ConstructorCall extends Recodable {
+
+        /**
+         * <p>
+         * Recode constant.
+         * </p>
+         * 
+         * @param variable
+         * @param expression
+         */
+        void recodeConstructor(String name, int paramsSize, Object value);
+    }
+
 }

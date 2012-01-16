@@ -484,4 +484,22 @@ public class PowerAssertTest {
         test.willUseOperator("instanceof");
         assert value instanceof Map;
     }
+
+    @Test
+    public void instantiate() {
+        Object value = "test";
+
+        test.willCapture("value", value);
+        test.willUseOperator("new Object()");
+        assert value == new Object();
+    }
+
+    @Test
+    public void instantiateWithParameter() {
+        Object value = "test";
+
+        test.willCapture("value", value);
+        test.willUseOperator("new String(\"fail\")");
+        assert value == new String("fail");
+    }
 }
