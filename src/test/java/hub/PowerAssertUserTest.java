@@ -28,8 +28,8 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAccess() throws Exception {
-        Class value = int.class;
+        String value = "aaa";
 
-        assert Integer.class == value;
+        assert value == "test";
     }
 }

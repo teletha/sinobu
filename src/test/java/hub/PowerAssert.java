@@ -216,6 +216,18 @@ public class PowerAssert extends ReusableRule {
                     mv.visitLdcInsn("!=");
                     invokeVirtual(PowerAssertContext.class, Expression.class);
                     break;
+
+                case IFNULL:
+                    // recode null constant
+                    loadContext();
+                    mv.visitInsn(ACONST_NULL);
+                    invokeVirtual(PowerAssertContext.class, Constant.class);
+
+                    // recode == expression
+                    loadContext();
+                    mv.visitLdcInsn("==");
+                    invokeVirtual(PowerAssertContext.class, Expression.class);
+                    break;
                 }
             }
         }
@@ -644,8 +656,15 @@ public class PowerAssert extends ReusableRule {
          * @return
          */
         private String toValueExpression() {
-            if (value instanceof Class) {
+            if (value == null) {
+                return "null";
+            } else if (value instanceof String) {
+                return "\"" + value + "\"";
+            } else if (value instanceof Class) {
                 return ((Class) value).getSimpleName() + ".class";
+            } else if (value instanceof Enum) {
+                Enum enumration = (Enum) value;
+                return enumration.getDeclaringClass().getSimpleName() + '.' + enumration.name();
             } else {
                 return value.toString();
             }
