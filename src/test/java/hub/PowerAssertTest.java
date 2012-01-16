@@ -87,6 +87,21 @@ public class PowerAssertTest {
     }
 
     @Test
+    public void classLiteral() throws Exception {
+        Class value = int.class;
+
+        test.willCapture("value", value);
+        test.willCapture("Integer.class", Integer.class);
+        assert Integer.class == value;
+    }
+
+    @Test
+    public void classLiteralWithMethodCall() throws Exception {
+        test.willCapture("Integer.class.getName()", "java.lang.Integer");
+        assert Integer.class.getName() == "fail";
+    }
+
+    @Test
     public void methodCall() throws Exception {
         String value = "test";
 
@@ -117,11 +132,85 @@ public class PowerAssertTest {
         assert list.size() == 34;
     }
 
+    @Test
+    public void methodCallObject() throws Exception {
+        List list = new ArrayList();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+
+        test.willCapture("list", list);
+        test.willCapture("list.get(1)", "b");
+        assert list.get(1) == "fail";
+    }
+
+    @Test
+    public void methodStaticCall() throws Exception {
+        Object value = "";
+
+        test.willCapture("Integer.valueOf(10)", new Integer(10));
+        test.willCapture("value", "");
+        assert Integer.valueOf(10) == value;
+    }
+
+    /** The tester. */
+    private int intField = 11;
+
+    /** The tester. */
+    private static int intFieldStatic = 11;
+
+    @Test
+    public void fieldIntAccess() throws Exception {
+        test.willCapture("this.intField", 11);
+        assert intField == 0;
+    }
+
+    @Test
+    public void fieldIntStaticAccess() throws Exception {
+        test.willCapture("PowerAssertTest.intFieldStatic", 11);
+        assert intFieldStatic == 0;
+    }
+
+    /** The tester. */
+    private boolean booleanField = false;
+
+    /** The tester. */
+    private static boolean booleanFieldStatic = false;
+
+    @Test
+    public void fieldBooleanAccess() throws Exception {
+        test.willCapture("this.booleanField", false);
+        assert booleanField;
+    }
+
+    @Test
+    public void fieldBooleanStaticAccess() throws Exception {
+        test.willCapture("PowerAssertTest.booleanFieldStatic", false);
+        assert booleanFieldStatic;
+    }
+
+    /** The tester. */
+    private String objectField = "hitagi";
+
+    /** The tester. */
+    private static String objectFieldStatic = "hitagi";
+
+    @Test
+    public void fieldObjectAccess() throws Exception {
+        test.willCapture("this.objectField", "hitagi");
+        assert objectField == "nadeko";
+    }
+
+    @Test
+    public void fieldObjectStaticAccess() throws Exception {
+        test.willCapture("PowerAssertTest.objectFieldStatic", "hitagi");
+        assert objectFieldStatic == "nadeko";
+    }
+
     public void asm() {
 
-        boolean value = false;
-        PowerAssertContext.get().recodeLocalVariable(23990546, null);
-
+        assert intField == 0;
+        PowerAssertContext.get().recodeField("test", intField);
         throw new AssertionError();
     }
 }
