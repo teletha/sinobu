@@ -9,8 +9,6 @@
  */
 package hub;
 
-import hub.PowerAssert.PowerAssertContext;
-
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
@@ -241,10 +239,179 @@ public class PowerAssertTest {
         assert objectFieldStatic == "nadeko";
     }
 
-    public void asm() {
+    @Test
+    public void lessThan() {
+        int one = 10;
+        int other = 20;
 
-        assert intField == 0;
-        PowerAssertContext.get().recodeField("test", intField);
-        throw new AssertionError();
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("<");
+        assert other < one;
+    }
+
+    @Test
+    public void lessEqual() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("<=");
+        assert other <= one;
+    }
+
+    @Test
+    public void greaterThan() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator(">");
+        assert one > other;
+    }
+
+    @Test
+    public void greaterEqual() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator(">=");
+        assert one >= other;
+    }
+
+    @Test
+    public void addition() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("+");
+        test.willUseOperator("==");
+        assert one + 1 == other;
+    }
+
+    @Test
+    public void subtraction() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("-");
+        test.willUseOperator("==");
+        assert one - 1 == other;
+    }
+
+    @Test
+    public void multiplication() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("*");
+        test.willUseOperator("==");
+        assert one * 3 == other;
+    }
+
+    @Test
+    public void division() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("/");
+        test.willUseOperator("==");
+        assert one / 2 == other;
+    }
+
+    @Test
+    public void remainder() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("%");
+        test.willUseOperator("==");
+        assert one % 2 == other;
+    }
+
+    @Test
+    public void leftShift() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("<<");
+        test.willUseOperator("==");
+        assert one << 3 == other;
+    }
+
+    @Test
+    public void rightShift() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator(">>");
+        test.willUseOperator("==");
+        assert one >> 3 == other;
+    }
+
+    @Test
+    public void unrotateRightShift() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator(">>>");
+        test.willUseOperator("==");
+        assert one >>> 3 == other;
+    }
+
+    @Test
+    public void increment() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("++");
+        test.willUseOperator("==");
+        assert one++ == other;
+    }
+
+    @Test
+    public void incrementPre() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("++");
+        test.willUseOperator("==");
+        assert ++one == other;
+    }
+
+    @Test
+    public void decrement() {
+        int one = 10;
+        int other = 20;
+
+        test.willCapture("one", one);
+        test.willCapture("other", other);
+        test.willUseOperator("--");
+        test.willUseOperator("==");
+        assert one-- == other;
     }
 }

@@ -28,8 +28,9 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAccess() throws Exception {
-        String value = null;
+        int one = 10;
+        int other = 20;
 
-        assert value != null;
+        assert other < one;
     }
 }
