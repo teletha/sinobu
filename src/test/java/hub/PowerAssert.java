@@ -228,6 +228,18 @@ public class PowerAssert extends ReusableRule {
                     mv.visitLdcInsn("==");
                     invokeVirtual(PowerAssertContext.class, Expression.class);
                     break;
+
+                case IFNONNULL:
+                    // recode null constant
+                    loadContext();
+                    mv.visitInsn(ACONST_NULL);
+                    invokeVirtual(PowerAssertContext.class, Constant.class);
+
+                    // recode != expression
+                    loadContext();
+                    mv.visitLdcInsn("!=");
+                    invokeVirtual(PowerAssertContext.class, Expression.class);
+                    break;
                 }
             }
         }
