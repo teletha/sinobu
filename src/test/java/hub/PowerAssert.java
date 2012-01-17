@@ -448,6 +448,7 @@ public class PowerAssert implements TestRule {
                     loadContext();
                     mv.visitInsn(opcode);
                     wrap(INT_TYPE);
+                    callInterface(PowerAssertContext.class, Manipulation.class).recodeConstant(null);
                     invokeVirtual(PowerAssertContext.class, Constant.class);
                     break;
 
@@ -631,7 +632,7 @@ public class PowerAssert implements TestRule {
     @Manageable(lifestyle = ThreadSpecific.class)
     public static class PowerAssertContext
             implements Constant, FieldAccess, LocalVariable, Operator, MethodCall, StaticFieldAccess, StaticMethodCall,
-            Increment, Negative, Instanceof, ConstructorCall {
+            Increment, Negative, Instanceof, ConstructorCall, Manipulation {
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
@@ -955,6 +956,14 @@ public class PowerAssert implements TestRule {
         public String toString() {
             return name;
         }
+    }
+
+    /**
+     * @version 2012/01/18 0:47:32
+     */
+    public static interface Manipulation {
+
+        void recodeConstant(Object constant);
     }
 
     /**
