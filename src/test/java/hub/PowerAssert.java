@@ -25,7 +25,6 @@ import kiss.I;
 import kiss.Manageable;
 import kiss.ThreadSpecific;
 
-import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -43,8 +42,7 @@ public class PowerAssert implements TestRule {
     /** The local variable name mapping. */
     private static final Map<Integer, String[]> localVariables = new ConcurrentHashMap();
 
-    @Rule
-    private final Agent agent = new Agent(PowerAssertTranslator.class);
+    private static final Agent agent = new Agent(PowerAssertTranslator.class);
 
     /** The tester flag. */
     private final boolean selfTest;
@@ -96,6 +94,10 @@ public class PowerAssert implements TestRule {
              */
             @Override
             public void evaluate() throws Throwable {
+                if (translateds.add(description.getClassName())) {
+                    agent.transform(description.getTestClass());
+                }
+
                 expecteds.clear();
                 operators.clear();
 
@@ -108,22 +110,34 @@ public class PowerAssert implements TestRule {
 
                             evaluate(); // retry
                             return;
-                        } else if (selfTest) {
-                            PowerAssertContext context = PowerAssertContext.get();
+                        }
 
+                        PowerAssertContext context = PowerAssertContext.get();
+
+                        if (selfTest) {
                             for (Operand expected : expecteds) {
                                 if (!context.operands.contains(expected)) {
-                                    throw new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n" + context);
+                                    throw new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n");
                                 }
                             }
 
                             for (String operator : operators) {
                                 if (context.stack.peek().name.indexOf(operator) == -1) {
-                                    throw new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n" + context);
+                                    throw new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n");
                                 }
                             }
                             return;
                         }
+
+                        // replace message
+                        String message = e.getLocalizedMessage();
+
+                        if (message == null) {
+                            message = "";
+                        }
+                        AssertionError error = new AssertionError(message + "\r\n" + context);
+                        error.setStackTrace(e.getStackTrace());
+                        throw error;
                     }
                     throw e;
                 }
@@ -188,21 +202,25 @@ public class PowerAssert implements TestRule {
             super.visitFieldInsn(opcode, owner, name, desc);
 
             if (processAssertion) {
+                Type type = Type.getType(desc);
+                mv.visitInsn(DUP);
+
+                int index = newLocalVariable(type);
+                mv.visitVarInsn(type.getOpcode(ISTORE), index);
                 loadContext();
 
                 switch (opcode) {
                 case GETFIELD:
                     mv.visitLdcInsn(name);
-                    mv.visitVarInsn(ALOAD, 0);
-                    mv.visitFieldInsn(opcode, owner, name, desc);
-                    wrap(Type.getType(desc));
+                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
+                    wrap(type);
                     invokeVirtual(PowerAssertContext.class, FieldAccess.class);
                     break;
 
                 case GETSTATIC:
                     mv.visitLdcInsn(computeClassName(owner) + '.' + name);
-                    mv.visitFieldInsn(opcode, owner, name, desc);
-                    wrap(Type.getType(desc));
+                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
+                    wrap(type);
                     invokeVirtual(PowerAssertContext.class, StaticFieldAccess.class);
                     break;
                 }
@@ -319,11 +337,10 @@ public class PowerAssert implements TestRule {
          */
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-            // replace invocation of AssertionError constructor.
-            if (opcode == INVOKESPECIAL && owner.equals("java/lang/AssertionError")) {
-                loadContext(); // first parameter
-                mv.visitMethodInsn(opcode, owner, name, "(Ljava/lang/Object;)V"); // replace
+            super.visitMethodInsn(opcode, owner, name, desc);
 
+            // replace invocation of AssertionError constructor.
+            if (startAssertion && opcode == INVOKESPECIAL && owner.equals("java/lang/AssertionError")) {
                 // reset state
                 startAssertion = false;
                 skipNextJump = false;
@@ -331,44 +348,51 @@ public class PowerAssert implements TestRule {
                 return;
             }
 
-            super.visitMethodInsn(opcode, owner, name, desc);
-
             if (processAssertion) {
                 // recode method invocation
-                Type ownerType = Type.getType(owner);
+                Type type;
                 Type methodType = Type.getType(desc);
-                Type returnType = methodType.getReturnType();
+
+                if (opcode == INVOKESPECIAL && name.charAt(0) == '<') {
+                    // constructor
+                    type = Type.getType(owner);
+                } else {
+                    // method
+                    type = methodType.getReturnType();
+                }
+
+                int index = newLocalVariable(type);
 
                 mv.visitInsn(DUP);
 
                 switch (opcode) {
                 case INVOKESTATIC:
-                    mv.visitVarInsn(returnType.getOpcode(ISTORE), 0);
+                    mv.visitVarInsn(type.getOpcode(ISTORE), index);
                     loadContext();
                     mv.visitLdcInsn(computeClassName(owner) + '.' + name);
                     mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
-                    mv.visitVarInsn(returnType.getOpcode(ILOAD), 0);
-                    wrap(returnType);
+                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
+                    wrap(type);
                     invokeVirtual(PowerAssertContext.class, StaticMethodCall.class);
                     break;
 
                 case INVOKESPECIAL:
-                    mv.visitVarInsn(ownerType.getOpcode(ISTORE), 0);
+                    mv.visitVarInsn(type.getOpcode(ISTORE), index);
                     loadContext();
                     mv.visitLdcInsn(computeClassName(owner));
                     mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
-                    mv.visitVarInsn(ownerType.getOpcode(ILOAD), 0);
-                    wrap(returnType);
+                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
+                    wrap(type);
                     invokeVirtual(PowerAssertContext.class, ConstructorCall.class);
                     break;
 
                 default:
-                    mv.visitVarInsn(returnType.getOpcode(ISTORE), 0);
+                    mv.visitVarInsn(type.getOpcode(ISTORE), index);
                     loadContext();
                     mv.visitLdcInsn(name);
                     mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
-                    mv.visitVarInsn(returnType.getOpcode(ILOAD), 0);
-                    wrap(returnType);
+                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
+                    wrap(type);
                     invokeVirtual(PowerAssertContext.class, MethodCall.class);
                     break;
                 }
@@ -538,7 +562,17 @@ public class PowerAssert implements TestRule {
             if (processAssertion) {
                 loadContext();
                 mv.visitLdcInsn(value);
-                wrap(Type.getType(value.getClass()));
+                if (value instanceof Integer) {
+                    wrap(Type.INT_TYPE);
+                } else if (value instanceof Long) {
+                    wrap(Type.LONG_TYPE);
+                } else if (value instanceof Float) {
+                    wrap(Type.FLOAT_TYPE);
+                } else if (value instanceof Double) {
+                    wrap(Type.DOUBLE_TYPE);
+                } else {
+                    wrap(Type.getType(value.getClass()));
+                }
                 invokeVirtual(PowerAssertContext.class, Constant.class);
             }
         }
@@ -808,7 +842,7 @@ public class PowerAssert implements TestRule {
          */
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder("\r\n");
+            StringBuilder builder = new StringBuilder("assert ");
             builder.append(stack.peek()).append("\r\n");
 
             for (Operand operand : operands) {

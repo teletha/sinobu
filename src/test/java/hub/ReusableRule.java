@@ -16,14 +16,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import kiss.model.ClassUtil;
+
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import kiss.model.ClassUtil;
 
 /**
  * <p>
@@ -314,9 +314,8 @@ public abstract class ReusableRule implements TestRule {
             }
         }
 
-        // If this exception will be thrown, it is bug of this program. So we must rethrow the
-        // wrapped error in here.
-        throw new Error("Testcase is not found.");
+        // suitable test class is not found
+        return ReusableRule.class;
     }
 
     /**
