@@ -98,7 +98,6 @@ public class PowerAssert implements TestRule {
             public void evaluate() throws Throwable {
                 expecteds.clear();
                 operators.clear();
-                PowerAssertContext.get().clear();
 
                 try {
                     statement.evaluate();
@@ -220,6 +219,10 @@ public class PowerAssert implements TestRule {
                 processAssertion = true;
 
                 super.visitJumpInsn(opcode, label);
+
+                // reset context
+                loadContext();
+                mv.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "clear", "()V");
                 return;
             }
 
@@ -320,6 +323,11 @@ public class PowerAssert implements TestRule {
             if (opcode == INVOKESPECIAL && owner.equals("java/lang/AssertionError")) {
                 loadContext(); // first parameter
                 mv.visitMethodInsn(opcode, owner, name, "(Ljava/lang/Object;)V"); // replace
+
+                // reset state
+                startAssertion = false;
+                skipNextJump = false;
+                processAssertion = false;
                 return;
             }
 
@@ -792,6 +800,7 @@ public class PowerAssert implements TestRule {
         public void clear() {
             stack.clear();
             operands.clear();
+            nextIncrement = null;
         }
 
         /**

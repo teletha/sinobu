@@ -502,4 +502,14 @@ public class PowerAssertTest {
         test.willUseOperator("new String(\"fail\")");
         assert value == new String("fail");
     }
+
+    @Test
+    public void assertTwice() throws Exception {
+        int value = 2;
+        assert value != 1; // success
+
+        test.willUseOperator("==");
+        test.willCapture("value", value);
+        assert value == 3;
+    }
 }
