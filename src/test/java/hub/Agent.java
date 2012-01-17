@@ -15,7 +15,9 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.ProtectionDomain;
@@ -234,7 +236,7 @@ public class Agent extends ReusableRule {
     /**
      * @version 2012/01/14 13:08:33
      */
-    public static abstract class Translator<T extends Translator<T>> extends MethodVisitor {
+    public static abstract class Translator extends MethodVisitor {
 
         /** The internal class name. */
         protected String className;
@@ -285,6 +287,10 @@ public class Agent extends ReusableRule {
             SAMInfo info = SAMInfo.get(sam);
 
             mv.visitMethodInsn(INVOKEVIRTUAL, Type.getType(invoker).getInternalName(), info.name, info.descriptor);
+        }
+
+        protected final <S> S callInterface(Class invoker, Class<S> manipulation) {
+            return (S) Proxy.newProxyInstance(manipulation.getClassLoader(), new Class[] {manipulation}, new Handler(invoker));
         }
 
         /**
@@ -338,6 +344,40 @@ public class Agent extends ReusableRule {
 
             default:
                 return type;
+            }
+        }
+
+        /**
+         * @version 2012/01/18 1:18:40
+         */
+        private class Handler implements InvocationHandler {
+
+            /** The invocation type. */
+            private final String invocation;
+
+            /**
+             * @param invocation
+             */
+            private Handler(Class invocation) {
+                this.invocation = Type.getType(invocation).getInternalName();
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                Class[] parameters = method.getParameterTypes();
+
+                for (int i = 0; i < parameters.length; i++) {
+                    Class parameter = parameters[i];
+                    Object value = args[i];
+
+                }
+
+                // call interface method
+                mv.visitMethodInsn(INVOKEINTERFACE, invocation, method.getName(), Type.getMethodDescriptor(method));
+                return null;
             }
         }
     }
