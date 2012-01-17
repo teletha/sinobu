@@ -21,13 +21,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import kiss.I;
+import kiss.sample.bean.StringListProperty;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import kiss.I;
-import kiss.sample.bean.StringListProperty;
 
 /**
  * @version 2011/03/29 12:37:35

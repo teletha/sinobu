@@ -222,8 +222,9 @@ public class Agent extends ReusableRule {
             @Override
             public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
                 MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
+                LocalVariablesSorter sorter = new LocalVariablesSorter(access, desc, visitor);
                 Translator translator = I.make(TranslatorTransformer.this.translator);
-                translator.set(visitor, className, name, Type.getMethodType(desc));
+                translator.set(sorter, className, name, Type.getMethodType(desc));
 
                 return translator;
             }
@@ -256,11 +257,21 @@ public class Agent extends ReusableRule {
          * Lazy set up.
          * </p>
          */
-        final void set(MethodVisitor visitor, String className, String methodName, Type methodDescriptor) {
+        final void set(LocalVariablesSorter visitor, String className, String methodName, Type methodDescriptor) {
             mv = visitor;
             this.className = className;
             this.methodName = methodName;
             this.methodType = methodDescriptor;
+        }
+
+        /**
+         * Creates a new local variable of the given type.
+         * 
+         * @param type the type of the local variable to be created.
+         * @return the identifier of the newly created local variable.
+         */
+        protected final int newLocalVariable(Type type) {
+            return ((LocalVariablesSorter) mv).newLocal(type);
         }
 
         /**

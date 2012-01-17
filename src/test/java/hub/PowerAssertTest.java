@@ -35,12 +35,30 @@ public class PowerAssertTest {
     }
 
     @Test
+    public void intBigConstantAndVariable() throws Exception {
+        int value = 2;
+
+        test.willCapture("123456789", 123456789);
+        test.willCapture("value", value);
+        assert 123456789 == value;
+    }
+
+    @Test
     public void longConstantAndVariable() throws Exception {
         long value = 2;
 
         test.willCapture("1", 1L);
         test.willCapture("value", value);
         assert 1L == value;
+    }
+
+    @Test
+    public void longBigConstantAndVariable() throws Exception {
+        long value = 2;
+
+        test.willCapture("1234567890123", 1234567890123L);
+        test.willCapture("value", value);
+        assert 1234567890123L == value;
     }
 
     @Test
@@ -53,6 +71,15 @@ public class PowerAssertTest {
     }
 
     @Test
+    public void floatBigConstantAndVariable() throws Exception {
+        float value = 2;
+
+        test.willCapture("0.12345678", 0.12345678f);
+        test.willCapture("value", value);
+        assert 0.12345678f == value;
+    }
+
+    @Test
     public void doubleConstantAndVariable() throws Exception {
         double value = 2;
 
@@ -62,12 +89,30 @@ public class PowerAssertTest {
     }
 
     @Test
+    public void doubleBigConstantAndVariable() throws Exception {
+        double value = 2;
+
+        test.willCapture("0.1234567898765432", 0.1234567898765432d);
+        test.willCapture("value", value);
+        assert 0.1234567898765432d == value;
+    }
+
+    @Test
     public void shortConstantAndVariable() throws Exception {
         short value = 2;
 
         test.willCapture("1", 1);
         test.willCapture("value", (int) value);
         assert (short) 1 == value;
+    }
+
+    @Test
+    public void shortBigConstantAndVariable() throws Exception {
+        short value = 2;
+
+        test.willCapture("128", 128);
+        test.willCapture("value", (int) value);
+        assert (short) 128 == value;
     }
 
     @Test
@@ -141,6 +186,15 @@ public class PowerAssertTest {
         test.willCapture("value", value);
         test.willCapture("value.equals(\"a\")", false);
         assert value.equals("a");
+    }
+
+    @Test
+    public void privateMethodCall() throws Exception {
+        assert privateMethod();
+    }
+
+    private boolean privateMethod() {
+        return false;
     }
 
     @Test
@@ -511,5 +565,23 @@ public class PowerAssertTest {
         test.willUseOperator("==");
         test.willCapture("value", value);
         assert value == 3;
+    }
+
+    @Test
+    public void throwAssertionError() {
+        throw new AssertionError();
+    }
+
+    @Test
+    public void throwAssertionErrorWithParameter() {
+        throw new AssertionError("param");
+    }
+
+    @Test
+    public void useAssertWithMessage() {
+        int value = 4;
+
+        test.willCapture("value", value);
+        assert value == -1 : "this value is " + value;
     }
 }

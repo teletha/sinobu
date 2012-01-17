@@ -9,18 +9,12 @@
  */
 package hub;
 
-import java.util.Map;
-
-import org.junit.Rule;
 import org.junit.Test;
 
 /**
  * @version 2012/01/13 22:11:44
  */
 public class PowerAssertUserTest {
-
-    @Rule
-    public static PowerAssert powerAssert = new PowerAssert();
 
     /** The tester. */
     private int intField = 11;
@@ -32,6 +26,13 @@ public class PowerAssertUserTest {
     public void fieldIntStaticAccess() throws Exception {
         Object value = "test";
 
-        assert value instanceof Map;
+        assert value instanceof String;
+    }
+
+    @Test
+    public void fieldIntStaticAcces1s() throws Exception {
+        Object value = "test";
+
+        assert value instanceof StringBuffer;
     }
 }
