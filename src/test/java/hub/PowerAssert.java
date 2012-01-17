@@ -13,11 +13,12 @@ import static org.objectweb.asm.Opcodes.*;
 import static org.objectweb.asm.Type.*;
 import hub.Agent.Translator;
 
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.I;
@@ -25,13 +26,19 @@ import kiss.Manageable;
 import kiss.ThreadSpecific;
 
 import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
 /**
  * @version 2012/01/10 9:52:42
  */
-public class PowerAssert extends ReusableRule {
+public class PowerAssert implements TestRule {
+
+    /** The recod for the translated classes. */
+    private static final Set<String> translateds = new HashSet();
 
     /** The local variable name mapping. */
     private static final Map<Integer, String[]> localVariables = new ConcurrentHashMap();
@@ -68,9 +75,6 @@ public class PowerAssert extends ReusableRule {
     PowerAssert(boolean selfTest) {
         this.caller = UnsafeUtility.getCaller(1);
         this.selfTest = selfTest;
-
-        // force to transform
-        agent.transform(caller);
     }
 
     /**
@@ -89,38 +93,50 @@ public class PowerAssert extends ReusableRule {
     }
 
     /**
-     * @see hub.ReusableRule#before(java.lang.reflect.Method)
+     * {@inheritDoc}
      */
     @Override
-    protected void before(Method method) throws Exception {
-        expecteds.clear();
-        operators.clear();
-        PowerAssertContext.get().clear();
-    }
+    public Statement apply(final Statement statement, final Description description) {
+        return new Statement() {
 
-    /**
-     * @see hub.ReusableRule#validateError(java.lang.Throwable)
-     */
-    @Override
-    protected Throwable validateError(Throwable throwable) {
-        if (selfTest && throwable instanceof AssertionError) {
-            PowerAssertContext context = PowerAssertContext.get();
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void evaluate() throws Throwable {
+                expecteds.clear();
+                operators.clear();
+                PowerAssertContext.get().clear();
 
-            for (Operand expected : expecteds) {
-                if (!context.operands.contains(expected)) {
-                    return new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n" + context);
+                try {
+                    statement.evaluate();
+                } catch (Throwable e) {
+                    if (e instanceof AssertionError) {
+                        if (translateds.add(description.getClassName())) {
+                            agent.transform(description.getTestClass());
+
+                            evaluate(); // retry
+                        } else if (selfTest) {
+                            PowerAssertContext context = PowerAssertContext.get();
+
+                            for (Operand expected : expecteds) {
+                                if (!context.operands.contains(expected)) {
+                                    throw new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n" + context);
+                                }
+                            }
+
+                            for (String operator : operators) {
+                                if (context.stack.peek().name.indexOf(operator) == -1) {
+                                    throw new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n" + context);
+                                }
+                            }
+                        }
+                    } else {
+                        throw e;
+                    }
                 }
             }
-
-            for (String operator : operators) {
-                if (context.stack.peek().name.indexOf(operator) == -1) {
-                    return new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n" + context);
-                }
-            }
-            return null;
-        } else {
-            return throwable;
-        }
+        };
     }
 
     /**
