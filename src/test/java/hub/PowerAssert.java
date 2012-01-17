@@ -46,9 +46,6 @@ public class PowerAssert implements TestRule {
     @Rule
     private final Agent agent = new Agent(PowerAssertTranslator.class);
 
-    /** The caller class. */
-    private final Class caller;
-
     /** The tester flag. */
     private final boolean selfTest;
 
@@ -62,18 +59,13 @@ public class PowerAssert implements TestRule {
      * Assertion Utility.
      */
     public PowerAssert() {
-        this.caller = UnsafeUtility.getCaller(1);
         this.selfTest = false;
-
-        // force to transform
-        agent.transform(caller);
     }
 
     /**
      * Test for {@link PowerAssert}.
      */
     PowerAssert(boolean selfTest) {
-        this.caller = UnsafeUtility.getCaller(1);
         this.selfTest = selfTest;
     }
 
@@ -130,6 +122,8 @@ public class PowerAssert implements TestRule {
                                     throw new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n" + context);
                                 }
                             }
+                        } else {
+                            throw e;
                         }
                     } else {
                         throw e;
