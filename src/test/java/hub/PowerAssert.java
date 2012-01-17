@@ -15,11 +15,11 @@ import hub.Agent.Translator;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import kiss.I;
 import kiss.Manageable;
@@ -37,8 +37,8 @@ import org.objectweb.asm.Type;
  */
 public class PowerAssert implements TestRule {
 
-    /** The recod for the translated classes. */
-    private static final Set<String> translateds = new HashSet();
+    /** The recode for the translated classes. */
+    private static final Set<String> translateds = new CopyOnWriteArraySet();
 
     /** The local variable name mapping. */
     private static final Map<Integer, String[]> localVariables = new ConcurrentHashMap();
@@ -108,6 +108,7 @@ public class PowerAssert implements TestRule {
                             agent.transform(description.getTestClass());
 
                             evaluate(); // retry
+                            return;
                         } else if (selfTest) {
                             PowerAssertContext context = PowerAssertContext.get();
 
@@ -122,12 +123,10 @@ public class PowerAssert implements TestRule {
                                     throw new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n" + context);
                                 }
                             }
-                        } else {
-                            throw e;
+                            return;
                         }
-                    } else {
-                        throw e;
                     }
+                    throw e;
                 }
             }
         };
