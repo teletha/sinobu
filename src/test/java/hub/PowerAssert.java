@@ -160,14 +160,8 @@ public class PowerAssert implements TestRule {
         /** The state. */
         private boolean processAssertion = false;
 
-        /**
-         * <p>
-         * Helper method to write code which load {@link PowerAssertContext}.
-         * </p>
-         */
-        private void loadContext() {
-            mv.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
-        }
+        /** The acrual recoder. */
+        private final Recoder context = createAPI(PowerAssertContext.class, Recoder.class);
 
         /**
          * <p>
@@ -183,6 +177,21 @@ public class PowerAssert implements TestRule {
                 index = internalName.lastIndexOf('/');
             }
             return index == -1 ? internalName : internalName.substring(index + 1);
+        }
+
+        /**
+         * <p>
+         * Helper method to write code.
+         * </p>
+         * 
+         * @return
+         */
+        private Recoder recode() {
+            // load context
+            mv.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
+
+            // return API
+            return context;
         }
 
         /**
@@ -207,11 +216,11 @@ public class PowerAssert implements TestRule {
 
                 switch (opcode) {
                 case GETFIELD:
-                    call().recodeField(name, local);
+                    recode().field(name, local);
                     break;
 
                 case GETSTATIC:
-                    call().recodeStaticField(computeClassName(owner) + '.' + name, local);
+                    recode().staticField(computeClassName(owner) + '.' + name, local);
                     break;
                 }
             }
@@ -229,8 +238,7 @@ public class PowerAssert implements TestRule {
                 super.visitJumpInsn(opcode, label);
 
                 // reset context
-                loadContext();
-                mv.visitMethodInsn(INVOKEVIRTUAL, "hub/PowerAssert$PowerAssertContext", "clear", "()V");
+                recode().clear();
                 return;
             }
 
@@ -241,59 +249,48 @@ public class PowerAssert implements TestRule {
                 case IFEQ:
                 case IF_ICMPEQ:
                 case IF_ACMPEQ:
-                    recodeOperator("==");
+                    recode().operator("==");
                     break;
 
                 case IFNE:
                 case IF_ICMPNE:
                 case IF_ACMPNE:
-                    recodeOperator("!=");
+                    recode().operator("!=");
                     break;
 
                 case IF_ICMPLT:
-                    recodeOperator("<");
+                    recode().operator("<");
                     break;
 
                 case IF_ICMPLE:
-                    recodeOperator("<=");
+                    recode().operator("<=");
                     break;
 
                 case IF_ICMPGT:
-                    recodeOperator(">");
+                    recode().operator(">");
                     break;
 
                 case IF_ICMPGE:
-                    recodeOperator(">=");
+                    recode().operator(">=");
                     break;
 
                 case IFNULL:
                     // recode null constant
-                    call().recodeConstant(insn(ACONST_NULL));
+                    recode().constant(insn(ACONST_NULL));
 
                     // recode == expression
-                    recodeOperator("==");
+                    recode().operator("==");
                     break;
 
                 case IFNONNULL:
                     // recode null constant
-                    call().recodeConstant(insn(ACONST_NULL));
+                    recode().constant(insn(ACONST_NULL));
 
                     // recode != expression
-                    recodeOperator("!=");
+                    recode().operator("!=");
                     break;
                 }
             }
-        }
-
-        /**
-         * <p>
-         * Helper method to write operator code.
-         * </p>
-         * 
-         * @param operator
-         */
-        private void recodeOperator(String operator) {
-            call().recodeOperator(operator);
         }
 
         /**
@@ -309,7 +306,7 @@ public class PowerAssert implements TestRule {
 
             if (processAssertion) {
                 if (opcode == INSTANCEOF) {
-                    call().recodeInstanceof(computeClassName(type));
+                    recode().instanceOf(computeClassName(type));
                 }
             }
         }
@@ -342,15 +339,15 @@ public class PowerAssert implements TestRule {
 
                 switch (opcode) {
                 case INVOKESTATIC:
-                    call().recodeStaticMethod(computeClassName(owner) + '.' + name, size, local);
+                    recode().staticMethod(computeClassName(owner) + '.' + name, size, local);
                     break;
 
                 case INVOKESPECIAL:
-                    call().recodeConstructor(computeClassName(owner), size, local);
+                    recode().constructor(computeClassName(owner), size, local);
                     break;
 
                 default:
-                    call().recodeMethod(name, size, local);
+                    recode().method(name, size, local);
                     break;
                 }
             }
@@ -364,7 +361,7 @@ public class PowerAssert implements TestRule {
             super.visitIincInsn(index, increment);
 
             if (processAssertion) {
-                call().recodeIncrement(hashCode() + index, increment);
+                recode().recodeIncrement(hashCode() + index, increment);
             }
         }
 
@@ -376,21 +373,8 @@ public class PowerAssert implements TestRule {
             super.visitIntInsn(opcode, operand);
 
             if (processAssertion) {
-                call().recodeConstant(intInsn(opcode, operand));
+                recode().constant(intInsn(opcode, operand));
             }
-        }
-
-        /**
-         * <p>
-         * Helper method to write code.
-         * </p>
-         * 
-         * @return
-         */
-        private Manipulation call() {
-            loadContext();
-
-            return callInterface(PowerAssertContext.class, Manipulation.class);
         }
 
         /**
@@ -416,79 +400,79 @@ public class PowerAssert implements TestRule {
                 case FCONST_2:
                 case DCONST_0:
                 case DCONST_1:
-                    call().recodeConstant(insn(opcode));
+                    recode().constant(insn(opcode));
                     break;
 
                 case IADD:
                 case LADD:
                 case FADD:
                 case DADD:
-                    recodeOperator("+");
+                    recode().operator("+");
                     break;
 
                 case ISUB:
                 case LSUB:
                 case FSUB:
                 case DSUB:
-                    recodeOperator("-");
+                    recode().operator("-");
                     break;
 
                 case IMUL:
                 case LMUL:
                 case FMUL:
                 case DMUL:
-                    recodeOperator("*");
+                    recode().operator("*");
                     break;
 
                 case IDIV:
                 case LDIV:
                 case FDIV:
                 case DDIV:
-                    recodeOperator("/");
+                    recode().operator("/");
                     break;
 
                 case IREM:
                 case LREM:
                 case FREM:
                 case DREM:
-                    recodeOperator("%");
+                    recode().operator("%");
                     break;
 
                 case INEG:
                 case LNEG:
                 case FNEG:
                 case DNEG:
-                    call().recodeNegative();
+                    recode().negative();
                     break;
 
                 case ISHL:
                 case LSHL:
-                    recodeOperator("<<");
+                    recode().operator("<<");
                     break;
 
                 case ISHR:
                 case LSHR:
-                    recodeOperator(">>");
+                    recode().operator(">>");
                     break;
 
                 case IUSHR:
                 case LUSHR:
-                    recodeOperator(">>>");
+                    recode().operator(">>>");
                     break;
 
                 case IOR:
                 case LOR:
-                    recodeOperator("|");
+                    recode().operator("|");
                     break;
 
                 case IXOR:
                 case LXOR:
-                    recodeOperator("^");
+                    recode().operator("^");
                     break;
 
                 case IAND:
                 case LAND:
-                    recodeOperator("&");
+                    recode().operator("&");
                     break;
                 }
             }
@@ -502,7 +486,7 @@ public class PowerAssert implements TestRule {
             super.visitLdcInsn(value);
 
             if (processAssertion) {
-                call().recodeConstant(ldc(value));
+                recode().constant(ldc(value));
             }
         }
 
@@ -514,7 +498,7 @@ public class PowerAssert implements TestRule {
             super.visitVarInsn(opcode, index);
 
             if (processAssertion) {
-                call().recodeLocalVariable(hashCode() + index, local(opcode, index));
+                recode().localVariable(hashCode() + index, local(opcode, index));
             }
         }
 
@@ -534,7 +518,7 @@ public class PowerAssert implements TestRule {
      * @version 2012/01/11 11:27:35
      */
     @Manageable(lifestyle = ThreadSpecific.class)
-    public static class PowerAssertContext implements Manipulation {
+    public static class PowerAssertContext implements Recoder {
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
@@ -549,7 +533,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeConstant(Object constant) {
+        public void constant(Object constant) {
             Operand operand = new Operand(constant);
             stack.add(operand);
             operands.add(operand);
@@ -559,7 +543,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeLocalVariable(int id, Object variable) {
+        public void localVariable(int id, Object variable) {
             Operand operand;
             String[] localVariable = localVariables.get(id);
             String name = localVariable[0];
@@ -581,10 +565,10 @@ public class PowerAssert implements TestRule {
         }
 
         /**
-         * @see hub.PowerAssert.Manipulation#recodeOperator(java.lang.String)
+         * @see hub.PowerAssert.Recoder#operator(java.lang.String)
          */
         @Override
-        public void recodeOperator(String expression) {
+        public void operator(String expression) {
             if (1 < stack.size()) {
                 Operand right = stack.pollLast();
                 Operand left = stack.pollLast();
@@ -629,7 +613,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeNegative() {
+        public void negative() {
             stack.add(new Operand("-" + stack.pollLast(), null));
         }
 
@@ -637,7 +621,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeInstanceof(String className) {
+        public void instanceOf(String className) {
             stack.add(new Operand(stack.pollLast() + " instanceof " + className, null));
         }
 
@@ -645,7 +629,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeField(String expression, Object variable) {
+        public void field(String expression, Object variable) {
             Operand operand = new Operand(stack.pollLast() + "." + expression, variable);
             stack.add(operand);
             operands.add(operand);
@@ -655,7 +639,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeStaticField(String expression, Object variable) {
+        public void staticField(String expression, Object variable) {
             Operand operand = new Operand(expression, variable);
             stack.add(operand);
             operands.add(operand);
@@ -665,7 +649,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeConstructor(String name, int paramsSize, Object value) {
+        public void constructor(String name, int paramsSize, Object value) {
             // build method invocation
             StringBuilder invocation = new StringBuilder("()");
 
@@ -687,7 +671,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeMethod(String name, int paramsSize, Object value) {
+        public void method(String name, int paramsSize, Object value) {
             // build method invocation
             StringBuilder invocation = new StringBuilder("()");
 
@@ -709,7 +693,7 @@ public class PowerAssert implements TestRule {
          * {@inheritDoc}
          */
         @Override
-        public void recodeStaticMethod(String name, int paramsSize, Object value) {
+        public void staticMethod(String name, int paramsSize, Object value) {
             // build method invocation
             StringBuilder invocation = new StringBuilder("()");
 
@@ -728,9 +712,7 @@ public class PowerAssert implements TestRule {
         }
 
         /**
-         * <p>
-         * Clear current context.
-         * </p>
+         * @see hub.PowerAssert.Recoder#clear()
          */
         public void clear() {
             stack.clear();
@@ -868,7 +850,14 @@ public class PowerAssert implements TestRule {
     /**
      * @version 2012/01/18 0:47:32
      */
-    public static interface Manipulation {
+    public static interface Recoder {
+
+        /**
+         * <p>
+         * Clear current context.
+         * </p>
+         */
+        void clear();
 
         /**
          * <p>
@@ -877,7 +866,7 @@ public class PowerAssert implements TestRule {
          * 
          * @param constant
          */
-        void recodeConstant(Object constant);
+        void constant(Object constant);
 
         /**
          * <p>
@@ -887,7 +876,7 @@ public class PowerAssert implements TestRule {
          * @param id A local variable id.
          * @param variable A value.
          */
-        void recodeLocalVariable(int id, Object variable);
+        void localVariable(int id, Object variable);
 
         /**
          * <p>
@@ -897,7 +886,7 @@ public class PowerAssert implements TestRule {
          * @param expression
          * @param variable
          */
-        void recodeField(String expression, Object variable);
+        void field(String expression, Object variable);
 
         /**
          * <p>
@@ -907,7 +896,7 @@ public class PowerAssert implements TestRule {
          * @param expression
          * @param variable
          */
-        void recodeStaticField(String expression, Object variable);
+        void staticField(String expression, Object variable);
 
         /**
          * <p>
@@ -916,7 +905,7 @@ public class PowerAssert implements TestRule {
          * 
          * @param expression
          */
-        void recodeOperator(String operator);
+        void operator(String operator);
 
         /**
          * <p>
@@ -933,7 +922,7 @@ public class PowerAssert implements TestRule {
          * Recode negative value operation.
          * </p>
          */
-        void recodeNegative();
+        void negative();
 
         /**
          * <p>
@@ -942,7 +931,7 @@ public class PowerAssert implements TestRule {
          * 
          * @param className
          */
-        void recodeInstanceof(String className);
+        void instanceOf(String className);
 
         /**
          * <p>
@@ -953,7 +942,7 @@ public class PowerAssert implements TestRule {
          * @param paramsSize A method parameter size.
          * @param value A returned value.
          */
-        void recodeMethod(String name, int paramsSize, Object value);
+        void method(String name, int paramsSize, Object value);
 
         /**
          * <p>
@@ -964,7 +953,7 @@ public class PowerAssert implements TestRule {
          * @param paramsSize A method parameter size.
          * @param value A returned value.
          */
-        void recodeStaticMethod(String name, int paramsSize, Object value);
+        void staticMethod(String name, int paramsSize, Object value);
 
         /**
          * <p>
@@ -975,7 +964,6 @@ public class PowerAssert implements TestRule {
          * @param paramsSize A constructor parameter size.
          * @param value A constructed value.
          */
-        void recodeConstructor(String name, int paramsSize, Object value);
+        void constructor(String name, int paramsSize, Object value);
     }
-
 }
