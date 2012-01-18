@@ -45,7 +45,7 @@ import org.objectweb.asm.Type;
  * @author Eugene Kuleshov
  * @author Eric Bruneton
  */
-public class LocalVariableSorter extends MethodVisitor {
+class LocalVariableSorter extends MethodVisitor {
 
     private static final Type OBJECT_TYPE = Type.getObjectType("java/lang/Object");
 
