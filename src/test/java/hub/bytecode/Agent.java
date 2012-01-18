@@ -23,9 +23,7 @@ import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.ProtectionDomain;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
@@ -280,30 +278,6 @@ public class Agent extends ReusableRule {
 
         /**
          * <p>
-         * Write code for invokevirtual.
-         * </p>
-         * 
-         * @param sam A single abstract method class.
-         */
-        protected final void invokeVirtual(Class invoker, Class sam) {
-            SAMInfo info = SAMInfo.get(sam);
-
-            mv.visitMethodInsn(INVOKEVIRTUAL, Type.getType(invoker).getInternalName(), info.name, info.descriptor);
-        }
-
-        /**
-         * <p>
-         * Store the latest value into the specified local value.
-         * </p>
-         * 
-         * @param local
-         */
-        protected final void storeInto(LocalVariable local) {
-
-        }
-
-        /**
-         * <p>
          * Write local variable code.
          * </p>
          * 
@@ -352,7 +326,16 @@ public class Agent extends ReusableRule {
             return new Constant(value);
         }
 
-        protected final <S> S callInterface(Class invoker, Class<S> manipulation) {
+        /**
+         * <p>
+         * Create API.
+         * </p>
+         * 
+         * @param invoker
+         * @param manipulation
+         * @return
+         */
+        protected final <S> S createAPI(Class invoker, Class<S> manipulation) {
             return (S) Proxy.newProxyInstance(manipulation.getClassLoader(), new Class[] {manipulation}, new InterfaceCaller(invoker));
         }
 
@@ -409,57 +392,6 @@ public class Agent extends ReusableRule {
                 mv.visitMethodInsn(INVOKEVIRTUAL, invocation, method.getName(), Type.getMethodDescriptor(method));
                 return null;
             }
-        }
-    }
-
-    /**
-     * @version 2012/01/14 2:02:54
-     */
-    private static class SAMInfo {
-
-        /** The cache for recoder type. */
-        private static final Map<Class, SAMInfo> types = new HashMap();
-
-        /** The method name. */
-        private final String name;
-
-        /** The method descriptor. */
-        private final String descriptor;
-
-        /** The method owner. */
-        private final String owner;
-
-        /** The method type. */
-        private final Type type;
-
-        /**
-         * 
-         */
-        private SAMInfo(Class sam) {
-            Method method = sam.getMethods()[0];
-            this.name = method.getName();
-            this.type = Type.getType(method);
-            this.descriptor = type.getDescriptor();
-            this.owner = Type.getType(method.getDeclaringClass()).getInternalName();
-        }
-
-        /**
-         * <p>
-         * Search recoder method.
-         * </p>
-         * 
-         * @param sam
-         * @return
-         */
-        private static SAMInfo get(Class sam) {
-            SAMInfo info = types.get(sam);
-
-            if (info == null) {
-                info = new SAMInfo(sam);
-
-                types.put(sam, info);
-            }
-            return info;
         }
     }
 }
