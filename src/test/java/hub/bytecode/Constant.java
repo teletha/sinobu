@@ -32,8 +32,7 @@ public class Constant extends Bytecode<Constant> {
      * @see hub.bytecode.Bytecode#write(org.objectweb.asm.MethodVisitor, boolean)
      */
     @Override
-    public
-    void write(MethodVisitor visitor, boolean requireNonPrimitive) {
+    public void write(MethodVisitor visitor, boolean requireNonPrimitive) {
         visitor.visitLdcInsn(value);
 
         if (value instanceof Integer) {

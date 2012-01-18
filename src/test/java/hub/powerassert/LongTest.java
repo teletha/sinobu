@@ -15,14 +15,14 @@ import org.junit.Test;
 /**
  * @version 2012/01/18 13:15:48
  */
-public class IntTest {
+public class LongTest {
 
     @Rule
     public static final PowerAssert Assert = new PowerAssert(true);
 
     @Test
     public void constant_0() throws Exception {
-        int value = -1;
+        long value = -1;
 
         Assert.willUse("0");
         Assert.willCapture("value", value);
@@ -31,7 +31,7 @@ public class IntTest {
 
     @Test
     public void constant_1() throws Exception {
-        int value = -1;
+        long value = -1;
 
         Assert.willUse("1");
         Assert.willCapture("value", value);
@@ -40,7 +40,7 @@ public class IntTest {
 
     @Test
     public void constant_2() throws Exception {
-        int value = -1;
+        long value = -1;
 
         Assert.willUse("2");
         Assert.willCapture("value", value);
@@ -49,7 +49,7 @@ public class IntTest {
 
     @Test
     public void constant_3() throws Exception {
-        int value = -1;
+        long value = -1;
 
         Assert.willUse("3");
         Assert.willCapture("value", value);
@@ -58,7 +58,7 @@ public class IntTest {
 
     @Test
     public void constant_M1() throws Exception {
-        int value = 0;
+        long value = 0;
 
         Assert.willUse("-1");
         Assert.willCapture("value", value);
@@ -67,16 +67,16 @@ public class IntTest {
 
     @Test
     public void big() throws Exception {
-        int value = 2;
+        long value = 2;
 
-        Assert.willUse("123456789");
+        Assert.willUse("1234567890123");
         Assert.willCapture("value", value);
-        assert 123456789 == value;
+        assert 1234567890123L == value;
     }
 
     @Test
     public void array() throws Exception {
-        int[] array = {0, 1, 2};
+        long[] array = {0, 1, 2};
 
         Assert.willCapture("array", array);
         assert array == null;
@@ -84,16 +84,16 @@ public class IntTest {
 
     @Test
     public void arrayIndex() throws Exception {
-        int[] array = {0, 1, 2};
+        long[] array = {0, 1, 2};
 
         Assert.willCapture("array", array);
-        Assert.willCapture("array[1]", 1);
+        Assert.willCapture("array[1]", 1L);
         assert array[1] == 128;
     }
 
     @Test
     public void arrayLength() throws Exception {
-        int[] array = {0, 1, 2};
+        long[] array = {0, 1, 2};
 
         Assert.willCapture("array", array);
         Assert.willCapture("array.length", 3);
@@ -102,11 +102,11 @@ public class IntTest {
 
     @Test
     public void method() throws Exception {
-        Assert.willCapture("test()", 1);
+        Assert.willCapture("test()", 1L);
         assert test() == 2;
     }
 
-    int test() {
+    long test() {
         return 1;
     }
 
@@ -116,25 +116,25 @@ public class IntTest {
         assert test(12);
     }
 
-    private boolean test(int value) {
+    private boolean test(long value) {
         return false;
     }
 
     /** The tester. */
-    private int intField = 11;
+    private long longField = 11;
 
     /** The tester. */
-    private static int intFieldStatic = 11;
+    private static long longFieldStatic = 11;
 
     @Test
-    public void fieldIntAccess() throws Exception {
-        Assert.willCapture("this.intField", 11);
-        assert intField == 0;
+    public void fieldLongAccess() throws Exception {
+        Assert.willCapture("this.longField", 11L);
+        assert longField == 0;
     }
 
     @Test
-    public void fieldIntStaticAccess() throws Exception {
-        Assert.willCapture("IntTest.intFieldStatic", 11);
-        assert intFieldStatic == 0;
+    public void fieldLongStaticAccess() throws Exception {
+        Assert.willCapture("LongTest.longFieldStatic", 11L);
+        assert longFieldStatic == 0;
     }
 }

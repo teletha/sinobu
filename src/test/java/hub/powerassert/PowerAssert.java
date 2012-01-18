@@ -159,6 +159,9 @@ public class PowerAssert implements TestRule {
         /** The acrual recoder. */
         private final Recoder context = createAPI(PowerAssertContext.class, Recoder.class);
 
+        /** The state. */
+        private boolean doubleCompare = false;
+
         /**
          * <p>
          * Compute simple class name.
@@ -204,11 +207,8 @@ public class PowerAssert implements TestRule {
             }
 
             if (processAssertion) {
-                mv.visitInsn(DUP);
-
                 // store current value
-                LocalVariable local = newLocal(Type.getType(desc));
-                local.store();
+                LocalVariable local = copy(Type.getType(desc));
 
                 switch (opcode) {
                 case GETFIELD:
@@ -243,7 +243,10 @@ public class PowerAssert implements TestRule {
             if (processAssertion) {
                 switch (opcode) {
                 case IFEQ:
-                    recode().constant(insn(ICONST_0));
+                    if (!doubleCompare) {
+                        recode().constant(insn(ICONST_0));
+                    }
+                    doubleCompare = false;
                     recode().operator("==");
                     break;
 
@@ -253,7 +256,10 @@ public class PowerAssert implements TestRule {
                     break;
 
                 case IFNE:
-                    recode().constant(insn(ICONST_0));
+                    if (!doubleCompare) {
+                        recode().constant(insn(ICONST_0));
+                    }
+                    doubleCompare = false;
                     recode().operator("!=");
                     break;
 
@@ -332,29 +338,25 @@ public class PowerAssert implements TestRule {
             }
 
             if (processAssertion) {
-                mv.visitInsn(DUP);
-
                 Type type = Type.getType(desc);
-                int size = type.getArgumentTypes().length;
                 boolean constructor = name.charAt(0) == '<';
 
                 // save current value
-                LocalVariable local = newLocal(constructor ? Type.getType(owner) : type.getReturnType());
-                local.store();
+                LocalVariable local = copy(constructor ? Type.getType(owner) : type.getReturnType());
 
                 switch (opcode) {
                 case INVOKESTATIC:
-                    recode().staticMethod(computeClassName(owner) + '.' + name, size, local);
+                    recode().staticMethod(computeClassName(owner) + '.' + name, desc, local);
                     break;
 
                 case INVOKESPECIAL:
                     if (constructor) {
-                        recode().constructor(computeClassName(owner), size, local);
+                        recode().constructor(computeClassName(owner), desc, local);
                         break;
                     }
                     // fall-through for private method call
                 default:
-                    recode().method(name, size, local);
+                    recode().method(name, desc, local);
                     break;
                 }
             }
@@ -427,6 +429,11 @@ public class PowerAssert implements TestRule {
 
                 case DALOAD:
                     local = copy(Type.DOUBLE_TYPE);
+                    recode().arrayIndex(local);
+                    break;
+
+                case BALOAD:
+                    local = copy(Type.BOOLEAN_TYPE);
                     recode().arrayIndex(local);
                     break;
 
@@ -510,6 +517,10 @@ public class PowerAssert implements TestRule {
                 case IAND:
                 case LAND:
                     recode().operator("&");
+                    break;
+
+                case LCMP:
+                    doubleCompare = true;
                     break;
                 }
             }

@@ -409,7 +409,7 @@ public class Agent extends ReusableRule {
                     if (value instanceof Bytecode) {
                         Bytecode bytecode = (Bytecode) value;
                         bytecode.write(mv, !parameter.isPrimitive());
-                    } else if (parameter == int.class || parameter == String.class) {
+                    } else if (parameter == int.class || parameter == long.class || parameter == String.class) {
                         mv.visitLdcInsn(value);
                     }
                 }
