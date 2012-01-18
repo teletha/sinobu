@@ -22,9 +22,6 @@ class Operand {
     /** The actual value. */
     Object value;
 
-    /** The constant flag. */
-    boolean constant;
-
     /**
      * 
      */
@@ -37,7 +34,6 @@ class Operand {
             this.name = String.valueOf(value);
         }
         this.value = value;
-        this.constant = true;
     }
 
     /**
@@ -46,7 +42,6 @@ class Operand {
     Operand(String name, Object value) {
         this.name = name;
         this.value = value;
-        this.constant = false;
     }
 
     /**
