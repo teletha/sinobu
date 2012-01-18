@@ -1,7 +1,7 @@
 package org.junit.runners.model;
 
 import static java.lang.reflect.Modifier.*;
-import hub.PowerAssert;
+import hub.bytecode.PowerAssert;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

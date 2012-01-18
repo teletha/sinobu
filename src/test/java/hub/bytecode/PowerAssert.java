@@ -7,12 +7,10 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package hub;
+package hub.bytecode;
 
 import static org.objectweb.asm.Opcodes.*;
-import hub.bytecode.Agent;
 import hub.bytecode.Agent.Translator;
-import hub.bytecode.LocalVariable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -188,7 +186,7 @@ public class PowerAssert implements TestRule {
          */
         private Recoder recode() {
             // load context
-            mv.visitMethodInsn(INVOKESTATIC, "hub/PowerAssert$PowerAssertContext", "get", "()Lhub/PowerAssert$PowerAssertContext;");
+            mv.visitMethodInsn(INVOKESTATIC, "hub/bytecode/PowerAssert$PowerAssertContext", "get", "()Lhub/bytecode/PowerAssert$PowerAssertContext;");
 
             // return API
             return context;
@@ -565,7 +563,7 @@ public class PowerAssert implements TestRule {
         }
 
         /**
-         * @see hub.PowerAssert.Recoder#operator(java.lang.String)
+         * @see hub.bytecode.PowerAssert.Recoder#operator(java.lang.String)
          */
         @Override
         public void operator(String expression) {
@@ -712,7 +710,7 @@ public class PowerAssert implements TestRule {
         }
 
         /**
-         * @see hub.PowerAssert.Recoder#clear()
+         * @see hub.bytecode.PowerAssert.Recoder#clear()
          */
         public void clear() {
             stack.clear();
@@ -850,7 +848,7 @@ public class PowerAssert implements TestRule {
     /**
      * @version 2012/01/18 0:47:32
      */
-    public static interface Recoder {
+    private static interface Recoder {
 
         /**
          * <p>
