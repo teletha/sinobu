@@ -75,7 +75,7 @@ public class PowerAssert implements TestRule {
     /**
      * @param operator
      */
-    void willUseOperator(String operator) {
+    void willUse(String operator) {
         operators.add(operator);
     }
 

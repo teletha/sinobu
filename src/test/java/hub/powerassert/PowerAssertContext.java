@@ -38,7 +38,6 @@ public class PowerAssertContext implements Recoder {
     public void constant(Object constant) {
         Operand operand = new Operand(constant);
         stack.add(operand);
-        operands.add(operand);
     }
 
     /**
