@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package hub;
+package hub.bytecode;
 
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
