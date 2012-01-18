@@ -10,8 +10,9 @@
 package hub;
 
 import static org.objectweb.asm.Opcodes.*;
-import static org.objectweb.asm.Type.*;
-import hub.Agent.Translator;
+import hub.bytecode.Agent;
+import hub.bytecode.Agent.Translator;
+import hub.bytecode.LocalVariable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -150,8 +151,6 @@ public class PowerAssert implements TestRule {
      */
     private static class PowerAssertTranslator extends Translator {
 
-        private static final Type OBJECT_TYPE = Type.getType(Object.class);
-
         /** The state. */
         private boolean startAssertion = false;
 
@@ -191,37 +190,28 @@ public class PowerAssert implements TestRule {
          */
         @Override
         public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+            super.visitFieldInsn(opcode, owner, name, desc);
+
             if (!startAssertion && opcode == GETSTATIC && name.equals("$assertionsDisabled")) {
                 startAssertion = true;
                 skipNextJump = true;
-
-                super.visitFieldInsn(opcode, owner, name, desc);
                 return;
             }
 
-            super.visitFieldInsn(opcode, owner, name, desc);
-
             if (processAssertion) {
-                Type type = Type.getType(desc);
                 mv.visitInsn(DUP);
 
-                int index = newLocalVariable(type);
-                mv.visitVarInsn(type.getOpcode(ISTORE), index);
-                loadContext();
+                // store current value
+                LocalVariable local = newLocal(Type.getType(desc));
+                local.store();
 
                 switch (opcode) {
                 case GETFIELD:
-                    mv.visitLdcInsn(name);
-                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
-                    wrap(type);
-                    invokeVirtual(PowerAssertContext.class, FieldAccess.class);
+                    call().recodeField(name, local);
                     break;
 
                 case GETSTATIC:
-                    mv.visitLdcInsn(computeClassName(owner) + '.' + name);
-                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
-                    wrap(type);
-                    invokeVirtual(PowerAssertContext.class, StaticFieldAccess.class);
+                    call().recodeStaticField(computeClassName(owner) + '.' + name, local);
                     break;
                 }
             }
@@ -303,9 +293,7 @@ public class PowerAssert implements TestRule {
          * @param operator
          */
         private void recodeOperator(String operator) {
-            loadContext();
-            mv.visitLdcInsn(operator);
-            invokeVirtual(PowerAssertContext.class, Operator.class);
+            call().recodeOperator(operator);
         }
 
         /**
@@ -321,9 +309,7 @@ public class PowerAssert implements TestRule {
 
             if (processAssertion) {
                 if (opcode == INSTANCEOF) {
-                    loadContext();
-                    mv.visitLdcInsn(computeClassName(type));
-                    invokeVirtual(PowerAssertContext.class, Instanceof.class);
+                    call().recodeInstanceof(computeClassName(type));
                 }
             }
         }
@@ -345,51 +331,26 @@ public class PowerAssert implements TestRule {
             }
 
             if (processAssertion) {
-                // recode method invocation
-                Type type;
-                Type methodType = Type.getType(desc);
-
-                if (opcode == INVOKESPECIAL && name.charAt(0) == '<') {
-                    // constructor
-                    type = Type.getType(owner);
-                } else {
-                    // method
-                    type = methodType.getReturnType();
-                }
-
-                int index = newLocalVariable(type);
-
                 mv.visitInsn(DUP);
+
+                Type type = Type.getType(desc);
+                int size = type.getArgumentTypes().length;
+
+                // save current value
+                LocalVariable local = newLocal(name.charAt(0) == '<' ? Type.getType(owner) : type.getReturnType());
+                local.store();
 
                 switch (opcode) {
                 case INVOKESTATIC:
-                    mv.visitVarInsn(type.getOpcode(ISTORE), index);
-                    loadContext();
-                    mv.visitLdcInsn(computeClassName(owner) + '.' + name);
-                    mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
-                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
-                    wrap(type);
-                    invokeVirtual(PowerAssertContext.class, StaticMethodCall.class);
+                    call().recodeStaticMethod(computeClassName(owner) + '.' + name, size, local);
                     break;
 
                 case INVOKESPECIAL:
-                    mv.visitVarInsn(type.getOpcode(ISTORE), index);
-                    loadContext();
-                    mv.visitLdcInsn(computeClassName(owner));
-                    mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
-                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
-                    wrap(type);
-                    invokeVirtual(PowerAssertContext.class, ConstructorCall.class);
+                    call().recodeConstructor(computeClassName(owner), size, local);
                     break;
 
                 default:
-                    mv.visitVarInsn(type.getOpcode(ISTORE), index);
-                    loadContext();
-                    mv.visitLdcInsn(name);
-                    mv.visitIntInsn(BIPUSH, methodType.getArgumentTypes().length);
-                    mv.visitVarInsn(type.getOpcode(ILOAD), index);
-                    wrap(type);
-                    invokeVirtual(PowerAssertContext.class, MethodCall.class);
+                    call().recodeMethod(name, size, local);
                     break;
                 }
             }
@@ -403,10 +364,7 @@ public class PowerAssert implements TestRule {
             super.visitIincInsn(index, increment);
 
             if (processAssertion) {
-                loadContext();
-                mv.visitLdcInsn(new Integer(hashCode() + index));
-                mv.visitIntInsn(BIPUSH, increment);
-                invokeVirtual(PowerAssertContext.class, Increment.class);
+                call().recodeIncrement(hashCode() + index, increment);
             }
         }
 
@@ -451,23 +409,14 @@ public class PowerAssert implements TestRule {
                 case ICONST_3:
                 case ICONST_4:
                 case ICONST_5:
-                    call().recodeConstant(insn(opcode, INT_TYPE));
-                    break;
-
                 case LCONST_0:
                 case LCONST_1:
-                    call().recodeConstant(insn(opcode, LONG_TYPE));
-                    break;
-
                 case FCONST_0:
                 case FCONST_1:
                 case FCONST_2:
-                    call().recodeConstant(insn(opcode, FLOAT_TYPE));
-                    break;
-
                 case DCONST_0:
                 case DCONST_1:
-                    call().recodeConstant(insn(opcode, DOUBLE_TYPE));
+                    call().recodeConstant(insn(opcode));
                     break;
 
                 case IADD:
@@ -509,8 +458,7 @@ public class PowerAssert implements TestRule {
                 case LNEG:
                 case FNEG:
                 case DNEG:
-                    loadContext();
-                    invokeVirtual(PowerAssertContext.class, Negative.class);
+                    call().recodeNegative();
                     break;
 
                 case ISHL:
@@ -566,33 +514,7 @@ public class PowerAssert implements TestRule {
             super.visitVarInsn(opcode, index);
 
             if (processAssertion) {
-                Type type = Type.INT_TYPE;
-
-                switch (opcode) {
-                case LLOAD:
-                    type = Type.LONG_TYPE;
-                    break;
-
-                case FLOAD:
-                    type = Type.FLOAT_TYPE;
-                    break;
-
-                case DLOAD:
-                    type = Type.DOUBLE_TYPE;
-                    break;
-
-                case ALOAD:
-                    type = OBJECT_TYPE;
-                    break;
-                }
-
-                // loadContext();
-                // mv.visitLdcInsn(new Integer(hashCode() + index));
-                // mv.visitVarInsn(opcode, index);
-                // wrap(localVariableType);
-                // invokeVirtual(PowerAssertContext.class, LocalVariable.class);
-
-                call().recodeLocalVariable(hashCode() + index, local(opcode, index).wrap(type));
+                call().recodeLocalVariable(hashCode() + index, local(opcode, index));
             }
         }
 
@@ -612,9 +534,7 @@ public class PowerAssert implements TestRule {
      * @version 2012/01/11 11:27:35
      */
     @Manageable(lifestyle = ThreadSpecific.class)
-    public static class PowerAssertContext
-            implements FieldAccess, LocalVariable, Operator, MethodCall, StaticFieldAccess, StaticMethodCall,
-            Increment, Negative, Instanceof, ConstructorCall, Manipulation {
+    public static class PowerAssertContext implements Manipulation {
 
         /** The operand stack. */
         private ArrayDeque<Operand> stack = new ArrayDeque();
@@ -661,7 +581,7 @@ public class PowerAssert implements TestRule {
         }
 
         /**
-         * @see hub.PowerAssert.Operator#recodeOperator(java.lang.String)
+         * @see hub.PowerAssert.Manipulation#recodeOperator(java.lang.String)
          */
         @Override
         public void recodeOperator(String expression) {
@@ -732,8 +652,7 @@ public class PowerAssert implements TestRule {
         }
 
         /**
-         * @see hub.PowerAssert.StaticFieldAccess#recodeStaticField(java.lang.String,
-         *      java.lang.Object)
+         * {@inheritDoc}
          */
         @Override
         public void recodeStaticField(String expression, Object variable) {
@@ -787,8 +706,7 @@ public class PowerAssert implements TestRule {
         }
 
         /**
-         * @see hub.PowerAssert.StaticMethodCall#recodeStaticMethod(java.lang.String, int,
-         *      java.lang.Object)
+         * {@inheritDoc}
          */
         @Override
         public void recodeStaticMethod(String name, int paramsSize, Object value) {
@@ -836,6 +754,13 @@ public class PowerAssert implements TestRule {
             return builder.toString();
         }
 
+        /**
+         * <p>
+         * Retrieve thread specific context.
+         * </p>
+         * 
+         * @return
+         */
         public static PowerAssertContext get() {
             return I.make(PowerAssertContext.class);
         }
@@ -963,167 +888,92 @@ public class PowerAssert implements TestRule {
          * @param variable A value.
          */
         void recodeLocalVariable(int id, Object variable);
-    }
-
-    /**
-     * <p>
-     * Marker interface for type-safe bytecode builder.
-     * </p>
-     * 
-     * @version 2012/01/14 2:08:48
-     */
-    private static interface Recodable {
-    }
-
-    /**
-     * @version 2012/01/14 1:51:05
-     */
-    private static interface LocalVariable extends Recodable {
 
         /**
          * <p>
-         * Recode constant.
-         * </p>
-         * 
-         * @param variable
-         * @param expression
-         */
-        void recodeLocalVariable(int id, Object variable);
-    }
-
-    /**
-     * @version 2012/01/14 1:51:05
-     */
-    private static interface FieldAccess<T> extends Recodable {
-
-        /**
-         * <p>
-         * Recode constant.
+         * Recode field access.
          * </p>
          * 
          * @param expression
          * @param variable
          */
-        void recodeField(String expression, T variable);
-    }
-
-    /**
-     * @version 2012/01/14 1:51:05
-     */
-    private static interface StaticFieldAccess<T> extends Recodable {
+        void recodeField(String expression, Object variable);
 
         /**
          * <p>
-         * Recode constant.
+         * Recode static field access.
          * </p>
          * 
          * @param expression
          * @param variable
          */
-        void recodeStaticField(String expression, T variable);
-    }
-
-    /**
-     * @version 2012/01/14 14:42:28
-     */
-    private static interface Operator<T> extends Recodable {
+        void recodeStaticField(String expression, Object variable);
 
         /**
          * <p>
-         * Recode constant.
+         * Recode operator.
          * </p>
          * 
-         * @param variable
          * @param expression
          */
-        void recodeOperator(String expression);
-    }
-
-    /**
-     * @version 2012/01/14 14:42:28
-     */
-    private static interface Increment extends Recodable {
+        void recodeOperator(String operator);
 
         /**
          * <p>
-         * Recode constant.
+         * Recode increment operation.
          * </p>
          * 
-         * @param id
+         * @param id A local variable id.
+         * @param increment A increment value.
          */
         void recodeIncrement(int id, int increment);
-    }
-
-    /**
-     * @version 2012/01/14 14:42:28
-     */
-    private static interface Negative extends Recodable {
 
         /**
          * <p>
-         * Recode constant.
+         * Recode negative value operation.
          * </p>
          */
         void recodeNegative();
-    }
-
-    /**
-     * @version 2012/01/14 14:42:28
-     */
-    private static interface Instanceof extends Recodable {
 
         /**
          * <p>
-         * Recode constant.
+         * Recode instanceof operation.
          * </p>
+         * 
+         * @param className
          */
         void recodeInstanceof(String className);
-    }
-
-    /**
-     * @version 2012/01/14 14:42:28
-     */
-    private static interface MethodCall<T> extends Recodable {
 
         /**
          * <p>
-         * Recode constant.
+         * Recode method call.
          * </p>
          * 
-         * @param variable
-         * @param expression
+         * @param name A method name.
+         * @param paramsSize A method parameter size.
+         * @param value A returned value.
          */
-        void recodeMethod(String name, int paramsSize, T value);
-    }
-
-    /**
-     * @version 2012/01/14 14:42:28
-     */
-    private static interface StaticMethodCall<T> extends Recodable {
+        void recodeMethod(String name, int paramsSize, Object value);
 
         /**
          * <p>
-         * Recode constant.
+         * Recode static method call.
          * </p>
          * 
-         * @param variable
-         * @param expression
+         * @param name A method name.
+         * @param paramsSize A method parameter size.
+         * @param value A returned value.
          */
-        void recodeStaticMethod(String name, int paramsSize, T value);
-    }
-
-    /**
-     * @version 2012/01/14 14:42:28
-     */
-    private static interface ConstructorCall extends Recodable {
+        void recodeStaticMethod(String name, int paramsSize, Object value);
 
         /**
          * <p>
-         * Recode constant.
+         * Recode constructor call.
          * </p>
          * 
-         * @param variable
-         * @param expression
+         * @param name A constructor name.
+         * @param paramsSize A constructor parameter size.
+         * @param value A constructed value.
          */
         void recodeConstructor(String name, int paramsSize, Object value);
     }

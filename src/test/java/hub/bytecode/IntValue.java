@@ -31,15 +31,15 @@ public class IntValue extends Bytecode<IntValue> {
     public IntValue(int opcode, int operand) {
         this.opcode = opcode;
         this.operand = operand;
-
-        wrap(INT_TYPE);
     }
 
     /**
-     * @see hub.bytecode.Bytecode#write(org.objectweb.asm.MethodVisitor)
+     * @see hub.bytecode.Bytecode#write(org.objectweb.asm.MethodVisitor, boolean)
      */
     @Override
-    void write(MethodVisitor visitor) {
+    public
+    void write(MethodVisitor visitor, boolean isNonPrimitive) {
         visitor.visitIntInsn(opcode, operand);
+        wrap(visitor, INT_TYPE);
     }
 }

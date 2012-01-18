@@ -11,8 +11,6 @@ package hub.bytecode;
 
 import static org.objectweb.asm.Opcodes.*;
 
-import java.util.LinkedList;
-
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
@@ -21,8 +19,8 @@ import org.objectweb.asm.Type;
  */
 public abstract class Bytecode<T extends Bytecode<T>> {
 
-    /** The sub sequence. */
-    private LinkedList<Bytecode> sequence = new LinkedList();
+    /** The object type for reuse. */
+    public static final Type OBJECT_TYPE = Type.getType(Object.class);
 
     /**
      * <p>
@@ -32,15 +30,12 @@ public abstract class Bytecode<T extends Bytecode<T>> {
      * @param type
      * @return
      */
-    public final T wrap(Type type) {
+    final void wrap(MethodVisitor visitor, Type type) {
         Type wrapper = getWrapperType(type);
 
         if (wrapper != type) {
-            sequence.add(new MethodCall(INVOKESTATIC, wrapper.getInternalName(), "valueOf", Type.getMethodDescriptor(wrapper, type)));
+            visitor.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", Type.getMethodDescriptor(wrapper, type));
         }
-
-        // API definition
-        return (T) this;
     }
 
     /**
@@ -49,23 +44,9 @@ public abstract class Bytecode<T extends Bytecode<T>> {
      * </p>
      * 
      * @param visitor
+     * @param requireNonPrimitive TODO
      */
-    public final void toBytecode(MethodVisitor visitor) {
-        write(visitor);
-
-        for (Bytecode code : sequence) {
-            code.toBytecode(visitor);
-        }
-    }
-
-    /**
-     * <p>
-     * Write bytecode.
-     * </p>
-     * 
-     * @param visitor
-     */
-    abstract void write(MethodVisitor visitor);
+    public abstract void write(MethodVisitor visitor, boolean requireNonPrimitive);
 
     /**
      * <p>
