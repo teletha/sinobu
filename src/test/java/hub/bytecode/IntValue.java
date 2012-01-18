@@ -9,21 +9,30 @@
  */
 package hub.bytecode;
 
+import static org.objectweb.asm.Type.*;
+
 import org.objectweb.asm.MethodVisitor;
 
 /**
- * @version 2012/01/18 8:37:28
+ * @version 2012/01/18 9:51:34
  */
-public class Instruction extends Bytecode<Instruction> {
+public class IntValue extends Bytecode<IntValue> {
 
-    /** The operation code. */
+    /** The opration code. */
     public int opcode;
+
+    /** The value. */
+    public int operand;
 
     /**
      * @param opcode
+     * @param operand
      */
-    public Instruction(int opcode) {
+    public IntValue(int opcode, int operand) {
         this.opcode = opcode;
+        this.operand = operand;
+
+        wrap(INT_TYPE);
     }
 
     /**
@@ -31,6 +40,6 @@ public class Instruction extends Bytecode<Instruction> {
      */
     @Override
     void write(MethodVisitor visitor) {
-        visitor.visitInsn(opcode);
+        visitor.visitIntInsn(opcode, operand);
     }
 }

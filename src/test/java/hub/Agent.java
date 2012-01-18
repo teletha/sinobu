@@ -10,6 +10,11 @@
 package hub;
 
 import static org.objectweb.asm.Opcodes.*;
+import hub.bytecode.Bytecode;
+import hub.bytecode.Constant;
+import hub.bytecode.Instruction;
+import hub.bytecode.IntValue;
+import hub.bytecode.LocalVariable;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
@@ -289,8 +294,33 @@ public class Agent extends ReusableRule {
             mv.visitMethodInsn(INVOKEVIRTUAL, Type.getType(invoker).getInternalName(), info.name, info.descriptor);
         }
 
+        protected final Bytecode local(int opcode, int index) {
+            return new LocalVariable(opcode, index);
+        }
+
+        protected final Bytecode insn(int opcode) {
+            return insn(opcode, null);
+        }
+
+        protected final Bytecode insn(int opcode, Type type) {
+            Instruction instruction = new Instruction(opcode);
+
+            if (type != null) {
+                instruction = instruction.wrap(type);
+            }
+            return instruction;
+        }
+
+        protected final Bytecode intInsn(int opcode, int operand) {
+            return new IntValue(opcode, operand);
+        }
+
+        protected final Bytecode ldc(Object value) {
+            return new Constant(value);
+        }
+
         protected final <S> S callInterface(Class invoker, Class<S> manipulation) {
-            return (S) Proxy.newProxyInstance(manipulation.getClassLoader(), new Class[] {manipulation}, new Handler(invoker));
+            return (S) Proxy.newProxyInstance(manipulation.getClassLoader(), new Class[] {manipulation}, new InterfaceCaller(invoker));
         }
 
         /**
@@ -301,7 +331,7 @@ public class Agent extends ReusableRule {
          * @param type
          */
         protected final void wrap(Type type) {
-            Type wrapper = getWrapperType(type);
+            Type wrapper = Bytecode.getWrapperType(type);
 
             if (wrapper != type) {
                 mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", Type.getMethodDescriptor(wrapper, type));
@@ -309,48 +339,9 @@ public class Agent extends ReusableRule {
         }
 
         /**
-         * <p>
-         * Search wrapper type of the specified primitive type.
-         * </p>
-         * 
-         * @param type
-         * @return
-         */
-        private static Type getWrapperType(Type type) {
-            switch (type.getSort()) {
-            case Type.BOOLEAN:
-                return Type.getType(Boolean.class);
-
-            case Type.INT:
-                return Type.getType(Integer.class);
-
-            case Type.LONG:
-                return Type.getType(Long.class);
-
-            case Type.FLOAT:
-                return Type.getType(Float.class);
-
-            case Type.DOUBLE:
-                return Type.getType(Double.class);
-
-            case Type.CHAR:
-                return Type.getType(Character.class);
-
-            case Type.BYTE:
-                return Type.getType(Byte.class);
-
-            case Type.SHORT:
-                return Type.getType(Short.class);
-
-            default:
-                return type;
-            }
-        }
-
-        /**
          * @version 2012/01/18 1:18:40
          */
-        private class Handler implements InvocationHandler {
+        private class InterfaceCaller implements InvocationHandler {
 
             /** The invocation type. */
             private final String invocation;
@@ -358,7 +349,7 @@ public class Agent extends ReusableRule {
             /**
              * @param invocation
              */
-            private Handler(Class invocation) {
+            private InterfaceCaller(Class invocation) {
                 this.invocation = Type.getType(invocation).getInternalName();
             }
 
@@ -367,16 +358,22 @@ public class Agent extends ReusableRule {
              */
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                // build parameter stacks
                 Class[] parameters = method.getParameterTypes();
 
                 for (int i = 0; i < parameters.length; i++) {
                     Class parameter = parameters[i];
                     Object value = args[i];
 
+                    if (value instanceof Bytecode) {
+                        Bytecode bytecode = (Bytecode) value;
+                        bytecode.toBytecode(mv);
+                    } else if (parameter == int.class) {
+                        mv.visitLdcInsn(value);
+                    }
                 }
-
                 // call interface method
-                mv.visitMethodInsn(INVOKEINTERFACE, invocation, method.getName(), Type.getMethodDescriptor(method));
+                mv.visitMethodInsn(INVOKEVIRTUAL, invocation, method.getName(), Type.getMethodDescriptor(method));
                 return null;
             }
         }
