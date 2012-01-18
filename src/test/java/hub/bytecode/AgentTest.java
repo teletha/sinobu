@@ -7,7 +7,8 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package hub;
+package hub.bytecode;
+
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;

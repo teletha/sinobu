@@ -7,14 +7,11 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package hub;
+package hub.bytecode;
 
 import static org.objectweb.asm.Opcodes.*;
-import hub.bytecode.Bytecode;
-import hub.bytecode.Constant;
-import hub.bytecode.Instruction;
-import hub.bytecode.IntValue;
-import hub.bytecode.LocalVariable;
+import hub.ReusableRule;
+import hub.UnsafeUtility;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
@@ -229,7 +226,7 @@ public class Agent extends ReusableRule {
             @Override
             public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
                 MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
-                LocalVariablesSorter sorter = new LocalVariablesSorter(access, desc, visitor);
+                LocalVariableSorter sorter = new LocalVariableSorter(access, desc, visitor);
                 Translator translator = I.make(TranslatorTransformer.this.translator);
                 translator.set(sorter, className, name, Type.getMethodType(desc));
 
@@ -264,7 +261,7 @@ public class Agent extends ReusableRule {
          * Lazy set up.
          * </p>
          */
-        final void set(LocalVariablesSorter visitor, String className, String methodName, Type methodDescriptor) {
+        final void set(LocalVariableSorter visitor, String className, String methodName, Type methodDescriptor) {
             mv = visitor;
             this.className = className;
             this.methodName = methodName;
@@ -277,8 +274,8 @@ public class Agent extends ReusableRule {
          * @param type the type of the local variable to be created.
          * @return the identifier of the newly created local variable.
          */
-        protected final int newLocalVariable(Type type) {
-            return ((LocalVariablesSorter) mv).newLocal(type);
+        protected final LocalVariable newLocal(Type type) {
+            return new LocalVariable(type, (LocalVariableSorter) mv);
         }
 
         /**
@@ -294,27 +291,63 @@ public class Agent extends ReusableRule {
             mv.visitMethodInsn(INVOKEVIRTUAL, Type.getType(invoker).getInternalName(), info.name, info.descriptor);
         }
 
+        /**
+         * <p>
+         * Store the latest value into the specified local value.
+         * </p>
+         * 
+         * @param local
+         */
+        protected final void storeInto(LocalVariable local) {
+
+        }
+
+        /**
+         * <p>
+         * Write local variable code.
+         * </p>
+         * 
+         * @param opcode
+         * @param index
+         * @return
+         */
         protected final Bytecode local(int opcode, int index) {
             return new LocalVariable(opcode, index);
         }
 
+        /**
+         * <p>
+         * Write instruction code.
+         * </p>
+         * 
+         * @param opcode
+         * @return
+         */
         protected final Bytecode insn(int opcode) {
-            return insn(opcode, null);
+            return new Instruction(opcode);
         }
 
-        protected final Bytecode insn(int opcode, Type type) {
-            Instruction instruction = new Instruction(opcode);
-
-            if (type != null) {
-                instruction = instruction.wrap(type);
-            }
-            return instruction;
-        }
-
+        /**
+         * <p>
+         * Write int value code.
+         * </p>
+         * 
+         * @param opcode
+         * @param operand
+         * @return
+         */
         protected final Bytecode intInsn(int opcode, int operand) {
             return new IntValue(opcode, operand);
         }
 
+        /**
+         * <p>
+         * Write constant value code.
+         * </p>
+         * 
+         * @param value
+         * @return
+         */
         protected final Bytecode ldc(Object value) {
             return new Constant(value);
         }
@@ -367,8 +400,8 @@ public class Agent extends ReusableRule {
 
                     if (value instanceof Bytecode) {
                         Bytecode bytecode = (Bytecode) value;
-                        bytecode.toBytecode(mv);
-                    } else if (parameter == int.class) {
+                        bytecode.write(mv, !parameter.isPrimitive());
+                    } else if (parameter == int.class || parameter == String.class) {
                         mv.visitLdcInsn(value);
                     }
                 }

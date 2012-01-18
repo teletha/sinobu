@@ -9,8 +9,9 @@
  */
 package hub.bytecode;
 
+import static org.objectweb.asm.Type.*;
+
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
 
 /**
  * @version 2012/01/18 9:56:27
@@ -28,20 +29,21 @@ public class Constant extends Bytecode<Constant> {
     }
 
     /**
-     * @see hub.bytecode.Bytecode#write(org.objectweb.asm.MethodVisitor)
+     * @see hub.bytecode.Bytecode#write(org.objectweb.asm.MethodVisitor, boolean)
      */
     @Override
-    void write(MethodVisitor visitor) {
+    public
+    void write(MethodVisitor visitor, boolean requireNonPrimitive) {
         visitor.visitLdcInsn(value);
 
         if (value instanceof Integer) {
-            wrap(Type.INT_TYPE);
+            wrap(visitor, INT_TYPE);
         } else if (value instanceof Long) {
-            wrap(Type.LONG_TYPE);
+            wrap(visitor, LONG_TYPE);
         } else if (value instanceof Float) {
-            wrap(Type.FLOAT_TYPE);
+            wrap(visitor, FLOAT_TYPE);
         } else if (value instanceof Double) {
-            wrap(Type.DOUBLE_TYPE);
+            wrap(visitor, DOUBLE_TYPE);
         }
     }
 }

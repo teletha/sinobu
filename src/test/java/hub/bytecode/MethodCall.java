@@ -42,10 +42,11 @@ public class MethodCall extends Bytecode<MethodCall> {
     }
 
     /**
-     * @see hub.bytecode.Bytecode#write(org.objectweb.asm.MethodVisitor)
+     * @see hub.bytecode.Bytecode#write(org.objectweb.asm.MethodVisitor, boolean)
      */
     @Override
-    void write(MethodVisitor visitor) {
+    public
+    void write(MethodVisitor visitor, boolean isNonPrimitive) {
         visitor.visitMethodInsn(opcode, owner, name, desc);
     }
 }

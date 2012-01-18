@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package hub;
+package hub.bytecode;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -39,13 +39,13 @@ import org.objectweb.asm.Type;
  * allows one to easily add new local variables to a method. It may be used by inheriting from this
  * class, but the preferred way of using it is via delegation: the next visitor in the chain can
  * indeed add new locals when needed by calling {@link #newLocal} on this adapter (this requires a
- * reference back to this {@link LocalVariablesSorter}).
+ * reference back to this {@link LocalVariableSorter}).
  * 
  * @author Chris Nokleberg
  * @author Eugene Kuleshov
  * @author Eric Bruneton
  */
-public class LocalVariablesSorter extends MethodVisitor {
+public class LocalVariableSorter extends MethodVisitor {
 
     private static final Type OBJECT_TYPE = Type.getObjectType("java/lang/Object");
 
@@ -77,7 +77,7 @@ public class LocalVariablesSorter extends MethodVisitor {
     private boolean changed;
 
     /**
-     * Creates a new {@link LocalVariablesSorter}. <i>Subclasses must not use this constructor</i>.
+     * Creates a new {@link LocalVariableSorter}. <i>Subclasses must not use this constructor</i>.
      * Instead, they must use the {@link #LocalVariablesSorter(int, int, String, MethodVisitor)}
      * version.
      * 
@@ -85,12 +85,12 @@ public class LocalVariablesSorter extends MethodVisitor {
      * @param desc the method's descriptor (see {@link Type Type}).
      * @param mv the method visitor to which this adapter delegates calls.
      */
-    public LocalVariablesSorter(final int access, final String desc, final MethodVisitor mv) {
+    public LocalVariableSorter(final int access, final String desc, final MethodVisitor mv) {
         this(Opcodes.ASM4, access, desc, mv);
     }
 
     /**
-     * Creates a new {@link LocalVariablesSorter}.
+     * Creates a new {@link LocalVariableSorter}.
      * 
      * @param api the ASM API version implemented by this visitor. Must be one of
      *            {@link Opcodes#ASM4}.
@@ -98,7 +98,7 @@ public class LocalVariablesSorter extends MethodVisitor {
      * @param desc the method's descriptor (see {@link Type Type}).
      * @param mv the method visitor to which this adapter delegates calls.
      */
-    protected LocalVariablesSorter(final int api, final int access, final String desc, final MethodVisitor mv) {
+    protected LocalVariableSorter(final int api, final int access, final String desc, final MethodVisitor mv) {
         super(api, mv);
         Type[] args = Type.getArgumentTypes(desc);
         nextLocal = (Opcodes.ACC_STATIC & access) == 0 ? 1 : 0;
