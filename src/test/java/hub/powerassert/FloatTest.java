@@ -15,14 +15,14 @@ import org.junit.Test;
 /**
  * @version 2012/01/18 13:15:48
  */
-public class IntTest {
+public class FloatTest {
 
     @Rule
     public static final PowerAssert Assert = new PowerAssert(true);
 
     @Test
     public void constant_0() throws Exception {
-        int value = -1;
+        float value = -1;
 
         Assert.willUse("0");
         Assert.willCapture("value", value);
@@ -31,7 +31,7 @@ public class IntTest {
 
     @Test
     public void constant_1() throws Exception {
-        int value = -1;
+        float value = -1;
 
         Assert.willUse("1");
         Assert.willCapture("value", value);
@@ -40,7 +40,7 @@ public class IntTest {
 
     @Test
     public void constant_2() throws Exception {
-        int value = -1;
+        float value = -1;
 
         Assert.willUse("2");
         Assert.willCapture("value", value);
@@ -49,7 +49,7 @@ public class IntTest {
 
     @Test
     public void constant_3() throws Exception {
-        int value = -1;
+        float value = -1;
 
         Assert.willUse("3");
         Assert.willCapture("value", value);
@@ -58,7 +58,7 @@ public class IntTest {
 
     @Test
     public void constant_M1() throws Exception {
-        int value = 0;
+        float value = 0;
 
         Assert.willUse("-1");
         Assert.willCapture("value", value);
@@ -67,16 +67,16 @@ public class IntTest {
 
     @Test
     public void big() throws Exception {
-        int value = 2;
+        float value = 2;
 
-        Assert.willUse("123456789");
+        Assert.willUse("0.12345678");
         Assert.willCapture("value", value);
-        assert 123456789 == value;
+        assert 0.12345678f == value;
     }
 
     @Test
     public void array() throws Exception {
-        int[] array = {0, 1, 2};
+        float[] array = {0, 1, 2};
 
         Assert.willCapture("array", array);
         assert array == null;
@@ -84,16 +84,16 @@ public class IntTest {
 
     @Test
     public void arrayIndex() throws Exception {
-        int[] array = {0, 1, 2};
+        float[] array = {0, 1, 2};
 
         Assert.willCapture("array", array);
-        Assert.willCapture("array[1]", 1);
+        Assert.willCapture("array[1]", 1f);
         assert array[1] == 128;
     }
 
     @Test
     public void arrayLength() throws Exception {
-        int[] array = {0, 1, 2};
+        float[] array = {0, 1, 2};
 
         Assert.willCapture("array", array);
         Assert.willCapture("array.length", 3);
@@ -102,39 +102,39 @@ public class IntTest {
 
     @Test
     public void method() throws Exception {
-        Assert.willCapture("test()", 1);
-        assert test() == 2;
+        Assert.willCapture("test()", 1f);
+        assert test() == 2f;
     }
 
-    int test() {
+    float test() {
         return 1;
     }
 
     @Test
     public void parameter() throws Exception {
-        Assert.willCapture("test(12)", false);
+        Assert.willCapture("test(12.0)", false);
         assert test(12);
     }
 
-    private boolean test(int value) {
+    private boolean test(float value) {
         return false;
     }
 
     /** The tester. */
-    private int intField = 11;
+    private float floatField = 0.123f;
 
     /** The tester. */
-    private static int intFieldStatic = 11;
+    private static float floatFieldStatic = 0.123f;
 
     @Test
-    public void fieldIntAccess() throws Exception {
-        Assert.willCapture("this.intField", 11);
-        assert intField == 0;
+    public void fieldFloatAccess() throws Exception {
+        Assert.willCapture("this.floatField", 0.123f);
+        assert floatField == 0;
     }
 
     @Test
-    public void fieldIntStaticAccess() throws Exception {
-        Assert.willCapture("IntTest.intFieldStatic", 11);
-        assert intFieldStatic == 0;
+    public void fieldFloatStaticAccess() throws Exception {
+        Assert.willCapture("FloatTest.floatFieldStatic", 0.123f);
+        assert floatFieldStatic == 0;
     }
 }

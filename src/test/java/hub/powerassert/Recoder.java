@@ -101,10 +101,10 @@ interface Recoder {
      * </p>
      * 
      * @param name A method name.
-     * @param paramsSize A method parameter size.
+     * @param description A method parameter size.
      * @param value A returned value.
      */
-    void method(String name, int paramsSize, Object value);
+    void method(String name, String description, Object value);
 
     /**
      * <p>
@@ -112,10 +112,10 @@ interface Recoder {
      * </p>
      * 
      * @param name A method name.
-     * @param paramsSize A method parameter size.
+     * @param description A method parameter size.
      * @param value A returned value.
      */
-    void staticMethod(String name, int paramsSize, Object value);
+    void staticMethod(String name, String description, Object value);
 
     /**
      * <p>
@@ -123,10 +123,10 @@ interface Recoder {
      * </p>
      * 
      * @param name A constructor name.
-     * @param paramsSize A constructor parameter size.
+     * @param description A constructor parameter size.
      * @param value A constructed value.
      */
-    void constructor(String name, int paramsSize, Object value);
+    void constructor(String name, String description, Object value);
 
     /**
      * <p>

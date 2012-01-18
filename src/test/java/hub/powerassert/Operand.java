@@ -108,6 +108,8 @@ class Operand {
                 return Arrays.toString((byte[]) value);
             } else if (type == char.class) {
                 return Arrays.toString((char[]) value);
+            } else if (type == boolean.class) {
+                return Arrays.toString((boolean[]) value);
             }
             return Arrays.toString((Object[]) value);
         } else {

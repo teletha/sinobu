@@ -16,6 +16,8 @@ import kiss.I;
 import kiss.Manageable;
 import kiss.ThreadSpecific;
 
+import org.objectweb.asm.Type;
+
 /**
  * @version 2012/01/11 11:27:35
  */
@@ -76,6 +78,7 @@ public class PowerAssertContext implements Recoder {
             if (operator.equals("==") || operator.equals("!=")) {
                 // check operands
                 if (right.value instanceof Integer && ((Integer) right.value).intValue() == 0 && left.value instanceof Boolean) {
+
                     // boolean == 0 or boolean != 0
                     stack.add(left);
                     return;
@@ -158,14 +161,23 @@ public class PowerAssertContext implements Recoder {
      * {@inheritDoc}
      */
     @Override
-    public void constructor(String name, int paramsSize, Object value) {
+    public void constructor(String name, String description, Object value) {
         // build method invocation
         StringBuilder invocation = new StringBuilder("()");
+        Type[] params = Type.getMethodType(description).getArgumentTypes();
+        int size = params.length;
 
-        for (int i = 0; i < paramsSize; i++) {
-            invocation.insert(1, stack.pollLast());
+        for (int i = 0; i < size; i++) {
+            Type type = params[i];
+            Operand operand = stack.pollLast();
 
-            if (i + 1 != paramsSize) {
+            if (type.getSort() == Type.BOOLEAN && operand.value instanceof Integer) {
+                // format
+                operand = new Operand(Boolean.valueOf(operand.value.toString()));
+            }
+            invocation.insert(1, operand);
+
+            if (i + 1 != size) {
                 invocation.insert(1, ", ");
             }
         }
@@ -180,14 +192,23 @@ public class PowerAssertContext implements Recoder {
      * {@inheritDoc}
      */
     @Override
-    public void method(String name, int paramsSize, Object value) {
+    public void method(String name, String description, Object value) {
         // build method invocation
         StringBuilder invocation = new StringBuilder("()");
+        Type[] params = Type.getMethodType(description).getArgumentTypes();
+        int size = params.length;
 
-        for (int i = 0; i < paramsSize; i++) {
-            invocation.insert(1, stack.pollLast());
+        for (int i = 0; i < size; i++) {
+            Type type = params[i];
+            Operand operand = stack.pollLast();
 
-            if (i + 1 != paramsSize) {
+            if (type.getSort() == Type.BOOLEAN && operand.value instanceof Integer) {
+                // format
+                operand = new Operand(Boolean.valueOf(operand.value.toString()));
+            }
+            invocation.insert(1, operand);
+
+            if (i + 1 != size) {
                 invocation.insert(1, ", ");
             }
         }
@@ -211,14 +232,23 @@ public class PowerAssertContext implements Recoder {
      * {@inheritDoc}
      */
     @Override
-    public void staticMethod(String name, int paramsSize, Object value) {
+    public void staticMethod(String name, String description, Object value) {
         // build method invocation
         StringBuilder invocation = new StringBuilder("()");
+        Type[] params = Type.getMethodType(description).getArgumentTypes();
+        int size = params.length;
 
-        for (int i = 0; i < paramsSize; i++) {
-            invocation.insert(1, stack.pollLast());
+        for (int i = 0; i < size; i++) {
+            Type type = params[i];
+            Operand operand = stack.pollLast();
 
-            if (i + 1 != paramsSize) {
+            if (type.getSort() == Type.BOOLEAN && operand.value instanceof Integer) {
+                // format
+                operand = new Operand(Boolean.valueOf(operand.value.toString()));
+            }
+            invocation.insert(1, operand);
+
+            if (i + 1 != size) {
                 invocation.insert(1, ", ");
             }
         }

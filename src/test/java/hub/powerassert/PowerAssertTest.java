@@ -26,60 +26,6 @@ public class PowerAssertTest {
     public static final PowerAssert test = new PowerAssert(true);
 
     @Test
-    public void longConstantAndVariable() throws Exception {
-        long value = 2;
-
-        test.willUse("1");
-        test.willCapture("value", value);
-        assert 1L == value;
-    }
-
-    @Test
-    public void longBigConstantAndVariable() throws Exception {
-        long value = 2;
-
-        test.willUse("1234567890123");
-        test.willCapture("value", value);
-        assert 1234567890123L == value;
-    }
-
-    @Test
-    public void floatConstantAndVariable() throws Exception {
-        float value = 2;
-
-        test.willUse("1.0");
-        test.willCapture("value", value);
-        assert 1f == value;
-    }
-
-    @Test
-    public void floatBigConstantAndVariable() throws Exception {
-        float value = 2;
-
-        test.willUse("0.12345678");
-        test.willCapture("value", value);
-        assert 0.12345678f == value;
-    }
-
-    @Test
-    public void doubleConstantAndVariable() throws Exception {
-        double value = 2;
-
-        test.willUse("1.0");
-        test.willCapture("value", value);
-        assert 1d == value;
-    }
-
-    @Test
-    public void doubleBigConstantAndVariable() throws Exception {
-        double value = 2;
-
-        test.willUse("0.1234567898765432");
-        test.willCapture("value", value);
-        assert 0.1234567898765432d == value;
-    }
-
-    @Test
     public void shortConstantAndVariable() throws Exception {
         short value = 2;
 
@@ -220,24 +166,6 @@ public class PowerAssertTest {
         test.willCapture("Integer.valueOf(10)", new Integer(10));
         test.willCapture("value", "");
         assert Integer.valueOf(10) == value;
-    }
-
-    /** The tester. */
-    private int intField = 11;
-
-    /** The tester. */
-    private static int intFieldStatic = 11;
-
-    @Test
-    public void fieldIntAccess() throws Exception {
-        test.willCapture("this.intField", 11);
-        assert intField == 0;
-    }
-
-    @Test
-    public void fieldIntStaticAccess() throws Exception {
-        test.willCapture("PowerAssertTest.intFieldStatic", 11);
-        assert intFieldStatic == 0;
     }
 
     /** The tester. */
