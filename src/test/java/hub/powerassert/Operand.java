@@ -9,6 +9,8 @@
  */
 package hub.powerassert;
 
+import java.util.Arrays;
+
 /**
  * @version 2012/01/11 14:11:46
  */
@@ -94,6 +96,25 @@ class Operand {
         } else if (value instanceof Enum) {
             Enum enumration = (Enum) value;
             return enumration.getDeclaringClass().getSimpleName() + '.' + enumration.name();
+        } else if (value.getClass().isArray()) {
+            Class type = value.getClass().getComponentType();
+
+            if (type == int.class) {
+                return Arrays.toString((int[]) value);
+            } else if (type == long.class) {
+                return Arrays.toString((long[]) value);
+            } else if (type == float.class) {
+                return Arrays.toString((float[]) value);
+            } else if (type == double.class) {
+                return Arrays.toString((double[]) value);
+            } else if (type == short.class) {
+                return Arrays.toString((short[]) value);
+            } else if (type == byte.class) {
+                return Arrays.toString((byte[]) value);
+            } else if (type == char.class) {
+                return Arrays.toString((char[]) value);
+            }
+            return Arrays.toString((Object[]) value);
         } else {
             return value.toString();
         }

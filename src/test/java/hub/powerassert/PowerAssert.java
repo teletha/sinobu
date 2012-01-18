@@ -12,6 +12,7 @@ package hub.powerassert;
 import static org.objectweb.asm.Opcodes.*;
 import hub.bytecode.Agent;
 import hub.bytecode.Agent.Translator;
+import hub.bytecode.Bytecode;
 import hub.bytecode.LocalVariable;
 
 import java.util.ArrayList;
@@ -242,12 +243,20 @@ public class PowerAssert implements TestRule {
             if (processAssertion) {
                 switch (opcode) {
                 case IFEQ:
+                    recode().constant(insn(ICONST_0));
+                    recode().operator("==");
+                    break;
+
                 case IF_ICMPEQ:
                 case IF_ACMPEQ:
                     recode().operator("==");
                     break;
 
                 case IFNE:
+                    recode().constant(insn(ICONST_0));
+                    recode().operator("!=");
+                    break;
+
                 case IF_ICMPNE:
                 case IF_ACMPNE:
                     recode().operator("!=");
@@ -327,9 +336,10 @@ public class PowerAssert implements TestRule {
 
                 Type type = Type.getType(desc);
                 int size = type.getArgumentTypes().length;
+                boolean constructor = name.charAt(0) == '<';
 
                 // save current value
-                LocalVariable local = newLocal(name.charAt(0) == '<' ? Type.getType(owner) : type.getReturnType());
+                LocalVariable local = newLocal(constructor ? Type.getType(owner) : type.getReturnType());
                 local.store();
 
                 switch (opcode) {
@@ -338,9 +348,11 @@ public class PowerAssert implements TestRule {
                     break;
 
                 case INVOKESPECIAL:
-                    recode().constructor(computeClassName(owner), size, local);
-                    break;
-
+                    if (constructor) {
+                        recode().constructor(computeClassName(owner), size, local);
+                        break;
+                    }
+                    // fall-through for private method call
                 default:
                     recode().method(name, size, local);
                     break;
@@ -396,6 +408,36 @@ public class PowerAssert implements TestRule {
                 case DCONST_0:
                 case DCONST_1:
                     recode().constant(insn(opcode));
+                    break;
+
+                case IALOAD:
+                    LocalVariable local = copy(Type.INT_TYPE);
+                    recode().arrayIndex(local);
+                    break;
+
+                case LALOAD:
+                    local = copy(Type.LONG_TYPE);
+                    recode().arrayIndex(local);
+                    break;
+
+                case FALOAD:
+                    local = copy(Type.FLOAT_TYPE);
+                    recode().arrayIndex(local);
+                    break;
+
+                case DALOAD:
+                    local = copy(Type.DOUBLE_TYPE);
+                    recode().arrayIndex(local);
+                    break;
+
+                case AALOAD:
+                    local = copy(Bytecode.OBJECT_TYPE);
+                    recode().arrayIndex(local);
+                    break;
+
+                case ARRAYLENGTH:
+                    local = copy(Type.INT_TYPE);
+                    recode().field("length", local);
                     break;
 
                 case IADD:

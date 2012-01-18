@@ -26,24 +26,6 @@ public class PowerAssertTest {
     public static final PowerAssert test = new PowerAssert(true);
 
     @Test
-    public void intConstantAndVariable() throws Exception {
-        int value = 2;
-
-        test.willCapture("1", 1);
-        test.willCapture("value", value);
-        assert 1 == value;
-    }
-
-    @Test
-    public void intBigConstantAndVariable() throws Exception {
-        int value = 2;
-
-        test.willCapture("123456789", 123456789);
-        test.willCapture("value", value);
-        assert 123456789 == value;
-    }
-
-    @Test
     public void longConstantAndVariable() throws Exception {
         long value = 2;
 

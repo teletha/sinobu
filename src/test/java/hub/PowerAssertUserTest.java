@@ -31,8 +31,8 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAcces1s() throws Exception {
-        Object value = "test";
+        int[] array = {0, 1, 2};
 
-        assert value instanceof StringBuffer;
+        assert array.length == 10;
     }
 }
