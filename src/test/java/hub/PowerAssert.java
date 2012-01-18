@@ -278,9 +278,7 @@ public class PowerAssert implements TestRule {
 
                 case IFNULL:
                     // recode null constant
-                    loadContext();
-                    mv.visitInsn(ACONST_NULL);
-                    invokeVirtual(PowerAssertContext.class, Constant.class);
+                    call().recodeConstant(insn(ACONST_NULL));
 
                     // recode == expression
                     recodeOperator("==");
@@ -288,9 +286,7 @@ public class PowerAssert implements TestRule {
 
                 case IFNONNULL:
                     // recode null constant
-                    loadContext();
-                    mv.visitInsn(ACONST_NULL);
-                    invokeVirtual(PowerAssertContext.class, Constant.class);
+                    call().recodeConstant(insn(ACONST_NULL));
 
                     // recode != expression
                     recodeOperator("!=");
@@ -422,11 +418,21 @@ public class PowerAssert implements TestRule {
             super.visitIntInsn(opcode, operand);
 
             if (processAssertion) {
-                loadContext();
-                mv.visitIntInsn(opcode, operand);
-                wrap(INT_TYPE);
-                invokeVirtual(PowerAssertContext.class, Constant.class);
+                call().recodeConstant(intInsn(opcode, operand));
             }
+        }
+
+        /**
+         * <p>
+         * Helper method to write code.
+         * </p>
+         * 
+         * @return
+         */
+        private Manipulation call() {
+            loadContext();
+
+            return callInterface(PowerAssertContext.class, Manipulation.class);
         }
 
         /**
@@ -445,36 +451,23 @@ public class PowerAssert implements TestRule {
                 case ICONST_3:
                 case ICONST_4:
                 case ICONST_5:
-                    loadContext();
-                    mv.visitInsn(opcode);
-                    wrap(INT_TYPE);
-                    callInterface(PowerAssertContext.class, Manipulation.class).recodeConstant(null);
-                    invokeVirtual(PowerAssertContext.class, Constant.class);
+                    call().recodeConstant(insn(opcode, INT_TYPE));
                     break;
 
                 case LCONST_0:
                 case LCONST_1:
-                    loadContext();
-                    mv.visitInsn(opcode);
-                    wrap(LONG_TYPE);
-                    invokeVirtual(PowerAssertContext.class, Constant.class);
+                    call().recodeConstant(insn(opcode, LONG_TYPE));
                     break;
 
                 case FCONST_0:
                 case FCONST_1:
                 case FCONST_2:
-                    loadContext();
-                    mv.visitInsn(opcode);
-                    wrap(FLOAT_TYPE);
-                    invokeVirtual(PowerAssertContext.class, Constant.class);
+                    call().recodeConstant(insn(opcode, FLOAT_TYPE));
                     break;
 
                 case DCONST_0:
                 case DCONST_1:
-                    loadContext();
-                    mv.visitInsn(opcode);
-                    wrap(DOUBLE_TYPE);
-                    invokeVirtual(PowerAssertContext.class, Constant.class);
+                    call().recodeConstant(insn(opcode, DOUBLE_TYPE));
                     break;
 
                 case IADD:
@@ -561,20 +554,7 @@ public class PowerAssert implements TestRule {
             super.visitLdcInsn(value);
 
             if (processAssertion) {
-                loadContext();
-                mv.visitLdcInsn(value);
-                if (value instanceof Integer) {
-                    wrap(Type.INT_TYPE);
-                } else if (value instanceof Long) {
-                    wrap(Type.LONG_TYPE);
-                } else if (value instanceof Float) {
-                    wrap(Type.FLOAT_TYPE);
-                } else if (value instanceof Double) {
-                    wrap(Type.DOUBLE_TYPE);
-                } else {
-                    wrap(Type.getType(value.getClass()));
-                }
-                invokeVirtual(PowerAssertContext.class, Constant.class);
+                call().recodeConstant(ldc(value));
             }
         }
 
@@ -586,31 +566,33 @@ public class PowerAssert implements TestRule {
             super.visitVarInsn(opcode, index);
 
             if (processAssertion) {
-                Type localVariableType = Type.INT_TYPE;
+                Type type = Type.INT_TYPE;
 
                 switch (opcode) {
                 case LLOAD:
-                    localVariableType = Type.LONG_TYPE;
+                    type = Type.LONG_TYPE;
                     break;
 
                 case FLOAD:
-                    localVariableType = Type.FLOAT_TYPE;
+                    type = Type.FLOAT_TYPE;
                     break;
 
                 case DLOAD:
-                    localVariableType = Type.DOUBLE_TYPE;
+                    type = Type.DOUBLE_TYPE;
                     break;
 
                 case ALOAD:
-                    localVariableType = OBJECT_TYPE;
+                    type = OBJECT_TYPE;
                     break;
                 }
 
-                loadContext();
-                mv.visitLdcInsn(new Integer(hashCode() + index));
-                mv.visitVarInsn(opcode, index);
-                wrap(localVariableType);
-                invokeVirtual(PowerAssertContext.class, LocalVariable.class);
+                // loadContext();
+                // mv.visitLdcInsn(new Integer(hashCode() + index));
+                // mv.visitVarInsn(opcode, index);
+                // wrap(localVariableType);
+                // invokeVirtual(PowerAssertContext.class, LocalVariable.class);
+
+                call().recodeLocalVariable(hashCode() + index, local(opcode, index).wrap(type));
             }
         }
 
@@ -631,7 +613,7 @@ public class PowerAssert implements TestRule {
      */
     @Manageable(lifestyle = ThreadSpecific.class)
     public static class PowerAssertContext
-            implements Constant, FieldAccess, LocalVariable, Operator, MethodCall, StaticFieldAccess, StaticMethodCall,
+            implements FieldAccess, LocalVariable, Operator, MethodCall, StaticFieldAccess, StaticMethodCall,
             Increment, Negative, Instanceof, ConstructorCall, Manipulation {
 
         /** The operand stack. */
@@ -963,7 +945,24 @@ public class PowerAssert implements TestRule {
      */
     public static interface Manipulation {
 
+        /**
+         * <p>
+         * Recode constant value.
+         * </p>
+         * 
+         * @param constant
+         */
         void recodeConstant(Object constant);
+
+        /**
+         * <p>
+         * Recode local variable value.
+         * </p>
+         * 
+         * @param id A local variable id.
+         * @param variable A value.
+         */
+        void recodeLocalVariable(int id, Object variable);
     }
 
     /**
@@ -979,22 +978,7 @@ public class PowerAssert implements TestRule {
     /**
      * @version 2012/01/14 1:51:05
      */
-    private static interface Constant<T> extends Recodable {
-
-        /**
-         * <p>
-         * Recode constant.
-         * </p>
-         * 
-         * @param constant
-         */
-        void recodeConstant(T constant);
-    }
-
-    /**
-     * @version 2012/01/14 1:51:05
-     */
-    private static interface LocalVariable<T> extends Recodable {
+    private static interface LocalVariable extends Recodable {
 
         /**
          * <p>
@@ -1004,7 +988,7 @@ public class PowerAssert implements TestRule {
          * @param variable
          * @param expression
          */
-        void recodeLocalVariable(int id, T variable);
+        void recodeLocalVariable(int id, Object variable);
     }
 
     /**

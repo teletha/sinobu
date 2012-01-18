@@ -12,18 +12,23 @@ package hub.bytecode;
 import org.objectweb.asm.MethodVisitor;
 
 /**
- * @version 2012/01/18 8:37:28
+ * @version 2012/01/18 10:12:18
  */
-public class Instruction extends Bytecode<Instruction> {
+public class LocalVariable extends Bytecode<LocalVariable> {
 
     /** The operation code. */
     public int opcode;
 
+    /** The local variable index. */
+    public int index;
+
     /**
      * @param opcode
+     * @param index
      */
-    public Instruction(int opcode) {
+    public LocalVariable(int opcode, int index) {
         this.opcode = opcode;
+        this.index = index;
     }
 
     /**
@@ -31,6 +36,6 @@ public class Instruction extends Bytecode<Instruction> {
      */
     @Override
     void write(MethodVisitor visitor) {
-        visitor.visitInsn(opcode);
+        visitor.visitVarInsn(opcode, index);
     }
 }

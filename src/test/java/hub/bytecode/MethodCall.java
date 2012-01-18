@@ -12,18 +12,33 @@ package hub.bytecode;
 import org.objectweb.asm.MethodVisitor;
 
 /**
- * @version 2012/01/18 8:37:28
+ * @version 2012/01/18 9:29:55
  */
-public class Instruction extends Bytecode<Instruction> {
+public class MethodCall extends Bytecode<MethodCall> {
 
     /** The operation code. */
     public int opcode;
 
+    /** The method owner's internal name. */
+    public String owner;
+
+    /** The method name. */
+    public String name;
+
+    /** The method description. */
+    public String desc;
+
     /**
      * @param opcode
+     * @param owner
+     * @param name
+     * @param desc
      */
-    public Instruction(int opcode) {
+    public MethodCall(int opcode, String owner, String name, String desc) {
         this.opcode = opcode;
+        this.owner = owner;
+        this.name = name;
+        this.desc = desc;
     }
 
     /**
@@ -31,6 +46,6 @@ public class Instruction extends Bytecode<Instruction> {
      */
     @Override
     void write(MethodVisitor visitor) {
-        visitor.visitInsn(opcode);
+        visitor.visitMethodInsn(opcode, owner, name, desc);
     }
 }
