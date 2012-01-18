@@ -24,7 +24,7 @@ public class IntTest {
     public void constant_0() throws Exception {
         int value = -1;
 
-        Assert.willCapture("0", 0);
+        Assert.willUse("0");
         Assert.willCapture("value", value);
         assert 0 == value;
     }
@@ -33,7 +33,7 @@ public class IntTest {
     public void constant_1() throws Exception {
         int value = -1;
 
-        Assert.willCapture("1", 1);
+        Assert.willUse("1");
         Assert.willCapture("value", value);
         assert 1 == value;
     }
@@ -42,7 +42,7 @@ public class IntTest {
     public void constant_2() throws Exception {
         int value = -1;
 
-        Assert.willCapture("2", 2);
+        Assert.willUse("2");
         Assert.willCapture("value", value);
         assert 2 == value;
     }
@@ -51,7 +51,7 @@ public class IntTest {
     public void constant_3() throws Exception {
         int value = -1;
 
-        Assert.willCapture("3", 3);
+        Assert.willUse("3");
         Assert.willCapture("value", value);
         assert 3 == value;
     }
@@ -60,7 +60,7 @@ public class IntTest {
     public void constant_M1() throws Exception {
         int value = 0;
 
-        Assert.willCapture("-1", -1);
+        Assert.willUse("-1");
         Assert.willCapture("value", value);
         assert -1 == value;
     }
@@ -69,7 +69,7 @@ public class IntTest {
     public void big() throws Exception {
         int value = 2;
 
-        Assert.willCapture("123456789", 123456789);
+        Assert.willUse("123456789");
         Assert.willCapture("value", value);
         assert 123456789 == value;
     }

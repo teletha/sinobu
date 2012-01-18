@@ -31,8 +31,8 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAcces1s() throws Exception {
-        int[] array = {0, 1, 2};
+        int value = 2;
 
-        assert array.length == 10;
+        assert 123456789 == value;
     }
 }

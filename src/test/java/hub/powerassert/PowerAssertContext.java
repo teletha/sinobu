@@ -22,7 +22,7 @@ import kiss.ThreadSpecific;
 @Manageable(lifestyle = ThreadSpecific.class)
 public class PowerAssertContext implements Recoder {
 
-    /** The operand stack. */
+    /** The operand stack frame. */
     ArrayDeque<Operand> stack = new ArrayDeque();
 
     /** The using operand list. */
@@ -36,8 +36,7 @@ public class PowerAssertContext implements Recoder {
      */
     @Override
     public void constant(Object constant) {
-        Operand operand = new Operand(constant);
-        stack.add(operand);
+        stack.add(new Operand(constant));
     }
 
     /**
@@ -69,11 +68,20 @@ public class PowerAssertContext implements Recoder {
      * @see hub.powerassert.Recoder#operator(java.lang.String)
      */
     @Override
-    public void operator(String expression) {
+    public void operator(String operator) {
         if (1 < stack.size()) {
             Operand right = stack.pollLast();
             Operand left = stack.pollLast();
-            stack.add(new Operand(left + " " + expression + " " + right, null));
+
+            if (operator.equals("==") || operator.equals("!=")) {
+                // check operands
+                if (right.value instanceof Integer && ((Integer) right.value).intValue() == 0 && left.value instanceof Boolean) {
+                    // boolean == 0 or boolean != 0
+                    stack.add(left);
+                    return;
+                }
+            }
+            stack.add(new Operand(left + " " + operator + " " + right, null));
         }
     }
 
@@ -183,7 +191,16 @@ public class PowerAssertContext implements Recoder {
                 invocation.insert(1, ", ");
             }
         }
-        invocation.insert(0, name).insert(0, '.').insert(0, stack.pollLast());
+
+        // method name
+        invocation.insert(0, name);
+
+        // remove "this" from this.methodCall() if needed
+        Operand invoker = stack.pollLast();
+
+        if (!invoker.name.equals("this")) {
+            invocation.insert(0, '.').insert(0, invoker);
+        }
 
         Operand operand = new Operand(invocation.toString(), value);
         stack.add(operand);
@@ -242,9 +259,7 @@ public class PowerAssertContext implements Recoder {
         builder.append(stack.peek()).append("\r\n");
 
         for (Operand operand : operands) {
-            if (!operand.constant) {
-                builder.append("\r\n").append(operand.name).append(" : ").append(operand.toValueExpression());
-            }
+            builder.append("\r\n").append(operand.name).append(" : ").append(operand.toValueExpression());
         }
         return builder.toString();
     }
