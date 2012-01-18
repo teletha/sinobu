@@ -278,6 +278,31 @@ public class Agent extends ReusableRule {
 
         /**
          * <p>
+         * Helper method to write below code.
+         * </p>
+         * 
+         * <pre>
+         * mv.visitVisitInsn(Opcodes.DUP);
+         * 
+         * LocalVariable local = newLocal(type);
+         * 
+         * local.store();
+         * </pre>
+         * 
+         * @param type
+         * @return
+         */
+        protected final LocalVariable copy(Type type) {
+            mv.visitInsn(type.getSize() == 1 ? DUP : DUP2);
+
+            LocalVariable local = newLocal(type);
+            local.store();
+
+            return local;
+        }
+
+        /**
+         * <p>
          * Write local variable code.
          * </p>
          * 

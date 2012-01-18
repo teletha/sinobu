@@ -127,4 +127,11 @@ interface Recoder {
      * @param value A constructed value.
      */
     void constructor(String name, int paramsSize, Object value);
+
+    /**
+     * <p>
+     * Recode array index acess.
+     * </p>
+     */
+    void arrayIndex(Object value);
 }
