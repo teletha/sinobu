@@ -29,7 +29,7 @@ public class PowerAssertTest {
     public void longConstantAndVariable() throws Exception {
         long value = 2;
 
-        test.willCapture("1", 1L);
+        test.willUse("1");
         test.willCapture("value", value);
         assert 1L == value;
     }
@@ -38,7 +38,7 @@ public class PowerAssertTest {
     public void longBigConstantAndVariable() throws Exception {
         long value = 2;
 
-        test.willCapture("1234567890123", 1234567890123L);
+        test.willUse("1234567890123");
         test.willCapture("value", value);
         assert 1234567890123L == value;
     }
@@ -47,7 +47,7 @@ public class PowerAssertTest {
     public void floatConstantAndVariable() throws Exception {
         float value = 2;
 
-        test.willCapture("1.0", 1f);
+        test.willUse("1.0");
         test.willCapture("value", value);
         assert 1f == value;
     }
@@ -56,7 +56,7 @@ public class PowerAssertTest {
     public void floatBigConstantAndVariable() throws Exception {
         float value = 2;
 
-        test.willCapture("0.12345678", 0.12345678f);
+        test.willUse("0.12345678");
         test.willCapture("value", value);
         assert 0.12345678f == value;
     }
@@ -65,7 +65,7 @@ public class PowerAssertTest {
     public void doubleConstantAndVariable() throws Exception {
         double value = 2;
 
-        test.willCapture("1.0", 1d);
+        test.willUse("1.0");
         test.willCapture("value", value);
         assert 1d == value;
     }
@@ -74,7 +74,7 @@ public class PowerAssertTest {
     public void doubleBigConstantAndVariable() throws Exception {
         double value = 2;
 
-        test.willCapture("0.1234567898765432", 0.1234567898765432d);
+        test.willUse("0.1234567898765432");
         test.willCapture("value", value);
         assert 0.1234567898765432d == value;
     }
@@ -83,7 +83,7 @@ public class PowerAssertTest {
     public void shortConstantAndVariable() throws Exception {
         short value = 2;
 
-        test.willCapture("1", 1);
+        test.willUse("1");
         test.willCapture("value", (int) value);
         assert (short) 1 == value;
     }
@@ -92,7 +92,7 @@ public class PowerAssertTest {
     public void shortBigConstantAndVariable() throws Exception {
         short value = 2;
 
-        test.willCapture("128", 128);
+        test.willUse("128");
         test.willCapture("value", (int) value);
         assert (short) 128 == value;
     }
@@ -142,7 +142,7 @@ public class PowerAssertTest {
         Class value = int.class;
 
         test.willCapture("value", value);
-        test.willCapture("Integer.class", Integer.class);
+        test.willUse("Integer.class");
         assert Integer.class == value;
     }
 
@@ -283,7 +283,7 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("<");
+        test.willUse("<");
         assert other < one;
     }
 
@@ -294,7 +294,7 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("<=");
+        test.willUse("<=");
         assert other <= one;
     }
 
@@ -305,7 +305,7 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator(">");
+        test.willUse(">");
         assert one > other;
     }
 
@@ -316,7 +316,7 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator(">=");
+        test.willUse(">=");
         assert one >= other;
     }
 
@@ -327,8 +327,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("+");
-        test.willUseOperator("==");
+        test.willUse("+");
+        test.willUse("==");
         assert one + 1 == other;
     }
 
@@ -339,8 +339,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("-");
-        test.willUseOperator("==");
+        test.willUse("-");
+        test.willUse("==");
         assert one - 1 == other;
     }
 
@@ -351,8 +351,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("*");
-        test.willUseOperator("==");
+        test.willUse("*");
+        test.willUse("==");
         assert one * 3 == other;
     }
 
@@ -363,8 +363,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("/");
-        test.willUseOperator("==");
+        test.willUse("/");
+        test.willUse("==");
         assert one / 2 == other;
     }
 
@@ -375,8 +375,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("%");
-        test.willUseOperator("==");
+        test.willUse("%");
+        test.willUse("==");
         assert one % 2 == other;
     }
 
@@ -387,8 +387,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("-");
-        test.willUseOperator("==");
+        test.willUse("-");
+        test.willUse("==");
         assert -one == other;
     }
 
@@ -399,8 +399,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("<<");
-        test.willUseOperator("==");
+        test.willUse("<<");
+        test.willUse("==");
         assert one << 3 == other;
     }
 
@@ -411,8 +411,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator(">>");
-        test.willUseOperator("==");
+        test.willUse(">>");
+        test.willUse("==");
         assert one >> 3 == other;
     }
 
@@ -423,8 +423,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator(">>>");
-        test.willUseOperator("==");
+        test.willUse(">>>");
+        test.willUse("==");
         assert one >>> 3 == other;
     }
 
@@ -435,8 +435,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("|");
-        test.willUseOperator("==");
+        test.willUse("|");
+        test.willUse("==");
         assert (one | other) == other;
     }
 
@@ -447,8 +447,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("^");
-        test.willUseOperator("==");
+        test.willUse("^");
+        test.willUse("==");
         assert (one ^ other) == other;
     }
 
@@ -459,8 +459,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("&");
-        test.willUseOperator("==");
+        test.willUse("&");
+        test.willUse("==");
         assert (one & other) == other;
     }
 
@@ -471,8 +471,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("++");
-        test.willUseOperator("==");
+        test.willUse("++");
+        test.willUse("==");
         assert one++ == other;
     }
 
@@ -483,8 +483,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one + 1);
         test.willCapture("other", other);
-        test.willUseOperator("++");
-        test.willUseOperator("==");
+        test.willUse("++");
+        test.willUse("==");
         assert ++one == other;
     }
 
@@ -495,8 +495,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUseOperator("--");
-        test.willUseOperator("==");
+        test.willUse("--");
+        test.willUse("==");
         assert one-- == other;
     }
 
@@ -507,8 +507,8 @@ public class PowerAssertTest {
 
         test.willCapture("one", one - 1);
         test.willCapture("other", other);
-        test.willUseOperator("--");
-        test.willUseOperator("==");
+        test.willUse("--");
+        test.willUse("==");
         assert --one == other;
     }
 
@@ -517,7 +517,7 @@ public class PowerAssertTest {
         Object value = "test";
 
         test.willCapture("value", value);
-        test.willUseOperator("instanceof");
+        test.willUse("instanceof");
         assert value instanceof Map;
     }
 
@@ -526,7 +526,7 @@ public class PowerAssertTest {
         Object value = "test";
 
         test.willCapture("value", value);
-        test.willUseOperator("new Object()");
+        test.willUse("new Object()");
         assert value == new Object();
     }
 
@@ -535,7 +535,7 @@ public class PowerAssertTest {
         Object value = "test";
 
         test.willCapture("value", value);
-        test.willUseOperator("new String(\"fail\")");
+        test.willUse("new String(\"fail\")");
         assert value == new String("fail");
     }
 
@@ -544,7 +544,7 @@ public class PowerAssertTest {
         int value = 2;
         assert value != 1; // success
 
-        test.willUseOperator("==");
+        test.willUse("==");
         test.willCapture("value", value);
         assert value == 3;
     }
