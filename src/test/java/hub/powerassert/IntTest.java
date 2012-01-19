@@ -101,6 +101,22 @@ public class IntTest {
     }
 
     @Test
+    public void arrayNew() throws Exception {
+        tester.willUse("new int[] {1, 2}");
+        assert new int[] {1, 2} == null;
+    }
+
+    @Test
+    public void varargs() throws Exception {
+        tester.willCapture("var()", false);
+        assert var();
+    }
+
+    boolean var(int... var) {
+        return false;
+    }
+
+    @Test
     public void method() throws Exception {
         tester.willCapture("test()", 1);
         assert test() == 2;

@@ -265,7 +265,49 @@ class PowerAssertTranslator extends Translator {
         super.visitIntInsn(opcode, operand);
 
         if (processAssertion) {
-            recode().constant(intInsn(opcode, operand));
+            switch (opcode) {
+            case NEWARRAY:
+                LocalVariable local = copy(Bytecode.OBJECT_TYPE);
+
+                switch (operand) {
+                case T_BOOLEAN:
+                    recode().arrayNew("boolean", local);
+                    break;
+
+                case T_BYTE:
+                    recode().arrayNew("byte", local);
+                    break;
+
+                case T_CHAR:
+                    recode().arrayNew("char", local);
+                    break;
+
+                case T_DOUBLE:
+                    recode().arrayNew("double", local);
+                    break;
+
+                case T_FLOAT:
+                    recode().arrayNew("float", local);
+                    break;
+
+                case T_INT:
+                    recode().arrayNew("int", local);
+                    break;
+
+                case T_LONG:
+                    recode().arrayNew("long", local);
+                    break;
+
+                case T_SHORT:
+                    recode().arrayNew("short", local);
+                    break;
+                }
+                break;
+
+            default:
+                recode().constant(intInsn(opcode, operand));
+                break;
+            }
         }
     }
 
@@ -325,6 +367,11 @@ class PowerAssertTranslator extends Translator {
                 recode().arrayIndex(local);
                 break;
 
+            case IASTORE:
+            case LASTORE:
+            case DASTORE:
+            case FASTORE:
+            case BASTORE:
             case AASTORE:
                 recode().arrayStore();
                 break;

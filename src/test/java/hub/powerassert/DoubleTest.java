@@ -101,6 +101,22 @@ public class DoubleTest {
     }
 
     @Test
+    public void arrayNew() throws Exception {
+        tester.willUse("new double[] {1.0, 2.0}");
+        assert new double[] {1, 2} == null;
+    }
+
+    @Test
+    public void varargs() throws Exception {
+        tester.willCapture("var()", false);
+        assert var();
+    }
+
+    boolean var(double... var) {
+        return false;
+    }
+
+    @Test
     public void method() throws Exception {
         tester.willCapture("test()", 1d);
         assert test() == 2;

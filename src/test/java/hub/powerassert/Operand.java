@@ -12,7 +12,7 @@ package hub.powerassert;
 import java.util.Arrays;
 
 /**
- * @version 2012/01/19 12:01:26
+ * @version 2012/01/20 1:03:27
  */
 class Operand {
 
@@ -23,8 +23,8 @@ class Operand {
     Object value;
 
     /**
-     * 
-     */
+ * 
+ */
     Operand(Object value) {
         if (value instanceof String) {
             this.name = "\"" + value + "\"";
@@ -37,8 +37,8 @@ class Operand {
     }
 
     /**
-     * 
-     */
+ * 
+ */
     Operand(String name, Object value) {
         this.name = name;
         this.value = value;
@@ -51,6 +51,7 @@ class Operand {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
@@ -72,18 +73,20 @@ class Operand {
         Class type = getClass();
         Class otherType = obj.getClass();
 
-        if (type != otherType) {
+        if (!Operand.class.isAssignableFrom(type) || !Operand.class.isAssignableFrom(otherType)) {
             return false;
         }
 
         Operand other = (Operand) obj;
+        String name = toString();
+        String otherName = other.toString();
 
         // check name
         if (name == null) {
-            if (other.name != null) {
+            if (otherName != null) {
                 return false;
             }
-        } else if (!name.equals(other.name)) {
+        } else if (!name.equals(otherName)) {
             return false;
         }
 
