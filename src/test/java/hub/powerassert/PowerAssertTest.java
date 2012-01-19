@@ -433,21 +433,4 @@ public class PowerAssertTest {
         assert value == 3;
     }
 
-    @Test
-    public void throwAssertionError() {
-        throw new AssertionError();
-    }
-
-    @Test
-    public void throwAssertionErrorWithParameter() {
-        throw new AssertionError("param");
-    }
-
-    @Test
-    public void useAssertWithMessage() {
-        int value = 4;
-
-        test.willCapture("value", value);
-        assert value == -1 : "this value is " + value;
-    }
 }
