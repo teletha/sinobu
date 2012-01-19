@@ -11,6 +11,8 @@ package hub.powerassert;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.I;
 import kiss.Manageable;
@@ -23,6 +25,9 @@ import org.objectweb.asm.Type;
  */
 @Manageable(lifestyle = ThreadSpecific.class)
 public class PowerAssertContext implements Recoder {
+
+    /** The local variable name mapping. */
+    static final Map<Integer, String[]> localVariables = new ConcurrentHashMap();
 
     /** The operand stack frame. */
     ArrayDeque<Operand> stack = new ArrayDeque();
@@ -47,7 +52,7 @@ public class PowerAssertContext implements Recoder {
     @Override
     public void localVariable(int id, Object variable) {
         Operand operand;
-        String[] localVariable = PowerAssert.localVariables.get(id);
+        String[] localVariable = localVariables.get(id);
         String name = localVariable[0];
 
         if (nextIncrement != null) {
@@ -93,7 +98,7 @@ public class PowerAssertContext implements Recoder {
      */
     @Override
     public void recodeIncrement(int id, int increment) {
-        String[] localVariable = PowerAssert.localVariables.get(id);
+        String[] localVariable = localVariables.get(id);
         Operand latest = stack.peekLast();
 
         if (latest == null || !latest.name.equals(localVariable[0])) {

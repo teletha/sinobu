@@ -23,7 +23,7 @@ import org.junit.Test;
 public class PowerAssertTest {
 
     @Rule
-    public static final PowerAssert test = new PowerAssert(true);
+    public static final PowerAssertTester test = new PowerAssertTester();
 
     @Test
     public void shortConstantAndVariable() throws Exception {
@@ -41,14 +41,6 @@ public class PowerAssertTest {
         test.willUse("128");
         test.willCapture("value", (int) value);
         assert (short) 128 == value;
-    }
-
-    @Test
-    public void booleanConstantAndVariable() throws Exception {
-        boolean value = false;
-
-        test.willCapture("value", value);
-        assert value;
     }
 
     @Test
@@ -166,42 +158,6 @@ public class PowerAssertTest {
         test.willCapture("Integer.valueOf(10)", new Integer(10));
         test.willCapture("value", "");
         assert Integer.valueOf(10) == value;
-    }
-
-    /** The tester. */
-    private boolean booleanField = false;
-
-    /** The tester. */
-    private static boolean booleanFieldStatic = false;
-
-    @Test
-    public void fieldBooleanAccess() throws Exception {
-        test.willCapture("this.booleanField", false);
-        assert booleanField;
-    }
-
-    @Test
-    public void fieldBooleanStaticAccess() throws Exception {
-        test.willCapture("PowerAssertTest.booleanFieldStatic", false);
-        assert booleanFieldStatic;
-    }
-
-    /** The tester. */
-    private String objectField = "hitagi";
-
-    /** The tester. */
-    private static String objectFieldStatic = "hitagi";
-
-    @Test
-    public void fieldObjectAccess() throws Exception {
-        test.willCapture("this.objectField", "hitagi");
-        assert objectField == "nadeko";
-    }
-
-    @Test
-    public void fieldObjectStaticAccess() throws Exception {
-        test.willCapture("PowerAssertTest.objectFieldStatic", "hitagi");
-        assert objectFieldStatic == "nadeko";
     }
 
     @Test

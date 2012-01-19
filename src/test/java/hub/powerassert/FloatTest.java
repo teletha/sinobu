@@ -18,14 +18,14 @@ import org.junit.Test;
 public class FloatTest {
 
     @Rule
-    public static final PowerAssert Assert = new PowerAssert(true);
+    public static final PowerAssertTester tester = new PowerAssertTester();
 
     @Test
     public void constant_0() throws Exception {
         float value = -1;
 
-        Assert.willUse("0");
-        Assert.willCapture("value", value);
+        tester.willUse("0");
+        tester.willCapture("value", value);
         assert 0 == value;
     }
 
@@ -33,8 +33,8 @@ public class FloatTest {
     public void constant_1() throws Exception {
         float value = -1;
 
-        Assert.willUse("1");
-        Assert.willCapture("value", value);
+        tester.willUse("1");
+        tester.willCapture("value", value);
         assert 1 == value;
     }
 
@@ -42,8 +42,8 @@ public class FloatTest {
     public void constant_2() throws Exception {
         float value = -1;
 
-        Assert.willUse("2");
-        Assert.willCapture("value", value);
+        tester.willUse("2");
+        tester.willCapture("value", value);
         assert 2 == value;
     }
 
@@ -51,8 +51,8 @@ public class FloatTest {
     public void constant_3() throws Exception {
         float value = -1;
 
-        Assert.willUse("3");
-        Assert.willCapture("value", value);
+        tester.willUse("3");
+        tester.willCapture("value", value);
         assert 3 == value;
     }
 
@@ -60,8 +60,8 @@ public class FloatTest {
     public void constant_M1() throws Exception {
         float value = 0;
 
-        Assert.willUse("-1");
-        Assert.willCapture("value", value);
+        tester.willUse("-1");
+        tester.willCapture("value", value);
         assert -1 == value;
     }
 
@@ -69,8 +69,8 @@ public class FloatTest {
     public void big() throws Exception {
         float value = 2;
 
-        Assert.willUse("0.12345678");
-        Assert.willCapture("value", value);
+        tester.willUse("0.12345678");
+        tester.willCapture("value", value);
         assert 0.12345678f == value;
     }
 
@@ -78,7 +78,7 @@ public class FloatTest {
     public void array() throws Exception {
         float[] array = {0, 1, 2};
 
-        Assert.willCapture("array", array);
+        tester.willCapture("array", array);
         assert array == null;
     }
 
@@ -86,8 +86,8 @@ public class FloatTest {
     public void arrayIndex() throws Exception {
         float[] array = {0, 1, 2};
 
-        Assert.willCapture("array", array);
-        Assert.willCapture("array[1]", 1f);
+        tester.willCapture("array", array);
+        tester.willCapture("array[1]", 1f);
         assert array[1] == 128;
     }
 
@@ -95,14 +95,14 @@ public class FloatTest {
     public void arrayLength() throws Exception {
         float[] array = {0, 1, 2};
 
-        Assert.willCapture("array", array);
-        Assert.willCapture("array.length", 3);
+        tester.willCapture("array", array);
+        tester.willCapture("array.length", 3);
         assert array.length == 10;
     }
 
     @Test
     public void method() throws Exception {
-        Assert.willCapture("test()", 1f);
+        tester.willCapture("test()", 1f);
         assert test() == 2f;
     }
 
@@ -112,7 +112,7 @@ public class FloatTest {
 
     @Test
     public void parameter() throws Exception {
-        Assert.willCapture("test(12.0)", false);
+        tester.willCapture("test(12.0)", false);
         assert test(12);
     }
 
@@ -128,13 +128,13 @@ public class FloatTest {
 
     @Test
     public void fieldFloatAccess() throws Exception {
-        Assert.willCapture("this.floatField", 0.123f);
+        tester.willCapture("this.floatField", 0.123f);
         assert floatField == 0;
     }
 
     @Test
     public void fieldFloatStaticAccess() throws Exception {
-        Assert.willCapture("FloatTest.floatFieldStatic", 0.123f);
+        tester.willCapture("FloatTest.floatFieldStatic", 0.123f);
         assert floatFieldStatic == 0;
     }
 }

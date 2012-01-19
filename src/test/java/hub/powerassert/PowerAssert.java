@@ -9,74 +9,54 @@
  */
 package hub.powerassert;
 
-import static org.objectweb.asm.Opcodes.*;
 import hub.bytecode.Agent;
-import hub.bytecode.Agent.Translator;
-import hub.bytecode.Bytecode;
-import hub.bytecode.LocalVariable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Type;
 
 /**
- * @version 2012/01/10 9:52:42
+ * <p>
+ * Enhance assertion message in testcase.
+ * </p>
+ * <p>
+ * {@link PowerAssert} is declared implicitly, so you don't use this class except for testing
+ * {@link PowerAssert} itself. Implicit declaration is achived by class loading replacement. You
+ * have to add this jar file in classpath before the JUnit jar file.
+ * </p>
+ * <p>
+ * Using {@link PowerAssertOff} annotation, you can stop {@link PowerAssert}'s functionality for
+ * each test classes or testcase methods.
+ * </p>
+ * 
+ * @version 2012/01/19 11:50:38
  */
 public class PowerAssert implements TestRule {
 
     /** The recode for the translated classes. */
-    private static final Set<String> translateds = new CopyOnWriteArraySet();
+    private static final Set<String> translated = new CopyOnWriteArraySet();
 
-    /** The local variable name mapping. */
-    static final Map<Integer, String[]> localVariables = new ConcurrentHashMap();
-
+    /** The actual translator. */
     private static final Agent agent = new Agent(PowerAssertTranslator.class);
 
-    /** The tester flag. */
-    private final boolean selfTest;
-
-    /** The expected operands. */
-    private final List<Operand> expecteds = new ArrayList();
-
-    /** The expected operands. */
-    private final List<String> operators = new ArrayList();
+    /** The self tester. */
+    private final PowerAssertTester tester;
 
     /**
      * Assertion Utility.
      */
     public PowerAssert() {
-        this.selfTest = false;
+        this(null);
     }
 
     /**
      * Test for {@link PowerAssert}.
      */
-    PowerAssert(boolean selfTest) {
-        this.selfTest = selfTest;
-    }
-
-    /**
-     * @param name
-     * @param value
-     */
-    void willCapture(String name, Object value) {
-        expecteds.add(new Operand(name, value));
-    }
-
-    /**
-     * @param operator
-     */
-    void willUse(String operator) {
-        operators.add(operator);
+    PowerAssert(PowerAssertTester tester) {
+        this.tester = tester;
     }
 
     /**
@@ -91,474 +71,44 @@ public class PowerAssert implements TestRule {
              */
             @Override
             public void evaluate() throws Throwable {
-                if (translateds.add(description.getClassName())) {
-                    agent.transform(description.getTestClass());
-                }
-
-                expecteds.clear();
-                operators.clear();
-
                 try {
                     statement.evaluate();
-                } catch (Throwable e) {
-                    if (e instanceof AssertionError) {
-                        if (translateds.add(description.getClassName())) {
-                            agent.transform(description.getTestClass());
+                } catch (Throwable error) {
+                    if (error instanceof AssertionError) {
+                        // should we print this error message in detal?
+                        if (description.getAnnotation(PowerAssertOff.class) == null && !description.getTestClass()
+                                .isAnnotationPresent(PowerAssertOff.class)) {
+                            // translate assertion code only once
+                            if (translated.add(description.getClassName())) {
+                                agent.transform(description.getTestClass());
 
-                            evaluate(); // retry
-                            return;
-                        }
-
-                        PowerAssertContext context = PowerAssertContext.get();
-
-                        if (selfTest) {
-                            for (Operand expected : expecteds) {
-                                if (!context.operands.contains(expected)) {
-                                    throw new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n");
-                                }
+                                evaluate(); // retry testcase
+                                return;
                             }
 
-                            for (String operator : operators) {
-                                if (context.stack.peek().name.indexOf(operator) == -1) {
-                                    throw new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n");
-                                }
+                            // retrieve context
+                            PowerAssertContext context = PowerAssertContext.get();
+
+                            if (tester != null) {
+                                // for sel test
+                                tester.validate(context);
+                                return;
                             }
-                            return;
-                        }
 
-                        // replace message
-                        String message = e.getLocalizedMessage();
+                            // replace error message
+                            String message = error.getLocalizedMessage();
+                            StackTraceElement[] stacktrace = error.getStackTrace();
 
-                        if (message == null) {
-                            message = "";
+                            if (message == null) {
+                                message = "";
+                            }
+                            error = new AssertionError(message + "\r\n" + context);
+                            error.setStackTrace(stacktrace);
                         }
-                        AssertionError error = new AssertionError(message + "\r\n" + context);
-                        error.setStackTrace(e.getStackTrace());
-                        throw error;
                     }
-                    throw e;
+                    throw error; // rethrow
                 }
             }
         };
-    }
-
-    /**
-     * @version 2012/01/14 22:48:47
-     */
-    private static class PowerAssertTranslator extends Translator {
-
-        /** The state. */
-        private boolean startAssertion = false;
-
-        /** The state. */
-        private boolean skipNextJump = false;
-
-        /** The state. */
-        private boolean processAssertion = false;
-
-        /** The acrual recoder. */
-        private final Recoder context = createAPI(PowerAssertContext.class, Recoder.class);
-
-        /** The state. */
-        private boolean doubleCompare = false;
-
-        /**
-         * <p>
-         * Compute simple class name.
-         * </p>
-         * 
-         * @return
-         */
-        private String computeClassName(String internalName) {
-            int index = internalName.lastIndexOf('$');
-
-            if (index == -1) {
-                index = internalName.lastIndexOf('/');
-            }
-            return index == -1 ? internalName : internalName.substring(index + 1);
-        }
-
-        /**
-         * <p>
-         * Helper method to write code.
-         * </p>
-         * 
-         * @return
-         */
-        private Recoder recode() {
-            // load context
-            mv.visitMethodInsn(INVOKESTATIC, "hub/powerassert/PowerAssertContext", "get", "()Lhub/powerassert/PowerAssertContext;");
-
-            // return API
-            return context;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-            super.visitFieldInsn(opcode, owner, name, desc);
-
-            if (!startAssertion && opcode == GETSTATIC && name.equals("$assertionsDisabled")) {
-                startAssertion = true;
-                skipNextJump = true;
-                return;
-            }
-
-            if (processAssertion) {
-                // store current value
-                LocalVariable local = copy(Type.getType(desc));
-
-                switch (opcode) {
-                case GETFIELD:
-                    recode().field(name, local);
-                    break;
-
-                case GETSTATIC:
-                    recode().staticField(computeClassName(owner) + '.' + name, local);
-                    break;
-                }
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitJumpInsn(int opcode, Label label) {
-            if (skipNextJump) {
-                skipNextJump = false;
-                processAssertion = true;
-
-                super.visitJumpInsn(opcode, label);
-
-                // reset context
-                recode().clear();
-                return;
-            }
-
-            super.visitJumpInsn(opcode, label);
-
-            if (processAssertion) {
-                switch (opcode) {
-                case IFEQ:
-                    if (!doubleCompare) {
-                        recode().constant(insn(ICONST_0));
-                    }
-                    doubleCompare = false;
-                    recode().operator("==");
-                    break;
-
-                case IF_ICMPEQ:
-                case IF_ACMPEQ:
-                    recode().operator("==");
-                    break;
-
-                case IFNE:
-                    if (!doubleCompare) {
-                        recode().constant(insn(ICONST_0));
-                    }
-                    doubleCompare = false;
-                    recode().operator("!=");
-                    break;
-
-                case IF_ICMPNE:
-                case IF_ACMPNE:
-                    recode().operator("!=");
-                    break;
-
-                case IF_ICMPLT:
-                    recode().operator("<");
-                    break;
-
-                case IF_ICMPLE:
-                    recode().operator("<=");
-                    break;
-
-                case IF_ICMPGT:
-                    recode().operator(">");
-                    break;
-
-                case IF_ICMPGE:
-                    recode().operator(">=");
-                    break;
-
-                case IFNULL:
-                    // recode null constant
-                    recode().constant(insn(ACONST_NULL));
-
-                    // recode == expression
-                    recode().operator("==");
-                    break;
-
-                case IFNONNULL:
-                    // recode null constant
-                    recode().constant(insn(ACONST_NULL));
-
-                    // recode != expression
-                    recode().operator("!=");
-                    break;
-                }
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitTypeInsn(int opcode, String type) {
-            if (processAssertion && opcode == NEW && type.equals("java/lang/AssertionError")) {
-                processAssertion = false;
-            }
-
-            super.visitTypeInsn(opcode, type);
-
-            if (processAssertion) {
-                if (opcode == INSTANCEOF) {
-                    recode().instanceOf(computeClassName(type));
-                }
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-            super.visitMethodInsn(opcode, owner, name, desc);
-
-            // replace invocation of AssertionError constructor.
-            if (startAssertion && opcode == INVOKESPECIAL && owner.equals("java/lang/AssertionError")) {
-                // reset state
-                startAssertion = false;
-                skipNextJump = false;
-                processAssertion = false;
-                return;
-            }
-
-            if (processAssertion) {
-                Type type = Type.getType(desc);
-                boolean constructor = name.charAt(0) == '<';
-
-                // save current value
-                LocalVariable local = copy(constructor ? Type.getType(owner) : type.getReturnType());
-
-                switch (opcode) {
-                case INVOKESTATIC:
-                    recode().staticMethod(computeClassName(owner) + '.' + name, desc, local);
-                    break;
-
-                case INVOKESPECIAL:
-                    if (constructor) {
-                        recode().constructor(computeClassName(owner), desc, local);
-                        break;
-                    }
-                    // fall-through for private method call
-                default:
-                    recode().method(name, desc, local);
-                    break;
-                }
-            }
-        }
-
-        /**
-         * @see org.objectweb.asm.MethodVisitor#visitIincInsn(int, int)
-         */
-        @Override
-        public void visitIincInsn(int index, int increment) {
-            super.visitIincInsn(index, increment);
-
-            if (processAssertion) {
-                recode().recodeIncrement(hashCode() + index, increment);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitIntInsn(int opcode, int operand) {
-            super.visitIntInsn(opcode, operand);
-
-            if (processAssertion) {
-                recode().constant(intInsn(opcode, operand));
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitInsn(int opcode) {
-            super.visitInsn(opcode);
-
-            if (processAssertion) {
-                switch (opcode) {
-                case ICONST_M1:
-                case ICONST_0:
-                case ICONST_1:
-                case ICONST_2:
-                case ICONST_3:
-                case ICONST_4:
-                case ICONST_5:
-                case LCONST_0:
-                case LCONST_1:
-                case FCONST_0:
-                case FCONST_1:
-                case FCONST_2:
-                case DCONST_0:
-                case DCONST_1:
-                    recode().constant(insn(opcode));
-                    break;
-
-                case IALOAD:
-                    LocalVariable local = copy(Type.INT_TYPE);
-                    recode().arrayIndex(local);
-                    break;
-
-                case LALOAD:
-                    local = copy(Type.LONG_TYPE);
-                    recode().arrayIndex(local);
-                    break;
-
-                case FALOAD:
-                    local = copy(Type.FLOAT_TYPE);
-                    recode().arrayIndex(local);
-                    break;
-
-                case DALOAD:
-                    local = copy(Type.DOUBLE_TYPE);
-                    recode().arrayIndex(local);
-                    break;
-
-                case BALOAD:
-                    local = copy(Type.BOOLEAN_TYPE);
-                    recode().arrayIndex(local);
-                    break;
-
-                case AALOAD:
-                    local = copy(Bytecode.OBJECT_TYPE);
-                    recode().arrayIndex(local);
-                    break;
-
-                case ARRAYLENGTH:
-                    local = copy(Type.INT_TYPE);
-                    recode().field("length", local);
-                    break;
-
-                case IADD:
-                case LADD:
-                case FADD:
-                case DADD:
-                    recode().operator("+");
-                    break;
-
-                case ISUB:
-                case LSUB:
-                case FSUB:
-                case DSUB:
-                    recode().operator("-");
-                    break;
-
-                case IMUL:
-                case LMUL:
-                case FMUL:
-                case DMUL:
-                    recode().operator("*");
-                    break;
-
-                case IDIV:
-                case LDIV:
-                case FDIV:
-                case DDIV:
-                    recode().operator("/");
-                    break;
-
-                case IREM:
-                case LREM:
-                case FREM:
-                case DREM:
-                    recode().operator("%");
-                    break;
-
-                case INEG:
-                case LNEG:
-                case FNEG:
-                case DNEG:
-                    recode().negative();
-                    break;
-
-                case ISHL:
-                case LSHL:
-                    recode().operator("<<");
-                    break;
-
-                case ISHR:
-                case LSHR:
-                    recode().operator(">>");
-                    break;
-
-                case IUSHR:
-                case LUSHR:
-                    recode().operator(">>>");
-                    break;
-
-                case IOR:
-                case LOR:
-                    recode().operator("|");
-                    break;
-
-                case IXOR:
-                case LXOR:
-                    recode().operator("^");
-                    break;
-
-                case IAND:
-                case LAND:
-                    recode().operator("&");
-                    break;
-
-                case LCMP:
-                    doubleCompare = true;
-                    break;
-                }
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitLdcInsn(Object value) {
-            super.visitLdcInsn(value);
-
-            if (processAssertion) {
-                recode().constant(ldc(value));
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitVarInsn(int opcode, int index) {
-            super.visitVarInsn(opcode, index);
-
-            if (processAssertion) {
-                recode().localVariable(hashCode() + index, local(opcode, index));
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-            super.visitLocalVariable(name, desc, signature, start, end, index);
-
-            localVariables.put(hashCode() + index, new String[] {name, desc});
-        }
-
     }
 }

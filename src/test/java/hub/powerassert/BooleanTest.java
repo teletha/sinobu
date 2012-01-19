@@ -18,13 +18,13 @@ import org.junit.Test;
 public class BooleanTest {
 
     @Rule
-    public static final PowerAssert Assert = new PowerAssert(true);
+    public static final PowerAssertTester tester = new PowerAssertTester();
 
     @Test
     public void constant() throws Exception {
         boolean value = false;
 
-        Assert.willCapture("value", value);
+        tester.willCapture("value", value);
         assert value;
     }
 
@@ -32,7 +32,7 @@ public class BooleanTest {
     public void array() throws Exception {
         boolean[] array = {false, false, false};
 
-        Assert.willCapture("array", array);
+        tester.willCapture("array", array);
         assert array == null;
     }
 
@@ -40,8 +40,8 @@ public class BooleanTest {
     public void arrayIndex() throws Exception {
         boolean[] array = {false, false, false};
 
-        Assert.willCapture("array", array);
-        Assert.willCapture("array[1]", false);
+        tester.willCapture("array", array);
+        tester.willCapture("array[1]", false);
         assert array[1];
     }
 
@@ -49,14 +49,14 @@ public class BooleanTest {
     public void arrayLength() throws Exception {
         boolean[] array = {false, false, false};
 
-        Assert.willCapture("array", array);
-        Assert.willCapture("array.length", 3);
+        tester.willCapture("array", array);
+        tester.willCapture("array.length", 3);
         assert array.length == 10;
     }
 
     @Test
     public void method() throws Exception {
-        Assert.willCapture("test()", false);
+        tester.willCapture("test()", false);
         assert test();
     }
 
@@ -66,7 +66,7 @@ public class BooleanTest {
 
     @Test
     public void parameter() throws Exception {
-        Assert.willCapture("test(false)", false);
+        tester.willCapture("test(false)", false);
         assert test(false);
     }
 
@@ -82,13 +82,13 @@ public class BooleanTest {
 
     @Test
     public void fieldBooleanAccess() throws Exception {
-        Assert.willCapture("this.booleanField", false);
+        tester.willCapture("this.booleanField", false);
         assert booleanField;
     }
 
     @Test
     public void fieldBooleanStaticAccess() throws Exception {
-        Assert.willCapture("BooleanTest.booleanFieldStatic", false);
+        tester.willCapture("BooleanTest.booleanFieldStatic", false);
         assert booleanFieldStatic;
     }
 }

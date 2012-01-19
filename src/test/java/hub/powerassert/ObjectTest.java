@@ -18,13 +18,13 @@ import org.junit.Test;
 public class ObjectTest {
 
     @Rule
-    public static final PowerAssert Assert = new PowerAssert(true);
+    public static final PowerAssertTester tester = new PowerAssertTester();
 
     @Test
     public void constant() throws Exception {
         Object value = new Object();
 
-        Assert.willCapture("value", value);
+        tester.willCapture("value", value);
         assert null == value;
     }
 
@@ -32,7 +32,7 @@ public class ObjectTest {
     public void array() throws Exception {
         Object[] array = {"0", "1", "2"};
 
-        Assert.willCapture("array", array);
+        tester.willCapture("array", array);
         assert array == null;
     }
 
@@ -40,8 +40,8 @@ public class ObjectTest {
     public void arrayIndex() throws Exception {
         Object[] array = {"0", "1", "2"};
 
-        Assert.willCapture("array", array);
-        Assert.willCapture("array[1]", "1");
+        tester.willCapture("array", array);
+        tester.willCapture("array[1]", "1");
         assert array[1] == "128";
     }
 
@@ -49,14 +49,14 @@ public class ObjectTest {
     public void arrayLength() throws Exception {
         Object[] array = {"0", "1", "2"};
 
-        Assert.willCapture("array", array);
-        Assert.willCapture("array.length", 3);
+        tester.willCapture("array", array);
+        tester.willCapture("array.length", 3);
         assert array.length == 10;
     }
 
     @Test
     public void method() throws Exception {
-        Assert.willCapture("test()", "1");
+        tester.willCapture("test()", "1");
         assert test() == "2";
     }
 
@@ -66,7 +66,7 @@ public class ObjectTest {
 
     @Test
     public void parameter() throws Exception {
-        Assert.willCapture("test(\"12\")", false);
+        tester.willCapture("test(\"12\")", false);
         assert test("12");
     }
 
@@ -82,13 +82,13 @@ public class ObjectTest {
 
     @Test
     public void fieldObjectAccess() throws Exception {
-        Assert.willCapture("this.ObjectField", "11");
+        tester.willCapture("this.ObjectField", "11");
         assert ObjectField == "";
     }
 
     @Test
     public void fieldObjectStaticAccess() throws Exception {
-        Assert.willCapture("ObjectTest.ObjectFieldStatic", "11");
+        tester.willCapture("ObjectTest.ObjectFieldStatic", "11");
         assert ObjectFieldStatic == "";
     }
 }
