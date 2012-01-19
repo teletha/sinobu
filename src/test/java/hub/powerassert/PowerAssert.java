@@ -105,6 +105,10 @@ public class PowerAssert implements TestRule {
                             error = new AssertionError(message + "\r\n" + context);
                             error.setStackTrace(stacktrace);
                         }
+                    } else {
+                        PowerAssertContext context = PowerAssertContext.get();
+
+                        System.out.println(context);
                     }
                     throw error; // rethrow
                 }

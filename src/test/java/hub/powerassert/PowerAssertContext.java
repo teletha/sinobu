@@ -277,6 +277,32 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void arrayNew(String className, Object value) {
+        // remove previous array size constant
+        stack.pollLast();
+
+        Operand operand = new OperandArray(className, value);
+        stack.add(operand);
+        operands.add(operand);
+    }
+
+    /**
+     * @see hub.powerassert.Recoder#arrayStore()
+     */
+    @Override
+    public void arrayStore() {
+        // remove previous two operand
+        Operand value = stack.pollLast();
+        Operand index = stack.pollLast();
+        OperandArray array = (OperandArray) stack.peekLast();
+
+        array.addValue(value);
+    }
+
+    /**
      * @see hub.powerassert.Recoder#clear()
      */
     public void clear() {

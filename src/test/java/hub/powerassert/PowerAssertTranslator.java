@@ -10,9 +10,9 @@
 package hub.powerassert;
 
 import static org.objectweb.asm.Opcodes.*;
+import hub.bytecode.Agent.Translator;
 import hub.bytecode.Bytecode;
 import hub.bytecode.LocalVariable;
-import hub.bytecode.Agent.Translator;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
@@ -190,8 +190,16 @@ class PowerAssertTranslator extends Translator {
         super.visitTypeInsn(opcode, type);
 
         if (processAssertion) {
-            if (opcode == INSTANCEOF) {
+            switch (opcode) {
+            case INSTANCEOF:
                 recode().instanceOf(computeClassName(type));
+                break;
+
+            case ANEWARRAY:
+                LocalVariable local = copy(Type.getType(type));
+
+                recode().arrayNew(computeClassName(type), local);
+                break;
             }
         }
     }
@@ -315,6 +323,10 @@ class PowerAssertTranslator extends Translator {
             case AALOAD:
                 local = copy(Bytecode.OBJECT_TYPE);
                 recode().arrayIndex(local);
+                break;
+
+            case AASTORE:
+                recode().arrayStore();
                 break;
 
             case ARRAYLENGTH:

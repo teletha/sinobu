@@ -10,6 +10,7 @@
 package hub;
 
 import static org.junit.Assert.*;
+import hub.xml.XML;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,59 +51,12 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 /**
- * @version 2011/03/23 7:51:19
+ * @version 2012/01/19 12:59:58
  */
 public class Ezunit {
 
     /** The empty attribute for reuse. */
     public static final Attributes EMPTY_ATTR = new AttributesImpl();
-
-    /**
-     * <p>
-     * Assert that the specified abstract FilePath is FilePath (not directory), present and has the
-     * given FilePath contents.
-     * </p>
-     * 
-     * @param Path A FilePath to test.
-     * @param contents FilePath contents.
-     */
-    public static void assertFile(Path path, String... contents) {
-        assert path != null;
-        assert Files.exists(path);
-        assert Files.isRegularFile(path);
-        assert !Files.isDirectory(path);
-
-        String expected = option(contents, null);
-
-        if (expected != null) {
-            assertEquals(expected, readLine(path));
-        }
-    }
-
-    /**
-     * Helper method to assert file.
-     * 
-     * @param path
-     */
-    public static void assertDirectory(Path path) {
-        assert path != null;
-        assert Files.isDirectory(path);
-        assert Files.isRegularFile(path);
-        assert Files.exists(path);
-    }
-
-    /**
-     * <p>
-     * Locate a class FilePath of the specified class.
-     * </p>
-     * 
-     * @param clazz A class to resolve location.
-     * @return A located class file.
-     * @throws NullPointerException If the class is <code>null</code>.
-     */
-    public static Path locate(Class clazz) {
-        return I.locate(clazz.getResource(clazz.getSimpleName().concat(".class")));
-    }
 
     /**
      * <p>
@@ -113,7 +67,7 @@ public class Ezunit {
      * @return A located package directory.
      * @throws NullPointerException If the class is <code>null</code>.
      */
-    public static Path locatePackage(Class clazz) {
+    public static final Path locatePackage(Class clazz) {
         try {
             return Paths.get(clazz.getResource("").toURI());
         } catch (URISyntaxException e) {
@@ -131,7 +85,7 @@ public class Ezunit {
      * @param charset A character set used when reading the file.
      * @return A string containing all the characters from the file.
      */
-    public static String read(Path path, Charset... charset) {
+    public static final String read(Path path, Charset... charset) {
         StringBuilder builder = new StringBuilder();
 
         for (String line : readLines(path, charset)) {
@@ -157,7 +111,7 @@ public class Ezunit {
      * @return the first line, or null if the FilePath is empty
      * @throws IOException if an I/O error occurs
      */
-    public static String readLine(Path path, Charset... charset) {
+    public static final String readLine(Path path, Charset... charset) {
         List<String> lines = readLines(path, option(charset, I.$encoding), false);
 
         return lines.size() == 0 ? "" : lines.get(0);
@@ -175,7 +129,7 @@ public class Ezunit {
      * @return the first line, or null if the FilePath is empty
      * @throws IOException if an I/O error occurs
      */
-    public static List<String> readLines(Path path, Charset... charset) {
+    public static final List<String> readLines(Path path, Charset... charset) {
         return readLines(path, option(charset, I.$encoding), true);
     }
 
@@ -388,6 +342,10 @@ public class Ezunit {
      */
     public static final void assertXMLEqual(String expectedXMLFilePath, String testedXMLFilePath, XMLFilter... filters) {
         assertXMLEqual(locateDOM(expectedXMLFilePath), locateDOM(testedXMLFilePath, filters));
+    }
+
+    public static final XML xml(String path, XMLFilter... filters) {
+        return new XML(locateFileFromCaller(path));
     }
 
     /**

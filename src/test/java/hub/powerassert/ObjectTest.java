@@ -55,6 +55,12 @@ public class ObjectTest {
     }
 
     @Test
+    public void arrayNew() throws Exception {
+        tester.willUse("new Object[] {\"1\", \"2\"}");
+        assert new Object[] {"1", "2"} == null;
+    }
+
+    @Test
     public void method() throws Exception {
         tester.willCapture("test()", "1");
         assert test() == "2";
@@ -73,6 +79,16 @@ public class ObjectTest {
     private boolean test(Object value) {
         return false;
     }
+
+    // @Test
+    // public void parameterWithVarArg() throws Exception {
+    // tester.willCapture("var()", false);
+    // assert var();
+    // }
+    //
+    // private boolean var(String... vars) {
+    // return false;
+    // }
 
     /** The tester. */
     private Object ObjectField = "11";

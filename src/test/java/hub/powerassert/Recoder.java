@@ -134,4 +134,18 @@ interface Recoder {
      * </p>
      */
     void arrayIndex(Object value);
+
+    /**
+     * <p>
+     * Recode create array.
+     * </p>
+     */
+    void arrayNew(String className, Object value);
+
+    /**
+     * <p>
+     * Recode array store acess.
+     * </p>
+     */
+    void arrayStore();
 }
