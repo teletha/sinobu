@@ -9,8 +9,12 @@
  */
 package hub.powerassert;
 
+import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -199,38 +203,10 @@ public class PowerAssertContext implements Recoder {
     @Override
     public void method(String name, String description, Object value) {
         // build method invocation
-        StringBuilder invocation = new StringBuilder("()");
-        Type[] params = Type.getMethodType(description).getArgumentTypes();
-        int size = params.length;
+        OperandMethod method = new OperandMethod(name, description, value);
 
-        for (int i = 0; i < size; i++) {
-            Type type = params[i];
-            Operand operand = stack.pollLast();
-
-            if (type.getSort() == Type.BOOLEAN && operand.value instanceof Integer) {
-                // format
-                operand = new Operand(Boolean.valueOf(operand.value.toString()));
-            }
-            invocation.insert(1, operand);
-
-            if (i + 1 != size) {
-                invocation.insert(1, ", ");
-            }
-        }
-
-        // method name
-        invocation.insert(0, name);
-
-        // remove "this" from this.methodCall() if needed
-        Operand invoker = stack.pollLast();
-
-        if (!invoker.name.equals("this")) {
-            invocation.insert(0, '.').insert(0, invoker);
-        }
-
-        Operand operand = new Operand(invocation.toString(), value);
-        stack.add(operand);
-        operands.add(operand);
+        stack.add(method);
+        operands.add(method);
     }
 
     /**
@@ -295,11 +271,11 @@ public class PowerAssertContext implements Recoder {
     @Override
     public void arrayStore() {
         // remove previous two operand
-        Operand value = stack.pollLast();
-        Operand index = stack.pollLast();
+        Operand value = stack.pollLast(); // value
+        Operand index = stack.pollLast(); // index
         OperandArray array = (OperandArray) stack.peekLast();
 
-        array.addValue(value);
+        array.add((Integer) index.value, value);
     }
 
     /**
@@ -320,7 +296,7 @@ public class PowerAssertContext implements Recoder {
         builder.append(stack.peek()).append("\r\n");
 
         for (Operand operand : operands) {
-            builder.append("\r\n").append(operand.name).append(" : ").append(operand.toValueExpression());
+            builder.append("\r\n").append(operand).append(" : ").append(operand.toValueExpression());
         }
         return builder.toString();
     }
@@ -334,5 +310,197 @@ public class PowerAssertContext implements Recoder {
      */
     public static PowerAssertContext get() {
         return I.make(PowerAssertContext.class);
+    }
+
+    /**
+     * @version 2012/01/19 16:18:02
+     */
+    private class OperandArray extends Operand {
+
+        private final String className;
+
+        private final Object value;
+
+        private final Class type;
+
+        private final List<Operand> values = new ArrayList();
+
+        /**
+         * @param name
+         * @param value
+         */
+        private OperandArray(String name, Object value) {
+            super(name, value);
+
+            this.className = name;
+            this.value = value;
+            this.type = value.getClass().getComponentType();
+
+            // Boolean array is initialized with false values, other type arrays are initialized
+            // with null values. Array store operation will be invoked array length times but false
+            // value will not be invoked. So we should fill with false values to normalize setup.
+            int size = Array.getLength(value);
+
+            for (int i = 0; i < size; i++) {
+                values.add(new Operand(false));
+            }
+        }
+
+        /**
+         * <p>
+         * Add value.
+         * </p>
+         * 
+         * @param operand
+         */
+        private void add(int index, Operand operand) {
+            if (type == boolean.class && operand.value instanceof Integer) {
+                values.set(index, new Operand(((Integer) operand.value).intValue() == 1));
+            } else {
+                values.set(index, operand);
+            }
+        }
+
+        /**
+         * @see hub.powerassert.Operand#toString()
+         */
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder("new ");
+            builder.append(className).append("[] {");
+
+            Iterator<Operand> iterator = values.iterator();
+
+            if (iterator.hasNext()) {
+                builder.append(iterator.next());
+
+                while (iterator.hasNext()) {
+                    builder.append(", ").append(iterator.next());
+                }
+            }
+
+            builder.append('}');
+            return builder.toString();
+        }
+
+        /**
+         * @see hub.powerassert.Operand#toValueExpression()
+         */
+        @Override
+        public String toValueExpression() {
+            switch (value.getClass().getComponentType().getSimpleName()) {
+            case "int":
+                return Arrays.toString((int[]) value);
+
+            case "long":
+                return Arrays.toString((long[]) value);
+
+            case "float":
+                return Arrays.toString((float[]) value);
+
+            case "double":
+                return Arrays.toString((double[]) value);
+
+            case "char":
+                return Arrays.toString((char[]) value);
+
+            case "boolean":
+                return Arrays.toString((boolean[]) value);
+
+            case "short":
+                return Arrays.toString((short[]) value);
+
+            case "byte":
+                return Arrays.toString((byte[]) value);
+
+            default:
+                return Arrays.toString((Object[]) value);
+            }
+        }
+    }
+
+    /**
+     * @version 2012/01/19 16:58:26
+     */
+    private class OperandMethod extends Operand {
+
+        private final Operand invoker;
+
+        private final String methodName;
+
+        private final Type[] parameterTypes;
+
+        private final List<Operand> parameters = new ArrayList();
+
+        /**
+         * @param name
+         * @param value
+         */
+        private OperandMethod(String name, String description, Object value) {
+            super(name, value);
+
+            this.methodName = name;
+            this.parameterTypes = Type.getMethodType(description).getArgumentTypes();
+
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Operand operand = stack.pollLast();
+
+                if (parameterTypes[i] == Type.BOOLEAN_TYPE && operand.value instanceof Integer) {
+                    parameters.add(0, new Operand(((Integer) operand.value).intValue() == 1));
+                } else {
+                    parameters.add(0, operand);
+                }
+            }
+            invoker = stack.pollLast();
+        }
+
+        /**
+         * @see hub.powerassert.Operand#toString()
+         */
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            if (!invoker.toString().equals("this")) {
+                builder.append(invoker).append('.');
+            }
+            builder.append(methodName).append('(');
+
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Type type = parameterTypes[i];
+                Operand value = parameters.get(i);
+
+                if (i + 1 == parameterTypes.length && type.getSort() == Type.ARRAY && value instanceof OperandArray) {
+                    // for varargs
+                    OperandArray array = (OperandArray) value;
+
+                    Iterator<Operand> iterator = array.values.iterator();
+
+                    if (iterator.hasNext()) {
+                        builder.append(iterator.next());
+
+                        while (iterator.hasNext()) {
+                            builder.append(", ").append(iterator.next());
+                        }
+                    }
+                } else {
+                    builder.append(value);
+                }
+
+                if (i + 1 != parameterTypes.length) {
+                    builder.append(", ");
+                }
+            }
+            builder.append(')');
+
+            return builder.toString();
+        }
+
+        /**
+         * @see hub.powerassert.Operand#toValueExpression()
+         */
+        @Override
+        public String toValueExpression() {
+            return super.toValueExpression();
+        }
     }
 }

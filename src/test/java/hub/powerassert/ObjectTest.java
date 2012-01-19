@@ -61,6 +61,16 @@ public class ObjectTest {
     }
 
     @Test
+    public void varargs() throws Exception {
+        tester.willCapture("var()", false);
+        assert var();
+    }
+
+    boolean var(Object... var) {
+        return false;
+    }
+
+    @Test
     public void method() throws Exception {
         tester.willCapture("test()", "1");
         assert test() == "2";

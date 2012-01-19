@@ -101,6 +101,22 @@ public class LongTest {
     }
 
     @Test
+    public void arrayNew() throws Exception {
+        tester.willUse("new long[] {1, 2}");
+        assert new long[] {1, 2} == null;
+    }
+
+    @Test
+    public void varargs() throws Exception {
+        tester.willCapture("var()", false);
+        assert var();
+    }
+
+    boolean var(long... var) {
+        return false;
+    }
+
+    @Test
     public void method() throws Exception {
         tester.willCapture("test()", 1L);
         assert test() == 2;

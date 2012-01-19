@@ -101,6 +101,22 @@ public class FloatTest {
     }
 
     @Test
+    public void arrayNew() throws Exception {
+        tester.willUse("new float[] {1.0, 2.0}");
+        assert new float[] {1, 2} == null;
+    }
+
+    @Test
+    public void varargs() throws Exception {
+        tester.willCapture("var()", false);
+        assert var();
+    }
+
+    boolean var(float... var) {
+        return false;
+    }
+
+    @Test
     public void method() throws Exception {
         tester.willCapture("test()", 1f);
         assert test() == 2f;

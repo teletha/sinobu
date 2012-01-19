@@ -55,6 +55,22 @@ public class BooleanTest {
     }
 
     @Test
+    public void arrayNew() throws Exception {
+        tester.willUse("new boolean[] {true, false}");
+        assert new boolean[] {true, false} == null;
+    }
+
+    @Test
+    public void varargs() throws Exception {
+        tester.willCapture("var()", false);
+        assert var();
+    }
+
+    boolean var(boolean... var) {
+        return false;
+    }
+
+    @Test
     public void method() throws Exception {
         tester.willCapture("test()", false);
         assert test();
