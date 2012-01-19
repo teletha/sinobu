@@ -12,7 +12,7 @@ package hub.powerassert;
 import java.util.Arrays;
 
 /**
- * @version 2012/01/11 14:11:46
+ * @version 2012/01/19 12:01:26
  */
 class Operand {
 
@@ -61,16 +61,73 @@ class Operand {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        Class type = getClass();
+        Class otherType = obj.getClass();
+
+        if (type != otherType) {
+            return false;
+        }
+
         Operand other = (Operand) obj;
+
+        // check name
         if (name == null) {
-            if (other.name != null) return false;
-        } else if (!name.equals(other.name)) return false;
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+
+        // check value
         if (value == null) {
-            if (other.value != null) return false;
-        } else if (!value.equals(other.value)) return false;
+            if (other.value != null) {
+                return false;
+            }
+        } else if (!value.equals(other.value)) {
+            type = value.getClass();
+
+            if (!type.isArray()) {
+                return false;
+            } else {
+                switch (type.getComponentType().getSimpleName()) {
+                case "int":
+                    return Arrays.equals((int[]) value, (int[]) other.value);
+
+                case "long":
+                    return Arrays.equals((long[]) value, (long[]) other.value);
+
+                case "float":
+                    return Arrays.equals((float[]) value, (float[]) other.value);
+
+                case "double":
+                    return Arrays.equals((double[]) value, (double[]) other.value);
+
+                case "char":
+                    return Arrays.equals((char[]) value, (char[]) other.value);
+
+                case "boolean":
+                    return Arrays.equals((boolean[]) value, (boolean[]) other.value);
+
+                case "short":
+                    return Arrays.equals((short[]) value, (short[]) other.value);
+
+                case "byte":
+                    return Arrays.equals((byte[]) value, (byte[]) other.value);
+
+                default:
+                    return Arrays.deepEquals((Object[]) value, (Object[]) other.value);
+                }
+            }
+        }
         return true;
     }
 
@@ -84,37 +141,54 @@ class Operand {
     String toValueExpression() {
         if (value == null) {
             return "null";
-        } else if (value instanceof String) {
+        }
+
+        if (value instanceof CharSequence) {
             return "\"" + value + "\"";
-        } else if (value instanceof Class) {
-            return ((Class) value).getSimpleName() + ".class";
-        } else if (value instanceof Enum) {
+        }
+
+        if (value instanceof Enum) {
             Enum enumration = (Enum) value;
             return enumration.getDeclaringClass().getSimpleName() + '.' + enumration.name();
-        } else if (value.getClass().isArray()) {
-            Class type = value.getClass().getComponentType();
-
-            if (type == int.class) {
-                return Arrays.toString((int[]) value);
-            } else if (type == long.class) {
-                return Arrays.toString((long[]) value);
-            } else if (type == float.class) {
-                return Arrays.toString((float[]) value);
-            } else if (type == double.class) {
-                return Arrays.toString((double[]) value);
-            } else if (type == short.class) {
-                return Arrays.toString((short[]) value);
-            } else if (type == byte.class) {
-                return Arrays.toString((byte[]) value);
-            } else if (type == char.class) {
-                return Arrays.toString((char[]) value);
-            } else if (type == boolean.class) {
-                return Arrays.toString((boolean[]) value);
-            }
-            return Arrays.toString((Object[]) value);
-        } else {
-            return value.toString();
         }
+
+        Class clazz = value.getClass();
+
+        if (clazz == Class.class) {
+            return ((Class) value).getSimpleName() + ".class";
+        }
+
+        if (clazz.isArray()) {
+            switch (clazz.getComponentType().getSimpleName()) {
+            case "int":
+                return Arrays.toString((int[]) value);
+
+            case "long":
+                return Arrays.toString((long[]) value);
+
+            case "float":
+                return Arrays.toString((float[]) value);
+
+            case "double":
+                return Arrays.toString((double[]) value);
+
+            case "char":
+                return Arrays.toString((char[]) value);
+
+            case "boolean":
+                return Arrays.toString((boolean[]) value);
+
+            case "short":
+                return Arrays.toString((short[]) value);
+
+            case "byte":
+                return Arrays.toString((byte[]) value);
+
+            default:
+                return Arrays.toString((Object[]) value);
+            }
+        }
+        return value.toString();
     }
 
     /**

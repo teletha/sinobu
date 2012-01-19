@@ -18,14 +18,14 @@ import org.junit.Test;
 public class LongTest {
 
     @Rule
-    public static final PowerAssert Assert = new PowerAssert(true);
+    public static final PowerAssertTester tester = new PowerAssertTester();
 
     @Test
     public void constant_0() throws Exception {
         long value = -1;
 
-        Assert.willUse("0");
-        Assert.willCapture("value", value);
+        tester.willUse("0");
+        tester.willCapture("value", value);
         assert 0 == value;
     }
 
@@ -33,8 +33,8 @@ public class LongTest {
     public void constant_1() throws Exception {
         long value = -1;
 
-        Assert.willUse("1");
-        Assert.willCapture("value", value);
+        tester.willUse("1");
+        tester.willCapture("value", value);
         assert 1 == value;
     }
 
@@ -42,8 +42,8 @@ public class LongTest {
     public void constant_2() throws Exception {
         long value = -1;
 
-        Assert.willUse("2");
-        Assert.willCapture("value", value);
+        tester.willUse("2");
+        tester.willCapture("value", value);
         assert 2 == value;
     }
 
@@ -51,8 +51,8 @@ public class LongTest {
     public void constant_3() throws Exception {
         long value = -1;
 
-        Assert.willUse("3");
-        Assert.willCapture("value", value);
+        tester.willUse("3");
+        tester.willCapture("value", value);
         assert 3 == value;
     }
 
@@ -60,8 +60,8 @@ public class LongTest {
     public void constant_M1() throws Exception {
         long value = 0;
 
-        Assert.willUse("-1");
-        Assert.willCapture("value", value);
+        tester.willUse("-1");
+        tester.willCapture("value", value);
         assert -1 == value;
     }
 
@@ -69,8 +69,8 @@ public class LongTest {
     public void big() throws Exception {
         long value = 2;
 
-        Assert.willUse("1234567890123");
-        Assert.willCapture("value", value);
+        tester.willUse("1234567890123");
+        tester.willCapture("value", value);
         assert 1234567890123L == value;
     }
 
@@ -78,7 +78,7 @@ public class LongTest {
     public void array() throws Exception {
         long[] array = {0, 1, 2};
 
-        Assert.willCapture("array", array);
+        tester.willCapture("array", array);
         assert array == null;
     }
 
@@ -86,8 +86,8 @@ public class LongTest {
     public void arrayIndex() throws Exception {
         long[] array = {0, 1, 2};
 
-        Assert.willCapture("array", array);
-        Assert.willCapture("array[1]", 1L);
+        tester.willCapture("array", array);
+        tester.willCapture("array[1]", 1L);
         assert array[1] == 128;
     }
 
@@ -95,14 +95,14 @@ public class LongTest {
     public void arrayLength() throws Exception {
         long[] array = {0, 1, 2};
 
-        Assert.willCapture("array", array);
-        Assert.willCapture("array.length", 3);
+        tester.willCapture("array", array);
+        tester.willCapture("array.length", 3);
         assert array.length == 10;
     }
 
     @Test
     public void method() throws Exception {
-        Assert.willCapture("test()", 1L);
+        tester.willCapture("test()", 1L);
         assert test() == 2;
     }
 
@@ -112,7 +112,7 @@ public class LongTest {
 
     @Test
     public void parameter() throws Exception {
-        Assert.willCapture("test(12)", false);
+        tester.willCapture("test(12)", false);
         assert test(12);
     }
 
@@ -128,13 +128,13 @@ public class LongTest {
 
     @Test
     public void fieldLongAccess() throws Exception {
-        Assert.willCapture("this.longField", 11L);
+        tester.willCapture("this.longField", 11L);
         assert longField == 0;
     }
 
     @Test
     public void fieldLongStaticAccess() throws Exception {
-        Assert.willCapture("LongTest.longFieldStatic", 11L);
+        tester.willCapture("LongTest.longFieldStatic", 11L);
         assert longFieldStatic == 0;
     }
 }
