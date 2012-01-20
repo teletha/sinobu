@@ -117,6 +117,16 @@ public class IntTest {
     }
 
     @Test
+    public void varargsWithHead() throws Exception {
+        tester.willCapture("head(1)", false);
+        assert head(1);
+    }
+
+    boolean head(int head, int... var) {
+        return false;
+    }
+
+    @Test
     public void method() throws Exception {
         tester.willCapture("test()", 1);
         assert test() == 2;

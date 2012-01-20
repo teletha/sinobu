@@ -14,7 +14,7 @@ import java.util.Arrays;
 /**
  * @version 2012/01/20 1:03:27
  */
-class Operand {
+class Operand implements CharSequence {
 
     /** The human redable expression. */
     String name;
@@ -23,25 +23,23 @@ class Operand {
     Object value;
 
     /**
- * 
- */
-    Operand(Object value) {
-        if (value instanceof String) {
-            this.name = "\"" + value + "\"";
-        } else if (value instanceof Class) {
-            this.name = ((Class) value).getSimpleName() + ".class";
-        } else {
-            this.name = String.valueOf(value);
-        }
+     * @param name
+     * @param value
+     */
+    Operand(String name, Object value) {
+        this.name = name;
         this.value = value;
     }
 
     /**
- * 
- */
-    Operand(String name, Object value) {
-        this.name = name;
-        this.value = value;
+     * <p>
+     * Decide that this operand has a value to display to user.
+     * </p>
+     * 
+     * @return A result.
+     */
+    boolean isVariableHolder() {
+        return true;
     }
 
     /**
@@ -200,5 +198,29 @@ class Operand {
     @Override
     public String toString() {
         return name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int length() {
+        return toString().length();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public char charAt(int index) {
+        return toString().charAt(index);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return toString().subSequence(start, end);
     }
 }

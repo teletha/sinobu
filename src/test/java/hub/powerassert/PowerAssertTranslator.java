@@ -229,7 +229,7 @@ class PowerAssertTranslator extends Translator {
 
             switch (opcode) {
             case INVOKESTATIC:
-                recode().staticMethod(computeClassName(owner) + '.' + name, desc, local);
+                recode().staticMethod(computeClassName(owner), name, desc, local);
                 break;
 
             case INVOKESPECIAL:
