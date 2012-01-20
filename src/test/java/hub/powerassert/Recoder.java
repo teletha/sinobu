@@ -111,11 +111,12 @@ interface Recoder {
      * Recode static method call.
      * </p>
      * 
-     * @param name A method name.
+     * @param className A class name.
+     * @param methodName A method name.
      * @param description A method parameter size.
      * @param value A returned value.
      */
-    void staticMethod(String name, String description, Object value);
+    void staticMethod(String className, String methodName, String description, Object value);
 
     /**
      * <p>

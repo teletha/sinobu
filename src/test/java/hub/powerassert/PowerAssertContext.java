@@ -47,7 +47,7 @@ public class PowerAssertContext implements Recoder {
      */
     @Override
     public void constant(Object constant) {
-        stack.add(new Operand(constant));
+        stack.add(new OperandConstant(constant));
     }
 
     /**
@@ -182,7 +182,7 @@ public class PowerAssertContext implements Recoder {
 
             if (type.getSort() == Type.BOOLEAN && operand.value instanceof Integer) {
                 // format
-                operand = new Operand(Boolean.valueOf(operand.value.toString()));
+                operand = new OperandConstant(Boolean.valueOf(operand.value.toString()));
             }
             invocation.insert(1, operand);
 
@@ -213,31 +213,12 @@ public class PowerAssertContext implements Recoder {
      * {@inheritDoc}
      */
     @Override
-    public void staticMethod(String name, String description, Object value) {
+    public void staticMethod(String className, String methodName, String description, Object value) {
         // build method invocation
-        StringBuilder invocation = new StringBuilder("()");
-        Type[] params = Type.getMethodType(description).getArgumentTypes();
-        int size = params.length;
+        OperandMethod method = new OperandMethod(className, methodName, description, value);
 
-        for (int i = 0; i < size; i++) {
-            Type type = params[i];
-            Operand operand = stack.pollLast();
-
-            if (type.getSort() == Type.BOOLEAN && operand.value instanceof Integer) {
-                // format
-                operand = new Operand(Boolean.valueOf(operand.value.toString()));
-            }
-            invocation.insert(1, operand);
-
-            if (i + 1 != size) {
-                invocation.insert(1, ", ");
-            }
-        }
-        invocation.insert(0, name);
-
-        Operand operand = new Operand(invocation.toString(), value);
-        stack.add(operand);
-        operands.add(operand);
+        stack.add(method);
+        operands.add(method);
     }
 
     /**
@@ -296,7 +277,9 @@ public class PowerAssertContext implements Recoder {
         builder.append(stack.peek()).append("\r\n");
 
         for (Operand operand : operands) {
-            builder.append("\r\n").append(operand).append(" : ").append(operand.toValueExpression());
+            if (operand.isVariableHolder()) {
+                builder.append("\r\n").append(operand).append(" : ").append(operand.toValueExpression());
+            }
         }
         return builder.toString();
     }
@@ -313,15 +296,48 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
+     * @version 2012/01/20 13:17:56
+     */
+    private static class OperandConstant extends Operand {
+
+        /**
+         * @param value
+         */
+        public OperandConstant(Object value) {
+            super(getDisplayName(value), value);
+        }
+
+        private static String getDisplayName(Object value) {
+            if (value instanceof String) {
+                return "\"" + value + "\"";
+            }
+
+            if (value instanceof Class) {
+                return ((Class) value).getSimpleName() + ".class";
+            }
+
+            return String.valueOf(value);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        boolean isVariableHolder() {
+            return false;
+        }
+    }
+
+    /**
      * @version 2012/01/19 16:18:02
      */
     private class OperandArray extends Operand {
 
         private final String className;
 
-        private final Object value;
-
         private final Class type;
+
+        private final int size;
 
         private final List<Operand> values = new ArrayList();
 
@@ -339,10 +355,10 @@ public class PowerAssertContext implements Recoder {
             // Boolean array is initialized with false values, other type arrays are initialized
             // with null values. Array store operation will be invoked array length times but false
             // value will not be invoked. So we should fill with false values to normalize setup.
-            int size = Array.getLength(value);
+            this.size = Array.getLength(value);
 
             for (int i = 0; i < size; i++) {
-                values.add(new Operand(false));
+                values.add(new OperandConstant(false));
             }
         }
 
@@ -355,10 +371,18 @@ public class PowerAssertContext implements Recoder {
          */
         private void add(int index, Operand operand) {
             if (type == boolean.class && operand.value instanceof Integer) {
-                values.set(index, new Operand(((Integer) operand.value).intValue() == 1));
+                values.set(index, new OperandConstant(((Integer) operand.value).intValue() == 1));
             } else {
                 values.set(index, operand);
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        boolean isVariableHolder() {
+            return false;
         }
 
         /**
@@ -424,7 +448,7 @@ public class PowerAssertContext implements Recoder {
      */
     private class OperandMethod extends Operand {
 
-        private final Operand invoker;
+        private final CharSequence invoker;
 
         private final String methodName;
 
@@ -433,25 +457,47 @@ public class PowerAssertContext implements Recoder {
         private final List<Operand> parameters = new ArrayList();
 
         /**
-         * @param name
-         * @param value
+         * <p>
+         * Normal method invocation.
+         * </p>
+         * 
+         * @param name A method name.
+         * @param description A method description.
+         * @param value A method result.
          */
         private OperandMethod(String name, String description, Object value) {
+            this(null, name, description, value);
+        }
+
+        /**
+         * <p>
+         * Repesents method invocation.
+         * </p>
+         * 
+         * @param invoker A method invoker.
+         * @param name A method name.
+         * @param description A method description.
+         * @param value A method result.
+         */
+        private OperandMethod(CharSequence invoker, String name, String description, Object value) {
             super(name, value);
 
             this.methodName = name;
             this.parameterTypes = Type.getMethodType(description).getArgumentTypes();
 
-            for (int i = 0; i < parameterTypes.length; i++) {
+            int size = parameterTypes.length - 1;
+
+            for (int i = 0; i <= size; i++) {
                 Operand operand = stack.pollLast();
 
                 if (parameterTypes[i] == Type.BOOLEAN_TYPE && operand.value instanceof Integer) {
-                    parameters.add(0, new Operand(((Integer) operand.value).intValue() == 1));
+                    parameters.add(0, new OperandConstant(((Integer) operand.value).intValue() == 1));
                 } else {
                     parameters.add(0, operand);
                 }
             }
-            invoker = stack.pollLast();
+
+            this.invoker = invoker != null ? invoker : stack.pollLast();
         }
 
         /**
@@ -460,34 +506,43 @@ public class PowerAssertContext implements Recoder {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
+
+            // write invoker
             if (!invoker.toString().equals("this")) {
                 builder.append(invoker).append('.');
             }
             builder.append(methodName).append('(');
 
             for (int i = 0; i < parameterTypes.length; i++) {
-                Type type = parameterTypes[i];
                 Operand value = parameters.get(i);
 
-                if (i + 1 == parameterTypes.length && type.getSort() == Type.ARRAY && value instanceof OperandArray) {
-                    // for varargs
-                    OperandArray array = (OperandArray) value;
-
-                    Iterator<Operand> iterator = array.values.iterator();
-
-                    if (iterator.hasNext()) {
-                        builder.append(iterator.next());
-
-                        while (iterator.hasNext()) {
-                            builder.append(", ").append(iterator.next());
-                        }
-                    }
-                } else {
-                    builder.append(value);
-                }
-
                 if (i + 1 != parameterTypes.length) {
-                    builder.append(", ");
+                    builder.append(value).append(", ");
+                } else {
+                    // last parameter processing
+                    if (value instanceof OperandArray) {
+                        OperandArray array = (OperandArray) value;
+
+                        if (array.size == 0) {
+                            // delete last separator ',' unless this method has only varargs
+                            if (parameterTypes.length != 1) {
+                                builder.delete(builder.length() - 2, builder.length());
+                            }
+                        } else {
+                            // expand array elements
+                            Iterator<Operand> iterator = array.values.iterator();
+
+                            if (iterator.hasNext()) {
+                                builder.append(iterator.next());
+
+                                while (iterator.hasNext()) {
+                                    builder.append(", ").append(iterator.next());
+                                }
+                            }
+                        }
+                    } else {
+                        builder.append(value);
+                    }
                 }
             }
             builder.append(')');
