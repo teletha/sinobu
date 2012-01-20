@@ -71,6 +71,15 @@ interface Recoder {
 
     /**
      * <p>
+     * Recode conditional expression.
+     * </p>
+     * 
+     * @param contionalExpression
+     */
+    void condition(String contionalExpression);
+
+    /**
+     * <p>
      * Recode increment operation.
      * </p>
      * 

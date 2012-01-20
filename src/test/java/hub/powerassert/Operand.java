@@ -14,7 +14,7 @@ import java.util.Arrays;
 /**
  * @version 2012/01/20 1:03:27
  */
-class Operand implements CharSequence {
+class Operand {
 
     /** The human redable expression. */
     String name;
@@ -198,29 +198,5 @@ class Operand implements CharSequence {
     @Override
     public String toString() {
         return name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int length() {
-        return toString().length();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public char charAt(int index) {
-        return toString().charAt(index);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CharSequence subSequence(int start, int end) {
-        return toString().subSequence(start, end);
     }
 }

@@ -98,6 +98,15 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void condition(String contionalExpression) {
+        OperandCondition condition = new OperandCondition(contionalExpression, null);
+        stack.add(condition);
+    }
+
+    /**
      * @see hub.powerassert.PowerAssert.Increment#recodeIncrement(int, int)
      */
     @Override
@@ -215,7 +224,7 @@ public class PowerAssertContext implements Recoder {
     @Override
     public void staticMethod(String className, String methodName, String description, Object value) {
         // build method invocation
-        OperandMethod method = new OperandMethod(className, methodName, description, value);
+        OperandMethod method = new OperandMethod(new OperandConstant(className, false), methodName, description, value);
 
         stack.add(method);
         operands.add(method);
@@ -268,19 +277,37 @@ public class PowerAssertContext implements Recoder {
         nextIncrement = null;
     }
 
+    private static int c = 0;
+
     /**
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("assert ");
-        builder.append(stack.peek()).append("\r\n");
 
-        for (Operand operand : operands) {
-            if (operand.isVariableHolder()) {
-                builder.append("\r\n").append(operand).append(" : ").append(operand.toValueExpression());
+        // top level operand must be conditional operand because of assert statement
+        OperandCondition result = (OperandCondition) stack.peekLast();
+
+        // write assertion code
+        builder.append(result).append("\n\n");
+
+        if (result instanceof OperandCondition) {
+            // focus on these top level two element
+            OperandCondition condition = (OperandCondition) result;
+
+            if (result.left.value instanceof Boolean && result.right.value instanceof Integer) {
+                System.out.println(result.left.value);
             }
+
+            builder.append("────────────────────────────────────\n").append(condition.left);
+            builder.append("\n\n");
+            builder.append("right \n ").append(condition.right);
+        } else {
+
+            throw new IllegalAccessError();
         }
+
         return builder.toString();
     }
 
@@ -303,8 +330,15 @@ public class PowerAssertContext implements Recoder {
         /**
          * @param value
          */
-        public OperandConstant(Object value) {
-            super(getDisplayName(value), value);
+        private OperandConstant(Object value) {
+            this(value, true);
+        }
+
+        /**
+         * @param value
+         */
+        private OperandConstant(Object value, boolean decorate) {
+            super(decorate ? getDisplayName(value) : String.valueOf(value), value);
         }
 
         private static String getDisplayName(Object value) {
@@ -325,6 +359,47 @@ public class PowerAssertContext implements Recoder {
         @Override
         boolean isVariableHolder() {
             return false;
+        }
+    }
+
+    /**
+     * @version 2012/01/20 17:43:57
+     */
+    private class OperandCondition extends Operand {
+
+        private final Operand left;
+
+        private final Operand right;
+
+        private final String expression;
+
+        /**
+         * @param name
+         * @param value
+         * @param left
+         * @param right
+         */
+        private OperandCondition(String expression, Object value) {
+            super(expression, value);
+
+            this.expression = expression;
+            this.right = stack.pollLast();
+            this.left = stack.pollLast();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+
+            if (right.value instanceof Integer && ((Integer) right.value).intValue() == 0 && left.value instanceof Boolean) {
+                builder.append(left);
+            } else {
+                builder.append(left).append(' ').append(expression).append(' ').append(right);
+            }
+            return builder.toString();
         }
     }
 
@@ -448,7 +523,7 @@ public class PowerAssertContext implements Recoder {
      */
     private class OperandMethod extends Operand {
 
-        private final CharSequence invoker;
+        private final Operand invoker;
 
         private final String methodName;
 
@@ -479,7 +554,7 @@ public class PowerAssertContext implements Recoder {
          * @param description A method description.
          * @param value A method result.
          */
-        private OperandMethod(CharSequence invoker, String name, String description, Object value) {
+        private OperandMethod(Operand invoker, String name, String description, Object value) {
             super(name, value);
 
             this.methodName = name;
@@ -511,9 +586,10 @@ public class PowerAssertContext implements Recoder {
             if (!invoker.toString().equals("this")) {
                 builder.append(invoker).append('.');
             }
+
             builder.append(methodName).append('(');
 
-            for (int i = 0; i < parameterTypes.length; i++) {
+            for (int i = 0; i < parameters.size(); i++) {
                 Operand value = parameters.get(i);
 
                 if (i + 1 != parameterTypes.length) {
