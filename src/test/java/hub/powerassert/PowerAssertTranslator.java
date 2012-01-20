@@ -122,12 +122,12 @@ class PowerAssertTranslator extends Translator {
                     recode().constant(insn(ICONST_0));
                 }
                 doubleCompare = false;
-                recode().operator("==");
+                recode().condition("==");
                 break;
 
             case IF_ICMPEQ:
             case IF_ACMPEQ:
-                recode().operator("==");
+                recode().condition("==");
                 break;
 
             case IFNE:
@@ -135,28 +135,28 @@ class PowerAssertTranslator extends Translator {
                     recode().constant(insn(ICONST_0));
                 }
                 doubleCompare = false;
-                recode().operator("!=");
+                recode().condition("!=");
                 break;
 
             case IF_ICMPNE:
             case IF_ACMPNE:
-                recode().operator("!=");
+                recode().condition("!=");
                 break;
 
             case IF_ICMPLT:
-                recode().operator("<");
+                recode().condition("<");
                 break;
 
             case IF_ICMPLE:
-                recode().operator("<=");
+                recode().condition("<=");
                 break;
 
             case IF_ICMPGT:
-                recode().operator(">");
+                recode().condition(">");
                 break;
 
             case IF_ICMPGE:
-                recode().operator(">=");
+                recode().condition(">=");
                 break;
 
             case IFNULL:
@@ -164,7 +164,7 @@ class PowerAssertTranslator extends Translator {
                 recode().constant(insn(ACONST_NULL));
 
                 // recode == expression
-                recode().operator("==");
+                recode().condition("==");
                 break;
 
             case IFNONNULL:
@@ -172,7 +172,7 @@ class PowerAssertTranslator extends Translator {
                 recode().constant(insn(ACONST_NULL));
 
                 // recode != expression
-                recode().operator("!=");
+                recode().condition("!=");
                 break;
             }
         }

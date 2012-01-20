@@ -11,6 +11,9 @@ package hub.powerassert;
 
 import hub.bytecode.Agent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -97,13 +100,18 @@ public class PowerAssert implements TestRule {
 
                             // replace error message
                             String message = error.getLocalizedMessage();
-                            StackTraceElement[] stacktrace = error.getStackTrace();
 
                             if (message == null) {
                                 message = "";
                             }
+
+                            List<StackTraceElement> elements = new ArrayList();
+                            elements.addAll(Arrays.asList(error.getStackTrace()));
+
+                            elements.add(0, new StackTraceElement("a", "test\n", "", -1));
+
                             error = new AssertionError(message + "\r\n" + context);
-                            error.setStackTrace(stacktrace);
+                            error.setStackTrace(elements.toArray(new StackTraceElement[elements.size()]));
                         }
                     }
                     throw error; // rethrow

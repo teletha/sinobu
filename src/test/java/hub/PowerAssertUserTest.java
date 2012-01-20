@@ -31,8 +31,8 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAcces1s() throws Exception {
-        int value = 2;
+        boolean value = false;
 
-        assert 123456789 == value;
+        assert new boolean[] {true, value} == null;
     }
 }
