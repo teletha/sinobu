@@ -9,6 +9,8 @@
  */
 package hub;
 
+import java.io.File;
+
 import org.junit.Test;
 
 /**
@@ -31,8 +33,8 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAcces1s() throws Exception {
-        boolean value = false;
+        String value = "aaaa";
 
-        assert new boolean[] {true, value} == null;
+        assert new File(value) /* hoge */== new File("example.txt");
     }
 }

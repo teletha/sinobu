@@ -290,25 +290,59 @@ public class PowerAssertContext implements Recoder {
         OperandCondition result = (OperandCondition) stack.peekLast();
 
         // write assertion code
-        builder.append(result).append("\n\n");
+        builder.append(result).append("\n");
 
-        if (result instanceof OperandCondition) {
-            // focus on these top level two element
-            OperandCondition condition = (OperandCondition) result;
+        // search top level operand
+        Operand top = result;
 
-            if (result.left.value instanceof Boolean && result.right.value instanceof Integer) {
-                System.out.println(result.left.value);
-            }
-
-            builder.append("────────────────────────────────────\n").append(condition.left);
-            builder.append("\n\n");
-            builder.append("right \n ").append(condition.right);
-        } else {
-
-            throw new IllegalAccessError();
+        if (result.right.value instanceof Integer && result.left.value instanceof Boolean) {
+            top = result.left;
         }
 
+        // collect all variable operans
+        List<Operand> variables = new ArrayList();
+
+        for (Operand operand : operands) {
+            if (operand.isVariableHolder() && operand != top) {
+                variables.add(operand);
+            }
+        }
+
+        Iterator<Operand> iterator = variables.iterator();
+        builder.append("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
+        if (iterator.hasNext()) {
+            render(builder, iterator.next());
+
+            while (iterator.hasNext()) {
+                builder.append("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+                render(builder, iterator.next());
+            }
+        }
+        builder.append("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
         return builder.toString();
+    }
+
+    private void render(StringBuilder builder, Operand operand) {
+        Object value = operand.value;
+        String name = operand.toString();
+        String[] lines = operand.toValueExpression().split("\r\n|\r|\n");
+
+        builder.append("┃").append(name);
+
+        if (value != null && !value.getClass().isPrimitive()) {
+            builder.append("　　　(")
+                    .append(value.getClass().getName())
+                    .append("@")
+                    .append(System.identityHashCode(value))
+                    .append(")");
+        }
+        builder.append("\n");
+
+        for (String line : lines) {
+            builder.append("┃　　").append(line).append("\n");
+        }
     }
 
     /**
@@ -624,14 +658,6 @@ public class PowerAssertContext implements Recoder {
             builder.append(')');
 
             return builder.toString();
-        }
-
-        /**
-         * @see hub.powerassert.Operand#toValueExpression()
-         */
-        @Override
-        public String toValueExpression() {
-            return super.toValueExpression();
         }
     }
 }
