@@ -65,10 +65,18 @@ public class PowerAssertContext implements Recoder {
             nextIncrement = null;
         }
 
-        if (localVariable[1].equals("Z")) {
+        switch (localVariable[1]) {
+        case "Z": // boolean
             operand = new Operand(localVariable[0], (int) variable == 1);
-        } else {
+            break;
+
+        case "C": // char
+            operand = new Operand(localVariable[0], (char) ((Integer) variable).intValue());
+            break;
+
+        default:
             operand = new Operand(localVariable[0], variable);
+            break;
         }
 
         stack.add(new Operand(name, null));
@@ -309,17 +317,17 @@ public class PowerAssertContext implements Recoder {
         }
 
         Iterator<Operand> iterator = variables.iterator();
-        builder.append("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        builder.append("┌─────────────────────────────────────────\n");
 
         if (iterator.hasNext()) {
             render(builder, iterator.next());
 
             while (iterator.hasNext()) {
-                builder.append("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+                builder.append("├─────────────────────────────────────────\n");
                 render(builder, iterator.next());
             }
         }
-        builder.append("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        builder.append("└─────────────────────────────────────────\n");
 
         return builder.toString();
     }
@@ -329,19 +337,19 @@ public class PowerAssertContext implements Recoder {
         String name = operand.toString();
         String[] lines = operand.toValueExpression().split("\r\n|\r|\n");
 
-        builder.append("┃").append(name);
+        builder.append("│").append(name);
 
         if (value != null && !value.getClass().isPrimitive()) {
-            builder.append("　　　(")
+            builder.append("　　　　#")
                     .append(value.getClass().getName())
                     .append("@")
-                    .append(System.identityHashCode(value))
-                    .append(")");
+                    .append(Integer.toHexString(System.identityHashCode(value)))
+                    .append("");
         }
         builder.append("\n");
 
         for (String line : lines) {
-            builder.append("┃　　").append(line).append("\n");
+            builder.append("│　　").append(line).append("\n");
         }
     }
 
@@ -354,6 +362,31 @@ public class PowerAssertContext implements Recoder {
      */
     public static PowerAssertContext get() {
         return I.make(PowerAssertContext.class);
+    }
+
+    /**
+     * @version 2012/01/21 22:02:37
+     */
+    private static class OperandVariable extends Operand {
+
+        private Type type;
+
+        private Object value;
+
+        private String name;
+
+        /**
+         * @param name
+         * @param type
+         * @param value
+         */
+        private OperandVariable(String name, Type type, Object value) {
+            super(name, value);
+
+            this.type = type;
+            this.name = name;
+            this.value = value;
+        }
     }
 
     /**
@@ -428,7 +461,7 @@ public class PowerAssertContext implements Recoder {
         public String toString() {
             StringBuilder builder = new StringBuilder();
 
-            if (right.value instanceof Integer && ((Integer) right.value).intValue() == 0 && left.value instanceof Boolean) {
+            if (right.value instanceof Integer && left.value instanceof Boolean) {
                 builder.append(left);
             } else {
                 builder.append(left).append(' ').append(expression).append(' ').append(right);

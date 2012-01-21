@@ -153,6 +153,10 @@ class Operand {
             return enumration.getDeclaringClass().getSimpleName() + '.' + enumration.name();
         }
 
+        if (value instanceof Character) {
+            return "'" + value + "'";
+        }
+
         Class clazz = value.getClass();
 
         if (clazz == Class.class) {
