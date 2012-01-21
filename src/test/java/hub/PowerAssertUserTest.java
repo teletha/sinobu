@@ -35,6 +35,6 @@ public class PowerAssertUserTest {
     public void fieldIntStaticAcces1s() throws Exception {
         String value = "aaaa";
 
-        assert new File(value) /* hoge */== new File("example.txt");
+        assert new File(value.replace('a', 'b')) == new File("example.txt");
     }
 }
