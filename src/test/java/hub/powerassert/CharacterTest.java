@@ -44,6 +44,7 @@ public class CharacterTest {
 
         tester.willCapture("array", array);
         tester.willCapture("array[1]", '1');
+        tester.willUse("'@'");
         assert array[1] == '@';
     }
 
@@ -58,7 +59,7 @@ public class CharacterTest {
 
     @Test
     public void arrayNew() throws Exception {
-        tester.willUse("new char[] {'a', '1'}");
+        tester.willUse("new char[] {'a', '1'} == null");
         assert new char[] {'a', '1'} == null;
     }
 
@@ -85,6 +86,7 @@ public class CharacterTest {
     @Test
     public void method() throws Exception {
         tester.willCapture("test()", 'r');
+        tester.willUse("'a'");
         assert test() == 'a';
     }
 
@@ -111,12 +113,14 @@ public class CharacterTest {
     @Test
     public void fieldCharacterAccess() throws Exception {
         tester.willCapture("this.charField", 'a');
+        tester.willUse("'b'");
         assert charField == 'b';
     }
 
     @Test
     public void fieldCharacterStaticAccess() throws Exception {
         tester.willCapture("CharacterTest.charFieldStatic", 'a');
+        tester.willUse("'b'");
         assert charFieldStatic == 'b';
     }
 }

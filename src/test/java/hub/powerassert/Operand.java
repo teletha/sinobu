@@ -47,6 +47,10 @@ class Operand {
         return true;
     }
 
+    Type getType() {
+        return value == null ? Unknown : Type.getType(value.getClass());
+    }
+
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
