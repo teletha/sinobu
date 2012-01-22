@@ -362,6 +362,11 @@ class PowerAssertTranslator extends Translator {
                 recode().arrayIndex(local);
                 break;
 
+            case CALOAD:
+                local = copy(Type.CHAR_TYPE);
+                recode().arrayIndex(local);
+                break;
+
             case AALOAD:
                 local = copy(Bytecode.OBJECT_TYPE);
                 recode().arrayIndex(local);
@@ -372,6 +377,7 @@ class PowerAssertTranslator extends Translator {
             case DASTORE:
             case FASTORE:
             case BASTORE:
+            case CASTORE:
             case AASTORE:
                 recode().arrayStore();
                 break;

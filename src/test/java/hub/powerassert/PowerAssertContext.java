@@ -79,7 +79,7 @@ public class PowerAssertContext implements Recoder {
             break;
         }
 
-        stack.add(new Operand(name, null));
+        stack.add(new Operand(name, operand.value));
         operands.add(operand);
     }
 
@@ -122,7 +122,7 @@ public class PowerAssertContext implements Recoder {
         String[] localVariable = localVariables.get(id);
         Operand latest = stack.peekLast();
 
-        if (latest == null || !latest.name.equals(localVariable[0])) {
+        if (latest == null || !latest.toString().equals(localVariable[0])) {
             // pre increment
             switch (increment) {
             case 1:
@@ -285,8 +285,6 @@ public class PowerAssertContext implements Recoder {
         nextIncrement = null;
     }
 
-    private static int c = 0;
-
     /**
      * @see java.lang.Object#toString()
      */
@@ -365,31 +363,6 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
-     * @version 2012/01/21 22:02:37
-     */
-    private static class OperandVariable extends Operand {
-
-        private Type type;
-
-        private Object value;
-
-        private String name;
-
-        /**
-         * @param name
-         * @param type
-         * @param value
-         */
-        private OperandVariable(String name, Type type, Object value) {
-            super(name, value);
-
-            this.type = type;
-            this.name = name;
-            this.value = value;
-        }
-    }
-
-    /**
      * @version 2012/01/20 13:17:56
      */
     private static class OperandConstant extends Operand {
@@ -441,10 +414,8 @@ public class PowerAssertContext implements Recoder {
         private final String expression;
 
         /**
-         * @param name
+         * @param expression
          * @param value
-         * @param left
-         * @param right
          */
         private OperandCondition(String expression, Object value) {
             super(expression, value);
@@ -459,15 +430,26 @@ public class PowerAssertContext implements Recoder {
          */
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
-
-            if (right.value instanceof Integer && left.value instanceof Boolean) {
-                builder.append(left);
-            } else {
-                builder.append(left).append(' ').append(expression).append(' ').append(right);
+            // Integer value represents various types (int, char and boolean).
+            // We have to check the opposite term' type to infer its actual type.
+            if (left.value instanceof Integer) {
+                if (right.value instanceof Boolean) {
+                    return right.toString();
+                } else if (right.value instanceof Character) {
+                    return convert(left, char.class) + " " + expression + " " + right;
+                }
             }
-            return builder.toString();
+
+            if (right.value instanceof Integer) {
+                if (left.value instanceof Boolean) {
+                    return left.toString();
+                } else if (left.value instanceof Character) {
+                    return left + " " + expression + " " + convert(right, char.class);
+                }
+            }
+            return left + " " + expression + " " + right;
         }
+
     }
 
     /**
@@ -491,7 +473,6 @@ public class PowerAssertContext implements Recoder {
             super(name, value);
 
             this.className = name;
-            this.value = value;
             this.type = value.getClass().getComponentType();
 
             // Boolean array is initialized with false values, other type arrays are initialized
@@ -512,8 +493,16 @@ public class PowerAssertContext implements Recoder {
          * @param operand
          */
         private void add(int index, Operand operand) {
-            if (type == boolean.class && operand.value instanceof Integer) {
-                values.set(index, new OperandConstant(((Integer) operand.value).intValue() == 1));
+            // Integer value represents various types (int, char and boolean).
+            // We have to check the array type to infer its actual type.
+            if (operand.value instanceof Integer) {
+                if (type == boolean.class) {
+                    values.set(index, new OperandConstant(convert(operand, boolean.class), false));
+                } else if (type == char.class) {
+                    values.set(index, new OperandConstant(convert(operand, char.class), false));
+                } else {
+                    values.set(index, operand);
+                }
             } else {
                 values.set(index, operand);
             }
@@ -629,11 +618,25 @@ public class PowerAssertContext implements Recoder {
 
             int size = parameterTypes.length - 1;
 
-            for (int i = 0; i <= size; i++) {
+            for (int i = size; 0 <= i; i--) {
                 Operand operand = stack.pollLast();
 
-                if (parameterTypes[i] == Type.BOOLEAN_TYPE && operand.value instanceof Integer) {
-                    parameters.add(0, new OperandConstant(((Integer) operand.value).intValue() == 1));
+                // Integer value represents various types (int, char and boolean).
+                // We have to check the parameter type to infer its actual type.
+                if (operand.value instanceof Integer) {
+                    switch (parameterTypes[i].getSort()) {
+                    case Type.BOOLEAN:
+                        parameters.add(0, new OperandConstant(convert(operand, boolean.class), false));
+                        break;
+
+                    case Type.CHAR:
+                        parameters.add(0, new OperandConstant(convert(operand, char.class), false));
+                        break;
+
+                    default:
+                        parameters.add(0, operand);
+                        break;
+                    }
                 } else {
                     parameters.add(0, operand);
                 }
