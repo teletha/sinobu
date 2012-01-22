@@ -35,7 +35,7 @@ class PowerAssertTranslator extends Translator {
     private final Journal context = createAPI(PowerAssertContext.class, Journal.class);
 
     /** The state. */
-    private boolean doubleCompare = false;
+    private boolean compare = false;
 
     /**
      * <p>
@@ -118,10 +118,10 @@ class PowerAssertTranslator extends Translator {
         if (processAssertion) {
             switch (opcode) {
             case IFEQ:
-                if (!doubleCompare) {
+                if (!compare) {
                     journal().constant(insn(ICONST_0));
                 }
-                doubleCompare = false;
+                compare = false;
                 journal().condition("==");
                 break;
 
@@ -131,10 +131,10 @@ class PowerAssertTranslator extends Translator {
                 break;
 
             case IFNE:
-                if (!doubleCompare) {
+                if (!compare) {
                     journal().constant(insn(ICONST_0));
                 }
-                doubleCompare = false;
+                compare = false;
                 journal().condition("!=");
                 break;
 
@@ -462,7 +462,7 @@ class PowerAssertTranslator extends Translator {
             case LCMP:
             case FCMPL:
             case DCMPL:
-                doubleCompare = true;
+                compare = true;
                 break;
             }
         }

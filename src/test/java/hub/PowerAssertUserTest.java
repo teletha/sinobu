@@ -9,8 +9,6 @@
  */
 package hub;
 
-import java.io.File;
-
 import org.junit.Test;
 
 /**
@@ -26,15 +24,15 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAccess() throws Exception {
-        Object value = "";
+        int[] array = {0, 1, 2};
 
-        assert Integer.valueOf(10) == value;
+        assert array.length == 10;
     }
 
     @Test
     public void fieldIntStaticAcces1s() throws Exception {
         String value = "aaaa";
 
-        assert new File(value.replace('a', 'b')) == new File("example.txt");
+        assert new int[] {1, 2} == null;
     }
 }
