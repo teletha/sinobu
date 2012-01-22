@@ -76,10 +76,11 @@ interface Journal {
      * Write local variable value.
      * </p>
      * 
-     * @param id A local variable id.
+     * @param methodId A method id.
+     * @param index A local variable index.
      * @param variable A value.
      */
-    void local(int id, Object variable);
+    void local(int methodId, int index, Object variable);
 
     /**
      * <p>
@@ -89,8 +90,9 @@ interface Journal {
      * @param expression
      * @param description
      * @param variable
+     * @param methodId A accessing method id.
      */
-    void field(String expression, String description, Object variable);
+    void field(String expression, String description, Object variable, int methodId);
 
     /**
      * <p>
@@ -109,10 +111,11 @@ interface Journal {
      * Write increment operation.
      * </p>
      * 
-     * @param id A local variable id.
+     * @param methodId A method id.
+     * @param index A local variable index.
      * @param increment A increment value.
      */
-    void increment(int id, int increment);
+    void increment(int methodId, int index, int increment);
 
     /**
      * <p>

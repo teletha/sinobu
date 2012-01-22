@@ -98,8 +98,16 @@ public class BooleanTest {
 
     @Test
     public void fieldBooleanAccess() throws Exception {
-        tester.willCapture("this.booleanField", false);
+        tester.willCapture("booleanField", false);
         assert booleanField;
+    }
+
+    @Test
+    public void fieldIntAccessWithHiddenName() throws Exception {
+        boolean booleanField = false;
+
+        tester.willCapture("this.booleanField", booleanField);
+        assert this.booleanField;
     }
 
     @Test

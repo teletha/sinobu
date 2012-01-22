@@ -87,7 +87,7 @@ class PowerAssertTranslator extends Translator {
 
             switch (opcode) {
             case GETFIELD:
-                journal().field(name, desc, local);
+                journal().field(name, desc, local, hashCode());
                 break;
 
             case GETSTATIC:
@@ -255,7 +255,7 @@ class PowerAssertTranslator extends Translator {
         super.visitIincInsn(index, increment);
 
         if (processAssertion) {
-            journal().increment(hashCode() + index, increment);
+            journal().increment(hashCode(), index, increment);
         }
     }
 
@@ -386,7 +386,7 @@ class PowerAssertTranslator extends Translator {
 
             case ARRAYLENGTH:
                 local = copy(Type.INT_TYPE);
-                journal().field("length", "I", local);
+                journal().field("length", "I", local, hashCode());
                 break;
 
             case IADD:
@@ -490,7 +490,7 @@ class PowerAssertTranslator extends Translator {
         super.visitVarInsn(opcode, index);
 
         if (processAssertion) {
-            journal().local(hashCode() + index, local(opcode, index));
+            journal().local(hashCode(), index, local(opcode, index));
         }
     }
 
@@ -501,7 +501,7 @@ class PowerAssertTranslator extends Translator {
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
         super.visitLocalVariable(name, desc, signature, start, end, index);
 
-        PowerAssertContext.localVariables.put(hashCode() + index, new String[] {name, desc});
+        PowerAssertContext.registerLocalVariable(hashCode(), name, desc);
     }
 
 }

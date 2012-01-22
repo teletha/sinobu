@@ -154,8 +154,16 @@ public class LongTest {
 
     @Test
     public void fieldLongAccess() throws Exception {
-        tester.willCapture("this.longField", 11L);
+        tester.willCapture("longField", 11L);
         assert longField == 0;
+    }
+
+    @Test
+    public void fieldIntAccessWithHiddenName() throws Exception {
+        long longField = 11;
+
+        tester.willCapture("this.longField", longField);
+        assert this.longField == 0;
     }
 
     @Test

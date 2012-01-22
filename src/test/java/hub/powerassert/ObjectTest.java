@@ -100,15 +100,15 @@ public class ObjectTest {
         return false;
     }
 
-    // @Test
-    // public void parameterWithVarArg() throws Exception {
-    // tester.willCapture("var()", false);
-    // assert var();
-    // }
-    //
-    // private boolean var(String... vars) {
-    // return false;
-    // }
+    @Test
+    public void parameterWithVarArg() throws Exception {
+        tester.willCapture("var()", false);
+        assert var();
+    }
+
+    private boolean var(String... vars) {
+        return false;
+    }
 
     /** The tester. */
     private Object ObjectField = "11";
@@ -118,7 +118,7 @@ public class ObjectTest {
 
     @Test
     public void fieldObjectAccess() throws Exception {
-        tester.willCapture("this.ObjectField", "11");
+        tester.willCapture("ObjectField", "11");
         assert ObjectField == "";
     }
 

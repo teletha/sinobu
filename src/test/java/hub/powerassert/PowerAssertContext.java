@@ -33,7 +33,7 @@ import org.objectweb.asm.Type;
 public class PowerAssertContext implements Journal, PowerAssertRenderer {
 
     /** The local variable name mapping. */
-    static final Map<Integer, String[]> localVariables = new ConcurrentHashMap();
+    private static final Map<Integer, List<String[]>> locals = new ConcurrentHashMap();
 
     /** The operand stack frame. */
     ArrayDeque<Operand> stack = new ArrayDeque();
@@ -53,6 +53,17 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
      */
     public static PowerAssertContext get() {
         return I.make(PowerAssertContext.class);
+    }
+
+    public static void registerLocalVariable(int methodId, String name, String description) {
+        List<String[]> local = locals.get(methodId);
+
+        if (local == null) {
+            local = new ArrayList();
+
+            locals.put(methodId, local);
+        }
+        local.add(new String[] {name, description});
     }
 
     /**
@@ -146,8 +157,11 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
      * {@inheritDoc}
      */
     @Override
-    public void field(String expression, String description, Object variable) {
-        Operand operand = new Variable(stack.pollLast() + "." + expression, Type.getType(description), variable);
+    public void field(String expression, String description, Object variable, int methodId) {
+        Operand owner = stack.pollLast();
+        boolean qualified = !owner.name.equals("this") || hasLocal(methodId, expression);
+
+        Operand operand = new Variable(qualified ? owner + "." + expression : expression, Type.getType(description), variable);
         stack.add(operand);
         operands.add(operand);
     }
@@ -166,11 +180,11 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
      * @see hub.powerassert.PowerAssert.Increment#increment(int, int)
      */
     @Override
-    public void increment(int id, int increment) {
-        String[] localVariable = localVariables.get(id);
+    public void increment(int methodId, int index, int increment) {
+        String[] local = locals.get(methodId).get(index);
         Operand latest = stack.peekLast();
 
-        if (latest == null || !latest.toString().equals(localVariable[0])) {
+        if (latest == null || !latest.toString().equals(local[0])) {
             // pre increment
             switch (increment) {
             case 1:
@@ -207,10 +221,10 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
      * {@inheritDoc}
      */
     @Override
-    public void local(int id, Object variable) {
+    public void local(int methodId, int index, Object variable) {
         Operand operand;
-        String[] localVariable = localVariables.get(id);
-        String name = localVariable[0];
+        String[] local = locals.get(methodId).get(index);
+        String name = local[0];
 
         if (nextIncrement != null) {
             name = nextIncrement.concat(name);
@@ -218,19 +232,19 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
             nextIncrement = null;
         }
 
-        Type type = Type.getType(localVariable[1]);
+        Type type = Type.getType(local[1]);
 
         switch (type.getSort()) {
         case BOOLEAN: // boolean
-            operand = new Operand(localVariable[0], (int) variable == 1);
+            operand = new Operand(local[0], (int) variable == 1);
             break;
 
         case CHAR: // char
-            operand = new Operand(localVariable[0], (char) ((Integer) variable).intValue());
+            operand = new Operand(local[0], (char) ((Integer) variable).intValue());
             break;
 
         default:
-            operand = new Operand(localVariable[0], variable);
+            operand = new Operand(local[0], variable);
             break;
         }
 
@@ -439,6 +453,25 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
                 builder.append("│　　").append(line).append("\n");
             }
         }
+    }
+
+    /**
+     * <p>
+     * Helper method to chech whether the specified method declare the spcified local variable or
+     * not.
+     * </p>
+     * 
+     * @param methodId
+     * @param name
+     * @return
+     */
+    private static boolean hasLocal(int methodId, String name) {
+        for (String[] local : locals.get(methodId)) {
+            if (local[0].equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

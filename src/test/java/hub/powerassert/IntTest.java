@@ -164,8 +164,16 @@ public class IntTest {
 
     @Test
     public void fieldIntAccess() throws Exception {
-        tester.willCapture("this.intField", 11);
+        tester.willCapture("intField", 11);
         assert intField == 0;
+    }
+
+    @Test
+    public void fieldIntAccessWithHiddenName() throws Exception {
+        int intField = 11;
+
+        tester.willCapture("this.intField", intField);
+        assert this.intField == 0;
     }
 
     @Test

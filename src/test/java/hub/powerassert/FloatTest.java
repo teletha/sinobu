@@ -154,8 +154,16 @@ public class FloatTest {
 
     @Test
     public void fieldFloatAccess() throws Exception {
-        tester.willCapture("this.floatField", 0.123f);
+        tester.willCapture("floatField", 0.123f);
         assert floatField == 0;
+    }
+
+    @Test
+    public void fieldIntAccessWithHiddenName() throws Exception {
+        float floatField = 0.123f;
+
+        tester.willCapture("this.floatField", floatField);
+        assert this.floatField == 0;
     }
 
     @Test
