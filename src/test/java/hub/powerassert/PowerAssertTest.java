@@ -367,7 +367,7 @@ public class PowerAssertTest {
 
         test.willCapture("one", one + 1);
         test.willCapture("other", other);
-        test.willUse("++");
+        test.willUse("++one");
         test.willUse("==");
         assert ++one == other;
     }
@@ -379,7 +379,7 @@ public class PowerAssertTest {
 
         test.willCapture("one", one);
         test.willCapture("other", other);
-        test.willUse("--");
+        test.willUse("one--");
         test.willUse("==");
         assert one-- == other;
     }

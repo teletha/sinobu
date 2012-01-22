@@ -15,6 +15,7 @@ import org.junit.Test;
 /**
  * @version 2012/01/18 13:15:48
  */
+
 public class CharacterTest {
 
     @Rule
@@ -30,15 +31,6 @@ public class CharacterTest {
     }
 
     @Test
-    public void big() throws Exception {
-        char value = 2;
-
-        tester.willUse("123456789");
-        tester.willCapture("value", value);
-        assert 123456789 == value;
-    }
-
-    @Test
     public void array() throws Exception {
         char[] array = {0, 1, 2};
 
@@ -48,11 +40,11 @@ public class CharacterTest {
 
     @Test
     public void arrayIndex() throws Exception {
-        char[] array = {0, 1, 2};
+        char[] array = {'a', '1', 'あ'};
 
         tester.willCapture("array", array);
-        tester.willCapture("array[1]", 1);
-        assert array[1] == 128;
+        tester.willCapture("array[1]", '1');
+        assert array[1] == '@';
     }
 
     @Test
@@ -92,17 +84,17 @@ public class CharacterTest {
 
     @Test
     public void method() throws Exception {
-        tester.willCapture("test()", 1);
-        assert test() == 2;
+        tester.willCapture("test()", 'r');
+        assert test() == 'a';
     }
 
     char test() {
-        return 1;
+        return 'r';
     }
 
     @Test
     public void parameter() throws Exception {
-        tester.willCapture("test(12)", false);
+        tester.willCapture("test('p')", false);
         assert test('p');
     }
 
@@ -111,20 +103,20 @@ public class CharacterTest {
     }
 
     /** The tester. */
-    private char charField = 11;
+    private char charField = 'a';
 
     /** The tester. */
-    private static char charFieldStatic = 11;
+    private static char charFieldStatic = 'a';
 
     @Test
     public void fieldCharacterAccess() throws Exception {
-        tester.willCapture("this.charField", 11);
-        assert charField == 0;
+        tester.willCapture("this.charField", 'a');
+        assert charField == 'b';
     }
 
     @Test
     public void fieldCharacterStaticAccess() throws Exception {
-        tester.willCapture("CharacterTest.charFieldStatic", 11);
-        assert charFieldStatic == 0;
+        tester.willCapture("CharacterTest.charFieldStatic", 'a');
+        assert charFieldStatic == 'b';
     }
 }

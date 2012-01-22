@@ -11,16 +11,21 @@ package hub.powerassert;
 
 import java.util.Arrays;
 
+import org.objectweb.asm.Type;
+
 /**
  * @version 2012/01/20 1:03:27
  */
 class Operand {
 
+    /** The unknown type. */
+    static final Type Unknown = Type.VOID_TYPE;
+
     /** The human redable expression. */
-    String name;
+    final String name;
 
     /** The actual value. */
-    Object value;
+    final Object value;
 
     /**
      * @param name
@@ -40,19 +45,6 @@ class Operand {
      */
     boolean isVariableHolder() {
         return true;
-    }
-
-    /**
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
-        return result;
     }
 
     /**
@@ -202,5 +194,17 @@ class Operand {
     @Override
     public String toString() {
         return name;
+    }
+
+    static String convert(Operand operand, Class type) {
+        Integer value = (Integer) operand.value;
+
+        if (type == char.class) {
+            return "'" + (char) value.intValue() + "'";
+        } else if (type == boolean.class) {
+            return String.valueOf(value.intValue() == 1);
+        } else {
+            return value.toString();
+        }
     }
 }

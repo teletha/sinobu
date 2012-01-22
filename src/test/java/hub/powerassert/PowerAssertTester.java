@@ -51,7 +51,7 @@ public class PowerAssertTester extends ReusableRule {
         context.toString();
         for (Operand expected : expecteds) {
             if (!context.operands.contains(expected)) {
-                throw new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.name + "\r\nValue : " + expected.value + "\r\n");
+                throw new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.toString() + "\r\nValue : " + expected.value + "\r\n");
             }
         }
 
