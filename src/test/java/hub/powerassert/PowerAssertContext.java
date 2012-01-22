@@ -30,7 +30,7 @@ import org.objectweb.asm.Type;
  * @version 2012/01/11 11:27:35
  */
 @Manageable(lifestyle = ThreadSpecific.class)
-public class PowerAssertContext implements Journal {
+public class PowerAssertContext implements Journal, PowerAssertRenderer {
 
     /** The local variable name mapping. */
     static final Map<Integer, String[]> localVariables = new ConcurrentHashMap();
@@ -43,6 +43,17 @@ public class PowerAssertContext implements Journal {
 
     /** The incremetn state. */
     private String nextIncrement;
+
+    /**
+     * <p>
+     * Retrieve thread specific context.
+     * </p>
+     * 
+     * @return
+     */
+    public static PowerAssertContext get() {
+        return I.make(PowerAssertContext.class);
+    }
 
     /**
      * {@inheritDoc}
@@ -306,11 +317,12 @@ public class PowerAssertContext implements Journal {
         // search top level operand
         Operand top = result;
 
+        // strip result operand if the top operand is boolean condition clearly
         if (result.right.value instanceof Integer && result.left.value instanceof Boolean) {
             top = result.left;
         }
 
-        // collect all variable operans
+        // collect all variable operands
         List<Operand> variables = new ArrayList();
 
         for (Operand operand : operands) {
@@ -319,52 +331,139 @@ public class PowerAssertContext implements Journal {
             }
         }
 
-        Iterator<Operand> iterator = variables.iterator();
-        builder.append("┌─────────────────────────────────────────\n");
+        if (variables.size() != 0) {
+            Iterator<Operand> iterator = variables.iterator();
+            builder.append("┌─────────────────────────────────────────\n");
 
-        if (iterator.hasNext()) {
-            render(builder, iterator.next());
-
-            while (iterator.hasNext()) {
-                builder.append("├─────────────────────────────────────────\n");
+            if (iterator.hasNext()) {
                 render(builder, iterator.next());
-            }
-        }
-        builder.append("└─────────────────────────────────────────\n");
 
+                while (iterator.hasNext()) {
+                    builder.append("├─────────────────────────────────────────\n");
+                    render(builder, iterator.next());
+                }
+            }
+            builder.append("└─────────────────────────────────────────\n");
+        }
         return builder.toString();
     }
 
+    /**
+     * @see hub.powerassert.PowerAssertRenderer#render(java.lang.Object)
+     */
+    @Override
+    public String render(Object value) {
+        if (value instanceof CharSequence) {
+            return "\"" + value + "\"";
+        }
+    
+        if (value instanceof Enum) {
+            Enum enumration = (Enum) value;
+            return enumration.getDeclaringClass().getSimpleName() + '.' + enumration.name();
+        }
+    
+        if (value instanceof Character) {
+            return "'" + value + "'";
+        }
+    
+        Class clazz = value.getClass();
+    
+        if (clazz == Class.class) {
+            return ((Class) value).getSimpleName() + ".class";
+        }
+    
+        if (clazz.isArray()) {
+            switch (clazz.getComponentType().getSimpleName()) {
+            case "int":
+                return Arrays.toString((int[]) value);
+    
+            case "long":
+                return Arrays.toString((long[]) value);
+    
+            case "float":
+                return Arrays.toString((float[]) value);
+    
+            case "double":
+                return Arrays.toString((double[]) value);
+    
+            case "char":
+                return Arrays.toString((char[]) value);
+    
+            case "boolean":
+                return Arrays.toString((boolean[]) value);
+    
+            case "short":
+                return Arrays.toString((short[]) value);
+    
+            case "byte":
+                return Arrays.toString((byte[]) value);
+    
+            default:
+                return Arrays.toString((Object[]) value);
+            }
+        }
+        return value.toString();
+    }
+
+    /**
+     * <p>
+     * Render the specified operand for human.
+     * </p>
+     * 
+     * @param builder
+     * @param operand
+     */
     private void render(StringBuilder builder, Operand operand) {
+        builder.append("│").append(operand);
+    
         Object value = operand.value;
-        String name = operand.toString();
-        String[] lines = operand.toValueExpression().split("\r\n|\r|\n");
-
-        builder.append("│").append(name);
-
-        if (value != null && !value.getClass().isPrimitive()) {
+    
+        if (value != null && !isPrimitive(operand.getType())) {
             builder.append("　　　　#")
                     .append(value.getClass().getName())
                     .append("@")
-                    .append(Integer.toHexString(System.identityHashCode(value)))
-                    .append("");
+                    .append(Integer.toHexString(System.identityHashCode(value)));
         }
         builder.append("\n");
-
-        for (String line : lines) {
-            builder.append("│　　").append(line).append("\n");
+    
+        if (value == null) {
+            builder.append("│　　").append("null").append("\n");
+        } else {
+            PowerAssertRenderer renderer = I.find(PowerAssertRenderer.class, value.getClass());
+    
+            if (renderer == null) {
+                renderer = this;
+            }
+    
+            for (String line : renderer.render(value).split("\r\n|\r|\n")) {
+                builder.append("│　　").append(line).append("\n");
+            }
         }
     }
 
     /**
      * <p>
-     * Retrieve thread specific context.
+     * Helper method to decide whether the specified type is primitive or not.
      * </p>
      * 
+     * @param type
      * @return
      */
-    public static PowerAssertContext get() {
-        return I.make(PowerAssertContext.class);
+    private static boolean isPrimitive(Type type) {
+        switch (type.getSort()) {
+        case INT:
+        case LONG:
+        case FLOAT:
+        case DOUBLE:
+        case BOOLEAN:
+        case CHAR:
+        case BYTE:
+        case SHORT:
+            return true;
+
+        default:
+            return false;
+        }
     }
 
     /**
@@ -598,41 +697,6 @@ public class PowerAssertContext implements Journal {
 
             builder.append('}');
             return builder.toString();
-        }
-
-        /**
-         * @see hub.powerassert.Operand#toValueExpression()
-         */
-        @Override
-        public String toValueExpression() {
-            switch (type.getSort()) {
-            case INT:
-                return Arrays.toString((int[]) value);
-
-            case LONG:
-                return Arrays.toString((long[]) value);
-
-            case FLOAT:
-                return Arrays.toString((float[]) value);
-
-            case DOUBLE:
-                return Arrays.toString((double[]) value);
-
-            case CHAR:
-                return Arrays.toString((char[]) value);
-
-            case BOOLEAN:
-                return Arrays.toString((boolean[]) value);
-
-            case SHORT:
-                return Arrays.toString((short[]) value);
-
-            case BYTE:
-                return Arrays.toString((byte[]) value);
-
-            default:
-                return Arrays.toString((Object[]) value);
-            }
         }
     }
 

@@ -47,6 +47,13 @@ class Operand {
         return true;
     }
 
+    /**
+     * <p>
+     * Decide the type of this operand's value.
+     * </p>
+     * 
+     * @return
+     */
     Type getType() {
         return value == null ? Unknown : Type.getType(value.getClass());
     }
@@ -129,86 +136,10 @@ class Operand {
     }
 
     /**
-     * <p>
-     * Compute human-readable expression of value.
-     * </p>
-     * 
-     * @return
-     */
-    String toValueExpression() {
-        if (value == null) {
-            return "null";
-        }
-
-        if (value instanceof CharSequence) {
-            return "\"" + value + "\"";
-        }
-
-        if (value instanceof Enum) {
-            Enum enumration = (Enum) value;
-            return enumration.getDeclaringClass().getSimpleName() + '.' + enumration.name();
-        }
-
-        if (value instanceof Character) {
-            return "'" + value + "'";
-        }
-
-        Class clazz = value.getClass();
-
-        if (clazz == Class.class) {
-            return ((Class) value).getSimpleName() + ".class";
-        }
-
-        if (clazz.isArray()) {
-            switch (clazz.getComponentType().getSimpleName()) {
-            case "int":
-                return Arrays.toString((int[]) value);
-
-            case "long":
-                return Arrays.toString((long[]) value);
-
-            case "float":
-                return Arrays.toString((float[]) value);
-
-            case "double":
-                return Arrays.toString((double[]) value);
-
-            case "char":
-                return Arrays.toString((char[]) value);
-
-            case "boolean":
-                return Arrays.toString((boolean[]) value);
-
-            case "short":
-                return Arrays.toString((short[]) value);
-
-            case "byte":
-                return Arrays.toString((byte[]) value);
-
-            default:
-                return Arrays.toString((Object[]) value);
-            }
-        }
-        return value.toString();
-    }
-
-    /**
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         return name;
-    }
-
-    static String convert(Operand operand, Class type) {
-        Integer value = (Integer) operand.value;
-
-        if (type == char.class) {
-            return "'" + (char) value.intValue() + "'";
-        } else if (type == boolean.class) {
-            return String.valueOf(value.intValue() == 1);
-        } else {
-            return value.toString();
-        }
     }
 }
