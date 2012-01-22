@@ -75,6 +75,16 @@ public class FloatTest {
     }
 
     @Test
+    public void negative() throws Exception {
+        float value = 0.3f;
+
+        tester.willUse("0.3");
+        tester.willUse("-value");
+        tester.willCapture("value", value);
+        assert 0.3f == -value;
+    }
+
+    @Test
     public void array() throws Exception {
         float[] array = {0, 1, 2};
 

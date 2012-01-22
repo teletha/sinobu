@@ -48,7 +48,12 @@ public class PowerAssertTester extends ReusableRule {
      * @param context
      */
     void validate(PowerAssertContext context) {
-        context.toString();
+        if (context.stack.size() != 1) {
+            throw new AssertionError("Stack size is not 1. \n" + context.stack);
+        }
+
+        String code = context.stack.peek().toString();
+
         for (Operand expected : expecteds) {
             if (!context.operands.contains(expected)) {
                 throw new AssertionError("Can't capture the below operand.\r\nCode  : " + expected.toString() + "\r\nValue : " + expected.value + "\r\n");
@@ -56,8 +61,8 @@ public class PowerAssertTester extends ReusableRule {
         }
 
         for (String operator : operators) {
-            if (context.stack.peek().toString().indexOf(operator) == -1) {
-                throw new AssertionError("Can't capture the below operator.\r\nCode  : " + operator + "\r\n");
+            if (code.indexOf(operator) == -1) {
+                throw new AssertionError("Can't capture the below code.\r\nCode  : " + operator + "\r\n");
             }
         }
     }

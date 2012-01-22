@@ -26,9 +26,9 @@ public class PowerAssertUserTest {
 
     @Test
     public void fieldIntStaticAccess() throws Exception {
-        Object value = "test";
+        Object value = "";
 
-        assert value instanceof String;
+        assert Integer.valueOf(10) == value;
     }
 
     @Test
