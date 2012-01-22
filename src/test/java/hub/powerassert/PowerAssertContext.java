@@ -9,6 +9,8 @@
  */
 package hub.powerassert;
 
+import static org.objectweb.asm.Type.*;
+
 import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ import org.objectweb.asm.Type;
  * @version 2012/01/11 11:27:35
  */
 @Manageable(lifestyle = ThreadSpecific.class)
-public class PowerAssertContext implements Recoder {
+public class PowerAssertContext implements Journal {
 
     /** The local variable name mapping. */
     static final Map<Integer, String[]> localVariables = new ConcurrentHashMap();
@@ -54,7 +56,7 @@ public class PowerAssertContext implements Recoder {
      * {@inheritDoc}
      */
     @Override
-    public void localVariable(int id, Object variable) {
+    public void local(int id, Object variable) {
         Operand operand;
         String[] localVariable = localVariables.get(id);
         String name = localVariable[0];
@@ -65,12 +67,14 @@ public class PowerAssertContext implements Recoder {
             nextIncrement = null;
         }
 
-        switch (localVariable[1]) {
-        case "Z": // boolean
+        Type type = Type.getType(localVariable[1]);
+
+        switch (type.getSort()) {
+        case BOOLEAN: // boolean
             operand = new Operand(localVariable[0], (int) variable == 1);
             break;
 
-        case "C": // char
+        case CHAR: // char
             operand = new Operand(localVariable[0], (char) ((Integer) variable).intValue());
             break;
 
@@ -79,12 +83,12 @@ public class PowerAssertContext implements Recoder {
             break;
         }
 
-        stack.add(new Operand(name, operand.value));
+        stack.add(new OperandVariable(name, operand.value, type));
         operands.add(operand);
     }
 
     /**
-     * @see hub.powerassert.Recoder#operator(java.lang.String)
+     * @see hub.powerassert.Journal#operator(java.lang.String)
      */
     @Override
     public void operator(String operator) {
@@ -115,10 +119,10 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
-     * @see hub.powerassert.PowerAssert.Increment#recodeIncrement(int, int)
+     * @see hub.powerassert.PowerAssert.Increment#increment(int, int)
      */
     @Override
-    public void recodeIncrement(int id, int increment) {
+    public void increment(int id, int increment) {
         String[] localVariable = localVariables.get(id);
         Operand latest = stack.peekLast();
 
@@ -167,8 +171,8 @@ public class PowerAssertContext implements Recoder {
      * {@inheritDoc}
      */
     @Override
-    public void field(String expression, Object variable) {
-        Operand operand = new Operand(stack.pollLast() + "." + expression, variable);
+    public void field(String expression, String description, Object variable) {
+        Operand operand = new OperandVariable(stack.pollLast() + "." + expression, variable, Type.getType(description));
         stack.add(operand);
         operands.add(operand);
     }
@@ -177,8 +181,8 @@ public class PowerAssertContext implements Recoder {
      * {@inheritDoc}
      */
     @Override
-    public void staticField(String expression, Object variable) {
-        Operand operand = new Operand(expression, variable);
+    public void fieldStatic(String expression, String description, Object variable) {
+        Operand operand = new OperandVariable(expression, variable, Type.getType(description));
         stack.add(operand);
         operands.add(operand);
     }
@@ -230,7 +234,7 @@ public class PowerAssertContext implements Recoder {
      * {@inheritDoc}
      */
     @Override
-    public void staticMethod(String className, String methodName, String description, Object value) {
+    public void methodStatic(String className, String methodName, String description, Object value) {
         // build method invocation
         OperandMethod method = new OperandMethod(new OperandConstant(className, false), methodName, description, value);
 
@@ -244,7 +248,8 @@ public class PowerAssertContext implements Recoder {
     @Override
     public void arrayIndex(Object value) {
         Operand index = stack.pollLast();
-        Operand operand = new Operand(stack.pollLast() + "[" + index + "]", value);
+        Operand array = stack.pollLast();
+        Operand operand = new OperandVariable(array + "[" + index + "]", value, array.getType().getElementType());
 
         stack.add(operand);
         operands.add(operand);
@@ -264,7 +269,7 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
-     * @see hub.powerassert.Recoder#arrayStore()
+     * @see hub.powerassert.Journal#arrayStore()
      */
     @Override
     public void arrayStore() {
@@ -277,7 +282,7 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
-     * @see hub.powerassert.Recoder#clear()
+     * @see hub.powerassert.Journal#clear()
      */
     public void clear() {
         stack.clear();
@@ -363,6 +368,61 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
+     * @param operand
+     * @param hint
+     * @return
+     */
+    private static Operand infer(Operand operand, Operand hint) {
+        return infer(operand, hint.getType());
+    }
+
+    /**
+     * @param operand
+     * @param hint
+     * @return
+     */
+    private static Operand infer(Operand operand, Type hint) {
+        // Integer value represents various types (int, char and boolean).
+        // We have to check the opposite term' type to infer its actual type.
+        if (operand instanceof OperandConstant && operand.value instanceof Integer) {
+            Integer value = (Integer) operand.value;
+
+            if (hint == Type.CHAR_TYPE) {
+                return new OperandConstant("'" + (char) value.intValue() + "'", false);
+            } else if (hint == Type.BOOLEAN_TYPE) {
+                return new OperandConstant(String.valueOf(value.intValue() == 1), false);
+            }
+        }
+        return operand;
+    }
+
+    /**
+     * @version 2012/01/22 14:15:51
+     */
+    private static class OperandVariable extends Operand {
+
+        private final Type type;
+
+        /**
+         * @param name
+         * @param value
+         */
+        public OperandVariable(String name, Object value, Type type) {
+            super(name, value);
+
+            this.type = type;
+        }
+
+        /**
+         * @see hub.powerassert.Operand#getType()
+         */
+        @Override
+        Type getType() {
+            return type;
+        }
+    }
+
+    /**
      * @version 2012/01/20 13:17:56
      */
     private static class OperandConstant extends Operand {
@@ -435,19 +495,15 @@ public class PowerAssertContext implements Recoder {
             if (left.value instanceof Integer) {
                 if (right.value instanceof Boolean) {
                     return right.toString();
-                } else if (right.value instanceof Character) {
-                    return convert(left, char.class) + " " + expression + " " + right;
                 }
             }
 
             if (right.value instanceof Integer) {
                 if (left.value instanceof Boolean) {
                     return left.toString();
-                } else if (left.value instanceof Character) {
-                    return left + " " + expression + " " + convert(right, char.class);
                 }
             }
-            return left + " " + expression + " " + right;
+            return infer(left, right) + " " + expression + " " + infer(right, left);
         }
 
     }
@@ -459,7 +515,7 @@ public class PowerAssertContext implements Recoder {
 
         private final String className;
 
-        private final Class type;
+        private final Type type;
 
         private final int size;
 
@@ -473,7 +529,7 @@ public class PowerAssertContext implements Recoder {
             super(name, value);
 
             this.className = name;
-            this.type = value.getClass().getComponentType();
+            this.type = Type.getType(value.getClass().getComponentType());
 
             // Boolean array is initialized with false values, other type arrays are initialized
             // with null values. Array store operation will be invoked array length times but false
@@ -493,19 +549,7 @@ public class PowerAssertContext implements Recoder {
          * @param operand
          */
         private void add(int index, Operand operand) {
-            // Integer value represents various types (int, char and boolean).
-            // We have to check the array type to infer its actual type.
-            if (operand.value instanceof Integer) {
-                if (type == boolean.class) {
-                    values.set(index, new OperandConstant(convert(operand, boolean.class), false));
-                } else if (type == char.class) {
-                    values.set(index, new OperandConstant(convert(operand, char.class), false));
-                } else {
-                    values.set(index, operand);
-                }
-            } else {
-                values.set(index, operand);
-            }
+            values.set(index, infer(operand, type));
         }
 
         /**
@@ -575,16 +619,23 @@ public class PowerAssertContext implements Recoder {
     }
 
     /**
-     * @version 2012/01/19 16:58:26
+     * @version 2012/01/22 14:41:13
      */
     private class OperandMethod extends Operand {
 
+        /** The invoker. */
         private final Operand invoker;
 
+        /** The method name. */
         private final String methodName;
 
+        /** The return type. */
+        private final Type returnType;
+
+        /** The paramter types. */
         private final Type[] parameterTypes;
 
+        /** The parameter operands. */
         private final List<Operand> parameters = new ArrayList();
 
         /**
@@ -613,36 +664,26 @@ public class PowerAssertContext implements Recoder {
         private OperandMethod(Operand invoker, String name, String description, Object value) {
             super(name, value);
 
+            Type type = Type.getType(description);
+
             this.methodName = name;
-            this.parameterTypes = Type.getMethodType(description).getArgumentTypes();
+            this.returnType = type.getReturnType();
+            this.parameterTypes = type.getArgumentTypes();
 
             int size = parameterTypes.length - 1;
 
             for (int i = size; 0 <= i; i--) {
-                Operand operand = stack.pollLast();
-
-                // Integer value represents various types (int, char and boolean).
-                // We have to check the parameter type to infer its actual type.
-                if (operand.value instanceof Integer) {
-                    switch (parameterTypes[i].getSort()) {
-                    case Type.BOOLEAN:
-                        parameters.add(0, new OperandConstant(convert(operand, boolean.class), false));
-                        break;
-
-                    case Type.CHAR:
-                        parameters.add(0, new OperandConstant(convert(operand, char.class), false));
-                        break;
-
-                    default:
-                        parameters.add(0, operand);
-                        break;
-                    }
-                } else {
-                    parameters.add(0, operand);
-                }
+                parameters.add(0, infer(stack.pollLast(), parameterTypes[i]));
             }
-
             this.invoker = invoker != null ? invoker : stack.pollLast();
+        }
+
+        /**
+         * @see hub.powerassert.Operand#getType()
+         */
+        @Override
+        Type getType() {
+            return returnType;
         }
 
         /**
