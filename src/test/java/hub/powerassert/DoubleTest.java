@@ -75,6 +75,16 @@ public class DoubleTest {
     }
 
     @Test
+    public void negative() throws Exception {
+        double value = 0.3;
+
+        tester.willUse("0.3");
+        tester.willUse("-value");
+        tester.willCapture("value", value);
+        assert 0.3 == -value;
+    }
+
+    @Test
     public void array() throws Exception {
         double[] array = {0, 1, 2};
 

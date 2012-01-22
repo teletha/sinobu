@@ -75,6 +75,16 @@ public class IntTest {
     }
 
     @Test
+    public void negative() throws Exception {
+        int value = 10;
+
+        tester.willUse("10");
+        tester.willUse("-value");
+        tester.willCapture("value", value);
+        assert 10 == -value;
+    }
+
+    @Test
     public void array() throws Exception {
         int[] array = {0, 1, 2};
 

@@ -460,6 +460,8 @@ class PowerAssertTranslator extends Translator {
                 break;
 
             case LCMP:
+            case FCMPL:
+            case DCMPL:
                 doubleCompare = true;
                 break;
             }
