@@ -160,7 +160,7 @@ public class DoubleTest {
 
     @Test
     public void fieldDoubleStaticAccess() throws Exception {
-        tester.willCapture("DoubleTest.doubleFieldStatic", 32.1011d);
+        tester.willCapture("doubleFieldStatic", 32.1011d);
         assert doubleFieldStatic == 0;
     }
 }

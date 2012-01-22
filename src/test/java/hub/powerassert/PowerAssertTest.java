@@ -44,14 +44,6 @@ public class PowerAssertTest {
     }
 
     @Test
-    public void objectConstantAndVariable() throws Exception {
-        String value = "test";
-
-        test.willCapture("value", value);
-        assert value == "test";
-    }
-
-    @Test
     public void nullLiteral1() throws Exception {
         String value = "";
 
@@ -433,4 +425,22 @@ public class PowerAssertTest {
         assert value == 3;
     }
 
+    @Test
+    public void external() {
+        String value = "test";
+
+        test.willCapture("value", value);
+        test.willCapture("value.length()", 4);
+        External.assertInExternal(value);
+    }
+
+    /**
+     * @version 2012/01/22 19:58:35
+     */
+    private static class External {
+
+        private static void assertInExternal(String value) {
+            assert value.length() == 20;
+        }
+    }
 }

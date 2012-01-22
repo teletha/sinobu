@@ -97,11 +97,12 @@ interface Journal {
      * Write static field access.
      * </p>
      * 
-     * @param expression
+     * @param className
+     * @param fieldName
      * @param description
      * @param variable
      */
-    void fieldStatic(String expression, String description, Object variable);
+    void fieldStatic(String className, String fieldName, String description, Object variable);
 
     /**
      * <p>

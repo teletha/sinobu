@@ -91,7 +91,9 @@ class PowerAssertTranslator extends Translator {
                 break;
 
             case GETSTATIC:
-                journal().fieldStatic(computeClassName(owner) + '.' + name, desc, local);
+                String className = computeClassName(owner);
+
+                journal().fieldStatic(className, this.className.equals(owner) ? name : className + "." + name, desc, local);
                 break;
             }
         }

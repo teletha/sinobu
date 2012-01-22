@@ -170,7 +170,7 @@ public class IntTest {
 
     @Test
     public void fieldIntStaticAccess() throws Exception {
-        tester.willCapture("IntTest.intFieldStatic", 11);
+        tester.willCapture("intFieldStatic", 11);
         assert intFieldStatic == 0;
     }
 }

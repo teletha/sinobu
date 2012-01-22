@@ -9,6 +9,7 @@
  */
 package hub;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -26,13 +27,31 @@ public class PowerAssertUserTest {
     public void fieldIntStaticAccess() throws Exception {
         int[] array = {0, 1, 2};
 
-        assert array.length == 10;
+        assert intFieldStatic == 10;
     }
 
     @Test
+    @Ignore
     public void fieldIntStaticAcces1s() throws Exception {
         String value = "aaaa";
 
         assert new int[] {1, 2} == null;
+    }
+
+    @Test
+    public void external() {
+        String value = "test";
+
+        External.assertInExternal(value);
+    }
+
+    /**
+     * @version 2012/01/22 19:58:35
+     */
+    private static class External {
+
+        private static void assertInExternal(String value) {
+            assert value.length() == 20;
+        }
     }
 }

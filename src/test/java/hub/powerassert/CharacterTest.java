@@ -119,7 +119,7 @@ public class CharacterTest {
 
     @Test
     public void fieldCharacterStaticAccess() throws Exception {
-        tester.willCapture("CharacterTest.charFieldStatic", 'a');
+        tester.willCapture("charFieldStatic", 'a');
         tester.willUse("'b'");
         assert charFieldStatic == 'b';
     }

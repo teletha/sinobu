@@ -124,7 +124,7 @@ public class ObjectTest {
 
     @Test
     public void fieldObjectStaticAccess() throws Exception {
-        tester.willCapture("ObjectTest.ObjectFieldStatic", "11");
+        tester.willCapture("ObjectFieldStatic", "11");
         assert ObjectFieldStatic == "";
     }
 }
