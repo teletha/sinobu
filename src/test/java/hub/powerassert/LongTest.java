@@ -160,7 +160,7 @@ public class LongTest {
 
     @Test
     public void fieldLongStaticAccess() throws Exception {
-        tester.willCapture("LongTest.longFieldStatic", 11L);
+        tester.willCapture("longFieldStatic", 11L);
         assert longFieldStatic == 0;
     }
 }

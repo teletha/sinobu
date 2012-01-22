@@ -19,7 +19,7 @@ import org.objectweb.asm.Type;
 class Operand {
 
     /** The unknown type. */
-    static final Type Unknown = Type.VOID_TYPE;
+    private static final Type Unknown = Type.VOID_TYPE;
 
     /** The human redable expression. */
     final String name;

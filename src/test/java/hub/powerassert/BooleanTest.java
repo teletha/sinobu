@@ -104,7 +104,7 @@ public class BooleanTest {
 
     @Test
     public void fieldBooleanStaticAccess() throws Exception {
-        tester.willCapture("BooleanTest.booleanFieldStatic", false);
+        tester.willCapture("booleanFieldStatic", false);
         assert booleanFieldStatic;
     }
 }

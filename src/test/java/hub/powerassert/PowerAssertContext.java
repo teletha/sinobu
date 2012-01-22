@@ -156,8 +156,8 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
      * {@inheritDoc}
      */
     @Override
-    public void fieldStatic(String expression, String description, Object variable) {
-        Operand operand = new Variable(expression, Type.getType(description), variable);
+    public void fieldStatic(String className, String fieldName, String description, Object variable) {
+        Operand operand = new Variable(fieldName, Type.getType(description), variable);
         stack.add(operand);
         operands.add(operand);
     }
@@ -356,48 +356,48 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
         if (value instanceof CharSequence) {
             return "\"" + value + "\"";
         }
-    
+
         if (value instanceof Enum) {
             Enum enumration = (Enum) value;
             return enumration.getDeclaringClass().getSimpleName() + '.' + enumration.name();
         }
-    
+
         if (value instanceof Character) {
             return "'" + value + "'";
         }
-    
+
         Class clazz = value.getClass();
-    
+
         if (clazz == Class.class) {
             return ((Class) value).getSimpleName() + ".class";
         }
-    
+
         if (clazz.isArray()) {
             switch (clazz.getComponentType().getSimpleName()) {
             case "int":
                 return Arrays.toString((int[]) value);
-    
+
             case "long":
                 return Arrays.toString((long[]) value);
-    
+
             case "float":
                 return Arrays.toString((float[]) value);
-    
+
             case "double":
                 return Arrays.toString((double[]) value);
-    
+
             case "char":
                 return Arrays.toString((char[]) value);
-    
+
             case "boolean":
                 return Arrays.toString((boolean[]) value);
-    
+
             case "short":
                 return Arrays.toString((short[]) value);
-    
+
             case "byte":
                 return Arrays.toString((byte[]) value);
-    
+
             default:
                 return Arrays.toString((Object[]) value);
             }
@@ -415,9 +415,9 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
      */
     private void render(StringBuilder builder, Operand operand) {
         builder.append("│").append(operand);
-    
+
         Object value = operand.value;
-    
+
         if (value != null && !isPrimitive(operand.getType())) {
             builder.append("　　　　#")
                     .append(value.getClass().getName())
@@ -425,16 +425,16 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
                     .append(Integer.toHexString(System.identityHashCode(value)));
         }
         builder.append("\n");
-    
+
         if (value == null) {
             builder.append("│　　").append("null").append("\n");
         } else {
             PowerAssertRenderer renderer = I.find(PowerAssertRenderer.class, value.getClass());
-    
+
             if (renderer == null) {
                 renderer = this;
             }
-    
+
             for (String line : renderer.render(value).split("\r\n|\r|\n")) {
                 builder.append("│　　").append(line).append("\n");
             }

@@ -78,9 +78,13 @@ public class PowerAssert implements TestRule {
                         // should we print this error message in detal?
                         if (description.getAnnotation(PowerAssertOff.class) == null && !description.getTestClass()
                                 .isAnnotationPresent(PowerAssertOff.class)) {
+                            // find the class whihc rises assertion error
+                            StackTraceElement[] trace = error.getStackTrace();
+                            Class clazz = Class.forName(trace[0].getClassName());
+
                             // translate assertion code only once
-                            if (translated.add(description.getClassName())) {
-                                agent.transform(description.getTestClass());
+                            if (translated.add(clazz.getName())) {
+                                agent.transform(clazz);
 
                                 evaluate(); // retry testcase
                                 return;
@@ -97,7 +101,6 @@ public class PowerAssert implements TestRule {
 
                             // replace error message
                             String message = error.getLocalizedMessage();
-                            StackTraceElement[] trace = error.getStackTrace();
 
                             if (message == null) {
                                 message = "";

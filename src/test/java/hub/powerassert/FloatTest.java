@@ -160,7 +160,7 @@ public class FloatTest {
 
     @Test
     public void fieldFloatStaticAccess() throws Exception {
-        tester.willCapture("FloatTest.floatFieldStatic", 0.123f);
+        tester.willCapture("floatFieldStatic", 0.123f);
         assert floatFieldStatic == 0;
     }
 }
