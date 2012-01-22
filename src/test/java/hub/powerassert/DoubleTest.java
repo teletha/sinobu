@@ -154,8 +154,16 @@ public class DoubleTest {
 
     @Test
     public void fieldDoubleAccess() throws Exception {
-        tester.willCapture("this.doubleField", 32.1011d);
+        tester.willCapture("doubleField", 32.1011d);
         assert doubleField == 0;
+    }
+
+    @Test
+    public void fieldIntAccessWithHiddenName() throws Exception {
+        double doubleField = 32.1011d;
+
+        tester.willCapture("this.doubleField", doubleField);
+        assert this.doubleField == 0;
     }
 
     @Test

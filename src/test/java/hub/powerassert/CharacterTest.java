@@ -112,9 +112,17 @@ public class CharacterTest {
 
     @Test
     public void fieldCharacterAccess() throws Exception {
-        tester.willCapture("this.charField", 'a');
+        tester.willCapture("charField", 'a');
         tester.willUse("'b'");
         assert charField == 'b';
+    }
+
+    @Test
+    public void fieldIntAccessWithHiddenName() throws Exception {
+        char charField = 'a';
+
+        tester.willCapture("this.charField", charField);
+        assert this.charField == 0;
     }
 
     @Test
