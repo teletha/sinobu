@@ -9,7 +9,6 @@
  */
 package hub;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -31,7 +30,6 @@ public class PowerAssertUserTest {
     }
 
     @Test
-    @Ignore
     public void fieldIntStaticAcces1s() throws Exception {
         String value = "aaaa";
 

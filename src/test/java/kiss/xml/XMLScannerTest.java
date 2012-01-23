@@ -11,11 +11,13 @@ package kiss.xml;
 
 import static hub.Ezunit.*;
 import hub.SAXBuilder;
+import hub.xml.XMLBuilder;
 
 import java.io.IOException;
 
 import kiss.I;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
@@ -29,6 +31,9 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * @version 2010/02/05 1:31:37
  */
 public class XMLScannerTest {
+
+    @Rule
+    public static final XMLBuilder builder = new XMLBuilder();
 
     /**
      * Parse with filter. No {@link NullPointerException}.
@@ -59,8 +64,8 @@ public class XMLScannerTest {
         XMLFilter third = new XMLScanner();
         third.setParent(second);
 
-        // assertXMLIdentical("scanner/expected002.xml", "scanner/test001.xml", third);
-        assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
+        assertXMLIdentical("scanner/expected002.xml", "scanner/test001.xml", third);
+        // assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
     }
 
     /**

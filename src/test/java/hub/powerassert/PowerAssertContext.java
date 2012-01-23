@@ -323,17 +323,18 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
         StringBuilder builder = new StringBuilder("assert ");
 
         // top level operand must be conditional operand because of assert statement
-        Condition result = (Condition) stack.peekLast();
+        Operand top = stack.peekLast();
 
         // write assertion code
-        builder.append(result).append("\n");
-
-        // search top level operand
-        Operand top = result;
+        builder.append(top).append("\n");
 
         // strip result operand if the top operand is boolean condition clearly
-        if (result.right.value instanceof Integer && result.left.value instanceof Boolean) {
-            top = result.left;
+        if (top instanceof Condition) {
+            Condition condition = (Condition) top;
+
+            if (condition.right.value instanceof Integer && condition.left.value instanceof Boolean) {
+                top = condition.left;
+            }
         }
 
         // collect all variable operands
