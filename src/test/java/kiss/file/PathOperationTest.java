@@ -9,8 +9,6 @@
  */
 package kiss.file;
 
-import hub.CleanRoom;
-import hub.Synchrotron;
 
 import java.net.URL;
 import java.nio.file.Files;
@@ -19,6 +17,9 @@ import java.nio.file.Path;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.CleanRoom;
+import testament.Synchrotron;
 
 import kiss.I;
 

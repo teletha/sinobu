@@ -12,7 +12,6 @@ package kiss.file;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import hub.CleanRoom;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -22,6 +21,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.CleanRoom;
 
 import kiss.I;
 

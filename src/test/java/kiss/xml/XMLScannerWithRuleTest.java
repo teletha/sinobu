@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static hub.Ezunit.*;
+import static testament.Ezunit.*;
 
 import java.util.ArrayList;
 import java.util.List;

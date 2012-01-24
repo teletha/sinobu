@@ -9,7 +9,6 @@
  */
 package kiss.module;
 
-import hub.PrivateModule;
 
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.GarbageCollectorMXBean;
@@ -19,6 +18,8 @@ import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.PrivateModule;
 
 import kiss.I;
 import kiss.sample.RuntimeAnnotation1;

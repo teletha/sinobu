@@ -9,10 +9,11 @@
  */
 package kiss.performance;
 
-import hub.AbstractMicroBenchmarkTest;
-import hub.BenchmarkCode;
 
 import org.junit.Test;
+
+import testament.AbstractMicroBenchmarkTest;
+import testament.BenchmarkCode;
 
 import kiss.I;
 import kiss.sample.bean.Person;

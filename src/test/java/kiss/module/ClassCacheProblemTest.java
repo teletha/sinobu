@@ -9,13 +9,14 @@
  */
 package kiss.module;
 
-import hub.PrivateModule;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.PrivateModule;
 
 import kiss.I;
 import kiss.model.Model;

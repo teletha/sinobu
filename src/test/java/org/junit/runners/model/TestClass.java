@@ -1,7 +1,6 @@
 package org.junit.runners.model;
 
 import static java.lang.reflect.Modifier.*;
-import hub.powerassert.PowerAssert;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -18,6 +17,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
+
+import testament.powerassert.PowerAssert;
 
 /**
  * Wraps a class to be run, providing method validation and annotation searching

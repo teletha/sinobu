@@ -9,7 +9,6 @@
  */
 package kiss.module;
 
-import hub.PrivateModule;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,6 +17,8 @@ import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.PrivateModule;
 
 import kiss.I;
 import kiss.Interceptor;

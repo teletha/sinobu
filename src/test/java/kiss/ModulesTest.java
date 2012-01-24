@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import hub.PrivateModule;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,6 +19,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.PrivateModule;
 
 import kiss.module.external.ExtendedClass1;
 import kiss.sample.MarkerInterface1;
