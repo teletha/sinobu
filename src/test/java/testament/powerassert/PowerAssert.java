@@ -77,10 +77,7 @@ public class PowerAssert implements TestRule {
                     if (tester != null) {
                         tester.validate(error.context); // for self test
                     } else {
-                        AssertionError e = new AssertionError(error.getMessage());
-                        e.setStackTrace(error.getStackTrace());
-
-                        throw e; // rethrow for unit test
+                        throw error; // rethrow for unit test
                     }
                 } catch (AssertionError error) {
                     // should we print this error message in detal?
