@@ -34,7 +34,7 @@ class PowerAssertTranslator extends Translator {
     /** The state. */
     private boolean compare = false;
 
-    /** The context. */
+    /** The context for code log. */
     private Journal journal;
 
     /**
@@ -89,18 +89,6 @@ class PowerAssertTranslator extends Translator {
      */
     @Override
     public void visitJumpInsn(int opcode, Label label) {
-        if (skipNextJump) {
-            skipNextJump = false;
-            processAssertion = true;
-
-            super.visitJumpInsn(opcode, label);
-
-            // create context
-            journal = instantiate(Journal.class, PowerAssertContext.class);
-
-            return;
-        }
-
         super.visitJumpInsn(opcode, label);
 
         if (processAssertion) {
@@ -164,6 +152,14 @@ class PowerAssertTranslator extends Translator {
                 break;
             }
         }
+
+        if (skipNextJump) {
+            skipNextJump = false;
+            processAssertion = true;
+
+            // create new journal for this assertion
+            journal = instantiate(Journal.class, PowerAssertContext.class);
+        }
     }
 
     /**
@@ -203,13 +199,15 @@ class PowerAssertTranslator extends Translator {
     public void visitMethodInsn(int opcode, String owner, String name, String desc) {
         // replace invocation of AssertionError constructor.
         if (startAssertion && opcode == INVOKESPECIAL && owner.equals("java/lang/AssertionError")) {
-            load(journal);
+            load(journal); // load context
 
+            // append parameter for context
             StringBuilder builder = new StringBuilder(desc);
             builder.insert(builder.length() - 2, "L");
             builder.insert(builder.length() - 2, Type.getType(PowerAssertContext.class).getInternalName());
             builder.insert(builder.length() - 2, ";");
 
+            // instantiate PowerAssertError
             super.visitMethodInsn(opcode, Type.getType(PowerAssertionError.class).getInternalName(), name, builder.toString());
 
             // reset state
@@ -218,6 +216,7 @@ class PowerAssertTranslator extends Translator {
             processAssertion = false;
             return;
         }
+
         super.visitMethodInsn(opcode, owner, name, desc);
 
         if (processAssertion) {

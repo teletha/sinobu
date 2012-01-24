@@ -75,10 +75,9 @@ public class PowerAssert implements TestRule {
                     statement.evaluate();
                 } catch (PowerAssertionError error) {
                     if (tester != null) {
-                        // for self test
-                        tester.validate(error.context);
+                        tester.validate(error.context); // for self test
                     } else {
-                        throw error;
+                        throw error; // rethrow for unit test
                     }
                 } catch (AssertionError error) {
                     // should we print this error message in detal?
@@ -95,7 +94,7 @@ public class PowerAssert implements TestRule {
                             return;
                         }
                     }
-                    throw error; // rethrow
+                    throw error; // rethrow for unit test
                 }
             }
         };
