@@ -9,7 +9,6 @@
  */
 package kiss.serialization;
 
-import hub.CleanRoom;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,6 +27,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.CleanRoom;
 
 /**
  * @version 2011/03/29 12:37:35

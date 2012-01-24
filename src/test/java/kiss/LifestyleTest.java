@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import hub.PrivateModule;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -17,6 +16,8 @@ import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.PrivateModule;
 
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Student;

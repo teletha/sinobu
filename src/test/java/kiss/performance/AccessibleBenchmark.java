@@ -9,8 +9,6 @@
  */
 package kiss.performance;
 
-import hub.AbstractMicroBenchmarkTest;
-import hub.BenchmarkCode;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -21,6 +19,9 @@ import java.lang.reflect.Method;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
+import testament.AbstractMicroBenchmarkTest;
+import testament.BenchmarkCode;
 
 import kiss.I;
 import kiss.sample.bean.Person;

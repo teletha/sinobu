@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import hub.PrivateModule;
 
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -18,6 +17,8 @@ import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.PrivateModule;
 
 import kiss.module.external.AnnotatedClass1;
 import kiss.module.external.AnnotatedClass2;

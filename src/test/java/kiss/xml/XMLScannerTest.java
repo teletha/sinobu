@@ -9,9 +9,7 @@
  */
 package kiss.xml;
 
-import static hub.Ezunit.*;
-import hub.SAXBuilder;
-import hub.xml.XMLBuilder;
+import static testament.Ezunit.*;
 
 import java.io.IOException;
 
@@ -26,6 +24,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
+
+import testament.SAXBuilder;
+import testament.xml.XMLBuilder;
 
 /**
  * @version 2010/02/05 1:31:37
@@ -64,8 +65,8 @@ public class XMLScannerTest {
         XMLFilter third = new XMLScanner();
         third.setParent(second);
 
-        assertXMLIdentical("scanner/expected002.xml", "scanner/test001.xml", third);
-        // assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
+        // assertXMLIdentical("scanner/expected002.xml", "scanner/test001.xml", third);
+        assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
     }
 
     /**

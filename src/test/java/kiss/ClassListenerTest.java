@@ -9,11 +9,12 @@
  */
 package kiss;
 
-import hub.PrivateModule;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.PrivateModule;
 
 import kiss.sample.MarkerInterface1;
 import kiss.sample.MarkerInterface2;

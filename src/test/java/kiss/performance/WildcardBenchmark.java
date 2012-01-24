@@ -9,8 +9,6 @@
  */
 package kiss.performance;
 
-import hub.AbstractMicroBenchmarkTest;
-import hub.BenchmarkCode;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -19,6 +17,9 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+
+import testament.AbstractMicroBenchmarkTest;
+import testament.BenchmarkCode;
 
 import kiss.scratchpad.Wildcard;
 

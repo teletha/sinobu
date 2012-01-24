@@ -11,13 +11,14 @@ package kiss.jdk;
 
 import static java.nio.file.StandardCopyOption.*;
 
-import hub.CleanRoom;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.CleanRoom;
 
 
 /**

@@ -9,7 +9,6 @@
  */
 package kiss.serialization;
 
-import hub.CleanRoom;
 
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
@@ -20,6 +19,8 @@ import javax.script.ScriptException;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import testament.CleanRoom;
 
 import kiss.I;
 import kiss.sample.bean.Person;
