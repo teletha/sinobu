@@ -25,7 +25,7 @@ import kiss.I;
 import org.objectweb.asm.Type;
 
 /**
- * @version 2012/01/11 11:27:35
+ * @version 2012/01/24 20:49:58
  */
 public class PowerAssertContext implements Journal, PowerAssertRenderer {
 
@@ -299,15 +299,6 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
             }
             stack.add(new Operand(left + " " + operator + " " + right, null));
         }
-    }
-
-    /**
-     * @see hub.powerassert.Journal#clear()
-     */
-    public void clear() {
-        stack.clear();
-        operands.clear();
-        nextIncrement = null;
     }
 
     /**

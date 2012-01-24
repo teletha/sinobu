@@ -37,8 +37,7 @@ public class IntValue extends Bytecode<IntValue> {
      * @see hub.bytecode.Bytecode#write(org.objectweb.asm.MethodVisitor, boolean)
      */
     @Override
-    public
-    void write(MethodVisitor visitor, boolean isNonPrimitive) {
+    public void write(MethodVisitor visitor, boolean isNonPrimitive) {
         visitor.visitIntInsn(opcode, operand);
         wrap(visitor, INT_TYPE);
     }

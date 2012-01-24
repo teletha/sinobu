@@ -10,16 +10,9 @@
 package hub.powerassert;
 
 /**
- * @version 2012/01/22 14:56:25
+ * @version 2012/01/24 20:50:02
  */
 interface Journal {
-
-    /**
-     * <p>
-     * Clear current context.
-     * </p>
-     */
-    void clear();
 
     /**
      * <p>

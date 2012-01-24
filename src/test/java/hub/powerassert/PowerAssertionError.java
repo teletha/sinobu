@@ -10,16 +10,22 @@
 package hub.powerassert;
 
 /**
+ * <p>
+ * This is internal class for enhanced error.
+ * </p>
+ * 
  * @version 2012/01/24 13:14:52
  */
 @SuppressWarnings("serial")
 public class PowerAssertionError extends AssertionError {
 
+    /** The related variables holder. */
     final PowerAssertContext context;
 
     /**
-     * @param message
-     * @param cause
+     * <p>
+     * This is internal constructor. Don't use it.
+     * </p>
      */
     public PowerAssertionError(PowerAssertContext context) {
         super("");
@@ -28,7 +34,9 @@ public class PowerAssertionError extends AssertionError {
     }
 
     /**
-     * @param detailMessage
+     * <p>
+     * This is internal constructor. Don't use it.
+     * </p>
      */
     public PowerAssertionError(boolean detailMessage, PowerAssertContext context) {
         super(detailMessage);
@@ -37,7 +45,9 @@ public class PowerAssertionError extends AssertionError {
     }
 
     /**
-     * @param detailMessage
+     * <p>
+     * This is internal constructor. Don't use it.
+     * </p>
      */
     public PowerAssertionError(char detailMessage, PowerAssertContext context) {
         super(detailMessage);
@@ -46,7 +56,9 @@ public class PowerAssertionError extends AssertionError {
     }
 
     /**
-     * @param detailMessage
+     * <p>
+     * This is internal constructor. Don't use it.
+     * </p>
      */
     public PowerAssertionError(double detailMessage, PowerAssertContext context) {
         super(detailMessage);
@@ -55,7 +67,9 @@ public class PowerAssertionError extends AssertionError {
     }
 
     /**
-     * @param detailMessage
+     * <p>
+     * This is internal constructor. Don't use it.
+     * </p>
      */
     public PowerAssertionError(float detailMessage, PowerAssertContext context) {
         super(detailMessage);
@@ -64,7 +78,9 @@ public class PowerAssertionError extends AssertionError {
     }
 
     /**
-     * @param detailMessage
+     * <p>
+     * This is internal constructor. Don't use it.
+     * </p>
      */
     public PowerAssertionError(int detailMessage, PowerAssertContext context) {
         super(detailMessage);
@@ -73,7 +89,9 @@ public class PowerAssertionError extends AssertionError {
     }
 
     /**
-     * @param detailMessage
+     * <p>
+     * This is internal constructor. Don't use it.
+     * </p>
      */
     public PowerAssertionError(long detailMessage, PowerAssertContext context) {
         super(detailMessage);
@@ -82,7 +100,9 @@ public class PowerAssertionError extends AssertionError {
     }
 
     /**
-     * @param detailMessage
+     * <p>
+     * This is internal constructor. Don't use it.
+     * </p>
      */
     public PowerAssertionError(Object detailMessage, PowerAssertContext context) {
         super(detailMessage);
@@ -91,10 +111,10 @@ public class PowerAssertionError extends AssertionError {
     }
 
     /**
-     * @see java.lang.Throwable#getLocalizedMessage()
+     * {@inheritDoc}
      */
     @Override
-    public String getLocalizedMessage() {
-        return super.getLocalizedMessage() + "\n" + context;
+    public String getMessage() {
+        return super.getMessage() + "\n" + context;
     }
 }
