@@ -73,41 +73,26 @@ public class PowerAssert implements TestRule {
             public void evaluate() throws Throwable {
                 try {
                     statement.evaluate();
-                } catch (Throwable error) {
-                    if (error instanceof AssertionError) {
-                        // should we print this error message in detal?
-                        if (description.getAnnotation(PowerAssertOff.class) == null && !description.getTestClass()
-                                .isAnnotationPresent(PowerAssertOff.class)) {
-                            // find the class whihc rises assertion error
-                            StackTraceElement[] trace = error.getStackTrace();
-                            Class clazz = Class.forName(trace[0].getClassName());
+                } catch (PowerAssertionError error) {
+                    if (tester != null) {
+                        // for self test
+                        tester.validate(error.context);
+                    } else {
+                        throw error;
+                    }
+                } catch (AssertionError error) {
+                    // should we print this error message in detal?
+                    if (description.getAnnotation(PowerAssertOff.class) == null && !description.getTestClass()
+                            .isAnnotationPresent(PowerAssertOff.class)) {
+                        // find the class whihc rises assertion error
+                        Class clazz = Class.forName(error.getStackTrace()[0].getClassName());
 
-                            // translate assertion code only once
-                            if (translated.add(clazz.getName())) {
-                                agent.transform(clazz);
+                        // translate assertion code only once
+                        if (translated.add(clazz.getName())) {
+                            agent.transform(clazz);
 
-                                evaluate(); // retry testcase
-                                return;
-                            }
-
-                            // retrieve context
-                            PowerAssertContext context = PowerAssertContext.get();
-
-                            if (tester != null) {
-                                // for sel test
-                                tester.validate(context);
-                                return;
-                            }
-
-                            // replace error message
-                            String message = error.getLocalizedMessage();
-
-                            if (message == null) {
-                                message = "";
-                            }
-
-                            error = new AssertionError(message + "\r\n" + context);
-                            error.setStackTrace(trace);
+                            evaluate(); // retry testcase
+                            return;
                         }
                     }
                     throw error; // rethrow

@@ -21,20 +21,18 @@ public class ThrowTest {
     public static final PowerAssertTester tester = new PowerAssertTester();
 
     @Test
-    public void assertionError() {
-        throw new AssertionError();
-    }
-
-    @Test
-    public void assertionErrorWithParameter() {
-        throw new AssertionError("param");
-    }
-
-    @Test
     public void useAssertWithMessage() {
         int value = 4;
 
         tester.willCapture("value", value);
         assert value == -1 : "this value is " + value;
+    }
+
+    @Test
+    public void useAssertWithIntMessage() {
+        int value = 4;
+
+        tester.willCapture("value", value);
+        assert value == -1 : value;
     }
 }

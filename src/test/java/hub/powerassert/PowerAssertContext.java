@@ -21,15 +21,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.I;
-import kiss.Manageable;
-import kiss.ThreadSpecific;
 
 import org.objectweb.asm.Type;
 
 /**
  * @version 2012/01/11 11:27:35
  */
-@Manageable(lifestyle = ThreadSpecific.class)
 public class PowerAssertContext implements Journal, PowerAssertRenderer {
 
     /** The local variable name mapping. */
@@ -46,15 +43,13 @@ public class PowerAssertContext implements Journal, PowerAssertRenderer {
 
     /**
      * <p>
-     * Retrieve thread specific context.
+     * Register local variable.
      * </p>
      * 
-     * @return
+     * @param methodId
+     * @param name
+     * @param description
      */
-    public static PowerAssertContext get() {
-        return I.make(PowerAssertContext.class);
-    }
-
     public static void registerLocalVariable(int methodId, String name, String description) {
         List<String[]> local = locals.get(methodId);
 

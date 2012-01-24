@@ -30,6 +30,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import kiss.I;
+import kiss.model.ClassUtil;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -278,6 +279,50 @@ public class Agent extends ReusableRule {
 
         /**
          * <p>
+         * Create a new insntance and store it into new local variable.
+         * </p>
+         * 
+         * @param api
+         * @param instantiator
+         * @return
+         */
+        protected final <S> S instantiate(Class<S> api, Class<? extends S> instantiator) {
+            Type type = Type.getType(instantiator);
+            mv.visitTypeInsn(NEW, type.getInternalName());
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, type.getInternalName(), "<init>", Type.getConstructorDescriptor(ClassUtil.getMiniConstructor(instantiator)));
+
+            LocalVariable local = newLocal(type);
+            local.store();
+
+            return createAPI(local, api);
+        }
+
+        /**
+         * <p>
+         * Load the specified object as possible as we can.
+         * </p>
+         * 
+         * @param object
+         */
+        protected final void load(Object object) {
+            if (object == null) {
+                mv.visitInsn(ACONST_NULL);
+            } else if (object instanceof String) {
+                mv.visitLdcInsn(object);
+            } else if (object instanceof LocalVariable) {
+                ((LocalVariable) object).load();
+            } else if (Proxy.isProxyClass(object.getClass())) {
+                InvocationHandler handler = Proxy.getInvocationHandler(object);
+
+                if (handler instanceof InterfaceCaller) {
+                    ((InterfaceCaller) handler).invoker.load();
+                }
+            }
+        }
+
+        /**
+         * <p>
          * Helper method to write below code.
          * </p>
          * 
@@ -353,19 +398,6 @@ public class Agent extends ReusableRule {
 
         /**
          * <p>
-         * Create API.
-         * </p>
-         * 
-         * @param invoker
-         * @param manipulation
-         * @return
-         */
-        protected final <S> S createAPI(Class invoker, Class<S> manipulation) {
-            return (S) Proxy.newProxyInstance(manipulation.getClassLoader(), new Class[] {manipulation}, new InterfaceCaller(invoker));
-        }
-
-        /**
-         * <p>
          * Helper method to write bytecode which wrap the primitive value.
          * </p>
          * 
@@ -380,18 +412,36 @@ public class Agent extends ReusableRule {
         }
 
         /**
+         * <p>
+         * Create API.
+         * </p>
+         * 
+         * @param invoker
+         * @param api
+         * @return
+         */
+        protected final <S> S createAPI(LocalVariable invoker, Class<S> api) {
+            return (S) Proxy.newProxyInstance(api.getClassLoader(), new Class[] {api}, new InterfaceCaller(invoker));
+        }
+
+        /**
          * @version 2012/01/18 1:18:40
          */
         private class InterfaceCaller implements InvocationHandler {
+
+            /** The method invoker. */
+            private final LocalVariable invoker;
 
             /** The invocation type. */
             private final String invocation;
 
             /**
+             * @param invoker
              * @param invocation
              */
-            private InterfaceCaller(Class invocation) {
-                this.invocation = Type.getType(invocation).getInternalName();
+            private InterfaceCaller(LocalVariable invoker) {
+                this.invoker = invoker;
+                this.invocation = invoker == null ? className : invoker.type.getInternalName();
             }
 
             /**
@@ -399,6 +449,12 @@ public class Agent extends ReusableRule {
              */
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                if (invoker == null) {
+                    mv.visitVarInsn(ALOAD, 0); // load this
+                } else {
+                    invoker.load(); // load insntance
+                }
+
                 // build parameter stacks
                 Class[] parameters = method.getParameterTypes();
 
