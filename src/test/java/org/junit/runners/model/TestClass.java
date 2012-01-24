@@ -144,7 +144,7 @@ public class TestClass {
         }
 
         if (annotationClass == Rule.class && valueClass == TestRule.class) {
-            results.add((T) new PowerAssert());
+            results.add(0, (T) new PowerAssert());
         }
         return results;
     }

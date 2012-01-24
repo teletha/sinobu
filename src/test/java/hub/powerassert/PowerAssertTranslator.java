@@ -31,11 +31,11 @@ class PowerAssertTranslator extends Translator {
     /** The state. */
     private boolean processAssertion = false;
 
-    /** The acrual recoder. */
-    private final Journal context = createAPI(PowerAssertContext.class, Journal.class);
-
     /** The state. */
     private boolean compare = false;
+
+    /** The context. */
+    private Journal journal;
 
     /**
      * <p>
@@ -51,21 +51,6 @@ class PowerAssertTranslator extends Translator {
             index = internalName.lastIndexOf('/');
         }
         return index == -1 ? internalName : internalName.substring(index + 1);
-    }
-
-    /**
-     * <p>
-     * Helper method to write code.
-     * </p>
-     * 
-     * @return
-     */
-    private Journal journal() {
-        // load context
-        mv.visitMethodInsn(INVOKESTATIC, "hub/powerassert/PowerAssertContext", "get", "()Lhub/powerassert/PowerAssertContext;");
-
-        // return API
-        return context;
     }
 
     /**
@@ -87,13 +72,13 @@ class PowerAssertTranslator extends Translator {
 
             switch (opcode) {
             case GETFIELD:
-                journal().field(name, desc, local, hashCode());
+                journal.field(name, desc, local, hashCode());
                 break;
 
             case GETSTATIC:
                 String className = computeClassName(owner);
 
-                journal().fieldStatic(className, this.className.equals(owner) ? name : className + "." + name, desc, local);
+                journal.fieldStatic(className, this.className.equals(owner) ? name : className + "." + name, desc, local);
                 break;
             }
         }
@@ -110,8 +95,9 @@ class PowerAssertTranslator extends Translator {
 
             super.visitJumpInsn(opcode, label);
 
-            // reset context
-            journal().clear();
+            // create context
+            journal = instantiate(Journal.class, PowerAssertContext.class);
+
             return;
         }
 
@@ -121,60 +107,60 @@ class PowerAssertTranslator extends Translator {
             switch (opcode) {
             case IFEQ:
                 if (!compare) {
-                    journal().constant(insn(ICONST_0));
+                    journal.constant(insn(ICONST_0));
                 }
                 compare = false;
-                journal().condition("==");
+                journal.condition("==");
                 break;
 
             case IF_ICMPEQ:
             case IF_ACMPEQ:
-                journal().condition("==");
+                journal.condition("==");
                 break;
 
             case IFNE:
                 if (!compare) {
-                    journal().constant(insn(ICONST_0));
+                    journal.constant(insn(ICONST_0));
                 }
                 compare = false;
-                journal().condition("!=");
+                journal.condition("!=");
                 break;
 
             case IF_ICMPNE:
             case IF_ACMPNE:
-                journal().condition("!=");
+                journal.condition("!=");
                 break;
 
             case IF_ICMPLT:
-                journal().condition("<");
+                journal.condition("<");
                 break;
 
             case IF_ICMPLE:
-                journal().condition("<=");
+                journal.condition("<=");
                 break;
 
             case IF_ICMPGT:
-                journal().condition(">");
+                journal.condition(">");
                 break;
 
             case IF_ICMPGE:
-                journal().condition(">=");
+                journal.condition(">=");
                 break;
 
             case IFNULL:
                 // recode null constant
-                journal().constant(insn(ACONST_NULL));
+                journal.constant(insn(ACONST_NULL));
 
                 // recode == expression
-                journal().condition("==");
+                journal.condition("==");
                 break;
 
             case IFNONNULL:
                 // recode null constant
-                journal().constant(insn(ACONST_NULL));
+                journal.constant(insn(ACONST_NULL));
 
                 // recode != expression
-                journal().condition("!=");
+                journal.condition("!=");
                 break;
             }
         }
@@ -187,6 +173,10 @@ class PowerAssertTranslator extends Translator {
     public void visitTypeInsn(int opcode, String type) {
         if (processAssertion && opcode == NEW && type.equals("java/lang/AssertionError")) {
             processAssertion = false;
+
+            // replace AssertionError with PowerAssertionError
+            super.visitTypeInsn(opcode, Type.getType(PowerAssertionError.class).getInternalName());
+            return;
         }
 
         super.visitTypeInsn(opcode, type);
@@ -194,13 +184,13 @@ class PowerAssertTranslator extends Translator {
         if (processAssertion) {
             switch (opcode) {
             case INSTANCEOF:
-                journal().instanceOf(computeClassName(type));
+                journal.instanceOf(computeClassName(type));
                 break;
 
             case ANEWARRAY:
                 LocalVariable local = copy(Type.getType(type));
 
-                journal().arrayNew(computeClassName(type), local);
+                journal.arrayNew(computeClassName(type), local);
                 break;
             }
         }
@@ -211,16 +201,24 @@ class PowerAssertTranslator extends Translator {
      */
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-        super.visitMethodInsn(opcode, owner, name, desc);
-
         // replace invocation of AssertionError constructor.
         if (startAssertion && opcode == INVOKESPECIAL && owner.equals("java/lang/AssertionError")) {
+            load(journal);
+
+            StringBuilder builder = new StringBuilder(desc);
+            builder.insert(builder.length() - 2, "L");
+            builder.insert(builder.length() - 2, Type.getType(PowerAssertContext.class).getInternalName());
+            builder.insert(builder.length() - 2, ";");
+
+            super.visitMethodInsn(opcode, Type.getType(PowerAssertionError.class).getInternalName(), name, builder.toString());
+
             // reset state
             startAssertion = false;
             skipNextJump = false;
             processAssertion = false;
             return;
         }
+        super.visitMethodInsn(opcode, owner, name, desc);
 
         if (processAssertion) {
             Type type = Type.getType(desc);
@@ -231,17 +229,17 @@ class PowerAssertTranslator extends Translator {
 
             switch (opcode) {
             case INVOKESTATIC:
-                journal().methodStatic(computeClassName(owner), name, desc, local);
+                journal.methodStatic(computeClassName(owner), name, desc, local);
                 break;
 
             case INVOKESPECIAL:
                 if (constructor) {
-                    journal().constructor(computeClassName(owner), desc, local);
+                    journal.constructor(computeClassName(owner), desc, local);
                     break;
                 }
                 // fall-through for private method call
             default:
-                journal().method(name, desc, local);
+                journal.method(name, desc, local);
                 break;
             }
         }
@@ -255,7 +253,7 @@ class PowerAssertTranslator extends Translator {
         super.visitIincInsn(index, increment);
 
         if (processAssertion) {
-            journal().increment(hashCode(), index, increment);
+            journal.increment(hashCode(), index, increment);
         }
     }
 
@@ -273,41 +271,41 @@ class PowerAssertTranslator extends Translator {
 
                 switch (operand) {
                 case T_BOOLEAN:
-                    journal().arrayNew("boolean", local);
+                    journal.arrayNew("boolean", local);
                     break;
 
                 case T_BYTE:
-                    journal().arrayNew("byte", local);
+                    journal.arrayNew("byte", local);
                     break;
 
                 case T_CHAR:
-                    journal().arrayNew("char", local);
+                    journal.arrayNew("char", local);
                     break;
 
                 case T_DOUBLE:
-                    journal().arrayNew("double", local);
+                    journal.arrayNew("double", local);
                     break;
 
                 case T_FLOAT:
-                    journal().arrayNew("float", local);
+                    journal.arrayNew("float", local);
                     break;
 
                 case T_INT:
-                    journal().arrayNew("int", local);
+                    journal.arrayNew("int", local);
                     break;
 
                 case T_LONG:
-                    journal().arrayNew("long", local);
+                    journal.arrayNew("long", local);
                     break;
 
                 case T_SHORT:
-                    journal().arrayNew("short", local);
+                    journal.arrayNew("short", local);
                     break;
                 }
                 break;
 
             default:
-                journal().constant(intInsn(opcode, operand));
+                journal.constant(intInsn(opcode, operand));
                 break;
             }
         }
@@ -336,42 +334,35 @@ class PowerAssertTranslator extends Translator {
             case FCONST_2:
             case DCONST_0:
             case DCONST_1:
-                journal().constant(insn(opcode));
+                journal.constant(insn(opcode));
                 break;
 
             case IALOAD:
-                LocalVariable local = copy(Type.INT_TYPE);
-                journal().arrayIndex(local);
+                journal.arrayIndex(copy(Type.INT_TYPE));
                 break;
 
             case LALOAD:
-                local = copy(Type.LONG_TYPE);
-                journal().arrayIndex(local);
+                journal.arrayIndex(copy(Type.LONG_TYPE));
                 break;
 
             case FALOAD:
-                local = copy(Type.FLOAT_TYPE);
-                journal().arrayIndex(local);
+                journal.arrayIndex(copy(Type.FLOAT_TYPE));
                 break;
 
             case DALOAD:
-                local = copy(Type.DOUBLE_TYPE);
-                journal().arrayIndex(local);
+                journal.arrayIndex(copy(Type.DOUBLE_TYPE));
                 break;
 
             case BALOAD:
-                local = copy(Type.BOOLEAN_TYPE);
-                journal().arrayIndex(local);
+                journal.arrayIndex(copy(Type.BOOLEAN_TYPE));
                 break;
 
             case CALOAD:
-                local = copy(Type.CHAR_TYPE);
-                journal().arrayIndex(local);
+                journal.arrayIndex(copy(Type.CHAR_TYPE));
                 break;
 
             case AALOAD:
-                local = copy(Bytecode.OBJECT_TYPE);
-                journal().arrayIndex(local);
+                journal.arrayIndex(copy(Bytecode.OBJECT_TYPE));
                 break;
 
             case IASTORE:
@@ -381,84 +372,83 @@ class PowerAssertTranslator extends Translator {
             case BASTORE:
             case CASTORE:
             case AASTORE:
-                journal().arrayStore();
+                journal.arrayStore();
                 break;
 
             case ARRAYLENGTH:
-                local = copy(Type.INT_TYPE);
-                journal().field("length", "I", local, hashCode());
+                journal.field("length", "I", copy(Type.INT_TYPE), hashCode());
                 break;
 
             case IADD:
             case LADD:
             case FADD:
             case DADD:
-                journal().operator("+");
+                journal.operator("+");
                 break;
 
             case ISUB:
             case LSUB:
             case FSUB:
             case DSUB:
-                journal().operator("-");
+                journal.operator("-");
                 break;
 
             case IMUL:
             case LMUL:
             case FMUL:
             case DMUL:
-                journal().operator("*");
+                journal.operator("*");
                 break;
 
             case IDIV:
             case LDIV:
             case FDIV:
             case DDIV:
-                journal().operator("/");
+                journal.operator("/");
                 break;
 
             case IREM:
             case LREM:
             case FREM:
             case DREM:
-                journal().operator("%");
+                journal.operator("%");
                 break;
 
             case INEG:
             case LNEG:
             case FNEG:
             case DNEG:
-                journal().negative();
+                journal.negative();
                 break;
 
             case ISHL:
             case LSHL:
-                journal().operator("<<");
+                journal.operator("<<");
                 break;
 
             case ISHR:
             case LSHR:
-                journal().operator(">>");
+                journal.operator(">>");
                 break;
 
             case IUSHR:
             case LUSHR:
-                journal().operator(">>>");
+                journal.operator(">>>");
                 break;
 
             case IOR:
             case LOR:
-                journal().operator("|");
+                journal.operator("|");
                 break;
 
             case IXOR:
             case LXOR:
-                journal().operator("^");
+                journal.operator("^");
                 break;
 
             case IAND:
             case LAND:
-                journal().operator("&");
+                journal.operator("&");
                 break;
 
             case LCMP:
@@ -478,7 +468,7 @@ class PowerAssertTranslator extends Translator {
         super.visitLdcInsn(value);
 
         if (processAssertion) {
-            journal().constant(ldc(value));
+            journal.constant(ldc(value));
         }
     }
 
@@ -490,7 +480,7 @@ class PowerAssertTranslator extends Translator {
         super.visitVarInsn(opcode, index);
 
         if (processAssertion) {
-            journal().local(hashCode(), index, local(opcode, index));
+            journal.local(hashCode(), index, local(opcode, index));
         }
     }
 
