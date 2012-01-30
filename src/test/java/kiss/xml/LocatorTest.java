@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static testament.Ezunit.*;
+import static antibug.Ezunit.*;
 
 import java.nio.file.Path;
 

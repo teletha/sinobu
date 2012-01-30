@@ -9,8 +9,8 @@
  */
 package kiss.xml;
 
+import static antibug.Ezunit.*;
 import static org.junit.Assert.*;
-import static testament.Ezunit.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;

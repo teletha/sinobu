@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static testament.Ezunit.*;
+import static antibug.Ezunit.*;
 
 import java.io.IOException;
 
@@ -25,8 +25,9 @@ import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-import testament.SAXBuilder;
-import testament.xml.XMLBuilder;
+import antibug.SAXBuilder;
+import antibug.xml.XMLBuilder;
+
 
 /**
  * @version 2010/02/05 1:31:37

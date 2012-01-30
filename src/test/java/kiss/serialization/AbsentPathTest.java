@@ -17,7 +17,8 @@ import java.nio.file.Path;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.CleanRoom;
+import antibug.CleanRoom;
+
 
 import kiss.I;
 import kiss.sample.bean.Person;

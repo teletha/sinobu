@@ -16,7 +16,8 @@ import java.util.concurrent.Future;
 
 import org.junit.Test;
 
-import testament.MultiThreadTestCase;
+import antibug.MultiThreadTestCase;
+
 
 
 /**

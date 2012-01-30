@@ -15,7 +15,8 @@ import java.util.Locale;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.PrivateModule;
+import antibug.PrivateModule;
+
 
 
 /**

@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package testament;
+package antibug;
 
 import static org.junit.Assert.*;
 
@@ -49,7 +49,8 @@ import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-import testament.xml.XML;
+import antibug.xml.XML;
+
 
 /**
  * @version 2012/01/19 12:59:58

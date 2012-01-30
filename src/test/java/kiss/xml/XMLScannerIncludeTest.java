@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static testament.Ezunit.*;
+import static antibug.Ezunit.*;
 
 import org.junit.Test;
 import org.xml.sax.Attributes;

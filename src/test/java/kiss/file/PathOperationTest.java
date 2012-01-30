@@ -18,8 +18,9 @@ import java.nio.file.Path;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.CleanRoom;
-import testament.Synchrotron;
+import antibug.CleanRoom;
+import antibug.Synchrotron;
+
 
 import kiss.I;
 

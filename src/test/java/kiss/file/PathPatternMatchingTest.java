@@ -23,7 +23,8 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.CleanRoom;
+import antibug.CleanRoom;
+
 
 import kiss.I;
 
