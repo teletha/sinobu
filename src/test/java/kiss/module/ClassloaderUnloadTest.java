@@ -19,7 +19,8 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.PrivateModule;
+import antibug.PrivateModule;
+
 
 import kiss.I;
 import kiss.sample.RuntimeAnnotation1;

@@ -26,7 +26,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.CleanRoom;
+import antibug.CleanRoom;
+
 
 import kiss.Disposable;
 import kiss.I;

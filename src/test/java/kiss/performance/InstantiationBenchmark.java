@@ -9,14 +9,13 @@
  */
 package kiss.performance;
 
+import kiss.I;
+import kiss.sample.bean.Person;
 
 import org.junit.Test;
 
-import testament.AbstractMicroBenchmarkTest;
-import testament.BenchmarkCode;
-
-import kiss.I;
-import kiss.sample.bean.Person;
+import antibug.benchmark.AbstractMicroBenchmarkTest;
+import antibug.benchmark.BenchmarkCode;
 
 /**
  * DOCUMENT.

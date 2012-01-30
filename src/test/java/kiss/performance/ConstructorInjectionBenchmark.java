@@ -9,15 +9,14 @@
  */
 package kiss.performance;
 
+import kiss.I;
+import kiss.model.ClassUtil;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import testament.AbstractMicroBenchmarkTest;
-import testament.BenchmarkCode;
-
-import kiss.I;
-import kiss.model.ClassUtil;
+import antibug.benchmark.AbstractMicroBenchmarkTest;
+import antibug.benchmark.BenchmarkCode;
 
 /**
  * DOCUMENT.

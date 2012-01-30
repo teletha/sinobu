@@ -9,7 +9,6 @@
  */
 package kiss.performance;
 
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -17,14 +16,14 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import kiss.I;
+import kiss.sample.bean.Person;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
-import testament.AbstractMicroBenchmarkTest;
-import testament.BenchmarkCode;
-
-import kiss.I;
-import kiss.sample.bean.Person;
+import antibug.benchmark.AbstractMicroBenchmarkTest;
+import antibug.benchmark.BenchmarkCode;
 
 /**
  * DOCUMENT.

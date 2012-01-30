@@ -16,7 +16,8 @@ import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.PrivateModule;
+import antibug.PrivateModule;
+
 
 import kiss.I;
 import kiss.model.Model;

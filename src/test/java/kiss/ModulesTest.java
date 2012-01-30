@@ -20,7 +20,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.PrivateModule;
+import antibug.PrivateModule;
+
 
 import kiss.module.external.ExtendedClass1;
 import kiss.sample.MarkerInterface1;

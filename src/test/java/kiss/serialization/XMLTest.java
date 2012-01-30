@@ -9,7 +9,7 @@
  */
 package kiss.serialization;
 
-import static testament.Ezunit.*;
+import static antibug.Ezunit.*;
 
 import java.io.File;
 import java.io.Serializable;
@@ -42,7 +42,8 @@ import kiss.sample.bean.TransientBean;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.CleanRoom;
+import antibug.CleanRoom;
+
 
 /**
  * @version 2011/03/22 17:17:16

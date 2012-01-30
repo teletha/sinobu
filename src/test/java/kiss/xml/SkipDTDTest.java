@@ -12,7 +12,8 @@ package kiss.xml;
 
 import org.junit.Test;
 
-import testament.Ezunit;
+import antibug.Ezunit;
+
 
 import kiss.I;
 

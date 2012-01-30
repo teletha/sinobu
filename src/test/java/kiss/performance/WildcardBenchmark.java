@@ -9,19 +9,18 @@
  */
 package kiss.performance;
 
-
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
+import kiss.scratchpad.Wildcard;
+
 import org.junit.Test;
 
-import testament.AbstractMicroBenchmarkTest;
-import testament.BenchmarkCode;
-
-import kiss.scratchpad.Wildcard;
+import antibug.benchmark.AbstractMicroBenchmarkTest;
+import antibug.benchmark.BenchmarkCode;
 
 /**
  * @version 2011/02/19 14:15:17

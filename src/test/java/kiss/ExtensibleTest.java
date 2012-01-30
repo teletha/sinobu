@@ -13,7 +13,8 @@ package kiss;
 import org.junit.Rule;
 import org.junit.Test;
 
-import testament.PrivateModule;
+import antibug.PrivateModule;
+
 
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
