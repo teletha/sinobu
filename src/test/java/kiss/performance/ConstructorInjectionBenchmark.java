@@ -13,17 +13,19 @@ import kiss.I;
 import kiss.model.ClassUtil;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 
-import antibug.benchmark.AbstractMicroBenchmarkTest;
-import antibug.benchmark.BenchmarkCode;
+import antibug.benchmark.Benchmark;
+import antibug.benchmark.Benchmark.Code;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/05 9:44:55
+ * @version 2012/01/31 16:16:39
  */
-public class ConstructorInjectionBenchmark extends AbstractMicroBenchmarkTest {
+public class ConstructorInjectionBenchmark {
+
+    @Rule
+    public static final Benchmark benchmark = new Benchmark();
 
     @BeforeClass
     public static void initialize() {
@@ -32,21 +34,17 @@ public class ConstructorInjectionBenchmark extends AbstractMicroBenchmarkTest {
 
     @Test
     public void instantiate() {
-        benchmark(new BenchmarkCode() {
+        benchmark.measure(new Code() {
 
-            /**
-             * @see java.util.concurrent.Callable#call()
-             */
-            public Object call() throws Throwable {
+            @Override
+            public Object measure() throws Throwable {
                 return I.make(ConstructorInjection.class);
             }
         });
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/11/05 9:56:32
+     * @version 2012/01/31 16:16:46
      */
     @SuppressWarnings("unused")
     private static class ConstructorInjection {
@@ -70,17 +68,13 @@ public class ConstructorInjectionBenchmark extends AbstractMicroBenchmarkTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/11/05 9:56:05
+     * @version 2012/01/31 16:16:51
      */
     private static class Injected1 {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/11/05 9:56:01
+     * @version 2012/01/31 16:16:54
      */
     private static class Injected2 {
     }

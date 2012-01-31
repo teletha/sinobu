@@ -12,26 +12,28 @@ package kiss.performance;
 import kiss.I;
 import kiss.sample.bean.Person;
 
+import org.junit.Rule;
 import org.junit.Test;
 
-import antibug.benchmark.AbstractMicroBenchmarkTest;
-import antibug.benchmark.BenchmarkCode;
+import antibug.benchmark.Benchmark;
+import antibug.benchmark.Benchmark.Code;
 
 /**
  * DOCUMENT.
  * 
  * @version 2008/11/05 8:36:15
  */
-public class InstantiationBenchmark extends AbstractMicroBenchmarkTest {
+public class InstantiationBenchmark {
+
+    @Rule
+    public static final Benchmark benchmark = new Benchmark();
 
     @Test
     public void instantiate() {
-        benchmark(new BenchmarkCode() {
+        benchmark.measure(new Code() {
 
-            /**
-             * @see java.util.concurrent.Callable#call()
-             */
-            public Object call() throws Throwable {
+            @Override
+            public Object measure() throws Throwable {
                 return I.make(Person.class);
             }
         });

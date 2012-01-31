@@ -19,35 +19,33 @@ import java.lang.reflect.Method;
 import kiss.I;
 import kiss.sample.bean.Person;
 
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
-import antibug.benchmark.AbstractMicroBenchmarkTest;
-import antibug.benchmark.BenchmarkCode;
+import antibug.benchmark.Benchmark;
+import antibug.benchmark.Benchmark.Code;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/05 15:45:55
+ * @version 2012/01/31 16:13:18
  */
-public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
+public class AccessibleBenchmark {
+
+    @Rule
+    public static final Benchmark benchmark = new Benchmark();
 
     /**
      * Normal access.
      */
     @Test
-    @Ignore
     public void method() {
-        benchmark(new BenchmarkCode() {
+        benchmark.measure(new Code() {
 
             private String value = "test";
 
             private Person person = I.make(Person.class);
 
-            /**
-             * {@inheritDoc}
-             */
-            public Object call() throws Throwable {
+            @Override
+            public Object measure() throws Throwable {
                 person.setFirstName(value);
                 return person;
             }
@@ -59,7 +57,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
      */
     @Test
     public void reflection() {
-        benchmark(new BenchmarkCode() {
+        benchmark.measure(new Code() {
 
             private Person person = I.make(Person.class);
 
@@ -78,10 +76,8 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
                 }
             }
 
-            /**
-             * {@inheritDoc}
-             */
-            public Object call() throws Throwable {
+            @Override
+            public Object measure() throws Throwable {
                 method.invoke(person, param);
                 return person;
             }
@@ -93,7 +89,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
      */
     @Test
     public void methodHandle() {
-        benchmark(new BenchmarkCode() {
+        benchmark.measure(new Code() {
 
             private Person person = I.make(Person.class);
 
@@ -110,10 +106,8 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
                 }
             }
 
-            /**
-             * {@inheritDoc}
-             */
-            public Object call() throws Throwable {
+            @Override
+            public Object measure() throws Throwable {
                 method.invoke(person, param);
                 return person;
             }
@@ -125,7 +119,7 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
      */
     @Test
     public void methodHandleExact() {
-        benchmark(new BenchmarkCode() {
+        benchmark.measure(new Code() {
 
             private Person person = I.make(Person.class);
 
@@ -147,10 +141,8 @@ public class AccessibleBenchmark extends AbstractMicroBenchmarkTest {
                 }
             }
 
-            /**
-             * {@inheritDoc}
-             */
-            public Object call() throws Throwable {
+            @Override
+            public Object measure() throws Throwable {
                 method.invoke(param);
                 return person;
             }

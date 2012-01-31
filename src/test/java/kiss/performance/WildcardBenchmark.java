@@ -17,28 +17,30 @@ import java.nio.file.Paths;
 
 import kiss.scratchpad.Wildcard;
 
+import org.junit.Rule;
 import org.junit.Test;
 
-import antibug.benchmark.AbstractMicroBenchmarkTest;
-import antibug.benchmark.BenchmarkCode;
+import antibug.benchmark.Benchmark;
+import antibug.benchmark.Benchmark.Code;
 
 /**
- * @version 2011/02/19 14:15:17
+ * @version 2012/01/31 16:18:56
  */
-public class WildcardBenchmark extends AbstractMicroBenchmarkTest {
+public class WildcardBenchmark {
+
+    @Rule
+    public static final Benchmark benchmark = new Benchmark();
 
     Path path = Paths.get(new File("").getAbsolutePath());
 
     @Test
     public void wild() throws Exception {
-        benchmark(new BenchmarkCode() {
+        benchmark.measure(new Code() {
 
             private Wildcard wildcard = new Wildcard("**.java");
 
-            /**
-             * @see java.util.concurrent.Callable#call()
-             */
-            public Boolean call() throws Throwable {
+            @Override
+            public Object measure() throws Throwable {
                 return wildcard.match(path.toString());
             }
         });
@@ -46,14 +48,12 @@ public class WildcardBenchmark extends AbstractMicroBenchmarkTest {
 
     @Test
     public void system() throws Exception {
-        benchmark(new BenchmarkCode() {
+        benchmark.measure(new Code() {
 
             private PathMatcher wildcard = FileSystems.getDefault().getPathMatcher("glob:*.java");
 
-            /**
-             * @see java.util.concurrent.Callable#call()
-             */
-            public Boolean call() throws Throwable {
+            @Override
+            public Object measure() throws Throwable {
                 return wildcard.matches(path);
             }
         });
