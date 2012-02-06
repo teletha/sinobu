@@ -300,6 +300,13 @@ public class ElementFindTest {
         assert $(xml).find("Q:has(.A.B)").size() == 1;
     }
 
+    @Test
+    public void parent() throws Exception {
+        String xml = xml("<m><Q/><Q/><Q/></m>");
+
+        assert $(xml).find("Q:parent)").size() == 1;
+    }
+
     /**
      * <p>
      * Format to human-redable xml for display when assertion is fail..

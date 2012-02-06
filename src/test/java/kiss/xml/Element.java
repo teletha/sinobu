@@ -370,11 +370,11 @@ public class Element implements Iterable<Element> {
                     break;
 
                 case "only-child":
-                    xpath.append("[count(parent::*/*) = 1]");
+                    xpath.append("[count(../*) = 1]");
                     break;
 
                 case "only-of-type":
-                    xpath.append("[count(parent::*/").append(matcher.group(2)).append(")=1]");
+                    xpath.append("[count(../").append(matcher.group(2)).append(")=1]");
                     break;
 
                 case "empty":
@@ -408,6 +408,10 @@ public class Element implements Iterable<Element> {
                         sub = sub.replace("descendant", "self");
                     }
                     xpath.append(sub).append(")]");
+                    break;
+
+                case "parent":
+                    xpath.append("/..");
                     break;
                 }
             }
