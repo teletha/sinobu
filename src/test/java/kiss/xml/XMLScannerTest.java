@@ -12,6 +12,7 @@ package kiss.xml;
 import static antibug.Ezunit.*;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import kiss.I;
 
@@ -28,11 +29,36 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import antibug.SAXBuilder;
 import antibug.xml.XMLBuilder;
 
-
 /**
  * @version 2010/02/05 1:31:37
  */
 public class XMLScannerTest {
+
+    private static class Block implements Iterable<No> {
+
+        /**
+         * @see java.lang.Iterable#iterator()
+         */
+        @Override
+        public Iterator<No> iterator() {
+            return null;
+        }
+
+    }
+
+    private static class No {
+
+    }
+
+    private Block p() {
+        return null;
+    }
+
+    private boolean a() {
+        return false;
+    }
+
+    static No e;
 
     @Rule
     public static final XMLBuilder builder = new XMLBuilder();

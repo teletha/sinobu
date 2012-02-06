@@ -9,7 +9,6 @@
  */
 package antibug.xml;
 
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,13 +35,16 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import antibug.SAXBuilder;
 
-
 /**
  * @version 2012/01/19 15:05:01
  */
 public class XML {
 
     private Document document;
+
+    public XML() {
+
+    }
 
     public XML(Path path, XMLFilter... filters) {
         // build xml pipe
