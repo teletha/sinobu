@@ -44,10 +44,10 @@ public class Element implements Iterable<Element> {
      * Original pattern.
      * 
      * <pre>
-     * ([>+~ ])?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s?([=~^$*|])?=\s?["]([^"]*)["])?\s?\])?(:([\w-]+)\((.*)\))?
+     * ([>+~ ])?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s?([=~^$*|])?=\s?["]([^"]*)["])?\s?\])?(:([\w-]+)(\(?(odd|even|(\d*)(n)?(\+(\d+))?)\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>+~ ])?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s?([=~^$*|])?=\\s?[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)\\((.*)\\))?");
+    private static final Pattern SELECTOR = Pattern.compile("([>+~ ])?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s?([=~^$*|])?=\\s?[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\(?(odd|even|(\\d*)(n)?(\\+(\\d+))?)\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -330,6 +330,55 @@ public class Element implements Iterable<Element> {
                         }
                     }
                 }
+
+                // =================================================
+                // Structural Pseudo Classes Selector
+                // =================================================
+                match = matcher.group(13);
+
+                if (match != null) {
+                    switch (match) {
+                    case "first-child":
+                        xpath.append("[not(preceding-sibling::*)]");
+                        break;
+
+                    case "last-child":
+                        xpath.append("[not(following-sibling::*)]");
+                        break;
+
+                    case "first-of-type":
+                        xpath.append("[not(preceding-sibling::").append(matcher.group(2)).append(")]");
+                        break;
+
+                    case "last-of-type":
+                        xpath.append("[not(following-sibling::").append(matcher.group(2)).append(")]");
+                        break;
+
+                    case "only-child":
+                        xpath.append("[count(parent::*/*) = 1]");
+                        break;
+
+                    case "only-of-type":
+                        xpath.append("[count(parent::*/").append(matcher.group(2)).append(")=1]");
+                        break;
+
+                    case "empty":
+                        xpath.append("[not(*) and not(text())]");
+                        break;
+
+                    case "nth-child":
+                    case "nth-last-child":
+                    case "nth-of-type":
+                    case "nth-last-of-type":
+                        if (matcher.group(17) == null) {
+                            // odd, even or number
+                            compile(xpath, match, matcher.group(2), null, matcher.group(15));
+                        } else {
+                            compile(xpath, match, matcher.group(2), matcher.group(16), matcher.group(19));
+                        }
+                        break;
+                    }
+                }
             }
 
             try {
@@ -345,5 +394,48 @@ public class Element implements Iterable<Element> {
 
         // API definition
         return compiled;
+    }
+
+    /**
+     * <p>
+     * Helper method to compile nth-pusedo-selectors.
+     * </p>
+     * 
+     * @param xpath
+     * @param clazz
+     * @param type
+     * @param coefficient
+     * @param remainder
+     */
+    private static void compile(StringBuilder xpath, String clazz, String type, String coefficient, String remainder) {
+        String direction = "preceding";
+
+        if (clazz.contains("last")) {
+            direction = "following";
+        }
+
+        if (clazz.endsWith("child")) {
+            type = "*";
+        }
+
+        if (remainder == null) {
+            remainder = "0";
+        } else if (remainder.equals("even")) {
+            coefficient = "2";
+            remainder = "0";
+        } else if (remainder.equals("odd")) {
+            coefficient = "2";
+            remainder = "1";
+        }
+
+        xpath.append("[(count(").append(direction).append("-sibling::").append(type).append(") + 1)");
+
+        if (coefficient != null) {
+            if (coefficient.length() == 0) {
+                coefficient = "1";
+            }
+            xpath.append(" mod ").append(coefficient);
+        }
+        xpath.append('=').append(remainder).append("]");
     }
 }
