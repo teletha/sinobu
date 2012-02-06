@@ -44,19 +44,19 @@ public class Element implements Iterable<Element> {
      * Original pattern.
      * 
      * <pre>
-     * ([>+~ ])?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s?([=~^$*|])?=\s?["]([^"]*)["])?\s?\])?(:([\w-]+)(\(?(odd|even|(\d*)(n)?(\+(\d+))?)\))?)?
+     * ([>+~ ])?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s?([=~^$*|])?=\s?["]([^"]*)["])?\s?\])?(:([\w-]+)(\(?(odd|even|(\d*)(n)?(\+(\d+))?|(.*))\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>+~ ])?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s?([=~^$*|])?=\\s?[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\(?(odd|even|(\\d*)(n)?(\\+(\\d+))?)\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile("([>+~ ])?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s?([=~^$*|])?=\\s?[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\(?(odd|even|(\\d*)(n)?(\\+(\\d+))?|(.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
 
     /** The document builder. */
-    private static DocumentBuilder DOM;
+    private static final DocumentBuilder DOM;
 
     /** The xpath evaluator. */
-    private static XPath XPATH;
+    private static final XPath XPATH;
 
     // initialization
     static {
@@ -167,223 +167,11 @@ public class Element implements Iterable<Element> {
 
         if (compiled == null) {
             // normalize space
-            String pattern = selector.replaceAll("\\s+", " ").replaceAll(" ([>+~]) ", "$1");
-
-            // compile css selector to xpath
-            StringBuilder xpath = new StringBuilder();
-            Matcher matcher = SELECTOR.matcher(pattern);
-
-            while (matcher.find()) {
-                // =================================================
-                // Combinators
-                // =================================================
-                String suffix = null;
-                String match = matcher.group(1);
-
-                if (match == null) {
-                    // no combinator
-                    if (matcher.start() == 0) {
-                        // first selector
-                        xpath.append("descendant::");
-                    } else {
-                        break; // finish parsing
-                    }
-                } else {
-                    switch (match.charAt(0)) {
-                    case '>': // Child combinator
-                        xpath.append('/');
-                        break;
-
-                    case ' ': // Descendant combinator
-                        xpath.append("//");
-                        break;
-
-                    case '~': // General sibling combinator
-                        xpath.append("/following-sibling::");
-                        break;
-
-                    case '+': // Adjacent sibling combinator
-                        xpath.append("/following-sibling::*[1][self::");
-                        suffix = "]";
-                        break;
-                    }
-                }
-
-                // =================================================
-                // Type (Universal) Selector
-                // =================================================
-                match = matcher.group(2);
-
-                if (match == null) {
-                    xpath.append("*");
-                } else {
-                    xpath.append(match);
-                }
-
-                if (suffix != null) {
-                    xpath.append(suffix);
-                }
-
-                // =================================================
-                // ID Selector
-                // =================================================
-                match = matcher.group(4);
-
-                if (match != null) {
-                    xpath.append("[@id='" + match + "']");
-                }
-
-                // =================================================
-                // Class Selector
-                // =================================================
-                match = matcher.group(5);
-
-                if (match != null && match.length() != 0) {
-                    for (String className : match.substring(1).split("\\.")) {
-                        xpath.append("[contains(concat(' ',normalize-space(@class),' '),' " + className + " ')]");
-                    }
-                }
-
-                // =================================================
-                // Attribute Selector
-                // =================================================
-                match = matcher.group(8);
-
-                if (match != null) {
-                    String value = matcher.group(11);
-
-                    if (value == null) {
-                        // [att]
-                        //
-                        // Represents an element with the att attribute, whatever the value
-                        // of the attribute.
-                        xpath.append("[@").append(match).append("]");
-                    } else {
-                        String type = matcher.group(10);
-
-                        if (type == null) {
-                            // [att=val]
-                            //
-                            // Represents an element with the att attribute whose value
-                            // is exactly "val".
-                            xpath.append("[@").append(match).append("='").append(value).append("']");
-                        } else {
-                            switch (type.charAt(0)) {
-                            case '~':
-                                // [att~=val]
-                                //
-                                // Represents an element with the att attribute whose value is a
-                                // whitespace-separated list of words, one of which is exactly
-                                // "val". If "val" contains whitespace, it will never represent
-                                // anything (since the words are separated by spaces). Also if "val"
-                                // is the empty string, it will never represent anything.
-                                xpath.append("[contains(concat(' ',@")
-                                        .append(match)
-                                        .append(",' '),' ")
-                                        .append(value)
-                                        .append(" ')]");
-                                break;
-
-                            case '*':
-                                // [att*=val]
-                                //
-                                // Represents an element with the att attribute whose value contains
-                                // at least one instance of the substring "val". If "val" is the
-                                // empty string then the selector does not represent anything.
-                                xpath.append("[contains(@").append(match).append(",'").append(value).append("')]");
-                                break;
-
-                            case '^':
-                                // [att^=val]
-                                //
-                                // Represents an element with the att attribute whose value begins
-                                // with the prefix "val". If "val" is the empty string then the
-                                // selector does not represent anything.
-                                xpath.append("[starts-with(@").append(match).append(",'").append(value).append("')]");
-                                break;
-
-                            case '$':
-                                // [att$=val]
-                                //
-                                // Represents an element with the att attribute whose value ends
-                                // with the suffix "val". If "val" is the empty string then the
-                                // selector does not represent anything.
-                                xpath.append("[substring(@")
-                                        .append(match)
-                                        .append(", string-length(@")
-                                        .append(match)
-                                        .append(") - string-length('")
-                                        .append(value)
-                                        .append("') + 1) = '")
-                                        .append(value)
-                                        .append("']");
-                                break;
-
-                            case '|':
-                                // [att|=val]
-                                //
-                                // Represents an element with the att attribute, its value either
-                                // being exactly "val" or beginning with "val" immediately followed
-                                // by "-" (U+002D).
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // =================================================
-                // Structural Pseudo Classes Selector
-                // =================================================
-                match = matcher.group(13);
-
-                if (match != null) {
-                    switch (match) {
-                    case "first-child":
-                        xpath.append("[not(preceding-sibling::*)]");
-                        break;
-
-                    case "last-child":
-                        xpath.append("[not(following-sibling::*)]");
-                        break;
-
-                    case "first-of-type":
-                        xpath.append("[not(preceding-sibling::").append(matcher.group(2)).append(")]");
-                        break;
-
-                    case "last-of-type":
-                        xpath.append("[not(following-sibling::").append(matcher.group(2)).append(")]");
-                        break;
-
-                    case "only-child":
-                        xpath.append("[count(parent::*/*) = 1]");
-                        break;
-
-                    case "only-of-type":
-                        xpath.append("[count(parent::*/").append(matcher.group(2)).append(")=1]");
-                        break;
-
-                    case "empty":
-                        xpath.append("[not(*) and not(text())]");
-                        break;
-
-                    case "nth-child":
-                    case "nth-last-child":
-                    case "nth-of-type":
-                    case "nth-last-of-type":
-                        if (matcher.group(17) == null) {
-                            // odd, even or number
-                            compile(xpath, match, matcher.group(2), null, matcher.group(15));
-                        } else {
-                            compile(xpath, match, matcher.group(2), matcher.group(16), matcher.group(19));
-                        }
-                        break;
-                    }
-                }
-            }
+            selector = selector.replaceAll("\\s+", " ").replaceAll(" ([>+~]) ", "$1");
 
             try {
                 // compile actually
-                compiled = XPATH.compile(xpath.toString());
+                compiled = XPATH.compile(convert(selector));
 
                 // cache it
                 selectors.put(selector, compiled);
@@ -394,6 +182,237 @@ public class Element implements Iterable<Element> {
 
         // API definition
         return compiled;
+    }
+
+    private static String convert(String selector) {
+        StringBuilder xpath = new StringBuilder();
+        Matcher matcher = SELECTOR.matcher(selector);
+
+        while (matcher.find()) {
+            // =================================================
+            // Combinators
+            // =================================================
+            String suffix = null;
+            String match = matcher.group(1);
+
+            if (match == null) {
+                // no combinator
+                if (matcher.start() == 0) {
+                    // first selector
+                    xpath.append("descendant::");
+                } else {
+                    break; // finish parsing
+                }
+            } else {
+                switch (match.charAt(0)) {
+                case '>': // Child combinator
+                    xpath.append('/');
+                    break;
+
+                case ' ': // Descendant combinator
+                    xpath.append("//");
+                    break;
+
+                case '~': // General sibling combinator
+                    xpath.append("/following-sibling::");
+                    break;
+
+                case '+': // Adjacent sibling combinator
+                    xpath.append("/following-sibling::*[1][self::");
+                    suffix = "]";
+                    break;
+                }
+            }
+
+            // =================================================
+            // Type (Universal) Selector
+            // =================================================
+            match = matcher.group(2);
+
+            if (match == null) {
+                xpath.append("*");
+            } else {
+                xpath.append(match);
+            }
+
+            if (suffix != null) {
+                xpath.append(suffix);
+            }
+
+            // =================================================
+            // ID Selector
+            // =================================================
+            match = matcher.group(4);
+
+            if (match != null) {
+                xpath.append("[@id='" + match + "']");
+            }
+
+            // =================================================
+            // Class Selector
+            // =================================================
+            match = matcher.group(5);
+
+            if (match != null && match.length() != 0) {
+                for (String className : match.substring(1).split("\\.")) {
+                    xpath.append("[contains(concat(' ',normalize-space(@class),' '),' " + className + " ')]");
+                }
+            }
+
+            // =================================================
+            // Attribute Selector
+            // =================================================
+            match = matcher.group(8);
+
+            if (match != null) {
+                String value = matcher.group(11);
+
+                if (value == null) {
+                    // [att]
+                    //
+                    // Represents an element with the att attribute, whatever the value
+                    // of the attribute.
+                    xpath.append("[@").append(match).append("]");
+                } else {
+                    String type = matcher.group(10);
+
+                    if (type == null) {
+                        // [att=val]
+                        //
+                        // Represents an element with the att attribute whose value
+                        // is exactly "val".
+                        xpath.append("[@").append(match).append("='").append(value).append("']");
+                    } else {
+                        switch (type.charAt(0)) {
+                        case '~':
+                            // [att~=val]
+                            //
+                            // Represents an element with the att attribute whose value is a
+                            // whitespace-separated list of words, one of which is exactly
+                            // "val". If "val" contains whitespace, it will never represent
+                            // anything (since the words are separated by spaces). Also if "val"
+                            // is the empty string, it will never represent anything.
+                            xpath.append("[contains(concat(' ',@")
+                                    .append(match)
+                                    .append(",' '),' ")
+                                    .append(value)
+                                    .append(" ')]");
+                            break;
+
+                        case '*':
+                            // [att*=val]
+                            //
+                            // Represents an element with the att attribute whose value contains
+                            // at least one instance of the substring "val". If "val" is the
+                            // empty string then the selector does not represent anything.
+                            xpath.append("[contains(@").append(match).append(",'").append(value).append("')]");
+                            break;
+
+                        case '^':
+                            // [att^=val]
+                            //
+                            // Represents an element with the att attribute whose value begins
+                            // with the prefix "val". If "val" is the empty string then the
+                            // selector does not represent anything.
+                            xpath.append("[starts-with(@").append(match).append(",'").append(value).append("')]");
+                            break;
+
+                        case '$':
+                            // [att$=val]
+                            //
+                            // Represents an element with the att attribute whose value ends
+                            // with the suffix "val". If "val" is the empty string then the
+                            // selector does not represent anything.
+                            xpath.append("[substring(@")
+                                    .append(match)
+                                    .append(", string-length(@")
+                                    .append(match)
+                                    .append(") - string-length('")
+                                    .append(value)
+                                    .append("') + 1) = '")
+                                    .append(value)
+                                    .append("']");
+                            break;
+
+                        case '|':
+                            // [att|=val]
+                            //
+                            // Represents an element with the att attribute, its value either
+                            // being exactly "val" or beginning with "val" immediately followed
+                            // by "-" (U+002D).
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // =================================================
+            // Structural Pseudo Classes Selector
+            // =================================================
+            match = matcher.group(13);
+
+            if (match != null) {
+                switch (match) {
+                case "first-child":
+                    xpath.append("[not(preceding-sibling::*)]");
+                    break;
+
+                case "last-child":
+                    xpath.append("[not(following-sibling::*)]");
+                    break;
+
+                case "first-of-type":
+                    xpath.append("[not(preceding-sibling::").append(matcher.group(2)).append(")]");
+                    break;
+
+                case "last-of-type":
+                    xpath.append("[not(following-sibling::").append(matcher.group(2)).append(")]");
+                    break;
+
+                case "only-child":
+                    xpath.append("[count(parent::*/*) = 1]");
+                    break;
+
+                case "only-of-type":
+                    xpath.append("[count(parent::*/").append(matcher.group(2)).append(")=1]");
+                    break;
+
+                case "empty":
+                    xpath.append("[not(*) and not(text())]");
+                    break;
+
+                case "nth-child":
+                case "nth-last-child":
+                case "nth-of-type":
+                case "nth-last-of-type":
+                    if (matcher.group(17) == null) {
+                        // odd, even or number
+                        convert(xpath, match, matcher.group(2), null, matcher.group(15));
+                    } else {
+                        convert(xpath, match, matcher.group(2), matcher.group(16), matcher.group(19));
+                    }
+                    break;
+
+                case "not":
+                case "has":
+                    xpath.append('[');
+
+                    if (match.charAt(0) == 'n') {
+                        xpath.append("not");
+                    }
+                    xpath.append('(');
+
+                    String sub = convert(matcher.group(15));
+
+                    if (sub.startsWith("descendant::*[")) {
+                        sub = sub.replace("descendant", "self");
+                    }
+                    xpath.append(sub).append(")]");
+                    break;
+                }
+            }
+        }
+        return xpath.toString();
     }
 
     /**
@@ -407,7 +426,7 @@ public class Element implements Iterable<Element> {
      * @param coefficient
      * @param remainder
      */
-    private static void compile(StringBuilder xpath, String clazz, String type, String coefficient, String remainder) {
+    private static void convert(StringBuilder xpath, String clazz, String type, String coefficient, String remainder) {
         String direction = "preceding";
 
         if (clazz.contains("last")) {

@@ -154,11 +154,27 @@ public class ElementFindTest {
     }
 
     @Test
+    public void firstOfType() throws Exception {
+        String xml = xml("<m><Q/><Q/><R/></m>");
+
+        assert $(xml).find("Q:first-of-type").size() == 1;
+        assert $(xml).find("R:first-of-type").size() == 1;
+    }
+
+    @Test
     public void lastChild() throws Exception {
         String xml = xml("<m><Q/><Q/><R/></m>");
 
         assert $(xml).find("Q:last-child").size() == 0;
         assert $(xml).find("R:last-child").size() == 1;
+    }
+
+    @Test
+    public void lastOfType() throws Exception {
+        String xml = xml("<m><Q/><Q/><R/></m>");
+
+        assert $(xml).find("Q:last-of-type").size() == 1;
+        assert $(xml).find("R:last-of-type").size() == 1;
     }
 
     @Test
@@ -178,6 +194,21 @@ public class ElementFindTest {
     }
 
     @Test
+    public void nthOfType() throws Exception {
+        String xml = xml("<m><Q/><P/><Q/><P/><P/><Q/><Q/></m>");
+
+        assert $(xml).find("Q:nth-of-type(1)").size() == 1;
+        assert $(xml).find("Q:nth-of-type(2)").size() == 1;
+        assert $(xml).find("Q:nth-of-type(5)").size() == 0;
+        assert $(xml).find("Q:nth-of-type(n)").size() == 4;
+        assert $(xml).find("Q:nth-of-type(2n)").size() == 2;
+        assert $(xml).find("Q:nth-of-type(3n)").size() == 1;
+        assert $(xml).find("Q:nth-of-type(2n+1)").size() == 2;
+        assert $(xml).find("Q:nth-of-type(odd)").size() == 2;
+        assert $(xml).find("Q:nth-of-type(even)").size() == 2;
+    }
+
+    @Test
     public void nthLastChild() throws Exception {
         String xml = xml("<m><Q/><Q/><Q/><Q/><P/><Q/><Q/></m>");
 
@@ -194,21 +225,6 @@ public class ElementFindTest {
     }
 
     @Test
-    public void nthOfType() throws Exception {
-        String xml = xml("<m><Q/><P/><Q/><P/><P/><Q/><Q/></m>");
-
-        assert $(xml).find("Q:nth-of-type(1)").size() == 1;
-        assert $(xml).find("Q:nth-of-type(2)").size() == 1;
-        assert $(xml).find("Q:nth-of-type(5)").size() == 0;
-        assert $(xml).find("Q:nth-of-type(n)").size() == 4;
-        assert $(xml).find("Q:nth-of-type(2n)").size() == 2;
-        assert $(xml).find("Q:nth-of-type(3n)").size() == 1;
-        assert $(xml).find("Q:nth-of-type(2n+1)").size() == 2;
-        assert $(xml).find("Q:nth-of-type(odd)").size() == 2;
-        assert $(xml).find("Q:nth-of-type(even)").size() == 2;
-    }
-
-    @Test
     public void nthLastOfType() throws Exception {
         String xml = xml("<m><Q/><P/><Q/><P/><P/><Q/><Q/></m>");
 
@@ -221,22 +237,6 @@ public class ElementFindTest {
         assert $(xml).find("Q:nth-last-of-type(2n+1)").size() == 2;
         assert $(xml).find("Q:nth-last-of-type(odd)").size() == 2;
         assert $(xml).find("Q:nth-last-of-type(even)").size() == 2;
-    }
-
-    @Test
-    public void firstOfType() throws Exception {
-        String xml = xml("<m><Q/><Q/><R/></m>");
-
-        assert $(xml).find("Q:first-of-type").size() == 1;
-        assert $(xml).find("R:first-of-type").size() == 1;
-    }
-
-    @Test
-    public void lastOfType() throws Exception {
-        String xml = xml("<m><Q/><Q/><R/></m>");
-
-        assert $(xml).find("Q:last-of-type").size() == 1;
-        assert $(xml).find("R:last-of-type").size() == 1;
     }
 
     @Test
@@ -258,6 +258,46 @@ public class ElementFindTest {
         String xml = xml("<m><Q/><Q>text</Q><Q><r/></Q></m>");
 
         assert $(xml).find("Q:empty").size() == 1;
+    }
+
+    @Test
+    public void notElement() throws Exception {
+        String xml = xml("<m><Q><S/></Q><Q><t/></Q></m>");
+
+        assert $(xml).find("Q:not(S)").size() == 1;
+    }
+
+    @Test
+    public void notAttribute() throws Exception {
+        String xml = xml("<m><Q class='A'/><Q class='B'/><Q class='A B'/></m>");
+
+        assert $(xml).find("Q:not(.A)").size() == 1;
+    }
+
+    @Test
+    public void hasElement() throws Exception {
+        String xml = xml("<m><Q><S/></Q><Q><S/><T/></Q><Q><T/></Q></m>");
+
+        assert $(xml).find("Q:has(S)").size() == 2;
+        assert $(xml).find("Q:has(T)").size() == 2;
+        assert $(xml).find("Q:has(T:first-child)").size() == 1;
+        assert $(xml).find("Q:has(S + T)").size() == 1;
+    }
+
+    @Test
+    public void hasElementNest() throws Exception {
+        String xml = xml("<m><Q><S/></Q><Q><S><T/></S></Q></m>");
+
+        assert $(xml).find("Q:has(S:has(T))").size() == 1;
+    }
+
+    @Test
+    public void hasAttribute() throws Exception {
+        String xml = xml("<m><Q class='A'/><Q class='B'/><Q class='A B'/></m>");
+
+        assert $(xml).find("Q:has(.A)").size() == 2;
+        assert $(xml).find("Q:has(.B)").size() == 2;
+        assert $(xml).find("Q:has(.A.B)").size() == 1;
     }
 
     /**
