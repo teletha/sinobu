@@ -184,6 +184,14 @@ public class Element implements Iterable<Element> {
         return compiled;
     }
 
+    /**
+     * <p>
+     * Helper method to convert css selector to xpath.
+     * </p>
+     * 
+     * @param selector A css selector.
+     * @return A xpath.
+     */
     private static String convert(String selector) {
         StringBuilder xpath = new StringBuilder();
         Matcher matcher = SELECTOR.matcher(selector);
