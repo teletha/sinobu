@@ -10,19 +10,27 @@
 package kiss.xml;
 
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -31,12 +39,10 @@ import javax.xml.xpath.XPathFactory;
 
 import kiss.I;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSParser;
 import org.xml.sax.InputSource;
 
 /**
@@ -48,10 +54,10 @@ public class Element implements Iterable<Element> {
      * Original pattern.
      * 
      * <pre>
-     * ([>+~ ])?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s?([=~^$*|])?=\s?["]([^"]*)["])?\s?\])?(:([\w-]+)(\(?(odd|even|(\d*)(n)?(\+(\d+))?|(.*))\))?)?
+     * ([>~+\- ])?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s?([=~^$*|])?=\s?["]([^"]*)["])?\s?\])?(:([\w-]+)(\(?(odd|even|(\d*)(n)?(\+(\d+))?|(.*))\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>+~ ])?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s?([=~^$*|])?=\\s?[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\(?(odd|even|(\\d*)(n)?(\\+(\\d+))?|(.*))\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ])?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s?([=~^$*|])?=\\s?[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\(?(odd|even|(\\d*)(n)?(\\+(\\d+))?|(.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -62,18 +68,11 @@ public class Element implements Iterable<Element> {
     /** The xpath evaluator. */
     private static final XPath XPATH;
 
-    private static final DOMImplementationLS LS;
-
-    /** The document fragment parser. */
-    private static final LSParser PARSER;
-
     // initialization
     static {
         try {
             DOM = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             XPATH = XPathFactory.newInstance().newXPath();
-            LS = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
-            PARSER = LS.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS, null);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -83,8 +82,11 @@ public class Element implements Iterable<Element> {
         return new Element(xml);
     }
 
+    /** The current document. */
+    private final Document doc;
+
     /** The current node set. */
-    private final Set<Node> nodes;
+    private final List<Node> nodes;
 
     /**
      * <p>
@@ -95,7 +97,8 @@ public class Element implements Iterable<Element> {
      */
     private Element(String xml) {
         try {
-            nodes = Collections.singleton(DOM.parse(new InputSource(new StringReader(xml))).getFirstChild());
+            doc = DOM.parse(new InputSource(new StringReader(xml)));
+            nodes = Collections.singletonList(doc.getFirstChild());
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -108,21 +111,418 @@ public class Element implements Iterable<Element> {
      * 
      * @param nodes
      */
-    private Element(Set<Node> nodes) {
+    private Element(Document doc, List<Node> nodes) {
+        this.doc = doc;
         this.nodes = nodes;
     }
 
+    /**
+     * <p>
+     * Insert content, specified by the parameter, to the end of each element in the set of matched
+     * elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
     public Element append(String xml) {
+        return append(parse(xml));
+    }
 
-        LSInput input = LS.createLSInput();
-        input.setStringData(xml);
-
+    /**
+     * <p>
+     * Insert content, specified by the parameter, to the end of each element in the set of matched
+     * elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element append(Element xml) {
         for (Node node : nodes) {
-            PARSER.parse(input);
+            node.appendChild(copy(xml));
         }
 
         // API definition
         return this;
+    }
+
+    /**
+     * <p>
+     * Insert content, specified by the parameter, to the beginning of each element in the set of
+     * matched elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element prepend(String xml) {
+        return prepend(parse(xml));
+    }
+
+    /**
+     * <p>
+     * Insert content, specified by the parameter, to the beginning of each element in the set of
+     * matched elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element prepend(Element xml) {
+        for (Node node : nodes) {
+            node.insertBefore(copy(xml), node.getFirstChild());
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Insert content, specified by the parameter, before each element in the set of matched
+     * elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element before(String xml) {
+        return before(parse(xml));
+    }
+
+    /**
+     * <p>
+     * Insert content, specified by the parameter, before each element in the set of matched
+     * elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element before(Element xml) {
+        for (Node node : nodes) {
+            node.getParentNode().insertBefore(copy(xml), node);
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Insert content, specified by the parameter, after each element in the set of matched
+     * elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element after(String xml) {
+        return after(parse(xml));
+    }
+
+    /**
+     * <p>
+     * Insert content, specified by the parameter, after each element in the set of matched
+     * elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element after(Element xml) {
+        for (Node node : nodes) {
+            node.getParentNode().insertBefore(copy(xml), node.getNextSibling());
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Remove all child nodes of the set of matched elements from the DOM.
+     * </p>
+     * 
+     * @return
+     */
+    public Element empty() {
+        for (Node node : nodes) {
+            while (node.hasChildNodes()) {
+                node.removeChild(node.getFirstChild());
+            }
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Remove the set of matched elements from the DOM.
+     * </p>
+     * <p>
+     * Similar to {@link #empty()}, the {@link #remove()} method takes elements out of the DOM. Use
+     * {@link #remove()} when you want to remove the element itself, as well as everything inside
+     * it.
+     * </p>
+     * 
+     * @return
+     */
+    public Element remove() {
+        for (Node node : nodes) {
+            node.getParentNode().removeChild(node);
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Wrap an HTML structure around each element in the set of matched elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element wrap(String xml) {
+        return wrap(parse(xml));
+    }
+
+    /**
+     * <p>
+     * Wrap an HTML structure around each element in the set of matched elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element wrap(Element xml) {
+        for (Element e : this) {
+            e.wrapAll(xml);
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Wrap an HTML structure around all elements in the set of matched elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element wrapAll(String xml) {
+        return wrapAll(parse(xml));
+    }
+
+    /**
+     * <p>
+     * Wrap an HTML structure around all elements in the set of matched elements.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element wrapAll(Element xml) {
+        first().after(xml).find(".+*").append(this);
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Get the combined text contents of each element in the set of matched elements, including
+     * their descendants.
+     * </p>
+     * 
+     * @return
+     */
+    public String text() {
+        StringBuilder text = new StringBuilder();
+
+        for (Node node : nodes) {
+            text.append(node.getTextContent());
+        }
+        return text.toString();
+    }
+
+    /**
+     * <p>
+     * Set the content of each element in the set of matched elements to the specified text.
+     * </p>
+     * 
+     * @param text
+     * @return
+     */
+    public Element text(String text) {
+        for (Node node : nodes) {
+            node.setTextContent(text);
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Get the value of an attribute for the first element in the set of matched elements.
+     * </p>
+     * 
+     * @param name An attribute name.
+     * @return
+     */
+    public String attr(String name) {
+        return ((org.w3c.dom.Element) nodes.iterator().next()).getAttribute(name);
+    }
+
+    /**
+     * <p>
+     * Set one or more attributes for the set of matched elements.
+     * </p>
+     * 
+     * @param name
+     * @param value
+     * @return
+     */
+    public Element attr(String name, String value) {
+        for (Node node : nodes) {
+            if (value == null) {
+                ((org.w3c.dom.Element) node).removeAttribute(name);
+            } else {
+                ((org.w3c.dom.Element) node).setAttribute(name, value);
+            }
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Adds the specified class(es) to each of the set of matched elements.
+     * </p>
+     * <p>
+     * It's important to note that this method does not replace a class. It simply adds the class,
+     * appending it to any which may already be assigned to the elements. More than one class may be
+     * added at a time, separated by a space, to the set of matched elements.
+     * </p>
+     * 
+     * @param names
+     * @return
+     */
+    public Element addClass(String names) {
+        for (Element e : this) {
+            String value = " " + e.attr("class") + " ";
+
+            for (String name : names.split(" ")) {
+                if (!value.contains(" " + name + " ")) {
+                    value = value + name + " ";
+                }
+            }
+            e.attr("class", value.trim());
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Remove a single class, multiple classes, or all classes from each element in the set of
+     * matched elements.
+     * </p>
+     * <p>
+     * If a class name is included as a parameter, then only that class will be removed from the set
+     * of matched elements. If no class names are specified in the parameter, all classes will be
+     * removed. More than one class may be removed at a time, separated by a space, from the set of
+     * matched elements.
+     * </p>
+     * 
+     * @param names
+     * @return
+     */
+    public Element removeClass(String names) {
+        for (Element e : this) {
+            String value = " " + e.attr("class") + " ";
+
+            for (String name : names.split(" ")) {
+                value = value.replace(" " + name + " ", " ");
+            }
+            e.attr("class", value.trim());
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Add or remove one class from each element in the set of matched elements, depending on either
+     * the class's presence or the value of the switch argument.
+     * </p>
+     * 
+     * @param name
+     * @return
+     */
+    public Element toggleClass(String name) {
+        for (Element e : this) {
+            if (e.hasClass(name)) {
+                e.removeClass(name);
+            } else {
+                e.addClass(name);
+            }
+        }
+
+        // API definition
+        return this;
+    }
+
+    /**
+     * <p>
+     * Determine whether any of the matched elements are assigned the given class.
+     * </p>
+     * 
+     * @param name
+     * @return
+     */
+    public boolean hasClass(String name) {
+        for (Element e : this) {
+            String value = " " + e.attr("class") + " ";
+
+            if (value.contains(" " + name + " ")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * <p>
+     * Reduce the set of matched elements to the first in the set.
+     * </p>
+     * 
+     * @return
+     */
+    public Element first() {
+        return new Element(doc, nodes.subList(0, 1));
+    }
+
+    /**
+     * <p>
+     * Reduce the set of matched elements to the final one in the set.
+     * </p>
+     * 
+     * @return
+     */
+    public Element last() {
+        int size = nodes.size();
+        return new Element(doc, nodes.subList(size - 1, size));
     }
 
     /**
@@ -136,18 +536,17 @@ public class Element implements Iterable<Element> {
      */
     public Element find(String selector) {
         XPathExpression xpath = compile(selector);
-        Set<Node> result = new HashSet();
+        CopyOnWriteArrayList<Node> result = new CopyOnWriteArrayList();
 
         try {
             for (Node node : nodes) {
                 NodeList list = (NodeList) xpath.evaluate(node, XPathConstants.NODESET);
 
                 for (int i = 0; i < list.getLength(); i++) {
-                    result.add(list.item(i));
+                    result.addIfAbsent(list.item(i));
                 }
             }
-
-            return new Element(result);
+            return new Element(doc, result);
         } catch (XPathExpressionException e) {
             throw I.quiet(e);
         }
@@ -172,9 +571,42 @@ public class Element implements Iterable<Element> {
         List<Element> elements = new ArrayList();
 
         for (Node node : nodes) {
-            elements.add(new Element(Collections.singleton(node)));
+            elements.add(new Element(doc, Collections.singletonList(node)));
         }
         return elements.iterator();
+    }
+
+    /**
+     * <p>
+     * Helper method to copy nodes.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    private Node copy(Element xml) {
+        DocumentFragment fragment = doc.createDocumentFragment();
+
+        for (Node node : xml.nodes) {
+            if (doc == xml.doc) {
+                fragment.appendChild(node);
+            } else {
+                fragment.appendChild(doc.importNode(node, true));
+            }
+        }
+        return fragment;
+    }
+
+    /**
+     * <p>
+     * Parse xml fragment.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    private Element parse(String xml) {
+        return $("<i>" + xml + "</i>").find("i:root>*");
     }
 
     /**
@@ -191,7 +623,7 @@ public class Element implements Iterable<Element> {
 
         if (compiled == null) {
             // normalize space
-            selector = selector.replaceAll("\\s+", " ").replaceAll(" ([>+~]) ", "$1");
+            selector = selector.replaceAll("\\s+", " ").replaceAll(" ([>+~\\-]) ", "$1");
 
             try {
                 // compile actually
@@ -231,7 +663,7 @@ public class Element implements Iterable<Element> {
                 // no combinator
                 if (matcher.start() == 0) {
                     // first selector
-                    xpath.append("descendant::");
+                    xpath.append("descendant-or-self::");
                 } else {
                     break; // finish parsing
                 }
@@ -251,6 +683,11 @@ public class Element implements Iterable<Element> {
 
                 case '+': // Adjacent sibling combinator
                     xpath.append("/following-sibling::*[1][self::");
+                    suffix = "]";
+                    break;
+
+                case '-': // Adjacent previous sibling combinator (EXTENSION)
+                    xpath.append("/preceding-sibling::*[1][self::");
                     suffix = "]";
                     break;
                 }
@@ -445,6 +882,14 @@ public class Element implements Iterable<Element> {
                 case "parent":
                     xpath.append("/..");
                     break;
+
+                case "root":
+                    xpath.append("[not(parent::*)]");
+                    break;
+
+                case "contains":
+                    xpath.append("[contains(text(),'").append(matcher.group(15)).append("')]");
+                    break;
                 }
             }
         }
@@ -492,5 +937,33 @@ public class Element implements Iterable<Element> {
             xpath.append(" mod ").append(coefficient);
         }
         xpath.append('=').append(remainder).append("]");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringWriter buffer;
+        try {
+            TransformerFactory transFactory = TransformerFactory.newInstance();
+            Transformer transformer = transFactory.newTransformer();
+            buffer = new StringWriter();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
+            for (Node node : nodes) {
+                transformer.transform(new DOMSource(node), new StreamResult(buffer));
+            }
+        } catch (TransformerConfigurationException e) {
+            throw I.quiet(e);
+        } catch (IllegalArgumentException e) {
+            throw I.quiet(e);
+        } catch (TransformerFactoryConfigurationError e) {
+            throw I.quiet(e);
+        } catch (TransformerException e) {
+            throw I.quiet(e);
+        }
+
+        return buffer.toString();
     }
 }

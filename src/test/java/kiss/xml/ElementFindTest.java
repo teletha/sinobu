@@ -146,6 +146,15 @@ public class ElementFindTest {
     }
 
     @Test
+    public void previous() throws Exception {
+        String xml = xml("<m><P><Q/><P/><Q/></P><Q/><Q/></m>");
+
+        assert $(xml).find("P-Q").size() == 1;
+        assert $(xml).find("P - Q").size() == 1;
+        assert $(xml).find("P   -   Q").size() == 1;
+    }
+
+    @Test
     public void firstChild() throws Exception {
         String xml = xml("<m><Q/><Q/><R/></m>");
 
@@ -305,6 +314,29 @@ public class ElementFindTest {
         String xml = xml("<m><Q/><Q/><Q/></m>");
 
         assert $(xml).find("Q:parent)").size() == 1;
+    }
+
+    @Test
+    public void root() throws Exception {
+        String xml = xml("<Q><Q/></Q>");
+
+        assert $(xml).find("Q:root)").size() == 1;
+    }
+
+    @Test
+    public void contains() throws Exception {
+        String xml = xml("<m><Q>a</Q><Q>b</Q><Q>aa</Q></m>");
+
+        assert $(xml).find("Q:contains(a)").size() == 2;
+        assert $(xml).find("Q:contains(b)").size() == 1;
+        assert $(xml).find("Q:contains(aa)").size() == 1;
+    }
+
+    @Test
+    public void asterisk() throws Exception {
+        String xml = xml("<m><Q><a/><b/><c/></Q></m>");
+
+        assert $(xml).find("Q *").size() == 3;
     }
 
     /**
