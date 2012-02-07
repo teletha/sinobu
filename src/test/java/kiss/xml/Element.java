@@ -79,7 +79,7 @@ public class Element implements Iterable<Element> {
     }
 
     public static final Element $(String xml) {
-        return new Element(xml);
+        return parse(xml);
     }
 
     /** The current document. */
@@ -87,22 +87,6 @@ public class Element implements Iterable<Element> {
 
     /** The current node set. */
     private final List<Node> nodes;
-
-    /**
-     * <p>
-     * From xml text.
-     * </p>
-     * 
-     * @param xml
-     */
-    private Element(String xml) {
-        try {
-            doc = DOM.parse(new InputSource(new StringReader(xml)));
-            nodes = Collections.singletonList(doc.getFirstChild());
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
 
     /**
      * <p>
@@ -125,22 +109,11 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element append(String xml) {
-        return append(parse(xml));
-    }
+    public Element append(Object xml) {
+        Element e = parse(xml);
 
-    /**
-     * <p>
-     * Insert content, specified by the parameter, to the end of each element in the set of matched
-     * elements.
-     * </p>
-     * 
-     * @param xml
-     * @return
-     */
-    public Element append(Element xml) {
         for (Node node : nodes) {
-            node.appendChild(copy(xml));
+            node.appendChild(copy(e));
         }
 
         // API definition
@@ -156,22 +129,11 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element prepend(String xml) {
-        return prepend(parse(xml));
-    }
+    public Element prepend(Object xml) {
+        Element e = parse(xml);
 
-    /**
-     * <p>
-     * Insert content, specified by the parameter, to the beginning of each element in the set of
-     * matched elements.
-     * </p>
-     * 
-     * @param xml
-     * @return
-     */
-    public Element prepend(Element xml) {
         for (Node node : nodes) {
-            node.insertBefore(copy(xml), node.getFirstChild());
+            node.insertBefore(copy(e), node.getFirstChild());
         }
 
         // API definition
@@ -187,22 +149,11 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element before(String xml) {
-        return before(parse(xml));
-    }
+    public Element before(Object xml) {
+        Element e = parse(xml);
 
-    /**
-     * <p>
-     * Insert content, specified by the parameter, before each element in the set of matched
-     * elements.
-     * </p>
-     * 
-     * @param xml
-     * @return
-     */
-    public Element before(Element xml) {
         for (Node node : nodes) {
-            node.getParentNode().insertBefore(copy(xml), node);
+            node.getParentNode().insertBefore(copy(e), node);
         }
 
         // API definition
@@ -218,22 +169,11 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element after(String xml) {
-        return after(parse(xml));
-    }
+    public Element after(Object xml) {
+        Element e = parse(xml);
 
-    /**
-     * <p>
-     * Insert content, specified by the parameter, after each element in the set of matched
-     * elements.
-     * </p>
-     * 
-     * @param xml
-     * @return
-     */
-    public Element after(Element xml) {
         for (Node node : nodes) {
-            node.getParentNode().insertBefore(copy(xml), node.getNextSibling());
+            node.getParentNode().insertBefore(copy(e), node.getNextSibling());
         }
 
         // API definition
@@ -287,21 +227,11 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element wrap(String xml) {
-        return wrap(parse(xml));
-    }
+    public Element wrap(Object xml) {
+        Element element = parse(xml);
 
-    /**
-     * <p>
-     * Wrap an HTML structure around each element in the set of matched elements.
-     * </p>
-     * 
-     * @param xml
-     * @return
-     */
-    public Element wrap(Element xml) {
         for (Element e : this) {
-            e.wrapAll(xml);
+            e.wrapAll(element);
         }
 
         // API definition
@@ -316,20 +246,10 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element wrapAll(String xml) {
-        return wrapAll(parse(xml));
-    }
+    public Element wrapAll(Object xml) {
+        Element e = parse(xml);
 
-    /**
-     * <p>
-     * Wrap an HTML structure around all elements in the set of matched elements.
-     * </p>
-     * 
-     * @param xml
-     * @return
-     */
-    public Element wrapAll(Element xml) {
-        first().after(xml).find(".+*").append(this);
+        first().after(e).find(".+*").append(this);
 
         // API definition
         return this;
@@ -605,8 +525,37 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    private Element parse(String xml) {
-        return $("<i>" + xml + "</i>").find("i:root>*");
+    private static Element parse(Object xml) {
+        if (xml instanceof Element) {
+            return (Element) xml;
+        }
+
+        if (xml instanceof NodeList) {
+            NodeList list = (NodeList) xml;
+            CopyOnWriteArrayList<Node> nodes = new CopyOnWriteArrayList();
+
+            for (int i = 0; i < list.getLength(); i++) {
+                nodes.add(list.item(i));
+            }
+            return new Element(DOM.newDocument(), nodes);
+        }
+
+        if (xml instanceof Document) {
+            return new Element(DOM.newDocument(), Collections.singletonList(((Document) xml).getFirstChild()));
+        }
+
+        if (xml instanceof Node) {
+            return new Element(DOM.newDocument(), Collections.singletonList((Node) xml));
+        }
+
+        try {
+            Document doc = DOM.parse(new InputSource(new StringReader("<i>" + xml + "</i>")));
+            List<Node> nodes = Collections.singletonList(doc.getFirstChild());
+
+            return new Element(doc, nodes).find("i:root>*");
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
