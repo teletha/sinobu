@@ -11,12 +11,7 @@ package kiss.xml;
 
 import static kiss.xml.Element.*;
 
-import java.io.StringReader;
-
-import kiss.I;
-
 import org.junit.Test;
-import org.xml.sax.InputSource;
 
 /**
  * @version 2012/02/05 17:08:12
@@ -348,11 +343,6 @@ public class ElementFindTest {
      * @return
      */
     private static final String xml(String text) {
-        StringBuilder builder = new StringBuilder();
-
-        // format
-        I.parse(new InputSource(new StringReader(text)), new XMLWriter(builder));
-
-        return builder.toString();
+        return text;
     }
 }

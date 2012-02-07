@@ -63,16 +63,16 @@ public class Element implements Iterable<Element> {
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
 
     /** The document builder. */
-    private static final DocumentBuilder DOM;
+    private static final DocumentBuilder dom;
 
     /** The xpath evaluator. */
-    private static final XPath XPATH;
+    private static final XPath xpath;
 
     // initialization
     static {
         try {
-            DOM = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            XPATH = XPathFactory.newInstance().newXPath();
+            dom = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            xpath = XPathFactory.newInstance().newXPath();
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -534,14 +534,13 @@ public class Element implements Iterable<Element> {
             Node node = (Node) xml;
 
             if (node instanceof Document) {
-                node = ((Document) node).getDocumentElement();
+                node = node.getFirstChild();
             }
-
             return new Element(node.getOwnerDocument(), Collections.singletonList(node));
         }
 
         try {
-            Document doc = DOM.parse(new InputSource(new StringReader("<i>" + xml + "</i>")));
+            Document doc = dom.parse(new InputSource(new StringReader("<i>" + xml + "</i>")));
 
             return new Element(doc, Collections.singletonList(doc.getFirstChild())).find("i:root>*");
         } catch (Exception e) {
@@ -567,7 +566,7 @@ public class Element implements Iterable<Element> {
 
             try {
                 // compile actually
-                compiled = XPATH.compile(convert(selector));
+                compiled = xpath.compile(convert(selector));
 
                 // cache it
                 selectors.put(selector, compiled);
@@ -824,7 +823,7 @@ public class Element implements Iterable<Element> {
                     break;
 
                 case "root":
-                    xpath.append("[not(parent::*)]");
+                    xpath.delete(0, xpath.length()).append("/*");
                     break;
 
                 case "contains":
