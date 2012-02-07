@@ -530,29 +530,20 @@ public class Element implements Iterable<Element> {
             return (Element) xml;
         }
 
-        if (xml instanceof NodeList) {
-            NodeList list = (NodeList) xml;
-            CopyOnWriteArrayList<Node> nodes = new CopyOnWriteArrayList();
-
-            for (int i = 0; i < list.getLength(); i++) {
-                nodes.add(list.item(i));
-            }
-            return new Element(DOM.newDocument(), nodes);
-        }
-
-        if (xml instanceof Document) {
-            return new Element(DOM.newDocument(), Collections.singletonList(((Document) xml).getFirstChild()));
-        }
-
         if (xml instanceof Node) {
-            return new Element(DOM.newDocument(), Collections.singletonList((Node) xml));
+            Node node = (Node) xml;
+
+            if (node instanceof Document) {
+                node = ((Document) node).getDocumentElement();
+            }
+
+            return new Element(node.getOwnerDocument(), Collections.singletonList(node));
         }
 
         try {
             Document doc = DOM.parse(new InputSource(new StringReader("<i>" + xml + "</i>")));
-            List<Node> nodes = Collections.singletonList(doc.getFirstChild());
 
-            return new Element(doc, nodes).find("i:root>*");
+            return new Element(doc, Collections.singletonList(doc.getFirstChild())).find("i:root>*");
         } catch (Exception e) {
             throw I.quiet(e);
         }
