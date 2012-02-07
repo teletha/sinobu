@@ -33,6 +33,10 @@ import kiss.I;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSParser;
 import org.xml.sax.InputSource;
 
 /**
@@ -58,11 +62,18 @@ public class Element implements Iterable<Element> {
     /** The xpath evaluator. */
     private static final XPath XPATH;
 
+    private static final DOMImplementationLS LS;
+
+    /** The document fragment parser. */
+    private static final LSParser PARSER;
+
     // initialization
     static {
         try {
             DOM = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             XPATH = XPathFactory.newInstance().newXPath();
+            LS = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
+            PARSER = LS.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS, null);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -99,6 +110,19 @@ public class Element implements Iterable<Element> {
      */
     private Element(Set<Node> nodes) {
         this.nodes = nodes;
+    }
+
+    public Element append(String xml) {
+
+        LSInput input = LS.createLSInput();
+        input.setStringData(xml);
+
+        for (Node node : nodes) {
+            PARSER.parse(input);
+        }
+
+        // API definition
+        return this;
     }
 
     /**
