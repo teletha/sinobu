@@ -12,7 +12,6 @@ package kiss.model;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import kiss.I;
 import kiss.PropertyWalker;
@@ -94,7 +93,7 @@ class MapModel extends Model {
         if (key.codec == null) {
             super.walk(object, walker);
         } else {
-            for (Entry<Object, Object> entry : (Set<Entry<Object, Object>>) ((Map) object).entrySet()) {
+            for (Entry entry : ((Map<?, ?>) object).entrySet()) {
                 walker.walk(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue());
             }
         }
