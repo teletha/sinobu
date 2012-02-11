@@ -64,7 +64,7 @@ class XMLOut extends JSON {
      */
     protected void enter(Model model, Property property, Object node) {
         if (mode) {
-            if (!property.isAttribute() && nodes.contains(node)) {
+            if (!property.isAttribute()) {
                 objects.putIfAbsent(node, objects.size());
             }
         } else {
