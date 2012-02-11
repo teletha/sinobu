@@ -13,16 +13,15 @@ import static antibug.Ezunit.*;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
+import kiss.I;
+
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
-
-import kiss.I;
 
 /**
  * @version 2010/02/05 1:31:48
@@ -225,30 +224,29 @@ public class XMLWriterTest {
 
     @Test
     public void testXMLWriter() throws SAXException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        StringBuilder builder = new StringBuilder();
 
-        XMLWriter writer = new XMLWriter(new OutputStreamWriter(output));
+        XMLWriter writer = new XMLWriter(builder);
         writer.startDocument();
         writer.start("root");
         writer.end();
         writer.endDocument();
 
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root/>", new String(output.toByteArray()).replaceAll("\\r\\n", ""));
+        assert builder.toString().replaceAll("\\r\\n", "").equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root/>");
+
     }
 
     @Test
     public void omitXMLDeclaration() throws SAXException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        StringBuilder builder = new StringBuilder();
 
-        XMLWriter writer = new OmitXMLDeclaration(new OutputStreamWriter(output));
-        writer.setContentHandler(writer);
-
+        XMLWriter writer = new OmitXMLDeclaration(builder);
         writer.startDocument();
         writer.start("root");
         writer.end();
         writer.endDocument();
 
-        assertEquals("<root/>", new String(output.toByteArray()));
+        assert builder.toString().equals("<root/>");
     }
 
     /**
