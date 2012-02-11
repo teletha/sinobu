@@ -12,11 +12,9 @@ package kiss.xml;
 import static antibug.Ezunit.*;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import kiss.I;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
@@ -27,41 +25,11 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import antibug.SAXBuilder;
-import antibug.xml.XMLBuilder;
 
 /**
  * @version 2010/02/05 1:31:37
  */
 public class XMLScannerTest {
-
-    private static class Block implements Iterable<No> {
-
-        /**
-         * @see java.lang.Iterable#iterator()
-         */
-        @Override
-        public Iterator<No> iterator() {
-            return null;
-        }
-
-    }
-
-    private static class No {
-
-    }
-
-    private Block p() {
-        return null;
-    }
-
-    private boolean a() {
-        return false;
-    }
-
-    static No e;
-
-    @Rule
-    public static final XMLBuilder builder = new XMLBuilder();
 
     /**
      * Parse with filter. No {@link NullPointerException}.
@@ -92,8 +60,8 @@ public class XMLScannerTest {
         XMLFilter third = new XMLScanner();
         third.setParent(second);
 
-        // assertXMLIdentical("scanner/expected002.xml", "scanner/test001.xml", third);
-        assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
+        assertXMLIdentical("scanner/expected001.xml", "scanner/test001.xml", third);
+        // assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
     }
 
     /**
@@ -117,8 +85,8 @@ public class XMLScannerTest {
         XMLFilter third = new Encloser("third");
         third.setParent(second);
 
-        // assertXMLIdentical("scanner/expected003.xml", "scanner/test003.xml", third);
-        assert xml("scanner/expected003.xml").equals(xml("scanner/test002.xml", third));
+        assertXMLIdentical("scanner/expected003.xml", "scanner/test003.xml", third);
+        // assert xml("scanner/expected003.xml").equals(xml("scanner/test002.xml", third));
     }
 
     /**
