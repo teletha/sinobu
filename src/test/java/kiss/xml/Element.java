@@ -338,11 +338,11 @@ public class Element implements Iterable<Element> {
      */
     public Element addClass(String names) {
         for (Element e : this) {
-            String value = " " + e.attr("class") + " ";
+            String value = " ".concat(e.attr("class")).concat(" ");
 
             for (String name : names.split(" ")) {
-                if (!value.contains(" " + name + " ")) {
-                    value = value + name + " ";
+                if (!value.contains(" ".concat(name).concat(" "))) {
+                    value = value.concat(name).concat(" ");
                 }
             }
             e.attr("class", value.trim());
@@ -369,10 +369,10 @@ public class Element implements Iterable<Element> {
      */
     public Element removeClass(String names) {
         for (Element e : this) {
-            String value = " " + e.attr("class") + " ";
+            String value = " ".concat(e.attr("class")).concat(" ");
 
             for (String name : names.split(" ")) {
-                value = value.replace(" " + name + " ", " ");
+                value = value.replace(" ".concat(name).concat(" "), " ");
             }
             e.attr("class", value.trim());
         }
@@ -413,9 +413,9 @@ public class Element implements Iterable<Element> {
      */
     public boolean hasClass(String name) {
         for (Element e : this) {
-            String value = " " + e.attr("class") + " ";
+            String value = " ".concat(e.attr("class")).concat(" ");
 
-            if (value.contains(" " + name + " ")) {
+            if (value.contains(" ".concat(name).concat(" "))) {
                 return true;
             }
         }
