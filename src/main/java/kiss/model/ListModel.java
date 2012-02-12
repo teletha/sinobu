@@ -12,7 +12,6 @@ package kiss.model;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import kiss.PropertyWalker;
 
 /**
  * @version 2009/07/22 23:37:56
@@ -81,7 +80,7 @@ class ListModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#walk(java.lang.Object, kiss.PropertyWalker)
+     * @see kiss.model.Model#walk(java.lang.Object, kiss.model.PropertyWalker)
      */
     @Override
     public void walk(Object object, PropertyWalker walker) {

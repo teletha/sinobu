@@ -16,6 +16,7 @@ import java.util.Set;
 
 import kiss.model.Model;
 import kiss.model.Property;
+import kiss.model.PropertyWalker;
 
 /**
  * <p>
@@ -56,7 +57,7 @@ class JSON implements PropertyWalker {
      * @param property An arc in object graph. This value must not be <code>null</code>. If the
      *            visited node is root, this value will be a object property of the root node.
      * @param node A current node that {@link PropertyWalker} arrives at.
-     * @see kiss.PropertyWalker#walk(kiss.model.Model, kiss.model.Property, java.lang.Object)
+     * @see kiss.model.PropertyWalker#walk(kiss.model.Model, kiss.model.Property, java.lang.Object)
      */
     public final void walk(Model model, Property property, Object node) {
         if (!property.isTransient()) {

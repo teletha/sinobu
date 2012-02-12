@@ -36,7 +36,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.I;
-import kiss.PropertyWalker;
 
 /**
  * <p>

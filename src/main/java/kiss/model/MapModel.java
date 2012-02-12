@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import kiss.I;
-import kiss.PropertyWalker;
 
 /**
  * @version 2010/01/10 17:10:23
@@ -86,7 +85,7 @@ class MapModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#walk(java.lang.Object, kiss.PropertyWalker)
+     * @see kiss.model.Model#walk(java.lang.Object, kiss.model.PropertyWalker)
      */
     @Override
     public void walk(Object object, PropertyWalker walker) {

@@ -15,6 +15,7 @@ import java.nio.CharBuffer;
 
 import kiss.model.Model;
 import kiss.model.Property;
+import kiss.model.PropertyWalker;
 
 /**
  * <p>
