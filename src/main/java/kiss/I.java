@@ -258,10 +258,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = I.aware(new ConcurrentHashMap<Class, Lifestyle>());
 
     /** The mapping from extension point to extensions. */
-    private static final Cache<Class, Class> extensions = new Cache();
+    private static final Table<Class, Class> extensions = new Table();
 
     /** The mapping from extension point to assosiated extension mapping. */
-    private static final Cache<Integer, Class> keys = new Cache();
+    private static final Table<Integer, Class> keys = new Table();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -779,7 +779,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
         // If this model is non-private or final class, we can extend it for interceptor mechanism.
         if (((PRIVATE | FINAL) & modifier) == 0) {
-            Cache<Method, Annotation> interceptables = new Cache();
+            Table<Method, Annotation> interceptables = new Table();
 
             for (Class clazz : ClassUtil.getTypes(actualClass)) {
                 for (Method method : clazz.getDeclaredMethods()) {

@@ -97,7 +97,7 @@ class Module extends URLClassLoader {
      *            object, otherwise for normal bean object.
      * @return A generated {@link Class} object.
      */
-    synchronized Class define(Class model, Cache interceptables) {
+    synchronized Class define(Class model, Table interceptables) {
         // Compute fully qualified class name for the generated class.
         // The coder class name is prefix to distinguish enhancer type by a name and make core
         // package classes (e.g. swing components) enhance.
@@ -223,7 +223,7 @@ class Module extends URLClassLoader {
      * model.
      * </p>
      */
-    private void write(ClassVisitor cv, Class model, String className, Cache<Method, Annotation> interceptables) {
+    private void write(ClassVisitor cv, Class model, String className, Table<Method, Annotation> interceptables) {
         Type type = Type.getType(model);
 
         // ================================================

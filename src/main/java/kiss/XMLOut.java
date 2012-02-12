@@ -60,7 +60,7 @@ class XMLOut extends JSON {
     }
 
     /**
-     * @see kiss.model.PropertyWalker#enter(kiss.model.Model, kiss.model.Property, java.lang.Object)
+     * @see kiss.kiss.model.PropertyWalker#enter(kiss.model.Model, kiss.model.Property, java.lang.Object)
      */
     protected void enter(Model model, Property property, Object node) {
         if (mode) {
@@ -104,7 +104,7 @@ class XMLOut extends JSON {
     }
 
     /**
-     * @see kiss.model.PropertyWalker#leave(kiss.model.Model, kiss.model.Property, java.lang.Object)
+     * @see kiss.kiss.model.PropertyWalker#leave(kiss.model.Model, kiss.model.Property, java.lang.Object)
      */
     protected void leave(Model model, Property property, Object node) {
         if (!mode) {

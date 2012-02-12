@@ -38,7 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * only one thread at a time.
  * </p>
  * <p>
- * Implementation of {@link Cache} that uses an {@link java.util.List} to store the values for a
+ * Implementation of {@link Table} that uses an {@link java.util.List} to store the values for a
  * given key. A {@link ConcurrentHashMap} associates each key with an {@link CopyOnWriteArrayList}
  * of values.
  * </p>
@@ -57,7 +57,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version 2010/02/19 2:30:56
  */
 @SuppressWarnings("serial")
-class Cache<K, V> extends ConcurrentHashMap<K, List<V>> {
+class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
 
     /**
      * <p>
@@ -118,7 +118,7 @@ class Cache<K, V> extends ConcurrentHashMap<K, List<V>> {
      * </p>
      * <p>
      * This method prohibits duplicates, and storing a key-value pair that's already in the
-     * {@link Cache} has no effect.
+     * {@link Table} has no effect.
      * </p>
      * 
      * @param key A key to store in the multimap.

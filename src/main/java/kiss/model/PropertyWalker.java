@@ -7,10 +7,8 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.model;
 
-import kiss.model.Model;
-import kiss.model.Property;
 
 /**
  * <p>
