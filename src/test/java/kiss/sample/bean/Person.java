@@ -18,6 +18,8 @@ public class Person {
 
     private int age;
 
+    private String name;
+
     private String firstName;
 
     private String lastName;
@@ -39,6 +41,24 @@ public class Person {
     @RuntimeAnnotation1
     public void setAge(int age) {
         this.age = age;
+    }
+
+    /**
+     * Get the name property of this {@link Person}.
+     * 
+     * @return The name property.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Set the name property of this {@link Person}.
+     * 
+     * @param name The name value to set.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

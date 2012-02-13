@@ -61,7 +61,7 @@ public class XMLScannerTest {
         third.setParent(second);
 
         assertXMLIdentical("scanner/expected001.xml", "scanner/test001.xml", third);
-        // assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
+        assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
     }
 
     /**

@@ -69,7 +69,7 @@ public class JSONTest {
 
         // write
         String json = json(student);
-        assert json.equals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\",\"school\":{\"name\":\"Sakura High School\"}}");
+        assert json.equals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\",\"school\":{\"name\":\"Sakura High School\",\"students\":[]}}");
 
         // read
         student = I.read(json, I.make(Student.class));
