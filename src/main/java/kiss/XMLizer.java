@@ -9,40 +9,68 @@
  */
 package kiss;
 
-import static kiss.xml.Element.*;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import kiss.model.Model;
 import kiss.model.Property;
 import kiss.model.PropertyWalker;
-import kiss.xml.Element;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import antibug.Ezunit;
 
 /**
  * @version 2012/02/13 13:47:28
  */
 public class XMLizer implements PropertyWalker {
 
+    /** The document builder. */
+    private static final DocumentBuilder dom;
+
+    /** The xpath evaluator. */
+    private static final XPath xpath;
+
+    // initialization
+    static {
+        try {
+            dom = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            xpath = XPathFactory.newInstance().newXPath();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
     /** The record for traversed objects. */
     final Set nodes = new LinkedHashSet();
 
-    private Deque<Element> contexts = new ArrayDeque();
+    private Deque<Node> contexts = new ArrayDeque();
 
-    private Element e;
+    /** The current document. */
+    private Document doc;
+
+    private Node e;
 
     public void write(Object input) {
         Model model = Model.load(input.getClass());
         Property property = new Property(model, model.name);
 
-        e = $("<" + model.name + "/>");
+        doc = dom.newDocument();
+        e = doc;
         contexts.add(e);
 
         walk(model, property, input);
 
-        System.out.println(e);
+        Ezunit.dumpXML(doc);
     }
 
     /**
@@ -65,15 +93,15 @@ public class XMLizer implements PropertyWalker {
     protected void enter(Model model, Property property, Object node) {
 
         if (property.isAttribute()) {
-            e.attr(property.name, I.transform(node, String.class));
+            ((Element) e).setAttribute(property.name, I.transform(node, String.class));
         } else {
             System.out.println("enter " + node);
 
-            Element child = $("<" + property.model.name + "/>");
-            if (e != null) {
-                e.append(child);
+            Element child = doc.createElement(property.model.name);
 
-                System.out.println(e + "  @@  " + child);
+            if (e != null) {
+                e.appendChild(child);
+
                 contexts.add(e);
             }
 
