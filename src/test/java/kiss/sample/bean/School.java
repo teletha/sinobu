@@ -9,6 +9,7 @@
  */
 package kiss.sample.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,10 +22,14 @@ public class School {
     private String name;
 
     /** The students list. */
-    private List<Student> students;
+    private List<Student> students = new ArrayList();
 
     /** The teacher list. */
     private Map<String, Person> teachers;
+
+    public void addStudent(Student student) {
+        students.add(student);
+    }
 
     /**
      * Get the name property of this {@link School}.

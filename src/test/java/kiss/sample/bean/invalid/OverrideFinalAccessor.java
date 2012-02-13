@@ -17,7 +17,7 @@ import kiss.sample.bean.Person;
 public class OverrideFinalAccessor extends Person {
 
     /**
-     * @see kiss.sample.bean.Person#getAge()
+     * {@inheritDoc}
      */
     @Override
     public final int getAge() {
@@ -25,7 +25,7 @@ public class OverrideFinalAccessor extends Person {
     }
 
     /**
-     * @see kiss.sample.bean.Person#getLastName()
+     * {@inheritDoc}
      */
     @Override
     public final String getLastName() {
@@ -33,7 +33,15 @@ public class OverrideFinalAccessor extends Person {
     }
 
     /**
-     * @see kiss.sample.bean.Person#setAge(int)
+     * {@inheritDoc}
+     */
+    @Override
+    public final String getName() {
+        return super.getName();
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public final void setAge(int age) {

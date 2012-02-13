@@ -83,7 +83,7 @@ public class Element implements Iterable<Element> {
     }
 
     /** The current document. */
-    private final Document doc;
+    private Document doc;
 
     /** The current node set. */
     private final List<Node> nodes;
@@ -110,10 +110,10 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element append(Object xml) {
-        Element e = parse(xml);
+        Node n = copy(parse(xml));
 
         for (Node node : nodes) {
-            node.appendChild(copy(e));
+            node.appendChild(n.cloneNode(true));
         }
 
         // API definition
@@ -130,10 +130,10 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element prepend(Object xml) {
-        Element e = parse(xml);
+        Node n = copy(parse(xml));
 
         for (Node node : nodes) {
-            node.insertBefore(copy(e), node.getFirstChild());
+            node.insertBefore(n.cloneNode(true), node.getFirstChild());
         }
 
         // API definition
@@ -150,10 +150,10 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element before(Object xml) {
-        Element e = parse(xml);
+        Node n = copy(parse(xml));
 
         for (Node node : nodes) {
-            node.getParentNode().insertBefore(copy(e), node);
+            node.getParentNode().insertBefore(n.cloneNode(true), node);
         }
 
         // API definition
@@ -170,10 +170,10 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element after(Object xml) {
-        Element e = parse(xml);
+        Node n = copy(parse(xml));
 
         for (Node node : nodes) {
-            node.getParentNode().insertBefore(copy(e), node.getNextSibling());
+            node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
         }
 
         // API definition
@@ -253,6 +253,27 @@ public class Element implements Iterable<Element> {
 
         // API definition
         return this;
+    }
+
+    /**
+     * <p>
+     * Create a deep copy of the set of matched elements.
+     * </p>
+     * <p>
+     * The .clone() method performs a deep copy of the set of matched elements, meaning that it
+     * copies the matched elements as well as all of their descendant elements and text nodes. When
+     * used in conjunction with one of the insertion methods, .clone() is a convenient way to
+     * duplicate elements on a page.
+     * </p>
+     * {@inheritDoc}
+     */
+    public Element clone() {
+        List<Node> list = new ArrayList();
+
+        for (Node node : nodes) {
+            list.add(node.cloneNode(true));
+        }
+        return new Element(doc, list);
     }
 
     /**
@@ -507,13 +528,18 @@ public class Element implements Iterable<Element> {
     private Node copy(Element xml) {
         DocumentFragment fragment = doc.createDocumentFragment();
 
-        for (Node node : xml.nodes) {
+        for (int i = 0; i < xml.nodes.size(); i++) {
+            Node node = xml.nodes.get(i);
+
             if (doc == xml.doc) {
                 fragment.appendChild(node);
             } else {
-                fragment.appendChild(doc.importNode(node, true));
+                node = doc.importNode(node, true);
+                xml.nodes.set(i, node);
+                fragment.appendChild(node);
             }
         }
+        xml.doc = doc;
         return fragment;
     }
 
