@@ -99,7 +99,7 @@ public class Element implements Iterable<Element> {
      */
     private Element(Document doc, List nodes) {
         this.doc = doc;
-        this.nodes = nodes;
+        this.nodes = new ArrayList(nodes);
     }
 
     /**
