@@ -56,7 +56,7 @@ public class XMLizer implements PropertyWalker {
     private Deque<Node> contexts = new ArrayDeque();
 
     /** The current document. */
-    private Document doc;
+    private Document doc = dom.newDocument();
 
     private Node e;
 
@@ -64,7 +64,6 @@ public class XMLizer implements PropertyWalker {
         Model model = Model.load(input.getClass());
         Property property = new Property(model, model.name);
 
-        doc = dom.newDocument();
         e = doc;
         contexts.add(e);
 
@@ -91,26 +90,14 @@ public class XMLizer implements PropertyWalker {
     }
 
     protected void enter(Model model, Property property, Object node) {
-
         if (property.isAttribute()) {
             ((Element) e).setAttribute(property.name, I.transform(node, String.class));
         } else {
-            System.out.println("enter " + node);
-
-            Element child = doc.createElement(property.model.name);
-
-            if (e != null) {
-                e.appendChild(child);
-
-                contexts.add(e);
-            }
-
-            e = child;
+            contexts.add(e = e.appendChild(doc.createElement(property.model.name)));
         }
     }
 
     protected void leave(Model model, Property property, Object node) {
-
         if (property.isAttribute()) {
 
         } else {
