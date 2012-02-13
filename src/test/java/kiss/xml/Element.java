@@ -45,6 +45,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.sun.org.apache.xerces.internal.util.DOMUtil;
+
 /**
  * @version 2012/02/06 16:24:40
  */
@@ -86,7 +88,7 @@ public class Element implements Iterable<Element> {
     private Document doc;
 
     /** The current node set. */
-    private final List<Node> nodes;
+    private List<Node> nodes;
 
     /**
      * <p>
@@ -95,7 +97,7 @@ public class Element implements Iterable<Element> {
      * 
      * @param nodes
      */
-    private Element(Document doc, List<Node> nodes) {
+    private Element(Document doc, List nodes) {
         this.doc = doc;
         this.nodes = nodes;
     }
@@ -110,7 +112,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element append(Object xml) {
-        Node n = copy(parse(xml));
+        Node n = convert(parse(xml));
 
         for (Node node : nodes) {
             node.appendChild(n.cloneNode(true));
@@ -130,7 +132,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element prepend(Object xml) {
-        Node n = copy(parse(xml));
+        Node n = convert(parse(xml));
 
         for (Node node : nodes) {
             node.insertBefore(n.cloneNode(true), node.getFirstChild());
@@ -150,7 +152,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element before(Object xml) {
-        Node n = copy(parse(xml));
+        Node n = convert(parse(xml));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node);
@@ -170,7 +172,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element after(Object xml) {
-        Node n = copy(parse(xml));
+        Node n = convert(parse(xml));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
@@ -519,13 +521,13 @@ public class Element implements Iterable<Element> {
 
     /**
      * <p>
-     * Helper method to copy nodes.
+     * Helper method to convert {@link Element} to single {@link Node}.
      * </p>
      * 
      * @param xml
      * @return
      */
-    private Node copy(Element xml) {
+    private Node convert(Element xml) {
         DocumentFragment fragment = doc.createDocumentFragment();
 
         for (int i = 0; i < xml.nodes.size(); i++) {
@@ -534,18 +536,20 @@ public class Element implements Iterable<Element> {
             if (doc == xml.doc) {
                 fragment.appendChild(node);
             } else {
-                node = doc.importNode(node, true);
-                xml.nodes.set(i, node);
-                fragment.appendChild(node);
+                xml.nodes.set(i, fragment.appendChild(doc.importNode(node, true)));
             }
         }
+
+        // update
         xml.doc = doc;
+
+        // root
         return fragment;
     }
 
     /**
      * <p>
-     * Parse xml fragment.
+     * Parse as xml fragment.
      * </p>
      * 
      * @param xml
@@ -556,21 +560,30 @@ public class Element implements Iterable<Element> {
             return (Element) xml;
         }
 
-        if (xml instanceof Node) {
-            Node node = (Node) xml;
+        // parse as string
+        String value = xml.toString();
 
-            if (node instanceof Document) {
-                node = node.getFirstChild();
+        if (value.charAt(0) != '<') {
+            // element name
+            Document doc = dom.newDocument();
+
+            return new Element(doc, Collections.singletonList(doc.createElement(value)));
+        } else {
+            // xml text
+            try {
+                List<Node> list = new ArrayList();
+                Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
+                Node node = DOMUtil.getFirstChildElement(doc.getDocumentElement());
+
+                while (node != null) {
+                    list.add(node);
+
+                    node = DOMUtil.getNextSiblingElement(node);
+                }
+                return new Element(doc, list);
+            } catch (Exception e) {
+                throw I.quiet(e);
             }
-            return new Element(node.getOwnerDocument(), Collections.singletonList(node));
-        }
-
-        try {
-            Document doc = dom.parse(new InputSource(new StringReader("<i>" + xml + "</i>")));
-
-            return new Element(doc, Collections.singletonList(doc.getFirstChild())).find("i:root>*");
-        } catch (Exception e) {
-            throw I.quiet(e);
         }
     }
 
