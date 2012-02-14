@@ -44,7 +44,6 @@ import org.junit.Test;
 
 import antibug.CleanRoom;
 
-
 /**
  * @version 2011/03/22 17:17:16
  */
@@ -67,20 +66,17 @@ public class XMLTest {
     @Test
     public void list() throws Exception {
         Student student = I.make(Student.class);
-        student.setFirstName("test");
-
-        List<Student> students = new ArrayList();
-        students.add(student);
+        student.setName("test");
 
         School school = I.make(School.class);
-        school.setStudents(students);
+        school.addStudent(student);
 
         // write
         I.write(school, config, false);
 
         // read
         school = I.read(config, I.make(School.class));
-        assert school.getStudents().get(0).getFirstName().equals("test");
+        assert school.getStudents().get(0).getName().equals("test");
     }
 
     @Test
