@@ -18,12 +18,13 @@ import java.nio.file.Path;
 import kiss.I;
 
 import org.junit.Test;
-import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
+
+import antibug.xml.XML;
 
 /**
  * @version 2012/02/14 15:44:41
@@ -113,7 +114,7 @@ public class XMLScannerTest {
     @Test
     public void writeXML() throws Exception {
         XMLScanner writer = new XMLScanner();
-        Document doc = build(writer);
+        XML doc = xml(writer);
 
         // write xml
         writer.startDocument();
@@ -123,13 +124,13 @@ public class XMLScannerTest {
 
         String expect = "<root/>";
 
-        assert xml(doc).isIdenticalTo(expect);
+        assert doc.isIdenticalTo(expect);
     }
 
     @Test
     public void writeAttributeAndText() throws Exception {
         XMLScanner writer = new XMLScanner();
-        Document doc = build(writer);
+        XML doc = xml(writer);
 
         // write xml
         writer.startDocument();
@@ -140,13 +141,13 @@ public class XMLScannerTest {
 
         String expect = "<root name1='value1' name2='value2'>text</root>";
 
-        assert xml(doc).isIdenticalTo(expect);
+        assert doc.isIdenticalTo(expect);
     }
 
     @Test
     public void writeNS() throws Exception {
         XMLScanner writer = new XMLScanner();
-        Document doc = build(writer);
+        XML doc = xml(writer);
 
         // write xml
         writer.startDocument();
@@ -158,13 +159,13 @@ public class XMLScannerTest {
 
         String expect = "<root xmlns='default'/>";
 
-        assert xml(doc).isIdenticalTo(expect);
+        assert doc.isIdenticalTo(expect);
     }
 
     @Test
     public void writeNSElement() throws Exception {
         XMLScanner writer = new XMLScanner();
-        Document doc = build(writer);
+        XML doc = xml(writer);
 
         // write xml
         writer.startDocument();
@@ -180,15 +181,15 @@ public class XMLScannerTest {
         writer.endPrefixMapping("test");
         writer.endDocument();
 
-        String expect = "<test:root xmlns:test='first'><test:in xmlns:test='second'/>  <test:in/></test:root>";
+        String expect = "<test:root xmlns:test='first'><test:in xmlns:test='second'/><test:in/></test:root>";
 
-        assert xml(doc).isIdenticalTo(expect);
+        assert doc.isIdenticalTo(expect);
     }
 
     @Test
     public void writeNSAttribute() throws Exception {
         XMLScanner writer = new XMLScanner();
-        Document doc = build(writer);
+        XML doc = xml(writer);
 
         // write xml
         writer.startDocument();
@@ -201,13 +202,14 @@ public class XMLScannerTest {
 
         String expect = "<root xmlns:test='first' test:name1='value1'>text</root>";
 
-        assert xml(doc).isIdenticalTo(expect);
+        assert doc.isIdenticalTo(expect);
     }
 
     @Test
     public void writeLoop() throws Exception {
         XMLScanner writer = new XMLScanner();
-        Document doc = build(writer);
+        XML doc = xml(writer);
+        XML expect = xml("<root xmlns:ns='nss'><ns:m>0</ns:m><ns:m>1</ns:m><ns:m>2</ns:m></root>");
 
         // write xml
         writer.startDocument();
@@ -222,9 +224,7 @@ public class XMLScannerTest {
         writer.endPrefixMapping("ns");
         writer.endDocument();
 
-        String expect = "<root xmlns:ns='ns'><ns:m>0</ns:m><ns:m>1</ns:m><ns:m>2</ns:m></root>";
-
-        assert xml(doc).isIdenticalTo(expect);
+        assert doc.isIdenticalTo(expect);
     }
 
     /**
