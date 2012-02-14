@@ -9,18 +9,16 @@
  */
 package kiss.xml;
 
-
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import kiss.xml.XMLScanner;
-
 /**
- * DOCUMENT.
+ * <p>
+ * Enclose root element.
+ * </p>
  * 
- * @version 2008/08/29 21:32:44
+ * @version 2012/02/14 11:17:45
  */
 public class Encloser extends XMLScanner {
 
@@ -40,8 +38,7 @@ public class Encloser extends XMLScanner {
     }
 
     /**
-     * @see org.xml.sax.helpers.XMLFilterImpl#startElement(java.lang.String, java.lang.String,
-     *      java.lang.String, org.xml.sax.Attributes)
+     * {@inheritDoc}
      */
     @Override
     public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
@@ -54,8 +51,7 @@ public class Encloser extends XMLScanner {
     }
 
     /**
-     * @see org.xml.sax.helpers.XMLFilterImpl#endElement(java.lang.String, java.lang.String,
-     *      java.lang.String)
+     * {@inheritDoc}
      */
     @Override
     public void endElement(String uri, String localName, String name) throws SAXException {
@@ -64,8 +60,6 @@ public class Encloser extends XMLScanner {
         if (counter == 1) {
             super.endElement("", root, root);
         }
-
         counter--;
     }
-
 }
