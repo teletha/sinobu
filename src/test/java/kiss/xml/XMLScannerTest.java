@@ -9,9 +9,11 @@
  */
 package kiss.xml;
 
-import static antibug.Ezunit.*;
+import static antibug.xml.XML.*;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Path;
 
 import kiss.I;
 
@@ -22,36 +24,54 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
-import org.xml.sax.helpers.XMLFilterImpl;
-
-import antibug.SAXBuilder;
 
 /**
- * @version 2010/02/05 1:31:37
+ * @version 2012/02/14 15:44:41
  */
 public class XMLScannerTest {
 
     /**
-     * Parse with filter. No {@link NullPointerException}.
+     * <p>
+     * Helper method to build input source.
+     * </p>
+     * 
+     * @param text
+     * @return
      */
-    @Test
-    public void testXMLScanner() throws IOException {
-        I.parse(locateSource("scanner/test001.xml"), new XMLScanner());
+    private InputSource source(String text) {
+        return new InputSource(new StringReader(text));
     }
 
-    /**
-     * Test XMLScanner.
-     */
     @Test
-    public void testXMLScanner1() throws Exception {
-        assertXMLIdentical("scanner/expected001.xml", "scanner/test001.xml", new XMLScanner());
+    public void dontThrowNPE() throws IOException {
+        I.parse(source("<text/>"), new XMLScanner());
     }
 
-    /**
-     * Test XMLScanner.
-     */
+    @Test(expected = NullPointerException.class)
+    public void requireFilter() throws IOException {
+        I.parse(source("<text/>"), (XMLFilter) null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void requireXML() throws IOException {
+        I.parse((InputSource) null, new XMLScanner());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void requirePath() throws IOException {
+        I.parse((Path) null, new XMLScanner());
+    }
+
     @Test
-    public void testXMLScanner2() throws Exception {
+    public void dontModify() throws Exception {
+        String text = "<root/>";
+        String expect = "<root/>";
+
+        assert xml(text, new XMLScanner()).isIdenticalTo(expect);
+    }
+
+    @Test
+    public void chainFilter() throws Exception {
         XMLFilter first = new XMLScanner();
 
         XMLFilter second = new XMLScanner();
@@ -60,23 +80,22 @@ public class XMLScannerTest {
         XMLFilter third = new XMLScanner();
         third.setParent(second);
 
-        assertXMLIdentical("scanner/expected001.xml", "scanner/test001.xml", third);
-        assert xml("scanner/expected002.xml").equals(xml("scanner/test001.xml", third));
+        String text = "<root/>";
+        String expect = "<root/>";
+
+        assert xml(text, third).isIdenticalTo(expect);
     }
 
-    /**
-     * Test XMLScanner.
-     */
     @Test
-    public void testXMLScanner3() throws Exception {
-        assertXMLIdentical("scanner/expected002.xml", "scanner/test002.xml", new Encloser("enclose"));
+    public void modifyByFilter() throws Exception {
+        String text = "<root/>";
+        String expect = "<top><root/></top>";
+
+        assert xml(text, new Encloser("top")).isIdenticalTo(expect);
     }
 
-    /**
-     * Test XMLScanner.
-     */
     @Test
-    public void testXMLScanner4() throws Exception {
+    public void modifyByChinedFilters() throws Exception {
         XMLFilter first = new Encloser("first");
 
         XMLFilter second = new Encloser("second");
@@ -85,18 +104,16 @@ public class XMLScannerTest {
         XMLFilter third = new Encloser("third");
         third.setParent(second);
 
-        assertXMLIdentical("scanner/expected003.xml", "scanner/test003.xml", third);
-        // assert xml("scanner/expected003.xml").equals(xml("scanner/test002.xml", third));
+        String text = "<root/>";
+        String expect = "<third><second><first><root/></first></second></third>";
+
+        assert xml(text, third).isIdenticalTo(expect);
     }
 
-    /**
-     * Test writing xml with helper method.
-     */
     @Test
-    public void testWriting01() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void writeXML() throws Exception {
         XMLScanner writer = new XMLScanner();
-        writer.setContentHandler(builder);
+        Document doc = build(writer);
 
         // write xml
         writer.startDocument();
@@ -104,38 +121,32 @@ public class XMLScannerTest {
         writer.end();
         writer.endDocument();
 
-        // assert
-        assertXMLIdentical(locateDOM("scanner/expected20.xml"), builder.getDocument());
+        String expect = "<root/>";
+
+        assert xml(doc).isIdenticalTo(expect);
     }
 
-    /**
-     * Test writing xml with helper method.
-     */
     @Test
-    public void testWriting02() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void writeAttributeAndText() throws Exception {
         XMLScanner writer = new XMLScanner();
-        writer.setContentHandler(builder);
+        Document doc = build(writer);
 
         // write xml
         writer.startDocument();
         writer.start("root", "name1", "value1", "name2", "value2");
-        writer.text("test");
+        writer.text("text");
         writer.end();
         writer.endDocument();
 
-        // assert
-        assertXMLIdentical(locateDOM("scanner/expected21.xml"), builder.getDocument());
+        String expect = "<root name1='value1' name2='value2'>text</root>";
+
+        assert xml(doc).isIdenticalTo(expect);
     }
 
-    /**
-     * Test writing xml with helper method.
-     */
     @Test
-    public void testWriting03() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void writeNS() throws Exception {
         XMLScanner writer = new XMLScanner();
-        writer.setContentHandler(builder);
+        Document doc = build(writer);
 
         // write xml
         writer.startDocument();
@@ -145,18 +156,15 @@ public class XMLScannerTest {
         writer.endPrefixMapping("");
         writer.endDocument();
 
-        // assert
-        assertXMLIdentical(locateDOM("scanner/expected22.xml"), builder.getDocument());
+        String expect = "<root xmlns='default'/>";
+
+        assert xml(doc).isIdenticalTo(expect);
     }
 
-    /**
-     * Test writing xml with helper method.
-     */
     @Test
-    public void testWriting04() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void writeNSElement() throws Exception {
         XMLScanner writer = new XMLScanner();
-        writer.setContentHandler(builder);
+        Document doc = build(writer);
 
         // write xml
         writer.startDocument();
@@ -172,164 +180,106 @@ public class XMLScannerTest {
         writer.endPrefixMapping("test");
         writer.endDocument();
 
-        // assert
-        Document document = builder.getDocument();
-        assertXMLIdentical(locateDOM("scanner/expected23.xml"), document);
+        String expect = "<test:root xmlns:test='first'><test:in xmlns:test='second'/>  <test:in/></test:root>";
+
+        assert xml(doc).isIdenticalTo(expect);
     }
 
-    /**
-     * Test writing xml with helper method.
-     */
     @Test
-    public void testWriting05() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void writeNSAttribute() throws Exception {
         XMLScanner writer = new XMLScanner();
-        writer.setContentHandler(builder);
+        Document doc = build(writer);
 
         // write xml
         writer.startDocument();
         writer.startPrefixMapping("test", "first");
         writer.start("root", "test:name1", "value1");
-        writer.text("test");
+        writer.text("text");
         writer.end();
         writer.endPrefixMapping("test");
         writer.endDocument();
 
-        // assert
-        assertXMLIdentical(locateDOM("scanner/expected24.xml"), builder.getDocument());
+        String expect = "<root xmlns:test='first' test:name1='value1'>text</root>";
+
+        assert xml(doc).isIdenticalTo(expect);
     }
 
-    /**
-     * Test writing xml with helper method.
-     */
     @Test
-    public void testWriting06() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void writeLoop() throws Exception {
         XMLScanner writer = new XMLScanner();
-        writer.setContentHandler(builder);
+        Document doc = build(writer);
 
         // write xml
         writer.startDocument();
-        writer.startPrefixMapping("test", "ns");
+        writer.startPrefixMapping("ns", "ns");
         writer.start("root");
-
         for (int i = 0; i < 3; i++) {
-            writer.start("test:item");
+            writer.start("ns:m");
             writer.text(String.valueOf(i));
             writer.end();
         }
-
         writer.end();
-        writer.endPrefixMapping("test");
+        writer.endPrefixMapping("ns");
         writer.endDocument();
 
-        // assert
-        assertXMLIdentical(locateDOM("scanner/expected27.xml"), builder.getDocument());
-    }
+        String expect = "<root xmlns:ns='ns'><ns:m>0</ns:m><ns:m>1</ns:m><ns:m>2</ns:m></root>";
 
-    /**
-     * Test xml include (not XInclude).
-     */
-    @Test
-    public void testInclude01() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
-        XMLScanner writer = new XMLScanner();
-        writer.setContentHandler(builder);
-
-        // write xml
-        writer.startDocument();
-        writer.start("root");
-        I.parse(locateSource("scanner/include00.xml"), new DocumentStriper(), writer);
-        writer.end();
-        writer.endDocument();
-
-        // assert
-        assertXMLIdentical(locateDOM("scanner/expected28.xml"), builder.getDocument());
+        assert xml(doc).isIdenticalTo(expect);
     }
 
     /**
      * Test to avoid the circular method calling.
      */
     @Test(expected = StackOverflowError.class)
-    public void testOverrideMethodLoop01() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void overrideStartElement() throws Exception {
         XMLScanner writer = new XMLScanner() {
 
-            /**
-             * @see org.xml.sax.helpers.XMLFilterImpl#startElement(java.lang.String,
-             *      java.lang.String, java.lang.String, org.xml.sax.Attributes)
-             */
             @Override
             public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
-                super.startElement(uri, localName, name, atts);
                 start("add");
-                end();
             }
         };
-        writer.setContentHandler(builder);
 
         // write xml
         writer.startDocument();
         writer.startElement("", "root", "root", new AttributesImpl());
         writer.endElement("", "root", "root");
         writer.endDocument();
-
-        // assert
-        Document document = builder.getDocument();
-        assertXMLIdentical(locateDOM("scanner/expected26.xml"), document);
     }
 
     /**
      * Test to avoid the circular method calling.
      */
     @Test(expected = StackOverflowError.class)
-    public void testOverrideMethodLoop02() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void overrideEndElement() throws Exception {
         XMLScanner writer = new XMLScanner() {
 
-            /**
-             * @see org.xml.sax.helpers.XMLFilterImpl#endElement(java.lang.String, java.lang.String,
-             *      java.lang.String)
-             */
             @Override
             public void endElement(String uri, String localName, String name) throws SAXException {
                 start("add");
                 end();
-                super.endElement(uri, localName, name);
             }
         };
-        writer.setContentHandler(builder);
 
         // write xml
         writer.startDocument();
         writer.startElement("", "root", "root", new AttributesImpl());
         writer.endElement("", "root", "root");
         writer.endDocument();
-
-        // assert
-        Document document = builder.getDocument();
-        assertXMLIdentical(locateDOM("scanner/expected26.xml"), document);
     }
 
     /**
      * Test to avoid the circular method calling.
      */
     @Test(expected = StackOverflowError.class)
-    public void testOverrideMethodLoop03() throws Exception {
-        SAXBuilder builder = new SAXBuilder();
+    public void overrideCharacters() throws Exception {
         XMLScanner writer = new XMLScanner() {
 
-            /**
-             * @see org.xml.sax.helpers.XMLFilterImpl#characters(char[], int, int)
-             */
             @Override
             public void characters(char[] ch, int start, int length) throws SAXException {
                 text("@");
-                super.characters(ch, start, length);
-                text("@");
             }
         };
-        writer.setContentHandler(builder);
 
         // write xml
         writer.startDocument();
@@ -337,107 +287,5 @@ public class XMLScannerTest {
         writer.characters("test".toCharArray(), 0, 4);
         writer.endElement("", "root", "root");
         writer.endDocument();
-
-        // assert
-        Document document = builder.getDocument();
-        assertXMLIdentical(locateDOM("scanner/expected25.xml"), document);
-    }
-
-    /**
-     * Test method for 'org.trix.tidori.xml.DefaultXMLFilter.resolveEntity(String, String)'
-     */
-    @Test
-    public void testResolveEntityWithoutAdditionalResolving() throws Exception {
-        assertXMLIdentical("scanner/expected006.xml", "scanner/test006.xml", new XMLFilterImpl());
-    }
-
-    /**
-     * Test method for 'org.trix.tidori.xml.DefaultXMLFilter.resolveEntity(String, String)'
-     */
-    @Test
-    public void testResolveEntityWithAdditionalResolving() throws Exception {
-        assertXMLIdentical("scanner/expected007.xml", "scanner/test007.xml", new EntityResolvableBuilder());
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2007/06/04 11:54:16
-     */
-    private static class EntityResolvableBuilder extends XMLFilterImpl {
-
-        /**
-         * @see org.xml.sax.helpers.XMLFilterImpl#resolveEntity(java.lang.String, java.lang.String)
-         */
-        @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            return locateSource("scanner/entity01.dtd");
-        }
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/10/30 14:27:00
-     */
-    private static class DocumentStriper extends XMLFilterImpl {
-
-        /**
-         * @see org.xml.sax.helpers.XMLFilterImpl#endDocument()
-         */
-        @Override
-        public void endDocument() throws SAXException {
-        }
-
-        /**
-         * @see org.xml.sax.helpers.XMLFilterImpl#startDocument()
-         */
-        @Override
-        public void startDocument() throws SAXException {
-        }
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2007/10/22 16:06:21
-     */
-    @SuppressWarnings("unused")
-    private static class RootStriper extends XMLFilterImpl {
-
-        private int count = 0;
-
-        /**
-         * @see org.xml.sax.helpers.XMLFilterImpl#startElement(java.lang.String, java.lang.String,
-         *      java.lang.String, org.xml.sax.Attributes)
-         */
-        @Override
-        public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
-            count++;
-
-            if (count > 1) {
-                super.startElement(uri, localName, name, atts);
-            }
-        }
-
-        /**
-         * @see org.xml.sax.helpers.XMLFilterImpl#endElement(java.lang.String, java.lang.String,
-         *      java.lang.String)
-         */
-        @Override
-        public void endElement(String uri, String localName, String name) throws SAXException {
-            if (count > 1) {
-                super.endElement(uri, localName, name);
-            }
-            count--;
-        }
-
-        /**
-         * @see org.xml.sax.helpers.XMLFilterImpl#characters(char[], int, int)
-         */
-        @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            // do nothing
-        }
     }
 }

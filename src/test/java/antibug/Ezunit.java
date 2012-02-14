@@ -49,9 +49,6 @@ import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-import antibug.xml.XML;
-
-
 /**
  * @version 2012/01/19 12:59:58
  */
@@ -344,10 +341,6 @@ public class Ezunit {
      */
     public static final void assertXMLEqual(String expectedXMLFilePath, String testedXMLFilePath, XMLFilter... filters) {
         assertXMLEqual(locateDOM(expectedXMLFilePath), locateDOM(testedXMLFilePath, filters));
-    }
-
-    public static final XML xml(String path, XMLFilter... filters) {
-        return new XML(locateFileFromCaller(path));
     }
 
     /**

@@ -297,6 +297,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             sax.setNamespaceAware(true);
             sax.setXIncludeAware(true);
             sax.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            // sax.setFeature("http://xml.org/sax/features/string-interning", true);
             // sax.setFeature("http://xml.org/sax/features/external-general-entities", false);
             // sax.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             // sax.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
