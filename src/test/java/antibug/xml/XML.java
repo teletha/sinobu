@@ -42,8 +42,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-import antibug.Ezunit;
-
 import com.sun.org.apache.xml.internal.security.c14n.CanonicalizerSpi;
 import com.sun.org.apache.xml.internal.security.c14n.implementations.Canonicalizer11_OmitComments;
 import com.sun.org.apache.xml.internal.utils.DOMBuilder;
@@ -52,8 +50,6 @@ import com.sun.org.apache.xml.internal.utils.DOMBuilder;
  * @version 2012/01/19 15:05:01
  */
 public class XML {
-
-    public static final DOMBuilder builder;
 
     /** The factory. */
     private static final DocumentBuilder dom;
@@ -64,8 +60,6 @@ public class XML {
             factory.setNamespaceAware(true);
 
             dom = factory.newDocumentBuilder();
-
-            builder = new DOMBuilder(dom.newDocument());
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -139,20 +133,20 @@ public class XML {
 
     /**
      * <p>
-     * Build document from the specified filter.
+     * Wrap xml document.
      * </p>
      * 
      * @param filter
      * @return
      */
-    public static Document build(XMLFilter filter) {
+    public static XML xml(XMLFilter filter) {
         DOMBuilder builder = new DOMBuilder(dom.newDocument());
 
         // make chain
         filter.setContentHandler(builder);
 
         // API definition
-        return builder.m_doc;
+        return new XML(builder.m_doc);
     }
 
     private final Document doc;
@@ -214,8 +208,8 @@ public class XML {
      * @param text
      * @return
      */
-    public boolean isEqualTo(String xml) {
-        return isEqualTo(xml(xml));
+    public boolean equals(String xml) {
+        return equals(xml(xml));
     }
 
     /**
@@ -226,8 +220,8 @@ public class XML {
      * @param xml
      * @return
      */
-    public boolean isEqualTo(Document xml) {
-        return isEqualTo(xml(xml));
+    public boolean equals(Document xml) {
+        return equals(xml(xml));
     }
 
     /**
@@ -238,7 +232,7 @@ public class XML {
      * @param xml
      * @return
      */
-    public boolean isEqualTo(XML xml) {
+    public boolean equals(XML xml) {
         compare(canonicalize(), xml.canonicalize());
 
         return false;
@@ -447,18 +441,14 @@ public class XML {
         }
     }
 
+    public void render(Renderer renderer, Hint hint) {
+
+    }
+
     /**
-     * <p>
-     * Helper method to dump XML data to system output.
-     * </p>
-     * 
-     * @param document A target document to dump.
+     * @version 2012/02/15 1:49:33
      */
-    public static final void dumpXML(Document document) {
+    private static final class Diff extends RenderHint {
 
-        Ezunit.dumpXML(document);
-
-        System.out.println(" @ @ ");
-        System.out.println("");
     }
 }
