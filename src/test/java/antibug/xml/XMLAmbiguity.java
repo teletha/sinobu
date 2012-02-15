@@ -17,6 +17,6 @@ public enum XMLAmbiguity {
 
     AttributeOrder,
 
-    NamespacePrefix,
+    Prefix,
 
 }

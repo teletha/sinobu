@@ -11,6 +11,8 @@ package antibug.xml;
 
 import static antibug.xml.XML.*;
 
+import java.util.EnumSet;
+
 import org.junit.Test;
 
 /**
@@ -18,11 +20,37 @@ import org.junit.Test;
  */
 public class XMLTest {
 
-    @Test
-    public void testname() throws Exception {
-        XML xml = xml("<root><one/><one a='ab'/></root>");
-        XML fail = xml("<root><one/><one a='aa'/></root>");
+    private EnumSet<XMLAmbiguity> ignorePrefix = EnumSet.of(XMLAmbiguity.Prefix);
 
-        assert xml.equals(fail);
+    @Test
+    public void elementLocalName() throws Exception {
+        XML one = xml("<Q/>");
+        XML other = xml("<P/>");
+
+        assert !one.equals(other);
+    }
+
+    @Test
+    public void elementURI() throws Exception {
+        XML one = xml("<m xmlns='P'/>");
+        XML other = xml("<m xmlns='Q'/>");
+
+        assert !one.equals(other);
+    }
+
+    @Test
+    public void elementName() throws Exception {
+        XML one = xml("<Q:m xmlns:Q='ns'/>");
+        XML other = xml("<P:m xmlns:P='ns'/>");
+
+        assert !one.equals(other);
+    }
+
+    @Test
+    public void elementNameIgnorePrefix() throws Exception {
+        XML one = xml("<Q:m xmlns:Q='ns'/>");
+        XML other = xml("<P:m xmlns:P='ns'/>");
+
+        assert one.equals(other, ignorePrefix);
     }
 }
