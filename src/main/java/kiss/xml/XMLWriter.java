@@ -241,15 +241,15 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
                 // change state
                 this.state = (prev == START) ? OTHER : prev;
             } else if (asBlock(ch, start, length)) {
-                out.append(EOL);
 
-                for (String line : new String(ch, start, length).split(EOL)) {
+                for (String line : new String(ch, start, length).split("\r|\n|\r\n")) {
+                    out.append(EOL);
                     writeIndent();
                     out.append(line);
                 }
 
                 // change state
-                this.state = (prev == START) ? OTHER : prev;
+                this.state = OTHER;
             } else {
                 write(ch, start, length);
             }
@@ -391,7 +391,7 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * Check whether the text node is treated as a block or not. You can override this method to
+     * Check whether the text is treated as a block or not. You can override this method to
      * manipulate a format of serialization.
      * 
      * @param ch A charactor sequence to parse.
