@@ -20,9 +20,9 @@ public class XMLTest {
 
     @Test
     public void testname() throws Exception {
-        XML xml = xml("<root/>");
-        XML fail = xml("<fail/>");
+        XML xml = xml("<root><one/><one/></root>");
+        XML fail = xml("<root><one/><fail/></root>");
 
-        assert xml.isIdenticalTo(fail);
+        assert xml.equals(fail);
     }
 }
