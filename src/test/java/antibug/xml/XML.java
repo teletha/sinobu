@@ -42,6 +42,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+import com.sun.org.apache.xerces.internal.util.DOMUtil;
 import com.sun.org.apache.xml.internal.security.c14n.CanonicalizerSpi;
 import com.sun.org.apache.xml.internal.security.c14n.implementations.Canonicalizer11_OmitComments;
 import com.sun.org.apache.xml.internal.utils.DOMBuilder;
@@ -333,7 +334,7 @@ public class XML {
         if (one == null || other == null) {
             assert one == other;
         } else {
-            assert one.getNodeName() == other.getNodeName();
+            assert one.getNodeName() == other.getNodeName() : new Detail(one, other);
             assert one.getLocalName().intern() == other.getLocalName().intern();
             assert one.getNamespaceURI() == other.getNamespaceURI();
 
@@ -441,14 +442,78 @@ public class XML {
         }
     }
 
-    public void render(Renderer renderer, Hint hint) {
-
-    }
-
     /**
      * @version 2012/02/15 1:49:33
      */
-    private static final class Diff extends RenderHint {
+    private static final class Detail {
 
+        /**
+         * <p>
+         * Show error in detail.
+         * </p>
+         * 
+         * @param one
+         * @param other
+         */
+        private Detail(Element one, Element other) {
+            System.out.println(makeXPath(one));
+            System.out.println(makeXPath(other));
+        }
+    }
+
+    /**
+     * <p>
+     * Helper method to build xpath expression of the specified node.
+     * </p>
+     * 
+     * @param node A target node.
+     * @return A xpath expression.
+     */
+    private static String makeXPath(Node node) {
+        StringBuilder builder = new StringBuilder();
+
+        while (node != null) {
+            switch (node.getNodeType()) {
+            case ATTRIBUTE_NODE:
+                builder.insert(0, "/@" + node.getNodeName());
+                break;
+
+            case ELEMENT_NODE:
+                builder.insert(0, "/" + node.getNodeName() + makeXPathPosition(node));
+                break;
+
+            case TEXT_NODE:
+                builder.insert(0, "/text()");
+                break;
+            }
+            node = node.getParentNode();
+        }
+        return builder.toString();
+    }
+
+    /**
+     * <p>
+     * Helper method to calcurate xpath position.
+     * </p>
+     * 
+     * @param node A target element node.
+     * @return A position.
+     */
+    private static String makeXPathPosition(Node node) {
+        int i = 1;
+        Element current = DOMUtil.getFirstChildElement(node.getParentNode(), node.getNodeName());
+
+        while (current != node) {
+            i++;
+            current = DOMUtil.getNextSiblingElement(current, node.getNodeName());
+        }
+
+        // if the current element is only typed child in this context, we can omit a position
+        // syntax sugar of the xpath expression.
+        if (i == 1 && DOMUtil.getNextSiblingElement(current, node.getNodeName()) == null) {
+            return "";
+        } else {
+            return "[" + i + "]";
+        }
     }
 }
