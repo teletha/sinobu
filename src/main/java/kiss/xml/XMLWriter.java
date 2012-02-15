@@ -15,11 +15,11 @@ import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
 
+import kiss.I;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
-
-import kiss.I;
 
 /**
  * <p>
@@ -29,12 +29,12 @@ import kiss.I;
  * @see ContentHandler
  * @see LexicalHandler
  * @see Attributes
- * @version 2010/05/17 19:08:03
+ * @version 2012/02/15 23:23:00
  */
 public class XMLWriter extends XMLScanner implements LexicalHandler {
 
     /** The line separator character */
-    private static final String EOL = System.getProperty("line.separator");
+    protected static final String EOL = System.getProperty("line.separator");
 
     /** The event state for other. */
     private static final int OTHER = 0;
@@ -80,9 +80,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
      * <p>
      * You can override this method to omit xml declaration.
      * </p>
-     * 
-     * @see org.xml.sax.ContentHandler#startDocument()
+     * {@inheritDoc}
      */
+    @Override
     public void startDocument() {
         // use myself as xml output if needed
         if (getParent() == null) {
@@ -98,8 +98,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ContentHandler#endDocument()
+     * {@inheritDoc}
      */
+    @Override
     public void endDocument() {
         if (out instanceof Flushable) {
             try {
@@ -111,8 +112,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ContentHandler#startPrefixMapping(java.lang.String, java.lang.String)
+     * {@inheritDoc}
      */
+    @Override
     public void startPrefixMapping(String prefix, String uri) {
         count++;
         namespaces.add(prefix); // add prefix
@@ -120,17 +122,18 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ContentHandler#endPrefixMapping(java.lang.String)
+     * {@inheritDoc}
      */
+    @Override
     public void endPrefixMapping(String prefix) {
         namespaces.remove(namespaces.size() - 1); // remove uri
         namespaces.remove(namespaces.size() - 1); // remove prefix
     }
 
     /**
-     * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String,
-     *      java.lang.String, org.xml.sax.Attributes)
+     * {@inheritDoc}
      */
+    @Override
     public void startElement(String uri, String local, String name, Attributes atts) {
         try {
             int prev = checkEvent(START);
@@ -196,9 +199,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String,
-     *      java.lang.String)
+     * {@inheritDoc}
      */
+    @Override
     public void endElement(String uri, String local, String name) {
         depth--;
 
@@ -225,14 +228,25 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ContentHandler#characters(char[], int, int)
+     * {@inheritDoc}
      */
+    @Override
     public void characters(char[] ch, int start, int length) {
         try {
             int prev = checkEvent(CHARACTER);
 
             if (isIgnorableNode(ch, start, length)) {
                 if (breaks == 0) write(ch, start, length);
+
+                // change state
+                this.state = (prev == START) ? OTHER : prev;
+            } else if (asBlock(ch, start, length)) {
+                out.append(EOL);
+
+                for (String line : new String(ch, start, length).split(EOL)) {
+                    writeIndent();
+                    out.append(line);
+                }
 
                 // change state
                 this.state = (prev == START) ? OTHER : prev;
@@ -245,8 +259,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ContentHandler#processingInstruction(java.lang.String, java.lang.String)
+     * {@inheritDoc}
      */
+    @Override
     public void processingInstruction(String target, String data) {
         try {
             checkEvent(OTHER);
@@ -265,9 +280,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ext.LexicalHandler#startDTD(java.lang.String, java.lang.String,
-     *      java.lang.String)
+     * {@inheritDoc}
      */
+    @Override
     public void startDTD(String name, String publicId, String systemId) {
         try {
             checkEvent(OTHER);
@@ -292,8 +307,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ext.LexicalHandler#endDTD()
+     * {@inheritDoc}
      */
+    @Override
     public void endDTD() {
         try {
             checkEvent(OTHER);
@@ -304,22 +320,25 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ext.LexicalHandler#startEntity(java.lang.String)
+     * {@inheritDoc}
      */
+    @Override
     public void startEntity(String name) {
         // do nothing
     }
 
     /**
-     * @see org.xml.sax.ext.LexicalHandler#endEntity(java.lang.String)
+     * {@inheritDoc}
      */
+    @Override
     public void endEntity(String name) {
         // do nothing
     }
 
     /**
-     * @see org.xml.sax.ext.LexicalHandler#startCDATA()
+     * {@inheritDoc}
      */
+    @Override
     public void startCDATA() {
         try {
             checkEvent(CHARACTER);
@@ -330,8 +349,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ext.LexicalHandler#endCDATA()
+     * {@inheritDoc}
      */
+    @Override
     public void endCDATA() {
         try {
             checkEvent(CHARACTER);
@@ -342,8 +362,9 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
     }
 
     /**
-     * @see org.xml.sax.ext.LexicalHandler#comment(char[], int, int)
+     * {@inheritDoc}
      */
+    @Override
     public void comment(char[] ch, int start, int length) {
         try {
             int prev = checkEvent(OTHER);
@@ -367,6 +388,19 @@ public class XMLWriter extends XMLScanner implements LexicalHandler {
         } catch (IOException e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * Check whether the text node is treated as a block or not. You can override this method to
+     * manipulate a format of serialization.
+     * 
+     * @param ch A charactor sequence to parse.
+     * @param start A start position of parsing.
+     * @param length A length.
+     * @return Is this text node treated as a block?
+     */
+    protected boolean asBlock(char[] ch, int start, int length) {
+        return false;
     }
 
     /**
