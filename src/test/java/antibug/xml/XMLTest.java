@@ -20,8 +20,8 @@ public class XMLTest {
 
     @Test
     public void testname() throws Exception {
-        XML xml = xml("<root><one/><one/></root>");
-        XML fail = xml("<root><one/><fail/></root>");
+        XML xml = xml("<root><one/><one a='ab'/></root>");
+        XML fail = xml("<root><one/><one a='aa'/></root>");
 
         assert xml.equals(fail);
     }
