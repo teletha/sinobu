@@ -18,6 +18,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,6 +44,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+import antibug.powerassert.PowerAssertRenderer;
+
 import com.sun.org.apache.xerces.internal.util.DOMUtil;
 import com.sun.org.apache.xml.internal.security.c14n.CanonicalizerSpi;
 import com.sun.org.apache.xml.internal.security.c14n.implementations.Canonicalizer11_OmitComments;
@@ -55,12 +59,19 @@ public class XML {
     /** The factory. */
     private static final DocumentBuilder dom;
 
+    /** The error details. */
+    private static final Map<XML, Node> details = new ConcurrentHashMap();
+
     static {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
 
             dom = factory.newDocumentBuilder();
+
+            PowerAssertRenderer.register(XMLRenderer.class);
+            PowerAssertRenderer.register(ElementRenderer.class);
+            PowerAssertRenderer.register(AttributeRenderer.class);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -150,6 +161,68 @@ public class XML {
         return new XML(builder.m_doc);
     }
 
+    /**
+     * <p>
+     * Helper method to build xpath expression of the specified node.
+     * </p>
+     * 
+     * @param node A target node.
+     * @return A xpath expression.
+     */
+    private static String makeXPath(Node node) {
+        StringBuilder builder = new StringBuilder();
+
+        while (node != null) {
+            switch (node.getNodeType()) {
+            case ATTRIBUTE_NODE:
+                builder.insert(0, "/@" + node.getNodeName());
+                node = ((Attr) node).getOwnerElement();
+                break;
+
+            case ELEMENT_NODE:
+                builder.insert(0, "/" + node.getNodeName() + makeXPathPosition(node));
+                node = node.getParentNode();
+                break;
+
+            case TEXT_NODE:
+                builder.insert(0, "/text()");
+                node = node.getParentNode();
+                break;
+
+            default:
+                node = node.getParentNode();
+                break;
+            }
+        }
+        return builder.toString();
+    }
+
+    /**
+     * <p>
+     * Helper method to calcurate xpath position.
+     * </p>
+     * 
+     * @param node A target element node.
+     * @return A position.
+     */
+    private static String makeXPathPosition(Node node) {
+        int i = 1;
+        Element current = DOMUtil.getFirstChildElement(node.getParentNode(), node.getNodeName());
+
+        while (current != node) {
+            i++;
+            current = DOMUtil.getNextSiblingElement(current, node.getNodeName());
+        }
+
+        // if the current element is only typed child in this context, we can omit a position
+        // syntax sugar of the xpath expression.
+        if (i == 1 && DOMUtil.getNextSiblingElement(current, node.getNodeName()) == null) {
+            return "";
+        } else {
+            return "[" + i + "]";
+        }
+    }
+
     private final Document doc;
 
     /**
@@ -234,9 +307,23 @@ public class XML {
      * @return
      */
     public boolean equals(XML xml) {
-        compare(canonicalize(), xml.canonicalize());
+        try {
+            compare(doc, xml.doc);
 
-        return false;
+            // no difference
+            return true;
+        } catch (AssertionError e) {
+            // some differences
+            Throwable cause = e.getCause();
+
+            if (cause instanceof Detail) {
+                Detail detail = (Detail) cause;
+
+                details.put(this, detail.one);
+                details.put(xml, detail.other);
+            }
+            return false;
+        }
     }
 
     /**
@@ -385,7 +472,7 @@ public class XML {
             assert one.getName() == other.getName();
             assert one.getLocalName().intern() == other.getLocalName().intern();
             assert one.getNamespaceURI() == other.getNamespaceURI();
-            assert one.getValue().equals(other.getValue());
+            assert one.getValue().equals(other.getValue()) : new Detail(one, other);
         }
     }
 
@@ -428,7 +515,7 @@ public class XML {
     public String toString() {
         try {
             StringBuilder builder = new StringBuilder();
-            XMLWriter formatter = new XMLWriter(builder);
+            XMLFormatter formatter = new XMLFormatter(builder);
 
             SAXResult result = new SAXResult(formatter);
             result.setLexicalHandler(formatter);
@@ -443,9 +530,37 @@ public class XML {
     }
 
     /**
+     * @version 2012/02/15 14:15:10
+     */
+    private static final class XMLFormatter extends XMLWriter {
+
+        /**
+         * @param out
+         */
+        public XMLFormatter(Appendable out) {
+            super(out);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void startDocument() {
+            // ignore
+        }
+    }
+
+    /**
      * @version 2012/02/15 1:49:33
      */
-    private static final class Detail {
+    @SuppressWarnings("serial")
+    private static final class Detail extends Throwable {
+
+        /** The test node. */
+        private final Node one;
+
+        /** The expect node. */
+        private final Node other;
 
         /**
          * <p>
@@ -455,65 +570,103 @@ public class XML {
          * @param one
          * @param other
          */
-        private Detail(Element one, Element other) {
-            System.out.println(makeXPath(one));
-            System.out.println(makeXPath(other));
+        private Detail(Node one, Node other) {
+            this.one = one;
+            this.other = other;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+
+            builder.append(makeXPath(one)).append(" is ").append(PowerAssertRenderer.format(one)).append("\n");
+            builder.append(makeXPath(other)).append(" is ").append(PowerAssertRenderer.format(other)).append("\n");
+
+            return builder.toString();
         }
     }
 
     /**
-     * <p>
-     * Helper method to build xpath expression of the specified node.
-     * </p>
-     * 
-     * @param node A target node.
-     * @return A xpath expression.
+     * @version 2012/02/15 14:35:59
      */
-    private static String makeXPath(Node node) {
-        StringBuilder builder = new StringBuilder();
+    private static final class XMLRenderer extends PowerAssertRenderer<XML> {
 
-        while (node != null) {
-            switch (node.getNodeType()) {
-            case ATTRIBUTE_NODE:
-                builder.insert(0, "/@" + node.getNodeName());
-                break;
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected String render(XML value) {
+            StringBuilder builder = new StringBuilder();
 
-            case ELEMENT_NODE:
-                builder.insert(0, "/" + node.getNodeName() + makeXPathPosition(node));
-                break;
+            Node detail = details.get(value);
 
-            case TEXT_NODE:
-                builder.insert(0, "/text()");
-                break;
+            if (detail != null) {
+                builder.append(makeXPath(detail))
+                        .append(" is ")
+                        .append(PowerAssertRenderer.format(detail))
+                        .append("\n");
+                Node node = detail instanceof Attr ? ((Attr) detail).getOwnerElement() : detail;
+
+                node.getParentNode().insertBefore(node.getOwnerDocument().createComment("----------"), node);
+                node.getParentNode()
+                        .insertBefore(node.getOwnerDocument().createComment("----------"), node.getNextSibling());
             }
-            node = node.getParentNode();
+            builder.append(value);
+
+            return builder.toString();
         }
-        return builder.toString();
     }
 
     /**
-     * <p>
-     * Helper method to calcurate xpath position.
-     * </p>
-     * 
-     * @param node A target element node.
-     * @return A position.
+     * @version 2012/02/15 11:55:46
      */
-    private static String makeXPathPosition(Node node) {
-        int i = 1;
-        Element current = DOMUtil.getFirstChildElement(node.getParentNode(), node.getNodeName());
+    private static final class ElementRenderer extends PowerAssertRenderer<Element> {
 
-        while (current != node) {
-            i++;
-            current = DOMUtil.getNextSiblingElement(current, node.getNodeName());
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected String render(Element value) {
+            StringBuilder builder = new StringBuilder();
+            builder.append('<').append(value.getNodeName());
+
+            for (Attr attribute : DOMUtil.getAttrs(value)) {
+                builder.append(' ').append(attribute.getName()).append("=\"").append(attribute.getValue()).append('"');
+            }
+            if (!value.hasChildNodes()) {
+                builder.append('/');
+            }
+            builder.append('>');
+
+            return builder.toString();
         }
+    }
 
-        // if the current element is only typed child in this context, we can omit a position
-        // syntax sugar of the xpath expression.
-        if (i == 1 && DOMUtil.getNextSiblingElement(current, node.getNodeName()) == null) {
-            return "";
-        } else {
-            return "[" + i + "]";
+    /**
+     * @version 2012/02/15 11:55:46
+     */
+    private static final class AttributeRenderer extends PowerAssertRenderer<Attr> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected String render(Attr attr) {
+            Element value = attr.getOwnerElement();
+
+            StringBuilder builder = new StringBuilder();
+            builder.append('<').append(value.getNodeName());
+            builder.append(' ').append(attr.getName()).append("=\"").append(attr.getValue()).append('"');
+
+            if (!value.hasChildNodes()) {
+                builder.append('/');
+            }
+            builder.append('>');
+
+            return builder.toString();
         }
     }
 }
