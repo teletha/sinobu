@@ -11,23 +11,19 @@ package antibug.xml;
 
 import static antibug.xml.XML.*;
 
-import java.util.EnumSet;
-
 import org.junit.Test;
 
 /**
- * @version 2012/02/15 1:18:03
+ * @version 2012/02/16 14:42:48
  */
 public class XMLTest {
-
-    private EnumSet<XMLAmbiguity> ignorePrefix = EnumSet.of(XMLAmbiguity.Prefix);
 
     @Test
     public void elementLocalName() throws Exception {
         XML one = xml("<Q/>");
         XML other = xml("<P/>");
 
-        assert !one.equals(other);
+        assert !one.isEqualTo(other);
     }
 
     @Test
@@ -35,7 +31,7 @@ public class XMLTest {
         XML one = xml("<m xmlns='P'/>");
         XML other = xml("<m xmlns='Q'/>");
 
-        assert !one.equals(other);
+        assert !one.isEqualTo(other);
     }
 
     @Test
@@ -43,14 +39,110 @@ public class XMLTest {
         XML one = xml("<Q:m xmlns:Q='ns'/>");
         XML other = xml("<P:m xmlns:P='ns'/>");
 
-        assert !one.equals(other);
+        assert one.isEqualTo(other);
+        assert one.isEqualTo(other, Except.Prefix());
+        assert !one.isEqualTo(other, Except.Comment());
+        assert !one.isIdenticalTo(other);
+
     }
 
     @Test
-    public void elementNameIgnorePrefix() throws Exception {
-        XML one = xml("<Q:m xmlns:Q='ns'/>");
-        XML other = xml("<P:m xmlns:P='ns'/>");
+    public void attributeLocalName() throws Exception {
+        XML one = xml("<m Q='value'/>");
+        XML other = xml("<m P='value'/>");
 
-        assert one.equals(other, ignorePrefix);
+        assert !one.isEqualTo(other);
+    }
+
+    @Test
+    public void attributeURI() throws Exception {
+        XML one = xml("<m name='value' xmlns='Q'/>");
+        XML other = xml("<m name='value' xmlns='P'/>");
+
+        assert !one.isEqualTo(other);
+    }
+
+    @Test
+    public void attributeName() throws Exception {
+        XML one = xml("<m Q:n='' xmlns:Q='ns'/>");
+        XML other = xml("<m P:n='' xmlns:P='ns'/>");
+
+        assert one.isEqualTo(other);
+        assert one.isEqualTo(other, Except.Prefix());
+        assert !one.isEqualTo(other, Except.Comment());
+        assert !one.isIdenticalTo(other);
+    }
+
+    @Test
+    public void attributes() throws Exception {
+        XML one = xml("<m P='p' Q='q'/>");
+        XML other = xml("<m Q='q' P='p'/>");
+
+        assert one.isEqualTo(other);
+    }
+
+    @Test
+    public void text() throws Exception {
+        XML one = xml("<m>Q</m>");
+        XML other = xml("<m>P</m>");
+
+        assert !one.isEqualTo(other);
+    }
+
+    @Test
+    public void whitespace() throws Exception {
+        XML one = xml("<m></m>");
+        XML other = xml("<m>  </m>");
+
+        assert one.isEqualTo(other);
+        assert one.isEqualTo(other, Except.WhiteSpace());
+        assert !one.isEqualTo(other, Except.Comment());
+        assert !one.isIdenticalTo(other);
+    }
+
+    @Test
+    public void textWithWhitespace() throws Exception {
+        XML one = xml("<m>Q</m>");
+        XML other = xml("<m> Q </m>");
+
+        assert one.isEqualTo(other);
+        assert one.isEqualTo(other, Except.WhiteSpace());
+        assert !one.isEqualTo(other, Except.Comment());
+        assert !one.isIdenticalTo(other);
+    }
+
+    @Test
+    public void child() throws Exception {
+        XML one = xml("<m><Q/></m>");
+        XML other = xml("<m><P/></m>");
+
+        assert !one.isEqualTo(other);
+    }
+
+    @Test
+    public void childrenOrder() throws Exception {
+        XML one = xml("<m><Q/><P/></m>");
+        XML other = xml("<m><P/><Q/></m>");
+
+        assert !one.isEqualTo(other);
+    }
+
+    @Test
+    public void childrenSize() throws Exception {
+        XML one = xml("<m><Q/></m>");
+        XML other = xml("<m><Q/><P/></m>");
+
+        assert !one.isEqualTo(other);
+    }
+
+    @Test
+    public void comment() throws Exception {
+        XML one = xml("<m><!-- Q --></m>");
+        XML other = xml("<m><!-- P --></m>");
+
+        assert one.isEqualTo(other);
+        assert one.isEqualTo(other, Except.Comment());
+        assert !one.isEqualTo(other, Except.Prefix());
+        assert !one.isIdenticalTo(other);
     }
 }
