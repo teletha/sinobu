@@ -9,16 +9,25 @@
  */
 package kiss.xml;
 
+import static antibug.AntiBug.*;
 import static antibug.Ezunit.*;
 
 import org.junit.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import antibug.OneTimeFile;
+import antibug.xml.XML;
+
 /**
  * @version 2011/04/14 10:36:03
  */
 public class XMLScannerIncludeTest {
+
+    private static final String includeXML = "<included><child/></included>";
+
+    @org.junit.Rule
+    public static final OneTimeFile include = new OneTimeFile(includeXML);
 
     @Test
     public void path() throws Exception {
@@ -28,12 +37,15 @@ public class XMLScannerIncludeTest {
             @Rule(match = "root")
             public void in() {
                 start("root");
-                include(locate("include/pathIncluded.xml"));
+                include(include);
                 end();
             }
         };
 
-        assertXMLIdentical("include/pathExpected.xml", "include/path.xml", scanner);
+        XML xml = xml("<root/>", scanner);
+        XML expect = xml("<root><included><child/></included></root>");
+
+        assert xml.isIdenticalTo(expect);
     }
 
     @Test
@@ -44,12 +56,15 @@ public class XMLScannerIncludeTest {
             @Rule(match = "root")
             public void in() {
                 start("root");
-                include(locate("include/pathIncluded.xml"), new StripChildElement());
+                include(include, new StripChildElement());
                 end();
             }
         };
 
-        assertXMLIdentical("include/pathWithFilterExpected.xml", "include/path.xml", scanner);
+        XML xml = xml("<root/>", scanner);
+        XML expect = xml("<root><included/></root>");
+
+        assert xml.isIdenticalTo(expect);
     }
 
     @Test

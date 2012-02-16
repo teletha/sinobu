@@ -311,26 +311,6 @@ public class Ezunit {
     }
 
     /**
-     * Assert that two XML documents are similar.
-     * 
-     * @param expected A XML to be compared against.
-     * @param tested A XML to be tested.
-     */
-    public static final void assertXMLEqual(Document expected, Document tested) {
-        Diff diff = new Diff(expected, tested);
-
-        if (!diff.similar()) {
-            System.out.println("The given document :");
-            dumpXML(tested);
-
-            System.out.println("The expected document :");
-            dumpXML(expected);
-
-            throw new AssertionError(diff.toString());
-        }
-    }
-
-    /**
      * Assert that two XML documents are identical.
      * 
      * @param expected A XML to be compared against.
