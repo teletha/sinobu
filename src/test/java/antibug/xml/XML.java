@@ -499,7 +499,6 @@ public class XML {
             Node node = nodes.item(i);
 
             if (except.ignoreComment() && node.getNodeType() == COMMENT_NODE) {
-                System.out.println("ignore comment");
                 continue;
             }
 
