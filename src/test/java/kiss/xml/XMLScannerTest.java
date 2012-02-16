@@ -9,17 +9,10 @@
  */
 package kiss.xml;
 
-import static antibug.xml.XML.*;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Path;
-
-import kiss.I;
+import static antibug.AntiBug.*;
 
 import org.junit.Test;
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
@@ -31,44 +24,12 @@ import antibug.xml.XML;
  */
 public class XMLScannerTest {
 
-    /**
-     * <p>
-     * Helper method to build input source.
-     * </p>
-     * 
-     * @param text
-     * @return
-     */
-    private InputSource source(String text) {
-        return new InputSource(new StringReader(text));
-    }
-
-    @Test
-    public void dontThrowNPE() throws IOException {
-        I.parse(source("<text/>"), new XMLScanner());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void requireFilter() throws IOException {
-        I.parse(source("<text/>"), (XMLFilter) null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void requireXML() throws IOException {
-        I.parse((InputSource) null, new XMLScanner());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void requirePath() throws IOException {
-        I.parse((Path) null, new XMLScanner());
-    }
-
     @Test
     public void dontModify() throws Exception {
-        String text = "<root/>";
-        String expect = "<root/>";
+        XML text = xml("<root/>", new XMLScanner());
+        XML expect = xml("<root/>");
 
-        assert xml(text, new XMLScanner()).isIdenticalTo(expect);
+        assert text.isIdenticalTo(expect);
     }
 
     @Test
@@ -81,18 +42,18 @@ public class XMLScannerTest {
         XMLFilter third = new XMLScanner();
         third.setParent(second);
 
-        String text = "<root/>";
-        String expect = "<root/>";
+        XML text = xml("<root/>", third);
+        XML expect = xml("<root/>");
 
-        assert xml(text, third).isIdenticalTo(expect);
+        assert text.isIdenticalTo(expect);
     }
 
     @Test
     public void modifyByFilter() throws Exception {
-        String text = "<root/>";
-        String expect = "<top><root/></top>";
+        XML text = xml("<root/>", new Encloser("top"));
+        XML expect = xml("<top><root/></top>");
 
-        assert xml(text, new Encloser("top")).isIdenticalTo(expect);
+        assert text.isIdenticalTo(expect);
     }
 
     @Test
@@ -105,10 +66,10 @@ public class XMLScannerTest {
         XMLFilter third = new Encloser("third");
         third.setParent(second);
 
-        String text = "<root/>";
-        String expect = "<third><second><first><root/></first></second></third>";
+        XML text = xml("<root/>", third);
+        XML expect = xml("<third><second><first><root/></first></second></third>");
 
-        assert xml(text, third).isIdenticalTo(expect);
+        assert text.isIdenticalTo(expect);
     }
 
     @Test
@@ -122,7 +83,7 @@ public class XMLScannerTest {
         writer.end();
         writer.endDocument();
 
-        String expect = "<root/>";
+        XML expect = xml("<root/>");
 
         assert doc.isIdenticalTo(expect);
     }
@@ -139,7 +100,7 @@ public class XMLScannerTest {
         writer.end();
         writer.endDocument();
 
-        String expect = "<root name1='value1' name2='value2'>text</root>";
+        XML expect = xml("<root name1='value1' name2='value2'>text</root>");
 
         assert doc.isIdenticalTo(expect);
     }
@@ -157,7 +118,7 @@ public class XMLScannerTest {
         writer.endPrefixMapping("");
         writer.endDocument();
 
-        String expect = "<root xmlns='default'/>";
+        XML expect = xml("<root xmlns='default'/>");
 
         assert doc.isIdenticalTo(expect);
     }
@@ -181,7 +142,7 @@ public class XMLScannerTest {
         writer.endPrefixMapping("test");
         writer.endDocument();
 
-        String expect = "<test:root xmlns:test='first'><test:in xmlns:test='second'/><test:in/></test:root>";
+        XML expect = xml("<test:root xmlns:test='first'><test:in xmlns:test='second'/><test:in/></test:root>");
 
         assert doc.isIdenticalTo(expect);
     }
@@ -200,7 +161,7 @@ public class XMLScannerTest {
         writer.endPrefixMapping("test");
         writer.endDocument();
 
-        String expect = "<root xmlns:test='first' test:name1='value1'>text</root>";
+        XML expect = xml("<root xmlns:test='first' test:name1='value1'>text</root>");
 
         assert doc.isIdenticalTo(expect);
     }
@@ -209,7 +170,7 @@ public class XMLScannerTest {
     public void writeLoop() throws Exception {
         XMLScanner writer = new XMLScanner();
         XML doc = xml(writer);
-        XML expect = xml("<root xmlns:ns='nss'><ns:m>0</ns:m><ns:m>1</ns:m><ns:m>2</ns:m></root>");
+        XML expect = xml("<root xmlns:ns='ns'><ns:m>0</ns:m><ns:m>1</ns:m><ns:m>2</ns:m></root>");
 
         // write xml
         writer.startDocument();
