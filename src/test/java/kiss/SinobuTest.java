@@ -9,9 +9,8 @@
  */
 package kiss;
 
-import static antibug.Ezunit.*;
-
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,6 @@ import kiss.sample.modifier.Abstract;
 import kiss.sample.modifier.Final;
 import kiss.sample.modifier.Nested.PublicStatic;
 import kiss.sample.modifier.Public;
-import kiss.xml.Encloser;
 
 import org.junit.Test;
 import org.xml.sax.InputSource;
@@ -394,13 +392,14 @@ public class SinobuTest {
     // ===============================================================
     // Test Parse Method
     // ===============================================================
+
     @Test(expected = NullPointerException.class)
-    public void testParseWithNullInputSource() throws IOException {
+    public void parseNullInputSource() throws IOException {
         I.parse((InputSource) null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testParseWithNullPath() throws IOException {
+    public void parseNullPath() throws IOException {
         I.parse((Path) null);
     }
 
@@ -408,48 +407,49 @@ public class SinobuTest {
      * Parse with <code>null</code> filter.
      */
     @Test(expected = NullPointerException.class)
-    public void testParseWithNullFilter() throws IOException {
-        I.parse(locateSource("xml/scanner/test001.xml"), (XMLFilter) null);
+    public void parseNullFilter() throws IOException {
+        I.parse(source("<Q/>"), (XMLFilter) null);
     }
 
     /**
      * Parse with <code>null</code> filters.
      */
     @Test(expected = NullPointerException.class)
-    public void testParseWithNullFilters() throws IOException {
-        I.parse(locateSource("xml/scanner/test001.xml"), (XMLFilter[]) null);
+    public void parseNullFilters() throws IOException {
+        I.parse(source("<Q/>"), (XMLFilter[]) null);
     }
 
     /**
      * Parse without filter.
      */
     @Test
-    public void testParseWithoutFilter() throws IOException {
-        I.parse(locateSource("xml/scanner/test001.xml"));
+    public void parseWithoutFilter() throws IOException {
+        I.parse(source("<Q/>"));
     }
 
     /**
      * Parse with filter.
      */
     @Test
-    public void testParseWithFilter() throws IOException {
-        I.parse(locateSource("xml/scanner/test001.xml"), new XMLFilterImpl());
+    public void parseWithFilter() throws IOException {
+        I.parse(source("<Q/>"), new XMLFilterImpl());
     }
 
-    /**
-     * Parse without filter.
-     */
     @Test(expected = SAXException.class)
-    public void testParseWithInvalidSource() throws IOException {
-        I.parse(locateSource("empty.txt"));
+    public void parseInvalidSource() throws IOException {
+        I.parse(source("invalid"));
     }
 
     /**
-     * Parse with filters.
+     * <p>
+     * Helper method to build input source.
+     * </p>
+     * 
+     * @param text
+     * @return
      */
-    @Test
-    public void testParse() {
-        assertXMLIdentical("xml/scanner/expected004.xml", "xml/scanner/test004.xml", new Encloser("first"), new Encloser("second"), new Encloser("third"));
+    private static InputSource source(String text) {
+        return new InputSource(new StringReader(text));
     }
 
     // ===============================================================

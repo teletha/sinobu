@@ -331,19 +331,6 @@ public class Ezunit {
     }
 
     /**
-     * <p>
-     * Assert that two XML documents are similar.
-     * </p>
-     * 
-     * @param expectedXMLFilePath A XML to be compared against.
-     * @param testedXMLFilePath A XML to be tested.
-     * @param filters A list of filters to transform xml.
-     */
-    public static final void assertXMLEqual(String expectedXMLFilePath, String testedXMLFilePath, XMLFilter... filters) {
-        assertXMLEqual(locateDOM(expectedXMLFilePath), locateDOM(testedXMLFilePath, filters));
-    }
-
-    /**
      * Assert that two XML documents are identical.
      * 
      * @param expected A XML to be compared against.
