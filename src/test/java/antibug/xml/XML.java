@@ -9,7 +9,6 @@
  */
 package antibug.xml;
 
-import static antibug.xml.XMLAmbiguity.*;
 import static org.w3c.dom.Node.*;
 
 import java.io.IOException;
@@ -20,7 +19,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.EnumSet;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -44,13 +42,11 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
-import org.xml.sax.helpers.XMLFilterImpl;
 
 import antibug.powerassert.PowerAssertRenderer;
 
 import com.sun.org.apache.xalan.internal.xsltc.trax.DOM2SAX;
 import com.sun.org.apache.xerces.internal.util.DOMUtil;
-import com.sun.org.apache.xml.internal.utils.DOMBuilder;
 
 /**
  * @version 2012/02/16 1:01:12
@@ -118,18 +114,20 @@ public class XML {
      * @return
      */
     public static XML xml(InputSource source, XMLFilter... filters) {
-        DOMBuilder builder = new DOMBuilder(dom.newDocument());
-        XMLFilterImpl filter = new XMLFilterImpl();
-        filter.setContentHandler(builder);
+        try {
+            DOMStreamer builder = new DOMStreamer(dom.newDocument());
 
-        // build pipe
-        List<XMLFilter> pipe = new ArrayList();
-        pipe.addAll(Arrays.asList(filters));
-        pipe.add(filter);
+            // build pipe
+            List<XMLFilter> pipe = new ArrayList();
+            pipe.addAll(Arrays.asList(filters));
+            pipe.add(builder);
 
-        I.parse(source, pipe.toArray(new XMLFilter[pipe.size()]));
+            I.parse(source, pipe.toArray(new XMLFilter[pipe.size()]));
 
-        return xml(builder.m_doc);
+            return xml(builder.m_doc);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -153,7 +151,7 @@ public class XML {
      * @return
      */
     public static XML xml(XMLFilter filter) {
-        DOMBuilder builder = new DOMBuilder(dom.newDocument());
+        DOMStreamer builder = new DOMStreamer(dom.newDocument());
 
         // make chain
         filter.setContentHandler(builder);
@@ -168,7 +166,8 @@ public class XML {
     /** The current processing element. */
     private Node detail;
 
-    private EnumSet<XMLAmbiguity> ambiguities = EnumSet.allOf(XMLAmbiguity.class);
+    /** The exceptions. */
+    private Except except = Except.Comment().andPrefix().andWhiteSpace();
 
     /**
      * @param doc
@@ -227,8 +226,8 @@ public class XML {
      * @param text
      * @return
      */
-    public boolean equals(String xml) {
-        return equals(xml(xml));
+    public boolean isEqualTo(String xml, Except... excepts) {
+        return isEqualTo(xml(xml), excepts);
     }
 
     /**
@@ -239,8 +238,8 @@ public class XML {
      * @param xml
      * @return
      */
-    public boolean equals(Document xml) {
-        return equals(xml(xml));
+    public boolean isEqualTo(Document xml, Except... excepts) {
+        return isEqualTo(xml(xml), excepts);
     }
 
     /**
@@ -251,9 +250,13 @@ public class XML {
      * @param xml
      * @return
      */
-    public boolean equals(XML xml, EnumSet<XMLAmbiguity>... ambiguities) {
-        if (ambiguities != null && ambiguities.length != 0) {
-            this.ambiguities = ambiguities[0];
+    public boolean isEqualTo(XML xml, Except... excepts) {
+        if (excepts != null && excepts.length != 0) {
+            this.except = new Except();
+
+            for (Except except : excepts) {
+                this.except.bits.or(except.bits);
+            }
         }
 
         try {
@@ -282,6 +285,10 @@ public class XML {
         switch (one.getNodeType()) {
         case ATTRIBUTE_NODE:
             compare((Attr) one, (Attr) other, otherXML);
+            break;
+
+        case COMMENT_NODE:
+            compare((Comment) one, (Comment) other, otherXML);
             break;
 
         case ELEMENT_NODE:
@@ -345,37 +352,6 @@ public class XML {
      * @param one A test node.
      * @param other A test node.
      */
-    private void compare(Element one, Element other, XML otherXML) {
-        if (one == null || other == null) {
-            assert one == other;
-        } else {
-            assert one.getLocalName().intern() == other.getLocalName().intern();
-            assert one.getNamespaceURI() == other.getNamespaceURI();
-
-            if (!ambiguities.contains(Prefix)) {
-                assert one.getNodeName() == other.getNodeName();
-            }
-
-            compare(one.getAttributes(), other.getAttributes(), otherXML);
-
-            NodeList oneChildren = one.getChildNodes();
-            NodeList otherChildren = other.getChildNodes();
-            assert oneChildren.getLength() == otherChildren.getLength();
-
-            for (int i = 0; i < oneChildren.getLength(); i++) {
-                compare(oneChildren.item(i), otherChildren.item(i), otherXML);
-            }
-        }
-    }
-
-    /**
-     * <p>
-     * Check node equality.
-     * </p>
-     * 
-     * @param one A test node.
-     * @param other A test node.
-     */
     private void compare(NamedNodeMap one, NamedNodeMap other, XML otherXML) {
         if (one == null || other == null) {
             assert one == other;
@@ -383,7 +359,11 @@ public class XML {
             assert one.getLength() == other.getLength();
 
             for (int i = 0; i < one.getLength(); i++) {
-                compare(one.item(i), other.item(i), otherXML);
+                Attr oneAttribute = (Attr) one.item(i);
+                Attr otherAttribute = (Attr) other.getNamedItemNS(oneAttribute.getNamespaceURI(), oneAttribute.getLocalName());
+
+                assert otherAttribute != null;
+                compare(oneAttribute, otherAttribute, otherXML);
             }
         }
     }
@@ -404,7 +384,7 @@ public class XML {
             assert one.getNamespaceURI() == other.getNamespaceURI();
             assert one.getValue().equals(other.getValue());
 
-            if (!ambiguities.contains(Prefix)) {
+            if (!except.ignorePrefix()) {
                 assert one.getName() == other.getName();
             }
         }
@@ -422,7 +402,37 @@ public class XML {
         if (one == null || other == null) {
             assert one == other;
         } else {
-            assert one.getData().equals(other.getData());
+            String oneText = one.getData();
+            String otherText = other.getData();
+
+            if (except.ignoreWhiteSpace()) {
+                oneText = oneText.trim();
+                otherText = otherText.trim();
+            }
+            assert oneText.equals(otherText);
+        }
+    }
+
+    /**
+     * <p>
+     * Check node equality.
+     * </p>
+     * 
+     * @param one A test node.
+     * @param other A test node.
+     */
+    private void compare(Comment one, Comment other, XML otherXML) {
+        if (one == null || other == null) {
+            assert one == other;
+        } else {
+            String oneText = one.getData();
+            String otherText = other.getData();
+
+            if (except.ignoreWhiteSpace()) {
+                oneText = oneText.trim();
+                otherText = otherText.trim();
+            }
+            assert oneText.equals(otherText);
         }
     }
 
@@ -440,6 +450,82 @@ public class XML {
         } else {
             throw new Error();
         }
+    }
+
+    /**
+     * <p>
+     * Check node equality.
+     * </p>
+     * 
+     * @param one A test node.
+     * @param other A test node.
+     */
+    private void compare(Element one, Element other, XML otherXML) {
+        if (one == null || other == null) {
+            assert one == other;
+        } else {
+            assert one.getLocalName().intern() == other.getLocalName().intern();
+            assert one.getNamespaceURI() == other.getNamespaceURI();
+
+            if (!except.ignorePrefix()) {
+                assert one.getNodeName() == other.getNodeName();
+            }
+
+            compare(one.getAttributes(), other.getAttributes(), otherXML);
+
+            List<Node> oneChildren = convert(one.getChildNodes());
+            List<Node> otherChildren = convert(other.getChildNodes());
+
+            assert oneChildren.size() == otherChildren.size();
+
+            for (int i = 0; i < oneChildren.size(); i++) {
+                compare(oneChildren.get(i), otherChildren.get(i), otherXML);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Helper method to conver {@link NodeList} to {@link List}.
+     * </p>
+     * 
+     * @param list
+     * @return
+     */
+    private List<Node> convert(NodeList nodes) {
+        List<Node> list = new ArrayList();
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+
+            if (except.ignoreComment() && node.getNodeType() == COMMENT_NODE) {
+                System.out.println("ignore comment");
+                continue;
+            }
+
+            if (except.ignoreWhiteSpace() && node.getNodeType() == TEXT_NODE && isWhitespace(node.getTextContent())) {
+                continue;
+            }
+            list.add(node);
+        }
+        return list;
+    }
+
+    /**
+     * <p>
+     * Helper method the specified text is whitespace or not.
+     * </p>
+     * 
+     * @param text
+     * @return
+     */
+    private boolean isWhitespace(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            if (!Character.isWhitespace(text.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -631,7 +717,14 @@ public class XML {
                 break;
 
             case ELEMENT_NODE:
-                builder.insert(0, "/*" + makeXPathPosition(node) + "[namespace-uri()='" + node.getNamespaceURI() + "'][local-name()='" + node.getLocalName() + "']");
+                String uri = node.getNamespaceURI();
+
+                if (uri != null) {
+                    builder.insert(0, "[namespace-uri()='" + uri + "']");
+                }
+                builder.insert(0, "[local-name()='" + node.getLocalName() + "']");
+                builder.insert(0, "/*" + makeXPathPosition(node));
+
                 node = node.getParentNode();
                 break;
 
