@@ -1003,11 +1003,14 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *             stream supplied by the application.
      */
     public static void parse(Path source, XMLFilter... filters) {
-        InputSource input = new InputSource(source.toUri().toString());
-        input.setEncoding($encoding.name());
-        input.setPublicId(source.toString());
+        try {
+            InputSource input = new InputSource(Files.newBufferedReader(source, $encoding));
+            input.setPublicId(source.toString());
 
-        parse(input, filters);
+            parse(input, filters);
+        } catch (Exception e) {
+            throw quiet(e);
+        }
     }
 
     /**
