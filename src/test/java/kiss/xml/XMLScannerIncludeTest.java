@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import antibug.OneTimeFile;
+import antibug.file.Memo;
 import antibug.xml.XML;
 
 /**
@@ -24,10 +24,7 @@ import antibug.xml.XML;
  */
 public class XMLScannerIncludeTest {
 
-    private static final String includeXML = "<included><child/></included>";
-
-    @org.junit.Rule
-    public static final OneTimeFile include = new OneTimeFile(includeXML);
+    private static final Memo include = new Memo("<included><child/></included>");
 
     @Test
     public void path() throws Exception {
