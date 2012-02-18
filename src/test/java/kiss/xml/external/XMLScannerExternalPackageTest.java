@@ -9,32 +9,22 @@
  */
 package kiss.xml.external;
 
-import static org.junit.Assert.assertNotNull;
-
+import kiss.xml.XMLScanner;
 
 import org.junit.Test;
 
-import kiss.xml.XMLScanner;
-
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/22 4:02:40
+ * @version 2012/02/18 13:46:51
  */
-public class XMLScannerTest {
+public class XMLScannerExternalPackageTest {
 
-    /**
-     * Private rule class. (Out of {@link XMLScanner} package)
-     */
     @Test
-    public void testPrivateClass() throws Exception {
-        assertNotNull(new PrivateRuleScanner());
+    public void externalPackage() throws Exception {
+        assert new PrivateRuleScanner() != null;
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2008/11/22 4:03:45
+     * @version 2012/02/18 13:46:48
      */
     protected static class PrivateRuleScanner extends XMLScanner {
 
