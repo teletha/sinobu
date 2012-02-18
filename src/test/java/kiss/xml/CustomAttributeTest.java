@@ -9,16 +9,15 @@
  */
 package kiss.xml;
 
-import static antibug.Ezunit.*;
+import static antibug.AntiBug.*;
+import kiss.I;
 
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import kiss.I;
-
 /**
- * @version 2011/04/13 19:04:00
+ * @version 2012/02/18 13:10:03
  */
 public class CustomAttributeTest {
 
@@ -33,7 +32,7 @@ public class CustomAttributeTest {
             }
         };
 
-        I.parse(locateSource("rule/test02.xml"), scanner);
+        I.parse(note("<root/>"), scanner);
     }
 
     /**
