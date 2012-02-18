@@ -10,6 +10,7 @@
 package kiss.xml;
 
 import static antibug.AntiBug.*;
+import kiss.I;
 
 import org.junit.Test;
 import org.xml.sax.Attributes;
@@ -17,6 +18,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
 
+import antibug.Ezunit;
 import antibug.xml.XML;
 
 /**
@@ -186,6 +188,11 @@ public class XMLScannerTest {
         writer.endDocument();
 
         assert doc.isIdenticalTo(expect);
+    }
+
+    @Test
+    public void skipDTD() {
+        I.parse(Ezunit.locateSource("doctype.xml"), new XMLScanner());
     }
 
     /**
