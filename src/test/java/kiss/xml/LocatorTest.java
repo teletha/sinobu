@@ -9,25 +9,26 @@
  */
 package kiss.xml;
 
-import static antibug.Ezunit.*;
+import static antibug.AntiBug.*;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+
+import kiss.I;
 
 import org.junit.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.LocatorImpl;
 
-import kiss.I;
-
 /**
- * @version 2011/04/11 11:30:24
+ * @version 2012/02/18 14:58:51
  */
 public class LocatorTest {
 
     @Test
-    public void publicId() {
-        InputSource source = locateSource("dummy.xml");
+    public void publicId() throws Exception {
+        InputSource source = new InputSource(Files.newInputStream(locate("dummy.xml")));
         source.setPublicId("dummy.xml");
 
         Chaser chaser = new Chaser();
@@ -52,14 +53,14 @@ public class LocatorTest {
     }
 
     /**
-     * @version 2011/04/11 11:30:28
+     * @version 2012/02/18 14:58:54
      */
     private static class Chaser extends XMLScanner {
 
         private Locator locator;
 
         /**
-         * @see org.xml.sax.helpers.XMLFilterImpl#setDocumentLocator(org.xml.sax.Locator)
+         * {@inheritDoc}
          */
         @Override
         public void setDocumentLocator(Locator locator) {

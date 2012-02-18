@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static antibug.Ezunit.*;
+import static antibug.AntiBug.*;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
@@ -280,7 +280,7 @@ public class XMLWriterTest {
             // tested
             StringBuilder testedOutput = new StringBuilder();
             XMLWriter formatter = clazz.getConstructor(Appendable.class).newInstance(testedOutput);
-            I.parse(locateSource(testedXMLFilePath), formatter);
+            I.parse(locate(testedXMLFilePath), formatter);
             String[] testedResult = line(testedOutput);
 
             // expected
@@ -331,7 +331,7 @@ public class XMLWriterTest {
             filters = Arrays.copyOf(filters, filters.length + 1);
             filters[filters.length - 1] = clazz.getConstructor(Appendable.class).newInstance(testedOutput);
 
-            I.parse(locateSource(testedXMLFilePath), filters);
+            I.parse(locate(testedXMLFilePath), filters);
             String[] testedResult = line(testedOutput);
 
             // expected

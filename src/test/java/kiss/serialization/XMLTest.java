@@ -9,7 +9,7 @@
  */
 package kiss.serialization;
 
-import static antibug.Ezunit.*;
+import static antibug.AntiBug.*;
 
 import java.io.File;
 import java.io.Serializable;
@@ -43,6 +43,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
+import antibug.xml.XML;
 
 /**
  * @version 2011/03/22 17:17:16
@@ -405,7 +406,8 @@ public class XMLTest {
         assert bean.getDate().equals(new Date(0L));
 
         // validate format
-        assertXPathEqual("1970-01-01T09:00:00", config, "/BuiltinBean/@date");
+        XML xml = xml(config);
+        assert xml.select("/BuiltinBean/@date").getTextContent().equals("1970-01-01T09:00:00");
     }
 
     /**
@@ -425,7 +427,8 @@ public class XMLTest {
         assert bean.getSomeClass().equals(SinobuTest.class);
 
         // validate format
-        assertXPathEqual(SinobuTest.class.getName(), config, "/BuiltinBean/@someClass");
+        XML xml = xml(config);
+        assert xml.has("/BuiltinBean/@someClass");
     }
 
     /**
@@ -532,8 +535,9 @@ public class XMLTest {
         assert list.get(2).equals("3");
 
         // list must not have ez:key attribute
-        assertXPathEqual("String", config, "local-name(//String[1])");
-        assertXPathEqual("", config, "//String[1]/@ss:key", namespaces);
+        XML xml = xml(config);
+        assert xml.has("//String[1]");
+        assert !xml.has("//String[1]/@ss:key", "ss", "sinobu");
     }
 
     @Test
@@ -593,7 +597,8 @@ public class XMLTest {
         assert map.get("three").equals("three");
 
         // map must have ez:key attribute
-        assertXPathEqual("two", config, "//String[1]/@ss:key", namespaces);
+        XML xml = xml(config);
+        assert xml.select("//String[1]/@ss:key", "ss", "sinobu").getTextContent().equals("two");
     }
 
     @Test

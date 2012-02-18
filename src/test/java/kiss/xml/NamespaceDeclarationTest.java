@@ -9,13 +9,12 @@
  */
 package kiss.xml;
 
-import static antibug.Ezunit.*;
+import static antibug.AntiBug.*;
+import kiss.I;
 
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
-
-import kiss.I;
 
 /**
  * @version 2011/03/22 17:24:09
@@ -36,7 +35,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 1 == counter.start;
@@ -57,7 +56,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 1 == counter.start;
@@ -80,7 +79,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 2 == counter.start;
@@ -103,7 +102,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 2 == counter.start;
@@ -124,7 +123,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 0 == counter.start;
@@ -145,7 +144,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 0 == counter.start;
@@ -168,7 +167,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 0 == counter.start;
@@ -193,7 +192,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 0 == counter.start;
@@ -218,7 +217,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 0 == counter.start;
@@ -243,7 +242,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), scanner, counter);
+        I.parse(locate("dummy.xml"), scanner, counter);
 
         // assertion
         assert 2 == counter.start;
@@ -269,7 +268,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), first, second, counter);
+        I.parse(locate("dummy.xml"), first, second, counter);
 
         // assertion
         assert 2 == counter.start;
@@ -295,7 +294,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), first, second, counter);
+        I.parse(locate("dummy.xml"), first, second, counter);
 
         // assertion
         assert 1 == counter.start;
@@ -321,7 +320,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), first, second, counter);
+        I.parse(locate("dummy.xml"), first, second, counter);
 
         // assertion
         assert 2 == counter.start;
@@ -347,7 +346,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), first, second, counter);
+        I.parse(locate("dummy.xml"), first, second, counter);
 
         // assertion
         assert 2 == counter.start;
@@ -373,7 +372,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), first, second, counter);
+        I.parse(locate("dummy.xml"), first, second, counter);
 
         // assertion
         assert 2 == counter.start;
@@ -399,7 +398,7 @@ public class NamespaceDeclarationTest {
         Counter counter = new Counter();
 
         // parse
-        I.parse(locateSource("dummy.xml"), first, second, counter);
+        I.parse(locate("dummy.xml"), first, second, counter);
 
         // assertion
         assert 1 == counter.start;
