@@ -9,7 +9,6 @@
  */
 package kiss.instantiation;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -21,13 +20,12 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
+import kiss.I;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import antibug.UnsafeUtility;
-
-
-import kiss.I;
+import antibug.util.UnsafeUtility;
 
 /**
  * @version 2011/03/22 16:54:33
