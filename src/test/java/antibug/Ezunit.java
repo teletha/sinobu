@@ -40,7 +40,6 @@ import javax.xml.xpath.XPathFactory;
 import kiss.I;
 import kiss.xml.XMLWriter;
 
-import org.custommonkey.xmlunit.Diff;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -308,37 +307,6 @@ public class Ezunit {
         // If this exception will be thrown, it is bug of this program. So we must rethrow the
         // wrapped error in here.
         throw new Error("Testcas is not found.");
-    }
-
-    /**
-     * Assert that two XML documents are identical.
-     * 
-     * @param expected A XML to be compared against.
-     * @param tested A XML to be tested.
-     */
-    public static final void assertXMLIdentical(Document expected, Document tested) {
-        Diff diff = new Diff(expected, tested);
-
-        if (!diff.identical()) {
-            System.out.println("The given document :");
-            dumpXML(tested);
-
-            System.out.println("The expected document :");
-            dumpXML(expected);
-
-            throw new AssertionError(diff.toString());
-        }
-    }
-
-    /**
-     * Assert that two XML documents are identical.
-     * 
-     * @param expectedXMLFilePath A XML to be compared against.
-     * @param testedXMLFilePath A XML to be tested.
-     * @param filters A list of filters to transform xml.
-     */
-    public static final void assertXMLIdentical(String expectedXMLFilePath, String testedXMLFilePath, XMLFilter... filters) {
-        assertXMLIdentical(locateDOM(expectedXMLFilePath), locateDOM(testedXMLFilePath, filters));
     }
 
     /**
