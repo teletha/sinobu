@@ -41,20 +41,15 @@ import kiss.I;
 import kiss.xml.XMLWriter;
 
 import org.w3c.dom.Document;
-import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
-import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 /**
  * @version 2012/01/19 12:59:58
  */
 public class Ezunit {
-
-    /** The empty attribute for reuse. */
-    public static final Attributes EMPTY_ATTR = new AttributesImpl();
 
     /**
      * <p>
