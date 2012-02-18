@@ -10,7 +10,6 @@
 package kiss.xml;
 
 import static antibug.AntiBug.*;
-import static antibug.Ezunit.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -632,7 +631,7 @@ public class XMLScannerRuleTest {
                 throw new SAXException();
             }
         };
-        I.parse(locateSource("dummy.xml"), scanner);
+        I.parse(locate("dummy.xml"), scanner);
     }
 
     @Test(expected = ArithmeticException.class)
@@ -645,7 +644,7 @@ public class XMLScannerRuleTest {
                 throw new ArithmeticException();
             }
         };
-        I.parse(locateSource("dummy.xml"), scanner);
+        I.parse(locate("dummy.xml"), scanner);
     }
 
     @Test(expected = FactoryConfigurationError.class)
@@ -658,7 +657,7 @@ public class XMLScannerRuleTest {
                 throw new FactoryConfigurationError();
             }
         };
-        I.parse(locateSource("dummy.xml"), scanner);
+        I.parse(locate("dummy.xml"), scanner);
     }
 
     @Test

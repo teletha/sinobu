@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,7 +48,6 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
-import antibug.Ezunit;
 import antibug.powerassert.PowerAssertRenderer;
 
 import com.sun.org.apache.xalan.internal.xsltc.trax.DOM2SAX;
@@ -193,10 +191,23 @@ public class XML {
      * @return A reuslt.
      */
     public boolean has(String xpath, String... namespaces) {
+        return select(xpath, namespaces) != null;
+    }
+
+    /**
+     * <p>
+     * Select the node which is identified by the specified xpath.
+     * </p>
+     * 
+     * @param xpath A xpath to indicate a node.
+     * @param namespaces A list of namespace declarations.
+     * @return A reuslt.
+     */
+    public Node select(String xpath, String... namespaces) {
         try {
             XPath path = XPathFactory.newInstance().newXPath();
             path.setNamespaceContext(new Namespaces(namespaces));
-            return path.evaluate(xpath, doc, XPathConstants.NODE) != null;
+            return (Node) path.evaluate(xpath, doc, XPathConstants.NODE);
         } catch (XPathExpressionException e) {
             throw I.quiet(e);
         }
@@ -576,7 +587,6 @@ public class XML {
                 // Find an error node of the new copied document by the previous xpath.
                 detail = (Node) xpath.evaluate(path, copy, XPathConstants.NODE);
 
-                Ezunit.dumpXML(copy);
                 // Shrink big document to be more readable.
                 // omitFollowingSiblings(detail);
                 // omitPrecedingSiblings(detail);

@@ -18,7 +18,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.AttributesImpl;
 
-import antibug.Ezunit;
 import antibug.xml.XML;
 
 /**
@@ -192,7 +191,7 @@ public class XMLScannerTest {
 
     @Test
     public void skipDTD() {
-        I.parse(Ezunit.locateSource("doctype.xml"), new XMLScanner());
+        I.parse(locate("doctype.xml"), new XMLScanner());
     }
 
     /**
