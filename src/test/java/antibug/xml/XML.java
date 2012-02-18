@@ -43,6 +43,7 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
+import antibug.Ezunit;
 import antibug.powerassert.PowerAssertRenderer;
 
 import com.sun.org.apache.xalan.internal.xsltc.trax.DOM2SAX;
@@ -549,11 +550,12 @@ public class XML {
 
                 // Find an error node of the new copied document by the previous xpath.
                 detail = (Node) xpath.evaluate(path, copy, XPathConstants.NODE);
-
+                System.out.println(detail + "  " + path);
+                Ezunit.dumpXML(copy);
                 // Shrink big document to be more readable.
-                omitFollowingSiblings(detail);
-                omitPrecedingSiblings(detail);
-                omitChildren(detail);
+                // omitFollowingSiblings(detail);
+                // omitPrecedingSiblings(detail);
+                // omitChildren(detail);
 
                 // Insert error message node.
                 insertErrorMessage(detail);
@@ -716,13 +718,12 @@ public class XML {
                 break;
 
             case ELEMENT_NODE:
-                String uri = node.getNamespaceURI();
-
-                if (uri != null) {
-                    builder.insert(0, "[namespace-uri()='" + uri + "']");
-                }
+                builder.insert(0, makeXPathPosition(node));
                 builder.insert(0, "[local-name()='" + node.getLocalName() + "']");
-                builder.insert(0, "/*" + makeXPathPosition(node));
+                if (node.getNamespaceURI() != null) {
+                    builder.insert(0, "[namespace-uri()='" + node.getNamespaceURI() + "']");
+                }
+                builder.insert(0, "/*");
 
                 node = node.getParentNode();
                 break;
