@@ -10,21 +10,20 @@
 package kiss.xml;
 
 import static antibug.AntiBug.*;
-import static antibug.Ezunit.*;
 
 import org.junit.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import antibug.file.Memo;
+import antibug.util.Note;
 import antibug.xml.XML;
 
 /**
- * @version 2011/04/14 10:36:03
+ * @version 2012/02/18 10:16:01
  */
 public class XMLScannerIncludeTest {
 
-    private static final Memo include = new Memo("<included><child/></included>");
+    private static final Note include = note("<included><child/></included>");
 
     @Test
     public void path() throws Exception {
@@ -68,7 +67,7 @@ public class XMLScannerIncludeTest {
     public void bit() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            Bits bits;
+            private Bits bits;
 
             @SuppressWarnings("unused")
             @Rule(match = "from")
@@ -87,7 +86,10 @@ public class XMLScannerIncludeTest {
             }
         };
 
-        assertXMLIdentical("include/bitsExpected.xml", "include/bits.xml", scanner);
+        XML xml = xml("<root><from><a>text</a></from><to/></root>", scanner);
+        XML expect = xml("<root><from/><to><a>text</a></to></root>");
+
+        assert xml.isIdenticalTo(expect);
     }
 
     @Test
@@ -115,7 +117,10 @@ public class XMLScannerIncludeTest {
             }
         };
 
-        assertXMLIdentical("include/bitsProceedExpected.xml", "include/bits.xml", scanner);
+        XML xml = xml("<root><from><a>text</a></from><to/></root>", scanner);
+        XML expect = xml("<root><from><a>text</a></from><to><a>text</a></to></root>");
+
+        assert xml.isIdenticalTo(expect);
     }
 
     /**
