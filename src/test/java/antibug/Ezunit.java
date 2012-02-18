@@ -316,17 +316,6 @@ public class Ezunit {
      * @param tested A XML to be tested.
      * @param xpath A XPath expression.
      */
-    public static final void assertXPathEqual(String expected, String testedXMLFilePath, String xpath) {
-        assertXPathEqual(expected, locateFileFromCaller(testedXMLFilePath), xpath);
-    }
-
-    /**
-     * Assert that the XML documents has the expected value which is result of XPath evaluation.
-     * 
-     * @param expected A expected value.
-     * @param tested A XML to be tested.
-     * @param xpath A XPath expression.
-     */
     public static final void assertXPathEqual(String expected, Path testedXMLFile, String xpath) {
         assertXPathEqual(expected, testedXMLFile, xpath, null);
     }
