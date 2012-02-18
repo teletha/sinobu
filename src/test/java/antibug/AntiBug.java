@@ -15,6 +15,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
+import antibug.util.Note;
 import antibug.xml.XML;
 
 /**
@@ -26,6 +27,18 @@ import antibug.xml.XML;
  * @version 2012/02/16 15:56:29
  */
 public class AntiBug {
+
+    /**
+     * <p>
+     * Take a note.
+     * </p>
+     * 
+     * @param contents
+     * @return
+     */
+    public static Note note(String... contents) {
+        return new Note(contents);
+    }
 
     /**
      * <p>
