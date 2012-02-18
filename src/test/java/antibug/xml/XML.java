@@ -18,13 +18,19 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import kiss.I;
@@ -175,6 +181,25 @@ public class XML {
      */
     private XML(Document doc) {
         this.doc = doc;
+    }
+
+    /**
+     * <p>
+     * Assert this xml has the node which is identified by the specified xpath.
+     * </p>
+     * 
+     * @param xpath A xpath to indicate a node.
+     * @param namespaces A list of namespace declarations.
+     * @return A reuslt.
+     */
+    public boolean has(String xpath, String... namespaces) {
+        try {
+            XPath path = XPathFactory.newInstance().newXPath();
+            path.setNamespaceContext(new Namespaces(namespaces));
+            return path.evaluate(xpath, doc, XPathConstants.NODE) != null;
+        } catch (XPathExpressionException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -550,7 +575,7 @@ public class XML {
 
                 // Find an error node of the new copied document by the previous xpath.
                 detail = (Node) xpath.evaluate(path, copy, XPathConstants.NODE);
-                System.out.println(detail + "  " + path);
+
                 Ezunit.dumpXML(copy);
                 // Shrink big document to be more readable.
                 // omitFollowingSiblings(detail);
@@ -793,6 +818,47 @@ public class XML {
         @Override
         protected boolean asBlock(char[] ch, int start, int length) {
             return length == 1 && ch[start] == ':';
+        }
+    }
+
+    /**
+     * @version 2012/02/18 14:17:30
+     */
+    private static class Namespaces implements NamespaceContext {
+
+        /** The actual mapping. */
+        private final Map<String, String> mapping;
+
+        /**
+         * @param mapping
+         */
+        private Namespaces(String... mapping) {
+            this.mapping = new HashMap();
+
+            for (int i = 0; i < mapping.length; i++) {
+                this.mapping.put(mapping[i++], mapping[i]);
+            }
+        }
+
+        /**
+         * @see javax.xml.namespace.NamespaceContext#getNamespaceURI(java.lang.String)
+         */
+        public String getNamespaceURI(String prefix) {
+            return mapping.get(prefix);
+        }
+
+        /**
+         * @see javax.xml.namespace.NamespaceContext#getPrefix(java.lang.String)
+         */
+        public String getPrefix(String namespaceURI) {
+            return null;
+        }
+
+        /**
+         * @see javax.xml.namespace.NamespaceContext#getPrefixes(java.lang.String)
+         */
+        public Iterator getPrefixes(String namespaceURI) {
+            return null;
         }
     }
 }
