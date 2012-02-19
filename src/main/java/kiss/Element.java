@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.xml;
+package kiss;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -27,8 +27,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
-import kiss.I;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -56,7 +54,7 @@ public class Element implements Iterable<Element> {
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
 
     /** The document builder. */
-    private static final DocumentBuilder dom;
+    static final DocumentBuilder dom;
 
     /** The xpath evaluator. */
     private static final XPath xpath;

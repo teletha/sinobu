@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.xml.XMLWriter;
 
 import org.xml.sax.helpers.AttributesImpl;
 

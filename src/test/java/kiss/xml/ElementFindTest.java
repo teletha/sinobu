@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static kiss.xml.Element.*;
+import static kiss.Element.*;
 
 import org.junit.Test;
 
