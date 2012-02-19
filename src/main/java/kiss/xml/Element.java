@@ -10,7 +10,6 @@
 package kiss.xml;
 
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -23,14 +22,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -56,10 +47,10 @@ public class Element implements Iterable<Element> {
      * Original pattern.
      * 
      * <pre>
-     * ([>~+\- ])?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s?([=~^$*|])?=\s?["]([^"]*)["])?\s?\])?(:([\w-]+)(\(?(odd|even|(\d*)(n)?(\+(\d+))?|(.*))\))?)?
+     * ([>~+\- ]*)?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(:([\w-]+)(\(?(odd|even|(\d*)(n)?(\+(\d+))?|(.*))\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ])?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s?([=~^$*|])?=\\s?[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\(?(odd|even|(\\d*)(n)?(\\+(\\d+))?|(.*))\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ]*)?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\(?(odd|even|(\\d*)(n)?(\\+(\\d+))?|(.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -80,8 +71,44 @@ public class Element implements Iterable<Element> {
         }
     }
 
-    public static final Element $(String xml) {
-        return parse(xml);
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public static Element $(Object xml) {
+        if (xml instanceof Element) {
+            return (Element) xml;
+        }
+
+        // parse as string
+        String value = xml.toString();
+
+        if (value.charAt(0) != '<') {
+            // element name
+            Document doc = dom.newDocument();
+
+            return new Element(doc, Collections.singletonList(doc.createElement(value)));
+        } else {
+            // xml text
+            try {
+                List<Node> list = new ArrayList();
+                Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
+                Node node = DOMUtil.getFirstChildElement(doc.getDocumentElement());
+
+                while (node != null) {
+                    list.add(node);
+
+                    node = DOMUtil.getNextSiblingElement(node);
+                }
+                return new Element(doc, list);
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }
     }
 
     /** The current document. */
@@ -99,7 +126,7 @@ public class Element implements Iterable<Element> {
      */
     private Element(Document doc, List nodes) {
         this.doc = doc;
-        this.nodes = new ArrayList(nodes);
+        this.nodes = nodes;
     }
 
     /**
@@ -112,7 +139,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element append(Object xml) {
-        Node n = convert(parse(xml));
+        Node n = convert($(xml));
 
         for (Node node : nodes) {
             node.appendChild(n.cloneNode(true));
@@ -132,7 +159,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element prepend(Object xml) {
-        Node n = convert(parse(xml));
+        Node n = convert($(xml));
 
         for (Node node : nodes) {
             node.insertBefore(n.cloneNode(true), node.getFirstChild());
@@ -152,7 +179,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element before(Object xml) {
-        Node n = convert(parse(xml));
+        Node n = convert($(xml));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node);
@@ -172,7 +199,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element after(Object xml) {
-        Node n = convert(parse(xml));
+        Node n = convert($(xml));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
@@ -230,7 +257,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element wrap(Object xml) {
-        Element element = parse(xml);
+        Element element = $(xml);
 
         for (Element e : this) {
             e.wrapAll(element);
@@ -249,7 +276,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element wrapAll(Object xml) {
-        Element e = parse(xml);
+        Element e = $(xml);
 
         first().after(e).find(".+*").append(this);
 
@@ -464,8 +491,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element last() {
-        int size = nodes.size();
-        return new Element(doc, nodes.subList(size - 1, size));
+        return new Element(doc, nodes.subList(nodes.size() - 1, nodes.size()));
     }
 
     /**
@@ -549,46 +575,6 @@ public class Element implements Iterable<Element> {
 
     /**
      * <p>
-     * Parse as xml fragment.
-     * </p>
-     * 
-     * @param xml
-     * @return
-     */
-    private static Element parse(Object xml) {
-        if (xml instanceof Element) {
-            return (Element) xml;
-        }
-
-        // parse as string
-        String value = xml.toString();
-
-        if (value.charAt(0) != '<') {
-            // element name
-            Document doc = dom.newDocument();
-
-            return new Element(doc, Collections.singletonList(doc.createElement(value)));
-        } else {
-            // xml text
-            try {
-                List<Node> list = new ArrayList();
-                Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
-                Node node = DOMUtil.getFirstChildElement(doc.getDocumentElement());
-
-                while (node != null) {
-                    list.add(node);
-
-                    node = DOMUtil.getNextSiblingElement(node);
-                }
-                return new Element(doc, list);
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-        }
-    }
-
-    /**
-     * <p>
      * Compile and cache the specified selector.
      * </p>
      * 
@@ -600,9 +586,6 @@ public class Element implements Iterable<Element> {
         XPathExpression compiled = selectors.get(selector);
 
         if (compiled == null) {
-            // normalize space
-            selector = selector.replaceAll("\\s+", " ").replaceAll(" ([>+~\\-]) ", "$1");
-
             try {
                 // compile actually
                 compiled = xpath.compile(convert(selector));
@@ -637,7 +620,7 @@ public class Element implements Iterable<Element> {
             String suffix = null;
             String match = matcher.group(1);
 
-            if (match == null) {
+            if (match.length() == 0) {
                 // no combinator
                 if (matcher.start() == 0) {
                     // first selector
@@ -646,28 +629,31 @@ public class Element implements Iterable<Element> {
                     break; // finish parsing
                 }
             } else {
-                switch (match.charAt(0)) {
-                case '>': // Child combinator
-                    xpath.append('/');
-                    break;
+                match = match.trim();
 
-                case ' ': // Descendant combinator
+                if (match.length() == 0) {
+                    // Descendant combinator
                     xpath.append("//");
-                    break;
+                } else {
+                    switch (match.charAt(0)) {
+                    case '>': // Child combinator
+                        xpath.append('/');
+                        break;
 
-                case '~': // General sibling combinator
-                    xpath.append("/following-sibling::");
-                    break;
+                    case '~': // General sibling combinator
+                        xpath.append("/following-sibling::");
+                        break;
 
-                case '+': // Adjacent sibling combinator
-                    xpath.append("/following-sibling::*[1][self::");
-                    suffix = "]";
-                    break;
+                    case '+': // Adjacent sibling combinator
+                        xpath.append("/following-sibling::*[1][self::");
+                        suffix = "]";
+                        break;
 
-                case '-': // Adjacent previous sibling combinator (EXTENSION)
-                    xpath.append("/preceding-sibling::*[1][self::");
-                    suffix = "]";
-                    break;
+                    case '-': // Adjacent previous sibling combinator (EXTENSION)
+                        xpath.append("/preceding-sibling::*[1][self::");
+                        suffix = "]";
+                        break;
+                    }
                 }
             }
 
@@ -799,49 +785,21 @@ public class Element implements Iterable<Element> {
             match = matcher.group(13);
 
             if (match != null) {
-                switch (match) {
-                case "first-child":
-                    xpath.append("[not(preceding-sibling::*)]");
-                    break;
-
-                case "last-child":
-                    xpath.append("[not(following-sibling::*)]");
-                    break;
-
-                case "first-of-type":
-                    xpath.append("[not(preceding-sibling::").append(matcher.group(2)).append(")]");
-                    break;
-
-                case "last-of-type":
-                    xpath.append("[not(following-sibling::").append(matcher.group(2)).append(")]");
-                    break;
-
-                case "only-child":
+                switch (match.hashCode()) {
+                case -947996741: // only-child
                     xpath.append("[count(../*) = 1]");
                     break;
 
-                case "only-of-type":
+                case 1455900751: // only-of-type
                     xpath.append("[count(../").append(matcher.group(2)).append(")=1]");
                     break;
 
-                case "empty":
-                    xpath.append("[not(*) and not(text())]");
+                case 96634189: // empty
+                    xpath.append("[not(node())]");
                     break;
 
-                case "nth-child":
-                case "nth-last-child":
-                case "nth-of-type":
-                case "nth-last-of-type":
-                    if (matcher.group(17) == null) {
-                        // odd, even or number
-                        convert(xpath, match, matcher.group(2), null, matcher.group(15));
-                    } else {
-                        convert(xpath, match, matcher.group(2), matcher.group(16), matcher.group(19));
-                    }
-                    break;
-
-                case "not":
-                case "has":
+                case 109267: // not
+                case 103066: // has
                     xpath.append('[');
 
                     if (match.charAt(0) == 'n') {
@@ -857,91 +815,80 @@ public class Element implements Iterable<Element> {
                     xpath.append(sub).append(")]");
                     break;
 
-                case "parent":
+                case -995424086: // parent
                     xpath.append("/..");
                     break;
 
-                case "root":
+                case 3506402: // root
                     xpath.delete(0, xpath.length()).append("/*");
                     break;
 
-                case "contains":
+                case -567445985: // contains
                     xpath.append("[contains(text(),'").append(matcher.group(15)).append("')]");
+                    break;
+
+                case -2136991809: // first-child
+                case 835834661: // last-child
+                case 1292941139: // first-of-type
+                case 2025926969: // last-of-type
+                case -1754914063: // nth-child
+                case -1629748624: // nth-last-child
+                case -897532411: // nth-of-type
+                case -872629820: // nth-last-of-type
+                    String coefficient = matcher.group(16);
+                    String remainder = matcher.group(15);
+
+                    if (remainder == null) {
+                        // coefficient = null; // coefficient is already null
+                        remainder = "1";
+                    } else if (matcher.group(17) == null) {
+                        coefficient = null;
+                        // remainder = matcher.group(15); // remainder is already assigned
+
+                        if (remainder.equals("even")) {
+                            coefficient = "2";
+                            remainder = "0";
+                        } else if (remainder.equals("odd")) {
+                            coefficient = "2";
+                            remainder = "1";
+                        }
+                    } else {
+                        // coefficient = matcher.group(16); // coefficient is already assigned
+                        remainder = matcher.group(19);
+
+                        if (remainder == null) {
+                            remainder = "0";
+                        }
+                    }
+
+                    xpath.append("[(count(");
+
+                    if (match.contains("last")) {
+                        xpath.append("following");
+                    } else {
+                        xpath.append("preceding");
+                    }
+
+                    xpath.append("-sibling::");
+
+                    if (match.endsWith("child")) {
+                        xpath.append("*");
+                    } else {
+                        xpath.append(matcher.group(2));
+                    }
+                    xpath.append(")+1)");
+
+                    if (coefficient != null) {
+                        if (coefficient.length() == 0) {
+                            coefficient = "1";
+                        }
+                        xpath.append(" mod ").append(coefficient);
+                    }
+                    xpath.append('=').append(remainder).append("]");
                     break;
                 }
             }
         }
         return xpath.toString();
-    }
-
-    /**
-     * <p>
-     * Helper method to compile nth-pusedo-selectors.
-     * </p>
-     * 
-     * @param xpath
-     * @param clazz
-     * @param type
-     * @param coefficient
-     * @param remainder
-     */
-    private static void convert(StringBuilder xpath, String clazz, String type, String coefficient, String remainder) {
-        String direction = "preceding";
-
-        if (clazz.contains("last")) {
-            direction = "following";
-        }
-
-        if (clazz.endsWith("child")) {
-            type = "*";
-        }
-
-        if (remainder == null) {
-            remainder = "0";
-        } else if (remainder.equals("even")) {
-            coefficient = "2";
-            remainder = "0";
-        } else if (remainder.equals("odd")) {
-            coefficient = "2";
-            remainder = "1";
-        }
-
-        xpath.append("[(count(").append(direction).append("-sibling::").append(type).append(") + 1)");
-
-        if (coefficient != null) {
-            if (coefficient.length() == 0) {
-                coefficient = "1";
-            }
-            xpath.append(" mod ").append(coefficient);
-        }
-        xpath.append('=').append(remainder).append("]");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringWriter buffer;
-        try {
-            TransformerFactory transFactory = TransformerFactory.newInstance();
-            Transformer transformer = transFactory.newTransformer();
-            buffer = new StringWriter();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-
-            for (Node node : nodes) {
-                transformer.transform(new DOMSource(node), new StreamResult(buffer));
-            }
-        } catch (TransformerConfigurationException e) {
-            throw I.quiet(e);
-        } catch (IllegalArgumentException e) {
-            throw I.quiet(e);
-        } catch (TransformerFactoryConfigurationError e) {
-            throw I.quiet(e);
-        } catch (TransformerException e) {
-            throw I.quiet(e);
-        }
-
-        return buffer.toString();
     }
 }
