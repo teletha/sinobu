@@ -14,12 +14,12 @@ import static kiss.I.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import org.xml.sax.Attributes;
-
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.xml.XMLScanner;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.XMLFilterImpl;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ import kiss.xml.XMLScanner;
  * @version 2010/01/12 22:54:15
  */
 @SuppressWarnings("resource")
-class XMLIn extends XMLScanner {
+class XMLIn extends XMLFilterImpl {
 
     /** The root object. */
     private Object root;

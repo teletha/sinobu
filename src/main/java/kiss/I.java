@@ -62,7 +62,6 @@ import kiss.model.ClassUtil;
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.xml.XMLWriter;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
