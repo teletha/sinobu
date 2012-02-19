@@ -26,6 +26,7 @@ import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -226,7 +227,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Sinobu environment.
      * </p>
      */
-    public static Charset $encoding = Charset.forName("UTF-8");
+    public static Charset $encoding = StandardCharsets.UTF_8;
 
     /**
      * <p>
