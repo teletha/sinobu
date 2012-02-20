@@ -9,7 +9,7 @@
  */
 package kiss.model;
 
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
 
 /**
  * <p>
@@ -33,7 +33,7 @@ public class Property implements Comparable<Property> {
     public final String name;
 
     /** The actual accessor methods. */
-    Method[] accessors;
+    MethodHandle[] accessors;
 
     /** The transient type of this property. */
     boolean type;

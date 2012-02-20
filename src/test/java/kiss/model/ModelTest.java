@@ -13,12 +13,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
+import kiss.sample.bean.FieldProperty;
 import kiss.sample.bean.GenericBean;
 import kiss.sample.bean.GenericBoundedTypedBean;
+import kiss.sample.bean.GenericFieldProperty;
 import kiss.sample.bean.GenericGetterBean;
 import kiss.sample.bean.GenericSetterBean;
 import kiss.sample.bean.GenericStringBean;
@@ -37,6 +37,8 @@ import kiss.sample.bean.invalid.OnlySetter;
 import kiss.sample.bean.invalid.OverrideFinalAccessor;
 import kiss.sample.bean.invalid.ProtectedAccessor;
 import kiss.sample.bean.invalid.StaticAccessor;
+
+import org.junit.Test;
 
 /**
  * @version 2011/03/22 17:02:48
@@ -162,6 +164,24 @@ public class ModelTest {
         model = property.model;
         assert model != null;
         assert String.class == model.type;
+    }
+
+    @Test
+    public void fieldProperty() throws Exception {
+        Model model = Model.load(FieldProperty.class);
+        assert model != null;
+
+        List<Property> list = model.properties;
+        assert 2 == list.size();
+    }
+
+    @Test
+    public void fieldPropertyGeneric() throws Exception {
+        Model model = Model.load(GenericFieldProperty.class);
+        assert model != null;
+
+        List<Property> list = model.properties;
+        assert 2 == list.size();
     }
 
     @Test
