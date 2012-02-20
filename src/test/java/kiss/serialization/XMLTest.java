@@ -24,6 +24,8 @@ import kiss.I;
 import kiss.SinobuTest;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.CompatibleKeyMap;
+import kiss.sample.bean.FieldProperty;
+import kiss.sample.bean.GenericFieldProperty;
 import kiss.sample.bean.GenericPersonBean;
 import kiss.sample.bean.IncompatibleKeyMap;
 import kiss.sample.bean.NestedCollection;
@@ -479,6 +481,37 @@ public class XMLTest {
         assert bean != null;
         assert bean.getNone() == 10;
         assert bean.getBoth() == 0;
+    }
+
+    @Test
+    public void publicFieldProperty() throws Exception {
+        FieldProperty bean = I.make(FieldProperty.class);
+        bean.publicField = "me";
+
+        // write
+        I.write(bean, config, false);
+
+        // read
+        bean = I.read(config, I.make(FieldProperty.class));
+        assert bean != null;
+        assert bean.publicField.equals("me");
+    }
+
+    @Test
+    public void genericFieldProperty() throws Exception {
+        List<String> list = new ArrayList();
+        list.add("test");
+
+        GenericFieldProperty bean = I.make(GenericFieldProperty.class);
+        bean.genericField = list;
+
+        // write
+        I.write(bean, config, false);
+
+        // read
+        bean = I.read(config, I.make(GenericFieldProperty.class));
+        assert bean != null;
+        assert bean.genericField.get(0).equals("test");
     }
 
     @Test

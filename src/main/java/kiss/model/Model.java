@@ -14,6 +14,10 @@ import static java.lang.reflect.Modifier.*;
 import java.beans.Introspector;
 import java.beans.Transient;
 import java.io.File;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -180,9 +184,10 @@ public class Model {
             }
         }
 
+        Lookup look = MethodHandles.lookup();
+
         // build valid properties
         ArrayList properties = new ArrayList(); // don't use type parameter to reduce footprint
-
         Iterator<Entry<String, Method[]>> iterator = candidates.entrySet().iterator();
 
         while (iterator.hasNext()) {
@@ -200,15 +205,34 @@ public class Model {
 
                         // this property is valid
                         Property property = new Property(model, entry.getKey());
-                        property.accessors = methods;
+                        property.accessors = new MethodHandle[] {look.unreflect(methods[0]), look.unreflect(methods[1])};
                         property.type = methods[0].getAnnotation(Transient.class) != null || methods[1].getAnnotation(Transient.class) != null;
 
                         // register it
                         properties.add(property);
                     }
-                } catch (SecurityException e) {
-                    // for GAE environment
+                } catch (Exception e) {
+                    throw I.quiet(e);
                 }
+            }
+        }
+
+        // Search field properties.
+        for (Field field : type.getFields()) {
+            try {
+                // exclude the field which modifier is final, static, private or native
+                if (((STATIC | PRIVATE | NATIVE | FINAL) & field.getModifiers()) != 0) {
+                    continue;
+                }
+
+                Property property = new Property(load(field.getGenericType(), type), field.getName());
+                property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
+                property.type = (TRANSIENT & field.getModifiers()) != 0;
+
+                // register it
+                properties.add(property);
+            } catch (Exception e) {
+                throw I.quiet(e);
             }
         }
 
@@ -261,7 +285,7 @@ public class Model {
     public Object get(Object object, Property property) {
         try {
             return property.accessors[0].invoke(object);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw I.quiet(e);
         }
     }
@@ -278,7 +302,7 @@ public class Model {
     public void set(Object object, Property property, Object propertyValue) {
         try {
             property.accessors[1].invoke(object, propertyValue);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw I.quiet(e);
         }
     }
