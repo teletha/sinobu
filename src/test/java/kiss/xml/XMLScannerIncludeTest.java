@@ -29,7 +29,6 @@ public class XMLScannerIncludeTest {
     public void path() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void in() {
                 start("root");
@@ -48,7 +47,6 @@ public class XMLScannerIncludeTest {
     public void pathWithFilter() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void in() {
                 start("root");
@@ -69,7 +67,6 @@ public class XMLScannerIncludeTest {
 
             private Bits bits;
 
-            @SuppressWarnings("unused")
             @Rule(match = "from")
             public void from(Bits bits) {
                 this.bits = bits;
@@ -77,7 +74,6 @@ public class XMLScannerIncludeTest {
                 element("from");
             }
 
-            @SuppressWarnings("unused")
             @Rule(match = "to")
             public void to() {
                 start("to");
@@ -98,7 +94,6 @@ public class XMLScannerIncludeTest {
 
             Bits bits;
 
-            @SuppressWarnings("unused")
             @Rule(match = "from")
             public void from(Bits bits) {
                 this.bits = bits;
@@ -108,7 +103,6 @@ public class XMLScannerIncludeTest {
                 end();
             }
 
-            @SuppressWarnings("unused")
             @Rule(match = "to")
             public void to() {
                 start("to");

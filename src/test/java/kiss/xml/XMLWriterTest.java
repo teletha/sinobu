@@ -192,7 +192,6 @@ public class XMLWriterTest {
             @SuppressWarnings("unused")
             public static final String XMLNS_NS = "uri";
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root() throws SAXException {
                 start("ns:root");
@@ -212,7 +211,6 @@ public class XMLWriterTest {
             @SuppressWarnings("unused")
             public static final String XMLNS = "uri";
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root() throws SAXException {
                 start("item", "name", "value");

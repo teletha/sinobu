@@ -53,7 +53,6 @@ public class XMLScannerRuleTest {
     private static class WithoutProceed extends XMLScanner {
 
         @Rule(match = "root")
-        @SuppressWarnings("unused")
         public void root(Attributes atts) throws Exception {
             start("added", atts);
             end();
@@ -70,14 +69,12 @@ public class XMLScannerRuleTest {
             @SuppressWarnings("unused")
             public static final String XMLNS_TEST = "test";
 
-            @SuppressWarnings("unused")
             @Rule(match = "child")
             public void child1(Attributes atts) throws SAXException {
                 start("default", atts);
                 end();
             }
 
-            @SuppressWarnings("unused")
             @Rule(match = "test:child")
             public void child2(Attributes atts) throws SAXException {
                 start("test:test", atts);
@@ -109,7 +106,6 @@ public class XMLScannerRuleTest {
             @SuppressWarnings("unused")
             public static final String XMLNS_NEW = "new";
 
-            @SuppressWarnings("unused")
             @Rule(match = "child")
             public void child1(Attributes atts) throws SAXException {
                 start("new:child", atts);
@@ -140,7 +136,6 @@ public class XMLScannerRuleTest {
             @SuppressWarnings("unused")
             public static final String XMLNS_NS = "uri";
 
-            @SuppressWarnings("unused")
             @Rule(match = "item")
             public void test() throws SAXException {
                 startPrefixMapping("ns", "override");
@@ -163,7 +158,6 @@ public class XMLScannerRuleTest {
             @SuppressWarnings("unused")
             public static final String XMLNS_NEW = "new";
 
-            @SuppressWarnings("unused")
             @Rule
             public void child(Attributes atts) throws SAXException {
                 start("new:child", atts);
@@ -191,7 +185,6 @@ public class XMLScannerRuleTest {
             @SuppressWarnings("unused")
             public static final String XMLNS_NEW = "new";
 
-            @SuppressWarnings("unused")
             @Rule(match = "child")
             public void child1(Attributes atts) throws SAXException {
                 startElement("", "test", "test", atts);
@@ -216,7 +209,6 @@ public class XMLScannerRuleTest {
     public void universalName() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root/*")
             public void child1(Attributes atts) throws SAXException {
                 startElement("", "match", "match", atts);
@@ -245,7 +237,6 @@ public class XMLScannerRuleTest {
     public void universalPrefix() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root/*:item")
             public void child1(Attributes atts) throws SAXException {
                 startElement("", "match", "match", atts);
@@ -277,7 +268,6 @@ public class XMLScannerRuleTest {
             @SuppressWarnings("unused")
             public static final String XMLNS_TEST = "test";
 
-            @SuppressWarnings("unused")
             @Rule(match = "root/test:*")
             public void child1(Attributes atts) throws SAXException {
                 startElement("", "match", "match", atts);
@@ -309,7 +299,6 @@ public class XMLScannerRuleTest {
             @SuppressWarnings("unused")
             public static final transient String XMLNS_OTHER = "other";
 
-            @SuppressWarnings("unused")
             @Rule(match = "root/*:*")
             public void child1(Attributes atts) throws SAXException {
                 startElement("", "match", "match", atts);
@@ -340,7 +329,6 @@ public class XMLScannerRuleTest {
     public void noParameter() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root/item")
             public void item() throws SAXException {
                 startElement("", "match", "match", new AttributesImpl());
@@ -369,21 +357,18 @@ public class XMLScannerRuleTest {
     public void priority() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "test", priority = 10)
             public void middle() throws SAXException {
                 start("middle", new AttributesImpl());
                 end();
             }
 
-            @SuppressWarnings("unused")
             @Rule(match = "test", priority = 1)
             public void low() throws SAXException {
                 start("low", new AttributesImpl());
                 end();
             }
 
-            @SuppressWarnings("unused")
             @Rule(match = "test", priority = 100)
             public void high() throws SAXException {
                 start("high", new AttributesImpl());
@@ -401,14 +386,12 @@ public class XMLScannerRuleTest {
     public void prioriteDefault() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "test")
             public void high() throws SAXException {
                 start("high", new AttributesImpl());
                 end();
             }
 
-            @SuppressWarnings("unused")
             @Rule(match = "test", priority = -1)
             public void low() throws SAXException {
                 start("low", new AttributesImpl());
@@ -433,7 +416,6 @@ public class XMLScannerRuleTest {
             public static final String XMLNS$EXCLUDED = "excluded";
 
             @Rule(match = "excluded:item")
-            @SuppressWarnings("unused")
             public void item() throws SAXException {
                 start("item", new AttributesImpl());
                 end();
@@ -450,7 +432,6 @@ public class XMLScannerRuleTest {
     public void start() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "test")
             public void test() throws SAXException {
                 start("new");
@@ -468,7 +449,6 @@ public class XMLScannerRuleTest {
     public void startWithAttributes() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "test")
             public void test() throws SAXException {
                 start("new", "title", "test");
@@ -484,7 +464,7 @@ public class XMLScannerRuleTest {
 
     @Test
     public void startWithInvalidAttribute() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
             @Rule(match = "test")
@@ -505,9 +485,10 @@ public class XMLScannerRuleTest {
      */
     @Test
     public void startWithPrefix() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
+            @SuppressWarnings("unused")
             public static final String XMLNS_NS = "uri";
 
             @Rule(match = "item")
@@ -529,7 +510,7 @@ public class XMLScannerRuleTest {
         /**
          * @version 2011/04/11 14:39:34
          */
-        @SuppressWarnings("unused")
+
         class Parent extends XMLScanner {
 
             @Rule(match = "test")
@@ -552,7 +533,7 @@ public class XMLScannerRuleTest {
 
     @Test
     public void element() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
             @Rule(match = "test")
@@ -572,7 +553,7 @@ public class XMLScannerRuleTest {
      */
     @Test
     public void elementWithAttributes() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
             @Rule(match = "test")
@@ -589,7 +570,7 @@ public class XMLScannerRuleTest {
 
     @Test
     public void elementWithContents() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
             @Rule(match = "test")
@@ -606,7 +587,7 @@ public class XMLScannerRuleTest {
 
     @Test
     public void elementWithAttributesAndContents() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
             @Rule(match = "test")
@@ -623,7 +604,7 @@ public class XMLScannerRuleTest {
 
     @Test(expected = SAXException.class)
     public void throwCheckedExceptionInRuleMethod() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
             @Rule(match = "dummy")
@@ -636,7 +617,7 @@ public class XMLScannerRuleTest {
 
     @Test(expected = ArithmeticException.class)
     public void throwUncheckedExceptionInRuleMethod() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
             @Rule(match = "dummy")
@@ -649,7 +630,7 @@ public class XMLScannerRuleTest {
 
     @Test(expected = FactoryConfigurationError.class)
     public void throwErroInRuleMethod() throws Exception {
-        @SuppressWarnings("unused")
+
         XMLScanner scanner = new XMLScanner() {
 
             @Rule(match = "dummy")
@@ -682,7 +663,6 @@ public class XMLScannerRuleTest {
     private static class WithProceed extends XMLScanner {
 
         @Rule(match = "root")
-        @SuppressWarnings("unused")
         public void root(Attributes atts) throws Exception {
             start("added", atts);
             proceed();
@@ -694,7 +674,6 @@ public class XMLScannerRuleTest {
     public void processNest() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule
             public void root(Attributes atts) throws SAXException {
                 start("root-change", atts);
@@ -702,7 +681,6 @@ public class XMLScannerRuleTest {
                 end();
             }
 
-            @SuppressWarnings("unused")
             @Rule
             public void child(Attributes atts) throws SAXException {
                 start("child-change", atts);
@@ -710,7 +688,6 @@ public class XMLScannerRuleTest {
                 end();
             }
 
-            @SuppressWarnings("unused")
             @Rule
             public void item(Attributes atts) throws SAXException {
                 start("item-change", atts);
@@ -742,7 +719,6 @@ public class XMLScannerRuleTest {
     public void processNestForNestedElement() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule
             public void root(Attributes atts) throws SAXException {
                 start("root-change", atts);
@@ -750,7 +726,6 @@ public class XMLScannerRuleTest {
                 end();
             }
 
-            @SuppressWarnings("unused")
             @Rule
             public void child(Attributes atts) throws SAXException {
                 start("child-change", atts);
@@ -800,7 +775,6 @@ public class XMLScannerRuleTest {
     private static class UseContents extends XMLScanner {
 
         @Rule
-        @SuppressWarnings("unused")
         public void root(String contents, Attributes atts) throws Exception {
             start(contents, atts);
             end();
@@ -812,7 +786,6 @@ public class XMLScannerRuleTest {
         XMLScanner scanner = new XMLScanner() {
 
             @Rule
-            @SuppressWarnings("unused")
             public void root(String contents, AttributesImpl atts) throws Exception {
                 atts.addAttribute("", "title", "title", "CDATA", contents);
 
@@ -832,7 +805,6 @@ public class XMLScannerRuleTest {
     public void clear() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule
             public void item() throws SAXException {
                 // remoce all contents
@@ -849,7 +821,6 @@ public class XMLScannerRuleTest {
     public void text() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule
             public void item() throws SAXException {
                 text("text");
@@ -866,7 +837,6 @@ public class XMLScannerRuleTest {
     public void textForSaxAPI() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule
             public void item() throws SAXException {
                 characters("text".toCharArray(), 0, 4);
@@ -895,7 +865,6 @@ public class XMLScannerRuleTest {
     public void unusedRules() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule
             public void unused() throws SAXException {
                 // do nothing
@@ -914,7 +883,6 @@ public class XMLScannerRuleTest {
 
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "item1 item2")
             public void root() throws SAXException {
                 events.add("matched");
@@ -932,7 +900,6 @@ public class XMLScannerRuleTest {
 
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule
             public void root(Bits bits) throws SAXException {
                 events.addAll(bits.bits);
@@ -950,7 +917,6 @@ public class XMLScannerRuleTest {
 
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root(Bits bits) throws SAXException {
                 events.addAll(bits.bits);
@@ -1001,13 +967,11 @@ public class XMLScannerRuleTest {
         private int count = 0;
 
         @Rule(match = "root/reach")
-        @SuppressWarnings("unused")
         public void reach() throws SAXException {
             throw new RuntimeException();
         }
 
         @Rule(match = "root/unreach")
-        @SuppressWarnings("unused")
         public void unreach() throws SAXException {
             count++;
         }
@@ -1017,7 +981,6 @@ public class XMLScannerRuleTest {
     public void invalidUnknownNamespacePrefix() throws Exception {
         new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "unknown:namespace")
             public void rule(Attributes atts) throws SAXException {
                 // this method will be ignored
@@ -1029,7 +992,6 @@ public class XMLScannerRuleTest {
     public void invalidParameterType() throws Exception {
         new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void rule(int type) throws SAXException {
                 // this method will be ignored
@@ -1041,7 +1003,6 @@ public class XMLScannerRuleTest {
     public void invalidParameterTypes1() throws Exception {
         new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void rule(String contents, boolean test) throws SAXException {
                 // this method will be ignored
@@ -1053,7 +1014,6 @@ public class XMLScannerRuleTest {
     public void invalidParameterTypes2() throws Exception {
         new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void rule(String contents, Attributes atts, boolean test) throws SAXException {
                 // this method will be ignored
@@ -1065,7 +1025,6 @@ public class XMLScannerRuleTest {
     public void invalidParameterOrder() throws Exception {
         new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void rule(Attributes atts, String contents) throws SAXException {
                 // this method will be ignored

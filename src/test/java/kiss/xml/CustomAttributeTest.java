@@ -25,7 +25,6 @@ public class CustomAttributeTest {
     public void custom() throws Exception {
         XMLScanner scanner = new XMLScanner() {
 
-            @SuppressWarnings("unused")
             @Rule(match = "root")
             public void root(Custom custom) throws SAXException {
                 assert custom != null;
