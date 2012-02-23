@@ -45,10 +45,10 @@ public class Element implements Iterable<Element> {
      * Original pattern.
      * 
      * <pre>
-     * ([>~+\- ]*)?((?:(?:\w+|\*)\|)?(?:\w+|\*))?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(:([\w-]+)(\((odd|even|(\d*)(n)?(\+(\d+))?|(.*))\))?)?
+     * ([>~+\- ]*)?((?:(?:\w+|\*)\|)?(?:\w+|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?(\w+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+|\\*))?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\((odd|even|(\\d*)(n)?(\\+(\\d+))?|(.*))\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+|\\*))?(?:#(\\w+))?((?:\\.\\w+)*)(?:\\[\\s?(\\w+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -676,7 +676,7 @@ public class Element implements Iterable<Element> {
             // =================================================
             // ID Selector
             // =================================================
-            match = matcher.group(4);
+            match = matcher.group(3);
 
             if (match != null) {
                 xpath.append("[@id='" + match + "']");
@@ -685,7 +685,7 @@ public class Element implements Iterable<Element> {
             // =================================================
             // Class Selector
             // =================================================
-            match = matcher.group(5);
+            match = matcher.group(4);
 
             if (match != null && match.length() != 0) {
                 for (String className : match.substring(1).split("\\.")) {
@@ -696,10 +696,10 @@ public class Element implements Iterable<Element> {
             // =================================================
             // Attribute Selector
             // =================================================
-            match = matcher.group(8);
+            match = matcher.group(5);
 
             if (match != null) {
-                String value = matcher.group(11);
+                String value = matcher.group(7);
 
                 if (value == null) {
                     // [att]
@@ -708,7 +708,7 @@ public class Element implements Iterable<Element> {
                     // of the attribute.
                     xpath.append("[@").append(match).append("]");
                 } else {
-                    String type = matcher.group(10);
+                    String type = matcher.group(6);
 
                     if (type == null) {
                         // [att=val]
@@ -783,7 +783,7 @@ public class Element implements Iterable<Element> {
             // =================================================
             // Structural Pseudo Classes Selector
             // =================================================
-            match = matcher.group(13);
+            match = matcher.group(8);
 
             if (match != null) {
                 switch (match.hashCode()) {
@@ -808,7 +808,7 @@ public class Element implements Iterable<Element> {
                     }
                     xpath.append('(');
 
-                    String sub = convert(matcher.group(15));
+                    String sub = convert(matcher.group(9));
 
                     if (sub.startsWith("descendant::*[")) {
                         sub = sub.replace("descendant", "self");
@@ -825,7 +825,7 @@ public class Element implements Iterable<Element> {
                     break;
 
                 case -567445985: // contains
-                    xpath.append("[contains(text(),'").append(matcher.group(15)).append("')]");
+                    xpath.append("[contains(text(),'").append(matcher.group(9)).append("')]");
                     break;
 
                 case -2136991809: // first-child
@@ -836,15 +836,15 @@ public class Element implements Iterable<Element> {
                 case -1629748624: // nth-last-child
                 case -897532411: // nth-of-type
                 case -872629820: // nth-last-of-type
-                    String coefficient = matcher.group(16);
-                    String remainder = matcher.group(15);
+                    String coefficient = matcher.group(10);
+                    String remainder = matcher.group(9);
 
                     if (remainder == null) {
                         // coefficient = null; // coefficient is already null
                         remainder = "1";
-                    } else if (matcher.group(17) == null) {
+                    } else if (matcher.group(11) == null) {
                         coefficient = null;
-                        // remainder = matcher.group(15); // remainder is already assigned
+                        // remainder = matcher.group(9); // remainder is already assigned
 
                         if (remainder.equals("even")) {
                             coefficient = "2";
@@ -854,8 +854,8 @@ public class Element implements Iterable<Element> {
                             remainder = "1";
                         }
                     } else {
-                        // coefficient = matcher.group(16); // coefficient is already assigned
-                        remainder = matcher.group(19);
+                        // coefficient = matcher.group(10); // coefficient is already assigned
+                        remainder = matcher.group(12);
 
                         if (remainder == null) {
                             remainder = "0";
