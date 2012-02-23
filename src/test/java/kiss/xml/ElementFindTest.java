@@ -142,11 +142,11 @@ public class ElementFindTest {
 
     @Test
     public void previous() throws Exception {
-        String xml = xml("<m><P><Q/><P/><Q/></P><Q/><Q/></m>");
+        String xml = xml("<m><P><Q/><P/><Q/></P><Q/><Q/><P/></m>");
 
-        assert $(xml).find("P-Q").size() == 1;
-        assert $(xml).find("P - Q").size() == 1;
-        assert $(xml).find("P   -   Q").size() == 1;
+        assert $(xml).find("P-Q").size() == 2;
+        assert $(xml).find("P - Q").size() == 2;
+        assert $(xml).find("P   -   Q").size() == 2;
     }
 
     @Test
@@ -332,6 +332,20 @@ public class ElementFindTest {
         String xml = xml("<m><Q><a/><b/><c/></Q></m>");
 
         assert $(xml).find("Q *").size() == 3;
+    }
+
+    @Test
+    public void namespaceElement() throws Exception {
+        String xml = xml("<m xmlns:p='p' xmlns:q='q' xmlns:r='r'><p:Q/><q:Q/><r:Q/></m>");
+
+        assert $(xml).find("p|Q").size() == 1;
+    }
+
+    @Test
+    public void namespaceAsterisk() throws Exception {
+        String xml = xml("<m xmlns:p='p' xmlns:q='q' xmlns:r='r'><p:Q/><q:Q/><r:Q/></m>");
+
+        assert $(xml).find("p|Q").size() == 1;
     }
 
     /**

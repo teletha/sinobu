@@ -45,10 +45,10 @@ public class Element implements Iterable<Element> {
      * Original pattern.
      * 
      * <pre>
-     * ([>~+\- ]*)?(\w+|\*)?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(:([\w-]+)(\(?(odd|even|(\d*)(n)?(\+(\d+))?|(.*))\))?)?
+     * ([>~+\- ]*)?((?:(?:\w+|\*)\|)?(?:\w+|\*))?(#(\w+))?((\.\w+)*)(\[\s?(\w+)(\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(:([\w-]+)(\((odd|even|(\d*)(n)?(\+(\d+))?|(.*))\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ]*)?(\\w+|\\*)?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\(?(odd|even|(\\d*)(n)?(\\+(\\d+))?|(.*))\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+|\\*))?(#(\\w+))?((\\.\\w+)*)(\\[\\s?(\\w+)(\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(:([\\w-]+)(\\((odd|even|(\\d*)(n)?(\\+(\\d+))?|(.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -62,7 +62,10 @@ public class Element implements Iterable<Element> {
     // initialization
     static {
         try {
-            dom = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+
+            dom = factory.newDocumentBuilder();
             xpath = XPathFactory.newInstance().newXPath();
         } catch (Exception e) {
             throw I.quiet(e);
@@ -643,13 +646,13 @@ public class Element implements Iterable<Element> {
                         break;
 
                     case '+': // Adjacent sibling combinator
-                        xpath.append("/following-sibling::*[1][self::");
-                        suffix = "]";
+                        xpath.append("/following-sibling::");
+                        suffix = "[1]";
                         break;
 
                     case '-': // Adjacent previous sibling combinator (EXTENSION)
-                        xpath.append("/preceding-sibling::*[1][self::");
-                        suffix = "]";
+                        xpath.append("/preceding-sibling::");
+                        suffix = "[1]";
                         break;
                     }
                 }
@@ -660,10 +663,10 @@ public class Element implements Iterable<Element> {
             // =================================================
             match = matcher.group(2);
 
-            if (match == null) {
+            if (match == null || match.equals("*")) {
                 xpath.append("*");
             } else {
-                xpath.append(match);
+                xpath.append("*[name()='").append(match.replace('|', ':')).append("']");
             }
 
             if (suffix != null) {
