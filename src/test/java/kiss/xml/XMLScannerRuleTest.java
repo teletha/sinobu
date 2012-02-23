@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.xml.parsers.FactoryConfigurationError;
 
+import kiss.Element;
 import kiss.I;
 
 import org.junit.Test;
@@ -927,21 +928,23 @@ public class XMLScannerRuleTest {
     }
 
     @Test
-    public void bits() throws Exception {
-        final List events = new ArrayList();
+    public void dom() throws Exception {
+        final Element[] elements = new Element[1];
 
         XMLScanner scanner = new XMLScanner() {
 
             @SuppressWarnings("unused")
             @Rule
-            public void root(Bits bits) throws SAXException {
-                events.addAll(bits.bits);
+            public void root(Element e) throws SAXException {
+                elements[0] = e;
             }
         };
 
         I.parse(note("<root/>"), scanner);
 
-        assert events.size() == 0;
+        assert elements[0] != null;
+        assert elements[0].size() == 1;
+        assert elements[0].find("*").size() == 0;
     }
 
     @Test
