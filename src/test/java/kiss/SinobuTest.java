@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.List;
@@ -24,9 +23,6 @@ import kiss.sample.modifier.Public;
 
 import org.junit.Test;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLFilter;
-import org.xml.sax.helpers.XMLFilterImpl;
 
 /**
  * @version 2011/12/09 20:31:05
@@ -392,53 +388,53 @@ public class SinobuTest {
     // ===============================================================
     // Test Parse Method
     // ===============================================================
-
-    @Test(expected = NullPointerException.class)
-    public void parseNullInputSource() throws IOException {
-        I.parse((InputSource) null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void parseNullPath() throws IOException {
-        I.parse((Path) null);
-    }
-
-    /**
-     * Parse with <code>null</code> filter.
-     */
-    @Test(expected = NullPointerException.class)
-    public void parseNullFilter() throws IOException {
-        I.parse(source("<Q/>"), (XMLFilter) null);
-    }
-
-    /**
-     * Parse with <code>null</code> filters.
-     */
-    @Test(expected = NullPointerException.class)
-    public void parseNullFilters() throws IOException {
-        I.parse(source("<Q/>"), (XMLFilter[]) null);
-    }
-
-    /**
-     * Parse without filter.
-     */
-    @Test
-    public void parseWithoutFilter() throws IOException {
-        I.parse(source("<Q/>"));
-    }
-
-    /**
-     * Parse with filter.
-     */
-    @Test
-    public void parseWithFilter() throws IOException {
-        I.parse(source("<Q/>"), new XMLFilterImpl());
-    }
-
-    @Test(expected = SAXException.class)
-    public void parseInvalidSource() throws IOException {
-        I.parse(source("invalid"));
-    }
+    //
+    // @Test(expected = NullPointerException.class)
+    // public void parseNullInputSource() throws IOException {
+    // I.parse((InputSource) null);
+    // }
+    //
+    // @Test(expected = NullPointerException.class)
+    // public void parseNullPath() throws IOException {
+    // I.parse((Path) null);
+    // }
+    //
+    // /**
+    // * Parse with <code>null</code> filter.
+    // */
+    // @Test(expected = NullPointerException.class)
+    // public void parseNullFilter() throws IOException {
+    // I.parse(source("<Q/>"), (XMLFilter) null);
+    // }
+    //
+    // /**
+    // * Parse with <code>null</code> filters.
+    // */
+    // @Test(expected = NullPointerException.class)
+    // public void parseNullFilters() throws IOException {
+    // I.parse(source("<Q/>"), (XMLFilter[]) null);
+    // }
+    //
+    // /**
+    // * Parse without filter.
+    // */
+    // @Test
+    // public void parseWithoutFilter() throws IOException {
+    // I.parse(source("<Q/>"));
+    // }
+    //
+    // /**
+    // * Parse with filter.
+    // */
+    // @Test
+    // public void parseWithFilter() throws IOException {
+    // I.parse(source("<Q/>"), new XMLFilterImpl());
+    // }
+    //
+    // @Test(expected = SAXException.class)
+    // public void parseInvalidSource() throws IOException {
+    // I.parse(source("invalid"));
+    // }
 
     /**
      * <p>
