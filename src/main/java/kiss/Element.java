@@ -33,10 +33,8 @@ import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import com.sun.org.apache.xerces.internal.util.DOMUtil;
-import com.sun.org.apache.xml.internal.utils.TreeWalker;
 
 /**
  * @version 2012/02/06 16:24:40
@@ -85,10 +83,6 @@ public class Element implements Iterable<Element> {
     public static Element $(Object xml) {
         if (xml instanceof Element) {
             return (Element) xml;
-        }
-
-        if (xml instanceof Document) {
-            return new Element((Document) xml, new ArrayList());
         }
 
         // parse as string
@@ -550,21 +544,6 @@ public class Element implements Iterable<Element> {
             elements.add(new Element(doc, Collections.singletonList(node)));
         }
         return elements.iterator();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        TreeWalker walker = new TreeWalker(new XMLWriter(builder));
-        try {
-            walker.traverse(doc);
-        } catch (SAXException e) {
-            throw I.quiet(e);
-        }
-        return builder.toString();
     }
 
     /**
