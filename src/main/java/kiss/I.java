@@ -66,7 +66,10 @@ import kiss.model.Property;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLFilter;
 import org.xml.sax.XMLReader;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 import sun.org.mozilla.javascript.internal.IdScriptableObject;
@@ -973,12 +976,101 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         return watcher;
     }
 
-    public static Element xml(Path source) {
-        return null;
+    /**
+     * <p>
+     * Parse the specified xml {@link Path} using the specified sequence of {@link XMLFilter} . The
+     * application can use this method to instruct the XML reader to begin parsing an XML document
+     * from the specified path.
+     * </p>
+     * <p>
+     * Sinobu use the {@link XMLReader} which has the following features.
+     * </p>
+     * <ul>
+     * <li>Support XML namespaces.</li>
+     * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude) Version
+     * 1.0</a>.</li>
+     * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
+     * <li><em>Not</em> support external DTD completely (parser doesn't even access DTD, using
+     * "http://apache.org/xml/features/nonvalidating/load-external-dtd" feature).</li>
+     * </ul>
+     * 
+     * @param source A path to xml source.
+     * @param filters A list of filters to parse a sax event. This may be <code>null</code>.
+     * @throws NullPointerException If the specified source is <code>null</code>. If one of the
+     *             specified filter is <code>null</code>.
+     * @throws SAXException Any SAX exception, possibly wrapping another exception.
+     * @throws IOException An IO exception from the parser, possibly from a byte stream or character
+     *             stream supplied by the application.
+     */
+    public static void parse(Path source, XMLFilter... filters) {
+        try {
+            InputSource input = new InputSource(Files.newBufferedReader(source, $encoding));
+            input.setPublicId(source.toString());
+
+            parse(input, filters);
+        } catch (Exception e) {
+            throw quiet(e);
+        }
     }
 
-    public static Element xml(InputSource source) {
-        return null;
+    /**
+     * <p>
+     * Parse the specified xml {@link InputSource} using the specified sequence of {@link XMLFilter}
+     * . The application can use this method to instruct the XML reader to begin parsing an XML
+     * document from any valid input source (a character stream, a byte stream, or a URI).
+     * </p>
+     * <p>
+     * Sinobu use the {@link XMLReader} which has the following features.
+     * </p>
+     * <ul>
+     * <li>Support XML namespaces.</li>
+     * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude) Version
+     * 1.0</a>.</li>
+     * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
+     * <li><em>Not</em> support external DTD completely (parser doesn't even access DTD, using
+     * "http://apache.org/xml/features/nonvalidating/load-external-dtd" feature).</li>
+     * </ul>
+     * 
+     * @param source A xml source.
+     * @param filters A list of filters to parse a sax event. This may be <code>null</code>.
+     * @throws NullPointerException If the specified source is <code>null</code>. If one of the
+     *             specified filter is <code>null</code>.
+     * @throws SAXException Any SAX exception, possibly wrapping another exception.
+     * @throws IOException An IO exception from the parser, possibly from a byte stream or character
+     *             stream supplied by the application.
+     */
+    public static void parse(InputSource source, XMLFilter... filters) {
+        try {
+            // create new xml reader
+            XMLReader reader = sax.newSAXParser().getXMLReader();
+
+            // chain filters if needed
+            for (int i = 0; i < filters.length; i++) {
+                // find the root filter of the current multilayer filter
+                XMLFilter filter = filters[i];
+
+                while (filter.getParent() instanceof XMLFilter) {
+                    filter = (XMLFilter) filter.getParent();
+                }
+
+                // the root filter makes previous filter as parent xml reader
+                filter.setParent(reader);
+
+                if (filter instanceof LexicalHandler) {
+                    reader.setProperty("http://xml.org/sax/properties/lexical-handler", filter);
+                }
+
+                // current filter is a xml reader in next step
+                reader = filters[i];
+            }
+
+            // start parsing
+            reader.parse(source);
+        } catch (Exception e) {
+            // We must throw the checked exception quietly and pass the original exception instead
+            // of wrapped exception.
+            throw quiet(e);
+        }
     }
 
     /**
@@ -1148,10 +1240,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             lock.readLock().lock();
 
             // Parse as XML
-            XMLReader xml = sax.newSAXParser().getXMLReader();
-            XMLIn in = new XMLIn(output);
-            in.setParent(xml);
-            in.parse(new InputSource(reader));
+            parse(new InputSource(reader), new XMLIn(output));
 
             // The input data is valid XML.
             return output;
@@ -1410,12 +1499,20 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 // traverse configuration as json
                 new JSON(output).walk(model, property, input);
             } else {
+                XMLWriter xml = new XMLWriter(output);
+
+                // xml start
+                xml.startDocument();
+                xml.startPrefixMapping("ss", URI);
 
                 // traverse configuration as xml
-                XMLDom out = new XMLDom();
+                XMLOut out = new XMLOut(xml);
+                out.walk(model, property, input);
+                out.mode = false;
+                out.nodes.clear();
                 out.walk(model, property, input);
 
-                System.out.println(out.element);
+                xml.endDocument();
                 // xml end
             }
         } finally {
