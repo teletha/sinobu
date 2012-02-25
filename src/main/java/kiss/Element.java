@@ -10,6 +10,7 @@
 package kiss;
 
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,9 +33,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
-
-import com.sun.org.apache.xerces.internal.util.DOMUtil;
 
 /**
  * @version 2012/02/06 16:24:40
@@ -59,6 +60,8 @@ public class Element implements Iterable<Element> {
     /** The xpath evaluator. */
     private static final XPath xpath;
 
+    private static final LSSerializer serializer;
+
     // initialization
     static {
         try {
@@ -67,6 +70,11 @@ public class Element implements Iterable<Element> {
 
             dom = factory.newDocumentBuilder();
             xpath = XPathFactory.newInstance().newXPath();
+            serializer = ((DOMImplementationLS) dom.getDOMImplementation().getFeature("LS", "3.0")).createLSSerializer();
+
+            // don't use boolean literal to reduce footprint size
+            serializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
+            serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -85,30 +93,36 @@ public class Element implements Iterable<Element> {
             return (Element) xml;
         }
 
-        // parse as string
-        String value = xml.toString();
+        try {
+            if (xml instanceof Path) {
+                Document doc = dom.parse(((Path) xml).toFile());
 
-        if (value.charAt(0) != '<') {
-            // element name
-            Document doc = dom.newDocument();
-
-            return new Element(doc, Collections.singletonList(doc.createElement(value)));
-        } else {
-            // xml text
-            try {
-                List<Node> list = new ArrayList();
-                Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
-                Node node = DOMUtil.getFirstChildElement(doc.getDocumentElement());
-
-                while (node != null) {
-                    list.add(node);
-
-                    node = DOMUtil.getNextSiblingElement(node);
-                }
-                return new Element(doc, list);
-            } catch (Exception e) {
-                throw I.quiet(e);
+                return new Element(doc, convert(doc.getChildNodes()));
             }
+
+            if (xml instanceof InputSource) {
+                Document doc = dom.parse((InputSource) xml);
+
+                return new Element(doc, convert(doc.getChildNodes()));
+            }
+
+            // parse as string
+            String value = xml.toString();
+
+            if (value.charAt(0) != '<') {
+                // element name
+                Document doc = dom.newDocument();
+                doc.appendChild(doc.createElement(value));
+
+                return new Element(doc, convert(doc.getChildNodes()));
+            } else {
+                // xml text
+                Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
+
+                return new Element(doc, convert(doc.getFirstChild().getChildNodes()));
+            }
+        } catch (Exception e) {
+            throw I.quiet(e);
         }
     }
 
@@ -510,11 +524,7 @@ public class Element implements Iterable<Element> {
 
         try {
             for (Node node : nodes) {
-                NodeList list = (NodeList) xpath.evaluate(node, XPathConstants.NODESET);
-
-                for (int i = 0; i < list.getLength(); i++) {
-                    result.addIfAbsent(list.item(i));
-                }
+                result.addAll(convert((NodeList) xpath.evaluate(node, XPathConstants.NODESET)));
             }
             return new Element(doc, result);
         } catch (XPathExpressionException e) {
@@ -547,6 +557,19 @@ public class Element implements Iterable<Element> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        for (Node node : nodes) {
+            builder.append(serializer.writeToString(node)).append("\r\n");
+        }
+        return builder.toString();
+    }
+
+    /**
      * <p>
      * Helper method to convert {@link Element} to single {@link Node}.
      * </p>
@@ -572,6 +595,27 @@ public class Element implements Iterable<Element> {
 
         // root
         return fragment;
+    }
+
+    /**
+     * <p>
+     * Helper method to convert {@link NodeList} to single {@link List}.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    private static List convert(NodeList list) {
+        CopyOnWriteArrayList<Node> nodes = new CopyOnWriteArrayList();
+
+        for (int i = 0; i < list.getLength(); i++) {
+            Node node = list.item(i);
+
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                nodes.addIfAbsent(node);
+            }
+        }
+        return nodes;
     }
 
     /**

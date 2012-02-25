@@ -26,6 +26,13 @@ public class ElementFindTest {
     }
 
     @Test
+    public void types() throws Exception {
+        String xml = "<m><E/><F/><e><G/></e></m>";
+
+        assert $(xml).find("E, F").size() == 2;
+    }
+
+    @Test
     public void clazz() throws Exception {
         String xml = "<m><e class='C'/><e class='none'/></m>";
 

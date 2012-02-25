@@ -128,8 +128,17 @@ public class ElementManipulationTest {
     public void attrGet() throws Exception {
         String xml = "<Q name='value' key='map'/>";
 
-        assert $(xml).find("Q").attr("name").equals("value");
-        assert $(xml).find("Q").attr("key").equals("map");
+        assert $(xml).attr("name").equals("value");
+        assert $(xml).attr("key").equals("map");
+    }
+
+    @Test
+    public void attrGetNS() throws Exception {
+        String xml = "<Q xmlns:P='p' xmlns:z='z' z:name='fail' P:name='value' name='fail'/>";
+
+        Element e = $(xml);
+
+        assert e.attr("P:name").equals("value");
     }
 
     @Test
@@ -139,9 +148,42 @@ public class ElementManipulationTest {
         Element e = $(xml);
         e.attr("name", "set");
 
-        assert e.find("Q").attr("name").equals("set");
-        assert e.find("Q").attr("key").equals("map");
+        assert e.attr("name").equals("set");
+        assert e.attr("key").equals("map");
         assert e.attr("name", null).find("Q[name]").size() == 0;
+    }
+
+    @Test
+    public void attrSetNS() throws Exception {
+        String xml = "<Q xmlns:P='p' xmlns:z='z' z:name='fail' P:name='value' name='fail'/>";
+
+        Element e = $(xml);
+        e.attr("P:name", "set");
+
+        assert e.attr("P:name").equals("set");
+    }
+
+    @Test
+    public void attrCreate() throws Exception {
+        String xml = "<Q/>";
+
+        Element e = $(xml);
+        e.attr("name", "set");
+
+        assert e.attr("name").equals("set");
+        assert e.find("Q[name]").size() == 1;
+    }
+
+    @Test
+    public void attrCreateNs() throws Exception {
+        String xml = "<Q/>";
+
+        Element e = $(xml);
+        e.attr("P:name", "set");
+
+        assert e.attr("P:name").equals("set");
+        assert e.attr("name").equals("");
+        assert e.find("Q[P:name]").size() == 1;
     }
 
     @Test

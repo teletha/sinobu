@@ -19,6 +19,7 @@ import javax.xml.parsers.FactoryConfigurationError;
 import kiss.Element;
 import kiss.I;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -928,6 +929,7 @@ public class XMLScannerRuleTest {
     }
 
     @Test
+    @Ignore
     public void dom() throws Exception {
         final Element[] elements = new Element[1];
 
