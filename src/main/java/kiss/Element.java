@@ -46,10 +46,10 @@ public class Element implements Iterable<Element> {
      * Original pattern.
      * 
      * <pre>
-     * ([>~+\- ]*)?((?:(?:\w+|\*)\|)?(?:\w+|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
+     * ([>~+\-, ]*)?((?:(?:\w+|\*)\|)?(?:\w+|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+|\\*))?(?:#(\\w+))?((?:\\.\\w+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile("([>~+\\-, ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+|\\*))?(?:#(\\w+))?((?:\\.\\w+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -656,7 +656,7 @@ public class Element implements Iterable<Element> {
      */
     private static String convert(String selector) {
         StringBuilder xpath = new StringBuilder();
-        Matcher matcher = SELECTOR.matcher(selector);
+        Matcher matcher = SELECTOR.matcher(selector.trim());
 
         while (matcher.find()) {
             // =================================================
@@ -671,12 +671,7 @@ public class Element implements Iterable<Element> {
                     // first selector
                     xpath.append("descendant-or-self::");
                 } else {
-                    if (matcher.hitEnd()) {
-                        break; // finish parsing
-                    } else {
-                        xpath.append('|');
-                        continue;
-                    }
+                    break; // finish parsing
                 }
             } else {
                 match = match.trim();
@@ -702,6 +697,10 @@ public class Element implements Iterable<Element> {
                     case '-': // Adjacent previous sibling combinator (EXTENSION)
                         xpath.append("/preceding-sibling::");
                         suffix = "[1]";
+                        break;
+
+                    case ',': // selector separator
+                        xpath.append("|descendant-or-self::");
                         break;
                     }
                 }

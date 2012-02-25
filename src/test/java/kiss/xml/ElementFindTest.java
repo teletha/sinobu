@@ -29,7 +29,9 @@ public class ElementFindTest {
     public void types() throws Exception {
         String xml = "<m><E/><F/><e><G/></e></m>";
 
+        assert $(xml).find("E,F").size() == 2;
         assert $(xml).find("E, F").size() == 2;
+        assert $(xml).find(" E , F ").size() == 2;
     }
 
     @Test
