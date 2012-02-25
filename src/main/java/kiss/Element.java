@@ -46,10 +46,10 @@ public class Element implements Iterable<Element> {
      * Original pattern.
      * 
      * <pre>
-     * ([>~+\- ]*)?((?:(?:\w+|\*)\|)?(?:\w+|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?(\w+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
+     * ([>~+\- ]*)?((?:(?:\w+|\*)\|)?(?:\w+|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+|\\*))?(?:#(\\w+))?((?:\\.\\w+)*)(?:\\[\\s?(\\w+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile("([>~+\\- ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+|\\*))?(?:#(\\w+))?((?:\\.\\w+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -671,7 +671,12 @@ public class Element implements Iterable<Element> {
                     // first selector
                     xpath.append("descendant-or-self::");
                 } else {
-                    break; // finish parsing
+                    if (matcher.hitEnd()) {
+                        break; // finish parsing
+                    } else {
+                        xpath.append('|');
+                        continue;
+                    }
                 }
             } else {
                 match = match.trim();

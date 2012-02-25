@@ -315,14 +315,14 @@ public class ElementFindTest {
     public void parent() throws Exception {
         String xml = xml("<m><Q/><Q/><Q/></m>");
 
-        assert $(xml).find("Q:parent)").size() == 1;
+        assert $(xml).find("Q:parent").size() == 1;
     }
 
     @Test
     public void root() throws Exception {
         String xml = xml("<Q><Q/></Q>");
 
-        assert $(xml).find("Q:root)").size() == 1;
+        assert $(xml).find("Q:root").size() == 1;
     }
 
     @Test
