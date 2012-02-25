@@ -183,7 +183,6 @@ public class ElementManipulationTest {
 
         assert e.attr("P:name").equals("set");
         assert e.attr("name").equals("");
-        assert e.find("Q[P:name]").size() == 1;
     }
 
     @Test
