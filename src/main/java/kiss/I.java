@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -202,7 +203,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     // get
     // hash have
     // i18n include
-    // json
+    // json join
     // kick
     // locate load log
     // make mock
@@ -643,6 +644,31 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     // }
     // return make(bundleClass);
     // }
+
+    /**
+     * <p>
+     * Returns a string containing the string representation of each of items, using the specified
+     * separator between each.
+     * </p>
+     * 
+     * @param items A {@link Iterable} items.
+     * @param separator A seperator.
+     * @return A concat expression.
+     * @throws NullPointerException If items is <code>null</code>.
+     */
+    public static String join(Iterable items, String separator) {
+        StringBuilder builder = new StringBuilder();
+        Iterator iterator = items.iterator();
+
+        if (iterator.hasNext()) {
+            builder.append(iterator.next());
+
+            while (iterator.hasNext()) {
+                builder.append(separator).append(iterator.next());
+            }
+        }
+        return builder.toString();
+    }
 
     /**
      * <p>
@@ -1245,14 +1271,18 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // The input data is valid XML.
             return output;
         } catch (Exception e) {
-            // The user input has some error as XML so we should try it as JSON.
-            try {
-                reader.i = 1; // reset input reader
+            if (e instanceof SAXException) {
+                // The user input has some error as XML so we should try it as JSON.
+                try {
+                    reader.i = 1; // reset input reader
 
-                // Parse as JSON.
-                return read(Model.load(output.getClass()), output, script.eval(reader));
-            } catch (Exception se) {
-                throw quiet(se);
+                    // Parse as JSON.
+                    return read(Model.load(output.getClass()), output, script.eval(reader));
+                } catch (Exception se) {
+                    throw quiet(se);
+                }
+            } else {
+                throw quiet(e);
             }
         } finally {
             // relese lock
