@@ -57,7 +57,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version 2010/02/19 2:30:56
  */
 @SuppressWarnings("serial")
-class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
+public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
 
     /**
      * <p>
