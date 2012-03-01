@@ -806,37 +806,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
         // If this model is non-private or final class, we can extend it for interceptor mechanism.
         if (((PRIVATE | FINAL) & modifier) == 0) {
-            Table<Method, Annotation> interceptables = new Table();
-
-            for (Class clazz : ClassUtil.getTypes(actualClass)) {
-                for (Method method : clazz.getDeclaredMethods()) {
-                    // exclude the method which modifier is final, static, private or native
-                    if (((STATIC | PRIVATE | NATIVE | FINAL) & method.getModifiers()) != 0) {
-                        continue;
-                    }
-
-                    // exclude the method which is created by compiler
-                    if (method.isBridge() || method.isSynthetic()) {
-                        continue;
-                    }
-
-                    Annotation[] annotations = method.getAnnotations();
-
-                    if (annotations.length != 0) {
-                        // check method overriding
-                        for (Method candidate : interceptables.keySet()) {
-                            if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
-                                method = candidate; // detect overriding
-                                break;
-                            }
-                        }
-
-                        for (Annotation annotation : annotations) {
-                            interceptables.push(method, annotation);
-                        }
-                    }
-                }
-            }
+            Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
 
             // Enhance the actual model class if needed.
             if (!interceptables.isEmpty()) {
