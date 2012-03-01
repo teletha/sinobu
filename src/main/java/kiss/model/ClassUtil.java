@@ -9,17 +9,23 @@
  */
 package kiss.model;
 
+import static java.lang.reflect.Modifier.*;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.security.CodeSource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import kiss.I;
+import kiss.Table;
 
 /**
  * <p>
@@ -92,6 +98,49 @@ public final class ClassUtil {
 
         // API definition
         return set;
+    }
+
+    /**
+     * <p>
+     * Helper method to collect all annotated methods and thire annotations.
+     * </p>
+     * 
+     * @param clazz A target class.
+     * @return A table of method and annnotations.
+     */
+    public static Table<Method, Annotation> getAnnotations(Class clazz) {
+        Table<Method, Annotation> table = new Table();
+
+        for (Class type : ClassUtil.getTypes(clazz)) {
+            for (Method method : type.getDeclaredMethods()) {
+                // exclude the method which modifier is final, static, private or native
+                if (((STATIC | PRIVATE | NATIVE | FINAL) & method.getModifiers()) != 0) {
+                    continue;
+                }
+
+                // exclude the method which is created by compiler
+                if (method.isBridge() || method.isSynthetic()) {
+                    continue;
+                }
+
+                Annotation[] annotations = method.getAnnotations();
+
+                if (annotations.length != 0) {
+                    // check method overriding
+                    for (Method candidate : table.keySet()) {
+                        if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
+                            method = candidate; // detect overriding
+                            break;
+                        }
+                    }
+
+                    for (Annotation annotation : annotations) {
+                        table.push(method, annotation);
+                    }
+                }
+            }
+        }
+        return table;
     }
 
     /**
