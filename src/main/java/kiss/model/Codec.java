@@ -32,7 +32,7 @@ import kiss.Singleton;
 @Manageable(lifestyle = Singleton.class)
 public class Codec<T> implements Extensible {
 
-    /** The type information for this codec. */
+    /** The raw type information for this codec. */
     private final Class type;
 
     /** The actual constructer for decode. */
@@ -54,7 +54,7 @@ public class Codec<T> implements Extensible {
      * @param type A codec type.
      */
     Codec(Class type) {
-        this.type = type != null ? type : ClassUtil.getParameter(getClass(), Codec.class)[0];
+        this.type = type;
 
         // convert primitive class to wrapper class
         type = ClassUtil.wrap(type);
@@ -92,7 +92,7 @@ public class Codec<T> implements Extensible {
      */
     public T decode(String value) {
         // for enum
-        if (type.isEnum()) {
+        if (type != null && type.isEnum()) {
             return (T) Enum.valueOf(type, value);
         }
 

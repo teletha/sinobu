@@ -9,20 +9,18 @@
  */
 package kiss.module;
 
-
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Rule;
-import org.junit.Test;
-
-import antibug.PrivateModule;
-
 
 import kiss.I;
 import kiss.model.Model;
 import kiss.module.external.ExtendedClass1;
 import kiss.module.external.SingletonClass;
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import antibug.PrivateModule;
 
 /**
  * @version 2011/03/22 17:08:49
@@ -50,6 +48,7 @@ public class ClassCacheProblemTest {
         assert object1 != null;
 
         // reload
+        module.unload();
         module.load();
 
         Model model2 = Model.load(module.convert(ExtendedClass1.class));
@@ -92,6 +91,7 @@ public class ClassCacheProblemTest {
         assert object1b.equals(object1a);
 
         // reload
+        module.unload();
         module.load();
 
         Model model2 = Model.load(module.convert(SingletonClass.class));

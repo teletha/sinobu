@@ -366,9 +366,6 @@ public class Model {
             } else {
                 model = new Model(modelClass);
             }
-
-            // store it
-            models.put(modelClass, model);
         }
 
         // API definition
