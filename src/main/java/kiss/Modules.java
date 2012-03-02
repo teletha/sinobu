@@ -27,16 +27,13 @@ import kiss.model.Model;
 class Modules implements ClassListener {
 
     /** The module list. */
-    // final CopyOnWriteArrayList<Module> paths = new CopyOnWriteArrayList();
-
-    /** The module list. */
-    final CopyOnWriteArrayList<Module> modules = new CopyOnWriteArrayList();
+    final List<Module> modules = new CopyOnWriteArrayList();
 
     /**
      * The two length class array for class load listener. (0 : ClassLoadListener class, 1 : Target
      * class to listen)
      */
-    final CopyOnWriteArrayList<Object[]> types = new CopyOnWriteArrayList();
+    final List<Object[]> types = new CopyOnWriteArrayList();
 
     /**
      * Avoid construction
@@ -115,14 +112,15 @@ class Modules implements ClassListener {
     ClassLoader load(Path path) {
         // check module file
         if (path != null && Files.exists(path)) {
-            // build module
             try {
+                // check duplication
                 for (Module module : modules) {
                     if (Files.isSameFile(path, module.path)) {
                         return module;
                     }
                 }
 
+                // build module
                 Module module = new Module(path);
 
                 // Load module for the specified directory. The new module has high priority than
