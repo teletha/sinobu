@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import kiss.model.ClassUtil;
+
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -33,8 +35,6 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-
-import kiss.model.ClassUtil;
 
 /**
  * <h2>Module System</h2>
@@ -144,19 +144,19 @@ class Module extends URLClassLoader {
         if (spi == null) {
             return Collections.EMPTY_LIST;
         }
-    
+
         // compute hash of service provider interface
         int hash = spi.getName().hashCode();
-    
+
         // set up container
         List list = new ArrayList(4);
-    
+
         // try to find all service providers
         for (Object[] info : visitor.infos) {
             try {
                 if (test(hash, info)) {
                     list.add(loadClass((String) info[0]));
-    
+
                     if (single) {
                         return list;
                     }
@@ -165,7 +165,7 @@ class Module extends URLClassLoader {
                 throw I.quiet(e);
             }
         }
-    
+
         // API definition
         return list;
     }
@@ -179,40 +179,40 @@ class Module extends URLClassLoader {
      */
     private boolean test(int hash, Object[] info) throws ClassNotFoundException {
         int[] hashs = (int[]) info[1];
-    
+
         if (hashs != null) {
             return -1 < Arrays.binarySearch(hashs, hash);
         }
-    
+
         // lazy evaluation
         Class<?> clazz = loadClass((String) info[0]);
-    
+
         // stealth class must be hidden from module
         if (ClassUtil.getMiniConstructor(clazz) == null) {
             return !visitor.infos.remove(info); // test method requires false for stealth classs
         }
-    
+
         Set<Class> set = ClassUtil.getTypes(clazz);
         Annotation[] annotations = clazz.getAnnotations();
-    
+
         // compute hash
         int i = 0;
         hashs = new int[set.size() + annotations.length];
-    
+
         for (Class c : set) {
             hashs[i++] = c.getName().hashCode();
         }
-    
+
         for (Annotation a : annotations) {
             hashs[i++] = a.annotationType().getName().hashCode();
         }
-    
+
         // sort for search
         Arrays.sort(hashs);
-    
+
         // register information of the service provider class
         info[1] = hashs;
-    
+
         // API definition
         return test(hash, info);
     }

@@ -1527,8 +1527,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /**
      * <p>
      * Load the file as an additional classpath into JVM. If the file indicates the classpath which
-     * is already loaded, that will be reloaded. The classpath can accept directory or archive (like
-     * Jar). If it is <code>null</code> or a file, this method does nothing.
+     * is already loaded, that will do nothing at all. The classpath can accept directory or archive
+     * (like Jar). If it is <code>null</code> or a file, this method does nothing.
      * </p>
      * <p>
      * There are two advantages in the classpath loaded by this method. One is that you can add

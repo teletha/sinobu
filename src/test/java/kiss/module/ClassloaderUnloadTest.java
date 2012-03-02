@@ -9,21 +9,19 @@
  */
 package kiss.module;
 
-
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.util.List;
 
+import kiss.I;
+import kiss.sample.RuntimeAnnotation1;
+
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
-
-
-import kiss.I;
-import kiss.sample.RuntimeAnnotation1;
 
 /**
  * @version 2011/03/22 17:08:02
@@ -48,6 +46,7 @@ public class ClassloaderUnloadTest {
         assert I.make(module.convert(Single.class)) != null;
 
         // reload module and execute gc if possible
+        module.unload();
         module.load();
         tryGC();
 
@@ -66,6 +65,7 @@ public class ClassloaderUnloadTest {
         assert 0 == unloaded - initialUnloaded;
 
         // reload module and execute gc if possible
+        module.unload();
         module.load();
         tryGC();
 
