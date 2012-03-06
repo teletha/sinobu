@@ -27,8 +27,11 @@ public class Interceptor<P extends Annotation> implements Extensible {
     /** The associated annotation. */
     protected P annotation;
 
+    /** The delegation method name. */
+    protected String name;
+
     /** The delegation method. */
-    private MethodHandle method;
+    protected MethodHandle method;
 
     /** The parent interceptor to chain. */
     private Interceptor parent;
@@ -80,7 +83,7 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * @param parames A current method parameters.
      * @param annotations A interceptable annotation list.
      */
-    public static Object invoke(MethodHandle method, Object that, Object[] params, Annotation[] annotations) {
+    public static Object invoke(String name, MethodHandle method, Object that, Object[] params, Annotation[] annotations) {
         Interceptor current = new Interceptor();
         current.method = method;
         current.that = that;
@@ -92,6 +95,8 @@ public class Interceptor<P extends Annotation> implements Extensible {
                 interceptor.that = that;
                 interceptor.parent = current;
                 interceptor.annotation = annotations[i];
+                interceptor.name = name;
+                interceptor.method = method;
 
                 current = interceptor;
             }

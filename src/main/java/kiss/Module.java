@@ -338,6 +338,9 @@ class Module extends URLClassLoader {
             // Write code
             mv.visitCode();
 
+            // Zero parameter : Method name
+            mv.visitLdcInsn(method.getName());
+
             // First parameter : Method delegation
             Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
             mv.visitLdcInsn(handle);
@@ -367,7 +370,7 @@ class Module extends URLClassLoader {
             mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
 
             // Invoke interceptor method
-            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;");
+            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;");
             cast(method.getReturnType());
             mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
             mv.visitMaxs(0, 0); // compute by ASM
