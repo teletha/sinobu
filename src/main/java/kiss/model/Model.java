@@ -248,14 +248,14 @@ public class Model {
      * Find the property which has the specified name in this object model. If the suitable property
      * is not found, <code>null</code> is returned.
      * 
-     * @param propertyIName A name of property.
+     * @param propertyName A name of property.
      * @return A suitable property or <code>null</code>.
      */
-    public Property getProperty(String propertyIName) {
+    public Property getProperty(String propertyName) {
         // check whether this model is attribute or not.
         if (codec == null) {
             for (Property property : properties) {
-                if (property.name.equals(propertyIName)) {
+                if (property.name.equals(propertyName)) {
                     return property;
                 }
             }
