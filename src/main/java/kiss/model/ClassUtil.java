@@ -9,8 +9,6 @@
  */
 package kiss.model;
 
-import static java.lang.reflect.Modifier.*;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -113,11 +111,6 @@ public final class ClassUtil {
 
         for (Class type : ClassUtil.getTypes(clazz)) {
             for (Method method : type.getDeclaredMethods()) {
-                // exclude the method which modifier is final, static, private or native
-                if (((STATIC | PRIVATE | NATIVE | FINAL) & method.getModifiers()) != 0) {
-                    continue;
-                }
-
                 // exclude the method which is created by compiler
                 if (method.isBridge() || method.isSynthetic()) {
                     continue;

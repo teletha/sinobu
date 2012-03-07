@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import static java.lang.reflect.Modifier.*;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.lang.annotation.Annotation;
@@ -326,6 +327,12 @@ class Module extends URLClassLoader {
         // -----------------------------------------------------------------------------------
         for (Entry<Method, List<Annotation>> entry : interceptables.entrySet()) {
             Method method = entry.getKey();
+
+            // exclude the method which modifier is final, static, private or native
+            if (((STATIC | PRIVATE | NATIVE | FINAL) & method.getModifiers()) != 0) {
+                continue;
+            }
+
             Type methodType = Type.getType(method);
 
             mv = cv.visitMethod(ACC_PUBLIC, method.getName(), methodType.getDescriptor(), null, null);
