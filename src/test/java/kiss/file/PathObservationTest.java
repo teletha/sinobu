@@ -11,7 +11,6 @@ package kiss.file;
 
 import static java.util.concurrent.TimeUnit.*;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,17 +20,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.SynchronousQueue;
 
+import kiss.Disposable;
+import kiss.I;
+import kiss.PathListener;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-
-
-import kiss.Disposable;
-import kiss.I;
-import kiss.PathListener;
 
 /**
  * @version 2011/04/09 7:09:37
@@ -410,6 +408,7 @@ public class PathObservationTest {
     public void patternWildcard() throws Exception {
         Path root = room.locateDirectory("directory");
         Path child = room.locateDirectory("directory/child");
+        Path descendent = room.locateDirectory("directory/child/descendent");
 
         // observe
         observe(root, "*");

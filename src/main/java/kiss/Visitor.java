@@ -312,9 +312,14 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
             this.service = path.getFileSystem().newWatchService();
 
             // register
-            for (Path dir : I.walkDirectory(path)) {
-                dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            if (patterns.length == 1 && patterns[0].equals("*")) {
+                path.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            } else {
+                for (Path dir : I.walkDirectory(path)) {
+                    dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+                }
             }
+
         } catch (Exception e) {
             throw I.quiet(e);
         }
