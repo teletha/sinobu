@@ -12,7 +12,6 @@ package kiss.file;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
@@ -20,13 +19,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
+import kiss.I;
+
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-
-
-import kiss.I;
 
 /**
  * @version 2012/01/05 9:20:57
