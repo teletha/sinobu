@@ -49,7 +49,7 @@ class MapModel extends Model {
      */
     @Override
     public Property getProperty(String propertyIName) {
-        return (key.codec == null) ? null : new Property(value, propertyIName);
+        return (key.codec == null) ? null : new Property(value, propertyIName, null);
     }
 
     /**
@@ -93,7 +93,7 @@ class MapModel extends Model {
             super.walk(object, walker);
         } else {
             for (Entry entry : ((Map<?, ?>) object).entrySet()) {
-                walker.walk(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue());
+                walker.walk(this, new Property(value, I.transform(entry.getKey(), String.class), null), entry.getValue());
             }
         }
     }
