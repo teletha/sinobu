@@ -10,6 +10,7 @@
 package kiss.model;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.AnnotatedElement;
 
 /**
  * <p>
@@ -32,6 +33,9 @@ public class Property implements Comparable<Property> {
     /** The human readable identifier of this property. */
     public final String name;
 
+    /** The annotated element. */
+    public final AnnotatedElement annotations;
+
     /** The actual accessor methods. */
     MethodHandle[] accessors;
 
@@ -44,9 +48,10 @@ public class Property implements Comparable<Property> {
      * @param model A model that this property belongs to.
      * @param name A property name.
      */
-    public Property(Model model, String name) {
+    public Property(Model model, String name, AnnotatedElement annotations) {
         this.model = model;
         this.name = name;
+        this.annotations = annotations;
     }
 
     /**

@@ -12,7 +12,6 @@ package kiss.model;
 import java.lang.reflect.Type;
 import java.util.List;
 
-
 /**
  * @version 2009/07/22 23:37:56
  */
@@ -40,7 +39,7 @@ class ListModel extends Model {
     @Override
     public Property getProperty(String propertyIName) {
         try {
-            return new Property(itemModel, propertyIName);
+            return new Property(itemModel, propertyIName, null);
         } catch (NumberFormatException e) {
             return null;
         }
@@ -90,7 +89,7 @@ class ListModel extends Model {
             int counter = 0;
 
             for (Object value : (List) object) {
-                walker.walk(this, new Property(itemModel, String.valueOf(counter++)), value);
+                walker.walk(this, new Property(itemModel, String.valueOf(counter++), null), value);
             }
         }
     }

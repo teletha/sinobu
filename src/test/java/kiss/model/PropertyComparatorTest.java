@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-
 import kiss.I;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
+
+import org.junit.Test;
 
 /**
  * @version 2011/03/22 16:56:52
@@ -37,11 +37,11 @@ public class PropertyComparatorTest {
     public void testCompare() {
         List<Property> properties = new ArrayList();
 
-        properties.add(new Property(Model.load(School.class), "aaa"));
-        properties.add(new Property(Model.load(String.class), "string"));
-        properties.add(new Property(Model.load(int.class), "int"));
-        properties.add(new Property(Model.load(Person.class), "abc"));
-        properties.add(new Property(Model.load(String.class), "first"));
+        properties.add(new Property(Model.load(School.class), "aaa", null));
+        properties.add(new Property(Model.load(String.class), "string", null));
+        properties.add(new Property(Model.load(int.class), "int", null));
+        properties.add(new Property(Model.load(Person.class), "abc", null));
+        properties.add(new Property(Model.load(String.class), "first", null));
 
         // create innocuous BeanModel as property comparator and sort above properties by it
         Collections.sort(properties);
