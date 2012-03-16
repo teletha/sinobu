@@ -1493,7 +1493,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             lock.writeLock().lock();
 
             Model model = Model.load(input.getClass());
-            Property property = new Property(model, model.name, null);
+            Property property = new Property(model, model.name);
 
             if (json) {
                 // traverse configuration as json

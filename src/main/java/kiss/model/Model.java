@@ -204,9 +204,11 @@ public class Model {
                         methods[1].setAccessible(true);
 
                         // this property is valid
-                        Property property = new Property(model, entry.getKey(), methods[1]);
+                        Property property = new Property(model, entry.getKey());
                         property.accessors = new MethodHandle[] {look.unreflect(methods[0]), look.unreflect(methods[1])};
                         property.type = methods[0].getAnnotation(Transient.class) != null || methods[1].getAnnotation(Transient.class) != null;
+                        property.addAnnotation(methods[0]);
+                        property.addAnnotation(methods[1]);
 
                         // register it
                         properties.add(property);
@@ -225,9 +227,10 @@ public class Model {
                     continue;
                 }
 
-                Property property = new Property(load(field.getGenericType(), type), field.getName(), field);
+                Property property = new Property(load(field.getGenericType(), type), field.getName());
                 property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
                 property.type = (TRANSIENT & field.getModifiers()) != 0;
+                property.addAnnotation(field);
 
                 // register it
                 properties.add(property);
