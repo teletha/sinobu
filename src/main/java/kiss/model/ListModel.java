@@ -39,7 +39,7 @@ class ListModel extends Model {
     @Override
     public Property getProperty(String propertyIName) {
         try {
-            return new Property(itemModel, propertyIName, null);
+            return new Property(itemModel, propertyIName);
         } catch (NumberFormatException e) {
             return null;
         }
@@ -89,7 +89,7 @@ class ListModel extends Model {
             int counter = 0;
 
             for (Object value : (List) object) {
-                walker.walk(this, new Property(itemModel, String.valueOf(counter++), null), value);
+                walker.walk(this, new Property(itemModel, String.valueOf(counter++)), value);
             }
         }
     }

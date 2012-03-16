@@ -541,7 +541,7 @@ public class ModelTest {
         Model model = Model.load(Person.class);
         List<Property> properties = model.properties;
 
-        properties.add(new Property(model, "test", null));
+        properties.add(new Property(model, "test"));
     }
 
     /**

@@ -9,8 +9,11 @@
  */
 package kiss.model;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.AnnotatedElement;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,7 +37,7 @@ public class Property implements Comparable<Property> {
     public final String name;
 
     /** The annotated element. */
-    public final AnnotatedElement annotations;
+    Map annotations = new HashMap(2);
 
     /** The actual accessor methods. */
     MethodHandle[] accessors;
@@ -48,10 +51,9 @@ public class Property implements Comparable<Property> {
      * @param model A model that this property belongs to.
      * @param name A property name.
      */
-    public Property(Model model, String name, AnnotatedElement annotations) {
+    public Property(Model model, String name) {
         this.model = model;
         this.name = name;
-        this.annotations = annotations;
     }
 
     /**
@@ -70,6 +72,34 @@ public class Property implements Comparable<Property> {
      */
     public boolean isTransient() {
         return type;
+    }
+
+    /**
+     * <p>
+     * Returns this property's annotation for the specified type if such an annotation is present,
+     * else null.
+     * </p>
+     * 
+     * @param annotationClass A Class object corresponding to the annotation type
+     * @return This property's annotation for the specified annotation type if present on this
+     *         element, else null
+     * @throws NullPointerException if the given annotation class is null
+     */
+    public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
+        return (A) annotations.get(annotationClass);
+    }
+
+    /**
+     * <p>
+     * Register the specified annotations to this property.
+     * </p>
+     * 
+     * @param element Annotations you want to add.
+     */
+    public void addAnnotation(AnnotatedElement element) {
+        for (Annotation annotation : element.getAnnotations()) {
+            annotations.put(annotation.annotationType(), annotation);
+        }
     }
 
     /**
