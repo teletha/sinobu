@@ -9,6 +9,7 @@
  */
 package kiss.model;
 
+import java.beans.Transient;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.AnnotatedElement;
@@ -42,9 +43,6 @@ public class Property implements Comparable<Property> {
     /** The actual accessor methods. */
     MethodHandle[] accessors;
 
-    /** The transient type of this property. */
-    boolean type;
-
     /**
      * Create a property.
      * 
@@ -71,7 +69,7 @@ public class Property implements Comparable<Property> {
      * @return A result.
      */
     public boolean isTransient() {
-        return type;
+        return annotations.get(Transient.class) != null;
     }
 
     /**

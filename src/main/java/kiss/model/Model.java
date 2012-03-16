@@ -206,7 +206,6 @@ public class Model {
                         // this property is valid
                         Property property = new Property(model, entry.getKey());
                         property.accessors = new MethodHandle[] {look.unreflect(methods[0]), look.unreflect(methods[1])};
-                        property.type = methods[0].getAnnotation(Transient.class) != null || methods[1].getAnnotation(Transient.class) != null;
                         property.addAnnotation(methods[0]);
                         property.addAnnotation(methods[1]);
 
@@ -229,8 +228,8 @@ public class Model {
 
                 Property property = new Property(load(field.getGenericType(), type), field.getName());
                 property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
-                property.type = (TRANSIENT & field.getModifiers()) != 0;
                 property.addAnnotation(field);
+                if ((TRANSIENT & field.getModifiers()) != 0) property.annotations.put(Transient.class, "");
 
                 // register it
                 properties.add(property);
