@@ -60,7 +60,7 @@ public class Property implements Comparable<Property> {
      * @return A result.
      */
     public boolean isAttribute() {
-        return model.codec != null || model.type.isArray();
+        return model.getCodec() != null || model.type.isArray();
     }
 
     /**

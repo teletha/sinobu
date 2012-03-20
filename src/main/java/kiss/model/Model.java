@@ -105,9 +105,7 @@ public class Model {
     public final List<Property> properties;
 
     /** The built-in codec. */
-    public final Codec codec;
-
-    // public final List<Method> intercepts = new ArrayList();
+    private Codec codec = null;
 
     /**
      * Create Model instance.
@@ -255,7 +253,7 @@ public class Model {
      */
     public Property getProperty(String propertyName) {
         // check whether this model is attribute or not.
-        if (codec == null) {
+        if (getCodec() == null) {
             for (Property property : properties) {
                 if (property.name.equals(propertyName)) {
                     return property;
@@ -274,6 +272,17 @@ public class Model {
      */
     public boolean isCollection() {
         return false;
+    }
+
+    /**
+     * <p>
+     * Retrieve codec for this model.
+     * </p>
+     * 
+     * @return
+     */
+    public Codec getCodec() {
+        return codec != null ? codec : I.find(Codec.class, type);
     }
 
     /**
@@ -319,7 +328,7 @@ public class Model {
      */
     public void walk(Object object, PropertyWalker walker) {
         // check whether this model is attribute or not.
-        if (walker != null && codec == null) {
+        if (walker != null && getCodec() == null) {
             for (Property property : properties) {
                 Object value = get(object, property);
 

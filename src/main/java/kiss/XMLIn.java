@@ -87,7 +87,7 @@ class XMLIn extends XMLFilterImpl {
             Object object = null;
 
             // check attribute model
-            Codec codec = property.model.codec;
+            Codec codec = property.model.getCodec();
 
             if (codec != null) {
                 String value = attributes.getValue("value");
@@ -133,7 +133,7 @@ class XMLIn extends XMLFilterImpl {
                 // ignore deprecated property
                 if (property != null) {
                     // restore a property value form an attribute value
-                    Codec codec = property.model.codec;
+                    Codec codec = property.model.getCodec();
 
                     if (codec != null) {
                         state.model.set(state.object, property, codec.decode(attributes.getValue(i)));

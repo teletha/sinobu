@@ -1249,6 +1249,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                     // Parse as JSON.
                     return read(Model.load(output.getClass()), output, script.eval(reader));
                 } catch (Exception se) {
+                    se.addSuppressed(e);
                     throw quiet(se);
                 }
             } else {
@@ -1333,8 +1334,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             return (M) input;
         }
 
-        Codec inputCodec = inputModel.codec;
-        Codec<M> outputCodec = outputModel.codec;
+        Codec inputCodec = inputModel.getCodec();
+        Codec<M> outputCodec = outputModel.getCodec();
 
         // check whether each model are attribute model or not
         if (inputCodec == null && outputCodec == null) {
