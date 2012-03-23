@@ -35,6 +35,20 @@ public class ElementFindTest {
     }
 
     @Test
+    public void typeWithDot() throws Exception {
+        String xml = "<m><E.E/></m>";
+
+        assert $(xml).find("E\\.E").size() == 1;
+    }
+
+    @Test
+    public void typeWithHyphen() throws Exception {
+        String xml = "<m><E-E/></m>";
+
+        assert $(xml).find("E\\-E").size() == 1;
+    }
+
+    @Test
     public void clazz() throws Exception {
         String xml = "<m><e class='C'/><e class='none'/></m>";
 
