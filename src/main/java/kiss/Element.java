@@ -49,7 +49,7 @@ public class Element implements Iterable<Element> {
      * ([>~+\-, ]*)?((?:(?:\w+|\*)\|)?(?:\w+|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
      */
-    private static final Pattern SELECTOR = Pattern.compile("([>~+\\-, ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+|\\*))?(?:#(\\w+))?((?:\\.\\w+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile("([>~+\\-, ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+(?:\\\\.\\w+)?|\\*))?(?:#(\\w+))?((?:\\.\\w+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -60,6 +60,7 @@ public class Element implements Iterable<Element> {
     /** The xpath evaluator. */
     private static final XPath xpath;
 
+    /** The pretty serializer. */
     private static final LSSerializer serializer;
 
     // initialization
@@ -714,7 +715,7 @@ public class Element implements Iterable<Element> {
             if (match == null || match.equals("*")) {
                 xpath.append("*");
             } else {
-                xpath.append("*[name()='").append(match.replace('|', ':')).append("']");
+                xpath.append("*[name()='").append(match.replace('|', ':').replaceAll("\\\\", "")).append("']");
             }
 
             if (suffix != null) {
