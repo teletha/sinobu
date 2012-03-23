@@ -36,9 +36,9 @@ public class ElementFindTest {
 
     @Test
     public void typeWithDot() throws Exception {
-        String xml = "<m><E.E/></m>";
+        String xml = "<m><E.E.E/></m>";
 
-        assert $(xml).find("E\\.E").size() == 1;
+        assert $(xml).find("E\\.E\\.E").size() == 1;
     }
 
     @Test
