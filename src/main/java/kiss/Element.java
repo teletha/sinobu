@@ -376,12 +376,12 @@ public class Element implements Iterable<Element> {
      * @param value
      * @return
      */
-    public Element attr(String name, String value) {
+    public Element attr(String name, Object value) {
         for (Node node : nodes) {
             if (value == null) {
                 ((org.w3c.dom.Element) node).removeAttribute(name);
             } else {
-                ((org.w3c.dom.Element) node).setAttribute(name, value);
+                ((org.w3c.dom.Element) node).setAttribute(name, value.toString());
             }
         }
 
