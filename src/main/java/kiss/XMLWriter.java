@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
 
-
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
@@ -541,6 +540,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
             case '\'':
                 out.append("&apos;");
                 break;
+
+            case '\r':
+                out.append("&");
 
             default:
                 out.append(data[i]);
