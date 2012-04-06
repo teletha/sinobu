@@ -57,13 +57,26 @@ public class XMLTest {
     public static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */
-    private static final Path config = room.locateFile("config.xml");
+    private static final Path config = I.locate("config.xml");
 
     /** The namespace definition for xpath. */
     private static Map<String, String> namespaces = new HashMap();
 
     static {
         namespaces.put("ss", "sinobu");
+    }
+
+    @Test
+    public void linefeed() throws Exception {
+        StringList list = I.make(StringList.class);
+        list.add("A\r\nA");
+
+        // write
+        I.write(list, config, false);
+
+        // read
+        list = I.read(config, I.make(StringList.class));
+        assert list.get(0).equals("A\r\nA");
     }
 
     @Test
