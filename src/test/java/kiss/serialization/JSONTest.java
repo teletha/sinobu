@@ -22,6 +22,25 @@ import org.junit.Test;
 public class JSONTest {
 
     @Test
+    public void escaped() {
+        Student student = I.make(Student.class);
+        student.setAge(15);
+        student.setFirstName("A\r\nA\t");
+        student.setLastName("B\n\"B");
+
+        // write
+        String json = json(student);
+        assert json.equals("{\"age\":\"15\",\"firstName\":\"A\\r\\nA\\t\",\"lastName\":\"B\\n\\\"B\"}");
+
+        // read
+        student = I.read(json, I.make(Student.class));
+        assert student.getAge() == 15;
+        assert student.getFirstName().equals("A\r\nA\t");
+        assert student.getLastName().equals("B\n\"B");
+        assert student.getSchool() == null;
+    }
+
+    @Test
     public void singleProperty() {
         Student student = I.make(Student.class);
         student.setAge(15);
