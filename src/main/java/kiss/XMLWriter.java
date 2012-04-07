@@ -542,7 +542,12 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
                 break;
 
             case '\r':
-                out.append("&");
+                out.append("&#xd;");
+                break;
+
+            case '\n':
+                out.append("&#xa;");
+                break;
 
             default:
                 out.append(data[i]);

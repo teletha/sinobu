@@ -159,14 +159,32 @@ class JSON implements PropertyWalker {
 
             switch (c) {
             case '"':
+                out.append("\\\"");
+                break;
+
             case '\\':
+                out.append("\\\\");
+                break;
+
             case '\b':
+                out.append("\\b");
+                break;
+
             case '\f':
+                out.append("\\f");
+                break;
+
             case '\n':
+                out.append("\\n");
+                break;
+
             case '\r':
+                out.append("\\r");
+                break;
+
             case '\t':
-                out.append('\\');
-                // pass through
+                out.append("\\t");
+                break;
 
             default:
                 out.append(c);

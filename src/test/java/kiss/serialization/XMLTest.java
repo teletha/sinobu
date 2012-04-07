@@ -57,7 +57,7 @@ public class XMLTest {
     public static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */
-    private static final Path config = I.locate("config.xml");
+    private static final Path config = room.locateFile("config.xml");
 
     /** The namespace definition for xpath. */
     private static Map<String, String> namespaces = new HashMap();
