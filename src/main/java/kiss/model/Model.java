@@ -223,6 +223,7 @@ public class Model {
                 if (((STATIC | PRIVATE | NATIVE | FINAL) & field.getModifiers()) != 0) {
                     continue;
                 }
+                field.setAccessible(true);
 
                 Property property = new Property(load(field.getGenericType(), type), field.getName());
                 property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
