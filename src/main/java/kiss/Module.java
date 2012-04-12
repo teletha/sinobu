@@ -65,8 +65,10 @@ class Module extends URLClassLoader {
     /** The root of this module. */
     final Path path;
 
+    final String pattern;
+
     /** The class scanner. */
-    private ModuleVisitor visitor;
+    ModuleVisitor visitor;
 
     /** The current processing method visitor. */
     private MethodVisitor mv;
@@ -78,7 +80,7 @@ class Module extends URLClassLoader {
      * 
      * @param path A module path as classpath, A <code>null</code> is not accepted.
      */
-    Module(Path path) throws MalformedURLException {
+    Module(Path path, String pattern) throws MalformedURLException {
         super(new URL[] {path.toUri().toURL()}, I.$loader);
 
         // we don't need to check null because this is internal class
@@ -87,7 +89,8 @@ class Module extends URLClassLoader {
 
         // Store original module path for unloading.
         this.path = path;
-        this.visitor = new ModuleVisitor(this);
+        this.pattern = pattern;
+        this.visitor = new ModuleVisitor(this, pattern);
     }
 
     /**
@@ -187,12 +190,6 @@ class Module extends URLClassLoader {
 
         // lazy evaluation
         Class<?> clazz = loadClass((String) info[0]);
-
-        // stealth class must be hidden from module
-        if (ClassUtil.getMiniConstructor(clazz) == null) {
-            return !visitor.infos.remove(info); // test method requires false for stealth classs
-        }
-
         Set<Class> set = ClassUtil.getTypes(clazz);
         Annotation[] annotations = clazz.getAnnotations();
 

@@ -9,23 +9,21 @@
  */
 package kiss;
 
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kiss.module.external.ExtendedClass1;
+import kiss.sample.MarkerInterface1;
+import kiss.sample.bean.Person;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
-
-
-import kiss.module.external.ExtendedClass1;
-import kiss.sample.MarkerInterface1;
-import kiss.sample.bean.Person;
 
 /**
  * @version 2011/03/22 16:36:07
@@ -58,44 +56,44 @@ public class ModulesTest {
     @Test
     public void loadModule() {
         assert 0 == modules.modules.size();
-        modules.load(module1.path);
+        modules.load(module1.path, "");
         assert 1 == modules.modules.size();
     }
 
     @Test
     public void loadJarModule() {
         assert 0 == modules.modules.size();
-        modules.load(module4.path);
+        modules.load(module4.path, "");
         assert 1 == modules.modules.size();
     }
 
     @Test
     public void loadMultipleModules() {
         assert 0 == modules.modules.size();
-        modules.load(module1.path);
+        modules.load(module1.path, "");
         assert 1 == modules.modules.size();
-        modules.load(module2.path);
+        modules.load(module2.path, "");
         assert 2 == modules.modules.size();
     }
 
     @Test
     public void loadNull() {
         assert 0 == modules.modules.size();
-        modules.load((Path) null);
+        modules.load((Path) null, "");
         assert 0 == modules.modules.size();
     }
 
     @Test
     public void loadNotExistModule() {
         assert 0 == modules.modules.size();
-        modules.load(Paths.get("not-exist"));
+        modules.load(Paths.get("not-exist"), "");
         assert 0 == modules.modules.size();
     }
 
     @Test
     public void loadDuplicateClass() {
         assert 0 == modules.modules.size();
-        modules.load(module2.path);
+        modules.load(module2.path, "");
         assert 1 == modules.modules.size();
 
         Module first = modules.modules.get(0);
@@ -109,7 +107,7 @@ public class ModulesTest {
         }
 
         // load another module which content is same
-        modules.load(module3.path);
+        modules.load(module3.path, "");
         Module second = modules.modules.get(1);
         List<Class<MarkerInterface1>> providers2 = second.find(MarkerInterface1.class, false);
         assert 3 == providers2.size();
@@ -135,11 +133,11 @@ public class ModulesTest {
     @Test
     public void reload() {
         assert 0 == modules.modules.size();
-        modules.load(module1.path);
+        modules.load(module1.path, "");
         assert 1 == modules.modules.size();
-        modules.load(module1.path);
+        modules.load(module1.path, "");
         assert 1 == modules.modules.size();
-        modules.load(module1.path);
+        modules.load(module1.path, "");
         assert 1 == modules.modules.size();
     }
 
@@ -153,11 +151,11 @@ public class ModulesTest {
             assert 0 == modules.modules.size();
 
             // as relative
-            modules.load(relativeModule);
+            modules.load(relativeModule, "");
             assert 1 == modules.modules.size();
 
             // as absolute
-            modules.load(relativeModule.toAbsolutePath());
+            modules.load(relativeModule.toAbsolutePath(), "");
             assert 1 == modules.modules.size();
         } finally {
             I.delete(relativeModule);
@@ -167,7 +165,7 @@ public class ModulesTest {
     @Test
     public void unloadModule() {
         assert 0 == modules.modules.size();
-        modules.load(module1.path);
+        modules.load(module1.path, "");
         assert 1 == modules.modules.size();
         modules.unload(module1.path);
         assert 0 == modules.modules.size();
@@ -176,7 +174,7 @@ public class ModulesTest {
     @Test
     public void unloadJarModule() {
         assert 0 == modules.modules.size();
-        modules.load(module4.path);
+        modules.load(module4.path, "");
         assert 1 == modules.modules.size();
         modules.unload(module4.path);
         assert 0 == modules.modules.size();
