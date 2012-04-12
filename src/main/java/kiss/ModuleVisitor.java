@@ -45,7 +45,7 @@ class ModuleVisitor extends ClassVisitor {
     /**
      * 
      */
-    ModuleVisitor(Module module) {
+    ModuleVisitor(Module module, String pattern) {
         super(ASM4);
 
         Path base = module.path;
@@ -60,7 +60,7 @@ class ModuleVisitor extends ClassVisitor {
             }
 
             // Then, we can scan module transparently.
-            for (Path file : I.walk(base, "**.class")) {
+            for (Path file : I.walk(base, pattern.concat("**.class"))) {
                 // exclude non-class file
                 InputStream input = Files.newInputStream(file);
                 String name = base.relativize(file).toString();

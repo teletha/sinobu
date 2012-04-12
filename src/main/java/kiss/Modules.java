@@ -109,19 +109,19 @@ class Modules implements ClassListener {
      * 
      * @param path A module path to load. Directory or archive path (like Jar) can be accepted.
      */
-    ClassLoader load(Path path) {
+    ClassLoader load(Path path, String pattern) {
         // check module file
         if (path != null && Files.exists(path)) {
             try {
                 // check duplication
                 for (Module module : modules) {
-                    if (Files.isSameFile(path, module.path)) {
+                    if (Files.isSameFile(path, module.path) && pattern.startsWith(module.pattern)) {
                         return module;
                     }
                 }
 
                 // build module
-                Module module = new Module(path);
+                Module module = new Module(path, pattern);
 
                 // Load module for the specified directory. The new module has high priority than
                 // previous.

@@ -9,17 +9,15 @@
  */
 package kiss;
 
+import kiss.sample.MarkerInterface1;
+import kiss.sample.MarkerInterface2;
+import kiss.sample.RuntimeAnnotation1;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
-
-
-import kiss.sample.MarkerInterface1;
-import kiss.sample.MarkerInterface2;
-import kiss.sample.RuntimeAnnotation1;
 
 /**
  * @version 2011/04/09 7:09:57
@@ -47,7 +45,7 @@ public class ClassListenerTest {
         modules.load(Interface1Listener.class);
 
         // load module
-        modules.load(module.path);
+        modules.load(module.path, "");
 
         listener.assertClass(3, 0);
 
@@ -65,7 +63,7 @@ public class ClassListenerTest {
         modules.load(Interface2Listener.class);
 
         // load module
-        modules.load(module.path);
+        modules.load(module.path, "");
 
         listener.assertClass(1, 0);
 
@@ -83,7 +81,7 @@ public class ClassListenerTest {
         modules.load(AnnotationListener.class);
 
         // load module
-        modules.load(module.path);
+        modules.load(module.path, "");
 
         listener.assertClass(3, 0);
 
@@ -101,7 +99,7 @@ public class ClassListenerTest {
         modules.load(ClassLoadListener.class);
 
         // load module
-        modules.load(module.path);
+        modules.load(module.path, "");
 
         listener.assertClass(10, 0);
 
