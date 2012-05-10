@@ -21,13 +21,13 @@ import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.junit.Test;
-
 import kiss.I;
 import kiss.sample.bean.GenericBoundedBean;
 import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.Student;
+
+import org.junit.Test;
 
 /**
  * @version 2011/03/22 17:04:38
