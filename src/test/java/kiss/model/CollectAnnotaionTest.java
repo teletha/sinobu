@@ -10,44 +10,96 @@
 package kiss.model;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import kiss.Table;
 
 import org.junit.Test;
 
 /**
- * @version 2012/05/10 11:17:18
+ * @version 2012/05/11 15:50:56
  */
 public class CollectAnnotaionTest {
 
     @Test
     public void collect() throws Exception {
         Table<Method, Annotation> table = ClassUtil.getAnnotations(Root.class);
-        assert table.size() == 1;
-        assert table.values().iterator().next().size() == 1;
+        assert table.size() == 2;
+
+        List<Annotation> annotations = filter("marked", table);
+        assert annotations.size() == 1;
+        assert annotations.get(0) instanceof Marker;
+
+        Marker marker = (Marker) annotations.get(0);
+        assert marker.value().equals("root");
     }
 
     @Test
-    public void testname() throws Exception {
+    public void overrideMethodHasSameAnnotation() throws Exception {
         Table<Method, Annotation> table = ClassUtil.getAnnotations(Child.class);
-        assert table.size() == 1;
+        assert table.size() == 2;
 
-        for (List<Annotation> annotations : table.values()) {
-            for (Annotation annotation : annotations) {
-                System.out.println(annotation);
+        List<Annotation> annotations = filter("marked", table);
+        assert annotations.size() == 1;
+        assert annotations.get(0) instanceof Marker;
+
+        Marker marker = (Marker) annotations.get(0);
+        assert marker.value().equals("child");
+    }
+
+    @Test
+    public void privateMethodShouldntInheritFromSameSignatureMethod() throws Exception {
+        Table<Method, Annotation> table = ClassUtil.getAnnotations(Child.class);
+        assert table.size() == 2;
+
+        List<Annotation> annotations = filter("collectable", table);
+        assert annotations.size() == 1;
+        assert annotations.get(0) instanceof AnotherMarker;
+
+        AnotherMarker another = (AnotherMarker) annotations.get(0);
+        assert another.value().equals("private in child");
+    }
+
+    /**
+     * <p>
+     * Filter by method name.
+     * </p>
+     * 
+     * @param methodName
+     * @param table
+     * @return
+     */
+    private List<Annotation> filter(String methodName, Table<Method, Annotation> table) {
+        for (Entry<Method, List<Annotation>> entry : table.entrySet()) {
+            if (methodName.equals(entry.getKey().getName())) {
+                return entry.getValue();
             }
         }
+        return Collections.EMPTY_LIST;
     }
 
     /**
      * @version 2012/05/10 11:18:04
      */
     @Retention(RetentionPolicy.RUNTIME)
+    @Inherited
     private static @interface Marker {
+
+        String value();
+    }
+
+    /**
+     * @version 2012/05/10 11:18:04
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Inherited
+    private static @interface AnotherMarker {
 
         String value();
     }
@@ -58,7 +110,13 @@ public class CollectAnnotaionTest {
     private static class Root {
 
         @Marker("root")
+        @SuppressWarnings("unused")
         protected void marked() {
+        }
+
+        @Marker("private in root")
+        @SuppressWarnings("unused")
+        private void collectable() {
         }
     }
 
@@ -67,9 +125,15 @@ public class CollectAnnotaionTest {
      */
     private static class Child extends Root {
 
-        @Marker("root")
+        @Marker("child")
         @Override
         protected void marked() {
+        }
+
+        @AnotherMarker("private in child")
+        @SuppressWarnings("unused")
+        private void collectable() {
+            // This is not override method, but parent class has same signature method.
         }
     }
 }

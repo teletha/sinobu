@@ -12,6 +12,7 @@ package kiss.model;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
@@ -112,7 +113,8 @@ public final class ClassUtil {
         for (Class type : ClassUtil.getTypes(clazz)) {
             for (Method method : type.getDeclaredMethods()) {
                 // exclude the method which is created by compiler
-                if (method.isBridge() || method.isSynthetic()) {
+                // exclude the private method which is not declared in the specified class
+                if (method.isBridge() || method.isSynthetic() || (((method.getModifiers() & Modifier.PRIVATE) != 0) && method.getDeclaringClass() != clazz)) {
                     continue;
                 }
 
@@ -127,7 +129,12 @@ public final class ClassUtil {
                         }
                     }
 
-                    for (Annotation annotation : annotations) {
+                    add: for (Annotation annotation : annotations) {
+                        for (Annotation item : table.get(method)) {
+                            if (item.annotationType() == annotation.annotationType()) {
+                                continue add;
+                            }
+                        }
                         table.push(method, annotation);
                     }
                 }
