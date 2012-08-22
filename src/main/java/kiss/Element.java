@@ -567,7 +567,7 @@ public class Element implements Iterable<Element> {
         for (Node node : nodes) {
             builder.append(serializer.writeToString(node)).append("\r\n");
         }
-        return builder.toString();
+        return builder.toString().trim();
     }
 
     /**
