@@ -10,6 +10,7 @@
 package kiss;
 
 import static java.lang.reflect.Modifier.*;
+import static org.objectweb.asm.Opcodes.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,6 +38,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.ProtectionDomain;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +50,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -65,6 +69,13 @@ import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
 
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -285,6 +296,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /** The reusable thread pool for Sinobu. */
     private static final ExecutorService threads = Executors.newCachedThreadPool(new I());
 
+    /** The accessible internal method for class loading. */
+    private static final Method find;
+
+    /** The accessible internal method for class loading. */
+    private static final Method define;
+
     // initialization
     static {
         // built-in lifestyles
@@ -333,6 +350,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // Create a lock after creating the temporary directory so there is no race condition
             // with another application trying to clean our temporary directory.
             new RandomAccessFile(temporary.resolve("lock").toFile(), "rw").getChannel().tryLock();
+
+            // reflect class loading related methods
+            find = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
+            find.setAccessible(true);
+            define = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
+            define.setAccessible(true);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -810,12 +833,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             // Enhance the actual model class if needed.
             if (!interceptables.isEmpty()) {
-                ClassLoader loader = actualClass.getClassLoader();
-
-                if (!(loader instanceof Module)) {
-                    loader = I.$loader;
-                }
-                actualClass = ((Module) loader).define(actualClass, interceptables);
+                actualClass = define(actualClass, interceptables);
             }
         }
 
@@ -865,6 +883,325 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             return lifestyles.get(modelClass);
         } finally {
             dependency.pollLast();
+        }
+    }
+
+    /**
+     * Returns the automatic generated class which implements or extends the given model.
+     * 
+     * @param model A class information of the model.
+     * @param trace If trace is <code>1</code>, the generated code will be traceable code for mock
+     *            object, otherwise for normal bean object.
+     * @return A generated {@link Class} object.
+     */
+    private static synchronized Class define(Class model, Table interceptables) {
+        // Compute fully qualified class name for the generated class.
+        // The coder class name is prefix to distinguish enhancer type by a name and make core
+        // package classes (e.g. swing components) enhance.
+        // The statement "String name = coder.getName() + model.type.getName();" produces larger
+        // byte code and more objects. To reduce them, we should use the method "concat".
+        String name = model.getName().concat("+");
+
+        if (name.startsWith("java.")) {
+            name = "$".concat(name);
+        }
+
+        ClassLoader loader = model.getClassLoader();
+
+        if (loader == null) {
+            loader = $loader;
+        }
+
+        // find class from cache of class loader
+        try {
+            Class clazz = (Class) find.invoke(loader, name);
+
+            if (clazz == null) {
+                // start writing byte code
+                ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+
+                // write code actually
+                write(writer, model, name.replace('.', '/'), interceptables);
+
+                // retrieve byte code
+                byte[] bytes = writer.toByteArray();
+
+                // define class
+                clazz = (Class) define.invoke(loader, name, bytes, 0, bytes.length, model.getProtectionDomain());
+            }
+
+            // API definition
+            return clazz;
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Generate a byte code which represents the specified class name and implements the specified
+     * model.
+     * </p>
+     */
+    private static void write(ClassVisitor cv, Class model, String className, Table<Method, Annotation> interceptables) {
+        Type type = Type.getType(model);
+
+        // ================================================
+        // START CODING
+        // ================================================
+        // The following steps is an outline flow.
+        // 1. define class
+        //
+        // 2. define default constructor
+        // The generated class must have only the default constructor which has no parameters. To
+        // resolve dependencies, we provide the solution named as 'builtin construction'. The
+        // constructor must call the parent constructor, so we prepare arguments in that step by
+        // using bytecode enhancement.
+        //
+        // 3. define properties
+        //
+        // 4. implement accessible interfaces
+        //
+        // 5 fiinish
+        //
+        // ================================================
+
+        // -----------------------------------------------------------------------------------
+        // Define Class
+        // -----------------------------------------------------------------------------------
+        // public class GeneratedClass extends SuperClass implements Inteface1, Interface2....
+        cv.visit(V1_7, ACC_PUBLIC | ACC_SUPER | ACC_SYNTHETIC, className, null, type.getInternalName(), null);
+
+        // don't use visitSource method because this generated source is unknown
+        // visitSource(className, null);
+
+        // -----------------------------------------------------------------------------------
+        // Define Constructor
+        // -----------------------------------------------------------------------------------
+        // decide constructor
+        Constructor constructor = ClassUtil.getMiniConstructor(model);
+        String descriptor = Type.getConstructorDescriptor(constructor);
+
+        // public GeneratedClass( param1, param2 ) { super(param1, param2); ... }
+        MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "<init>", descriptor, null, null);
+        mv.visitCode();
+        for (int i = 0; i < constructor.getParameterTypes().length + 1; i++) {
+            mv.visitVarInsn(ALOAD, i); // allocate 'this' and parameter variables
+        }
+        mv.visitMethodInsn(INVOKESPECIAL, type.getInternalName(), "<init>", descriptor);
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0); // compute by ASM
+        mv.visitEnd();
+
+        // -----------------------------------------------------------------------------------
+        // Define Annotation Pool
+        // -----------------------------------------------------------------------------------
+        cv.visitField(ACC_PRIVATE + ACC_STATIC, "pool", "Ljava/util/Map;", null, null).visitEnd();
+
+        Label end = new Label();
+        Label loop = new Label();
+
+        mv = cv.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+        mv.visitCode();
+        mv.visitTypeInsn(NEW, "java/util/HashMap");
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V");
+        mv.visitFieldInsn(PUTSTATIC, className, "pool", "Ljava/util/Map;");
+        mv.visitLdcInsn(Type.getType("L" + className + ";"));
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;");
+        mv.visitInsn(DUP);
+        mv.visitVarInsn(ASTORE, 3);
+        mv.visitInsn(ARRAYLENGTH);
+        mv.visitVarInsn(ISTORE, 2);
+        mv.visitInsn(ICONST_0);
+        mv.visitVarInsn(ISTORE, 1);
+        mv.visitJumpInsn(GOTO, end);
+        mv.visitLabel(loop);
+        mv.visitVarInsn(ALOAD, 3);
+        mv.visitVarInsn(ILOAD, 1);
+        mv.visitInsn(AALOAD);
+        mv.visitVarInsn(ASTORE, 0);
+        mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getName", "()Ljava/lang/String;");
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;");
+        mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;");
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;");
+        mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+        mv.visitInsn(POP);
+        mv.visitIincInsn(1, 1); // increment counter
+        mv.visitLabel(end);
+        mv.visitVarInsn(ILOAD, 1);
+        mv.visitVarInsn(ILOAD, 2);
+        mv.visitJumpInsn(IF_ICMPLT, loop);
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(5, 4);
+        mv.visitEnd();
+
+        // -----------------------------------------------------------------------------------
+        // Define Interceptable Methods
+        // -----------------------------------------------------------------------------------
+        for (Entry<Method, List<Annotation>> entry : interceptables.entrySet()) {
+            Method method = entry.getKey();
+
+            // exclude the method which modifier is final, static, private or native
+            if (((STATIC | PRIVATE | NATIVE | FINAL) & method.getModifiers()) != 0) {
+                continue;
+            }
+
+            Type methodType = Type.getType(method);
+
+            mv = cv.visitMethod(ACC_PUBLIC, method.getName(), methodType.getDescriptor(), null, null);
+
+            // Write annotations
+            for (Annotation annotation : entry.getValue()) {
+                annotate(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
+            }
+
+            // Write code
+            mv.visitCode();
+
+            // Zero parameter : Method name
+            mv.visitLdcInsn(method.getName());
+
+            // First parameter : Method delegation
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
+            mv.visitLdcInsn(handle);
+
+            // Second parameter : Callee instance
+            mv.visitVarInsn(ALOAD, 0);
+
+            // Third parameter : Method parameter delegation
+            Class[] params = method.getParameterTypes();
+
+            mv.visitIntInsn(BIPUSH, params.length);
+            mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+
+            // objects[0] ~ [n] are method parameter
+            for (int i = 0; i < params.length; i++) {
+                mv.visitInsn(DUP);
+                mv.visitIntInsn(BIPUSH, i);
+                mv.visitVarInsn(Type.getType(params[i]).getOpcode(ILOAD), i + 1);
+                wrap(params[i], mv);
+                mv.visitInsn(AASTORE);
+            }
+
+            // Fourth parameter : Pass annotation information
+            mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
+            mv.visitLdcInsn(method.getName().concat(Arrays.toString(method.getParameterTypes())));
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+            mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
+
+            // Invoke interceptor method
+            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;");
+            cast(method.getReturnType(), mv);
+            mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
+            mv.visitMaxs(0, 0); // compute by ASM
+            mv.visitEnd();
+        }
+
+        // -----------------------------------------------------------------------------------
+        // Finish Writing Source Code
+        // -----------------------------------------------------------------------------------
+        cv.visitEnd();
+    }
+
+    /**
+     * <p>
+     * Helper method to write annotation code.
+     * </p>
+     * 
+     * @param annotation An annotation you want to write.
+     * @param visitor An annotation target.
+     */
+    private static void annotate(Annotation annotation, AnnotationVisitor visitor) {
+        // For access non-public annotation class, use "getDeclaredMethods" instead of "getMethods".
+        for (Method method : annotation.annotationType().getDeclaredMethods()) {
+            method.setAccessible(true);
+
+            try {
+                Class clazz = method.getReturnType();
+                Object value = method.invoke(annotation);
+
+                if (clazz == Class.class) {
+                    // Class
+                    visitor.visit(method.getName(), Type.getType((Class) value));
+                } else if (clazz.isEnum()) {
+                    // Enum
+                    visitor.visitEnum(method.getName(), Type.getDescriptor(clazz), ((Enum) value).name());
+                } else if (clazz.isAnnotation()) {
+                    // Annotation
+                    annotate((Annotation) value, visitor.visitAnnotation(method.getName(), Type.getDescriptor(clazz)));
+                } else if (clazz.isArray()) {
+                    // Array
+                    clazz = clazz.getComponentType();
+                    AnnotationVisitor array = visitor.visitArray(method.getName());
+
+                    for (int i = 0; i < Array.getLength(value); i++) {
+                        if (clazz.isAnnotation()) {
+                            // Annotation Array
+                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
+                        } else if (clazz == Class.class) {
+                            // Class Array
+                            array.visit(null, Type.getType((Class) Array.get(value, i)));
+                        } else if (clazz.isEnum()) {
+                            // Enum Array
+                            array.visitEnum(null, Type.getDescriptor(clazz), ((Enum) Array.get(value, i)).name());
+                        } else {
+                            // Other Type Array
+                            array.visit(null, Array.get(value, i));
+                        }
+                    }
+                    array.visitEnd();
+                } else {
+                    // Other Type
+                    visitor.visit(method.getName(), value);
+                }
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }
+        visitor.visitEnd();
+    }
+
+    /**
+     * Helper method to write cast code. This cast mostly means down cast. (e.g. Object -> String,
+     * Object -> int)
+     * 
+     * @param clazz A class to cast.
+     * @return A class type to be casted.
+     */
+    private static Type cast(Class clazz, MethodVisitor mv) {
+        Type type = Type.getType(clazz);
+
+        if (clazz.isPrimitive()) {
+            if (clazz != Void.TYPE) {
+                Type wrapper = Type.getType(ClassUtil.wrap(clazz));
+                mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
+                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor());
+            }
+        } else {
+            mv.visitTypeInsn(CHECKCAST, type.getInternalName());
+        }
+
+        // API definition
+        return type;
+    }
+
+    /**
+     * Helper method to write cast code. This cast mostly means up cast. (e.g. String -> Object, int
+     * -> Integer)
+     * 
+     * @param clazz A primitive class type to wrap.
+     */
+    private static void wrap(Class clazz, MethodVisitor mv) {
+        if (clazz.isPrimitive() && clazz != Void.TYPE) {
+            Type wrapper = Type.getType(ClassUtil.wrap(clazz));
+            mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type.getType(clazz)
+                    .getDescriptor() + ")" + wrapper.getDescriptor());
         }
     }
 
