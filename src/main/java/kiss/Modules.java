@@ -21,7 +21,7 @@ import kiss.model.ClassUtil;
 import kiss.model.Model;
 
 /**
- * @version 2011/11/19 19:05:38
+ * @version 2012/09/11 14:31:34
  */
 @Manageable(lifestyle = Singleton.class)
 class Modules implements ClassListener {
@@ -116,7 +116,7 @@ class Modules implements ClassListener {
                 // check duplication
                 for (Module module : modules) {
                     if (Files.isSameFile(path, module.path) && pattern.startsWith(module.pattern)) {
-                        return module;
+                        return module.loader;
                     }
                 }
 
@@ -133,7 +133,7 @@ class Modules implements ClassListener {
                         ((ClassListener) types[0]).load(provider);
                     }
                 }
-                return module;
+                return module.loader;
             } catch (Exception e) {
                 throw I.quiet(e);
             }
@@ -174,7 +174,7 @@ class Modules implements ClassListener {
                                 Iterator<Class> iterator = aware.keySet().iterator();
 
                                 while (iterator.hasNext()) {
-                                    if (iterator.next().getClassLoader() == module) {
+                                    if (iterator.next().getClassLoader() == module.loader) {
                                         iterator.remove();
                                     }
                                 }

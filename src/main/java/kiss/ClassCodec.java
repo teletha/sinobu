@@ -32,7 +32,7 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
     public Class decode(String value) {
         for (Module module : I.make(Modules.class).modules) {
             try {
-                return module.loadClass(value);
+                return module.loader.loadClass(value);
             } catch (ClassNotFoundException e) {
                 // continue
             }

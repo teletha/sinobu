@@ -9,18 +9,34 @@
  */
 package kiss;
 
+import static org.objectweb.asm.ClassReader.*;
+import static org.objectweb.asm.Opcodes.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import kiss.model.ClassUtil;
+
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 /**
  * <h2>Module System</h2>
@@ -43,17 +59,27 @@ import kiss.model.ClassUtil;
  * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
  * </p>
  * 
- * @version 2011/11/19 19:06:03
+ * @version 2012/09/11 14:31:17
  */
-class Module extends URLClassLoader {
+class Module extends ClassVisitor {
+
+    /** The dirty process management. */
+    private static final IllegalStateException STOP = new IllegalStateException();
 
     /** The root of this module. */
     final Path path;
 
+    /** The class pattern which this module loads. */
     final String pattern;
 
-    /** The class scanner. */
-    ModuleVisitor visitor;
+    /** The module classloader. */
+    final ClassLoader loader;
+
+    /** The list of service provider classes (by class and interface). [java.lang.String, int[]] */
+    private List<Object[]> infos = new CopyOnWriteArrayList();
+
+    /** The expected internal form fully qualified class name. */
+    private String fqcn;
 
     /**
      * <p>
@@ -63,8 +89,7 @@ class Module extends URLClassLoader {
      * @param path A module path as classpath, A <code>null</code> is not accepted.
      */
     Module(Path path, String pattern) throws MalformedURLException {
-        super(new URL[] {path.toUri().toURL()}, I.$loader);
-
+        super(ASM4);
         // we don't need to check null because this is internal class
         // if (moduleFile == null) {
         // }
@@ -72,7 +97,52 @@ class Module extends URLClassLoader {
         // Store original module path for unloading.
         this.path = path;
         this.pattern = pattern;
-        this.visitor = new ModuleVisitor(this, pattern);
+        this.loader = new URLClassLoader(new URL[] {path.toUri().toURL()}, I.$loader);
+
+        Path base = path;
+
+        // start scanning class files
+        try {
+            // At first, we must scan the specified directory or archive. If the module file is
+            // archive, Sinobu automatically try to switch to other file system (e.g.
+            // ZipFileSystem).
+            if (Files.isRegularFile(path)) {
+                base = FileSystems.newFileSystem(base, loader).getPath("/");
+            }
+
+            // Then, we can scan module transparently.
+            for (Path file : I.walk(base, pattern.concat("**.class"))) {
+                // exclude non-class file
+                InputStream input = Files.newInputStream(file);
+                String name = base.relativize(file).toString();
+
+                // Don't write the following because "fqnc" field requires actual class name. If a
+                // module returns a non-class file (e.g. properties, xml, txt) at the end, there is
+                // a possibility that the module can't distinguish between system and Sinobu
+                // module correctly.
+                //
+                // this.fqcn = name;
+                //
+                // compute fully qualified class name
+                this.fqcn = name.substring(0, name.length() - 6).replace(File.separatorChar, '.').replace('/', '.');
+
+                // try to read class file and check it
+                try {
+                    // static field reference will be inlined by compiler, so we should pass all
+                    // flags to ClassReader (it doesn't increase byte code size)
+                    new ClassReader(input).accept(this, SKIP_CODE | SKIP_DEBUG | SKIP_FRAMES);
+                } catch (FileNotFoundException e) {
+                    // this exception means that the given class name may indicate some external
+                    // extension class or interface, so we can ignore it
+                } catch (IllegalStateException e) {
+                    // scanning was stoped normally
+                } finally {
+                    I.quiet(input);
+                }
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -97,10 +167,10 @@ class Module extends URLClassLoader {
         List list = new ArrayList(4);
 
         // try to find all service providers
-        for (Object[] info : visitor.infos) {
+        for (Object[] info : infos) {
             try {
                 if (test(hash, info)) {
-                    list.add(loadClass((String) info[0]));
+                    list.add(loader.loadClass((String) info[0]));
 
                     if (single) {
                         return list;
@@ -130,7 +200,7 @@ class Module extends URLClassLoader {
         }
 
         // lazy evaluation
-        Class<?> clazz = loadClass((String) info[0]);
+        Class<?> clazz = loader.loadClass((String) info[0]);
         Set<Class> set = ClassUtil.getTypes(clazz);
         Annotation[] annotations = clazz.getAnnotations();
 
@@ -154,5 +224,106 @@ class Module extends URLClassLoader {
 
         // API definition
         return test(hash, info);
+    }
+
+    /**
+     * @see org.objectweb.asm.ClassAdapter#visit(int, int, java.lang.String, java.lang.String,
+     *      java.lang.String, java.lang.String[])
+     */
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        // exclude a class file which is in invalid location
+        if (!name.equals(fqcn.replace('.', '/'))) {
+            throw STOP;
+        }
+
+        // must be public class (annotation is classified as interface)
+        // must be non-abstract
+        // must be non-enum
+        // must be non-deprecated
+        if ((ACC_SUPER & access) == 0 || ((ACC_ABSTRACT | ACC_ENUM | ACC_DEPRECATED) & access) != 0) {
+            throw STOP;
+        }
+
+        // verify super class
+        if (verify(superName)) {
+            infos.add(new Object[] {fqcn, null});
+
+            // this class may be extention point, we can stop scanning
+            throw STOP;
+        }
+
+        // verify interfaces
+        for (String interfaceClassName : interfaces) {
+            if (verify(interfaceClassName)) {
+                infos.add(new Object[] {fqcn, null});
+
+                // this class may be extention point, we can stop scanning
+                throw STOP;
+            }
+        }
+    }
+
+    /**
+     * @see org.objectweb.asm.ClassAdapter#visitAnnotation(java.lang.String, boolean)
+     */
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        // exclude runtime invisible
+        if (visible) {
+            // verify annotation
+            if (verify(desc.substring(1, desc.length() - 1))) {
+                infos.add(new Object[] {fqcn, null});
+
+                // this class may be extention point, we can stop scanning
+                throw STOP;
+            }
+        }
+
+        // continue scan process
+        return null;
+    }
+
+    /**
+     * @see org.objectweb.asm.ClassAdapter#visitField(int, java.lang.String, java.lang.String,
+     *      java.lang.String, java.lang.Object)
+     */
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        // all needed information was scanned, stop parsing
+        throw STOP;
+    }
+
+    /**
+     * @see org.objectweb.asm.ClassAdapter#visitMethod(int, java.lang.String, java.lang.String,
+     *      java.lang.String, java.lang.String[])
+     */
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        // all needed information was scanned, stop parsing
+        throw STOP;
+    }
+
+    /**
+     * @see org.objectweb.asm.ClassAdapter#visitInnerClass(java.lang.String, java.lang.String,
+     *      java.lang.String, int)
+     */
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        // all needed information was scanned, stop parsing
+        throw STOP;
+    }
+
+    /**
+     * Helper method to check whether the given class is non system class or not.
+     * 
+     * @param className A class name.
+     * @return A result.
+     */
+    private static final boolean verify(String className) {
+        if (className.startsWith("java")) {
+            char c = className.charAt(4);
+            return c != '/' && (c != 'x' || className.charAt(5) != '/');
+        }
+
+        if (className.startsWith("org/w3c/") || className.startsWith("org/xml/")) {
+            return false;
+        }
+        return true;
     }
 }

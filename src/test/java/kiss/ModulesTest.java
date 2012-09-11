@@ -103,7 +103,7 @@ public class ModulesTest {
         // assert class loader
         // all service providers should been loaded by first module
         for (Class provider : providers1) {
-            assert first == provider.getClassLoader();
+            assert first.loader == provider.getClassLoader();
         }
 
         // load another module which content is same
@@ -115,7 +115,7 @@ public class ModulesTest {
         // assert class loader
         // all service providers should been loaded by first module
         for (Class provider : providers2) {
-            assert first == provider.getClassLoader();
+            assert first.loader == provider.getClassLoader();
         }
 
         // unload first module
@@ -126,7 +126,7 @@ public class ModulesTest {
         // assert class loader
         // all service providers should been loaded by second module
         for (Class provider : providers3) {
-            assert second == provider.getClassLoader();
+            assert second.loader == provider.getClassLoader();
         }
     }
 
