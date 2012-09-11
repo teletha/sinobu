@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import static java.lang.reflect.Modifier.*;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.io.File;
@@ -23,6 +22,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
@@ -818,7 +818,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         // model class. If the actual model class is a concreate, we can use it directly.
         Class<M> actualClass = modelClass;
 
-        if (((ABSTRACT | INTERFACE) & modifier) != 0) {
+        if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
             // TODO model provider finding strategy
             // This strategy is decided at execution phase.
             actualClass = make(Modules.class).find(modelClass);
@@ -828,7 +828,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         }
 
         // If this model is non-private or final class, we can extend it for interceptor mechanism.
-        if (((PRIVATE | FINAL) & modifier) == 0) {
+        if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
             Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
 
             // Enhance the actual model class if needed.
@@ -1048,7 +1048,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             Method method = entry.getKey();
 
             // exclude the method which modifier is final, static, private or native
-            if (((STATIC | PRIVATE | NATIVE | FINAL) & method.getModifiers()) != 0) {
+            if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method.getModifiers()) != 0) {
                 continue;
             }
 
