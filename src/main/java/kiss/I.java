@@ -1628,12 +1628,18 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                     // be passed seamlessly to Java methods expecting a Map while arrays can be
                     // passed to methods expecting a List or java.util.Collection.
                     Object value = js instanceof List ? ((List) js).get((int) id) : ((Map) js).get(id);
+                    Class type = property.model.type;
 
                     // convert value
                     if (property.isAttribute()) {
-                        value = transform(value, property.model.type);
+                        // Rhino recognizes all numeric value as Double. If we need int or long
+                        // value, we must convert it by hand.
+                        if (value instanceof Double && (type == int.class || type == long.class)) {
+                            value = ((Double) value).longValue();
+                        }
+                        value = transform(transform(value, String.class), type);
                     } else {
-                        value = read(property.model, make(property.model.type), value);
+                        value = read(property.model, make(type), value);
                     }
 
                     // assign value
