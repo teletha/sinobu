@@ -421,7 +421,7 @@ public class PathObservationTest {
         verify(file, Created);
 
         // create
-        create(child.resolve("not-match"));
+        create(descendent.resolve("not-match"));
 
         // verify events
         verifyNone();
@@ -433,9 +433,9 @@ public class PathObservationTest {
         verify(file, Modified);
 
         // create directory
-        Path dir = root.resolve("dynamic-child");
-        Files.createDirectory(dir);
-        verify(dir, Created);
+        Path dir = root.resolve("dynamic/child");
+        Files.createDirectories(dir);
+        verify(dir.getParent(), Created);
 
         // create file in created directory
         Path deep = dir.resolve("deep");
@@ -447,6 +447,35 @@ public class PathObservationTest {
 
         // verify events
         verify(child, Deleted);
+    }
+
+    @Test
+    public void patternWildcards() throws Exception {
+        Path root = room.locateDirectory("directory");
+        Path descendent = room.locateDirectory("directory/child/descendent");
+
+        // observe
+        observe(root, "**");
+
+        // create
+        Path file = root.resolve("match");
+        create(file);
+
+        // verify events
+        verify(file, Created);
+
+        // create
+        file = descendent.resolve("match");
+        create(file);
+
+        // verify events
+        verify(file, Created);
+
+        // write
+        write(file);
+
+        // verify events
+        verify(file, Modified);
     }
 
     /**
@@ -584,7 +613,7 @@ public class PathObservationTest {
             Event event = queue.poll(10, MILLISECONDS);
 
             if (event != null) {
-                throw new AssertionError("The unnecessary event is found.");
+                throw new AssertionError("The unnecessary event is found. " + event);
             }
         } catch (InterruptedException e) {
             throw I.quiet(e);

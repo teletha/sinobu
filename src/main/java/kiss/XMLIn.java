@@ -33,7 +33,6 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * 
  * @version 2010/01/12 22:54:15
  */
-@SuppressWarnings("resource")
 class XMLIn extends XMLFilterImpl {
 
     /** The root object. */

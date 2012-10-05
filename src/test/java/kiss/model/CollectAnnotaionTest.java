@@ -110,12 +110,10 @@ public class CollectAnnotaionTest {
     private static class Root {
 
         @Marker("root")
-        @SuppressWarnings("unused")
         protected void marked() {
         }
 
         @Marker("private in root")
-        @SuppressWarnings("unused")
         private void collectable() {
         }
     }
@@ -131,7 +129,6 @@ public class CollectAnnotaionTest {
         }
 
         @AnotherMarker("private in child")
-        @SuppressWarnings("unused")
         private void collectable() {
             // This is not override method, but parent class has same signature method.
         }
