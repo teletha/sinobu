@@ -39,7 +39,6 @@ import antibug.PrivateModule;
 /**
  * @version 2011/03/22 16:37:20
  */
-@SuppressWarnings("resource")
 public class ModuleTest {
 
     @Rule

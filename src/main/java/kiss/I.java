@@ -331,7 +331,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 RandomAccessFile file = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
 
                 // test whether we can acquire lock or not
-                @SuppressWarnings("resource")
                 FileLock lock = file.getChannel().tryLock();
 
                 // release lock immediately

@@ -92,7 +92,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
             // Default file system doesn't support close method, so we can ignore to release
             // resource.
-            @SuppressWarnings("resource")
             FileSystem system = from.getFileSystem();
             ArrayList<PathMatcher> includes = new ArrayList();
             ArrayList<PathMatcher> excludes = new ArrayList();
