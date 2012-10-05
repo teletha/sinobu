@@ -13,12 +13,11 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
-import org.junit.Test;
-
-import kiss.sample.bean.GenericGetterBean;
 import kiss.sample.bean.Primitive;
 import kiss.sample.bean.PrimitiveWrapper;
 import kiss.sample.bean.invalid.ProtectedAccessor;
+
+import org.junit.Test;
 
 /**
  * {@link PropertyDescriptor} is not pathetic in JDK7.
@@ -39,15 +38,6 @@ public class PropertyDescriptorIsPatheticTest {
         PropertyDescriptor descriptor = new PropertyDescriptor("boolean", PrimitiveWrapper.class);
         Method method = descriptor.getReadMethod();
         assert method.getName().equals("isBoolean");
-    }
-
-    @Test(expected = IntrospectionException.class)
-    public void generic() throws Exception {
-        PropertyDescriptor descriptor = new PropertyDescriptor("generic", GenericGetterBean.class);
-        Method getter = descriptor.getReadMethod();
-        assert getter.getName().equals("getGeneric");
-        Method setter = descriptor.getWriteMethod();
-        assert setter.getName().equals("setGeneric");
     }
 
     @Test(expected = IntrospectionException.class)
