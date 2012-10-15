@@ -9,11 +9,6 @@
  */
 package kiss;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import kiss.model.Model;
-
 /**
  * <p>
  * This lifestyle guarantees that only one instance of the specific class exists in Sinobu and all
@@ -33,7 +28,7 @@ import kiss.model.Model;
 public class Preference<M> extends Singleton<M> implements Runnable {
 
     /** The automatic saving location. */
-    protected final Path path;
+    // protected final Path path;
 
     /**
      * Create Preference instance.
@@ -43,12 +38,15 @@ public class Preference<M> extends Singleton<M> implements Runnable {
     protected Preference(Class<M> modelClass) {
         super(modelClass);
 
-        this.path = I.$working.resolve("preferences").resolve(Model.load(modelClass).type.getName().concat(".xml"));
+        I.read(instance);
 
-        if (Files.exists(path)) {
-            I.read(path, instance);
-        }
-
+        // this.path =
+        // I.$working.resolve("preferences").resolve(Model.load(modelClass).type.getName().concat(".xml"));
+        //
+        // if (Files.exists(path)) {
+        // I.read(path, instance);
+        // }
+        //
         Runtime.getRuntime().addShutdownHook(new Thread(this));
     }
 
@@ -57,6 +55,6 @@ public class Preference<M> extends Singleton<M> implements Runnable {
      */
     @Override
     public void run() {
-        I.write(instance, path, false);
+        I.write(instance);
     }
 }
