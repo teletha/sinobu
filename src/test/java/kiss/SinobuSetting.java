@@ -9,13 +9,10 @@
  */
 package kiss;
 
-
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 
 import antibug.ReusableRule;
-
-
 
 /**
  * <p>
