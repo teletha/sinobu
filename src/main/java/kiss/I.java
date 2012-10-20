@@ -756,18 +756,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /**
      * <p>
-     * Locate preference file's path.
-     * </p>
-     * 
-     * @param model A target model instance.
-     * @return A constructed path.
-     */
-    static final Path locate(Class model) {
-        return $working.resolve("preferences").resolve(Model.load(model).type.getName().concat(".xml"));
-    }
-
-    /**
-     * <p>
      * Returns a new or cached instance of the model class.
      * </p>
      * <p>
@@ -1512,34 +1500,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /**
      * <p>
-     * Reads Java object tree from the preference XML.
-     * </p>
-     * 
-     * @param input A target model class to deserialize Java object tree data. If the input is
-     *            incompatible with serialized Java object, this method ignores the input.
-     *            <code>null</code> will throw {@link NullPointerException}. The empty or invalid
-     *            format data will throw {@link ScriptException}.
-     * @return A root Java object.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
-     * @throws NoSuchFileException If the input path doesn't exist.
-     * @throws AccessDeniedException If the input is not regular file but directory.
-     */
-    public static <M> M read(M input) {
-        try {
-            Path path = locate(input.getClass());
-
-            if (Files.exists(path) && Files.size(path) != 0) {
-                return read(path, input);
-            }
-            return input;
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * <p>
      * Reads Java object tree from the given XML or JSON input.
      * </p>
      * 
@@ -1833,7 +1793,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws NullPointerException If the input Java object is <code>null</code> .
      */
     public static void write(Object input) {
-        write(input, locate(input.getClass()), false);
+        Lifestyle lifestyle = lifestyles.get(Model.load(input.getClass()).type);
+
+        if (lifestyle instanceof Preference) {
+            write(input, ((Preference) lifestyle).path, false);
+        }
     }
 
     /**
