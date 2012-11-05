@@ -512,6 +512,18 @@ public class Element implements Iterable<Element> {
 
     /**
      * <p>
+     * Append the given xml as child and traverse into them.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public Element child(Object xml) {
+        return append(xml).find(". > *").last();
+    }
+
+    /**
+     * <p>
      * Get the descendants of each element in the current set of matched elements, filtered by a css
      * selector.
      * </p>

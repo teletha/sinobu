@@ -10,6 +10,7 @@
 package kiss.xml;
 
 import static kiss.Element.*;
+import kiss.Element;
 
 import org.junit.Test;
 
@@ -30,5 +31,13 @@ public class ElementFilterTest {
         String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
         assert $(xml).find("Q").last().attr("class").equals("last");
+    }
+
+    @Test
+    public void child() throws Exception {
+        Element xml = $("<m class='parent'/>");
+
+        assert !xml.child("child").hasClass("parent");
+        assert xml.find("child").size() == 1;
     }
 }
