@@ -336,6 +336,13 @@ public class ElementFindTest {
     }
 
     @Test
+    public void parent2() throws Exception {
+        String xml = xml("<m><Q/><Q/><Q/></m>");
+
+        assert $(xml).find("Q").parent().size() == 1;
+    }
+
+    @Test
     public void root() throws Exception {
         String xml = xml("<Q><Q/></Q>");
 
