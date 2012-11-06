@@ -77,23 +77,23 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
 
     /**
      * <p>
-     * You can override this method to omit xml declaration.
+     * You can override this method to write xml declaration.
      * </p>
      * {@inheritDoc}
      */
     @Override
     public void startDocument() {
-        // use myself as xml output if needed
-        if (getParent() == null) {
-            setContentHandler(this);
-        }
-
-        try {
-            // write xml declaration
-            out.append("<?xml version=\"1.0\" encoding=\"").append(I.$encoding.name()).append("\"?>").append(EOL);
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
+        // // use myself as xml output if needed
+        // if (getParent() == null) {
+        // setContentHandler(this);
+        // }
+        //
+        // try {
+        // // write xml declaration
+        // out.append("<?xml version=\"1.0\" encoding=\"").append(I.$encoding.name()).append("\"?>").append(EOL);
+        // } catch (IOException e) {
+        // throw I.quiet(e);
+        // }
     }
 
     /**

@@ -10,9 +10,8 @@
 package kiss;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -29,7 +28,7 @@ import kiss.model.PropertyWalker;
 class JSON implements PropertyWalker {
 
     /** The record for traversed objects. */
-    final Set nodes = new LinkedHashSet();
+    final ConcurrentHashMap<Object, Integer> nodes = new ConcurrentHashMap();
 
     /** The charcter sequence for output as JSON. */
     private final Appendable out;
@@ -65,7 +64,7 @@ class JSON implements PropertyWalker {
             enter(model, property, node);
 
             // check cyclic node
-            if (node != null && nodes.add(node)) property.model.walk(node, this);
+            if (node != null && nodes.putIfAbsent(node, nodes.size()) == null) property.model.walk(node, this);
 
             // leave node
             leave(model, property, node);

@@ -21,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -33,9 +34,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
+
+import com.sun.org.apache.xml.internal.utils.TreeWalker;
 
 /**
  * @version 2012/02/06 16:24:40
@@ -60,8 +61,8 @@ public class Element implements Iterable<Element> {
     /** The xpath evaluator. */
     private static final XPath xpath;
 
-    /** The pretty serializer. */
-    private static final LSSerializer serializer;
+    // /** The pretty serializer. */
+    // private static final LSSerializer serializer;
 
     // initialization
     static {
@@ -71,11 +72,12 @@ public class Element implements Iterable<Element> {
 
             dom = factory.newDocumentBuilder();
             xpath = XPathFactory.newInstance().newXPath();
-            serializer = ((DOMImplementationLS) dom.getDOMImplementation().getFeature("LS", "3.0")).createLSSerializer();
-
-            // don't use boolean literal to reduce footprint size
-            serializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
-            serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
+            // serializer = ((DOMImplementationLS) dom.getDOMImplementation().getFeature("LS",
+            // "3.0")).createLSSerializer();
+            //
+            // // don't use boolean literal to reduce footprint size
+            // serializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
+            // serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -387,6 +389,16 @@ public class Element implements Iterable<Element> {
         return this;
     }
 
+    public Element ns(String name, String uri) {
+        for (Node node : nodes) {
+            ((org.w3c.dom.Element) node).setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:".concat(name), uri);
+
+        }
+
+        // API definition
+        return this;
+    }
+
     /**
      * <p>
      * Adds the specified class(es) to each of the set of matched elements.
@@ -520,6 +532,16 @@ public class Element implements Iterable<Element> {
         return append(xml).find(">*:last-child");
     }
 
+    public Element parent() {
+        CopyOnWriteArrayList nodes = new CopyOnWriteArrayList();
+
+        for (Node node : this.nodes) {
+            nodes.addIfAbsent(node.getParentNode());
+        }
+
+        return new Element(doc, nodes);
+    }
+
     /**
      * <p>
      * Get the descendants of each element in the current set of matched elements, filtered by a css
@@ -568,16 +590,36 @@ public class Element implements Iterable<Element> {
     }
 
     /**
+     * <p>
+     * Write this elements to the specified output.
+     * </p>
+     * 
+     * @param output A output channel.
+     */
+    public void writeTo(Appendable output) {
+        try {
+            XMLWriter writer = new XMLWriter(output);
+            writer.startDocument();
+
+            for (Node node : nodes) {
+                new TreeWalker(writer).traverseFragment(node);
+            }
+            writer.endDocument();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        for (Node node : nodes) {
-            builder.append(serializer.writeToString(node)).append("\r\n");
-        }
-        return builder.toString().trim();
+        writeTo(builder);
+
+        return builder.toString();
     }
 
     /**
