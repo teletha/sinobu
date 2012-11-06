@@ -292,9 +292,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element wrapAll(Object xml) {
-        Element e = $(xml);
-
-        first().after(e).find("+*").append(this);
+        first().after(xml).find("+*").append(this);
 
         // API definition
         return this;
