@@ -214,4 +214,30 @@ public class ElementManipulationTest {
         assert $("<a class='one two'/>").toggleClass("one").attr("class").equals("two");
         assert $("<a class='one two'/>").toggleClass("three").attr("class").equals("one two three");
     }
+
+    @Test
+    public void child() throws Exception {
+        Element e = $("<Q/>");
+
+        assert e.find("child").size() == 0;
+        Element child = e.child("child");
+        assert e.find("child").size() == 1;
+
+        assert e.find("child.check").size() == 0;
+        child.addClass("check");
+        assert e.find("child.check").size() == 1;
+    }
+
+    @Test
+    public void childWithSameName() throws Exception {
+        Element e = $("<Q><child/></Q>");
+
+        assert e.find("child").size() == 1;
+        Element child = e.child("child");
+        assert e.find("child").size() == 2;
+
+        assert e.find("child.check").size() == 0;
+        child.addClass("check");
+        assert e.find("child.check").size() == 1;
+    }
 }
