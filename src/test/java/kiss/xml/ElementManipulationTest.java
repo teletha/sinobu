@@ -68,7 +68,7 @@ public class ElementManipulationTest {
         String xml = "<Q><P/><P/></Q>";
 
         Element e = $(xml);
-        e.find("Q").empty();
+        e.empty();
 
         assert e.find("P").size() == 0;
     }
@@ -78,7 +78,7 @@ public class ElementManipulationTest {
         String xml = "<Q><S/><T/><S/></Q>";
 
         Element e = $(xml);
-        assert e.find("Q > *").remove().size() == 3;
+        assert e.find("*").remove().size() == 3;
 
         assert e.find("S").size() == 0;
         assert e.find("T").size() == 0;
@@ -168,10 +168,10 @@ public class ElementManipulationTest {
         String xml = "<Q/>";
 
         Element e = $(xml);
-        e.attr("name", "set");
 
+        assert e.attr("name").equals("");
+        e.attr("name", "set");
         assert e.attr("name").equals("set");
-        assert e.find("Q[name]").size() == 1;
     }
 
     @Test
@@ -239,5 +239,19 @@ public class ElementManipulationTest {
         assert e.find("child.check").size() == 0;
         child.addClass("check");
         assert e.find("child.check").size() == 1;
+    }
+
+    @Test
+    public void childWithSameNameRoot() throws Exception {
+        Element e = $("<Q><Q/><P/></Q>");
+
+        assert e.find("Q").size() == 1;
+        Element child = e.child("Q");
+        assert child.size() == 1;
+        assert e.find("Q").size() == 2;
+
+        assert e.find("Q.check").size() == 0;
+        child.addClass("check");
+        assert e.find("Q.check").size() == 1;
     }
 }
