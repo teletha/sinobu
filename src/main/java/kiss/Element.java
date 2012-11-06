@@ -294,7 +294,7 @@ public class Element implements Iterable<Element> {
     public Element wrapAll(Object xml) {
         Element e = $(xml);
 
-        first().after(e).find(".+*").append(this);
+        first().after(e).find("+*").append(this);
 
         // API definition
         return this;
@@ -512,14 +512,14 @@ public class Element implements Iterable<Element> {
 
     /**
      * <p>
-     * Append the given xml as child and traverse into them.
+     * Append the given xml as child element and traverse into them.
      * </p>
      * 
-     * @param xml
-     * @return
+     * @param xml A xml element.
+     * @return A created child elements.
      */
     public Element child(Object xml) {
-        return append(xml).find("*").last();
+        return append(xml).find(">*:last-child");
     }
 
     /**
@@ -677,12 +677,13 @@ public class Element implements Iterable<Element> {
             // =================================================
             String suffix = null;
             String match = matcher.group(1);
+            boolean contextual = matcher.start() == 0;
 
             if (match.length() == 0) {
                 // no combinator
-                if (matcher.start() == 0) {
+                if (contextual) {
                     // first selector
-                    xpath.append("descendant-or-self::");
+                    xpath.append("descendant::");
                 } else {
                     break; // finish parsing
                 }
@@ -713,8 +714,12 @@ public class Element implements Iterable<Element> {
                         break;
 
                     case ',': // selector separator
-                        xpath.append("|descendant-or-self::");
+                        xpath.append("|descendant::");
                         break;
+                    }
+
+                    if (contextual) {
+                        xpath.delete(0, 1);
                     }
                 }
             }
@@ -871,8 +876,8 @@ public class Element implements Iterable<Element> {
 
                     String sub = convert(matcher.group(9));
 
-                    if (sub.startsWith("descendant::*[")) {
-                        sub = sub.replace("descendant", "self");
+                    if (sub.startsWith("descendant::")) {
+                        sub = sub.replace("descendant::", "descendant-or-self::");
                     }
                     xpath.append(sub).append(")]");
                     break;

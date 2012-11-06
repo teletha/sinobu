@@ -10,6 +10,7 @@
 package kiss.xml;
 
 import static kiss.Element.*;
+import kiss.Element;
 
 import org.junit.Test;
 
@@ -369,6 +370,15 @@ public class ElementFindTest {
         String xml = xml("<m xmlns:p='p' xmlns:q='q' xmlns:r='r'><p:Q/><q:Q/><r:Q/></m>");
 
         assert $(xml).find("p|Q").size() == 1;
+    }
+
+    @Test
+    public void contextual() throws Exception {
+        Element e = $("<Q><Q/><Q/></Q>");
+
+        assert e.find("> Q").size() == 2;
+        assert e.find(">Q").find("+Q").size() == 1;
+        assert e.find("> Q").find("~Q").size() == 1;
     }
 
     /**
