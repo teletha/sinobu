@@ -519,7 +519,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public Element child(Object xml) {
-        return append(xml).find(". > *").last();
+        return append(xml).find("*").last();
     }
 
     /**
