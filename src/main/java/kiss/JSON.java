@@ -28,7 +28,7 @@ import kiss.model.PropertyWalker;
 class JSON implements PropertyWalker {
 
     /** The record for traversed objects. */
-    final ConcurrentHashMap<Object, Integer> nodes = new ConcurrentHashMap();
+    private final ConcurrentHashMap reference = new ConcurrentHashMap();
 
     /** The charcter sequence for output as JSON. */
     private final Appendable out;
@@ -46,99 +46,62 @@ class JSON implements PropertyWalker {
     }
 
     /**
-     * <p>
-     * Traverse this object graph actually.
-     * </p>
-     * 
-     * @param model A object model of the base node that {@link PropertyWalker} started from. This
-     *            value must not be <code>null</code>. If the visited node is root, this value will
-     *            be a object model of the root node.
-     * @param property An arc in object graph. This value must not be <code>null</code>. If the
-     *            visited node is root, this value will be a object property of the root node.
-     * @param node A current node that {@link PropertyWalker} arrives at.
-     * @see kiss.model.PropertyWalker#walk(kiss.model.Model, kiss.model.Property, java.lang.Object)
+     * {@inheritDoc}
      */
-    public final void walk(Model model, Property property, Object node) {
+    @Override
+    public void walk(Model model, Property property, Object node) {
         if (!property.isTransient()) {
-            // enter node
-            enter(model, property, node);
-
-            // check cyclic node
-            if (node != null && nodes.putIfAbsent(node, nodes.size()) == null) property.model.walk(node, this);
-
-            // leave node
-            leave(model, property, node);
-        }
-    }
-
-    /**
-     * This method is called whenever the {@link PropertyWalker} visits a node in object graph.
-     * 
-     * @param model A object model of the base node that {@link PropertyWalker} started from. This
-     *            value must not be <code>null</code>. If the visited node is root, this value will
-     *            be a object model of the root node.
-     * @param property An arc in object graph. This value must not be <code>null</code>. If the
-     *            visited node is root, this value will be a object property of the root node.
-     * @param node A current node that {@link PropertyWalker} arrives at.
-     */
-    protected void enter(Model model, Property property, Object node) {
-        try {
-            // check whether this is first property in current context or not.
-            if (first) {
-                // mark as not first
-                first = false;
-            } else {
-                // write property seperator
-                out.append(',');
-            }
-
-            // write property key (root node and List node doesn't need key)
-            if (nodes.size() != 0 && model.type != List.class) {
-                write(property.name);
-                out.append(':');
-            }
-
-            // write property value
-            if (property.isAttribute()) {
-                write(I.transform(node, String.class));
-            } else {
-                // check cyclic node (non-attribute node only apply this check)
-                if (nodes.contains(node)) {
-                    throw new ClassCircularityError(nodes.toString());
+            try {
+                // ========================================
+                // Enter Node
+                // ========================================
+                // check whether this is first property in current context or not.
+                if (first) {
+                    // mark as not first
+                    first = false;
+                } else {
+                    // write property seperator
+                    out.append(',');
                 }
 
-                // write suitable brace
-                out.append(property.model.type == List.class ? '[' : '{');
+                // write property key (root node and List node doesn't need key)
+                if (reference.size() != 0 && model.type != List.class) {
+                    write(property.name);
+                    out.append(':');
+                }
 
-                // reset next context
-                first = true;
+                // write property value
+                if (property.isAttribute()) {
+                    write(I.transform(node, String.class));
+                } else {
+                    // check cyclic node (non-attribute node only apply this check)
+                    if (reference.putIfAbsent(node, 0) != null) {
+                        throw new ClassCircularityError(reference.toString());
+                    } else {
+                        // write suitable brace
+                        out.append(property.model.type == List.class ? '[' : '{');
+
+                        // reset next context
+                        first = true;
+                    }
+
+                    // ========================================
+                    // Traverse Child Node
+                    // ========================================
+                    property.model.walk(node, this);
+
+                    // ========================================
+                    // Leave Node
+                    // ========================================
+                    // unregister non-attribute node
+                    reference.remove(node);
+
+                    // write suitable brace
+                    out.append(property.model.type == List.class ? ']' : '}');
+                }
+            } catch (IOException e) {
+                throw I.quiet(e);
             }
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * This method is called whenever the {@link PropertyWalker} leaves a node in object graph.
-     * 
-     * @param model A object model of the base node that {@link PropertyWalker} started from. This
-     *            value must not be <code>null</code>. If the visited node is root, this value will
-     *            be a object model of the root node.
-     * @param property An arc in object graph. This value must not be <code>null</code>. If the
-     *            visited node is root, this value will be a object property of the root node.
-     * @param node A current node that {@link PropertyWalker} arrives at.
-     */
-    protected void leave(Model model, Property property, Object node) {
-        try {
-            if (!property.isAttribute()) {
-                // unregister non-attribute node
-                nodes.remove(node);
-
-                // write suitable brace
-                out.append(property.model.type == List.class ? ']' : '}');
-            }
-        } catch (IOException e) {
-            throw I.quiet(e);
         }
     }
 

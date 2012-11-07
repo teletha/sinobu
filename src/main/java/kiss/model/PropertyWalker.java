@@ -9,7 +9,6 @@
  */
 package kiss.model;
 
-
 /**
  * <p>
  * This class behaves like property iterator.

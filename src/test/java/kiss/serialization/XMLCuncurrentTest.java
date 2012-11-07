@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import kiss.I;
 import kiss.sample.bean.StringListProperty;
@@ -71,31 +70,25 @@ public class XMLCuncurrentTest {
         StringListProperty bean = createBigList();
 
         // write
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5; i++) {
             pool.execute(new Writer(bean));
         }
 
         // read
-        try {
-            Future<StringListProperty> future = pool.submit(new Reader());
+        StringListProperty result = pool.submit(new Reader()).get();
 
-            StringListProperty result = future.get();
-            //
-            System.out.println(result);
-
-            assert result != null;
-            assert result.getList() != null;
-            assert 100000 == result.getList().size();
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
-
+        assert result != null;
+        assert result.getList() != null;
+        assert 10000 == result.getList().size();
     }
 
+    /**
+     * @return
+     */
     private StringListProperty createBigList() {
-        List list = new ArrayList(100000);
+        List list = new ArrayList(10000);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10000; i++) {
             list.add(i);
         }
 
@@ -114,10 +107,8 @@ public class XMLCuncurrentTest {
          * @see java.util.concurrent.Callable#call()
          */
         public StringListProperty call() throws Exception {
-            System.out.println("read");
-
             if (Files.notExists(testFile)) {
-                System.out.println("not exist");
+
             }
             return I.read(Files.newBufferedReader(testFile, I.$encoding), I.make(StringListProperty.class));
         }
@@ -144,9 +135,7 @@ public class XMLCuncurrentTest {
          */
         public void run() {
             try {
-                System.out.println("write");
                 I.write(bean, Files.newBufferedWriter(testFile, I.$encoding), false);
-                System.out.println("write end");
             } catch (IOException e) {
                 throw I.quiet(e);
             }
