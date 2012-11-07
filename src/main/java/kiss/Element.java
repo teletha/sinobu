@@ -528,17 +528,34 @@ public class Element implements Iterable<Element> {
      * @return A created child elements.
      */
     public Element child(Object xml) {
-        return append(xml).find(">*:last-child");
+        ArrayList list = new ArrayList();
+        Node child = convert($(xml));
+
+        for (Node node : nodes) {
+            Node copy = child.cloneNode(true);
+            list.addAll(convert(copy.getChildNodes()));
+            node.appendChild(copy);
+        }
+        return new Element(doc, list);
+
+        // Don't use the below code because xpath is too slow.
+        // return append(xml).find(">*:last-child");
     }
 
+    /**
+     * <p>
+     * Get the parent of each element in the current set of matched elements.
+     * </p>
+     * 
+     * @return A set of parent elements.
+     */
     public Element parent() {
-        CopyOnWriteArrayList nodes = new CopyOnWriteArrayList();
+        CopyOnWriteArrayList list = new CopyOnWriteArrayList();
 
-        for (Node node : this.nodes) {
-            nodes.addIfAbsent(node.getParentNode());
+        for (Node node : nodes) {
+            list.addIfAbsent(node.getParentNode());
         }
-
-        return new Element(doc, nodes);
+        return new Element(doc, list);
     }
 
     /**
@@ -933,8 +950,11 @@ public class Element implements Iterable<Element> {
                     xpath.append("[contains(text(),'").append(matcher.group(9)).append("')]");
                     break;
 
-                case -2136991809: // first-child
                 case 835834661: // last-child
+                    xpath.append("[not(following-sibling::*)]");
+                    break;
+
+                case -2136991809: // first-child
                 case 1292941139: // first-of-type
                 case 2025926969: // last-of-type
                 case -1754914063: // nth-child

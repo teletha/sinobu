@@ -9,16 +9,12 @@
  */
 package kiss;
 
-import static kiss.I.*;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.model.Model;
 import kiss.model.Property;
 import kiss.model.PropertyWalker;
-
-import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * <p>
@@ -30,35 +26,31 @@ import org.xml.sax.helpers.AttributesImpl;
  * which provides constant-time performance for seaching element.
  * </p>
  * 
- * @version 2010/12/14 0:23:59
+ * @version 2012/11/07 21:01:06
  */
 class XMLOut implements PropertyWalker {
 
     /** The record for traversed objects. */
-    final ConcurrentHashMap<Object, Integer> nodes = new ConcurrentHashMap();
+    protected final ConcurrentHashMap<Object, Element> reference = new ConcurrentHashMap();
 
-    /** The record for traversed objects. */
-    protected final ConcurrentHashMap<Object, Integer> reference = new ConcurrentHashMap();
+    /** The reference counter. */
+    private int counter = 0;
 
-    /** The content handler. */
-    private final XMLWriter writer;
-
-    /** The current traversing mode. */
-    boolean mode = true;
-
-    /** The current stored node name. */
-    private String name;
-
-    /** The attribute for reuse. */
-    private AttributesImpl attributes = new AttributesImpl();
+    /** The current processing element. */
+    private Element current;
 
     /**
-     * Create ConfigurationWriter instance.
-     * 
-     * @param writer An actual XML writer.
+     * @param model
+     * @param property
+     * @param input
+     * @param output
      */
-    XMLOut(XMLWriter writer) {
-        this.writer = writer;
+    XMLOut(Model model, Property property, Object input, Appendable output) {
+        // build xml
+        walk(model, property, input);
+
+        // write down
+        current.writeTo(output);
     }
 
     /**
@@ -67,136 +59,65 @@ class XMLOut implements PropertyWalker {
     @Override
     public void walk(Model model, Property property, Object node) {
         if (!property.isTransient()) {
-            if (mode) {
-                // check cyclic node
-                if (node != null && !property.isAttribute() && reference.putIfAbsent(node, reference.size()) == null) {
-                    property.model.walk(node, this);
+            // ========================================
+            // Enter Node
+            // ========================================
+            if (model.isCollection()) {
+                // collection item property
+                current = child(property.model.name);
+
+                // collection needs key attribute
+                if (Map.class.isAssignableFrom(model.type)) {
+                    current.attr("ss:key", property.name);
                 }
-            } else {
-                // If the specfied model or property requires new element for serialization, we must
-                // write out the previous start element.
-                if (model.isCollection()) {
-                    write();
+            } else if (!property.isAttribute()) {
+                current = child(property.name);
+            }
 
-                    // collection item property
-                    name = property.model.name;
+            // If the collection item is attribute node, that is represented as xml value attribute
+            // and attribute node that collection node doesn't host is written as xml attribute too.
+            if (node != null) {
+                if (property.isAttribute()) {
+                    current.attr(model.isCollection() ? "value" : property.name, I.transform(node, String.class));
+                } else {
+                    Element ref = reference.get(node);
 
-                    // collection needs key attribute
-                    if (Map.class.isAssignableFrom(model.type)) {
-                        attributes.addAttribute(URI, null, "ss:key", null, property.name);
-                    }
-                } else if (!property.isAttribute()) {
-                    write();
+                    if (ref == null) {
+                        // associate node object with element
+                        reference.put(node, current);
 
-                    name = property.name;
-                }
+                        // assign new id
+                        current.attr("ss:id", counter++);
 
-                // If the collection item is attribute node, that is represented as xml value
-                // attribute and attribute node that collection node doesn't host is written as xml
-                // attribute too.
-                if (node != null) {
-                    if (property.isAttribute()) {
-                        attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null, I.transform(node, String.class));
+                        // ========================================
+                        // Traverse Child Node
+                        // ========================================
+                        property.model.walk(node, this);
                     } else {
-                        Integer integer = reference.get(node);
-
-                        if (integer != null) {
-                            // create reference id attribute
-                            attributes.addAttribute(URI, null, "ss:id", null, integer.toString());
-                        }
-
-                        // check cyclic node
-                        if (nodes.putIfAbsent(node, nodes.size()) == null) property.model.walk(node, this);
+                        // share id
+                        current.attr("ss:id", ref.attr("ss:id"));
                     }
                 }
             }
 
-            if (!mode) {
-                // If the specfied model or property requires new element for serialization, we must
-                // write out the previous start element.
-                if (model.isCollection() || !property.isAttribute()) {
-                    write();
-
-                    writer.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
-                }
+            // ========================================
+            // Leave Node
+            // ========================================
+            if (model.isCollection() || !property.isAttribute()) {
+                current = current.parent();
             }
         }
     }
 
-    // /**
-    // * @see kiss.kiss.model.PropertyWalker#enter(kiss.model.Model, kiss.model.Property,
-    // * java.lang.Object)
-    // */
-    // protected void enter(Model model, Property property, Object node) {
-    // if (mode) {
-    // if (!property.isAttribute() && nodes.contains(node)) {
-    // objects.putIfAbsent(node, objects.size());
-    // }
-    // } else {
-    // // If the specfied model or property requires new element for serialization, we must
-    // // write out the previous start element.
-    // if (model.isCollection()) {
-    // write();
-    //
-    // // collection item property
-    // name = property.model.name;
-    //
-    // // collection needs key attribute
-    // if (Map.class.isAssignableFrom(model.type)) {
-    // attributes.addAttribute(URI, null, "ss:key", null, property.name);
-    // }
-    // } else if (!property.isAttribute()) {
-    // write();
-    //
-    // name = property.name;
-    // }
-    //
-    // // If the collection item is attribute node, that is represented as xml value attribute
-    // // and attribute node that collection node doesn't host is written as xml attribute too.
-    // if (node != null) {
-    // if (property.isAttribute()) {
-    // attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null,
-    // I.transform(node, String.class));
-    // } else {
-    // Integer integer = objects.get(node);
-    //
-    // if (integer != null) {
-    // // create reference id attribute
-    // attributes.addAttribute(URI, null, "ss:id", null, integer.toString());
-    // }
-    // }
-    // }
-    // }
-    // }
-    //
-    // /**
-    // * @see kiss.kiss.model.PropertyWalker#leave(kiss.model.Model, kiss.model.Property,
-    // * java.lang.Object)
-    // */
-    // protected void leave(Model model, Property property, Object node) {
-    // if (!mode) {
-    // // If the specfied model or property requires new element for serialization, we must
-    // // write out the previous start element.
-    // if (model.isCollection() || !property.isAttribute()) {
-    // write();
-    //
-    // writer.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
-    // }
-    // }
-    // }
-
     /**
-     * Helper method to write out the stored sax event.
+     * @param name
+     * @return
      */
-    private void write() {
-        // check node name
-        if (name != null) {
-            // write start element
-            writer.startElement(null, null, name, attributes);
-
-            // clear current state
-            name = null;
-            attributes.clear();
+    private Element child(String name) {
+        if (current == null) {
+            return Element.$(name).attr("xmlns:ss", I.URI);
+        } else {
+            return current.child(name);
         }
     }
 }

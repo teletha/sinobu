@@ -1862,21 +1862,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 // traverse configuration as json
                 new JSON(output).walk(model, property, input);
             } else {
-                XMLWriter xml = new XMLWriter(output);
-
-                // xml start
-                xml.startDocument();
-                xml.startPrefixMapping("ss", URI);
-
                 // traverse configuration as xml
-                XMLOut out = new XMLOut(xml);
-                out.walk(model, property, input);
-                out.mode = false;
-                out.nodes.clear();
-                out.walk(model, property, input);
-
-                xml.endDocument();
-                // xml end
+                new XMLOut(model, property, input, output);
             }
         } finally {
             // relese lock
