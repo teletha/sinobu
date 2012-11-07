@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import static javax.xml.XMLConstants.*;
+
 import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,7 +23,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -381,18 +382,16 @@ public class Element implements Iterable<Element> {
             if (value == null) {
                 ((org.w3c.dom.Element) node).removeAttribute(name);
             } else {
-                ((org.w3c.dom.Element) node).setAttribute(name, value.toString());
+                org.w3c.dom.Element e = (org.w3c.dom.Element) node;
+
+                if (name.startsWith(XMLNS_ATTRIBUTE)) {
+                    // namespace
+                    e.setAttributeNS(XMLNS_ATTRIBUTE_NS_URI, name, value.toString());
+                } else {
+                    // attribute
+                    e.setAttribute(name, value.toString());
+                }
             }
-        }
-
-        // API definition
-        return this;
-    }
-
-    public Element ns(String name, String uri) {
-        for (Node node : nodes) {
-            ((org.w3c.dom.Element) node).setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:".concat(name), uri);
-
         }
 
         // API definition

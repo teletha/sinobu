@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.model.Model;
 import kiss.model.Property;
+import kiss.model.PropertyWalker;
 
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -31,13 +32,16 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @version 2010/12/14 0:23:59
  */
-class XMLOut extends JSON {
+class XMLOut implements PropertyWalker {
+
+    /** The record for traversed objects. */
+    final ConcurrentHashMap<Object, Integer> nodes = new ConcurrentHashMap();
+
+    /** The record for traversed objects. */
+    protected final ConcurrentHashMap<Object, Integer> reference = new ConcurrentHashMap();
 
     /** The content handler. */
     private final XMLWriter writer;
-
-    /** The object and id mapping. */
-    private ConcurrentHashMap<Object, Integer> objects = new ConcurrentHashMap();
 
     /** The current traversing mode. */
     boolean mode = true;
@@ -54,70 +58,132 @@ class XMLOut extends JSON {
      * @param writer An actual XML writer.
      */
     XMLOut(XMLWriter writer) {
-        super(null);
         this.writer = writer;
     }
 
     /**
-     * @see kiss.kiss.model.PropertyWalker#enter(kiss.model.Model, kiss.model.Property,
-     *      java.lang.Object)
+     * {@inheritDoc}
      */
-    protected void enter(Model model, Property property, Object node) {
-        if (mode) {
-            if (!property.isAttribute() && nodes.contains(node)) {
-                objects.putIfAbsent(node, objects.size());
-            }
-        } else {
-            // If the specfied model or property requires new element for serialization, we must
-            // write out the previous start element.
-            if (model.isCollection()) {
-                write();
-
-                // collection item property
-                name = property.model.name;
-
-                // collection needs key attribute
-                if (Map.class.isAssignableFrom(model.type)) {
-                    attributes.addAttribute(URI, null, "ss:key", null, property.name);
+    @Override
+    public void walk(Model model, Property property, Object node) {
+        if (!property.isTransient()) {
+            if (mode) {
+                // check cyclic node
+                if (node != null && !property.isAttribute() && reference.putIfAbsent(node, reference.size()) == null) {
+                    property.model.walk(node, this);
                 }
-            } else if (!property.isAttribute()) {
-                write();
+            } else {
+                // If the specfied model or property requires new element for serialization, we must
+                // write out the previous start element.
+                if (model.isCollection()) {
+                    write();
 
-                name = property.name;
-            }
+                    // collection item property
+                    name = property.model.name;
 
-            // If the collection item is attribute node, that is represented as xml value attribute
-            // and attribute node that collection node doesn't host is written as xml attribute too.
-            if (node != null) {
-                if (property.isAttribute()) {
-                    attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null, I.transform(node, String.class));
-                } else {
-                    Integer integer = objects.get(node);
+                    // collection needs key attribute
+                    if (Map.class.isAssignableFrom(model.type)) {
+                        attributes.addAttribute(URI, null, "ss:key", null, property.name);
+                    }
+                } else if (!property.isAttribute()) {
+                    write();
 
-                    if (integer != null) {
-                        // create reference id attribute
-                        attributes.addAttribute(URI, null, "ss:id", null, integer.toString());
+                    name = property.name;
+                }
+
+                // If the collection item is attribute node, that is represented as xml value
+                // attribute and attribute node that collection node doesn't host is written as xml
+                // attribute too.
+                if (node != null) {
+                    if (property.isAttribute()) {
+                        attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null, I.transform(node, String.class));
+                    } else {
+                        Integer integer = reference.get(node);
+
+                        if (integer != null) {
+                            // create reference id attribute
+                            attributes.addAttribute(URI, null, "ss:id", null, integer.toString());
+                        }
+
+                        // check cyclic node
+                        if (nodes.putIfAbsent(node, nodes.size()) == null) property.model.walk(node, this);
                     }
                 }
             }
-        }
-    }
 
-    /**
-     * @see kiss.kiss.model.PropertyWalker#leave(kiss.model.Model, kiss.model.Property,
-     *      java.lang.Object)
-     */
-    protected void leave(Model model, Property property, Object node) {
-        if (!mode) {
-            // If the specfied model or property requires new element for serialization, we must
-            // write out the previous start element.
-            if (model.isCollection() || !property.isAttribute()) {
-                write();
+            if (!mode) {
+                // If the specfied model or property requires new element for serialization, we must
+                // write out the previous start element.
+                if (model.isCollection() || !property.isAttribute()) {
+                    write();
 
-                writer.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
+                    writer.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
+                }
             }
         }
     }
+
+    // /**
+    // * @see kiss.kiss.model.PropertyWalker#enter(kiss.model.Model, kiss.model.Property,
+    // * java.lang.Object)
+    // */
+    // protected void enter(Model model, Property property, Object node) {
+    // if (mode) {
+    // if (!property.isAttribute() && nodes.contains(node)) {
+    // objects.putIfAbsent(node, objects.size());
+    // }
+    // } else {
+    // // If the specfied model or property requires new element for serialization, we must
+    // // write out the previous start element.
+    // if (model.isCollection()) {
+    // write();
+    //
+    // // collection item property
+    // name = property.model.name;
+    //
+    // // collection needs key attribute
+    // if (Map.class.isAssignableFrom(model.type)) {
+    // attributes.addAttribute(URI, null, "ss:key", null, property.name);
+    // }
+    // } else if (!property.isAttribute()) {
+    // write();
+    //
+    // name = property.name;
+    // }
+    //
+    // // If the collection item is attribute node, that is represented as xml value attribute
+    // // and attribute node that collection node doesn't host is written as xml attribute too.
+    // if (node != null) {
+    // if (property.isAttribute()) {
+    // attributes.addAttribute(null, null, (model.isCollection()) ? "value" : property.name, null,
+    // I.transform(node, String.class));
+    // } else {
+    // Integer integer = objects.get(node);
+    //
+    // if (integer != null) {
+    // // create reference id attribute
+    // attributes.addAttribute(URI, null, "ss:id", null, integer.toString());
+    // }
+    // }
+    // }
+    // }
+    // }
+    //
+    // /**
+    // * @see kiss.kiss.model.PropertyWalker#leave(kiss.model.Model, kiss.model.Property,
+    // * java.lang.Object)
+    // */
+    // protected void leave(Model model, Property property, Object node) {
+    // if (!mode) {
+    // // If the specfied model or property requires new element for serialization, we must
+    // // write out the previous start element.
+    // if (model.isCollection() || !property.isAttribute()) {
+    // write();
+    //
+    // writer.endElement(null, null, (model.isCollection()) ? property.model.name : property.name);
+    // }
+    // }
+    // }
 
     /**
      * Helper method to write out the stored sax event.

@@ -68,7 +68,6 @@ import kiss.model.ClassUtil;
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.sample.bean.Person;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
@@ -1870,10 +1869,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 xml.startPrefixMapping("ss", URI);
 
                 // traverse configuration as xml
-                XMLOut2 out = new XMLOut2(output);
+                XMLOut out = new XMLOut(xml);
                 out.walk(model, property, input);
-                out.current.writeTo(output);
-                out.current.writeTo(System.out);
+                out.mode = false;
+                out.nodes.clear();
+                out.walk(model, property, input);
 
                 xml.endDocument();
                 // xml end
@@ -1885,22 +1885,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // close carefuly
             quiet(output);
         }
-    }
-
-    public static void main(String[] args) {
-        Person input = I.make(Person.class);
-        input.setFirstName("test");
-        input.setAge(12);
-
-        Model model = Model.load(input.getClass());
-        Property property = new Property(model, model.name);
-
-        // traverse configuration as xml
-        XMLOut2 out = new XMLOut2(System.out);
-        out.walk(model, property, input);
-        System.out.println(out.current);
-        System.out.println("@@");
-
     }
 
     /**

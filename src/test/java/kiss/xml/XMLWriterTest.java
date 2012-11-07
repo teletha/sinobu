@@ -435,7 +435,7 @@ public class XMLWriterTest {
         }
 
         /**
-         * @see kiss.XMLOut.XMLFormatter#asCharacter(java.lang.String, java.lang.String)
+         * @see kiss.XMLWriter#asCharacter(java.lang.String, java.lang.String)
          */
         @Override
         protected boolean asCharacter(String namespaceURI, String localName) {
