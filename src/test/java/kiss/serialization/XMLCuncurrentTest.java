@@ -9,7 +9,6 @@
  */
 package kiss.serialization;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-
 
 /**
  * @version 2011/03/29 12:37:35
@@ -52,7 +50,7 @@ public class XMLCuncurrentTest {
     @Before
     public void init() throws Exception {
         // create new thread pool
-        pool = Executors.newFixedThreadPool(4);
+        pool = Executors.newFixedThreadPool(5);
 
     }
 
@@ -73,22 +71,31 @@ public class XMLCuncurrentTest {
         StringListProperty bean = createBigList();
 
         // write
-        pool.execute(new Writer(bean));
+        for (int i = 0; i < 100; i++) {
+            pool.execute(new Writer(bean));
+        }
 
         // read
-        Future<StringListProperty> future = pool.submit(new Reader());
+        try {
+            Future<StringListProperty> future = pool.submit(new Reader());
 
-        StringListProperty result = future.get();
+            StringListProperty result = future.get();
+            //
+            System.out.println(result);
 
-        assert result != null;
-        assert result.getList() != null;
-        assert 100000 == result.getList().size();
+            assert result != null;
+            assert result.getList() != null;
+            assert 100000 == result.getList().size();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+
     }
 
     private StringListProperty createBigList() {
         List list = new ArrayList(100000);
 
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10; i++) {
             list.add(i);
         }
 
@@ -107,6 +114,11 @@ public class XMLCuncurrentTest {
          * @see java.util.concurrent.Callable#call()
          */
         public StringListProperty call() throws Exception {
+            System.out.println("read");
+
+            if (Files.notExists(testFile)) {
+                System.out.println("not exist");
+            }
             return I.read(Files.newBufferedReader(testFile, I.$encoding), I.make(StringListProperty.class));
         }
     }
@@ -132,7 +144,9 @@ public class XMLCuncurrentTest {
          */
         public void run() {
             try {
+                System.out.println("write");
                 I.write(bean, Files.newBufferedWriter(testFile, I.$encoding), false);
+                System.out.println("write end");
             } catch (IOException e) {
                 throw I.quiet(e);
             }
