@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static kiss.XML.*;
+import kiss.I;
 
 import org.junit.Test;
 
@@ -22,13 +22,13 @@ public class XMLFilterTest {
     public void first() throws Exception {
         String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
-        assert $(xml).find("Q").first().attr("class").equals("first");
+        assert I.xml(xml).find("Q").first().attr("class").equals("first");
     }
 
     @Test
     public void last() throws Exception {
         String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
-        assert $(xml).find("Q").last().attr("class").equals("last");
+        assert I.xml(xml).find("Q").last().attr("class").equals("last");
     }
 }

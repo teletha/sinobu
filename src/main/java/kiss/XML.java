@@ -11,8 +11,7 @@ package kiss;
 
 import static javax.xml.XMLConstants.*;
 
-import java.io.StringReader;
-import java.nio.file.Path;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -23,8 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -35,7 +32,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
@@ -57,9 +53,6 @@ public class XML implements Iterable<XML> {
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
 
-    /** The document builder. */
-    private static final DocumentBuilder dom;
-
     /** The xpath evaluator. */
     private static final XPath xpath;
 
@@ -69,62 +62,12 @@ public class XML implements Iterable<XML> {
     // initialization
     static {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-
-            dom = factory.newDocumentBuilder();
             xpath = XPathFactory.newInstance().newXPath();
 
             format = new OutputFormat();
             format.setIndent(2);
             format.setLineWidth(0);
             format.setOmitXMLDeclaration(true);
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * <p>
-     * Parse as xml fragment.
-     * </p>
-     * 
-     * @param xml
-     * @return
-     */
-    public static XML $(Object xml) {
-        if (xml instanceof XML) {
-            return (XML) xml;
-        }
-
-        try {
-            if (xml instanceof Path) {
-                Document doc = dom.parse(((Path) xml).toFile());
-
-                return new XML(doc, convert(doc.getChildNodes()));
-            }
-
-            if (xml instanceof InputSource) {
-                Document doc = dom.parse((InputSource) xml);
-
-                return new XML(doc, convert(doc.getChildNodes()));
-            }
-
-            // parse as string
-            String value = xml.toString();
-
-            if (value.charAt(0) != '<') {
-                // element name
-                Document doc = dom.newDocument();
-                doc.appendChild(doc.createElement(value));
-
-                return new XML(doc, convert(doc.getChildNodes()));
-            } else {
-                // xml text
-                Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
-
-                return new XML(doc, convert(doc.getFirstChild().getChildNodes()));
-            }
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -143,7 +86,7 @@ public class XML implements Iterable<XML> {
      * 
      * @param nodes
      */
-    private XML(Document doc, List nodes) {
+    XML(Document doc, List nodes) {
         this.doc = doc;
         this.nodes = nodes;
     }
@@ -158,7 +101,7 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML append(Object xml) {
-        Node n = convert($(xml));
+        Node n = convert(I.xml(xml));
 
         for (Node node : nodes) {
             node.appendChild(n.cloneNode(true));
@@ -178,7 +121,7 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML prepend(Object xml) {
-        Node n = convert($(xml));
+        Node n = convert(I.xml(xml));
 
         for (Node node : nodes) {
             node.insertBefore(n.cloneNode(true), node.getFirstChild());
@@ -198,7 +141,7 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML before(Object xml) {
-        Node n = convert($(xml));
+        Node n = convert(I.xml(xml));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node);
@@ -218,7 +161,7 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML after(Object xml) {
-        Node n = convert($(xml));
+        Node n = convert(I.xml(xml));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
@@ -276,7 +219,7 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML wrap(Object xml) {
-        XML element = $(xml);
+        XML element = I.xml(xml);
 
         for (XML e : this) {
             e.wrapAll(element);
@@ -535,7 +478,7 @@ public class XML implements Iterable<XML> {
      */
     public XML child(Object xml) {
         ArrayList list = new ArrayList();
-        Node child = convert($(xml));
+        Node child = convert(I.xml(xml));
 
         for (Node node : nodes) {
             Node copy = child.cloneNode(true);
@@ -620,7 +563,8 @@ public class XML implements Iterable<XML> {
      */
     public void writeTo(Appendable output) {
         try {
-            XML11Serializer serializer = new XML11Serializer(new XMLOut(output), format);
+            XML11Serializer serializer = new XML11Serializer(output instanceof Writer ? (Writer) output
+                    : new XMLOut(output), format);
 
             for (Node node : nodes) {
                 serializer.serialize(node);
@@ -678,7 +622,7 @@ public class XML implements Iterable<XML> {
      * @param xml
      * @return
      */
-    private static List convert(NodeList list) {
+    static List convert(NodeList list) {
         CopyOnWriteArrayList<Node> nodes = new CopyOnWriteArrayList();
 
         for (int i = 0; i < list.getLength(); i++) {

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
@@ -62,6 +63,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 
 import kiss.model.ClassUtil;
@@ -76,6 +79,7 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
+import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -281,6 +285,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /** The sax parser factory for reuse. */
     private static final SAXParserFactory sax = SAXParserFactory.newInstance();
 
+    /** The document builder. */
+    private static final DocumentBuilder dom;
+
     /** The javascript engine for reuse. */
     private static final ScriptEngine script;
 
@@ -311,7 +318,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         lifestyles.put(Attributes.class, new Prototype(AttributesImpl.class));
 
         try {
-            // configure sax parser
+            // configure dom builder
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+
+            dom = factory.newDocumentBuilder();
+
             sax.setNamespaceAware(true);
             sax.setXIncludeAware(true);
             sax.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
@@ -1867,7 +1879,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 new JSON(output).walk(model, property, input);
             } else {
                 // traverse configuration as xml
-                new XMLOut(model, property, input, output);
+                XMLOut out = new XMLOut(output);
+                out.walk(model, property, input);
+                out.current.writeTo(out);
             }
         } finally {
             // relese lock
@@ -1875,6 +1889,52 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             // close carefuly
             quiet(output);
+        }
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     * 
+     * @param xml
+     * @return
+     */
+    public static XML xml(Object xml) {
+        if (xml instanceof XML) {
+            return (XML) xml;
+        }
+
+        try {
+            if (xml instanceof Path) {
+                Document doc = dom.parse(((Path) xml).toFile());
+
+                return new XML(doc, XML.convert(doc.getChildNodes()));
+            }
+
+            if (xml instanceof InputSource) {
+                Document doc = dom.parse((InputSource) xml);
+
+                return new XML(doc, XML.convert(doc.getChildNodes()));
+            }
+
+            // parse as string
+            String value = xml.toString();
+
+            if (value.charAt(0) != '<') {
+                // element name
+                Document doc = dom.newDocument();
+                doc.appendChild(doc.createElement(value));
+
+                return new XML(doc, XML.convert(doc.getChildNodes()));
+            } else {
+                // xml text
+                Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
+
+                return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+            }
+        } catch (Exception e) {
+            throw quiet(e);
         }
     }
 
