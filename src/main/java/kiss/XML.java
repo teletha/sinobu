@@ -35,14 +35,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
-
-import com.sun.org.apache.xml.internal.utils.TreeWalker;
 
 /**
  * @version 2012/02/06 16:24:40
  */
-public class Element implements Iterable<Element> {
+public class XML implements Iterable<XML> {
 
     /**
      * Original pattern.
@@ -62,8 +63,11 @@ public class Element implements Iterable<Element> {
     /** The xpath evaluator. */
     private static final XPath xpath;
 
-    // /** The pretty serializer. */
-    // private static final LSSerializer serializer;
+    /** The pretty serializer. */
+    private static final DOMImplementationLS ls;
+
+    /** The pretty serializer. */
+    private static final LSSerializer serializer;
 
     // initialization
     static {
@@ -73,12 +77,12 @@ public class Element implements Iterable<Element> {
 
             dom = factory.newDocumentBuilder();
             xpath = XPathFactory.newInstance().newXPath();
-            // serializer = ((DOMImplementationLS) dom.getDOMImplementation().getFeature("LS",
-            // "3.0")).createLSSerializer();
-            //
-            // // don't use boolean literal to reduce footprint size
-            // serializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
-            // serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
+            ls = (DOMImplementationLS) dom.getDOMImplementation().getFeature("LS", "3.0");
+            serializer = ls.createLSSerializer();
+
+            // don't use boolean literal to reduce footprint size
+            serializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
+            serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -92,22 +96,22 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public static Element $(Object xml) {
-        if (xml instanceof Element) {
-            return (Element) xml;
+    public static XML $(Object xml) {
+        if (xml instanceof XML) {
+            return (XML) xml;
         }
 
         try {
             if (xml instanceof Path) {
                 Document doc = dom.parse(((Path) xml).toFile());
 
-                return new Element(doc, convert(doc.getChildNodes()));
+                return new XML(doc, convert(doc.getChildNodes()));
             }
 
             if (xml instanceof InputSource) {
                 Document doc = dom.parse((InputSource) xml);
 
-                return new Element(doc, convert(doc.getChildNodes()));
+                return new XML(doc, convert(doc.getChildNodes()));
             }
 
             // parse as string
@@ -118,12 +122,12 @@ public class Element implements Iterable<Element> {
                 Document doc = dom.newDocument();
                 doc.appendChild(doc.createElement(value));
 
-                return new Element(doc, convert(doc.getChildNodes()));
+                return new XML(doc, convert(doc.getChildNodes()));
             } else {
                 // xml text
                 Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
 
-                return new Element(doc, convert(doc.getFirstChild().getChildNodes()));
+                return new XML(doc, convert(doc.getFirstChild().getChildNodes()));
             }
         } catch (Exception e) {
             throw I.quiet(e);
@@ -143,7 +147,7 @@ public class Element implements Iterable<Element> {
      * 
      * @param nodes
      */
-    private Element(Document doc, List nodes) {
+    private XML(Document doc, List nodes) {
         this.doc = doc;
         this.nodes = nodes;
     }
@@ -157,7 +161,7 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element append(Object xml) {
+    public XML append(Object xml) {
         Node n = convert($(xml));
 
         for (Node node : nodes) {
@@ -177,7 +181,7 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element prepend(Object xml) {
+    public XML prepend(Object xml) {
         Node n = convert($(xml));
 
         for (Node node : nodes) {
@@ -197,7 +201,7 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element before(Object xml) {
+    public XML before(Object xml) {
         Node n = convert($(xml));
 
         for (Node node : nodes) {
@@ -217,7 +221,7 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element after(Object xml) {
+    public XML after(Object xml) {
         Node n = convert($(xml));
 
         for (Node node : nodes) {
@@ -235,7 +239,7 @@ public class Element implements Iterable<Element> {
      * 
      * @return
      */
-    public Element empty() {
+    public XML empty() {
         for (Node node : nodes) {
             while (node.hasChildNodes()) {
                 node.removeChild(node.getFirstChild());
@@ -258,7 +262,7 @@ public class Element implements Iterable<Element> {
      * 
      * @return
      */
-    public Element remove() {
+    public XML remove() {
         for (Node node : nodes) {
             node.getParentNode().removeChild(node);
         }
@@ -275,10 +279,10 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element wrap(Object xml) {
-        Element element = $(xml);
+    public XML wrap(Object xml) {
+        XML element = $(xml);
 
-        for (Element e : this) {
+        for (XML e : this) {
             e.wrapAll(element);
         }
 
@@ -294,7 +298,7 @@ public class Element implements Iterable<Element> {
      * @param xml
      * @return
      */
-    public Element wrapAll(Object xml) {
+    public XML wrapAll(Object xml) {
         first().after(xml).find("+*").append(this);
 
         // API definition
@@ -313,13 +317,13 @@ public class Element implements Iterable<Element> {
      * </p>
      * {@inheritDoc}
      */
-    public Element clone() {
+    public XML clone() {
         List<Node> list = new ArrayList();
 
         for (Node node : nodes) {
             list.add(node.cloneNode(true));
         }
-        return new Element(doc, list);
+        return new XML(doc, list);
     }
 
     /**
@@ -347,7 +351,7 @@ public class Element implements Iterable<Element> {
      * @param text
      * @return
      */
-    public Element text(String text) {
+    public XML text(String text) {
         for (Node node : nodes) {
             node.setTextContent(text);
         }
@@ -377,7 +381,7 @@ public class Element implements Iterable<Element> {
      * @param value
      * @return
      */
-    public Element attr(String name, Object value) {
+    public XML attr(String name, Object value) {
         for (Node node : nodes) {
             org.w3c.dom.Element e = (org.w3c.dom.Element) node;
 
@@ -417,8 +421,8 @@ public class Element implements Iterable<Element> {
      * @param names
      * @return
      */
-    public Element addClass(String names) {
-        for (Element e : this) {
+    public XML addClass(String names) {
+        for (XML e : this) {
             String value = " ".concat(e.attr("class")).concat(" ");
 
             for (String name : names.split(" ")) {
@@ -448,8 +452,8 @@ public class Element implements Iterable<Element> {
      * @param names
      * @return
      */
-    public Element removeClass(String names) {
-        for (Element e : this) {
+    public XML removeClass(String names) {
+        for (XML e : this) {
             String value = " ".concat(e.attr("class")).concat(" ");
 
             for (String name : names.split(" ")) {
@@ -471,8 +475,8 @@ public class Element implements Iterable<Element> {
      * @param name
      * @return
      */
-    public Element toggleClass(String name) {
-        for (Element e : this) {
+    public XML toggleClass(String name) {
+        for (XML e : this) {
             if (e.hasClass(name)) {
                 e.removeClass(name);
             } else {
@@ -493,7 +497,7 @@ public class Element implements Iterable<Element> {
      * @return
      */
     public boolean hasClass(String name) {
-        for (Element e : this) {
+        for (XML e : this) {
             String value = " ".concat(e.attr("class")).concat(" ");
 
             if (value.contains(" ".concat(name).concat(" "))) {
@@ -510,8 +514,8 @@ public class Element implements Iterable<Element> {
      * 
      * @return
      */
-    public Element first() {
-        return new Element(doc, nodes.subList(0, 1));
+    public XML first() {
+        return new XML(doc, nodes.subList(0, 1));
     }
 
     /**
@@ -521,8 +525,8 @@ public class Element implements Iterable<Element> {
      * 
      * @return
      */
-    public Element last() {
-        return new Element(doc, nodes.subList(nodes.size() - 1, nodes.size()));
+    public XML last() {
+        return new XML(doc, nodes.subList(nodes.size() - 1, nodes.size()));
     }
 
     /**
@@ -533,7 +537,7 @@ public class Element implements Iterable<Element> {
      * @param xml A xml element.
      * @return A created child elements.
      */
-    public Element child(Object xml) {
+    public XML child(Object xml) {
         ArrayList list = new ArrayList();
         Node child = convert($(xml));
 
@@ -542,7 +546,7 @@ public class Element implements Iterable<Element> {
             list.addAll(convert(copy.getChildNodes()));
             node.appendChild(copy);
         }
-        return new Element(doc, list);
+        return new XML(doc, list);
 
         // Don't use the below code because xpath is too slow.
         // return append(xml).find(">*:last-child");
@@ -555,13 +559,13 @@ public class Element implements Iterable<Element> {
      * 
      * @return A set of parent elements.
      */
-    public Element parent() {
+    public XML parent() {
         CopyOnWriteArrayList list = new CopyOnWriteArrayList();
 
         for (Node node : nodes) {
             list.addIfAbsent(node.getParentNode());
         }
-        return new Element(doc, list);
+        return new XML(doc, list);
     }
 
     /**
@@ -573,7 +577,7 @@ public class Element implements Iterable<Element> {
      * @param selector A string containing a css selector expression to match elements against.
      * @return
      */
-    public Element find(String selector) {
+    public XML find(String selector) {
         XPathExpression xpath = compile(selector);
         CopyOnWriteArrayList<Node> result = new CopyOnWriteArrayList();
 
@@ -581,7 +585,7 @@ public class Element implements Iterable<Element> {
             for (Node node : nodes) {
                 result.addAll(convert((NodeList) xpath.evaluate(node, XPathConstants.NODESET)));
             }
-            return new Element(doc, result);
+            return new XML(doc, result);
         } catch (XPathExpressionException e) {
             throw I.quiet(e);
         }
@@ -602,11 +606,11 @@ public class Element implements Iterable<Element> {
      * {@inheritDoc}
      */
     @Override
-    public Iterator<Element> iterator() {
-        List<Element> elements = new ArrayList();
+    public Iterator<XML> iterator() {
+        List<XML> elements = new ArrayList();
 
         for (Node node : nodes) {
-            elements.add(new Element(doc, Collections.singletonList(node)));
+            elements.add(new XML(doc, Collections.singletonList(node)));
         }
         return elements.iterator();
     }
@@ -619,16 +623,11 @@ public class Element implements Iterable<Element> {
      * @param output A output channel.
      */
     public void writeTo(Appendable output) {
-        try {
-            XMLWriter writer = new XMLWriter(output);
-            writer.startDocument();
+        LSOutput out = ls.createLSOutput();
+        out.setCharacterStream(new XMLOut(output));
 
-            for (Node node : nodes) {
-                new TreeWalker(writer).traverseFragment(node);
-            }
-            writer.endDocument();
-        } catch (Exception e) {
-            throw I.quiet(e);
+        for (Node node : nodes) {
+            serializer.write(node, out);
         }
     }
 
@@ -646,13 +645,13 @@ public class Element implements Iterable<Element> {
 
     /**
      * <p>
-     * Helper method to convert {@link Element} to single {@link Node}.
+     * Helper method to convert {@link XML} to single {@link Node}.
      * </p>
      * 
      * @param xml
      * @return
      */
-    private Node convert(Element xml) {
+    private Node convert(XML xml) {
         DocumentFragment fragment = doc.createDocumentFragment();
 
         for (int i = 0; i < xml.nodes.size(); i++) {

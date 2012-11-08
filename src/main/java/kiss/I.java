@@ -1851,6 +1851,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
     public static void write(Object input, Appendable output, boolean json) {
+        if (output == null) {
+            throw new NullPointerException();
+        }
+
         try {
             // aquire lock
             lock.writeLock().lock();

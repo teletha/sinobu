@@ -31,7 +31,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * which provides constant-time performance for seaching element.
  * </p>
  * 
- * @version 2010/01/12 22:54:15
+ * @version 2012/11/08 11:21:14
  */
 class XMLIn extends XMLFilterImpl {
 
@@ -54,10 +54,10 @@ class XMLIn extends XMLFilterImpl {
     }
 
     /**
-     * @see org.xml.sax.helpers.XMLFilterImpl#startElement(java.lang.String, java.lang.String,
-     *      java.lang.String, org.xml.sax.Attributes)
+     * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("resource")
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
         Util state;
 
@@ -146,10 +146,10 @@ class XMLIn extends XMLFilterImpl {
     }
 
     /**
-     * @see org.xml.sax.helpers.XMLFilterImpl#endElement(java.lang.String, java.lang.String,
-     *      java.lang.String)
+     * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("resource")
     public void endElement(String uri, String localName, String qName) {
         Util current = states.pollLast();
         Util parent = states.peekLast();

@@ -9,6 +9,9 @@
  */
 package kiss;
 
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,29 +31,65 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2012/11/07 21:01:06
  */
-class XMLOut implements PropertyWalker {
+class XMLOut extends Writer implements PropertyWalker {
 
     /** The record for traversed objects. */
-    protected final ConcurrentHashMap<Object, Element> reference = new ConcurrentHashMap();
+    protected final ConcurrentHashMap<Object, XML> reference = new ConcurrentHashMap();
+
+    /** The actual output. */
+    private final Appendable output;
+
+    /** The current processing element. */
+    private XML current;
 
     /** The reference counter. */
     private int counter = 0;
 
-    /** The current processing element. */
-    private Element current;
+    /**
+     * @param output
+     */
+    XMLOut(Appendable output) {
+        this.output = output;
+    }
 
     /**
      * @param model
      * @param property
-     * @param input
+     * @param node
      * @param output
      */
-    XMLOut(Model model, Property property, Object input, Appendable output) {
-        // build xml
-        walk(model, property, input);
+    XMLOut(Model model, Property property, Object node, Appendable output) {
+        this.output = output;
 
-        // write down
-        current.writeTo(output);
+        walk(model, property, node);
+
+        current.writeTo(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() throws IOException {
+        I.quiet(output);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void flush() throws IOException {
+        if (output instanceof Flushable) {
+            ((Flushable) output).flush();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void write(char[] cbuf, int off, int len) throws IOException {
+        output.append(new String(cbuf, off, len));
     }
 
     /**
@@ -80,7 +119,7 @@ class XMLOut implements PropertyWalker {
                 if (property.isAttribute()) {
                     current.attr(model.isCollection() ? "value" : property.name, I.transform(node, String.class));
                 } else {
-                    Element ref = reference.get(node);
+                    XML ref = reference.get(node);
 
                     if (ref == null) {
                         // associate node object with element
@@ -113,9 +152,9 @@ class XMLOut implements PropertyWalker {
      * @param name
      * @return
      */
-    private Element child(String name) {
+    private XML child(String name) {
         if (current == null) {
-            return Element.$(name).attr("xmlns:ss", I.URI);
+            return XML.$(name).attr("xmlns:ss", I.URI);
         } else {
             return current.child(name);
         }
