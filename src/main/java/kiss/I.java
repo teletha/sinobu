@@ -90,6 +90,8 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import sun.org.mozilla.javascript.internal.IdScriptableObject;
 
+import com.sun.org.apache.xml.internal.utils.DOMBuilder;
+
 /**
  * <p>
  * Sinobu is not obsolete framework but utility, which can manipulate objects as a
@@ -1889,6 +1891,89 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             // close carefuly
             quiet(output);
+        }
+    }
+
+    public static XML build(Path source, XMLFilter... filters) {
+        try {
+            return sax(Files.newBufferedReader(source, $encoding), filters);
+        } catch (Exception e) {
+            throw quiet(e);
+        }
+    }
+
+    public static XML build(Readable source, XMLFilter... filters) {
+        try {
+            return sax(source, filters);
+        } catch (Exception e) {
+            throw quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Parse the specified xml {@link InputSource} using the specified sequence of {@link XMLFilter}
+     * . The application can use this method to instruct the XML reader to begin parsing an XML
+     * document from any valid input source (a character stream, a byte stream, or a URI).
+     * </p>
+     * <p>
+     * Sinobu use the {@link XMLReader} which has the following features.
+     * </p>
+     * <ul>
+     * <li>Support XML namespaces.</li>
+     * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude) Version
+     * 1.0</a>.</li>
+     * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
+     * <li><em>Not</em> support external DTD completely (parser doesn't even access DTD, using
+     * "http://apache.org/xml/features/nonvalidating/load-external-dtd" feature).</li>
+     * </ul>
+     * 
+     * @param source A xml source.
+     * @param filters A list of filters to parse a sax event. This may be <code>null</code>.
+     * @throws NullPointerException If the specified source is <code>null</code>. If one of the
+     *             specified filter is <code>null</code>.
+     * @throws SAXException Any SAX exception, possibly wrapping another exception.
+     * @throws IOException An IO exception from the parser, possibly from a byte stream or character
+     *             stream supplied by the application.
+     */
+    private static XML sax(Readable source, XMLFilter... filters) {
+        try {
+            // create new xml builder
+            DOMBuilder builder = new DOMBuilder(dom.newDocument());
+
+            // create new xml reader
+            XMLReader reader = sax.newSAXParser().getXMLReader();
+
+            // chain filters if needed
+            for (int i = 0; i < filters.length; i++) {
+                // find the root filter of the current multilayer filter
+                XMLFilter filter = filters[i];
+
+                while (filter.getParent() instanceof XMLFilter) {
+                    filter = (XMLFilter) filter.getParent();
+                }
+
+                // the root filter makes previous filter as parent xml reader
+                filter.setParent(reader);
+
+                if (filter instanceof LexicalHandler) {
+                    reader.setProperty("http://xml.org/sax/properties/lexical-handler", filter);
+                }
+
+                // current filter is a xml reader in next step
+                reader = filters[i];
+            }
+
+            // start parsing
+            reader.setContentHandler(builder);
+            reader.parse(new InputSource(new Util(source, null)));
+
+            // build XML
+            return new XML(builder.m_doc, XML.convert(builder.m_doc.getChildNodes()));
+        } catch (Exception e) {
+            // We must throw the checked exception quietly and pass the original exception instead
+            // of wrapped exception.
+            throw quiet(e);
         }
     }
 
