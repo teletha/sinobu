@@ -9,7 +9,8 @@
  */
 package kiss;
 
-import static javax.xml.XMLConstants.*;
+import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
+import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -80,9 +81,6 @@ public class XML implements Iterable<XML> {
     /** The current node set. */
     private List<Node> nodes;
 
-    /** The current node set. */
-    private List<XML> subs;
-
     /**
      * <p>
      * From node set.
@@ -97,18 +95,6 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
-     * From node set.
-     * </p>
-     * 
-     * @param nodes
-     */
-    XML(List<XML> subs, Document doc) {
-        this.doc = doc;
-        this.subs = subs;
-    }
-
-    /**
-     * <p>
      * Insert content, specified by the parameter, to the end of each element in the set of matched
      * elements.
      * </p>
@@ -117,16 +103,10 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML append(Object xml) {
-        if (subs != null) {
-            for (XML sub : subs) {
-                sub.append(xml);
-            }
-        } else {
-            Node n = convert(I.xml(xml));
+        Node n = convert(I.xml(xml));
 
-            for (Node node : nodes) {
-                node.appendChild(n.cloneNode(true));
-            }
+        for (Node node : nodes) {
+            node.appendChild(n.cloneNode(true));
         }
 
         // API definition
@@ -143,16 +123,10 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML prepend(Object xml) {
-        if (subs != null) {
-            for (XML sub : subs) {
-                sub.prepend(xml);
-            }
-        } else {
-            Node n = convert(I.xml(xml));
+        Node n = convert(I.xml(xml));
 
-            for (Node node : nodes) {
-                node.insertBefore(n.cloneNode(true), node.getFirstChild());
-            }
+        for (Node node : nodes) {
+            node.insertBefore(n.cloneNode(true), node.getFirstChild());
         }
 
         // API definition
@@ -169,16 +143,10 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML before(Object xml) {
-        if (subs != null) {
-            for (XML sub : subs) {
-                sub.before(xml);
-            }
-        } else {
-            Node n = convert(I.xml(xml));
+        Node n = convert(I.xml(xml));
 
-            for (Node node : nodes) {
-                node.getParentNode().insertBefore(n.cloneNode(true), node);
-            }
+        for (Node node : nodes) {
+            node.getParentNode().insertBefore(n.cloneNode(true), node);
         }
 
         // API definition
@@ -195,16 +163,10 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML after(Object xml) {
-        if (subs != null) {
-            for (XML sub : subs) {
-                sub.after(xml);
-            }
-        } else {
-            Node n = convert(I.xml(xml));
+        Node n = convert(I.xml(xml));
 
-            for (Node node : nodes) {
-                node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
-            }
+        for (Node node : nodes) {
+            node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
         }
 
         // API definition
@@ -219,15 +181,9 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML empty() {
-        if (subs != null) {
-            for (XML sub : subs) {
-                sub.empty();
-            }
-        } else {
-            for (Node node : nodes) {
-                while (node.hasChildNodes()) {
-                    node.removeChild(node.getFirstChild());
-                }
+        for (Node node : nodes) {
+            while (node.hasChildNodes()) {
+                node.removeChild(node.getFirstChild());
             }
         }
 
@@ -248,14 +204,8 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML remove() {
-        if (subs != null) {
-            for (XML sub : subs) {
-                sub.remove();
-            }
-        } else {
-            for (Node node : nodes) {
-                node.getParentNode().removeChild(node);
-            }
+        for (Node node : nodes) {
+            node.getParentNode().removeChild(node);
         }
 
         // API definition
@@ -271,16 +221,10 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML wrap(Object xml) {
-        if (subs != null) {
-            for (XML sub : subs) {
-                sub.wrap(xml);
-            }
-        } else {
-            XML element = I.xml(xml);
+        XML element = I.xml(xml);
 
-            for (XML e : this) {
-                e.wrapAll(element);
-            }
+        for (XML e : this) {
+            e.wrapAll(element);
         }
 
         // API definition
@@ -296,13 +240,7 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML wrapAll(Object xml) {
-        if (subs != null) {
-            for (XML sub : subs) {
-                sub.wrapAll(xml);
-            }
-        } else {
-            first().after(xml).find("+*").append(this);
-        }
+        first().after(xml).find("+*").append(this);
 
         // API definition
         return this;
@@ -323,17 +261,11 @@ public class XML implements Iterable<XML> {
     public XML clone() {
         List list = new ArrayList();
 
-        if (subs != null) {
-            for (XML sub : subs) {
-                list.add(sub.clone());
-            }
-            return new XML(list, doc);
-        } else {
-            for (Node node : nodes) {
-                list.add(node.cloneNode(true));
-            }
-            return new XML(doc, list);
+        for (Node node : nodes) {
+            list.add(node.cloneNode(true));
         }
+        return new XML(doc, list);
+
     }
 
     /**
@@ -517,6 +449,10 @@ public class XML implements Iterable<XML> {
         return false;
     }
 
+    // ===============================================
+    // Traversing
+    // ===============================================
+
     /**
      * <p>
      * Reduce the set of matched elements to the first in the set.
@@ -539,27 +475,32 @@ public class XML implements Iterable<XML> {
         return new XML(doc, nodes.subList(nodes.size() - 1, nodes.size()));
     }
 
+    /**
+     * <p>
+     * Get all following siblings of each element up to but not including the element matched by the
+     * given selector.
+     * </p>
+     * 
+     * @param selector
+     * @return
+     */
     public XML nextUntil(String selector) {
-        List<XML> list = new ArrayList();
+        CopyOnWriteArrayList list = new CopyOnWriteArrayList();
 
-        XML untils = find("+".concat(selector));
-
-        for (int i = 0; i < nodes.size(); i++) {
-            List<Node> elements = new ArrayList();
-
-            Node node = nodes.get(i);
-            Node until = untils.nodes.get(i);
+        for (XML xml : this) {
+            XML until = xml.find("+".concat(selector));
+            Node node = xml.nodes.get(0);
+            Node untilNode = until.size() == 0 ? null : until.nodes.get(0);
 
             do {
-                elements.add(node);
+                // collect matching node
+                list.addIfAbsent(node);
 
+                // search next sibling node
                 node = DOMUtil.getNextSiblingElement(node);
-            } while (node != until);
-
-            list.add(new XML(doc, elements));
+            } while (node != untilNode);
         }
-
-        return new XML(list, doc);
+        return new XML(doc, list);
     }
 
     /**
@@ -596,7 +537,13 @@ public class XML implements Iterable<XML> {
         CopyOnWriteArrayList list = new CopyOnWriteArrayList();
 
         for (Node node : nodes) {
-            list.addIfAbsent(node.getParentNode());
+            Node parent = node.getParentNode();
+
+            if (parent.getNodeType() == Node.ELEMENT_NODE) {
+                list.addIfAbsent(parent);
+            } else {
+                list.addIfAbsent(node);
+            }
         }
         return new XML(doc, list);
     }
@@ -640,10 +587,6 @@ public class XML implements Iterable<XML> {
      */
     @Override
     public Iterator<XML> iterator() {
-        if (subs != null) {
-            return subs.iterator();
-        }
-
         List<XML> elements = new ArrayList();
 
         for (Node node : nodes) {
@@ -835,10 +778,6 @@ public class XML implements Iterable<XML> {
                 xpath.append("*");
             } else {
                 xpath.append("*[name()='").append(match.replace('|', ':').replaceAll("\\\\", "")).append("']");
-            }
-
-            if (suffix != null) {
-                xpath.append(suffix);
             }
 
             // =================================================
@@ -1059,6 +998,10 @@ public class XML implements Iterable<XML> {
                     xpath.append('=').append(remainder).append("]");
                     break;
                 }
+            }
+
+            if (suffix != null) {
+                xpath.append(suffix);
             }
         }
         return xpath.toString();

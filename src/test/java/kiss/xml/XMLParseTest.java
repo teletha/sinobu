@@ -55,11 +55,4 @@ public class XMLParseTest {
         });
         assert xml.find("Q").size() == 1;
     }
-
-    @Test
-    public void nextUntil() throws Exception {
-        XML xml = I.xml("<p><Q/><A/><A/><B/><Q/><A/><A/></p>");
-        xml.find("Q").nextUntil("B").wrapAll("wrap");
-        System.out.println(xml);
-    }
 }

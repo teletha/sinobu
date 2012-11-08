@@ -10,13 +10,14 @@
 package kiss.xml;
 
 import kiss.I;
+import kiss.XML;
 
 import org.junit.Test;
 
 /**
  * @version 2012/02/07 19:01:50
  */
-public class XMLFilterTest {
+public class XMLTraversingTest {
 
     @Test
     public void first() throws Exception {
@@ -30,5 +31,24 @@ public class XMLFilterTest {
         String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
         assert I.xml(xml).find("Q").last().attr("class").equals("last");
+    }
+
+    @Test
+    public void parent() throws Exception {
+        XML xml = I.xml("<m><Q><P/></Q><Q><P/></Q></m>");
+
+        assert xml.find("P").parent().size() == 2;
+        assert xml.find("P").parent().parent().size() == 1;
+        assert xml.find("P").parent().parent().parent().size() == 1;
+        assert xml.find("P").parent().parent().parent().parent().size() == 1;
+    }
+
+    @Test
+    public void nextUntil() throws Exception {
+        XML xml = I.xml("<p><Q/><A/><B/><Q/><A class='stop'/><B/><Q/><A/><B/></p>");
+
+        assert xml.find("Q").nextUntil("A").size() == 3;
+        assert xml.find("Q").nextUntil("B").size() == 6;
+        assert xml.find("Q").nextUntil("A.stop").size() == 7;
     }
 }
