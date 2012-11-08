@@ -39,31 +39,17 @@ class XMLOut extends Writer implements PropertyWalker {
     /** The actual output. */
     private final Appendable output;
 
-    /** The current processing element. */
-    private XML current;
-
     /** The reference counter. */
     private int counter = 0;
+
+    /** The current processing element. */
+    XML current;
 
     /**
      * @param output
      */
     XMLOut(Appendable output) {
         this.output = output;
-    }
-
-    /**
-     * @param model
-     * @param property
-     * @param node
-     * @param output
-     */
-    XMLOut(Model model, Property property, Object node, Appendable output) {
-        this.output = output;
-
-        walk(model, property, node);
-
-        current.writeTo(this);
     }
 
     /**
@@ -154,7 +140,7 @@ class XMLOut extends Writer implements PropertyWalker {
      */
     private XML child(String name) {
         if (current == null) {
-            return XML.$(name).attr("xmlns:ss", I.URI);
+            return I.xml(name).attr("xmlns:ss", I.URI);
         } else {
             return current.child(name);
         }
