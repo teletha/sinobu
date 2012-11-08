@@ -9,8 +9,7 @@
  */
 package kiss;
 
-import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
-import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
+import static javax.xml.XMLConstants.*;
 
 import java.io.Writer;
 import java.util.ArrayList;
