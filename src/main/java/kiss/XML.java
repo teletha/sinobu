@@ -35,10 +35,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
+
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
 
 /**
  * @version 2012/02/06 16:24:40
@@ -58,16 +58,13 @@ public class XML implements Iterable<XML> {
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
 
     /** The document builder. */
-    static final DocumentBuilder dom;
+    private static final DocumentBuilder dom;
 
     /** The xpath evaluator. */
     private static final XPath xpath;
 
     /** The pretty serializer. */
-    private static final DOMImplementationLS ls;
-
-    /** The pretty serializer. */
-    private static final LSSerializer serializer;
+    private static final OutputFormat format;
 
     // initialization
     static {
@@ -77,12 +74,11 @@ public class XML implements Iterable<XML> {
 
             dom = factory.newDocumentBuilder();
             xpath = XPathFactory.newInstance().newXPath();
-            ls = (DOMImplementationLS) dom.getDOMImplementation().getFeature("LS", "3.0");
-            serializer = ls.createLSSerializer();
 
-            // don't use boolean literal to reduce footprint size
-            serializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
-            serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
+            format = new OutputFormat();
+            format.setIndent(2);
+            format.setLineWidth(0);
+            format.setOmitXMLDeclaration(true);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -623,11 +619,14 @@ public class XML implements Iterable<XML> {
      * @param output A output channel.
      */
     public void writeTo(Appendable output) {
-        LSOutput out = ls.createLSOutput();
-        out.setCharacterStream(new XMLOut(output));
+        try {
+            XML11Serializer serializer = new XML11Serializer(new XMLOut(output), format);
 
-        for (Node node : nodes) {
-            serializer.write(node, out);
+            for (Node node : nodes) {
+                serializer.serialize(node);
+            }
+        } catch (Exception e) {
+            throw I.quiet(e);
         }
     }
 

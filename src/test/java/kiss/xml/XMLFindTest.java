@@ -9,15 +9,15 @@
  */
 package kiss.xml;
 
-import static kiss.Element.*;
-import kiss.Element;
+import static kiss.XML.*;
+import kiss.XML;
 
 import org.junit.Test;
 
 /**
  * @version 2012/02/05 17:08:12
  */
-public class ElementFindTest {
+public class XMLFindTest {
 
     @Test
     public void type() throws Exception {
@@ -381,7 +381,7 @@ public class ElementFindTest {
 
     @Test
     public void contextual() throws Exception {
-        Element e = $("<Q><Q/><Q/></Q>");
+        XML e = $("<Q><Q/><Q/></Q>");
 
         assert e.find("> Q").size() == 2;
         assert e.find(">Q").find("+Q").size() == 1;

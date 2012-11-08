@@ -9,14 +9,14 @@
  */
 package kiss.xml;
 
-import static kiss.Element.*;
+import static kiss.XML.*;
 
 import org.junit.Test;
 
 /**
  * @version 2012/02/07 19:01:50
  */
-public class ElementFilterTest {
+public class XMLFilterTest {
 
     @Test
     public void first() throws Exception {
