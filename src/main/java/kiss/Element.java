@@ -379,11 +379,17 @@ public class Element implements Iterable<Element> {
      */
     public Element attr(String name, Object value) {
         for (Node node : nodes) {
-            if (value == null) {
-                ((org.w3c.dom.Element) node).removeAttribute(name);
-            } else {
-                org.w3c.dom.Element e = (org.w3c.dom.Element) node;
+            org.w3c.dom.Element e = (org.w3c.dom.Element) node;
 
+            if (value == null) {
+                if (name.startsWith(XMLNS_ATTRIBUTE)) {
+                    // namespace
+                    e.removeAttributeNS(XMLNS_ATTRIBUTE_NS_URI, name);
+                } else {
+                    // attribute
+                    e.removeAttribute(name);
+                }
+            } else {
                 if (name.startsWith(XMLNS_ATTRIBUTE)) {
                     // namespace
                     e.setAttributeNS(XMLNS_ATTRIBUTE_NS_URI, name, value.toString());
