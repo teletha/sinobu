@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -23,13 +21,9 @@ import kiss.sample.modifier.Nested.PublicStatic;
 import kiss.sample.modifier.Public;
 
 import org.junit.Test;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLFilter;
-import org.xml.sax.helpers.XMLFilterImpl;
 
 /**
- * @version 2011/12/09 20:31:05
+ * @version 2012/11/09 10:45:14
  */
 public class SinobuTest {
 
@@ -387,69 +381,6 @@ public class SinobuTest {
 
             private static final long serialVersionUID = 5333091127457345270L;
         }
-    }
-
-    // ===============================================================
-    // Test Parse Method
-    // ===============================================================
-
-    @Test(expected = NullPointerException.class)
-    public void parseNullInputSource() throws IOException {
-        I.parse((InputSource) null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void parseNullPath() throws IOException {
-        I.parse((Path) null);
-    }
-
-    /**
-     * Parse with <code>null</code> filter.
-     */
-    @Test(expected = NullPointerException.class)
-    public void parseNullFilter() throws IOException {
-        I.parse(source("<Q/>"), (XMLFilter) null);
-    }
-
-    /**
-     * Parse with <code>null</code> filters.
-     */
-    @Test(expected = NullPointerException.class)
-    public void parseNullFilters() throws IOException {
-        I.parse(source("<Q/>"), (XMLFilter[]) null);
-    }
-
-    /**
-     * Parse without filter.
-     */
-    @Test
-    public void parseWithoutFilter() throws IOException {
-        I.parse(source("<Q/>"));
-    }
-
-    /**
-     * Parse with filter.
-     */
-    @Test
-    public void parseWithFilter() throws IOException {
-        I.parse(source("<Q/>"), new XMLFilterImpl());
-    }
-
-    @Test(expected = SAXException.class)
-    public void parseInvalidSource() throws IOException {
-        I.parse(source("invalid"));
-    }
-
-    /**
-     * <p>
-     * Helper method to build input source.
-     * </p>
-     * 
-     * @param text
-     * @return
-     */
-    private static InputSource source(String text) {
-        return new InputSource(new StringReader(text));
     }
 
     // ===============================================================

@@ -38,7 +38,7 @@ import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
 
 /**
- * @version 2012/02/06 16:24:40
+ * @version 2012/11/09 10:45:49
  */
 public class XML implements Iterable<XML> {
 

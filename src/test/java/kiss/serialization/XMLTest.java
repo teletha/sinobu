@@ -48,7 +48,7 @@ import antibug.CleanRoom;
 import antibug.xml.XML;
 
 /**
- * @version 2011/03/22 17:17:16
+ * @version 2012/11/09 10:45:34
  */
 public class XMLTest {
 
