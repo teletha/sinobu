@@ -1978,6 +1978,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
+    @SuppressWarnings("resource")
     public static void write(Object input, Appendable output, boolean json) {
         if (output == null) {
             throw new NullPointerException();
@@ -1997,7 +1998,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 // traverse configuration as xml
                 XMLWriter writer = new XMLWriter(output);
                 writer.walk(model, property, input);
-                writer.current.writeTo(writer);
+                writer.current.writeTo(output);
             }
         } finally {
             // relese lock

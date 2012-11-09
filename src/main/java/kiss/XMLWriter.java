@@ -28,6 +28,9 @@ import kiss.model.PropertyWalker;
  * identifier. But it requires linear time to search the existing element. So we should use Map
  * which provides constant-time performance for seaching element.
  * </p>
+ * <p>
+ * This is {@link Appendable} {@link Writer}.
+ * </p>
  * 
  * @version 2012/11/07 21:01:06
  */
