@@ -1995,9 +1995,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 new JSON(output).walk(model, property, input);
             } else {
                 // traverse configuration as xml
-                XMLOut out = new XMLOut(output);
-                out.walk(model, property, input);
-                out.current.writeTo(out);
+                XMLWriter writer = new XMLWriter(output);
+                writer.walk(model, property, input);
+                writer.current.writeTo(writer);
             }
         } finally {
             // relese lock

@@ -604,7 +604,7 @@ public class XML implements Iterable<XML> {
     public void writeTo(Appendable output) {
         try {
             XML11Serializer serializer = new XML11Serializer(output instanceof Writer ? (Writer) output
-                    : new XMLOut(output), format);
+                    : new XMLWriter(output), format);
 
             for (Node node : nodes) {
                 serializer.serialize(node);
