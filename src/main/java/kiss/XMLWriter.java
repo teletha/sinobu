@@ -31,7 +31,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2012/11/07 21:01:06
  */
-class XMLOut extends Writer implements PropertyWalker {
+class XMLWriter extends Writer implements PropertyWalker {
 
     /** The record for traversed objects. */
     protected final ConcurrentHashMap<Object, XML> reference = new ConcurrentHashMap();
@@ -48,7 +48,7 @@ class XMLOut extends Writer implements PropertyWalker {
     /**
      * @param output
      */
-    XMLOut(Appendable output) {
+    XMLWriter(Appendable output) {
         this.output = output;
     }
 
