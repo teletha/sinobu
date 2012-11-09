@@ -480,8 +480,8 @@ public class XML implements Iterable<XML> {
      * given selector.
      * </p>
      * 
-     * @param selector
-     * @return
+     * @param selector CSS selector.
+     * @return A set of matched elements.
      */
     public XML nextUntil(String selector) {
         CopyOnWriteArrayList list = new CopyOnWriteArrayList();
