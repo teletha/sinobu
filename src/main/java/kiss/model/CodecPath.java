@@ -9,12 +9,13 @@
  */
 package kiss.model;
 
+import java.io.File;
 import java.nio.file.Path;
 
 import kiss.I;
 
 /**
- * @version 2011/12/25 17:29:44
+ * @version 2012/11/11 14:55:05
  */
 class CodecPath extends Codec<Path> {
 
@@ -23,7 +24,7 @@ class CodecPath extends Codec<Path> {
      */
     @Override
     public String encode(Path value) {
-        return value.toString();
+        return value.toString().replace(File.separatorChar, '/');
     }
 
     /**
