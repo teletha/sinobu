@@ -317,6 +317,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
             dom = factory.newDocumentBuilder();
 
@@ -2038,26 +2039,45 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // parse as string
             String value = xml.toString();
 
-            if (value.charAt(0) != '<') {
-                // element name
-                Document doc = dom.newDocument();
-                doc.appendChild(doc.createElement(value));
-
-                return new XML(doc, XML.convert(doc.getChildNodes()));
-            } else {
+            if (value.charAt(0) == '<') {
                 // xml text
                 Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
-                // DocumentFragment frag = doc.createDocumentFragment();
-                // NodeList list = doc.getFirstChild().getChildNodes();
-                //
-                // for (int i = 0; i < list.getLength(); i++) {
-                // frag.appendChild(list.item(i));
-                // }
+
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
             }
+
+            if (value.startsWith("http://") || value.startsWith("https://")) {
+                // url text
+                Document doc = dom.parse(value);
+
+                return new XML(doc, XML.convert(doc.getChildNodes()));
+            }
+
+            // element name
+            Document doc = dom.newDocument();
+            doc.appendChild(doc.createElement(value));
+
+            return new XML(doc, XML.convert(doc.getChildNodes()));
         } catch (Exception e) {
             throw quiet(e);
         }
+    }
+
+    /**
+     * Parse out a charset from a content type header. If the charset is not supported, returns null
+     * (so the default will kick in.)
+     * 
+     * @param value e.g. "text/html; charset=EUC-JP"
+     * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
+     */
+    private static Charset detect(String value) {
+        if (value == null || value.length() == 0) {
+            return $encoding;
+        }
+
+        int index = value.lastIndexOf('=');
+
+        return Charset.forName(index == -1 ? value : value.substring(index + 1));
     }
 
     /**
