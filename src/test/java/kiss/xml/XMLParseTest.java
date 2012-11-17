@@ -28,7 +28,7 @@ public class XMLParseTest {
 
     @Test
     public void taa() throws Exception {
-        XML xml = I.xml("http://itpro.nikkeibp.co.jp/article/COLUMN/20061208/256374/");
+        XML xml = I.xml("http://mtgwiki.com/wiki/%E7%86%8A");
         System.out.println(xml);
         assert xml.find("#firstHeading").text().equals("クマ");
     }

@@ -127,6 +127,14 @@ class XMLReader {
 
                 if (Arrays.binarySearch(empties, name) < 0) {
                     stack.addLast(child);
+
+                    // pc data only tags (textarea, script): chomp to end tag, add content as text
+                    // node
+                    if (0 <= Arrays.binarySearch(datas, name)) {
+                        child.appendChild(doc.createTextNode(chompTo("</" + name)));
+                        chompTo(">");
+                        stack.pollLast();
+                    }
                 } else {
                     // confirm character encoding
                     if (name.equals("meta")) {
@@ -150,14 +158,11 @@ class XMLReader {
                             }
                         }
                     }
+
+                    chompTo("/");
+                    chompTo(">");
                 }
 
-                // pc data only tags (textarea, script): chomp to end tag, add content as text node
-                if (0 <= Arrays.binarySearch(datas, name)) {
-                    child.appendChild(doc.createTextNode(chompTo("</" + name)));
-                    chompTo(">");
-                    stack.pollLast();
-                }
             } else if (matcheInto("</")) {
                 String name = chompTo(">").trim();
 
@@ -173,7 +178,7 @@ class XMLReader {
                 // ignore processing instruction and doctype declaration
                 chompTo(">");
             } else {
-                Text textNode;
+                Text textNode = null;
                 // special case: handle string like "hello < there". first char will be "<", because
                 // of matchStartTag
                 if (html.charAt(pos) == '<') {
@@ -183,8 +188,10 @@ class XMLReader {
                     textNode = doc.createTextNode(consumeTo("<"));
                 }
 
-                if (stack.getLast().getNodeType() != Node.DOCUMENT_NODE) {
-                    stack.getLast().appendChild(textNode);
+                Node node = stack.getLast();
+
+                if (node.getNodeType() != Node.DOCUMENT_NODE) {
+                    node.appendChild(textNode);
                 }
             }
         }
