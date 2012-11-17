@@ -38,7 +38,7 @@ import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
 
 /**
- * @version 2012/11/09 10:45:49
+ * @version 2012/11/18 2:56:05
  */
 public class XML implements Iterable<XML> {
 
@@ -78,7 +78,7 @@ public class XML implements Iterable<XML> {
     private Document doc;
 
     /** The current node set. */
-    private List<Node> nodes;
+    private final List<Node> nodes;
 
     /**
      * <p>
@@ -523,6 +523,22 @@ public class XML implements Iterable<XML> {
 
         // Don't use the below code because xpath is too slow.
         // return append(xml).find(">*:last-child");
+    }
+
+    /**
+     * <p>
+     * Get the children of each element in the current set of matched elements.
+     * </p>
+     * 
+     * @return A set of children elements.
+     */
+    public XML children() {
+        CopyOnWriteArrayList list = new CopyOnWriteArrayList();
+
+        for (Node node : nodes) {
+            list.addAllAbsent(convert(node.getChildNodes()));
+        }
+        return new XML(doc, list);
     }
 
     /**

@@ -15,7 +15,7 @@ import kiss.XML;
 import org.junit.Test;
 
 /**
- * @version 2012/02/07 19:01:50
+ * @version 2012/11/18 2:55:32
  */
 public class XMLTraversingTest {
 
@@ -41,6 +41,14 @@ public class XMLTraversingTest {
         assert xml.find("P").parent().parent().size() == 1;
         assert xml.find("P").parent().parent().parent().size() == 1;
         assert xml.find("P").parent().parent().parent().parent().size() == 1;
+    }
+
+    @Test
+    public void children() throws Exception {
+        XML xml = I.xml("<m><Q><P/><R><T/></R></Q><Q><P/></Q></m>");
+
+        assert xml.find("Q").size() == 2;
+        assert xml.find("Q").children().size() == 3;
     }
 
     @Test
