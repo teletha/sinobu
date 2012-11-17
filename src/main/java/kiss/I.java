@@ -83,6 +83,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import sun.org.mozilla.javascript.internal.IdScriptableObject;
@@ -2014,59 +2015,71 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * <p>
      * Parse as xml fragment.
      * </p>
+     * <ul>
+     * <li>{@link XML}</li>
+     * <li>{@link Path}</li>
+     * <li>{@link InputSource}</li>
+     * <li>{@link URL}</li>
+     * <li>{@link Node}</li>
+     * <li>{@link String}</li>
+     * </ul>
+     * <ul>
+     * <li>URL Expression (http and https)</li>
+     * <li>XML Literal</li>
+     * <li>Element Name</li>
+     * </ul>
      * 
-     * @param xml
-     * @return
+     * @param xml A xml expression.
+     * @return A constructed {@link XML}.
      */
     public static XML xml(Object xml) {
-        if (xml instanceof XML) {
-            return (XML) xml;
-        }
+        Document doc;
 
         try {
-            if (xml instanceof Path) {
-                Document doc = dom.parse(((Path) xml).toFile());
+            if (xml instanceof XML) {
+                return (XML) xml;
+            } else if (xml instanceof Path) {
+                doc = dom.parse(((Path) xml).toFile());
+            } else if (xml instanceof InputSource) {
+                doc = dom.parse((InputSource) xml);
+            } else if (xml instanceof URL) {
+                return new XMLReader(((URL) xml).openStream()).parse();
+            } else if (xml instanceof Document) {
+                doc = (Document) xml;
+            } else if (xml instanceof Node) {
+                return new XML(((Node) xml).getOwnerDocument(), new ArrayList(Collections.singleton(xml)));
+            } else {
+                // ================================
+                // Parse as String
+                // ================================
+                String value = xml.toString();
 
-                return new XML(doc, XML.convert(doc.getChildNodes()));
+                if (value.charAt(0) == '<') {
+                    // ========================
+                    // XML Literal
+                    // ========================
+                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
+
+                    return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+                }
+
+                if (value.startsWith("http://") || value.startsWith("https://")) {
+                    // ========================
+                    // HTML from URL
+                    // ========================
+                    return new XMLReader(new URL(value).openStream()).parse();
+                }
+
+                // ========================
+                // Element Name
+                // ========================
+                doc = dom.newDocument();
+                doc.appendChild(doc.createElement(value));
             }
-
-            if (xml instanceof InputSource) {
-                Document doc = dom.parse((InputSource) xml);
-
-                return new XML(doc, XML.convert(doc.getChildNodes()));
-            }
-
-            if (xml instanceof Document) {
-                Document doc = (Document) xml;
-
-                return new XML(doc, XML.convert(doc.getChildNodes()));
-            }
-
-            // parse as string
-            String value = xml.toString();
-
-            if (value.charAt(0) == '<') {
-                // xml text
-                Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
-
-                return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
-            }
-
-            if (value.startsWith("http://") || value.startsWith("https://")) {
-                // url text
-                Document doc = new XMLReader(value).parse();
-
-                return new XML(doc, XML.convert(doc.getChildNodes()));
-            }
-
-            // element name
-            Document doc = dom.newDocument();
-            doc.appendChild(doc.createElement(value));
-
-            return new XML(doc, XML.convert(doc.getChildNodes()));
         } catch (Exception e) {
             throw quiet(e);
         }
+        return new XML(doc, XML.convert(doc.getChildNodes()));
     }
 
     /**
