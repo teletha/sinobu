@@ -12,6 +12,7 @@ package kiss.xml;
 import kiss.I;
 import kiss.XML;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -20,9 +21,17 @@ import org.junit.Test;
 public class XMLParseTest {
 
     @Test
+    @Ignore
     public void url() throws Exception {
         XML xml = I.xml("http://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%9E");
 
+        assert xml.find("#firstHeading").text().equals("クマ");
+    }
+
+    @Test
+    public void taa() throws Exception {
+        XML xml = I.xml("http://stackoverflow.com/questions/7508993/help-with-url-as-inputsource");
+        System.out.println(xml);
         assert xml.find("#firstHeading").text().equals("クマ");
     }
 }
