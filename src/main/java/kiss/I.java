@@ -74,6 +74,7 @@ import kiss.model.ClassUtil;
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
+import kiss.xml.Parser;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
@@ -317,7 +318,17 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            factory.setCoalescing(true);
+            factory.setExpandEntityReferences(false);
+            factory.setIgnoringComments(true);
+            factory.setIgnoringElementContentWhitespace(true);
             factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            factory.setFeature("http://xml.org/sax/features/validation", false);
+            factory.setFeature("http://apache.org/xml/features/continue-after-fatal-error", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/validation/schema", false);
 
             dom = factory.newDocumentBuilder();
 
@@ -2036,6 +2047,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 return new XML(doc, XML.convert(doc.getChildNodes()));
             }
 
+            if (xml instanceof Document) {
+                Document doc = (Document) xml;
+
+                return new XML(doc, XML.convert(doc.getChildNodes()));
+            }
+
             // parse as string
             String value = xml.toString();
 
@@ -2048,9 +2065,15 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             if (value.startsWith("http://") || value.startsWith("https://")) {
                 // url text
-                Document doc = dom.parse(value);
+                try {
+                    Document doc = dom.parse(value);
 
-                return new XML(doc, XML.convert(doc.getChildNodes()));
+                    return new XML(doc, XML.convert(doc.getChildNodes()));
+                } catch (Exception e) {
+                    Document doc = Parser.parseURL(value);
+
+                    return new XML(doc, XML.convert(doc.getChildNodes()));
+                }
             }
 
             // element name
