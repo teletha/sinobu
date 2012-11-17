@@ -74,7 +74,6 @@ import kiss.model.ClassUtil;
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.xml.Parser;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
@@ -284,7 +283,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     private static final XMLInputFactory stax = XMLInputFactory.newFactory();
 
     /** The document builder. */
-    private static final DocumentBuilder dom;
+    static final DocumentBuilder dom;
 
     /** The javascript engine for reuse. */
     private static final ScriptEngine script;
@@ -318,17 +317,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
-            factory.setValidating(false);
-            factory.setCoalescing(true);
-            factory.setExpandEntityReferences(false);
-            factory.setIgnoringComments(true);
-            factory.setIgnoringElementContentWhitespace(true);
             factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            factory.setFeature("http://xml.org/sax/features/validation", false);
-            factory.setFeature("http://apache.org/xml/features/continue-after-fatal-error", true);
-            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            factory.setFeature("http://apache.org/xml/features/validation/schema", false);
 
             dom = factory.newDocumentBuilder();
 
@@ -2065,15 +2054,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             if (value.startsWith("http://") || value.startsWith("https://")) {
                 // url text
-                try {
-                    Document doc = dom.parse(value);
+                Document doc = new XMLReader(value).parse();
 
-                    return new XML(doc, XML.convert(doc.getChildNodes()));
-                } catch (Exception e) {
-                    Document doc = Parser.parseURL(value);
-
-                    return new XML(doc, XML.convert(doc.getChildNodes()));
-                }
+                return new XML(doc, XML.convert(doc.getChildNodes()));
             }
 
             // element name
@@ -2084,23 +2067,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         } catch (Exception e) {
             throw quiet(e);
         }
-    }
-
-    /**
-     * Parse out a charset from a content type header. If the charset is not supported, returns null
-     * (so the default will kick in.)
-     * 
-     * @param value e.g. "text/html; charset=EUC-JP"
-     * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
-     */
-    private static Charset detect(String value) {
-        if (value == null || value.length() == 0) {
-            return $encoding;
-        }
-
-        int index = value.lastIndexOf('=');
-
-        return Charset.forName(index == -1 ? value : value.substring(index + 1));
     }
 
     /**
