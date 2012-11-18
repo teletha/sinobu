@@ -119,6 +119,7 @@ class XMLReader {
 
                     if (!matche("=")) {
                         // single value attribute
+                        child.attr(attr, attr);
                     } else {
                         // name-value pair attribute
                         consumeSpace();
