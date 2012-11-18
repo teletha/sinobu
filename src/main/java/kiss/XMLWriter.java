@@ -37,7 +37,7 @@ import kiss.model.PropertyWalker;
 class XMLWriter extends Writer implements PropertyWalker {
 
     /** The record for traversed objects. */
-    protected final ConcurrentHashMap<Object, XML> reference = new ConcurrentHashMap();
+    private final ConcurrentHashMap<Object, XML> reference = new ConcurrentHashMap();
 
     /** The actual output. */
     private final Appendable output;
@@ -92,14 +92,14 @@ class XMLWriter extends Writer implements PropertyWalker {
             // ========================================
             if (model.isCollection()) {
                 // collection item property
-                current = child(property.model.name);
+                current = current.child(property.model.name);
 
                 // collection needs key attribute
                 if (Map.class.isAssignableFrom(model.type)) {
                     current.attr("ss:key", property.name);
                 }
             } else if (!property.isAttribute()) {
-                current = child(property.name);
+                current = current.child(property.name);
             }
 
             // If the collection item is attribute node, that is represented as xml value attribute
@@ -134,18 +134,6 @@ class XMLWriter extends Writer implements PropertyWalker {
             if (model.isCollection() || !property.isAttribute()) {
                 current = current.parent();
             }
-        }
-    }
-
-    /**
-     * @param name
-     * @return
-     */
-    private XML child(String name) {
-        if (current == null) {
-            return I.xml(name).attr("xmlns:ss", I.URI);
-        } else {
-            return current.child(name);
         }
     }
 }

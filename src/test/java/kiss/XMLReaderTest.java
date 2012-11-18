@@ -125,14 +125,6 @@ public class XMLReaderTest {
     }
 
     @Test
-    public void scriptEscapeScriptSequence() throws Exception {
-        XML xml = parse("<html><script>var test = '<script></script>';</script></html>");
-
-        assert xml.find("script").text().equals("var test = '<script></script>';");
-        assert xml.find("test").size() == 0;
-    }
-
-    @Test
     public void processingInstruction() throws Exception {
         XML xml = parse("<?xml-stylesheet type=\"text/xsl\" href=\"test.xsl\"?><html><head/></html>");
 

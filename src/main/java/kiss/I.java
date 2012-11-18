@@ -1998,9 +1998,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 new JSON(output).walk(model, property, input);
             } else {
                 // traverse configuration as xml
+
                 XMLWriter writer = new XMLWriter(output);
+                writer.current = xml(null);
                 writer.walk(model, property, input);
-                writer.current.writeTo(output);
+                writer.current.attr("xmlns:ss", URI).to(output);
             }
         } finally {
             // relese lock
@@ -2036,7 +2038,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         Document doc;
 
         try {
-            if (xml instanceof XML) {
+            if (xml == null) {
+                doc = dom.newDocument();
+
+                return new XML(doc, new ArrayList(Collections.singleton(doc)));
+            } else if (xml instanceof XML) {
                 return (XML) xml;
             } else if (xml instanceof Path) {
                 doc = dom.parse(((Path) xml).toFile());
