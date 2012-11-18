@@ -219,6 +219,13 @@ public class XMLParserTest {
     }
 
     @Test
+    public void encodingMultiple() throws Exception {
+        XML xml = parse("<html><head><meta no/><meta charset='euc-jp'/><meta charset='utf-8'><title>てすと</title></head></html>", "euc-jp");
+
+        assert xml.find("title").text().equals("てすと");
+    }
+
+    @Test
     public void invalidSlashPosition() throws Exception {
         XML xml = parse("<html><img height='0' / width='64'></html>");
 
@@ -286,5 +293,10 @@ public class XMLParserTest {
         } catch (Exception e) {
             throw I.quiet(e);
         }
+    }
+
+    @Test
+    public void testname() throws Exception {
+        I.xml("http://blog.livedoor.jp/nicovip2ch/archives/1794992.html");
     }
 }
