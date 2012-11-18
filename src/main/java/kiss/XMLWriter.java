@@ -208,23 +208,23 @@ class XMLWriter extends Writer implements PropertyWalker {
 
         while (pos != html.length()) {
             // System.out.println(pos);
-            if (matche("<!--")) {
+            if (test("<!--")) {
                 // =====================
                 // Comment
                 // =====================
                 xml.append(xml.doc.createComment(find("->")));
-            } else if (matche("<![CDATA[")) {
+            } else if (test("<![CDATA[")) {
                 // =====================
                 // CDATA
                 // =====================
                 xml.append(xml.doc.createCDATASection(find("]]>")));
-            } else if (matche("<!") || matche("<?")) {
+            } else if (test("<!") || test("<?")) {
                 // =====================
                 // DocType and PI
                 // =====================
                 // ignore doctype and pi
                 find(">");
-            } else if (matche("</")) {
+            } else if (test("</")) {
                 // =====================
                 // End Element
                 // =====================
@@ -232,7 +232,7 @@ class XMLWriter extends Writer implements PropertyWalker {
 
                 // update current element into parent
                 xml = xml.parent();
-            } else if (matche("<")) {
+            } else if (test("<")) {
                 // =====================
                 // Start Element
                 // =====================
@@ -246,7 +246,7 @@ class XMLWriter extends Writer implements PropertyWalker {
                     String attr = findName();
                     findSpace();
 
-                    if (!matche("=")) {
+                    if (!test("=")) {
                         // single value attribute
                         child.attr(attr, attr);
 
@@ -256,10 +256,10 @@ class XMLWriter extends Writer implements PropertyWalker {
                         // name-value pair attribute
                         findSpace();
 
-                        if (matche("\"")) {
+                        if (test("\"")) {
                             // quote attribute
                             child.attr(attr, find("\""));
-                        } else if (matche("'")) {
+                        } else if (test("'")) {
                             // apostrophe attribute
                             child.attr(attr, find("'"));
                         } else {
@@ -360,7 +360,7 @@ class XMLWriter extends Writer implements PropertyWalker {
      * @param until A condition.
      * @return A result.
      */
-    private boolean matche(String until) {
+    private boolean test(String until) {
         if (html.startsWith(until, pos)) {
             pos += until.length();
             return true;
