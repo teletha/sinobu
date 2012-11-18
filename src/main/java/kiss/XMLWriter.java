@@ -201,6 +201,10 @@ class XMLWriter extends Writer implements PropertyWalker {
         html = new String(row, 0, row.length, encoding);
         pos = 0;
 
+        // If crazy html provides multiple meta element for character encoding,
+        // we should adopt first one.
+        boolean detectable = true;
+
         // ====================
         // Start Parsing
         // ====================
@@ -307,28 +311,26 @@ class XMLWriter extends Writer implements PropertyWalker {
                 } else {
                     // empty element
 
-                    // chech encoding in meta element
-                    if (name.equals("meta")) {
+                    // check encoding in meta element
+                    if (detectable && name.equals("meta")) {
                         String value = child.attr("charset");
 
                         if (value.length() == 0 && child.attr("http-equiv").equalsIgnoreCase("content-type")) {
                             value = child.attr("content");
                         }
 
-                        Charset detect = encoding;
-                        int index = value.lastIndexOf('=');
+                        if (value.length() != 0) {
+                            detectable = false;
 
-                        try {
-                            detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
-                        } catch (Exception e) {
-                            // do nothing, use default
-                        }
+                            int index = value.lastIndexOf('=');
+                            Charset detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
 
-                        // reset and parse again if the current encoding is wrong
-                        if (!encoding.equals(detect)) {
-                            encoding = detect;
+                            // reset and parse again if the current encoding is wrong
+                            if (!encoding.equals(detect)) {
+                                encoding = detect;
 
-                            return parse();
+                                return parse();
+                            }
                         }
                     }
                     // don't update current elment
