@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import kiss.I;
-import kiss.SinobuTest;
+import kiss.core.CoreMethodsTest;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
@@ -431,7 +431,7 @@ public class XMLTest {
     @Test
     public void javaClass() throws Exception {
         BuiltinBean bean = I.make(BuiltinBean.class);
-        bean.setSomeClass(SinobuTest.class);
+        bean.setSomeClass(CoreMethodsTest.class);
 
         // write
         I.write(bean, config, false);
@@ -439,7 +439,7 @@ public class XMLTest {
         // read
         bean = I.read(config, I.make(BuiltinBean.class));
         assert bean != null;
-        assert bean.getSomeClass().equals(SinobuTest.class);
+        assert bean.getSomeClass().equals(CoreMethodsTest.class);
 
         // validate format
         XML xml = xml(config);

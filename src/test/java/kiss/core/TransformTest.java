@@ -7,14 +7,16 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.core;
+
+import kiss.I;
 
 import org.junit.Test;
 
 /**
  * @version 2011/03/22 16:50:58
  */
-public class SinobuTransformTest {
+public class TransformTest {
 
     @Test
     public void inputNull() throws Exception {
@@ -88,7 +90,7 @@ public class SinobuTransformTest {
         private int value;
 
         /**
-         * Get the value property of this {@link SinobuTransformTest.BeanA1}.
+         * Get the value property of this {@link TransformTest.BeanA1}.
          * 
          * @return The value property.
          */
@@ -97,7 +99,7 @@ public class SinobuTransformTest {
         }
 
         /**
-         * Set the value property of this {@link SinobuTransformTest.BeanA1}.
+         * Set the value property of this {@link TransformTest.BeanA1}.
          * 
          * @param value The value value to set.
          */
@@ -115,7 +117,7 @@ public class SinobuTransformTest {
         private String value;
 
         /**
-         * Get the value property of this {@link SinobuTransformTest.BeanA1}.
+         * Get the value property of this {@link TransformTest.BeanA1}.
          * 
          * @return The value property.
          */
@@ -124,7 +126,7 @@ public class SinobuTransformTest {
         }
 
         /**
-         * Set the value property of this {@link SinobuTransformTest.BeanA1}.
+         * Set the value property of this {@link TransformTest.BeanA1}.
          * 
          * @param value The value value to set.
          */

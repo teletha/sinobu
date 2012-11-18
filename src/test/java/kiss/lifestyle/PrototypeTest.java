@@ -7,7 +7,11 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.lifestyle;
+
+import kiss.I;
+import kiss.Manageable;
+import kiss.Prototype;
 
 import org.junit.Test;
 

@@ -7,10 +7,16 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.core;
 
 
 import java.util.Locale;
+
+import kiss.Extensible;
+import kiss.I;
+import kiss.Lifestyle;
+import kiss.Manageable;
+import kiss.Singleton;
 
 import org.junit.Rule;
 import org.junit.Test;

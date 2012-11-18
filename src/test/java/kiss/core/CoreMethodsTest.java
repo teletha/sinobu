@@ -7,12 +7,15 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.core;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import kiss.I;
+import kiss.Manageable;
+import kiss.Singleton;
 import kiss.sample.bean.FinalBean;
 import kiss.sample.bean.Primitive;
 import kiss.sample.modifier.Abstract;
@@ -25,7 +28,7 @@ import org.junit.Test;
 /**
  * @version 2012/11/09 10:45:14
  */
-public class SinobuTest {
+public class CoreMethodsTest {
 
     /**
      * Test public class. (top-level class)

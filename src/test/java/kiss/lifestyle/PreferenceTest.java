@@ -7,10 +7,15 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.lifestyle;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import kiss.I;
+import kiss.Manageable;
+import kiss.Preference;
+import kiss.SinobuSetting;
 
 import org.junit.Rule;
 import org.junit.Test;

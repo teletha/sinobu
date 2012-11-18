@@ -7,12 +7,16 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.lifestyle;
 
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+
+import kiss.I;
+import kiss.Manageable;
+import kiss.ThreadSpecific;
 
 import org.junit.Test;
 
