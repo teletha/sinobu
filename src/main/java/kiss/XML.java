@@ -28,6 +28,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
@@ -323,24 +324,30 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML attr(String name, Object value) {
-        for (Node node : nodes) {
-            org.w3c.dom.Element e = (org.w3c.dom.Element) node;
+        if (name != null && name.length() != 0) {
+            for (Node node : nodes) {
+                org.w3c.dom.Element e = (org.w3c.dom.Element) node;
 
-            if (value == null) {
-                if (name.startsWith(XMLNS_ATTRIBUTE)) {
-                    // namespace
-                    e.removeAttributeNS(XMLNS_ATTRIBUTE_NS_URI, name);
+                if (value == null) {
+                    if (name.startsWith(XMLNS_ATTRIBUTE)) {
+                        // namespace
+                        e.removeAttributeNS(XMLNS_ATTRIBUTE_NS_URI, name);
+                    } else {
+                        // attribute
+                        e.removeAttribute(name);
+                    }
                 } else {
-                    // attribute
-                    e.removeAttribute(name);
-                }
-            } else {
-                if (name.startsWith(XMLNS_ATTRIBUTE)) {
-                    // namespace
-                    e.setAttributeNS(XMLNS_ATTRIBUTE_NS_URI, name, value.toString());
-                } else {
-                    // attribute
-                    e.setAttribute(name, value.toString());
+                    try {
+                        if (name.startsWith(XMLNS_ATTRIBUTE)) {
+                            // namespace
+                            e.setAttributeNS(XMLNS_ATTRIBUTE_NS_URI, name, value.toString());
+                        } else {
+                            // attribute
+                            e.setAttribute(name, value.toString());
+                        }
+                    } catch (DOMException dom) {
+                        // user specify invalid attribute name
+                    }
                 }
             }
         }

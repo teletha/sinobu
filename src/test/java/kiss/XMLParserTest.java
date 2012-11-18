@@ -70,21 +70,37 @@ public class XMLParserTest {
     public void attributeNaked() throws Exception {
         XML xml = parse("<html><item name=value/></html>");
 
-        assert xml.find("item[name=value]").size() == 1;
+        assert xml.find("item").attr("name").equals("value");
+    }
+
+    @Test
+    public void attributeNakedURI() throws Exception {
+        XML xml = parse("<html><item name=http://test.org/index.html /></html>");
+
+        assert xml.find("item").attr("name").equalsIgnoreCase("http://test.org/index.html");
+    }
+
+    @Test
+    public void attributeNakedMultiples() throws Exception {
+        XML xml = parse("<html><item name=value one=other/></html>");
+
+        XML item = xml.find("item");
+        assert item.attr("name").equals("value");
+        assert item.attr("one").equals("other");
     }
 
     @Test
     public void attributeNoValue() throws Exception {
         XML xml = parse("<html><item disabled/></html>");
 
-        assert xml.find("item[disabled=disabled]").size() == 1;
+        assert xml.find("item").attr("disabled").equals("disabled");
     }
 
     @Test
     public void attributeWithSpace() throws Exception {
         XML xml = parse("<html><item  name = 'value' /></html>");
 
-        assert xml.find("item[name=value]").size() == 1;
+        assert xml.find("item").attr("name").equals("value");
     }
 
     @Test
@@ -176,6 +192,34 @@ public class XMLParserTest {
         XML xml = parse("<html><head><meta charset='euc-jp'><title>てすと</title></head></html>", "euc-jp");
 
         assert xml.find("title").text().equals("てすと");
+    }
+
+    @Test
+    public void invalidSlashPosition() throws Exception {
+        XML xml = parse("<html><img height='0' / width='64'></html>");
+
+        assert xml.find("img").attr("height").equals("0");
+    }
+
+    @Test
+    public void invalidQuotePosition() throws Exception {
+        XML xml = parse("<html><img alt=\"value\"\"></html>");
+
+        assert xml.find("img").attr("alt").equals("value");
+    }
+
+    @Test
+    public void invalidSingleQuotePosition() throws Exception {
+        XML xml = parse("<html><img alt='value''></html>");
+
+        assert xml.find("img").attr("alt").equals("value");
+    }
+
+    @Test
+    public void invalidAttribute() throws Exception {
+        XML xml = parse("<html><img alt=\"value\"(0)\"></html>");
+
+        assert xml.find("img").attr("alt").equals("value");
     }
 
     /**

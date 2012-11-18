@@ -9,9 +9,6 @@
  */
 package kiss;
 
-import kiss.I;
-import kiss.XML;
-
 import org.junit.Test;
 
 /**
@@ -183,6 +180,29 @@ public class XMLManipulationTest {
 
         assert e.attr("P:name").equals("set");
         assert e.attr("name").equals("");
+    }
+
+    @Test
+    public void attrNull() throws Exception {
+        String xml = "<Q/>";
+
+        XML e = I.xml(xml);
+        e.attr(null, "one"); // no error
+        e.attr("", "two"); // no error
+
+        assert e.attr("").equals("");
+    }
+
+    @Test
+    public void attrInvalidName() throws Exception {
+        String xml = "<Q/>";
+
+        XML e = I.xml(xml);
+        e.attr("0", "one"); // no error
+        e.attr("$", "one"); // no error
+
+        assert e.attr("0").equals("");
+        assert e.attr("$").equals("");
     }
 
     @Test
