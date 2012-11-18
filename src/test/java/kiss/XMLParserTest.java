@@ -141,6 +141,30 @@ public class XMLParserTest {
     }
 
     @Test
+    public void upperCase() throws Exception {
+        XML xml = parse("<html><SCRIPT></SCRIPT></html>");
+
+        assert xml.find("script").size() == 1;
+        assert xml.find("script").text().length() == 0;
+    }
+
+    @Test
+    public void upperLower() throws Exception {
+        XML xml = parse("<html><SCRIPT></script></html>");
+
+        assert xml.find("script").size() == 1;
+        assert xml.find("script").text().length() == 0;
+    }
+
+    @Test
+    public void lowerUpper() throws Exception {
+        XML xml = parse("<html><script></SCRIPT></html>");
+
+        assert xml.find("script").size() == 1;
+        assert xml.find("script").text().length() == 0;
+    }
+
+    @Test
     public void processingInstruction() throws Exception {
         XML xml = parse("<?xml-stylesheet type=\"text/xsl\" href=\"test.xsl\"?><html><head/></html>");
 
@@ -220,6 +244,13 @@ public class XMLParserTest {
         XML xml = parse("<html><img alt=\"value\"(0)\"></html>");
 
         assert xml.find("img").attr("alt").equals("value");
+    }
+
+    @Test
+    public void illegal() throws Exception {
+        XML xml = parse("<html><Q/><Q/><Q><p/><Q><p/></html>");
+
+        assert xml.children().size() == 3;
     }
 
     /**
