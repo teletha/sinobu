@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import antibug.AntiBug;
@@ -226,6 +227,14 @@ public class XMLParserTest {
     }
 
     @Test
+    @Ignore
+    public void encodingInvalid() throws Exception {
+        XML xml = parse("<html><head><meta charset='uft-3'><title>てすと</title></head></html>", "utf-8");
+
+        assert xml.find("title").text().equals("てすと");
+    }
+
+    @Test
     public void invalidSlashPosition() throws Exception {
         XML xml = parse("<html><img height='0' / width='64'></html>");
 
@@ -271,7 +280,7 @@ public class XMLParserTest {
     private XML parse(String html) {
         try {
             XMLWriter parser = new XMLWriter(Files.newInputStream(AntiBug.note(html)));
-            return parser.parse();
+            return parser.parse(I.$encoding);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -289,7 +298,7 @@ public class XMLParserTest {
         try {
             ByteBuffer buffer = Charset.forName(encoding).encode(html);
             XMLWriter parser = new XMLWriter(new ByteArrayInputStream(buffer.array(), 0, buffer.limit()));
-            return parser.parse();
+            return parser.parse(I.$encoding);
         } catch (Exception e) {
             throw I.quiet(e);
         }

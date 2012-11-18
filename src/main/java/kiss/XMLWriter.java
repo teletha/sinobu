@@ -165,9 +165,6 @@ class XMLWriter extends Writer implements PropertyWalker {
     /** The raw text data. */
     private byte[] row;
 
-    /** The document encoding. */
-    private Charset encoding;
-
     /** The encoded text data. */
     private String html;
 
@@ -183,7 +180,6 @@ class XMLWriter extends Writer implements PropertyWalker {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         I.copy(input, output, true);
         row = output.toByteArray();
-        encoding = I.$encoding;
     }
 
     /**
@@ -193,7 +189,7 @@ class XMLWriter extends Writer implements PropertyWalker {
      * 
      * @return A normalized {@link XML}.
      */
-    XML parse() {
+    XML parse(Charset encoding) {
         // ====================
         // Initialization
         // ====================
@@ -322,14 +318,16 @@ class XMLWriter extends Writer implements PropertyWalker {
                         if (value.length() != 0) {
                             detectable = false;
 
-                            int index = value.lastIndexOf('=');
-                            Charset detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
+                            try {
+                                int index = value.lastIndexOf('=');
+                                Charset detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
 
-                            // reset and parse again if the current encoding is wrong
-                            if (!encoding.equals(detect)) {
-                                encoding = detect;
-
-                                return parse();
+                                // reset and parse again if the current encoding is wrong
+                                if (!encoding.equals(detect)) {
+                                    return parse(detect);
+                                }
+                            } catch (Exception e) {
+                                // unkwnown encoding name
                             }
                         }
                     }
