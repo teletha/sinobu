@@ -74,6 +74,13 @@ public class XMLReaderTest {
     }
 
     @Test
+    public void attributeNoValue() throws Exception {
+        XML xml = parse("<html><item disabled/></html>");
+
+        assert xml.find("item[disabled=disabled]").size() == 1;
+    }
+
+    @Test
     public void attributeWithSpace() throws Exception {
         XML xml = parse("<html><item  name = 'value' /></html>");
 
@@ -114,6 +121,14 @@ public class XMLReaderTest {
         XML xml = parse("<html><script>var test = '<test/>';</script></html>");
 
         assert xml.find("script").text().equals("var test = '<test/>';");
+        assert xml.find("test").size() == 0;
+    }
+
+    @Test
+    public void scriptEscapeScriptSequence() throws Exception {
+        XML xml = parse("<html><script>var test = '<script></script>';</script></html>");
+
+        assert xml.find("script").text().equals("var test = '<script></script>';");
         assert xml.find("test").size() == 0;
     }
 
