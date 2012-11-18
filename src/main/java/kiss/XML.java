@@ -75,7 +75,7 @@ public class XML implements Iterable<XML> {
     }
 
     /** The current document. */
-    private Document doc;
+    Document doc;
 
     /** The current node set. */
     private final List<Node> nodes;

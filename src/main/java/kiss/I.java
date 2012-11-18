@@ -284,7 +284,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     private static final XMLInputFactory stax = XMLInputFactory.newFactory();
 
     /** The document builder. */
-    static final DocumentBuilder dom;
+    private static final DocumentBuilder dom;
 
     /** The javascript engine for reuse. */
     private static final ScriptEngine script;

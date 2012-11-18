@@ -29,7 +29,7 @@ import kiss.model.PropertyWalker;
  * which provides constant-time performance for seaching element.
  * </p>
  * <p>
- * This is {@link Appendable} {@link Writer}.
+ * This is also {@link Appendable} {@link Writer}.
  * </p>
  * 
  * @version 2012/11/07 21:01:06
