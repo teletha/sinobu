@@ -9,7 +9,10 @@
  */
 package kiss;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import org.junit.Test;
@@ -146,6 +149,20 @@ public class XMLReaderTest {
         assert xml.parent().text().length() == 0;
     }
 
+    @Test
+    public void whitespace() throws Exception {
+        XML xml = parse("   <html>\r\n\t<in/> \n\n</html>   ");
+
+        assert xml.find("in").size() == 1;
+    }
+
+    @Test
+    public void encoding() throws Exception {
+        XML xml = parse("<html><head><meta charset='euc-jp'><title>てすと</title></head></html>", "euc-jp");
+
+        assert xml.find("title").text().equals("てすと");
+    }
+
     /**
      * <p>
      * Parse as HTML.
@@ -159,6 +176,25 @@ public class XMLReaderTest {
             XMLReader reader = new XMLReader(Files.newInputStream(AntiBug.note(html)));
             return reader.parse();
         } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Parse as HTML.
+     * </p>
+     * 
+     * @param html
+     * @return
+     */
+    private XML parse(String html, String encoding) {
+        try {
+            Charset charset = Charset.forName(encoding);
+            ByteBuffer buffer = charset.encode(html);
+            XMLReader reader = new XMLReader(new ByteArrayInputStream(buffer.array(), 0, buffer.limit()));
+            return reader.parse();
+        } catch (Exception e) {
             throw I.quiet(e);
         }
     }

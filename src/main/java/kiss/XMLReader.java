@@ -55,6 +55,17 @@ class XMLReader {
         row = output.toByteArray();
     }
 
+    // /**
+    // * <p>
+    // * Constructor.
+    // * </p>
+    // *
+    // * @param input
+    // */
+    // XMLReader(String html) {
+    // this.html = html;
+    // }
+
     /**
      * <p>
      * Parse HTML and build {@link XML}.
@@ -73,13 +84,12 @@ class XMLReader {
                 // =====================
                 // Comment
                 // =====================
-                // ignore comment
-                consume("->");
+                xml.append(xml.doc.createComment(consume("->")));
             } else if (matche("<![CDATA[")) {
                 // =====================
                 // CDATA
                 // =====================
-                xml.append(I.dom.newDocument().createTextNode(consume("]]>")));
+                xml.append(xml.doc.createCDATASection(consume("]]>")));
             } else if (matche("<!") || matche("<?")) {
                 // =====================
                 // DocType and PI
@@ -145,20 +155,25 @@ class XMLReader {
 
                     // chech encoding in meta element
                     if (name.equals("meta")) {
-                        Charset detect = encoding;
                         String value = child.attr("charset");
 
-                        if (value.length() != 0) {
-                            detect = Charset.forName(value);
+                        if (value.length() == 0 && child.attr("http-equiv").equalsIgnoreCase("content-type")) {
+                            value = child.attr("content");
                         }
 
-                        if (child.attr("http-equiv").equalsIgnoreCase("content-type")) {
-                            detect = detect(child.attr("content"));
+                        Charset detect = encoding;
+                        int index = value.lastIndexOf('=');
+
+                        try {
+                            detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
+                        } catch (Exception e) {
+                            // do nothing, use default
                         }
 
                         // reset and parse again if the current encoding is wrong
                         if (!encoding.equals(detect)) {
                             encoding = detect;
+
                             return parse();
                         }
                     }
@@ -168,7 +183,7 @@ class XMLReader {
                 // =====================
                 // Text
                 // =====================
-                xml.append(I.dom.newDocument().createTextNode(consume("<")));
+                xml.append(xml.doc.createTextNode(consume("<")));
 
                 // If the current positon is not end of document, we should continue to parse
                 // next elements. So rollback position(1) for the "<" next start element.
@@ -247,22 +262,5 @@ class XMLReader {
         while (Character.isWhitespace(html.charAt(pos))) {
             pos++;
         }
-    }
-
-    /**
-     * Parse out a charset from a content type header. If the charset is not supported, returns null
-     * (so the default will kick in.)
-     * 
-     * @param value e.g. "text/html; charset=EUC-JP"
-     * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
-     */
-    private Charset detect(String value) {
-        if (value == null || value.length() == 0) {
-            return encoding;
-        }
-
-        int index = value.lastIndexOf('=');
-
-        return Charset.forName(index == -1 ? value : value.substring(index + 1));
     }
 }
