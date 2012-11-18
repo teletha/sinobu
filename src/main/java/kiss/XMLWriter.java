@@ -207,6 +207,7 @@ class XMLWriter extends Writer implements PropertyWalker {
         findSpace();
 
         while (pos != html.length()) {
+            // System.out.println(pos);
             if (matche("<!--")) {
                 // =====================
                 // Comment
@@ -237,6 +238,7 @@ class XMLWriter extends Writer implements PropertyWalker {
                 // =====================
                 String name = findName();
                 findSpace();
+
                 XML child = xml.child(name);
 
                 // parse attributes
@@ -282,9 +284,20 @@ class XMLWriter extends Writer implements PropertyWalker {
                 if (find(">").length() == 0 && Arrays.binarySearch(empties, name) < 0) {
                     // container element
                     if (0 <= Arrays.binarySearch(datas, name)) {
-                        // text data only element
-                        // add contents as text
-                        child.text(find("</".concat(name).concat(">")));
+                        // text data only element - add contents as text
+
+                        // At first, we find the end element, but the some html provides crazy
+                        // element pair like <div></DIV>. So we should search by case-insensitive,
+                        // don't use find("</" + name + ">").
+                        int start = pos;
+
+                        find("</");
+                        while (!findName().equals(name)) {
+                            find("</");
+                        }
+                        find(">");
+
+                        child.text(html.substring(start, pos - 3 - name.length()));
                         // don't update current elment
                     } else {
                         // mixed element
@@ -335,7 +348,7 @@ class XMLWriter extends Writer implements PropertyWalker {
             findSpace();
         }
 
-        return xml;
+        return I.xml(xml.doc); // return root
     }
 
     /**
@@ -392,7 +405,7 @@ class XMLWriter extends Writer implements PropertyWalker {
         while (Character.isLetterOrDigit(c) || c == '_' || c == ':' || c == '-') {
             c = html.charAt(++pos);
         }
-        return html.substring(start, pos);
+        return html.substring(start, pos).toLowerCase();
     }
 
     /**
