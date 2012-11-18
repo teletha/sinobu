@@ -467,7 +467,7 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML first() {
-        return new XML(doc, nodes.subList(0, 1));
+        return nodes.isEmpty() ? this : new XML(doc, nodes.subList(0, 1));
     }
 
     /**
@@ -478,7 +478,7 @@ public class XML implements Iterable<XML> {
      * @return
      */
     public XML last() {
-        return new XML(doc, nodes.subList(nodes.size() - 1, nodes.size()));
+        return nodes.isEmpty() ? this : new XML(doc, nodes.subList(nodes.size() - 1, nodes.size()));
     }
 
     /**
