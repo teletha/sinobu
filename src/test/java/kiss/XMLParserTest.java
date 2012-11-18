@@ -141,6 +141,14 @@ public class XMLParserTest {
     }
 
     @Test
+    public void doctypeWithWhitespace() throws Exception {
+        XML xml = parse("<!DOCTYPE html>\r\n<html><head/></html>");
+
+        assert xml.find("head").size() == 1;
+        assert xml.parent().text().length() == 0;
+    }
+
+    @Test
     public void doctypeWithPublic() throws Exception {
         XML xml = parse("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"><html><head/></html>");
 

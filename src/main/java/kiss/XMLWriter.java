@@ -319,6 +319,7 @@ class XMLWriter extends Writer implements PropertyWalker {
                     pos--;
                 }
             }
+            findSpace();
         }
 
         return xml;
@@ -387,7 +388,7 @@ class XMLWriter extends Writer implements PropertyWalker {
      * </p>
      */
     private void findSpace() {
-        while (Character.isWhitespace(html.charAt(pos))) {
+        while (pos < html.length() && Character.isWhitespace(html.charAt(pos))) {
             pos++;
         }
     }
