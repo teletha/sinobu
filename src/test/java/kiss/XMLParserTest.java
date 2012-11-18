@@ -15,7 +15,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import antibug.AntiBug;
@@ -227,7 +226,6 @@ public class XMLParserTest {
     }
 
     @Test
-    @Ignore
     public void encodingInvalid() throws Exception {
         XML xml = parse("<html><head><meta charset='uft-3'><title>てすと</title></head></html>", "utf-8");
 
