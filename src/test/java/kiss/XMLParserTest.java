@@ -22,7 +22,7 @@ import antibug.AntiBug;
 /**
  * @version 2012/11/18 2:56:12
  */
-public class XMLReaderTest {
+public class XMLParserTest {
 
     @Test
     public void html() throws Exception {
@@ -180,8 +180,8 @@ public class XMLReaderTest {
      */
     private XML parse(String html) {
         try {
-            XMLReader reader = new XMLReader(Files.newInputStream(AntiBug.note(html)));
-            return reader.parse();
+            XMLWriter parser = new XMLWriter(Files.newInputStream(AntiBug.note(html)));
+            return parser.parse();
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -197,10 +197,9 @@ public class XMLReaderTest {
      */
     private XML parse(String html, String encoding) {
         try {
-            Charset charset = Charset.forName(encoding);
-            ByteBuffer buffer = charset.encode(html);
-            XMLReader reader = new XMLReader(new ByteArrayInputStream(buffer.array(), 0, buffer.limit()));
-            return reader.parse();
+            ByteBuffer buffer = Charset.forName(encoding).encode(html);
+            XMLWriter parser = new XMLWriter(new ByteArrayInputStream(buffer.array(), 0, buffer.limit()));
+            return parser.parse();
         } catch (Exception e) {
             throw I.quiet(e);
         }

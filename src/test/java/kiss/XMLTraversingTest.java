@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.xml;
+package kiss;
 
 import kiss.I;
 import kiss.XML;
