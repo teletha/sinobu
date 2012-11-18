@@ -9,9 +9,6 @@
  */
 package kiss;
 
-import kiss.I;
-import kiss.XML;
-
 import org.junit.Test;
 
 /**
@@ -27,10 +24,26 @@ public class XMLTraversingTest {
     }
 
     @Test
+    public void firstAtEmpty() throws Exception {
+        XML xml = I.xml("<m/>");
+
+        assert xml.find("Q").size() == 0;
+        assert xml.find("Q").first().size() == 0;
+    }
+
+    @Test
     public void last() throws Exception {
         String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
         assert I.xml(xml).find("Q").last().attr("class").equals("last");
+    }
+
+    @Test
+    public void lastAtEmpty() throws Exception {
+        XML xml = I.xml("<m/>");
+
+        assert xml.find("Q").size() == 0;
+        assert xml.find("Q").last().size() == 0;
     }
 
     @Test
