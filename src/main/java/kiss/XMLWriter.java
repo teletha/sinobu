@@ -240,13 +240,16 @@ class XMLWriter extends Writer implements PropertyWalker {
                 XML child = xml.child(name);
 
                 // parse attributes
-                while (!html.startsWith("/>", pos) && !html.startsWith(">", pos)) {
+                while (html.charAt(pos) != '/' && html.charAt(pos) != '>') {
                     String attr = findName();
                     findSpace();
 
                     if (!matche("=")) {
                         // single value attribute
                         child.attr(attr, attr);
+
+                        // step into next
+                        pos++;
                     } else {
                         // name-value pair attribute
                         findSpace();
@@ -259,7 +262,17 @@ class XMLWriter extends Writer implements PropertyWalker {
                             child.attr(attr, find("'"));
                         } else {
                             // non-quoted attribute
-                            child.attr(attr, findName());
+                            int start = pos;
+                            char c = html.charAt(pos);
+
+                            while (c != '>' && !Character.isWhitespace(c)) {
+                                c = html.charAt(++pos);
+                            }
+
+                            if (html.charAt(pos - 1) == '/') {
+                                pos--;
+                            }
+                            child.attr(attr, html.substring(start, pos));
                         }
                     }
                     findSpace();
