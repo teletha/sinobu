@@ -55,17 +55,6 @@ class XMLReader {
         row = output.toByteArray();
     }
 
-    // /**
-    // * <p>
-    // * Constructor.
-    // * </p>
-    // *
-    // * @param input
-    // */
-    // XMLReader(String html) {
-    // this.html = html;
-    // }
-
     /**
      * <p>
      * Parse HTML and build {@link XML}.
@@ -75,32 +64,37 @@ class XMLReader {
      */
     XML parse() {
         // initialize
-        xml = I.xml("m");
+        xml = I.xml(null);
         html = new String(row, 0, row.length, encoding);
         pos = 0;
+
+        // ====================
+        // Start Parsing
+        // ====================
+        findSpace();
 
         while (pos != html.length()) {
             if (matche("<!--")) {
                 // =====================
                 // Comment
                 // =====================
-                xml.append(xml.doc.createComment(consume("->")));
+                xml.append(xml.doc.createComment(find("->")));
             } else if (matche("<![CDATA[")) {
                 // =====================
                 // CDATA
                 // =====================
-                xml.append(xml.doc.createCDATASection(consume("]]>")));
+                xml.append(xml.doc.createCDATASection(find("]]>")));
             } else if (matche("<!") || matche("<?")) {
                 // =====================
                 // DocType and PI
                 // =====================
                 // ignore doctype and pi
-                consume(">");
+                find(">");
             } else if (matche("</")) {
                 // =====================
                 // End Element
                 // =====================
-                consume(">");
+                find(">");
 
                 // update current element into parent
                 xml = xml.parent();
@@ -108,43 +102,43 @@ class XMLReader {
                 // =====================
                 // Start Element
                 // =====================
-                String name = consumeName();
-                consumeSpace();
+                String name = findName();
+                findSpace();
                 XML child = xml.child(name);
 
                 // parse attributes
                 while (!html.startsWith("/>", pos) && !html.startsWith(">", pos)) {
-                    String attr = consumeName();
-                    consumeSpace();
+                    String attr = findName();
+                    findSpace();
 
                     if (!matche("=")) {
                         // single value attribute
                         child.attr(attr, attr);
                     } else {
                         // name-value pair attribute
-                        consumeSpace();
+                        findSpace();
 
                         if (matche("\"")) {
                             // quote attribute
-                            child.attr(attr, consume("\""));
+                            child.attr(attr, find("\""));
                         } else if (matche("'")) {
                             // apostrophe attribute
-                            child.attr(attr, consume("'"));
+                            child.attr(attr, find("'"));
                         } else {
                             // non-quoted attribute
-                            child.attr(attr, consumeName());
+                            child.attr(attr, findName());
                         }
                     }
-                    consumeSpace();
+                    findSpace();
                 }
 
                 // close start element
-                if (consume(">").length() == 0 && Arrays.binarySearch(empties, name) < 0) {
+                if (find(">").length() == 0 && Arrays.binarySearch(empties, name) < 0) {
                     // container element
                     if (0 <= Arrays.binarySearch(datas, name)) {
                         // text data only element
                         // add contents as text
-                        child.text(consume("</".concat(name).concat(">")));
+                        child.text(find("</".concat(name).concat(">")));
                         // don't update current elment
                     } else {
                         // mixed element
@@ -184,7 +178,7 @@ class XMLReader {
                 // =====================
                 // Text
                 // =====================
-                xml.append(xml.doc.createTextNode(consume("<")));
+                xml.append(xml.doc.createTextNode(find("<")));
 
                 // If the current positon is not end of document, we should continue to parse
                 // next elements. So rollback position(1) for the "<" next start element.
@@ -194,7 +188,7 @@ class XMLReader {
             }
         }
 
-        return xml.children();
+        return xml;
     }
 
     /**
@@ -223,7 +217,7 @@ class XMLReader {
      * @param until A target character sequence. (include this sequence)
      * @return A consumed character sequence. (exclude the specified sequence)
      */
-    private String consume(String until) {
+    private String find(String until) {
         int start = pos;
         int index = html.indexOf(until, pos);
 
@@ -244,7 +238,7 @@ class XMLReader {
      * 
      * @return An identical name for XML.
      */
-    private String consumeName() {
+    private String findName() {
         int start = pos;
         char c = html.charAt(pos);
 
@@ -259,7 +253,7 @@ class XMLReader {
      * Consume the next run of whitespace characters.
      * </p>
      */
-    private void consumeSpace() {
+    private void findSpace() {
         while (Character.isWhitespace(html.charAt(pos))) {
             pos++;
         }

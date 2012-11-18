@@ -617,7 +617,7 @@ public class XML implements Iterable<XML> {
      * 
      * @param output A output channel.
      */
-    public void writeTo(Appendable output) {
+    public void to(Appendable output) {
         try {
             XML11Serializer serializer = new XML11Serializer(output instanceof Writer ? (Writer) output
                     : new XMLWriter(output), format);
@@ -637,7 +637,7 @@ public class XML implements Iterable<XML> {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        writeTo(builder);
+        to(builder);
 
         return builder.toString().trim();
     }
