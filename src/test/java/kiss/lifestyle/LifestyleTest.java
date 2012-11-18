@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.lifestyle;
 
 
 import java.util.HashSet;
@@ -20,6 +20,11 @@ import org.junit.Test;
 import antibug.PrivateModule;
 
 
+import kiss.I;
+import kiss.Lifestyle;
+import kiss.Manageable;
+import kiss.Prototype;
+import kiss.Singleton;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Student;
 

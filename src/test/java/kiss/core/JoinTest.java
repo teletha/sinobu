@@ -7,10 +7,12 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.core;
 
 import java.util.Arrays;
 import java.util.Collections;
+
+import kiss.I;
 
 import org.junit.Test;
 
