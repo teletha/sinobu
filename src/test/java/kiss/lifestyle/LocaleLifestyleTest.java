@@ -7,9 +7,11 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.lifestyle;
 
 import java.util.Locale;
+
+import kiss.I;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,7 +20,7 @@ import org.junit.Test;
 /**
  * @version 2011/03/22 16:43:38
  */
-public class DefaultLocaleTest {
+public class LocaleLifestyleTest {
 
     /** preserve. */
     private static Locale locale;
