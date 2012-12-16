@@ -36,7 +36,9 @@ import org.w3c.dom.NodeList;
 
 import com.sun.org.apache.xerces.internal.util.DOMUtil;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
+import com.sun.org.apache.xml.internal.serializer.ToHTMLStream;
+import com.sun.org.apache.xml.internal.serializer.ToStream;
+import com.sun.org.apache.xml.internal.serializer.ToXMLStream;
 
 /**
  * @version 2012/11/18 22:33:02
@@ -58,18 +60,11 @@ public class XML implements Iterable<XML> {
     /** The xpath evaluator. */
     private static final XPath xpath;
 
-    /** The pretty serializer. */
-    private static final OutputFormat format;
-
     // initialization
     static {
         try {
             xpath = XPathFactory.newInstance().newXPath();
 
-            format = new OutputFormat();
-            format.setIndent(2);
-            format.setLineWidth(0);
-            format.setOmitXMLDeclaration(true);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -625,14 +620,28 @@ public class XML implements Iterable<XML> {
      * @param output A output channel.
      */
     public void to(Appendable output) {
+        OutputFormat format = new OutputFormat();
+        format.setIndent(2);
+        format.setLineWidth(0);
+        format.setOmitXMLDeclaration(true);
+
+        Writer out = output instanceof Writer ? (Writer) output : new XMLWriter(output);
+
+        ToStream serializer;
+
         try {
             // deal well by HTML5
             if (nodes != null && nodes.size() == 1 && nodes.get(0).getNodeName().equals("html")) {
                 output.append("<!DOCTYPE html>\r\n");
-            }
+                serializer = new ToHTMLStream();
 
-            XML11Serializer serializer = new XML11Serializer(output instanceof Writer ? (Writer) output
-                    : new XMLWriter(output), format);
+                ((ToHTMLStream) serializer).setOmitMetaTag(true);
+            } else {
+                serializer = new ToXMLStream();
+            }
+            serializer.setIndent(true);
+            serializer.setIndentAmount(2);
+            serializer.setWriter(out);
 
             for (Node node : nodes) {
                 serializer.serialize(node);
