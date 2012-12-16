@@ -626,6 +626,11 @@ public class XML implements Iterable<XML> {
      */
     public void to(Appendable output) {
         try {
+            // deal well by HTML5
+            if (nodes != null && nodes.size() == 1 && nodes.get(0).getNodeName().equals("html")) {
+                output.append("<!DOCTYPE html>\r\n");
+            }
+
             XML11Serializer serializer = new XML11Serializer(output instanceof Writer ? (Writer) output
                     : new XMLWriter(output), format);
 
