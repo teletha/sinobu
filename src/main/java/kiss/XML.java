@@ -612,19 +612,25 @@ public class XML implements Iterable<XML> {
         return elements.iterator();
     }
 
-    public void to(ContentHandler handler) {
+    /**
+     * <p>
+     * Write this elements to the specified output.
+     * </p>
+     * 
+     * @param output A output channel.
+     */
+    public void to(ContentHandler output) {
         try {
-            handler.startDocument();
-            TreeWalker walker = new TreeWalker(handler);
+            output.startDocument();
+            TreeWalker walker = new TreeWalker(output);
 
             for (Node node : nodes) {
                 walker.traverseFragment(node);
             }
-            handler.endDocument();
+            output.endDocument();
         } catch (Exception e) {
             throw I.quiet(e);
         }
-
     }
 
     /**
@@ -640,10 +646,7 @@ public class XML implements Iterable<XML> {
         format.setLineWidth(0);
         format.setOmitXMLDeclaration(true);
 
-        XML11Serializer serializer = new XML11Serializer(output instanceof Writer ? (Writer) output
-                : new XMLWriter(output), format);
-
-        to(serializer);
+        to(new XML11Serializer(output instanceof Writer ? (Writer) output : new XMLWriter(output), format));
     }
 
     /**
