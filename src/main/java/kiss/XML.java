@@ -33,12 +33,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ContentHandler;
 
 import com.sun.org.apache.xerces.internal.util.DOMUtil;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serializer.ToHTMLStream;
-import com.sun.org.apache.xml.internal.serializer.ToStream;
-import com.sun.org.apache.xml.internal.serializer.ToXMLStream;
+import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
+import com.sun.org.apache.xml.internal.utils.TreeWalker;
 
 /**
  * @version 2012/11/18 22:33:02
@@ -612,6 +612,21 @@ public class XML implements Iterable<XML> {
         return elements.iterator();
     }
 
+    public void to(ContentHandler handler) {
+        try {
+            handler.startDocument();
+            TreeWalker walker = new TreeWalker(handler);
+
+            for (Node node : nodes) {
+                walker.traverseFragment(node);
+            }
+            handler.endDocument();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+
+    }
+
     /**
      * <p>
      * Write this elements to the specified output.
@@ -625,30 +640,10 @@ public class XML implements Iterable<XML> {
         format.setLineWidth(0);
         format.setOmitXMLDeclaration(true);
 
-        Writer out = output instanceof Writer ? (Writer) output : new XMLWriter(output);
+        XML11Serializer serializer = new XML11Serializer(output instanceof Writer ? (Writer) output
+                : new XMLWriter(output), format);
 
-        ToStream serializer;
-
-        try {
-            // deal well by HTML5
-            if (nodes != null && nodes.size() == 1 && nodes.get(0).getNodeName().equals("html")) {
-                output.append("<!DOCTYPE html>\r\n");
-                serializer = new ToHTMLStream();
-
-                ((ToHTMLStream) serializer).setOmitMetaTag(true);
-            } else {
-                serializer = new ToXMLStream();
-            }
-            serializer.setIndent(true);
-            serializer.setIndentAmount(2);
-            serializer.setWriter(out);
-
-            for (Node node : nodes) {
-                serializer.serialize(node);
-            }
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
+        to(serializer);
     }
 
     /**
