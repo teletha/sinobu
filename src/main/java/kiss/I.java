@@ -809,7 +809,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         // if (modelClass == null) throw new NullPointerException("NPE");
 
         // The model class have some preconditions to have to meet.
-        if (modelClass.isLocalClass() || modelClass.isAnonymousClass()) {
+        if (modelClass.isLocalClass()) {
             throw new UnsupportedOperationException(modelClass + " is  inner class.");
         }
 
