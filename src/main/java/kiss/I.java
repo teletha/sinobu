@@ -401,6 +401,29 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /**
      * <p>
+     * Retrieve file name and extension from the specified path.
+     * </p>
+     * 
+     * @param path A target path.
+     * @return A file name array like the following [name, extension].
+     * @throws NullPointerException A path is <code>null</code>.
+     */
+    public static String[] call(Path path) {
+        String[] names = {"", ""};
+        String name = path.getFileName().toString();
+        int index = name.lastIndexOf('.');
+
+        if (index == -1) {
+            names[0] = name;
+        } else {
+            names[0] = name.substring(0, index);
+            names[1] = name.substring(index + 1);
+        }
+        return names;
+    }
+
+    /**
+     * <p>
      * Note : This method closes both input and output stream carefully.
      * </p>
      * <p>
