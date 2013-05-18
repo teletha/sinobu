@@ -9,9 +9,6 @@
  */
 package kiss;
 
-import kiss.I;
-import kiss.XML;
-
 import org.junit.Test;
 
 /**
@@ -121,20 +118,26 @@ public class XMLFindTest {
 
     @Test
     public void attributeStartWith() throws Exception {
-        String xml = "<m><e A='A B C'/><e A='AA BB CC'/></m>";
+        String xml = "<m><e A='A B C'/><e A='AA BB CC'/><e A='D'/></m>";
 
         assert I.xml(xml).find("[A ^= \"A\"]").size() == 2;
+        assert I.xml(xml).find("[A^= \"A\"]").size() == 2;
+        assert I.xml(xml).find("[A ^=\"A\"]").size() == 2;
+        assert I.xml(xml).find("[A^=\"A\"]").size() == 2;
         assert I.xml(xml).find("[A ^= \"B\"]").size() == 0;
         assert I.xml(xml).find("[A ^= \"C\"]").size() == 0;
     }
 
     @Test
     public void attributeEndWith() throws Exception {
-        String xml = "<m><e A='A B C'/><e A='AA BB CC'/></m>";
+        String xml = "<m><e A='A B C'/><e A='AA BB CC'/><e A='D'/></m>";
 
         assert I.xml(xml).find("[A $= \"A\"]").size() == 0;
         assert I.xml(xml).find("[A $= \"B\"]").size() == 0;
         assert I.xml(xml).find("[A $= \"C\"]").size() == 2;
+        assert I.xml(xml).find("[A $=\"C\"]").size() == 2;
+        assert I.xml(xml).find("[A$= \"C\"]").size() == 2;
+        assert I.xml(xml).find("[A$=\"C\"]").size() == 2;
     }
 
     @Test
