@@ -40,6 +40,7 @@ public class ClassListenerTest {
     @Test
     public void awareInterface1() throws Exception {
         Interface1Listener listener = I.make(Interface1Listener.class);
+        listener.reset();
 
         // load listener
         modules.load(Interface1Listener.class);
@@ -58,6 +59,7 @@ public class ClassListenerTest {
     @Test
     public void awareInterface2() throws Exception {
         Interface2Listener listener = I.make(Interface2Listener.class);
+        listener.reset();
 
         // load listener
         modules.load(Interface2Listener.class);
@@ -76,6 +78,7 @@ public class ClassListenerTest {
     @Test
     public void awareAnnotation() throws Exception {
         AnnotationListener listener = I.make(AnnotationListener.class);
+        listener.reset();
 
         // load listener
         modules.load(AnnotationListener.class);
@@ -94,6 +97,7 @@ public class ClassListenerTest {
     @Test
     public void awareAllClass() throws Exception {
         ClassLoadListener listener = I.make(ClassLoadListener.class);
+        listener.reset();
 
         // load listener
         modules.load(ClassLoadListener.class);
@@ -142,6 +146,16 @@ public class ClassListenerTest {
         protected void assertClass(int loaded, int unloaded) {
             assert loaded == this.loaded;
             assert unloaded == this.unloaded;
+        }
+
+        /**
+         * <p>
+         * Reset counter.
+         * </p>
+         */
+        protected void reset() {
+            loaded = 0;
+            unloaded = 0;
         }
     }
 
@@ -196,6 +210,16 @@ public class ClassListenerTest {
         protected void assertClass(int loaded, int unloaded) {
             assert loaded == this.loaded;
             assert unloaded == this.unloaded;
+        }
+
+        /**
+         * <p>
+         * Reset counter.
+         * </p>
+         */
+        protected void reset() {
+            loaded = 0;
+            unloaded = 0;
         }
     }
 }
