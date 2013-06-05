@@ -72,4 +72,32 @@ public class XMLTraversingTest {
         assert xml.find("Q").nextUntil("B").size() == 6;
         assert xml.find("Q").nextUntil("A.stop").size() == 7;
     }
+
+    @Test
+    public void next() throws Exception {
+        XML xml = I.xml("<p><Q/><A>here</A></p>");
+
+        assert xml.find("Q").next().text().equals("here");
+    }
+
+    @Test
+    public void nextNone() throws Exception {
+        XML xml = I.xml("<p><Q/></p>");
+
+        assert xml.find("Q").next().size() == 0;
+    }
+
+    @Test
+    public void nextMulti() throws Exception {
+        XML xml = I.xml("<p><Q/><A/><Q/><B/></p>");
+
+        assert xml.find("Q").next().size() == 2;
+    }
+
+    @Test
+    public void nextMultiNone() throws Exception {
+        XML xml = I.xml("<p><Q/><A/><Q/></p>");
+
+        assert xml.find("Q").next().size() == 1;
+    }
 }
