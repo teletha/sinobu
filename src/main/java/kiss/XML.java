@@ -28,7 +28,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.jcp.xml.dsig.internal.dom.DOMUtils;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -488,7 +487,7 @@ public class XML implements Iterable<XML> {
         CopyOnWriteArrayList list = new CopyOnWriteArrayList();
 
         for (Node node : nodes) {
-            node = DOMUtils.getNextSiblingElement(node);
+            node = DOMUtil.getNextSiblingElement(node);
 
             if (node != null) {
                 list.addIfAbsent(node);
