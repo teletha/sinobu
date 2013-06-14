@@ -275,6 +275,7 @@ public class XMLParserTest {
      * @param html
      * @return
      */
+    @SuppressWarnings("resource")
     private XML parse(String html) {
         try {
             XMLWriter parser = new XMLWriter(Files.newInputStream(AntiBug.note(html)));
@@ -292,6 +293,7 @@ public class XMLParserTest {
      * @param html
      * @return
      */
+    @SuppressWarnings("resource")
     private XML parse(String html, String encoding) {
         try {
             ByteBuffer buffer = Charset.forName(encoding).encode(html);
