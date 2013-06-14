@@ -203,6 +203,7 @@ import sun.org.mozilla.javascript.internal.IdScriptableObject;
  * 
  * @version 2012/09/11 14:32:03
  */
+@SuppressWarnings("resource")
 public class I implements ClassListener<Extensible>, ThreadFactory {
 
     // Candidates of Method Name
@@ -332,7 +333,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 RandomAccessFile file = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
 
                 // test whether we can acquire lock or not
-                @SuppressWarnings("resource")
                 FileLock lock = file.getChannel().tryLock();
 
                 // release lock immediately
@@ -1640,7 +1640,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param input A data input.
      * @return A restored java object.
      */
-    @SuppressWarnings("resource")
     private static <M> M read(Model model, M root, Reader input) throws Exception {
         HashMap objects = new HashMap();
         ArrayDeque<State> states = new ArrayDeque();
@@ -2003,7 +2002,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
-    @SuppressWarnings("resource")
     public static void write(Object input, Appendable output, boolean json) {
         if (output == null) {
             throw new NullPointerException();
