@@ -17,6 +17,7 @@ import java.lang.invoke.MethodHandle;
  * This is generic method interceptor.
  * </p>
  * 
+ * @param <P> An annotation type to intercept.
  * @version 2011/12/19 2:20:56
  */
 public class Interceptor<P extends Annotation> implements Extensible {
@@ -78,10 +79,12 @@ public class Interceptor<P extends Annotation> implements Extensible {
      * NOTE : This is internal method. A user of Sinobu <em>does not have to use</em> this method.
      * </p>
      * 
+     * @param name A intercepted method name.
      * @param method A delegation method.
      * @param that A current processing object.
-     * @param parames A current method parameters.
+     * @param params A current method parameters.
      * @param annotations A interceptable annotation list.
+     * @return A result of method invocation.
      */
     public static Object invoke(String name, MethodHandle method, Object that, Object[] params, Annotation[] annotations) {
         Interceptor current = new Interceptor();

@@ -27,6 +27,7 @@ import kiss.Singleton;
  * original state from a return value of its method {@link #toString()}.
  * </p>
  * 
+ * @param <T> A target type to decode and encode.
  * @version 2009/12/30 22:11:00
  */
 @Manageable(lifestyle = Singleton.class)

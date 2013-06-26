@@ -23,6 +23,7 @@ import java.nio.file.Path;
  * the user configuration file.
  * </p>
  * 
+ * @param <M> A {@link Manageable} class.
  * @see Prototype
  * @see Singleton
  * @see ThreadSpecific

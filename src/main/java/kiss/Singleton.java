@@ -14,6 +14,7 @@ package kiss;
  * This lifestyle guarantees that only one instance of the specific class exists in Sinobu.
  * </p>
  * 
+ * @param <M> A {@link Manageable} class.
  * @see Prototype
  * @see ThreadSpecific
  * @see Preference

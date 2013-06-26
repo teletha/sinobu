@@ -54,6 +54,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * This class does not allow <code>null</code> to be used as a key.
  * </p>
  * 
+ * @param <K> A type of key.
+ * @param <V> A type of value.
  * @version 2010/02/19 2:30:56
  */
 @SuppressWarnings("serial")

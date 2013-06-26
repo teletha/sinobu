@@ -2132,6 +2132,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * 
      * @param classPath A classpath to load.
      * @param filter Filter classes by package of the specified class.
+     * @return A managed {@link ClassLoader}.
      * @see #unload(Path)
      * @see kiss.ClassListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
@@ -2165,6 +2166,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      * 
      * @param classPath A classpath to load. Directory or archive file (like Jar) can be accepted.
+     * @return A managed {@link ClassLoader}.
      * @see #unload(Path)
      * @see kiss.ClassListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
