@@ -95,7 +95,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param xml
-     * @return
+     * @return Chainable API.
      */
     public XML append(Object xml) {
         Node n = convert(I.xml(xml));
@@ -115,7 +115,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param xml
-     * @return
+     * @return Chainable API.
      */
     public XML prepend(Object xml) {
         Node n = convert(I.xml(xml));
@@ -135,7 +135,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param xml
-     * @return
+     * @return Chainable API.
      */
     public XML before(Object xml) {
         Node n = convert(I.xml(xml));
@@ -155,7 +155,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param xml
-     * @return
+     * @return Chainable API.
      */
     public XML after(Object xml) {
         Node n = convert(I.xml(xml));
@@ -173,7 +173,7 @@ public class XML implements Iterable<XML> {
      * Remove all child nodes of the set of matched elements from the DOM.
      * </p>
      * 
-     * @return
+     * @return Chainable API.
      */
     public XML empty() {
         for (Node node : nodes) {
@@ -196,7 +196,7 @@ public class XML implements Iterable<XML> {
      * it.
      * </p>
      * 
-     * @return
+     * @return Chainable API.
      */
     public XML remove() {
         for (Node node : nodes) {
@@ -213,7 +213,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param xml
-     * @return
+     * @return Chainable API.
      */
     public XML wrap(Object xml) {
         XML element = I.xml(xml);
@@ -232,7 +232,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param xml
-     * @return
+     * @return Chainable API.
      */
     public XML wrapAll(Object xml) {
         first().after(xml).find("+*").append(this);
@@ -269,7 +269,7 @@ public class XML implements Iterable<XML> {
      * their descendants.
      * </p>
      * 
-     * @return
+     * @return Chainable API.
      */
     public String text() {
         StringBuilder text = new StringBuilder();
@@ -286,7 +286,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param text
-     * @return
+     * @return Chainable API.
      */
     public XML text(String text) {
         for (Node node : nodes) {
@@ -303,7 +303,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param name An attribute name.
-     * @return
+     * @return Chainable API.
      */
     public String attr(String name) {
         return ((org.w3c.dom.Element) nodes.iterator().next()).getAttribute(name);
@@ -316,7 +316,7 @@ public class XML implements Iterable<XML> {
      * 
      * @param name
      * @param value
-     * @return
+     * @return Chainable API.
      */
     public XML attr(String name, Object value) {
         if (name != null && name.length() != 0) {
@@ -362,7 +362,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param names
-     * @return
+     * @return Chainable API.
      */
     public XML addClass(String names) {
         for (XML e : this) {
@@ -393,7 +393,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param names
-     * @return
+     * @return Chainable API.
      */
     public XML removeClass(String names) {
         for (XML e : this) {
@@ -416,7 +416,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param name
-     * @return
+     * @return Chainable API.
      */
     public XML toggleClass(String name) {
         for (XML e : this) {
@@ -437,7 +437,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param name
-     * @return
+     * @return Chainable API.
      */
     public boolean hasClass(String name) {
         for (XML e : this) {
@@ -459,7 +459,7 @@ public class XML implements Iterable<XML> {
      * Reduce the set of matched elements to the first in the set.
      * </p>
      * 
-     * @return
+     * @return Chainable API.
      */
     public XML first() {
         return nodes.isEmpty() ? this : new XML(doc, nodes.subList(0, 1));
@@ -470,7 +470,7 @@ public class XML implements Iterable<XML> {
      * Reduce the set of matched elements to the final one in the set.
      * </p>
      * 
-     * @return
+     * @return Chainable API.
      */
     public XML last() {
         return nodes.isEmpty() ? this : new XML(doc, nodes.subList(nodes.size() - 1, nodes.size()));
@@ -592,7 +592,7 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param selector A string containing a css selector expression to match elements against.
-     * @return
+     * @return Chainable API.
      */
     public XML find(String selector) {
         XPathExpression xpath = compile(selector);
@@ -613,7 +613,7 @@ public class XML implements Iterable<XML> {
      * Return size of the current node set.
      * </p>
      * 
-     * @return
+     * @return A size of current node set.
      */
     public int size() {
         return nodes.size();

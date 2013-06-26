@@ -49,7 +49,7 @@ public class ASMfierDebugBean extends ASMfierDebugBase {
     /**
      * @param id
      * @param params
-     * @return
+     * @return A calling result.
      */
     public Object ezCall(int id, Object... params) {
         switch (id) {

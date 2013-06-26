@@ -33,6 +33,7 @@ package kiss;
  * };
  * </pre>
  * 
+ * @param <M> A {@link Manageable} class.
  * @see Prototype
  * @see Singleton
  * @see Preference

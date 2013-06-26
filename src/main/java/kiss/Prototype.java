@@ -20,6 +20,7 @@ import kiss.model.ClassUtil;
  * the method {@link #resolve()}.
  * </p>
  * 
+ * @param <M> A {@link Manageable} class.
  * @see Singleton
  * @see ThreadSpecific
  * @see Preference
