@@ -22,17 +22,17 @@ import kiss.model.Codec;
  * This class locates Sinobu package to access {@link Modules}'s package-private field.
  * </p>
  * 
- * @version 2010/01/16 19:33:09
+ * @version 2013/07/27 4:11:17
  */
 class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
 
     /**
-     * @see kiss.model.Codec#decode(java.lang.String)
+     * {@inheritDoc}
      */
     public Class decode(String value) {
         for (Module module : I.make(Modules.class).modules) {
             try {
-                return module.loader.loadClass(value);
+                return Class.forName(value, false, module.loader);
             } catch (ClassNotFoundException e) {
                 // continue
             }
@@ -41,14 +41,14 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
     }
 
     /**
-     * @see kiss.model.Codec#encode(java.lang.Object)
+     * {@inheritDoc}
      */
     public String encode(Class value) {
         return value.getName();
     }
 
     /**
-     * @see kiss.Lifestyle#resolve()
+     * {@inheritDoc}
      */
     public Locale resolve() {
         return Locale.getDefault();

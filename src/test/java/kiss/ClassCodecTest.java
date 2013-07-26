@@ -9,17 +9,14 @@
  */
 package kiss;
 
-
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
 
-
-import kiss.ClassCodec;
-
 /**
- * @version 2011/03/22 17:03:59
+ * @version 2013/07/27 3:53:40
  */
 public class ClassCodecTest {
 
@@ -35,6 +32,14 @@ public class ClassCodecTest {
     }
 
     @Test
+    public void systemClassArray() throws Exception {
+        ClassCodec codec = new ClassCodec();
+        Class clazz = codec.decode("[Ljava.lang.String;");
+        assert clazz != null;
+        assert codec.encode(clazz).equals("[Ljava.lang.String;");
+    }
+
+    @Test
     public void moduleClass() throws Exception {
         Class clazz = module.convert(Private.class);
         assert Private.class != clazz;
@@ -42,6 +47,18 @@ public class ClassCodecTest {
         ClassCodec codec = new ClassCodec();
         String fqcn = codec.encode(clazz);
         assert Private.class.getName() != fqcn;
+        assert codec.decode(fqcn).equals(clazz);
+    }
+
+    @Test
+    @Ignore("FIXME")
+    public void moduleClassArray() throws Exception {
+        Class clazz = module.convert(Private[].class);
+        assert Private[].class != clazz;
+
+        ClassCodec codec = new ClassCodec();
+        String fqcn = codec.encode(clazz);
+        assert Private[].class.getName() != fqcn;
         assert codec.decode(fqcn).equals(clazz);
     }
 
