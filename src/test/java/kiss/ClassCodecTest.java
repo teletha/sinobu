@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -51,7 +50,6 @@ public class ClassCodecTest {
     }
 
     @Test
-    @Ignore("FIXME")
     public void moduleClassArray() throws Exception {
         Class clazz = module.convert(Private[].class);
         assert Private[].class != clazz;
