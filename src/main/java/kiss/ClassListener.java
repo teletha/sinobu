@@ -11,11 +11,11 @@ package kiss;
 
 /**
  * <p>
- * This interface is a listener for class loading and unloading event. These events are arisen
- * whenever the class type that you want to observe is loaded into or unloaded from the JVM for the
- * first time. However it is not that this listener can listen to all events caused by any dynamic
- * class loading against JVM. This listenr can listen to only event caused by the following two
- * methods ( {@link I#load(java.nio.file.Path)} and {@link I#unload(java.nio.file.Path)}).
+ * This interface is a listener for class loading and unloading event. These events occur when the
+ * class type which you observe is loaded to or unloaded from JVM first time. However it is not that
+ * this listener can listen to all events caused by any dynamic class loading against JVM. This
+ * listenr can listen to only event caused by the following two methods (
+ * {@link I#load(java.nio.file.Path)} and {@link I#unload(java.nio.file.Path)}).
  * </p>
  * <p>
  * You can specify the class type that you want to observe in type parameter. For instance, when you
