@@ -97,20 +97,16 @@ import sun.org.mozilla.javascript.internal.IdScriptableObject;
  * <dt>Instantiation and Management</dt>
  * <dd>
  * <p>
- * The method {@link #make(Class)} offers general-purpose elucidation for generation and management
- * of instances.
+ * Usually, the container which manages the object uses “get” method to provide such functionality.
+ * However, Sinobu uses {@link #make(Class)}. This difference of method name indicates the
+ * difference of the way for the management of objects, which also greatly affects the default
+ * lifestyle (called Scope in other containers).
  * </p>
  * <p>
- * When many containers which manage objects provide the functionality like this, they use the
- * method which name starts with "get". But Sinobu uses the method {@link #make(Class)}. We
- * attribute this difference to the thought to the object management. This difference has much
- * effect on the default lifestyle (many other containers call as Scope) too.
- * </p>
- * <p>
- * Sinobu doesn't provide any features for the object lifecycle because we stand by the principles
- * that we make the most of the function which is originally equipped in Java. If you want the
- * initialization callbacks, you can utilize the constructor. If you want the destruction callbacks,
- * you can utilize the {@link java.lang.Object#finalize()} method.
+ * We do not provides the functionalities related to object lifecycle through Sinobu, because we
+ * believe that it is better to use functionalities equipped in Java as much as possible. For
+ * example, if you want to receive initialization callbacks, it is better to use constructor. If you
+ * want to receive the destruction callbacks, it is better to use {@link #finalize()} method.
  * </p>
  * </dd>
  * <dt>Dependency Injection</dt>
