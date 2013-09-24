@@ -217,24 +217,27 @@ public class Model {
         }
 
         // Search field properties.
-        for (Field field : type.getFields()) {
-            try {
+        try {
+            for (Field field : type.getFields()) {
+
                 // exclude the field which modifier is final, static, private or native
-                if (((STATIC | PRIVATE | NATIVE | FINAL) & field.getModifiers()) != 0) {
-                    continue;
+                if (((STATIC | PRIVATE | NATIVE | FINAL) & field.getModifiers()) == 0) {
+                    field.setAccessible(true);
+
+                    Property property = new Property(load(field.getGenericType(), type), field.getName());
+                    property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
+                    property.addAnnotation(field);
+
+                    if ((TRANSIENT & field.getModifiers()) != 0) {
+                        property.annotations.put(Transient.class, "");
+                    }
+
+                    // register it
+                    properties.add(property);
                 }
-                field.setAccessible(true);
-
-                Property property = new Property(load(field.getGenericType(), type), field.getName());
-                property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
-                property.addAnnotation(field);
-                if ((TRANSIENT & field.getModifiers()) != 0) property.annotations.put(Transient.class, "");
-
-                // register it
-                properties.add(property);
-            } catch (Exception e) {
-                throw I.quiet(e);
             }
+        } catch (Exception e) {
+            throw I.quiet(e);
         }
 
         // trim and sort property list
