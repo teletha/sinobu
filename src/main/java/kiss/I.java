@@ -1832,7 +1832,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // we should copy property values
 
             // create destination object
-            M m = I.make(output);
+            M m = make(output);
 
             // copy actually
             inputModel.walk(input, new State(m, outputModel));
