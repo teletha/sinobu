@@ -114,28 +114,26 @@ public final class ClassUtil {
             for (Method method : type.getDeclaredMethods()) {
                 // exclude the method which is created by compiler
                 // exclude the private method which is not declared in the specified class
-                if (method.isBridge() || method.isSynthetic() || (((method.getModifiers() & Modifier.PRIVATE) != 0) && method.getDeclaringClass() != clazz)) {
-                    continue;
-                }
+                if (!method.isBridge() && !method.isSynthetic() & (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
+                    Annotation[] annotations = method.getAnnotations();
 
-                Annotation[] annotations = method.getAnnotations();
-
-                if (annotations.length != 0) {
-                    // check method overriding
-                    for (Method candidate : table.keySet()) {
-                        if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
-                            method = candidate; // detect overriding
-                            break;
-                        }
-                    }
-
-                    add: for (Annotation annotation : annotations) {
-                        for (Annotation item : table.get(method)) {
-                            if (item.annotationType() == annotation.annotationType()) {
-                                continue add;
+                    if (annotations.length != 0) {
+                        // check method overriding
+                        for (Method candidate : table.keySet()) {
+                            if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
+                                method = candidate; // detect overriding
+                                break;
                             }
                         }
-                        table.push(method, annotation);
+
+                        add: for (Annotation annotation : annotations) {
+                            for (Annotation item : table.get(method)) {
+                                if (item.annotationType() == annotation.annotationType()) {
+                                    continue add;
+                                }
+                            }
+                            table.push(method, annotation);
+                        }
                     }
                 }
             }
