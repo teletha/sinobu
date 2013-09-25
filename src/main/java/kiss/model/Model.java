@@ -64,7 +64,7 @@ import kiss.I;
 public class Model {
 
     /** The model repository. */
-    private static final Map<Class, Model> models = I.aware(new ConcurrentHashMap());
+    private static final Map<Class, Model> models = new ConcurrentHashMap();
 
     /** The repository of built-in codecs. */
     private static final ArrayList<Class> codecs = new ArrayList();
