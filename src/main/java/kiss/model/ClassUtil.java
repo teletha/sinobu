@@ -114,7 +114,7 @@ public final class ClassUtil {
             for (Method method : type.getDeclaredMethods()) {
                 // exclude the method which is created by compiler
                 // exclude the private method which is not declared in the specified class
-                if (!method.isBridge() && !method.isSynthetic() & (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
+                if (!method.isBridge() && !method.isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
                     Annotation[] annotations = method.getAnnotations();
 
                     if (annotations.length != 0) {
