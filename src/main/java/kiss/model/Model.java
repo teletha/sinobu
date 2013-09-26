@@ -59,7 +59,7 @@ import kiss.I;
  * which is neither Immutable nor Collection are Basic.</dd>
  * </dl>
  * 
- * @version 2011/03/07 22:16:00
+ * @version 2013/09/26 14:01:55
  */
 public class Model {
 
@@ -396,6 +396,7 @@ public class Model {
      * @param base A declaration class.
      * @return A cached model information.
      * @throws IllegalArgumentException If the given model type is null.
+     * @see TypeVariable
      */
     static Model load(Type type, Type base) {
         // class
@@ -445,7 +446,16 @@ public class Model {
             TypeVariable[] variables = variable.getGenericDeclaration().getTypeParameters();
 
             for (int i = 0; i < variables.length; i++) {
-                if (variable == variables[i]) {
+                // use equals method instead of "==".
+                //
+                // +++ From TypeVariable Javadoc +++
+                // Multiple objects may be instantiated at run-time to represent a given type
+                // variable. Even though a type variable is created only once, this does not imply
+                // any requirement to cache instances representing the type variable. However, all
+                // instances representing a type variable must be equal() to each other. As a
+                // consequence, users of type variables must not rely on the identity of instances
+                // of classes implementing this interface.
+                if (variable.equals(variables[i])) {
                     if (base == variable.getGenericDeclaration()) {
                         return load(variable.getBounds()[0], base);
                     } else {
