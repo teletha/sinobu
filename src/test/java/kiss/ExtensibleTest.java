@@ -9,19 +9,19 @@
  */
 package kiss;
 
+import java.util.List;
+
+import kiss.sample.bean.Person;
+import kiss.sample.bean.School;
+import kiss.sample.bean.Student;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
 
-
-import kiss.sample.bean.Person;
-import kiss.sample.bean.School;
-import kiss.sample.bean.Student;
-
 /**
- * @version 2011/03/22 16:44:14
+ * @version 2013/09/27 14:33:52
  */
 public class ExtensibleTest {
 
@@ -114,6 +114,12 @@ public class ExtensibleTest {
 
         I.make(I.class).unload(SameKEP1.class);
         assert I.find(KEPClass.class, Integer.class) == null;
+    }
+
+    @Test
+    public void findBy() throws Exception {
+        List<Class<EPClass>> extensions = I.collect(EPClass.class);
+        assert extensions.size() == 5;
     }
 
     /**
