@@ -197,7 +197,7 @@ import sun.org.mozilla.javascript.internal.IdScriptableObject;
  * matched. (root path will not match)</dd>
  * </dl>
  * 
- * @version 2012/09/11 14:32:03
+ * @version 2013/09/27 14:29:03
  */
 @SuppressWarnings("resource")
 public class I implements ClassListener<Extensible>, ThreadFactory {
@@ -395,27 +395,58 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         return map;
     }
 
+    // /**
+    // * <p>
+    // * Retrieve file name and extension from the specified path.
+    // * </p>
+    // *
+    // * @param path A target path.
+    // * @return A file name array like the following [name, extension].
+    // * @throws NullPointerException A path is <code>null</code>.
+    // */
+    // public static String[] call(Path path) {
+    // String[] names = {"", ""};
+    // String name = path.getFileName().toString();
+    // int index = name.lastIndexOf('.');
+    //
+    // if (index == -1) {
+    // names[0] = name;
+    // } else {
+    // names[0] = name.substring(0, index);
+    // names[1] = name.substring(index + 1);
+    // }
+    // return names;
+    // }
+
     /**
      * <p>
-     * Retrieve file name and extension from the specified path.
+     * Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
+     * <a href="Extensible#ExtensionPoint">Extension Point</a>.
+     * </p>
+     * <p>
+     * The returned list will be "safe" in that no references to it are maintained by Sinobu. (In
+     * other words, this method must allocate a new list). The caller is thus free to modify the
+     * returned list.
      * </p>
      * 
-     * @param path A target path.
-     * @return A file name array like the following [name, extension].
-     * @throws NullPointerException A path is <code>null</code>.
+     * @param <E> An Extension Point.
+     * @param extensionPoint An extension point class. The <a
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return empty list.
+     * @return All Extension classes of the given Extension Point or empty list.
+     * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
-    public static String[] call(Path path) {
-        String[] names = {"", ""};
-        String name = path.getFileName().toString();
-        int index = name.lastIndexOf('.');
+    public static <E extends Extensible> List<Class<E>> collect(Class<E> extensionPoint) {
+        // Skip null check because this method can throw NullPointerException.
+        List<Class> classes = extensions.get(extensionPoint);
 
-        if (index == -1) {
-            names[0] = name;
-        } else {
-            names[0] = name.substring(0, index);
-            names[1] = name.substring(index + 1);
+        // instantiate all found extesions
+        List list = new ArrayList(classes.size());
+
+        for (Class extension : classes) {
+            list.add(extension);
         }
-        return names;
+        return list;
     }
 
     /**
@@ -694,12 +725,29 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * separator between each.
      * </p>
      * 
+     * @param delimiter A sequence of characters that is used to separate each of the elements in
+     *            the resulting String.
      * @param items A {@link Iterable} items.
-     * @param separator A seperator.
      * @return A concat expression.
      * @throws NullPointerException If items is <code>null</code>.
      */
-    public static String join(Iterable items, String separator) {
+    public static String join(CharSequence delimiter, CharSequence... items) {
+        return join(delimiter, Arrays.asList(items));
+    }
+
+    /**
+     * <p>
+     * Returns a string containing the string representation of each of items, using the specified
+     * separator between each.
+     * </p>
+     * 
+     * @param delimiter A sequence of characters that is used to separate each of the elements in
+     *            the resulting String.
+     * @param items A {@link Iterable} items.
+     * @return A concat expression.
+     * @throws NullPointerException If items is <code>null</code>.
+     */
+    public static String join(CharSequence delimiter, Iterable items) {
         StringBuilder builder = new StringBuilder();
         Iterator iterator = items.iterator();
 
@@ -707,7 +755,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             builder.append(iterator.next());
 
             while (iterator.hasNext()) {
-                builder.append(separator).append(iterator.next());
+                builder.append(delimiter).append(iterator.next());
             }
         }
         return builder.toString();

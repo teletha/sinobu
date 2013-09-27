@@ -17,37 +17,37 @@ import kiss.I;
 import org.junit.Test;
 
 /**
- * @version 2012/02/29 21:45:13
+ * @version 2013/09/27 15:02:27
  */
 public class JoinTest {
 
     @Test
     public void items() throws Exception {
-        assert I.join(Arrays.asList("a", "b"), " ").equals("a b");
+        assert I.join(" ", Arrays.asList("a", "b")).equals("a b");
     }
 
     @Test
     public void single() throws Exception {
-        assert I.join(Arrays.asList("a"), " ").equals("a");
+        assert I.join(" ", Arrays.asList("a")).equals("a");
     }
 
     @Test(expected = NullPointerException.class)
     public void nullItems() throws Exception {
-        I.join(null, null);
+        I.join(null, (Iterable) null);
     }
 
     @Test
     public void nullSeparator() throws Exception {
-        assert I.join(Arrays.asList("a", "b"), null).equals("anullb");
+        assert I.join(null, Arrays.asList("a", "b")).equals("anullb");
     }
 
     @Test
     public void emptyItems() throws Exception {
-        assert I.join(Collections.EMPTY_LIST, "").equals("");
+        assert I.join("", Collections.EMPTY_LIST).equals("");
     }
 
     @Test
     public void emptySeparator() throws Exception {
-        assert I.join(Arrays.asList("a", "b"), "").equals("ab");
+        assert I.join("", Arrays.asList("a", "b")).equals("ab");
     }
 }
