@@ -86,8 +86,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-import sun.org.mozilla.javascript.internal.IdScriptableObject;
-
 /**
  * <p>
  * Sinobu is not obsolete framework but utility, which can manipulate objects as a
@@ -1808,8 +1806,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @return A restored java object.
      */
     private static <M> M read(Model model, M java, Object js) {
-        if (js instanceof IdScriptableObject) {
-            for (Object id : ((IdScriptableObject) js).getIds()) {
+        if (js instanceof Map) {
+            Map<String, Object> map = (Map) js;
+
+            for (String id : map.keySet()) {
                 // compute property
                 Property property = model.getProperty(id.toString());
 
@@ -1822,7 +1822,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                     // while Arrays implement java.util.List. This means that JavaScript objects can
                     // be passed seamlessly to Java methods expecting a Map while arrays can be
                     // passed to methods expecting a List or java.util.Collection.
-                    Object value = js instanceof List ? ((List) js).get((int) id) : ((Map) js).get(id);
+                    Object value = map.get(id);
                     Class type = property.model.type;
 
                     // convert value
