@@ -644,7 +644,7 @@ public class XMLTest {
 
         // map must have ez:key attribute
         XML xml = xml(config);
-        assert xml.select("//String[1]/@ss:key", "ss", "sinobu").getTextContent().equals("two");
+        assert xml.select("//String[2]/@ss:key", "ss", "sinobu").getTextContent().equals("two");
     }
 
     @Test
