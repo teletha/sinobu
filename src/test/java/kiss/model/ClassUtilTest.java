@@ -44,7 +44,7 @@ public class ClassUtilTest {
      */
     @Test
     public void testGetAllTypes01() {
-        Set<Class> classes = ClassUtil.getTypes(ExtendClass.class);
+        Set<Class<?>> classes = ClassUtil.getTypes(ExtendClass.class);
         assert 11 == classes.size();
         assert classes.contains(ExtendClass.class);
     }
@@ -54,7 +54,7 @@ public class ClassUtilTest {
      */
     @Test
     public void testGetAllTypes02() {
-        Set<Class> classes = ClassUtil.getTypes(null);
+        Set<Class<?>> classes = ClassUtil.getTypes(null);
         assert 0 == classes.size();
     }
 
