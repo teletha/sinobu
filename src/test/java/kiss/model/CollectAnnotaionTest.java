@@ -11,6 +11,7 @@ package kiss.model;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -23,14 +24,13 @@ import kiss.Table;
 import org.junit.Test;
 
 /**
- * @version 2012/05/11 15:50:56
+ * @version 2013/12/26 10:09:23
  */
 public class CollectAnnotaionTest {
 
     @Test
     public void collect() throws Exception {
         Table<Method, Annotation> table = ClassUtil.getAnnotations(Root.class);
-        assert table.size() == 2;
 
         List<Annotation> annotations = filter("marked", table);
         assert annotations.size() == 1;
@@ -41,9 +41,20 @@ public class CollectAnnotaionTest {
     }
 
     @Test
+    public void privateMethodShouldntInheritFromSameSignatureMethod() throws Exception {
+        Table<Method, Annotation> table = ClassUtil.getAnnotations(Child.class);
+
+        List<Annotation> annotations = filter("collectable", table);
+        assert annotations.size() == 1;
+        assert annotations.get(0) instanceof AnotherMarker;
+
+        AnotherMarker another = (AnotherMarker) annotations.get(0);
+        assert another.value().equals("private in child");
+    }
+
+    @Test
     public void overrideMethodHasSameAnnotation() throws Exception {
         Table<Method, Annotation> table = ClassUtil.getAnnotations(Child.class);
-        assert table.size() == 2;
 
         List<Annotation> annotations = filter("marked", table);
         assert annotations.size() == 1;
@@ -54,16 +65,43 @@ public class CollectAnnotaionTest {
     }
 
     @Test
-    public void privateMethodShouldntInheritFromSameSignatureMethod() throws Exception {
+    public void overrideMethodHasSameRepetableAnnotation() throws Exception {
         Table<Method, Annotation> table = ClassUtil.getAnnotations(Child.class);
-        assert table.size() == 2;
 
-        List<Annotation> annotations = filter("collectable", table);
-        assert annotations.size() == 1;
-        assert annotations.get(0) instanceof AnotherMarker;
+        List<Annotation> annotations = filter("rootMultipleMarked", table);
+        assert annotations.size() == 3;
+        assert annotations.get(0) instanceof RepeatableMarker;
+        assert annotations.get(1) instanceof RepeatableMarker;
+        assert annotations.get(2) instanceof RepeatableMarker;
 
-        AnotherMarker another = (AnotherMarker) annotations.get(0);
-        assert another.value().equals("private in child");
+        RepeatableMarker marker = (RepeatableMarker) annotations.get(0);
+        assert marker.value().equals("child");
+
+        marker = (RepeatableMarker) annotations.get(1);
+        assert marker.value().equals("root1");
+
+        marker = (RepeatableMarker) annotations.get(2);
+        assert marker.value().equals("root2");
+    }
+
+    @Test
+    public void overrideMethodHasSameAnnotationWhichIsRepetableInChild() throws Exception {
+        Table<Method, Annotation> table = ClassUtil.getAnnotations(Child.class);
+
+        List<Annotation> annotations = filter("childMultipleMarked", table);
+        assert annotations.size() == 3;
+        assert annotations.get(0) instanceof RepeatableMarker;
+        assert annotations.get(1) instanceof RepeatableMarker;
+        assert annotations.get(2) instanceof RepeatableMarker;
+
+        RepeatableMarker marker = (RepeatableMarker) annotations.get(0);
+        assert marker.value().equals("child1");
+
+        marker = (RepeatableMarker) annotations.get(1);
+        assert marker.value().equals("child2");
+
+        marker = (RepeatableMarker) annotations.get(2);
+        assert marker.value().equals("root");
     }
 
     /**
@@ -85,13 +123,34 @@ public class CollectAnnotaionTest {
     }
 
     /**
-     * @version 2012/05/10 11:18:04
+     * @version 2013/12/26 10:09:15
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Inherited
     private static @interface Marker {
 
         String value();
+    }
+
+    /**
+     * @version 2013/12/26 10:09:15
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Inherited
+    @Repeatable(RepeatableMarkers.class)
+    private static @interface RepeatableMarker {
+
+        String value();
+    }
+
+    /**
+     * @version 2013/12/26 10:09:12
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Inherited
+    private static @interface RepeatableMarkers {
+
+        RepeatableMarker[] value();
     }
 
     /**
@@ -116,6 +175,15 @@ public class CollectAnnotaionTest {
         @Marker("private in root")
         private void collectable() {
         }
+
+        @RepeatableMarker("root1")
+        @RepeatableMarker("root2")
+        protected void rootMultipleMarked() {
+        }
+
+        @RepeatableMarker("root")
+        protected void childMultipleMarked() {
+        }
     }
 
     /**
@@ -131,6 +199,17 @@ public class CollectAnnotaionTest {
         @AnotherMarker("private in child")
         private void collectable() {
             // This is not override method, but parent class has same signature method.
+        }
+
+        @RepeatableMarker("child")
+        @Override
+        protected void rootMultipleMarked() {
+        }
+
+        @RepeatableMarker("child1")
+        @RepeatableMarker("child2")
+        @Override
+        protected void childMultipleMarked() {
         }
     }
 }
