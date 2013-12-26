@@ -10,6 +10,7 @@
 package kiss.model;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,10 +18,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import kiss.I;
@@ -118,6 +121,34 @@ public final class ClassUtil {
                     Annotation[] annotations = method.getAnnotations();
 
                     if (annotations.length != 0) {
+                        List<Annotation> list = new ArrayList();
+
+                        // disclose container annotation
+                        for (Annotation annotation : annotations) {
+                            try {
+                                Class annotationType = annotation.annotationType();
+                                Method value = annotationType.getMethod("value");
+                                Class returnType = value.getReturnType();
+
+                                if (returnType.isArray()) {
+                                    Class<?> componentType = returnType.getComponentType();
+                                    Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
+
+                                    if (repeatable != null && repeatable.value() == annotationType) {
+                                        Annotation[] items = (Annotation[]) value.invoke(annotation);
+
+                                        for (Annotation item : items) {
+                                            list.add(item);
+                                        }
+                                        continue;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                // do nothing
+                            }
+                            list.add(annotation);
+                        }
+
                         // check method overriding
                         for (Method candidate : table.keySet()) {
                             if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
@@ -126,12 +157,17 @@ public final class ClassUtil {
                             }
                         }
 
-                        add: for (Annotation annotation : annotations) {
-                            for (Annotation item : table.get(method)) {
-                                if (item.annotationType() == annotation.annotationType()) {
-                                    continue add;
+                        add: for (Annotation annotation : list) {
+                            Class annotationType = annotation.annotationType();
+
+                            if (!annotationType.isAnnotationPresent(Repeatable.class)) {
+                                for (Annotation item : table.get(method)) {
+                                    if (item.annotationType() == annotationType) {
+                                        continue add;
+                                    }
                                 }
                             }
+
                             table.push(method, annotation);
                         }
                     }
