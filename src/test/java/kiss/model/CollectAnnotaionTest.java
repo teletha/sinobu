@@ -11,7 +11,6 @@ package kiss.model;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -20,11 +19,12 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import kiss.Table;
+import kiss.sample.annotation.RepeatableAnnotation;
 
 import org.junit.Test;
 
 /**
- * @version 2013/12/26 10:09:23
+ * @version 2013/12/27 10:01:29
  */
 public class CollectAnnotaionTest {
 
@@ -70,17 +70,17 @@ public class CollectAnnotaionTest {
 
         List<Annotation> annotations = filter("rootMultipleMarked", table);
         assert annotations.size() == 3;
-        assert annotations.get(0) instanceof RepeatableMarker;
-        assert annotations.get(1) instanceof RepeatableMarker;
-        assert annotations.get(2) instanceof RepeatableMarker;
+        assert annotations.get(0) instanceof RepeatableAnnotation;
+        assert annotations.get(1) instanceof RepeatableAnnotation;
+        assert annotations.get(2) instanceof RepeatableAnnotation;
 
-        RepeatableMarker marker = (RepeatableMarker) annotations.get(0);
+        RepeatableAnnotation marker = (RepeatableAnnotation) annotations.get(0);
         assert marker.value().equals("child");
 
-        marker = (RepeatableMarker) annotations.get(1);
+        marker = (RepeatableAnnotation) annotations.get(1);
         assert marker.value().equals("root1");
 
-        marker = (RepeatableMarker) annotations.get(2);
+        marker = (RepeatableAnnotation) annotations.get(2);
         assert marker.value().equals("root2");
     }
 
@@ -90,17 +90,17 @@ public class CollectAnnotaionTest {
 
         List<Annotation> annotations = filter("childMultipleMarked", table);
         assert annotations.size() == 3;
-        assert annotations.get(0) instanceof RepeatableMarker;
-        assert annotations.get(1) instanceof RepeatableMarker;
-        assert annotations.get(2) instanceof RepeatableMarker;
+        assert annotations.get(0) instanceof RepeatableAnnotation;
+        assert annotations.get(1) instanceof RepeatableAnnotation;
+        assert annotations.get(2) instanceof RepeatableAnnotation;
 
-        RepeatableMarker marker = (RepeatableMarker) annotations.get(0);
+        RepeatableAnnotation marker = (RepeatableAnnotation) annotations.get(0);
         assert marker.value().equals("child1");
 
-        marker = (RepeatableMarker) annotations.get(1);
+        marker = (RepeatableAnnotation) annotations.get(1);
         assert marker.value().equals("child2");
 
-        marker = (RepeatableMarker) annotations.get(2);
+        marker = (RepeatableAnnotation) annotations.get(2);
         assert marker.value().equals("root");
     }
 
@@ -133,27 +133,6 @@ public class CollectAnnotaionTest {
     }
 
     /**
-     * @version 2013/12/26 10:09:15
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Inherited
-    @Repeatable(RepeatableMarkers.class)
-    private static @interface RepeatableMarker {
-
-        String value();
-    }
-
-    /**
-     * @version 2013/12/26 10:09:12
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Inherited
-    private static @interface RepeatableMarkers {
-
-        RepeatableMarker[] value();
-    }
-
-    /**
      * @version 2012/05/10 11:18:04
      */
     @Retention(RetentionPolicy.RUNTIME)
@@ -176,12 +155,12 @@ public class CollectAnnotaionTest {
         private void collectable() {
         }
 
-        @RepeatableMarker("root1")
-        @RepeatableMarker("root2")
+        @RepeatableAnnotation("root1")
+        @RepeatableAnnotation("root2")
         protected void rootMultipleMarked() {
         }
 
-        @RepeatableMarker("root")
+        @RepeatableAnnotation("root")
         protected void childMultipleMarked() {
         }
     }
@@ -201,13 +180,13 @@ public class CollectAnnotaionTest {
             // This is not override method, but parent class has same signature method.
         }
 
-        @RepeatableMarker("child")
+        @RepeatableAnnotation("child")
         @Override
         protected void rootMultipleMarked() {
         }
 
-        @RepeatableMarker("child1")
-        @RepeatableMarker("child2")
+        @RepeatableAnnotation("child1")
+        @RepeatableAnnotation("child2")
         @Override
         protected void childMultipleMarked() {
         }
