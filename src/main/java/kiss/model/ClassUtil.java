@@ -135,6 +135,8 @@ public final class ClassUtil {
                                     Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
 
                                     if (repeatable != null && repeatable.value() == annotationType) {
+                                        value.setAccessible(true);
+
                                         Annotation[] items = (Annotation[]) value.invoke(annotation);
 
                                         for (Annotation item : items) {
