@@ -31,9 +31,9 @@ public class JoinTest {
         assert I.join(" ", Arrays.asList("a")).equals("a");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullItems() throws Exception {
-        I.join(null, (Iterable) null);
+        I.join(null, (Iterable) null).equals("");
     }
 
     @Test

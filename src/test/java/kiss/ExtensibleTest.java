@@ -21,7 +21,7 @@ import org.junit.Test;
 import antibug.PrivateModule;
 
 /**
- * @version 2013/09/27 14:33:52
+ * @version 2014/01/13 22:27:16
  */
 public class ExtensibleTest {
 
@@ -117,9 +117,13 @@ public class ExtensibleTest {
     }
 
     @Test
-    public void findBy() throws Exception {
-        List<Class<EPClass>> extensions = I.collect(EPClass.class);
+    public void findAs() throws Exception {
+        List<Class<EPClass>> extensions = I.findAs(EPClass.class);
         assert extensions.size() == 5;
+
+        extensions.clear(); // we can modify
+        assert extensions.size() == 0;
+        assert I.find(EPClass.class).size() == 5;
     }
 
     /**

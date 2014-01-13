@@ -196,7 +196,7 @@ import org.xml.sax.InputSource;
  * matched. (root path will not match)</dd>
  * </dl>
  * 
- * @version 2013/09/27 14:29:03
+ * @version 2014/01/13 23:59:03
  */
 @SuppressWarnings("resource")
 public class I implements ClassListener<Extensible>, ThreadFactory {
@@ -419,37 +419,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /**
      * <p>
-     * Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
-     * <a href="Extensible#ExtensionPoint">Extension Point</a>.
-     * </p>
-     * <p>
-     * The returned list will be "safe" in that no references to it are maintained by Sinobu. (In
-     * other words, this method must allocate a new list). The caller is thus free to modify the
-     * returned list.
-     * </p>
-     * 
-     * @param <E> An Extension Point.
-     * @param extensionPoint An extension point class. The <a
-     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     *            otherwise this method will return empty list.
-     * @return All Extension classes of the given Extension Point or empty list.
-     * @throws NullPointerException If the Extension Point is <code>null</code>.
-     */
-    public static <E extends Extensible> List<Class<E>> collect(Class<E> extensionPoint) {
-        // Skip null check because this method can throw NullPointerException.
-        List<Class> classes = extensions.get(extensionPoint);
-
-        // instantiate all found extesions
-        List list = new ArrayList(classes.size());
-
-        for (Class extension : classes) {
-            list.add(extension);
-        }
-        return list;
-    }
-
-    /**
-     * <p>
      * Note : This method closes both input and output stream carefully.
      * </p>
      * <p>
@@ -625,6 +594,28 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /**
      * <p>
+     * Find all <a href="Extensible.html#Extension">Extensions</a> classes which are specified by
+     * the given <a href="Extensible#ExtensionPoint">Extension Point</a>.
+     * </p>
+     * <p>
+     * The returned list will be "safe" in that no references to it are maintained by Sinobu. (In
+     * other words, this method must allocate a new list). The caller is thus free to modify the
+     * returned list.
+     * </p>
+     * 
+     * @param <E> An Extension Point.
+     * @param extensionPoint An extension point class. The <a
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return empty list.
+     * @return All Extension classes of the given Extension Point or empty list.
+     * @throws NullPointerException If the Extension Point is <code>null</code>.
+     */
+    public static <E extends Extensible> List<Class<E>> findAs(Class<E> extensionPoint) {
+        return new ArrayList(extensions.get(extensionPoint));
+    }
+
+    /**
+     * <p>
      * Gets a <em>type-safe and refactoring-safe</em> resource bundle (<em>not</em>
      * {@link java.util.ResourceBundle}) corresponding to the specified resource bundle class.
      * </p>
@@ -694,9 +685,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         for (Class clazz : extensions.get(bundleClass)) {
             if (clazz.getName().endsWith(lang)) {
                 bundleClass = clazz;
+                break;
             }
         }
-
         return make(bundleClass);
     }
 
@@ -744,9 +735,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *            the resulting String.
      * @param items A {@link Iterable} items.
      * @return A concat expression.
-     * @throws NullPointerException If items is <code>null</code>.
      */
     public static String join(CharSequence delimiter, Iterable items) {
+        if (items == null) {
+            return "";
+        }
+
         StringBuilder builder = new StringBuilder();
         Iterator iterator = items.iterator();
 
@@ -1037,7 +1031,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         // Define Class
         // -----------------------------------------------------------------------------------
         // public class GeneratedClass extends SuperClass implements Inteface1, Interface2....
-        cv.visit(V1_7, ACC_PUBLIC | ACC_SUPER | ACC_SYNTHETIC, className, null, type.getInternalName(), null);
+        cv.visit(V1_8, ACC_PUBLIC | ACC_SUPER | ACC_SYNTHETIC, className, null, type.getInternalName(), null);
 
         // don't use visitSource method because this generated source is unknown
         // visitSource(className, null);
@@ -1360,22 +1354,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *             check {@link LinkPermission}("symbolic").
      * @see PathListener
      */
-    // public static Disposable observe(Path path, PathListener listener, String... patterns) {
-    // if (!Files.isDirectory(path)) {
-    // patterns = new String[] {path.getFileName().toString()};
-    // path = path.getParent();
-    // }
-    //
-    // // Create logical file system watch service.
-    // Visitor watcher = new Visitor(path, listener, patterns);
-    //
-    // // Run in anothor thread.
-    // threads.execute(watcher);
-    //
-    // // API definition
-    // return watcher;
-    // }
-
     public static Observable<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
             return observe(path.getParent(), new String[] {path.getFileName().toString()});
@@ -2269,7 +2247,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     }
 
     /**
-     * @see kiss.ClassListener#load(java.lang.Class)
+     * {@inheritDoc}
      */
     @Override
     public final void load(Class extension) {
@@ -2302,7 +2280,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     }
 
     /**
-     * @see kiss.ClassListener#unload(java.lang.Class)
+     * {@inheritDoc}
      */
     @Override
     public final void unload(Class extension) {
@@ -2335,7 +2313,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     }
 
     /**
-     * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
+     * {@inheritDoc}
      */
     @Override
     public final Thread newThread(Runnable r) {
