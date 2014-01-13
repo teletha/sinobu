@@ -292,7 +292,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     private WatchService service;
 
     /** The user speecified event listener. */
-    private PathListener listener;
+    private Observer observer;
 
     /**
      * <p>
@@ -303,11 +303,11 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * @param listener A event listener.
      * @param visitor Name matching patterns.
      */
-    Visitor(Path path, PathListener listener, String... patterns) {
+    Visitor(Path path, Observer observer, String... patterns) {
         this(path, null, 6, null, patterns);
 
         try {
-            this.listener = listener;
+            this.observer = observer;
             this.service = path.getFileSystem().newWatchService();
 
             // register
@@ -339,18 +339,14 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
                     // pattern matching
                     if (accept(from.relativize(path))) {
-                        if (event.kind() == ENTRY_CREATE) {
-                            listener.create(path); // fire event
+                        observer.onNext(new Event(event, key));
 
+                        if (event.kind() == ENTRY_CREATE) {
                             if (Files.isDirectory(path) && preVisitDirectory(path, null) == CONTINUE) {
                                 for (Path dir : I.walkDirectory(path)) {
                                     dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                                 }
                             }
-                        } else if (event.kind() == ENTRY_DELETE) {
-                            listener.delete(path); // fire event
-                        } else {
-                            listener.modify(path); // fire event
                         }
                     }
                 }
@@ -362,6 +358,48 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
             } catch (Exception e) {
                 continue;
             }
+        }
+    }
+
+    /**
+     * @version 2014/01/13 15:08:57
+     */
+    private static class Event implements WatchEvent<Path> {
+
+        /** The actual event. */
+        private final WatchEvent<Path> event;
+
+        /** The resolved path. */
+        private final Path path;
+
+        /**
+         * @param event
+         * @param path
+         */
+        protected Event(WatchEvent event, WatchKey base) {
+            this.event = event;
+            this.path = ((Path) base.watchable()).resolve((Path) event.context());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public java.nio.file.WatchEvent.Kind<Path> kind() {
+            return event.kind();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public int count() {
+            return event.count();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public Path context() {
+            return path;
         }
     }
 

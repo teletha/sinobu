@@ -39,6 +39,7 @@ import java.nio.file.LinkPermission;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.WatchEvent;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.ProtectionDomain;
 import java.util.ArrayDeque;
@@ -1359,20 +1360,37 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *             check {@link LinkPermission}("symbolic").
      * @see PathListener
      */
-    public static Disposable observe(Path path, PathListener listener, String... patterns) {
+    // public static Disposable observe(Path path, PathListener listener, String... patterns) {
+    // if (!Files.isDirectory(path)) {
+    // patterns = new String[] {path.getFileName().toString()};
+    // path = path.getParent();
+    // }
+    //
+    // // Create logical file system watch service.
+    // Visitor watcher = new Visitor(path, listener, patterns);
+    //
+    // // Run in anothor thread.
+    // threads.execute(watcher);
+    //
+    // // API definition
+    // return watcher;
+    // }
+
+    public static Observable<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
-            patterns = new String[] {path.getFileName().toString()};
-            path = path.getParent();
+            return observe(path.getParent(), new String[] {path.getFileName().toString()});
         }
 
-        // Create logical file system watch service.
-        Visitor watcher = new Visitor(path, listener, patterns);
+        return new Observable(observer -> {
+            // Create logical file system watch service.
+            Visitor watcher = new Visitor(path, (Observer) observer, patterns);
 
-        // Run in anothor thread.
-        threads.execute(watcher);
+            // Run in anothor thread.
+            threads.execute(watcher);
 
-        // API definition
-        return watcher;
+            // API definition
+            return watcher;
+        });
     }
 
     //

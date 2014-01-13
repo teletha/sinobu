@@ -14,6 +14,7 @@ import static java.util.concurrent.TimeUnit.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.WatchEvent;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +23,7 @@ import java.util.concurrent.SynchronousQueue;
 
 import kiss.Disposable;
 import kiss.I;
-import kiss.PathListener;
+import kiss.Observer;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,13 +41,13 @@ public class PathObservationTest {
     public static final CleanRoom room = new CleanRoom(I.locateTemporary());
 
     /** The event type. */
-    private static final String Created = "create";
+    private static final String Created = "ENTRY_CREATE";
 
     /** The event type. */
-    private static final String Deleted = "delete";
+    private static final String Deleted = "ENTRY_DELETE";
 
     /** The event type. */
-    private static final String Modified = "modify";
+    private static final String Modified = "ENTRY_MODIFY";
 
     /** The file system event listener. */
     private EventQueue queue = new EventQueue();
@@ -486,7 +487,7 @@ public class PathObservationTest {
      * @param path
      */
     private Disposable observe(Path path) {
-        Disposable disposable = I.observe(path, queue);
+        Disposable disposable = I.observe(path).subscribe(queue);
 
         disposables.add(disposable);
 
@@ -501,7 +502,7 @@ public class PathObservationTest {
      * @param path
      */
     private Disposable observe(Path path, String pattern) {
-        Disposable disposable = I.observe(path, queue, pattern);
+        Disposable disposable = I.observe(path, pattern).subscribe(queue);
 
         disposables.add(disposable);
 
@@ -624,43 +625,19 @@ public class PathObservationTest {
      * @version 2011/04/03 14:14:01
      */
     @SuppressWarnings("serial")
-    private static class EventQueue extends SynchronousQueue<Event> implements PathListener {
+    private static class EventQueue extends SynchronousQueue<Event> implements Observer<WatchEvent<Path>> {
 
         private EventQueue() {
             super(true);
         }
 
         /**
-         * @see kiss.PathListener#create(java.nio.file.Path)
+         * {@inheritDoc}
          */
         @Override
-        public void create(Path path) {
+        public void onNext(WatchEvent<Path> value) {
             try {
-                put(new Event(path, Created));
-            } catch (InterruptedException e) {
-                throw I.quiet(e);
-            }
-        }
-
-        /**
-         * @see kiss.PathListener#delete(java.nio.file.Path)
-         */
-        @Override
-        public void delete(Path path) {
-            try {
-                put(new Event(path, Deleted));
-            } catch (InterruptedException e) {
-                throw I.quiet(e);
-            }
-        }
-
-        /**
-         * @see kiss.PathListener#modify(java.nio.file.Path)
-         */
-        @Override
-        public void modify(Path path) {
-            try {
-                put(new Event(path, Modified));
+                put(new Event(value.context(), value.kind().name()));
             } catch (InterruptedException e) {
                 throw I.quiet(e);
             }
