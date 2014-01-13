@@ -339,7 +339,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
                     // pattern matching
                     if (accept(from.relativize(path))) {
-                        observer.onNext(new Event(event, key));
+                        observer.onNext(new Event(event, path));
 
                         if (event.kind() == ENTRY_CREATE) {
                             if (Files.isDirectory(path) && preVisitDirectory(path, null) == CONTINUE) {
@@ -358,48 +358,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
             } catch (Exception e) {
                 continue;
             }
-        }
-    }
-
-    /**
-     * @version 2014/01/13 15:08:57
-     */
-    private static class Event implements WatchEvent<Path> {
-
-        /** The actual event. */
-        private final WatchEvent<Path> event;
-
-        /** The resolved path. */
-        private final Path path;
-
-        /**
-         * @param event
-         * @param path
-         */
-        protected Event(WatchEvent event, WatchKey base) {
-            this.event = event;
-            this.path = ((Path) base.watchable()).resolve((Path) event.context());
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public java.nio.file.WatchEvent.Kind<Path> kind() {
-            return event.kind();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int count() {
-            return event.count();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public Path context() {
-            return path;
         }
     }
 
