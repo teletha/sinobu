@@ -13,19 +13,14 @@
   <groupId>npc</groupId>
   <artifactId>sinobu</artifactId>
   <name>忍 -Kissshot Acerolaorion Heartunderblade-</name>
-  <version>0.9.2</version>
+  <version>0.9.3</version>
   <description>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.</description>
 
   <dependencies>
-  	<dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>5.0_BETA</version>
-    </dependency>
     <dependency>
       <groupId>npc</groupId>
       <artifactId>antibug</artifactId>
-      <version>0.2</version>
+      <version>0.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>

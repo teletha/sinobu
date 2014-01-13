@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static org.objectweb.asm.Opcodes.*;
+import static jdk.internal.org.objectweb.asm.Opcodes.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,18 +70,18 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import jdk.internal.org.objectweb.asm.AnnotationVisitor;
+import jdk.internal.org.objectweb.asm.ClassVisitor;
+import jdk.internal.org.objectweb.asm.ClassWriter;
+import jdk.internal.org.objectweb.asm.Handle;
+import jdk.internal.org.objectweb.asm.Label;
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+import jdk.internal.org.objectweb.asm.Type;
 import kiss.model.ClassUtil;
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
 
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Handle;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -1054,7 +1054,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         for (int i = 0; i < constructor.getParameterTypes().length + 1; i++) {
             mv.visitVarInsn(ALOAD, i); // allocate 'this' and parameter variables
         }
-        mv.visitMethodInsn(INVOKESPECIAL, type.getInternalName(), "<init>", descriptor);
+        mv.visitMethodInsn(INVOKESPECIAL, type.getInternalName(), "<init>", descriptor, false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0); // compute by ASM
         mv.visitEnd();
@@ -1071,10 +1071,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         mv.visitCode();
         mv.visitTypeInsn(NEW, "java/util/HashMap");
         mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
         mv.visitFieldInsn(PUTSTATIC, className, "pool", "Ljava/util/Map;");
         mv.visitLdcInsn(Type.getType("L" + className + ";"));
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;", false);
         mv.visitInsn(DUP);
         mv.visitVarInsn(ASTORE, 3);
         mv.visitInsn(ARRAYLENGTH);
@@ -1089,14 +1089,14 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         mv.visitVarInsn(ASTORE, 0);
         mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getName", "()Ljava/lang/String;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getName", "()Ljava/lang/String;", false);
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;");
-        mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;", false);
+        mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;", false);
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;");
-        mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;", false);
+        mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
         mv.visitInsn(POP);
         mv.visitIincInsn(1, 1); // increment counter
         mv.visitLabel(end);
@@ -1158,11 +1158,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // Fourth parameter : Pass annotation information
             mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
             mv.visitLdcInsn(method.getName().concat(Arrays.toString(method.getParameterTypes())));
-            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
             mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
 
             // Invoke interceptor method
-            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;");
+            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
             cast(method.getReturnType(), mv);
             mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
             mv.visitMaxs(0, 0); // compute by ASM
@@ -1247,7 +1247,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             if (clazz != Void.TYPE) {
                 Type wrapper = Type.getType(ClassUtil.wrap(clazz));
                 mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
-                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor());
+                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
             }
         } else {
             mv.visitTypeInsn(CHECKCAST, type.getInternalName());
@@ -1267,7 +1267,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         if (clazz.isPrimitive() && clazz != Void.TYPE) {
             Type wrapper = Type.getType(ClassUtil.wrap(clazz));
             mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type.getType(clazz)
-                    .getDescriptor() + ")" + wrapper.getDescriptor());
+                    .getDescriptor() + ")" + wrapper.getDescriptor(), false);
         }
     }
 

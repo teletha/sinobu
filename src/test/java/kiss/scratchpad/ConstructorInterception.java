@@ -9,14 +9,14 @@
  */
 package kiss.scratchpad;
 
-import static org.objectweb.asm.Opcodes.*;
+import static jdk.internal.org.objectweb.asm.Opcodes.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
+import jdk.internal.org.objectweb.asm.ClassWriter;
+import jdk.internal.org.objectweb.asm.Label;
+import jdk.internal.org.objectweb.asm.MethodVisitor;
 
 /**
  * DOCUMENT.
@@ -41,8 +41,7 @@ public class ConstructorInterception {
 
         cw.visitSource("Inner.java", null);
 
-        cw.visitInnerClass("sample/modifier/Inner$PrivateStatic", "sample/modifier/Inner", "PrivateStatic", ACC_PRIVATE
-                + ACC_STATIC);
+        cw.visitInnerClass("sample/modifier/Inner$PrivateStatic", "sample/modifier/Inner", "PrivateStatic", ACC_PRIVATE + ACC_STATIC);
 
         cw.visitInnerClass("sample/modifier/Inner$Test", "sample/modifier/Inner", "Test", ACC_PRIVATE + ACC_STATIC);
 
@@ -53,7 +52,7 @@ public class ConstructorInterception {
             mv.visitLabel(l0);
             mv.visitLineNumber(56, l0);
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESPECIAL, "sample/modifier/Inner$PrivateStatic", "<init>", "()V");
+            mv.visitMethodInsn(INVOKESPECIAL, "sample/modifier/Inner$PrivateStatic", "<init>", "()V", false);
             Label l1 = new Label();
             mv.visitLabel(l1);
             mv.visitLineNumber(57, l1);
