@@ -392,26 +392,6 @@ public class Observable<V> {
      * @param next An action to invoke for each value in the {@link Observable} sequence.
      * @return Chainable API.
      */
-    public final Observable<V> on(Consumer<V> next) {
-        // ignore invalid parameters
-        if (next == null) {
-            return this;
-        }
-
-        return on((observer, value) -> {
-            next.accept(value);
-            observer.onNext(value);
-        });
-    }
-
-    /**
-     * <p>
-     * Invokes an action for each value in the {@link Observable} sequence.
-     * </p>
-     * 
-     * @param next An action to invoke for each value in the {@link Observable} sequence.
-     * @return Chainable API.
-     */
     public final Observable<V> on(BiConsumer<Observer<? super V>, V> next) {
         // ignore invalid parameters
         if (next == null) {

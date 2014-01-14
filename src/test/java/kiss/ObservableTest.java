@@ -671,8 +671,9 @@ public class ObservableTest {
     public void onNext() throws Exception {
         List<Integer> list = new ArrayList<Integer>();
         EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().on(value -> {
+        emitter.observe().on((observer, value) -> {
             list.add(value);
+            observer.onNext(value);
         }).subscribe(emitter);
 
         assert emitter.emitAndRetrieve(10) == 10;
