@@ -57,8 +57,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -139,6 +139,7 @@ import org.xml.sax.InputSource;
  * <li><a href="#encoding">Character Encoding</a></li>
  * <li><a href="#loader">Parent Class Loader</a></li>
  * <li><a href="#working">Working Directory</a></li>
+ * <li><a href="#scheduler">Task Scheduler</a></li>
  * </ul>
  * <p>
  * When you want to initialize these enviroment variables and your application environment related
@@ -255,6 +256,14 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     public static Path $working = Paths.get(""); // Poplar Taneshima
 
+    /**
+     * <p>
+     * The configuration of task scheduler in Sinobu, default value is {@link Executors}
+     * <em>{@link Executors#newScheduledThreadPool(int)}</em>.
+     * </p>
+     */
+    public static ScheduledExecutorService $scheduler = Executors.newScheduledThreadPool(4, new I());
+
     /** The namespace uri of Sinobu. */
     static final String URI = "sinobu";
 
@@ -293,9 +302,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     /** The temporary directory for the current processing JVM. */
     private static final Path temporary;
-
-    /** The reusable thread pool for Sinobu. */
-    private static final ExecutorService threads = Executors.newCachedThreadPool(new I());
 
     /** The accessible internal method for class loading. */
     private static final Method find;
@@ -1364,7 +1370,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             Visitor watcher = new Visitor(path, (Observer) observer, patterns);
 
             // Run in anothor thread.
-            threads.execute(watcher);
+            $scheduler.execute(watcher);
 
             // API definition
             return watcher;
