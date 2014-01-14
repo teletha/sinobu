@@ -9,15 +9,17 @@
  */
 package kiss;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
- * @version 2014/01/09 13:35:39
+ * @version 2014/01/14 10:23:18
  */
-class Subscriber<V> implements Observer<V> {
+@SuppressWarnings("serial")
+class Agent<V> extends ArrayList<Disposable> implements Observer<V>, Disposable {
 
     /** The delegation. */
-    private final Observer<? super V> delegator;
+    Observer<? super V> observer;
 
     /** The delegation. */
     Consumer<? super V> next;
@@ -29,24 +31,14 @@ class Subscriber<V> implements Observer<V> {
     Runnable complete;
 
     /**
-     * @param delegator
-     * @param next
-     * @param error
-     * @param complete
-     */
-    Subscriber(Observer<? super V> delegator) {
-        this.delegator = delegator;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void onCompleted() {
         if (complete != null) {
             complete.run();
-        } else if (delegator != null) {
-            delegator.onCompleted();
+        } else if (observer != null) {
+            observer.onCompleted();
         }
     }
 
@@ -57,8 +49,8 @@ class Subscriber<V> implements Observer<V> {
     public void onError(Throwable e) {
         if (error != null) {
             error.accept(e);
-        } else if (delegator != null) {
-            delegator.onError(e);
+        } else if (observer != null) {
+            observer.onError(e);
         }
     }
 
@@ -69,8 +61,35 @@ class Subscriber<V> implements Observer<V> {
     public void onNext(V value) {
         if (next != null) {
             next.accept(value);
-        } else if (delegator != null) {
-            delegator.onNext(value);
+        } else if (observer != null) {
+            observer.onNext(value);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void dispose() {
+        for (Disposable disposable : this) {
+            disposable.dispose();
+        }
+    }
+
+    /**
+     * <p>
+     * Aggregate {@link Disposable} into this instance.
+     * </p>
+     * 
+     * @param disposable A target to dispose.
+     * @return Chainable API.
+     */
+    public Agent<V> and(Disposable disposable) {
+        if (disposable != null) {
+            add(disposable);
+        }
+
+        // API definition
+        return this;
     }
 }
