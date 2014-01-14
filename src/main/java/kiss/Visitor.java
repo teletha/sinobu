@@ -141,9 +141,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     }
 
     /**
-     * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object,
-     *      java.nio.file.attribute.BasicFileAttributes)
+     * {@inheritDoc}
      */
+    @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
         // Retrieve relative path from base.
         Path relative = from.relativize(path);
@@ -182,8 +182,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     }
 
     /**
-     * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
+     * {@inheritDoc}
      */
+    @Override
     public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
         switch (type) {
         case 0: // copy
@@ -211,9 +212,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     }
 
     /**
-     * @see java.nio.file.FileVisitor#visitFile(java.lang.Object,
-     *      java.nio.file.attribute.BasicFileAttributes)
+     * {@inheritDoc}
      */
+    @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
         if (type < 5) {
             // Retrieve relative path from base.
@@ -254,8 +255,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     }
 
     /**
-     * @see java.nio.file.FileVisitor#visitFileFailed(java.lang.Object, java.io.IOException)
+     * {@inheritDoc}
      */
+    @Override
     public FileVisitResult visitFileFailed(Path path, IOException exc) throws IOException {
         return CONTINUE;
     }
@@ -325,7 +327,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     }
 
     /**
-     * @see java.lang.Runnable#run()
+     * {@inheritDoc}
      */
     @Override
     public void run() {
@@ -339,7 +341,11 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
                     // pattern matching
                     if (accept(from.relativize(path))) {
-                        observer.onNext(new Event(event, path));
+                        Event e = new Event();
+                        e.watch = event;
+                        e.path = path;
+
+                        observer.onNext(e);
 
                         if (event.kind() == ENTRY_CREATE) {
                             if (Files.isDirectory(path) && preVisitDirectory(path, null) == CONTINUE) {
@@ -362,14 +368,10 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     }
 
     /**
-     * @see kiss.Disposable#dispose()
+     * {@inheritDoc}
      */
     @Override
     public void dispose() {
-        try {
-            service.close();
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
+        I.quiet(service);
     }
 }
