@@ -31,14 +31,14 @@ import java.util.function.Predicate;
 public class Observable<V> {
 
     /** For reuse. */
-    private static final Predicate<Boolean> IdenticalPredicate = value -> {
-        return value;
-    };
-
-    /** For reuse. */
     public static final Observable NEVER = new Observable(observer -> {
         return new Agent();
     });
+
+    /** For reuse. */
+    private static final Predicate<Boolean> IdenticalPredicate = value -> {
+        return value;
+    };
 
     /** The subscriber. */
     private Function<Observer<? super V>, Disposable> subscriber;
@@ -72,26 +72,6 @@ public class Observable<V> {
      */
     public Observable(Function<Observer<? super V>, Disposable> subscriber) {
         this.subscriber = subscriber;
-    }
-
-    /**
-     * <p>
-     * Create {@link Observable} with the specified subscriber {@link Function} which will be
-     * invoked whenever you calls {@link #subscribe(Observer)} related methods.
-     * </p>
-     * 
-     * @param previous A previous {@link Observable} of chain.
-     * @param next A {@link Observer#onNext(Object)} method to delegate.
-     */
-    private Observable(Observable<V> previous, BiConsumer<Observer<? super V>, V> next) {
-        this.subscriber = observer -> {
-            Agent<V> agent = new Agent();
-            agent.observer = observer;
-            agent.next = value -> {
-                next.accept(observer, value);
-            };
-            return previous.subscribe(agent);
-        };
     }
 
     /**
@@ -239,7 +219,7 @@ public class Observable<V> {
 
         AtomicReference<ScheduledFuture> latest = new AtomicReference();
 
-        return new Observable<V>(this, (observer, value) -> {
+        return on((observer, value) -> {
             ScheduledFuture future = latest.get();
 
             if (future != null) {
@@ -271,7 +251,7 @@ public class Observable<V> {
             return this;
         }
 
-        return new Observable<V>(this, (observer, value) -> {
+        return on((observer, value) -> {
             I.$scheduler.schedule(() -> {
                 observer.onNext(value);
             }, time, unit);
@@ -337,7 +317,7 @@ public class Observable<V> {
             return this;
         }
 
-        return new Observable<V>(this, (observer, value) -> {
+        return on((observer, value) -> {
             if (predicate.test(value)) {
                 observer.onNext(value);
             }
@@ -418,9 +398,33 @@ public class Observable<V> {
             return this;
         }
 
-        return new Observable<V>(this, (observer, value) -> {
+        return on((observer, value) -> {
             next.accept(value);
             observer.onNext(value);
+        });
+    }
+
+    /**
+     * <p>
+     * Invokes an action for each value in the {@link Observable} sequence.
+     * </p>
+     * 
+     * @param next An action to invoke for each value in the {@link Observable} sequence.
+     * @return Chainable API.
+     */
+    public final Observable<V> on(BiConsumer<Observer<? super V>, V> next) {
+        // ignore invalid parameters
+        if (next == null) {
+            return this;
+        }
+
+        return new Observable<V>(observer -> {
+            Agent<V> agent = new Agent();
+            agent.observer = observer;
+            agent.next = value -> {
+                next.accept(observer, value);
+            };
+            return subscribe(agent);
         });
     }
 
@@ -633,7 +637,7 @@ public class Observable<V> {
             return this;
         }
 
-        return new Observable<V>(this, (observer, value) -> {
+        return on((observer, value) -> {
             if (predicate.test(value)) {
                 observer.onNext(value);
                 observer.onCompleted();
