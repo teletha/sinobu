@@ -13,43 +13,48 @@ import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 
 /**
+ * <p>
+ * Versatile event wrapper.
+ * </p>
+ * 
+ * @see Visitor#run()
  * @version 2014/01/13 15:08:57
  */
-class Event implements WatchEvent<Path> {
+class Event implements WatchEvent {
 
-    /** The actual event. */
-    private final WatchEvent<Path> event;
+    /** The event holder. */
+    WatchEvent watch;
 
-    /** The resolved path. */
-    private final Path path;
+    /** The event holder. */
+    Path path;
 
     /**
-     * @param event
-     * @param path
+     * Hide constructor.
      */
-    protected Event(WatchEvent event, Path path) {
-        this.event = event;
-        this.path = path;
+    Event() {
     }
 
     /**
      * {@inheritDoc}
      */
-    public java.nio.file.WatchEvent.Kind<Path> kind() {
-        return event.kind();
+    @Override
+    public Kind kind() {
+        return watch.kind();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int count() {
-        return event.count();
+        return watch.count();
     }
 
     /**
      * {@inheritDoc}
      */
-    public Path context() {
+    @Override
+    public Object context() {
         return path;
     }
 }
