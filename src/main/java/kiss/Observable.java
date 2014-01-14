@@ -26,7 +26,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * @version 2014/01/10 22:31:16
+ * @version 2014/01/14 11:04:04
  */
 public class Observable<V> {
 
@@ -45,6 +45,18 @@ public class Observable<V> {
 
     /** The unsubscriber. */
     private Disposable unsubscriber;
+
+    /** The common value holder. */
+    private AtomicReference<V> ref;
+
+    /** The common counter. */
+    private AtomicInteger counter;
+
+    /** The common flag. */
+    private AtomicBoolean flag;
+
+    /** The common set. */
+    private Set<V> set;
 
     /**
      * <p>
@@ -266,9 +278,6 @@ public class Observable<V> {
         });
     }
 
-    /** The previous value for diff. */
-    private AtomicReference<V> diff;
-
     /**
      * <p>
      * Returns an {@link Observable} consisting of the distinct values (according to
@@ -279,10 +288,10 @@ public class Observable<V> {
      */
     public final Observable<V> diff() {
         return new Observable<V>(observer -> {
-            diff = new AtomicReference();
+            ref = new AtomicReference();
 
             return subscribe(value -> {
-                V prev = diff.getAndSet(value);
+                V prev = ref.getAndSet(value);
 
                 if (!Objects.equals(prev, value)) {
                     observer.onNext(value);
@@ -290,9 +299,6 @@ public class Observable<V> {
             });
         });
     }
-
-    /** The distinct set. */
-    private Set<V> distinct;
 
     /**
      * <p>
@@ -304,10 +310,10 @@ public class Observable<V> {
      */
     public final Observable<V> distinct() {
         return new Observable<V>(observer -> {
-            distinct = new HashSet();
+            set = new HashSet();
 
             return subscribe(value -> {
-                if (distinct.add(value)) {
+                if (set.add(value)) {
                     observer.onNext(value);
                 }
             });
@@ -467,9 +473,6 @@ public class Observable<V> {
         });
     }
 
-    /** The common counter. */
-    private AtomicInteger counter;
-
     /**
      * <p>
      * Bypasses a specified number of values in an {@link Observable} sequence and then returns the
@@ -497,9 +500,6 @@ public class Observable<V> {
         });
     }
 
-    /** The skip state. */
-    private AtomicBoolean skipUntil;
-
     /**
      * <p>
      * Returns the values from the source {@link Observable} sequence only after the other
@@ -517,14 +517,14 @@ public class Observable<V> {
         }
 
         return new Observable<V>(observer -> {
-            skipUntil = new AtomicBoolean();
+            flag = new AtomicBoolean();
 
             return new Agent().and(subscribe(value -> {
-                if (skipUntil.get()) {
+                if (flag.get()) {
                     observer.onNext(value);
                 }
             })).and(predicate.subscribe(value -> {
-                skipUntil.set(true);
+                flag.set(true);
             }));
         });
     }
@@ -546,13 +546,13 @@ public class Observable<V> {
         }
 
         return new Observable<V>(observer -> {
-            skipUntil = new AtomicBoolean();
+            flag = new AtomicBoolean();
 
             return subscribe(value -> {
-                if (skipUntil.get()) {
+                if (flag.get()) {
                     observer.onNext(value);
                 } else if (predicate.test(value)) {
-                    skipUntil.set(true);
+                    flag.set(true);
                     observer.onNext(value);
                 }
             });
