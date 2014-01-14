@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * @version 2012/01/05 15:12:52
+ * @version 2014/01/14 9:37:54
  */
 @SuppressWarnings("serial")
 class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, Runnable {
@@ -320,7 +320,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
                     dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                 }
             }
-
         } catch (Exception e) {
             throw I.quiet(e);
         }

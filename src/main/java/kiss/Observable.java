@@ -14,8 +14,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,9 +43,6 @@ public class Observable<V> {
     public static final Observable NEVER = new Observable(observer -> {
         return EmptyDisposable;
     });
-
-    /** The job scheduler. */
-    static ScheduledExecutorService tasks = Executors.newScheduledThreadPool(4);
 
     /** The subscriber. */
     private Function<Observer<? super V>, Disposable> subscriber;
@@ -246,7 +241,7 @@ public class Observable<V> {
                 latest.set(null);
                 observer.onNext(value);
             };
-            latest.set(tasks.schedule(task, time, unit));
+            latest.set(I.$scheduler.schedule(task, time, unit));
         });
     }
 
@@ -268,7 +263,7 @@ public class Observable<V> {
         }
 
         return new Observable<V>(this, (observer, value) -> {
-            tasks.schedule(() -> {
+            I.$scheduler.schedule(() -> {
                 observer.onNext(value);
             }, time, unit);
         });

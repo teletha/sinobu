@@ -26,7 +26,7 @@ import antibug.Async;
 public class ObservableTest {
 
     static {
-        Observable.tasks = Async.use();
+        I.$scheduler = Async.use();
     }
 
     @Test
