@@ -31,17 +31,13 @@ import java.util.function.Predicate;
 public class Observable<V> {
 
     /** For reuse. */
-    private static final Disposable EmptyDisposable = () -> {
-    };
-
-    /** For reuse. */
     private static final Predicate<Boolean> IdenticalPredicate = value -> {
         return value;
     };
 
     /** For reuse. */
     public static final Observable NEVER = new Observable(observer -> {
-        return EmptyDisposable;
+        return new Agent();
     });
 
     /** The subscriber. */
@@ -77,11 +73,12 @@ public class Observable<V> {
      */
     private Observable(Observable<V> previous, BiConsumer<Observer<? super V>, V> next) {
         this.subscriber = observer -> {
-            Subscriber<V> delegator = new Subscriber(observer);
-            delegator.next = value -> {
+            Agent<V> agent = new Agent();
+            agent.observer = observer;
+            agent.next = value -> {
                 next.accept(observer, value);
             };
-            return previous.subscribe(delegator);
+            return previous.subscribe(agent);
         };
     }
 
@@ -121,12 +118,12 @@ public class Observable<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable subscribe(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
-        Subscriber<V> observer = new Subscriber(null);
-        observer.next = next;
-        observer.error = error;
-        observer.complete = complete;
+        Agent agent = new Agent();
+        agent.next = next;
+        agent.error = error;
+        agent.complete = complete;
 
-        return subscribe(observer);
+        return subscribe(agent);
     }
 
     /**
@@ -397,7 +394,7 @@ public class Observable<V> {
         }
 
         return new Observable<V>(observer -> {
-            return new Unsubscriber().and(subscribe(observer)).and(other.subscribe(observer));
+            return new Agent().and(subscribe(observer)).and(other.subscribe(observer));
         });
     }
 
@@ -430,12 +427,13 @@ public class Observable<V> {
      */
     public final Observable<V> repeat() {
         return new Observable<V>(observer -> {
-            Subscriber<V> delegator = new Subscriber<V>(observer);
-            delegator.complete = () -> {
+            Agent agent = new Agent();
+            agent.observer = observer;
+            agent.complete = () -> {
                 observer.onCompleted();
-                subscribe(delegator);
+                subscribe(agent);
             };
-            return subscribe(delegator);
+            return subscribe(agent);
         });
     }
 
@@ -456,15 +454,16 @@ public class Observable<V> {
         AtomicInteger repeat = new AtomicInteger(count);
 
         return new Observable<V>(observer -> {
-            Subscriber<V> subscriber = new Subscriber<V>(observer);
-            subscriber.complete = () -> {
+            Agent agent = new Agent();
+            agent.observer = observer;
+            agent.complete = () -> {
                 if (repeat.decrementAndGet() == 0) {
                     unsubscriber.dispose();
                 } else {
-                    unsubscriber = new Unsubscriber().and(unsubscriber).and(subscribe(subscriber));
+                    unsubscriber = agent.and(unsubscriber).and(subscribe(agent));
                 }
             };
-            return subscribe(subscriber);
+            return subscribe(agent);
         });
     }
 
@@ -520,7 +519,7 @@ public class Observable<V> {
         return new Observable<V>(observer -> {
             skipUntil = new AtomicBoolean();
 
-            return new Unsubscriber().and(subscribe(value -> {
+            return new Agent().and(subscribe(value -> {
                 if (skipUntil.get()) {
                     observer.onNext(value);
                 }
@@ -611,7 +610,7 @@ public class Observable<V> {
         }
 
         return new Observable<V>(observer -> {
-            return unsubscriber = new Unsubscriber().and(subscribe(observer)).and(predicate.subscribe(value -> {
+            return unsubscriber = new Agent().and(subscribe(observer)).and(predicate.subscribe(value -> {
                 observer.onCompleted();
                 unsubscriber.dispose();
             }));
@@ -794,18 +793,18 @@ public class Observable<V> {
         }
 
         return new Observable<Boolean>(observer -> {
-            Unsubscriber unsubscriber = new Unsubscriber();
+            Agent agent = new Agent();
             boolean[] conditions = new boolean[observables.length];
 
             for (int i = 0; i < observables.length; i++) {
                 int index = i;
-                unsubscriber.add(observables[index].subscribe(value -> {
+                agent.add(observables[index].subscribe(value -> {
                     conditions[index] = !predicate.test(value);
 
                     observer.onNext(condition.test(conditions));
                 }));
             }
-            return unsubscriber;
+            return agent;
         });
     }
 }
