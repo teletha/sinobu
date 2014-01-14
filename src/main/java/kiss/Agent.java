@@ -85,9 +85,7 @@ class Agent<V> extends ArrayList<Disposable> implements Observer<V>, Disposable 
      * @return Chainable API.
      */
     public Agent<V> and(Disposable disposable) {
-        if (disposable != null) {
-            add(disposable);
-        }
+        add(disposable);
 
         // API definition
         return this;
