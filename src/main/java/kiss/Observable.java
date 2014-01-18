@@ -782,7 +782,7 @@ public class Observable<V> {
 
             for (int i = 0; i < observables.length; i++) {
                 int index = i;
-                agent.add(observables[index].subscribe(value -> {
+                agent.and(observables[index].subscribe(value -> {
                     conditions[index] = !predicate.test(value);
 
                     observer.onNext(condition.test(conditions));

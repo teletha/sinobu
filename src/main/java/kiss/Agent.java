@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * @version 2014/01/14 10:23:18
  */
 @SuppressWarnings("serial")
-class Agent<V> extends ArrayList<Disposable> implements Observer<V>, Disposable {
+class Agent<V> implements Observer<V>, Disposable {
 
     /** The delegation. */
     Observer<? super V> observer;
@@ -29,6 +29,9 @@ class Agent<V> extends ArrayList<Disposable> implements Observer<V>, Disposable 
 
     /** The delegation. */
     Runnable complete;
+
+    /** The container of unsubscribers. */
+    private ArrayList<Disposable> list = new ArrayList();
 
     /**
      * {@inheritDoc}
@@ -71,9 +74,10 @@ class Agent<V> extends ArrayList<Disposable> implements Observer<V>, Disposable 
      */
     @Override
     public void dispose() {
-        for (Disposable disposable : this) {
+        for (Disposable disposable : list) {
             disposable.dispose();
         }
+        list.clear();
     }
 
     /**
@@ -85,7 +89,7 @@ class Agent<V> extends ArrayList<Disposable> implements Observer<V>, Disposable 
      * @return Chainable API.
      */
     public Agent<V> and(Disposable disposable) {
-        add(disposable);
+        list.add(disposable);
 
         // API definition
         return this;

@@ -127,13 +127,15 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
      * @param value A value to store in the multimap.
      * @throws NullPointerException If the specified key is <code>null</code>.
      */
-    public void push(K key, V value) {
+    public boolean push(K key, V value) {
         // The cost of creating new CopyOnWriteArrayList instance is pretty low, so we may
         // create it each time.
-        putIfAbsent(key, new CopyOnWriteArrayList());
+        List list = putIfAbsent(key, new CopyOnWriteArrayList());
 
         // register value if absent
         ((CopyOnWriteArrayList) get(key)).addIfAbsent(value);
+
+        return list == null;
     }
 
     // /**
@@ -165,7 +167,7 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
      * @param key A key of entry to remove from the multimap.
      * @param value A value of entry to remove the multimap
      */
-    public void pull(K key, V value) {
+    public boolean pull(K key, V value) {
         List list = get(key);
 
         // unregister
@@ -174,6 +176,9 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
         // remove if the specified property's pool is empty
         if (list.size() == 0) {
             remove(key, list);
+            return true;
+        } else {
+            return false;
         }
     }
 
