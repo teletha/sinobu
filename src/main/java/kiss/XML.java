@@ -299,6 +299,18 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
+     * Get the element name for the first element in the set of matched elements.
+     * </p>
+     * 
+     * @param name An element name.
+     * @return Chainable API.
+     */
+    public String name() {
+        return ((org.w3c.dom.Element) nodes.iterator().next()).getTagName();
+    }
+
+    /**
+     * <p>
      * Get the value of an attribute for the first element in the set of matched elements.
      * </p>
      * 
