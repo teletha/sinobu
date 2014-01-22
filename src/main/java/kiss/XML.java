@@ -667,6 +667,17 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
+     * Convert the first element to {@link Node}.
+     * </p>
+     * 
+     * @return A first {@link Node} or <code>null</code>.
+     */
+    public Node to() {
+        return nodes.size() == 0 ? null : nodes.get(0);
+    }
+
+    /**
+     * <p>
      * Write this elements to the specified output.
      * </p>
      * 
