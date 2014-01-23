@@ -12,7 +12,9 @@ package kiss.model;
 import java.beans.Transient;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +54,18 @@ public class Property implements Comparable<Property> {
     public Property(Model model, String name) {
         this.model = model;
         this.name = name;
+    }
+
+    /**
+     * <p>
+     * Retrieve a property accessor.
+     * </p>
+     * 
+     * @param getter An accessor type.
+     * @return A property accessor.
+     */
+    public Method accessor(boolean getter) {
+        return MethodHandles.reflectAs(Method.class, accessors[getter ? 0 : 1]);
     }
 
     /**

@@ -87,6 +87,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import sun.reflect.ReflectionFactory;
+
 /**
  * <p>
  * Sinobu is not obsolete framework but utility, which can manipulate objects as a
@@ -309,6 +311,18 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /** The accessible internal method for class loading. */
     private static final Method define;
 
+    /**
+     * The tracer context per thread. The tracer context consists of the following. The first
+     * element is must be a source object that you want to trace the property paths. The other
+     * elements are property names as {@link java.lang.String}.
+     */
+    private static final ThreadSpecific<Deque<List>> tracers = new ThreadSpecific(ArrayDeque.class);
+
+    /**
+     * This instantiator instantiates an object with out any side effects caused by the constructor.
+     */
+    private static final Constructor instantiator;
+
     // initialization
     static {
         // built-in lifestyles
@@ -358,6 +372,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             find.setAccessible(true);
             define = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
             define.setAccessible(true);
+
+            // Instantiates a class by using reflection to make a call to private method
+            // ObjectStreamClass.newInstance, present in many JVM implementations.
+            instantiator = Object.class.getConstructor();
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -954,6 +972,66 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     }
 
     /**
+     * <p>
+     * Create a mock object which can trace the property paths with calling accessor methods.
+     * </p>
+     * 
+     * @param <M> A model object to trace property paths.
+     * @param type A model class to trace.
+     * @return A tracing object.
+     * @throws NullPointerException If the specified tracer is <code>null</code>.
+     */
+    public static <M> M mock(M model) {
+        if (model instanceof String) {
+            // Internal process.
+            // The specified model object indicates the property path.
+            tracers.resolve().peek().add(model);
+    
+            return null; // the returned value will not be used by Sinobu
+        }
+    
+        // compute model class
+        Class modelClass;
+    
+        if (model instanceof Class) {
+            // Internal process.
+            // The specified model object indicates the model class itself.
+            modelClass = (Class) model;
+        } else {
+            // Sinobu user uses this process with calling mock method from external.
+            // The specified model object indicates the actual bean, so we must create new trace
+            // context.
+            modelClass = model.getClass();
+    
+            // retrieve the tracer context for current thread
+            Deque<List> tracer = tracers.resolve();
+    
+            // for tracing, maximum necessary capacity is 2 (bind method needs it)
+            if (1 < tracer.size()) {
+                tracer.removeLast();
+            }
+    
+            // create new tracer context for property path tracing
+            tracer.addFirst(new ArrayList(4));
+    
+            // tracer context must have the source object at first element
+            tracer.peek().add(model);
+        }
+    
+        try {
+            // ObjectStreamClass.lookup method will cache the instance of ObjectStreamClass (at
+            // least Sun's implementation), so we don't use it.
+            return (M) ReflectionFactory.getReflectionFactory()
+                    .newConstructorForSerialization(define(modelClass, null), instantiator)
+                    .newInstance();
+        } catch (Exception e) {
+            // If this exception will be thrown, it is bug of this program. So we must rethrow the
+            // wrapped error in here.
+            throw new Error(e);
+        }
+    }
+
+    /**
      * Returns the automatic generated class which implements or extends the given model.
      * 
      * @param model A class information of the model.
@@ -967,7 +1045,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         // package classes (e.g. swing components) enhance.
         // The statement "String name = coder.getName() + model.type.getName();" produces larger
         // byte code and more objects. To reduce them, we should use the method "concat".
-        String name = model.getName().concat("+");
+        String name = model.getName().concat(interceptables == null ? "-" : "+");
 
         if (name.startsWith("java.")) {
             name = "$".concat(name);
@@ -1011,6 +1089,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      */
     private static void write(ClassVisitor cv, Class model, String className, Table<Method, Annotation> interceptables) {
+        Model m = Model.load(model);
         Type type = Type.getType(model);
 
         // ================================================
@@ -1108,66 +1187,133 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         mv.visitMaxs(5, 4);
         mv.visitEnd();
 
-        // -----------------------------------------------------------------------------------
-        // Define Interceptable Methods
-        // -----------------------------------------------------------------------------------
-        for (Entry<Method, List<Annotation>> entry : interceptables.entrySet()) {
-            Method method = entry.getKey();
+        if (interceptables == null) {
+            // -----------------------------------------------------------------------------------
+            // Define Tracer Methods
+            // -----------------------------------------------------------------------------------
+            /**
+             * <p>
+             * Define trace getter method.
+             * </p>
+             * <p>
+             * This is an example about attribute property.
+             * </p>
+             * 
+             * <pre>
+             * public int getSome() {
+             *     // track property path
+             *     I.mock(&quot;some&quot;);
+             * 
+             *     return super.getSome();
+             * }
+             * </pre>
+             * <p>
+             * This is an example about none attribute property.
+             * </p>
+             * 
+             * <pre>
+             * public Some getSome() {
+             *     // track property path
+             *     I.mock(&quot;some&quot;);
+             * 
+             *     // return the trackable mock object
+             *     return I.mock(Some.class);
+             * }
+             * </pre>
+             */
+            for (Property property : m.properties) {
+                Method accessor = property.accessor(true);
+                Type propertyType = Type.getType(property.model.type);
 
-            // exclude the method which modifier is final, static, private or native
-            if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method.getModifiers()) != 0) {
-                continue;
+                mv = cv.visitMethod(ACC_PUBLIC, accessor.getName(), Type.getMethodDescriptor(accessor), null, null);
+                mv.visitCode();
+                // invoke I.mock method with property name
+                mv.visitLdcInsn(property.name); // load 1st arguments
+                mv.visitMethodInsn(INVOKESTATIC, "kiss/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
+                mv.visitInsn(POP);
+
+                if (property.isAttribute()) {
+                    // This code is tricky because of footprint shurinking.
+                    //
+                    // Type.getOpcode(0) returns 1(long), 2(float), 3(double), 4(object array) or
+                    // 0(other). The current type's sort is 7(long), 6(float), 8(double), 9(array),
+                    // 10(object) or 1-5 (other). So the following code returns 10(long), 11(float),
+                    // 15(double), 1(object array) or 2-6(other). These values are equivalent to the
+                    // constant value code of itself.
+                    mv.visitInsn((propertyType.getOpcode(0) * 2 + 1 + Math.min(propertyType.getSort(), 9)) % 17);
+                } else {
+                    mv.visitLdcInsn(propertyType); // load 1st arguments
+                    mv.visitMethodInsn(INVOKESTATIC, "kiss/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
+                    mv.visitTypeInsn(CHECKCAST, propertyType.getInternalName());
+                }
+
+                // end method
+                mv.visitInsn(propertyType.getOpcode(IRETURN));
+                mv.visitMaxs(0, 0); // compute by ASM
+                mv.visitEnd();
             }
+        } else {
+            // -----------------------------------------------------------------------------------
+            // Define Interceptable Methods
+            // -----------------------------------------------------------------------------------
+            for (Entry<Method, List<Annotation>> entry : interceptables.entrySet()) {
+                Method method = entry.getKey();
 
-            Type methodType = Type.getType(method);
+                // exclude the method which modifier is final, static, private or native
+                if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method.getModifiers()) != 0) {
+                    continue;
+                }
 
-            mv = cv.visitMethod(ACC_PUBLIC, method.getName(), methodType.getDescriptor(), null, null);
+                Type methodType = Type.getType(method);
 
-            // Write annotations
-            for (Annotation annotation : entry.getValue()) {
-                annotate(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
+                mv = cv.visitMethod(ACC_PUBLIC, method.getName(), methodType.getDescriptor(), null, null);
+
+                // Write annotations
+                for (Annotation annotation : entry.getValue()) {
+                    annotate(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
+                }
+
+                // Write code
+                mv.visitCode();
+
+                // Zero parameter : Method name
+                mv.visitLdcInsn(method.getName());
+
+                // First parameter : Method delegation
+                Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
+                mv.visitLdcInsn(handle);
+
+                // Second parameter : Callee instance
+                mv.visitVarInsn(ALOAD, 0);
+
+                // Third parameter : Method parameter delegation
+                Class[] params = method.getParameterTypes();
+
+                mv.visitIntInsn(BIPUSH, params.length);
+                mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+
+                // objects[0] ~ [n] are method parameter
+                for (int i = 0; i < params.length; i++) {
+                    mv.visitInsn(DUP);
+                    mv.visitIntInsn(BIPUSH, i);
+                    mv.visitVarInsn(Type.getType(params[i]).getOpcode(ILOAD), i + 1);
+                    wrap(params[i], mv);
+                    mv.visitInsn(AASTORE);
+                }
+
+                // Fourth parameter : Pass annotation information
+                mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
+                mv.visitLdcInsn(method.getName().concat(Arrays.toString(method.getParameterTypes())));
+                mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
+                mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
+
+                // Invoke interceptor method
+                mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
+                cast(method.getReturnType(), mv);
+                mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
+                mv.visitMaxs(0, 0); // compute by ASM
+                mv.visitEnd();
             }
-
-            // Write code
-            mv.visitCode();
-
-            // Zero parameter : Method name
-            mv.visitLdcInsn(method.getName());
-
-            // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
-            mv.visitLdcInsn(handle);
-
-            // Second parameter : Callee instance
-            mv.visitVarInsn(ALOAD, 0);
-
-            // Third parameter : Method parameter delegation
-            Class[] params = method.getParameterTypes();
-
-            mv.visitIntInsn(BIPUSH, params.length);
-            mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
-
-            // objects[0] ~ [n] are method parameter
-            for (int i = 0; i < params.length; i++) {
-                mv.visitInsn(DUP);
-                mv.visitIntInsn(BIPUSH, i);
-                mv.visitVarInsn(Type.getType(params[i]).getOpcode(ILOAD), i + 1);
-                wrap(params[i], mv);
-                mv.visitInsn(AASTORE);
-            }
-
-            // Fourth parameter : Pass annotation information
-            mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
-            mv.visitLdcInsn(method.getName().concat(Arrays.toString(method.getParameterTypes())));
-            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
-            mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
-
-            // Invoke interceptor method
-            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
-            cast(method.getReturnType(), mv);
-            mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
-            mv.visitMaxs(0, 0); // compute by ASM
-            mv.visitEnd();
         }
 
         // -----------------------------------------------------------------------------------
