@@ -12,6 +12,7 @@ package kiss.core;
 import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
+import kiss.model.PropertyEvent;
 import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
@@ -42,21 +43,20 @@ public class PropertyWatchTest {
         // start observing
         I.watch(I.mock(person).getFirstName()).subscribe(listener);
 
-        // assert
-        assert listener.newValue == null;
-
         // change property
         person.setFirstName("miku");
 
-        // assert
-        assert "miku" == listener.newValue;
+        assert listener.event.getSource() == person;
+        assert listener.event.getPropertyName().equals("firstName");
+        assert listener.event.getOldValue() == null;
+        assert listener.event.getNewValue() == "miku";
     }
 
     /**
      * Observe primitive property.
      */
     @Test
-    public void testObserver02() {
+    public void primitive() {
         Person person = I.make(Person.class);
 
         Listener listener = new Listener();
@@ -64,29 +64,18 @@ public class PropertyWatchTest {
         // start observing
         I.watch(I.mock(person).getAge()).subscribe(listener);
 
-        // assert
-        assert listener.bean == null;
-        assert listener.propertyName == null;
-        assert listener.oldValue == null;
-        assert listener.newValue == null;
-
         // change property
         person.setAge(10);
-
-        // assert
-        assert person == listener.bean;
-        assert "age" == listener.propertyName;
-        assert listener.oldValue.equals(0);
-        assert listener.newValue.equals(10);
+        assert listener.event.getSource() == person;
+        assert listener.event.getPropertyName().equals("age");
+        assert listener.event.getOldValue().equals(0);
+        assert listener.event.getNewValue().equals(10);
     }
 
-    /**
-     * Nested property.
-     */
     @Test
-    public void testObserver03() {
+    public void nest() {
         School school = I.make(School.class);
-        school.setName("ashfood");
+        school.setName("Ashfood");
 
         Student student = I.make(Student.class);
 
@@ -95,40 +84,30 @@ public class PropertyWatchTest {
         // start observing
         I.watch(I.mock(student).getSchool().getName()).subscribe(listener);
 
-        // assert
-        assert listener.bean == null;
-        assert listener.propertyName == null;
-        assert listener.oldValue == null;
-        assert listener.newValue == null;
-
-        // change property
+        // set nested property
         student.setSchool(school);
+        assert listener.event.getSource() == school;
+        assert listener.event.getPropertyName().equals("name");
+        assert listener.event.getOldValue() == null;
+        assert listener.event.getNewValue() == "Ashfood";
 
-        // assert
-        assert school == listener.bean;
-        assert "name" == listener.propertyName;
-        assert null == listener.oldValue;
-        assert "ashfood" == listener.newValue;
-
-        // change property
+        // create another school
         School newSchool = I.make(School.class);
-        newSchool.setName("new");
-        student.setSchool(newSchool);
+        newSchool.setName("Naoetsu");
 
-        // assert
-        assert newSchool == listener.bean;
-        assert "name" == listener.propertyName;
-        assert "ashfood" == listener.oldValue;
-        assert "new" == listener.newValue;
+        // change nested property
+        student.setSchool(newSchool);
+        assert listener.event.getSource() == newSchool;
+        assert listener.event.getPropertyName().equals("name");
+        assert listener.event.getOldValue() == "Ashfood";
+        assert listener.event.getNewValue() == "Naoetsu";
 
         // change name property in school
-        newSchool.setName("change");
-
-        // assert
-        assert newSchool == listener.bean;
-        assert "name" == listener.propertyName;
-        assert "new" == listener.oldValue;
-        assert "change" == listener.newValue;
+        newSchool.setName("Siritsu Naoetsu");
+        assert listener.event.getSource() == newSchool;
+        assert listener.event.getPropertyName().equals("name");
+        assert listener.event.getOldValue() == "Naoetsu";
+        assert listener.event.getNewValue() == "Siritsu Naoetsu";
     }
 
     @Test
@@ -142,11 +121,6 @@ public class PropertyWatchTest {
 
         // change property
         bean.setGeneric("test");
-
-        // assert
-        assert bean == listener.bean;
-        assert "generic" == listener.propertyName;
-        assert null == listener.oldValue;
         assert "test" == listener.newValue;
     }
 
@@ -182,24 +156,18 @@ public class PropertyWatchTest {
     }
 
     /**
-     * @version 2010/03/19 10:40:34
+     * @version 2014/01/24 2:23:13
      */
-    private static class Listener implements Observer {
+    private static class Listener implements Observer<PropertyEvent> {
 
-        private Object bean;
-
-        private String propertyName;
-
-        private Object oldValue;
-
-        private Object newValue;
+        private PropertyEvent event;
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void onNext(Object value) {
-            newValue = value;
+        public void onNext(PropertyEvent event) {
+            this.event = event;
         }
     }
 }

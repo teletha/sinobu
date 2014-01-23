@@ -82,6 +82,7 @@ import kiss.model.ClassUtil;
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
+import kiss.model.PropertyEvent;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -916,6 +917,16 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
             Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
 
+            for (Property property : Model.load(modelClass).properties) {
+                interceptables.push(property.accessor(false), new Watchable() {
+
+                    @Override
+                    public Class<? extends Annotation> annotationType() {
+                        return Watchable.class;
+                    }
+                });
+            }
+
             // Enhance the actual model class if needed.
             if (!interceptables.isEmpty()) {
                 actualClass = define(actualClass, interceptables);
@@ -1256,6 +1267,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // -----------------------------------------------------------------------------------
             // Define Interceptable Methods
             // -----------------------------------------------------------------------------------
+            Type context = Type.getType(Table.class);
+
             for (Entry<Method, List<Annotation>> entry : interceptables.entrySet()) {
                 Method method = entry.getKey();
 
@@ -1314,6 +1327,17 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 mv.visitMaxs(0, 0); // compute by ASM
                 mv.visitEnd();
             }
+
+            /**
+             * <p>
+             * Make context field.
+             * </p>
+             * 
+             * <pre>
+             * private transient Table context;
+             * </pre>
+             */
+            cv.visitField(ACC_PUBLIC | ACC_TRANSIENT, "context", context.getDescriptor(), null, null).visitEnd();
         }
 
         // -----------------------------------------------------------------------------------
@@ -2152,13 +2176,13 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *             <code>null</code>.
      * @throws IndexOutOfBoundsException If the specified source's path is empty.
      */
-    public static <T> Observable<T> watch(T property) {
+    public static <T> Observable<PropertyEvent<T>> watch(T property) {
         Deque<List> tracer = tracers.resolve();
 
         try {
             List info = tracer.poll();
 
-            return new Observable<T>(observer -> {
+            return new Observable<PropertyEvent<T>>(observer -> {
                 return new Watch(info, observer);
             });
         } finally {
