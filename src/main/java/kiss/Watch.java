@@ -11,10 +11,6 @@ package kiss;
 
 import java.util.List;
 
-import javax.accessibility.Accessible;
-
-import jdk.nashorn.internal.runtime.Context;
-import jdk.nashorn.internal.runtime.PropertyListener;
 import kiss.model.Model;
 import kiss.model.Property;
 
@@ -23,6 +19,9 @@ import kiss.model.Property;
  */
 public class Watch implements Disposable {
 
+    /** The root object. */
+    final Object root;
+
     /** The property path. */
     final List<String> path;
 
@@ -30,7 +29,7 @@ public class Watch implements Disposable {
     final int length;
 
     /** The delegation of property change event. */
-    PropertyListener listener;
+    Observer observer;
 
     /** The operation mode about application of listeners. */
     private int mode = 2; // initial is add mode
@@ -41,35 +40,32 @@ public class Watch implements Disposable {
     /** The flag. */
     private boolean whileUpdate = false;
 
+    /** [0] is object(Object), [1] is property name(String) and [2] is old value(Object). */
     private Object[] info = new Object[3];
 
     /**
-     * Create Observer instance.
+     * Initialization : register listener for each nodes on path
      * 
-     * @param base
-     * @param path
+     * @param tracer
+     * @param observer
      */
-    Watch(List tracer, PropertyListener listener) {
-        super(tracer.remove(0));
-
-        // register model walk listener
-        addListener(this);
-
+    Watch(List tracer, Observer observer) {
+        this.root = tracer.remove(0);
         this.path = tracer;
         this.length = path.size();
-        this.listener = listener;
+        this.observer = observer;
 
         path.get(0);
 
-        traverse(path);
+        traverse(root, path);
         mode = 0;
     }
 
     /**
-     * @see net.sf.easybean.model.ModelWalkListener#enterNode(net.sf.easybean.model.Model,
-     *      net.sf.easybean.model.Property, java.lang.Object)
+     * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
      */
-    public void enterNode(Model model, Property property, Object node) {
+    protected void enter(Model model, Property property, Object node) {
         switch (mode) {
         case 1:
             if (info[0] == node) {
@@ -87,15 +83,13 @@ public class Watch implements Disposable {
             if (info[2] != null) {
                 mode = 3; // move into remove mode
 
-                // remove actually
-                ModelWalker walker = new ModelWalker(info[2]);
-                walker.addListener(this);
-
+                // Remove actually
+                //
                 // Only if we remove listeners, we can do like the following
                 // walker.traverse(path.subList(index, length - 1));
                 // But, in the greed, we need the actual old value which is indicated by the
                 // property path at once method call.
-                info[2] = walker.traverse(path.subList(index, length));
+                info[2] = traverse(info[2], path.subList(index, length));
             }
 
             // don't break, step into the next to add listeners
@@ -105,16 +99,15 @@ public class Watch implements Disposable {
         case 3: // remove mode
             // The location (index == length) indicates the last property path. It is no need to be
             // aware of property change event.
-            if (index < length && node instanceof Accessible) {
-                Context context = ((Accessible) node).ezContext();
+            if (index < length && node != null && node.getClass().isSynthetic()) {
+                Table<String, Observer> line = Enhancer.context(node);
 
                 if (mode == 2) {
-                    context.addListener(path.get(index), this);
+                    line.push(path.get(index), this);
 
                     info[0] = node;
-
                 } else {
-                    context.removeListener(path.get(index), this);
+                    line.pull(path.get(index), this);
                 }
             }
             break;
@@ -126,16 +119,16 @@ public class Watch implements Disposable {
     }
 
     /**
-     * @see net.sf.easybean.model.ModelWalkListener#leaveNode(net.sf.easybean.model.Model,
-     *      net.sf.easybean.model.Property, java.lang.Object)
+     * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
+     *      java.lang.Object)
      */
-    public void leaveNode(Model model, Property property, Object node) {
+    protected void leave(Model model, Property property, Object node) {
         index--;
     }
 
     /**
-     * @see net.sf.easybean.PropertyListener#change(java.lang.Object, java.lang.String,
-     *      java.lang.Object, java.lang.Object)
+     * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
+     *      java.lang.Object)
      */
     public void change(Object object, String propertyName, Object oldValue, Object newValue) {
         // The property value of the specified object was changed in some property path, but we
@@ -149,46 +142,45 @@ public class Watch implements Disposable {
         info[2] = oldValue;
 
         mode = 1;
-        newValue = traverse(path);
+        newValue = traverse(root, path);
         mode = 0;
 
-        if (listener instanceof Observer) {
-            Observer pair = (Observer) listener;
+        if (observer instanceof Watch) {
+            Watch pair = (Watch) observer;
 
             if (!whileUpdate && !pair.whileUpdate) {
                 // start synchronizing
                 whileUpdate = true;
 
                 // retrieve host object in the pair observer
-                Object target = pair.traverse(pair.path.subList(0, pair.length - 1));
+                Object target = pair.traverse(pair.root, pair.path.subList(0, pair.length - 1));
 
                 if (target != null) {
                     Model model = Model.load(target.getClass());
                     Property property = model.getProperty(pair.path.get(pair.length - 1));
-                    model.set(target, property, EasyBean.transform(newValue, property.model.type));
+                    model.set(target, property, I.transform(newValue, property.model.type));
                 }
 
                 // finish synchronizing
                 whileUpdate = false;
             }
         } else {
-            listener.change(info[0], path.get(length - 1), info[2], newValue);
+            observer.change(info[0], path.get(length - 1), info[2], newValue);
         }
     }
 
     /**
-     * {@inheritDoc}
+     * @see ezbean.Disposable#dispose()
      */
     public void dispose() {
         if (mode != 3) {
             // remove all registered listener from each elements on property path
             mode = 3; // remove mode
-            traverse(path);
+            traverse(root, path);
 
-            if (listener instanceof Watch) {
-                ((Watch) listener).dispose();
+            if (observer instanceof Watch) {
+                ((Watch) observer).dispose();
             }
         }
     }
-
 }

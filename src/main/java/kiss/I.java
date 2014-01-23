@@ -228,7 +228,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     // transform
     // unload use
     // v
-    // write weave warn walk
+    // write weave warn walk watch
     // xml xerox
     // yield
     // zip
@@ -1522,22 +1522,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         });
     }
 
-    /**
-     * <p>
-     * Observe the property change event of the specified property path.
-     * </p>
-     * 
-     * @param property A property path from the source object. Multiple path (e.g. parent.name) is
-     *            acceptable.
-     * @return A {@link Observable} object for this observation.
-     * @throws NullPointerException If the specified source's path or the specified listener is
-     *             <code>null</code>.
-     * @throws IndexOutOfBoundsException If the specified source's path is empty.
-     */
-    public static <T> Observable<T> observe(T property) {
-        return null;
-    }
-
     //
     // /**
     // * <p>
@@ -2154,6 +2138,32 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     public static void walk(Path start, FileVisitor visitor, String... patterns) {
         new Visitor(start, null, 4, visitor, patterns);
+    }
+
+    /**
+     * <p>
+     * Observe the property change event of the specified property path.
+     * </p>
+     * 
+     * @param property A property path from the source object. Multiple path (e.g. parent.name) is
+     *            acceptable.
+     * @return A {@link Observable} object for this observation.
+     * @throws NullPointerException If the specified source's path or the specified listener is
+     *             <code>null</code>.
+     * @throws IndexOutOfBoundsException If the specified source's path is empty.
+     */
+    public static <T> Observable<T> watch(T property) {
+        Deque<List> tracer = tracers.resolve();
+
+        try {
+            List info = tracer.poll();
+
+            return new Observable<T>(observer -> {
+                return new Watch(info, observer);
+            });
+        } finally {
+            tracer.clear(); // clean up property path tracing context
+        }
     }
 
     /**
