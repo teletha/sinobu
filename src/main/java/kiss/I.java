@@ -986,13 +986,13 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // Internal process.
             // The specified model object indicates the property path.
             tracers.resolve().peek().add(model);
-    
+
             return null; // the returned value will not be used by Sinobu
         }
-    
+
         // compute model class
         Class modelClass;
-    
+
         if (model instanceof Class) {
             // Internal process.
             // The specified model object indicates the model class itself.
@@ -1002,22 +1002,22 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // The specified model object indicates the actual bean, so we must create new trace
             // context.
             modelClass = model.getClass();
-    
+
             // retrieve the tracer context for current thread
             Deque<List> tracer = tracers.resolve();
-    
+
             // for tracing, maximum necessary capacity is 2 (bind method needs it)
             if (1 < tracer.size()) {
                 tracer.removeLast();
             }
-    
+
             // create new tracer context for property path tracing
             tracer.addFirst(new ArrayList(4));
-    
+
             // tracer context must have the source object at first element
             tracer.peek().add(model);
         }
-    
+
         try {
             // ObjectStreamClass.lookup method will cache the instance of ObjectStreamClass (at
             // least Sun's implementation), so we don't use it.
@@ -1480,15 +1480,15 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * <p>
      * The operating system interpret a cut-and-paste action or a move action as a rename action for
      * a directory and its contents. If you cut and paste a folder with files into a directory being
-     * watched, the {@link PathListener} object reports only the directory as new, but not its
-     * contents because they are essentially only renamed.
+     * watched, the {@link Observer} object reports only the directory as new, but not its contents
+     * because they are essentially only renamed.
      * </p>
      * <p>
      * Common file system operations might raise more than one event. For example, when a file is
      * moved from one directory to another, several Modify and some Create and Delete events might
      * be raised. Moving a file is a complex operation that consists of multiple simple operations,
      * therefore raising multiple events. Likewise, some applications might cause additional file
-     * system events that are detected by {@link PathListener} .
+     * system events that are detected by the {@link Observer}.
      * </p>
      * 
      * @param path A target path you want to observe. (file and directory are acceptable)
@@ -1504,7 +1504,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
-     * @see PathListener
      */
     public static Observable<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
@@ -1523,12 +1522,30 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         });
     }
 
+    /**
+     * <p>
+     * Observe the property change event of the specified property path.
+     * </p>
+     * 
+     * @param property A property path from the source object. Multiple path (e.g. parent.name) is
+     *            acceptable.
+     * @return A {@link Observable} object for this observation.
+     * @throws NullPointerException If the specified source's path or the specified listener is
+     *             <code>null</code>.
+     * @throws IndexOutOfBoundsException If the specified source's path is empty.
+     */
+    public static <T> Observable<T> observe(T property) {
+        return null;
+    }
+
     //
     // /**
     // * <p>
-    // * Parse the specified xml {@link Path} using the specified sequence of {@link XMLFilter} .
+    // * Parse the specified xml {@link Path} using the specified sequence of {@link
+    // XMLFilter} .
     // The
-    // * application can use this method to instruct the XML reader to begin parsing an XML document
+    // * application can use this method to instruct the XML reader to begin parsing an
+    // XML document
     // * from the specified path.
     // * </p>
     // * <p>
@@ -1536,19 +1553,25 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     // * </p>
     // * <ul>
     // * <li>Support XML namespaces.</li>
-    // * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude) Version
+    // * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude)
+    // Version
     // * 1.0</a>.</li>
     // * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
-    // * <li><em>Not</em> support external DTD completely (parser doesn't even access DTD, using
-    // * "http://apache.org/xml/features/nonvalidating/load-external-dtd" feature).</li>
+    // * <li><em>Not</em> support external DTD completely (parser doesn't even access
+    // DTD, using
+    // * "http://apache.org/xml/features/nonvalidating/load-external-dtd"
+    // feature).</li>
     // * </ul>
     // *
     // * @param source A path to xml source.
-    // * @param filters A list of filters to parse a sax event. This may be <code>null</code>.
-    // * @throws NullPointerException If the specified source is <code>null</code>. If one of the
+    // * @param filters A list of filters to parse a sax event. This may be
+    // <code>null</code>.
+    // * @throws NullPointerException If the specified source is <code>null</code>. If
+    // one of the
     // * specified filter is <code>null</code>.
     // * @throws SAXException Any SAX exception, possibly wrapping another exception.
-    // * @throws IOException An IO exception from the parser, possibly from a byte stream or
+    // * @throws IOException An IO exception from the parser, possibly from a byte
+    // stream or
     // character
     // * stream supplied by the application.
     // */
@@ -1565,29 +1588,38 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     //
     // /**
     // * <p>
-    // * Parse the specified xml {@link InputSource} using the specified sequence of {@link
+    // * Parse the specified xml {@link InputSource} using the specified sequence of
+    // {@link
     // XMLFilter}
-    // * . The application can use this method to instruct the XML reader to begin parsing an XML
-    // * document from any valid input source (a character stream, a byte stream, or a URI).
+    // * . The application can use this method to instruct the XML reader to begin
+    // parsing an XML
+    // * document from any valid input source (a character stream, a byte stream, or a
+    // URI).
     // * </p>
     // * <p>
     // * Sinobu use the {@link XMLReader} which has the following features.
     // * </p>
     // * <ul>
     // * <li>Support XML namespaces.</li>
-    // * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude) Version
+    // * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude)
+    // Version
     // * 1.0</a>.</li>
     // * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
-    // * <li><em>Not</em> support external DTD completely (parser doesn't even access DTD, using
-    // * "http://apache.org/xml/features/nonvalidating/load-external-dtd" feature).</li>
+    // * <li><em>Not</em> support external DTD completely (parser doesn't even access
+    // DTD, using
+    // * "http://apache.org/xml/features/nonvalidating/load-external-dtd"
+    // feature).</li>
     // * </ul>
     // *
     // * @param source A xml source.
-    // * @param filters A list of filters to parse a sax event. This may be <code>null</code>.
-    // * @throws NullPointerException If the specified source is <code>null</code>. If one of the
+    // * @param filters A list of filters to parse a sax event. This may be
+    // <code>null</code>.
+    // * @throws NullPointerException If the specified source is <code>null</code>. If
+    // one of the
     // * specified filter is <code>null</code>.
     // * @throws SAXException Any SAX exception, possibly wrapping another exception.
-    // * @throws IOException An IO exception from the parser, possibly from a byte stream or
+    // * @throws IOException An IO exception from the parser, possibly from a byte
+    // stream or
     // character
     // * stream supplied by the application.
     // */
@@ -1619,12 +1651,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     // // start parsing
     // reader.parse(source);
     // } catch (Exception e) {
-    // // We must throw the checked exception quietly and pass the original exception instead
+    // // We must throw the checked exception quietly and pass the original exception
+    // instead
     // // of wrapped exception.
     // throw quiet(e);
     // }
     // }
-
     /**
      * <p>
      * Close the specified object quietly if it is {@link AutoCloseable}. Equivalent to
