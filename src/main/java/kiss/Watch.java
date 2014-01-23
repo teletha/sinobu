@@ -9,15 +9,17 @@
  */
 package kiss;
 
+import java.util.Arrays;
 import java.util.List;
 
 import kiss.model.Model;
 import kiss.model.Property;
+import kiss.model.PropertyEvent;
 
 /**
  * @version 2014/01/23 15:57:06
  */
-public class Watch implements Disposable {
+public class Watch implements Disposable, Observer<PropertyEvent> {
 
     /** The root object. */
     final Object root;
@@ -33,9 +35,6 @@ public class Watch implements Disposable {
 
     /** The operation mode about application of listeners. */
     private int mode = 2; // initial is add mode
-
-    /** The current index of the property path. */
-    private int index = 0;
 
     /** The flag. */
     private boolean whileUpdate = false;
@@ -55,94 +54,100 @@ public class Watch implements Disposable {
         this.length = path.size();
         this.observer = observer;
 
-        path.get(0);
-
         traverse(root, path);
         mode = 0;
     }
 
-    /**
-     * @see ezbean.model.ModelWalker#enter(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object)
-     */
-    protected void enter(Model model, Property property, Object node) {
-        switch (mode) {
-        case 1:
-            if (info[0] == node) {
-                mode = 4;
-            }
-            break;
+    private Object traverse(Object node, List<String> route) {
+        Model model = Model.load(node.getClass());
+        Property property = new Property(model, model.name);
 
-        case 4:
-            if (!property.name.equals(info[1])) {
-                mode = 1;
+        for (int index = 0; index < route.size(); index++) {
+            switch (mode) {
+            case 1:
+                if (info[0] == node) {
+                    mode = 4;
+                }
                 break;
-            }
 
-            // remove all registered listeners from the sequence of old value
-            if (info[2] != null) {
-                mode = 3; // move into remove mode
+            case 4:
+                if (!property.name.equals(info[1])) {
+                    mode = 1;
+                    break;
+                }
 
-                // Remove actually
-                //
-                // Only if we remove listeners, we can do like the following
-                // walker.traverse(path.subList(index, length - 1));
-                // But, in the greed, we need the actual old value which is indicated by the
-                // property path at once method call.
-                info[2] = traverse(info[2], path.subList(index, length));
-            }
+                // remove all registered listeners from the sequence of old value
+                if (info[2] != null) {
+                    mode = 3; // move into remove mode
 
-            // don't break, step into the next to add listeners
-            mode = 2; // move into add mode
+                    // Remove actually
+                    //
+                    // Only if we remove listeners, we can do like the following
+                    // walker.traverse(path.subList(index, length - 1));
+                    // But, in the greed, we need the actual old value which is indicated by the
+                    // property path at once method call.
+                    info[2] = traverse(info[2], route.subList(index, length));
+                }
 
-        case 2: // add mode
-        case 3: // remove mode
-            // The location (index == length) indicates the last property path. It is no need to be
-            // aware of property change event.
-            if (index < length && node != null && node.getClass().isSynthetic()) {
-                Table<String, Observer> line = Enhancer.context(node);
+                // don't break, step into the next to add listeners
+                mode = 2; // move into add mode
+
+            case 2: // add mode
+            case 3: // remove mode
+                // The location (index == length) indicates the last property path. It is no need to
+                // be aware of property change event.
+                Table<String, Observer> line = Interceptor.context(node);
 
                 if (mode == 2) {
+                    System.out.println("set listener at " + path.get(index) + "  " + node);
                     line.push(path.get(index), this);
 
                     info[0] = node;
                 } else {
+                    System.out.println("remove listener at " + path.get(index) + "   " + node);
                     line.pull(path.get(index), this);
                 }
+                break;
+
+            default: // normal mode
+                break;
             }
-            break;
 
-        default: // normal mode
-            break;
+            model = property.model;
+            property = model.getProperty(path.get(index));
+
+            if (property == null) {
+                return null;
+            } else {
+                node = model.get(node, property);
+
+                if (node == null) {
+                    return null;
+                }
+            }
         }
-        index++;
+
+        return node;
     }
 
     /**
-     * @see ezbean.model.ModelWalker#leave(ezbean.model.Model, ezbean.model.Property,
-     *      java.lang.Object)
+     * {@inheritDoc}
      */
-    protected void leave(Model model, Property property, Object node) {
-        index--;
-    }
-
-    /**
-     * @see ezbean.PropertyListener#change(java.lang.Object, java.lang.String, java.lang.Object,
-     *      java.lang.Object)
-     */
-    public void change(Object object, String propertyName, Object oldValue, Object newValue) {
+    @Override
+    public void onNext(PropertyEvent value) {
+        System.out.println("onNext " + value);
         // The property value of the specified object was changed in some property path, but we
         // don't know the location of property change yet. At first, we must search the location
         // (index = n), then remove all registered listeners form the sequence of old value (from
         // n+1 to length-2) and add listeners to the sequence of new value (from n+1 to length-2).
 
         // On achieving this functionality,
-        info[0] = object;
-        info[1] = propertyName;
-        info[2] = oldValue;
+        info[0] = value.getSource();
+        info[1] = value.getPropertyName();
+        info[2] = value.getOldValue();
 
         mode = 1;
-        newValue = traverse(root, path);
+        Object newValue = traverse(root, path);
         mode = 0;
 
         if (observer instanceof Watch) {
@@ -165,13 +170,15 @@ public class Watch implements Disposable {
                 whileUpdate = false;
             }
         } else {
-            observer.change(info[0], path.get(length - 1), info[2], newValue);
+            System.out.println("info2 " + Arrays.toString(info));
+            observer.onNext(new PropertyEvent(info[0], path.get(length - 1), info[2], newValue));
         }
     }
 
     /**
-     * @see ezbean.Disposable#dispose()
+     * {@inheritDoc}
      */
+    @Override
     public void dispose() {
         if (mode != 3) {
             // remove all registered listener from each elements on property path
