@@ -45,6 +45,9 @@ public class Property implements Comparable<Property> {
     /** The actual accessor methods. */
     MethodHandle[] accessors;
 
+    /** The property type. */
+    boolean isField;
+
     /**
      * Create a property.
      * 
@@ -65,7 +68,7 @@ public class Property implements Comparable<Property> {
      * @return A property accessor.
      */
     public Method accessor(boolean getter) {
-        return MethodHandles.reflectAs(Method.class, accessors[getter ? 0 : 1]);
+        return isField ? null : MethodHandles.reflectAs(Method.class, accessors[getter ? 0 : 1]);
     }
 
     /**

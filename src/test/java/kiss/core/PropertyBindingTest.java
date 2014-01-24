@@ -536,7 +536,7 @@ public class PropertyBindingTest {
     /**
      * Test empty target path.
      */
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testNull04() {
         // create bean
         Person source = I.make(Person.class);
