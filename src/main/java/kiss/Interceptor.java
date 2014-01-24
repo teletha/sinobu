@@ -11,7 +11,6 @@ package kiss;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Field;
 
 /**
  * <p>
@@ -108,28 +107,5 @@ public class Interceptor<P extends Annotation> implements Extensible {
 
         // Invoke chain of interceptors.
         return current.invoke(params);
-    }
-
-    /**
-     * <p>
-     * Helper method to access property listener context.
-     * </p>
-     * 
-     * @param object A target bean.
-     * @return An associated context.
-     */
-    static final Table<String, Observer> context(Object object) {
-        try {
-            Field field = object.getClass().getField("context");
-            Object value = field.get(object);
-
-            if (value == null) {
-                value = new Table();
-                field.set(object, value);
-            }
-            return (Table<String, Observer>) value;
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
     }
 }

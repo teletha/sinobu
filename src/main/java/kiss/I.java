@@ -916,8 +916,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
             Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
 
+            // property must be interceptable to observe it
             for (Property property : Model.load(modelClass).properties) {
-                interceptables.push(property.accessor(false), new State(null, null));
+                interceptables.push(property.accessor(false), new Watch());
             }
 
             // Enhance the actual model class if needed.
