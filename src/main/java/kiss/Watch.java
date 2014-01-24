@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Nameless Production Committee
+ * Copyright (C) 2014 Nameless Production Committee
  *
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,25 +9,71 @@
  */
 package kiss;
 
+import java.beans.Introspector;
 import java.beans.PropertyChangeEvent;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
+
+import javax.jws.Oneway;
 
 import kiss.model.Model;
 import kiss.model.Property;
 
 /**
- * @version 2014/01/23 15:57:06
+ * @version 2014/01/24 13:07:40
  */
-public class Watch implements Disposable, Observer<PropertyChangeEvent> {
+public class Watch extends Interceptor<Oneway> implements Disposable, Observer<PropertyChangeEvent>, Oneway {
 
-    /** The root object. */
-    final Object root;
+    // =======================================================
+    // For Interceptor
+    // =======================================================
+    /**
+     * <p>
+     * Initialization as {@link Interceptor}.
+     * </p>
+     */
+    Watch() {
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Object invoke(Object... params) {
+        Property property = Model.load(that.getClass()).getProperty(Introspector.decapitalize(name.substring(3)));
+        List<Observer> list = context(that).get(property.name);
+
+        if (list.isEmpty()) {
+            return super.invoke(params);
+        }
+
+        try {
+            // Retrieve old value.
+            Object old = property.accessor(true).invoke(that);
+
+            Object result = super.invoke(params);
+
+            if (!Objects.equals(old, params[0])) {
+                PropertyChangeEvent event = new PropertyChangeEvent(that, property.name, old, params[0]);
+
+                for (Observer observer : list) {
+                    observer.onNext(event);
+                }
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    // =======================================================
+    // For Property Observer
+    // =======================================================
     /** The property path. */
-    final List<String> path;
-
-    /** The path length. This value is referred frequently, so cache it. */
-    final int length;
+    List<String> path;
 
     /** The delegation of property change event. */
     Observer observer;
@@ -39,33 +85,42 @@ public class Watch implements Disposable, Observer<PropertyChangeEvent> {
     private Object[] info = new Object[3];
 
     /**
-     * Initialization : register listener for each nodes on path
+     * Initialization as property {@link Observer}.
      * 
      * @param tracer
      * @param observer
      */
     Watch(List tracer, Observer observer) {
-        this.root = tracer.remove(0);
+        this.that = tracer.remove(0);
         this.path = tracer;
-        this.length = path.size();
         this.observer = observer;
 
-        traverse(root, path, 2);
+        traverse(that, path, 2);
     }
 
-    private Object traverse(Object node, List<String> route, int mode) {
-        Model model = Model.load(node.getClass());
+    /**
+     * <p>
+     * Traverse object tree along with the specified property path.
+     * </p>
+     * 
+     * @param object A base object.
+     * @param path A property path.
+     * @param mode A processing mode.
+     * @return
+     */
+    private Object traverse(Object object, List<String> path, int mode) {
+        Model model = Model.load(object.getClass());
         Property property = new Property(model, model.name);
 
-        root: for (int index = 0; index < route.size(); index++) {
+        root: for (int index = 0; index < path.size(); index++) {
             switch (mode) {
-            case 1:
-                if (info[0] == node) {
+            case 1: // search modification
+                if (info[0] == object) {
                     mode = 4;
                 }
                 break;
 
-            case 4:
+            case 4: // add listener to the new path
                 if (!property.name.equals(info[1])) {
                     mode = 1;
                     break;
@@ -73,15 +128,13 @@ public class Watch implements Disposable, Observer<PropertyChangeEvent> {
 
                 // remove all registered listeners from the sequence of old value
                 if (info[2] != null) {
-                    mode = 3; // move into remove mode
-
                     // Remove actually
                     //
                     // Only if we remove listeners, we can do like the following
                     // walker.traverse(path.subList(index, length - 1));
                     // But, in the greed, we need the actual old value which is indicated by the
                     // property path at once method call.
-                    info[2] = traverse(info[2], route.subList(index, length), 3);
+                    info[2] = traverse(info[2], path.subList(index, path.size()), 3);
                 }
 
                 // don't break, step into the next to add listeners
@@ -91,14 +144,14 @@ public class Watch implements Disposable, Observer<PropertyChangeEvent> {
             case 3: // remove mode
                 // The location (index == length) indicates the last property path. It is no need to
                 // be aware of property change event.
-                Table<String, Observer> line = Interceptor.context(node);
+                Table<String, Observer> list = context(object);
 
                 if (mode == 2) {
-                    line.push(route.get(index), this);
+                    list.push(path.get(index), this);
 
-                    info[0] = node;
+                    info[0] = object;
                 } else {
-                    line.pull(route.get(index), this);
+                    list.pull(path.get(index), this);
                 }
                 break;
 
@@ -107,19 +160,19 @@ public class Watch implements Disposable, Observer<PropertyChangeEvent> {
             }
 
             model = property.model;
-            property = model.getProperty(route.get(index));
+            property = model.getProperty(path.get(index));
 
             if (property == null) {
                 break root;
             } else {
-                node = model.get(node, property);
+                object = model.get(object, property);
 
-                if (node == null) {
+                if (object == null) {
                     break root;
                 }
             }
         }
-        return node;
+        return object;
     }
 
     /**
@@ -137,7 +190,8 @@ public class Watch implements Disposable, Observer<PropertyChangeEvent> {
         info[1] = event.getPropertyName();
         info[2] = event.getOldValue();
 
-        Object value = traverse(root, path, 1);
+        // search new value
+        Object value = traverse(that, path, 1);
 
         if (observer instanceof Watch) {
             Watch pair = (Watch) observer;
@@ -147,11 +201,11 @@ public class Watch implements Disposable, Observer<PropertyChangeEvent> {
                 whileUpdate = true;
 
                 // retrieve host object in the pair observer
-                Object target = pair.traverse(pair.root, pair.path.subList(0, pair.length - 1), 0);
+                Object target = pair.traverse(pair.that, pair.path.subList(0, pair.path.size() - 1), 0);
 
                 if (target != null) {
                     Model model = Model.load(target.getClass());
-                    Property property = model.getProperty(pair.path.get(pair.length - 1));
+                    Property property = model.getProperty(pair.path.get(pair.path.size() - 1));
                     model.set(target, property, I.transform(value, property.model.type));
                 }
 
@@ -168,10 +222,44 @@ public class Watch implements Disposable, Observer<PropertyChangeEvent> {
      */
     @Override
     public void dispose() {
-        traverse(root, path, 3);
+        traverse(that, path, 3);
 
         if (observer instanceof Watch) {
             ((Watch) observer).dispose();
         }
+    }
+
+    /**
+     * <p>
+     * Helper method to access property listener context.
+     * </p>
+     * 
+     * @param object A target bean.
+     * @return An associated context.
+     */
+    private static final Table<String, Observer> context(Object object) {
+        try {
+            Field field = object.getClass().getField("context");
+            Object value = field.get(object);
+
+            if (value == null) {
+                value = new Table();
+                field.set(object, value);
+            }
+            return (Table<String, Observer>) value;
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    // =======================================================
+    // For Annotation Implementation
+    // =======================================================
+    /**
+     * As Marker annotation.
+     */
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return Oneway.class;
     }
 }
