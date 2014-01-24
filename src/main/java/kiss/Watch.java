@@ -42,7 +42,8 @@ public class Watch extends Interceptor<Oneway> implements Disposable, Observer<P
      */
     @Override
     protected Object invoke(Object... params) {
-        Property property = Model.load(that.getClass()).getProperty(Introspector.decapitalize(name.substring(3)));
+        Model model = Model.load(that.getClass());
+        Property property = model.getProperty(Introspector.decapitalize(name.substring(3)));
         List<Observer> list = context(that).get(property.name);
 
         if (list.isEmpty()) {
@@ -51,7 +52,7 @@ public class Watch extends Interceptor<Oneway> implements Disposable, Observer<P
 
         try {
             // Retrieve old value.
-            Object old = property.accessor(true).invoke(that);
+            Object old = model.get(that, property);
 
             Object result = super.invoke(params);
 
@@ -222,10 +223,14 @@ public class Watch extends Interceptor<Oneway> implements Disposable, Observer<P
      */
     @Override
     public void dispose() {
-        traverse(that, path, 3);
+        if (annotation == null) {
+            annotation = this; // use as flag
 
-        if (observer instanceof Watch) {
-            ((Watch) observer).dispose();
+            traverse(that, path, 3);
+
+            if (observer instanceof Watch) {
+                ((Watch) observer).dispose();
+            }
         }
     }
 

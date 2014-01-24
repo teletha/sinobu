@@ -211,7 +211,6 @@ public class Model {
         // Search field properties.
         try {
             for (Field field : type.getFields()) {
-
                 // exclude the field which modifier is final, static, private or native
                 if (((STATIC | PRIVATE | NATIVE | FINAL) & field.getModifiers()) == 0) {
                     field.setAccessible(true);
@@ -219,6 +218,7 @@ public class Model {
                     Property property = new Property(load(field.getGenericType(), type), field.getName());
                     property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
                     property.addAnnotation(field);
+                    property.isField = true;
 
                     if ((TRANSIENT & field.getModifiers()) != 0) {
                         property.annotations.put(Transient.class, "");

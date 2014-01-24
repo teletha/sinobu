@@ -11,6 +11,7 @@ package kiss;
 
 import static jdk.internal.org.objectweb.asm.Opcodes.*;
 
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -416,6 +417,61 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
         // API definition
         return map;
+    }
+
+    /**
+     * <p>
+     * Bind between two properties. You can specify the binding type (one-way and two-way). This
+     * binding supports the following binding types :
+     * </p>
+     * <dl>
+     * <dt>Oneway</dt>
+     * <dd>The change to the target property is not transmitted to the data source though the value
+     * with a new data source is forwarded to the target property.</dd>
+     * <dt>Twoway</dt>
+     * <dd>The change on source and target is interactively transmitted.</dd>
+     * </dl>
+     * 
+     * @param sourcePath A property path from the source object. Multiple path (e.g. parent.name) is
+     *            acceptable.
+     * @param targetPath A property path from the target object. Multiple path (e.g. parent.name) is
+     *            acceptable.
+     * @param twoway A flag for binding type. If <code>true</code> is specified, source and target
+     *            properties bind each other. If <code>false</code> is specified, only the source
+     *            property binds to the target property.
+     * @return A {@link Disposable} object for this binding. You can unbind this binding to call the
+     *         method {@link Disposable#dispose()} of the returned object.
+     * @throws NullPointerException If the specified source's path or target's path is
+     *             <code>null</code>.
+     * @throws IllegalArgumentException If the specified source's path or target's path is empty.
+     */
+    public static <S> Disposable bind(S sourcePath, S targetPath, boolean twoway) {
+        // retrieve a tracer of the current processing thread
+        Deque<List> tracer = tracers.resolve();
+
+        try {
+            // create target binding
+            Watch targetBind = new Watch(tracer.poll(), null);
+
+            // create source binding
+            Watch subjectBind = new Watch(tracer.poll(), targetBind);
+
+            if (twoway) {
+                // bind each other
+                targetBind.observer = subjectBind;
+            } else {
+                // dispose target binding
+                targetBind.dispose();
+            }
+
+            // initial property binding
+            subjectBind.onNext(new PropertyChangeEvent(subjectBind.that, subjectBind.path.get(0), null, null));
+
+            // API definition
+            return subjectBind;
+        } finally {
+            tracer.clear(); // clean up property path tracing context
+        }
     }
 
     // /**
@@ -918,7 +974,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             // property must be interceptable to observe it
             for (Property property : Model.load(modelClass).properties) {
-                interceptables.push(property.accessor(false), new Watch());
+                Method method = property.accessor(false);
+
+                if (method != null) {
+                    interceptables.push(method, new Watch());
+                }
             }
 
             // Enhance the actual model class if needed.
@@ -1228,34 +1288,37 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
              */
             for (Property property : m.properties) {
                 Method accessor = property.accessor(true);
-                Type propertyType = Type.getType(property.model.type);
 
-                mv = cv.visitMethod(ACC_PUBLIC, accessor.getName(), Type.getMethodDescriptor(accessor), null, null);
-                mv.visitCode();
-                // invoke I.mock method with property name
-                mv.visitLdcInsn(property.name); // load 1st arguments
-                mv.visitMethodInsn(INVOKESTATIC, "kiss/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
-                mv.visitInsn(POP);
+                if (accessor != null) {
+                    Type propertyType = Type.getType(property.model.type);
 
-                if (property.isAttribute()) {
-                    // This code is tricky because of footprint shurinking.
-                    //
-                    // Type.getOpcode(0) returns 1(long), 2(float), 3(double), 4(object array) or
-                    // 0(other). The current type's sort is 7(long), 6(float), 8(double), 9(array),
-                    // 10(object) or 1-5 (other). So the following code returns 10(long), 11(float),
-                    // 15(double), 1(object array) or 2-6(other). These values are equivalent to the
-                    // constant value code of itself.
-                    mv.visitInsn((propertyType.getOpcode(0) * 2 + 1 + Math.min(propertyType.getSort(), 9)) % 17);
-                } else {
-                    mv.visitLdcInsn(propertyType); // load 1st arguments
+                    mv = cv.visitMethod(ACC_PUBLIC, accessor.getName(), Type.getMethodDescriptor(accessor), null, null);
+                    mv.visitCode();
+                    // invoke I.mock method with property name
+                    mv.visitLdcInsn(property.name); // load 1st arguments
                     mv.visitMethodInsn(INVOKESTATIC, "kiss/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
-                    mv.visitTypeInsn(CHECKCAST, propertyType.getInternalName());
-                }
+                    mv.visitInsn(POP);
 
-                // end method
-                mv.visitInsn(propertyType.getOpcode(IRETURN));
-                mv.visitMaxs(0, 0); // compute by ASM
-                mv.visitEnd();
+                    if (property.isAttribute()) {
+                        // This code is tricky because of footprint shurinking.
+                        //
+                        // Type.getOpcode(0) returns 1(long), 2(float), 3(double), 4(object array)
+                        // or 0(other). The current type's sort is 7(long), 6(float), 8(double),
+                        // 9(array), 10(object) or 1-5 (other). So the following code returns
+                        // 10(long), 11(float), 15(double), 1(object array) or 2-6(other). These
+                        // values are equivalent to the constant value code of itself.
+                        mv.visitInsn((propertyType.getOpcode(0) * 2 + 1 + Math.min(propertyType.getSort(), 9)) % 17);
+                    } else {
+                        mv.visitLdcInsn(propertyType); // load 1st arguments
+                        mv.visitMethodInsn(INVOKESTATIC, "kiss/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
+                        mv.visitTypeInsn(CHECKCAST, propertyType.getInternalName());
+                    }
+
+                    // end method
+                    mv.visitInsn(propertyType.getOpcode(IRETURN));
+                    mv.visitMaxs(0, 0); // compute by ASM
+                    mv.visitEnd();
+                }
             }
         } else {
             // -----------------------------------------------------------------------------------
