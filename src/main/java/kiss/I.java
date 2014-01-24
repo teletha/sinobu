@@ -82,7 +82,6 @@ import kiss.model.ClassUtil;
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.model.PropertyEvent;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -2170,13 +2169,13 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *             <code>null</code>.
      * @throws IndexOutOfBoundsException If the specified source's path is empty.
      */
-    public static <T> Observable<PropertyEvent<T>> watch(T property) {
+    public static <T> Observable<T> watch(T property) {
         Deque<List> tracer = tracers.resolve();
 
         try {
             List info = tracer.poll();
 
-            return new Observable<PropertyEvent<T>>(observer -> {
+            return new Observable<T>(observer -> {
                 return new Watch(info, observer);
             });
         } finally {

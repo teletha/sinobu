@@ -9,16 +9,16 @@
  */
 package kiss;
 
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.model.PropertyEvent;
 
 /**
  * @version 2014/01/23 15:57:06
  */
-public class Watch implements Disposable, Observer<PropertyEvent> {
+public class Watch implements Disposable, Observer<PropertyChangeEvent> {
 
     /** The root object. */
     final Object root;
@@ -126,7 +126,7 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
      * {@inheritDoc}
      */
     @Override
-    public void onNext(PropertyEvent event) {
+    public void onNext(PropertyChangeEvent event) {
         // The property value of the specified object was changed in some property path, but we
         // don't know the location of property change yet. At first, we must search the location
         // (index = n), then remove all registered listeners form the sequence of old value (from
@@ -159,7 +159,7 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
                 whileUpdate = false;
             }
         } else {
-            observer.onNext(new PropertyEvent(info[0], path.get(length - 1), info[2], value));
+            observer.onNext(value);
         }
     }
 
