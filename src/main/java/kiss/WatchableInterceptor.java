@@ -10,6 +10,7 @@
 package kiss;
 
 import java.beans.Introspector;
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,7 +18,6 @@ import javax.jws.Oneway;
 
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.model.PropertyEvent;
 
 /**
  * @version 2014/01/23 22:21:06
@@ -43,7 +43,7 @@ class WatchableInterceptor extends Interceptor<Oneway> {
             Object result = super.invoke(params);
 
             if (!Objects.equals(old, params[0])) {
-                PropertyEvent event = new PropertyEvent(that, property.name, old, params[0]);
+                PropertyChangeEvent event = new PropertyChangeEvent(that, property.name, old, params[0]);
 
                 for (Observer observer : Interceptor.context(that).get(property.name)) {
                     observer.onNext(event);
