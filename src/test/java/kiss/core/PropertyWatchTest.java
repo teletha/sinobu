@@ -21,23 +21,13 @@ import kiss.sample.bean.Student;
 import org.junit.Test;
 
 /**
- * @version 2014/01/23 16:11:44
+ * @version 2014/01/24 11:23:57
  */
 public class PropertyWatchTest {
 
-    @Test(expected = NullPointerException.class)
-    public void nullPath() {
-        // start observing
-        I.watch(null);
-    }
-
-    /**
-     * Observe single property.
-     */
     @Test
     public void observe() {
         Person person = I.make(Person.class);
-
         Listener listener = new Listener();
 
         // start observing
@@ -52,13 +42,9 @@ public class PropertyWatchTest {
         assert listener.event.getNewValue() == "miku";
     }
 
-    /**
-     * Observe primitive property.
-     */
     @Test
     public void primitive() {
         Person person = I.make(Person.class);
-
         Listener listener = new Listener();
 
         // start observing
@@ -78,7 +64,6 @@ public class PropertyWatchTest {
         school.setName("Ashfood");
 
         Student student = I.make(Student.class);
-
         Listener listener = new Listener();
 
         // start observing
@@ -111,9 +96,8 @@ public class PropertyWatchTest {
     }
 
     @Test
-    public void observeGenericProperty() {
+    public void generic() {
         GenericStringBean bean = I.make(GenericStringBean.class);
-
         Listener listener = new Listener();
 
         // observe
@@ -121,38 +105,50 @@ public class PropertyWatchTest {
 
         // change property
         bean.setGeneric("test");
-        assert "test" == listener.newValue;
+        assert listener.event.getSource() == bean;
+        assert listener.event.getPropertyName().equals("generic");
+        assert listener.event.getOldValue() == null;
+        assert listener.event.getNewValue() == "test";
     }
 
-    /**
-     * Unobserve single property.
-     */
     @Test
-    public void testUnobserve01() {
+    public void unsubscribe() {
         Person person = I.make(Person.class);
-
         Listener listener = new Listener();
 
         // start observing
         Disposable disposable = I.watch(I.mock(person).getFirstName()).subscribe(listener);
 
-        // assert
-        assert listener.newValue == null;
-
         // change property
-        person.setFirstName("miku");
+        person.setFirstName("Miku");
+        assert listener.event.getSource() == person;
+        assert listener.event.getPropertyName().equals("firstName");
+        assert listener.event.getOldValue() == null;
+        assert listener.event.getNewValue() == "Miku";
 
-        // assert
-        assert "miku" == listener.newValue;
-
-        // unobserve
+        // unsubscribe
         disposable.dispose();
 
         // change property
-        person.setFirstName("change");
+        person.setFirstName("Mikudayo-");
+        assert listener.event.getSource() == person;
+        assert listener.event.getPropertyName().equals("firstName");
+        assert listener.event.getOldValue() == null;
+        assert listener.event.getNewValue() == "Miku";
+    }
 
-        // assert
-        assert "miku" == listener.newValue;
+    @Test
+    public void unchaged() throws Exception {
+        Person person = I.make(Person.class);
+        Listener listener = new Listener();
+
+        // start observing
+        I.watch(I.mock(person).getFirstName()).subscribe(listener);
+
+        // change property
+        person.setFirstName(null);
+
+        assert listener.event == null;
     }
 
     /**
