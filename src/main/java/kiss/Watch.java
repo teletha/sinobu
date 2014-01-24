@@ -22,8 +22,9 @@ import kiss.model.Model;
 import kiss.model.Property;
 
 /**
- * @version 2014/01/24 13:07:40
+ * @version 2014/01/24 16:10:58
  */
+@SuppressWarnings("all")
 public class Watch extends Interceptor<Oneway> implements Disposable, Observer<PropertyChangeEvent>, Oneway {
 
     // =======================================================
@@ -54,6 +55,7 @@ public class Watch extends Interceptor<Oneway> implements Disposable, Observer<P
             // Retrieve old value.
             Object old = model.get(that, property);
 
+            //
             Object result = super.invoke(params);
 
             if (!Objects.equals(old, params[0])) {

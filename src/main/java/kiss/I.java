@@ -200,7 +200,7 @@ import sun.reflect.ReflectionFactory;
  * matched. (root path will not match)</dd>
  * </dl>
  * 
- * @version 2014/01/13 23:59:03
+ * @version 2014/01/24 16:01:56
  */
 @SuppressWarnings("resource")
 public class I implements ClassListener<Extensible>, ThreadFactory {
@@ -454,21 +454,21 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             Watch targetBind = new Watch(tracer.poll(), null);
 
             // create source binding
-            Watch subjectBind = new Watch(tracer.poll(), targetBind);
+            Watch sourceBind = new Watch(tracer.poll(), targetBind);
 
             if (twoway) {
                 // bind each other
-                targetBind.observer = subjectBind;
+                targetBind.observer = sourceBind;
             } else {
                 // dispose target binding
                 targetBind.dispose();
             }
 
             // initial property binding
-            subjectBind.onNext(new PropertyChangeEvent(subjectBind.that, subjectBind.path.get(0), null, null));
+            sourceBind.onNext(new PropertyChangeEvent(sourceBind.that, sourceBind.path.get(0), null, null));
 
             // API definition
-            return subjectBind;
+            return sourceBind;
         } finally {
             tracer.clear(); // clean up property path tracing context
         }
@@ -939,6 +939,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */
     static <M> Lifestyle<M> makeLifestyle(Class<M> modelClass) {
+        if (modelClass.isSynthetic()) {
+            modelClass = (Class<M>) modelClass.getSuperclass();
+        }
+
         // At first, we must confirm the cached lifestyle associated with the model class. If
         // there is no such cache, we will try to create newly lifestyle.
         Lifestyle<M> lifestyle = lifestyles.get(modelClass);
@@ -1105,6 +1109,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @return A generated {@link Class} object.
      */
     private static synchronized Class define(Class model, Table interceptables) {
+        model = Model.load(model).type;
+
         // Compute fully qualified class name for the generated class.
         // The coder class name is prefix to distinguish enhancer type by a name and make core
         // package classes (e.g. swing components) enhance.
