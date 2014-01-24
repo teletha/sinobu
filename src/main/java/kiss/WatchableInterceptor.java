@@ -10,6 +10,10 @@
 package kiss;
 
 import java.beans.Introspector;
+import java.util.List;
+import java.util.Objects;
+
+import javax.jws.Oneway;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -18,15 +22,19 @@ import kiss.model.PropertyEvent;
 /**
  * @version 2014/01/23 22:21:06
  */
-class WatchableInterceptor extends Interceptor<Watchable> {
+class WatchableInterceptor extends Interceptor<Oneway> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     protected Object invoke(Object... params) {
-        Model model = Model.load(that.getClass());
-        Property property = model.getProperty(Introspector.decapitalize(name.substring(3)));
+        Property property = Model.load(that.getClass()).getProperty(Introspector.decapitalize(name.substring(3)));
+        List<Observer> list = Interceptor.context(that).get(property.name);
+
+        if (list == null) {
+            return super.invoke(params);
+        }
 
         try {
             // Retrieve old value.
@@ -34,10 +42,12 @@ class WatchableInterceptor extends Interceptor<Watchable> {
 
             Object result = super.invoke(params);
 
-            PropertyEvent event = new PropertyEvent(that, property.name, old, params[0]);
+            if (!Objects.equals(old, params[0])) {
+                PropertyEvent event = new PropertyEvent(that, property.name, old, params[0]);
 
-            for (Observer observer : Interceptor.context(that).get(property.name)) {
-                observer.onNext(event);
+                for (Observer observer : Interceptor.context(that).get(property.name)) {
+                    observer.onNext(event);
+                }
             }
 
             return result;

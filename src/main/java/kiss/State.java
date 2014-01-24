@@ -12,7 +12,10 @@ package kiss;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.lang.annotation.Annotation;
 import java.nio.CharBuffer;
+
+import javax.jws.Oneway;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -30,7 +33,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2012/11/09 11:04:01
  */
-final class State extends Reader implements PropertyWalker {
+final class State extends Reader implements PropertyWalker, Oneway {
 
     /** The current model. */
     Model model;
@@ -101,5 +104,13 @@ final class State extends Reader implements PropertyWalker {
 
         // never check null because PropertyWalker traverses existing properties
         this.model.set(object, dest, I.transform(node, dest.model.type));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return Oneway.class;
     }
 }

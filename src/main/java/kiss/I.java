@@ -918,13 +918,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
 
             for (Property property : Model.load(modelClass).properties) {
-                interceptables.push(property.accessor(false), new Watchable() {
-
-                    @Override
-                    public Class<? extends Annotation> annotationType() {
-                        return Watchable.class;
-                    }
-                });
+                interceptables.push(property.accessor(false), new State(null, null));
             }
 
             // Enhance the actual model class if needed.

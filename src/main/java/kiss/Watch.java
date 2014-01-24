@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.util.Arrays;
 import java.util.List;
 
 import kiss.model.Model;
@@ -33,9 +32,6 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
     /** The delegation of property change event. */
     Observer observer;
 
-    /** The operation mode about application of listeners. */
-    private int mode = 2; // initial is add mode
-
     /** The flag. */
     private boolean whileUpdate = false;
 
@@ -54,15 +50,14 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
         this.length = path.size();
         this.observer = observer;
 
-        traverse(root, path);
-        mode = 0;
+        traverse(root, path, 2);
     }
 
-    private Object traverse(Object node, List<String> route) {
+    private Object traverse(Object node, List<String> route, int mode) {
         Model model = Model.load(node.getClass());
         Property property = new Property(model, model.name);
 
-        for (int index = 0; index < route.size(); index++) {
+        root: for (int index = 0; index < route.size(); index++) {
             switch (mode) {
             case 1:
                 if (info[0] == node) {
@@ -86,7 +81,7 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
                     // walker.traverse(path.subList(index, length - 1));
                     // But, in the greed, we need the actual old value which is indicated by the
                     // property path at once method call.
-                    info[2] = traverse(info[2], route.subList(index, length));
+                    info[2] = traverse(info[2], route.subList(index, length), 3);
                 }
 
                 // don't break, step into the next to add listeners
@@ -99,13 +94,11 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
                 Table<String, Observer> line = Interceptor.context(node);
 
                 if (mode == 2) {
-                    System.out.println("set listener at " + path.get(index) + "  " + node);
-                    line.push(path.get(index), this);
+                    line.push(route.get(index), this);
 
                     info[0] = node;
                 } else {
-                    System.out.println("remove listener at " + path.get(index) + "   " + node);
-                    line.pull(path.get(index), this);
+                    line.pull(route.get(index), this);
                 }
                 break;
 
@@ -114,19 +107,18 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
             }
 
             model = property.model;
-            property = model.getProperty(path.get(index));
+            property = model.getProperty(route.get(index));
 
             if (property == null) {
-                return null;
+                break root;
             } else {
                 node = model.get(node, property);
 
                 if (node == null) {
-                    return null;
+                    break root;
                 }
             }
         }
-
         return node;
     }
 
@@ -134,21 +126,18 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
      * {@inheritDoc}
      */
     @Override
-    public void onNext(PropertyEvent value) {
-        System.out.println("onNext " + value);
+    public void onNext(PropertyEvent event) {
         // The property value of the specified object was changed in some property path, but we
         // don't know the location of property change yet. At first, we must search the location
         // (index = n), then remove all registered listeners form the sequence of old value (from
         // n+1 to length-2) and add listeners to the sequence of new value (from n+1 to length-2).
 
         // On achieving this functionality,
-        info[0] = value.getSource();
-        info[1] = value.getPropertyName();
-        info[2] = value.getOldValue();
+        info[0] = event.getSource();
+        info[1] = event.getPropertyName();
+        info[2] = event.getOldValue();
 
-        mode = 1;
-        Object newValue = traverse(root, path);
-        mode = 0;
+        Object value = traverse(root, path, 1);
 
         if (observer instanceof Watch) {
             Watch pair = (Watch) observer;
@@ -158,20 +147,19 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
                 whileUpdate = true;
 
                 // retrieve host object in the pair observer
-                Object target = pair.traverse(pair.root, pair.path.subList(0, pair.length - 1));
+                Object target = pair.traverse(pair.root, pair.path.subList(0, pair.length - 1), 0);
 
                 if (target != null) {
                     Model model = Model.load(target.getClass());
                     Property property = model.getProperty(pair.path.get(pair.length - 1));
-                    model.set(target, property, I.transform(newValue, property.model.type));
+                    model.set(target, property, I.transform(value, property.model.type));
                 }
 
                 // finish synchronizing
                 whileUpdate = false;
             }
         } else {
-            System.out.println("info2 " + Arrays.toString(info));
-            observer.onNext(new PropertyEvent(info[0], path.get(length - 1), info[2], newValue));
+            observer.onNext(new PropertyEvent(info[0], path.get(length - 1), info[2], value));
         }
     }
 
@@ -180,14 +168,10 @@ public class Watch implements Disposable, Observer<PropertyEvent> {
      */
     @Override
     public void dispose() {
-        if (mode != 3) {
-            // remove all registered listener from each elements on property path
-            mode = 3; // remove mode
-            traverse(root, path);
+        traverse(root, path, 3);
 
-            if (observer instanceof Watch) {
-                ((Watch) observer).dispose();
-            }
+        if (observer instanceof Watch) {
+            ((Watch) observer).dispose();
         }
     }
 }
