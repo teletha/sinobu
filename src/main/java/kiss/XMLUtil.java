@@ -25,6 +25,9 @@ import kiss.model.PropertyWalker;
 
 /**
  * <p>
+ * This is multi-purpose implementation class. Please connive this extremely-dirty code.
+ * </p>
+ * <p>
  * XML writer for Object Graph serialization.
  * </p>
  * <p>
@@ -38,7 +41,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2012/11/07 21:01:06
  */
-class XMLWriter extends Writer implements PropertyWalker {
+class XMLUtil extends Writer implements PropertyWalker {
 
     // =======================================================================
     // General Fields
@@ -60,7 +63,7 @@ class XMLWriter extends Writer implements PropertyWalker {
      * Constructor for AppendableWriter.
      * </p>
      */
-    XMLWriter(Appendable output) {
+    XMLUtil(Appendable output) {
         this.output = output;
     }
 
@@ -175,7 +178,7 @@ class XMLWriter extends Writer implements PropertyWalker {
      * 
      * @param input
      */
-    XMLWriter(InputStream input) {
+    XMLUtil(InputStream input) {
         // read actual data
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         I.copy(input, output, true);
