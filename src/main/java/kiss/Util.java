@@ -30,7 +30,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2012/11/09 11:04:01
  */
-final class State extends Reader implements PropertyWalker {
+final class Util extends Reader implements PropertyWalker {
 
     /** The current model. */
     Model model;
@@ -53,7 +53,7 @@ final class State extends Reader implements PropertyWalker {
      * @param object A actual object.
      * @param model A model of the specified object.
      */
-    State(Object object, Model model) {
+    Util(Object object, Model model) {
         this.object = object;
         this.model = model;
     }

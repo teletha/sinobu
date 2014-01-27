@@ -1580,6 +1580,44 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * 
      * @param path A target path you want to observe. (file and directory are acceptable)
      * @param listener A event listener.
+     * @return A {@link Disposable} object for this observation. You can stop observing to call the
+     *         method {@link Disposable#dispose()} of the returned object.
+     * @throws NullPointerException If the specified path or listener is <code>null</code>.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
+     */
+    public static Observable<WatchEvent<Path>> observe(Path path) {
+        return observe(path, new String[0]);
+    }
+
+    /**
+     * <p>
+     * Observe the file system change and raises events when a file, directory, or file in a
+     * directory, changes.
+     * </p>
+     * <p>
+     * You can watch for changes in files and subdirectories of the specified directory.
+     * </p>
+     * <p>
+     * The operating system interpret a cut-and-paste action or a move action as a rename action for
+     * a directory and its contents. If you cut and paste a folder with files into a directory being
+     * watched, the {@link Observer} object reports only the directory as new, but not its contents
+     * because they are essentially only renamed.
+     * </p>
+     * <p>
+     * Common file system operations might raise more than one event. For example, when a file is
+     * moved from one directory to another, several Modify and some Create and Delete events might
+     * be raised. Moving a file is a complex operation that consists of multiple simple operations,
+     * therefore raising multiple events. Likewise, some applications might cause additional file
+     * system events that are detected by the {@link Observer}.
+     * </p>
+     * 
+     * @param path A target path you want to observe. (file and directory are acceptable)
+     * @param listener A event listener.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
      *            patterns if you want to observe a file.
      * @return A {@link Disposable} object for this observation. You can stop observing to call the
@@ -1607,6 +1645,32 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // API definition
             return watcher;
         });
+    }
+
+    /**
+     * <p>
+     * Observe the property change event of the specified property path.
+     * </p>
+     * 
+     * @param property A property path from the source object. Multiple path (e.g. parent.name) is
+     *            acceptable.
+     * @return A {@link Observable} object for this observation.
+     * @throws NullPointerException If the specified source's path or the specified listener is
+     *             <code>null</code>.
+     * @throws IndexOutOfBoundsException If the specified source's path is empty.
+     */
+    public static <T> Observable<T> observe(T property) {
+        Deque<List> tracer = tracers.resolve();
+
+        try {
+            List info = tracer.poll();
+
+            return new Observable<T>(observer -> {
+                return new Watch(info, observer);
+            });
+        } finally {
+            tracer.clear(); // clean up property path tracing context
+        }
     }
 
     //
@@ -1888,7 +1952,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws ScriptException If the input data is empty or invalid format.
      */
     public static <M> M read(Readable input, M output) {
-        State reader = new State(input, null);
+        Util reader = new Util(input, null);
 
         Model model = Model.load(output.getClass());
 
@@ -1935,22 +1999,22 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     private static <M> M read(Model model, M root, Reader input) throws Exception {
         HashMap objects = new HashMap();
-        ArrayDeque<State> states = new ArrayDeque();
+        ArrayDeque<Util> states = new ArrayDeque();
 
         XMLStreamReader node = stax.createXMLStreamReader(input);
 
         while (node.hasNext()) {
             switch (node.next()) {
             case XMLStreamReader.START_ELEMENT:
-                State state;
+                Util state;
                 String name = node.getLocalName();
 
                 // create next state
                 if (states.size() == 0) {
                     // this is root object
-                    state = new State(root, model);
+                    state = new Util(root, model);
                 } else {
-                    State parent = states.peekLast();
+                    Util parent = states.peekLast();
 
                     // Compute property.
                     //
@@ -1988,7 +2052,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                     }
 
                     // create next state
-                    state = new State(object, property.model);
+                    state = new Util(object, property.model);
                     state.property = property;
                 }
 
@@ -2033,8 +2097,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 break;
 
             case XMLStreamReader.END_ELEMENT:
-                State current = states.pollLast();
-                State parent = states.peekLast();
+                Util current = states.pollLast();
+                Util parent = states.peekLast();
 
                 if (parent != null) {
                     parent.model.set(parent.object, current.property, current.object);
@@ -2134,7 +2198,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             M m = make(output);
 
             // copy actually
-            inputModel.walk(input, new State(m, outputModel));
+            inputModel.walk(input, new Util(m, outputModel));
 
             // API definition
             return m;
@@ -2225,32 +2289,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     public static void walk(Path start, FileVisitor visitor, String... patterns) {
         new Visitor(start, null, 4, visitor, patterns);
-    }
-
-    /**
-     * <p>
-     * Observe the property change event of the specified property path.
-     * </p>
-     * 
-     * @param property A property path from the source object. Multiple path (e.g. parent.name) is
-     *            acceptable.
-     * @return A {@link Observable} object for this observation.
-     * @throws NullPointerException If the specified source's path or the specified listener is
-     *             <code>null</code>.
-     * @throws IndexOutOfBoundsException If the specified source's path is empty.
-     */
-    public static <T> Observable<T> watch(T property) {
-        Deque<List> tracer = tracers.resolve();
-
-        try {
-            List info = tracer.poll();
-
-            return new Observable<T>(observer -> {
-                return new Watch(info, observer);
-            });
-        } finally {
-            tracer.clear(); // clean up property path tracing context
-        }
     }
 
     /**
