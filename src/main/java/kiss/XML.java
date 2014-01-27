@@ -689,7 +689,7 @@ public class XML implements Iterable<XML> {
         format.setLineWidth(0);
         format.setOmitXMLDeclaration(true);
 
-        to(new XML11Serializer(output instanceof Writer ? (Writer) output : new XMLWriter(output), format));
+        to(new XML11Serializer(output instanceof Writer ? (Writer) output : new XMLUtil(output), format));
     }
 
     /**

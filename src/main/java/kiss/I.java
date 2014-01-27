@@ -2340,7 +2340,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 new JSON(output).walk(model, property, input);
             } else {
                 // traverse configuration as xml
-                XMLWriter writer = new XMLWriter(output);
+                XMLUtil writer = new XMLUtil(output);
                 writer.xml = xml(null);
                 writer.walk(model, property, input);
                 writer.xml.attr("xmlns:ss", URI).to(output);
@@ -2390,7 +2390,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             } else if (xml instanceof InputSource) {
                 doc = dom.parse((InputSource) xml);
             } else if (xml instanceof URL) {
-                return new XMLWriter(((URL) xml).openStream()).parse($encoding);
+                return new XMLUtil(((URL) xml).openStream()).parse($encoding);
             } else if (xml instanceof Document) {
                 doc = (Document) xml;
             } else if (xml instanceof Node) {
@@ -2414,7 +2414,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                     // ========================
                     // HTML from URL
                     // ========================
-                    return new XMLWriter(new URL(value).openStream()).parse($encoding);
+                    return new XMLUtil(new URL(value).openStream()).parse($encoding);
                 }
 
                 // ========================

@@ -278,7 +278,7 @@ public class XMLParserTest {
     @SuppressWarnings("resource")
     private XML parse(String html) {
         try {
-            XMLWriter parser = new XMLWriter(Files.newInputStream(AntiBug.note(html)));
+            XMLUtil parser = new XMLUtil(Files.newInputStream(AntiBug.note(html)));
             return parser.parse(I.$encoding);
         } catch (IOException e) {
             throw I.quiet(e);
@@ -297,7 +297,7 @@ public class XMLParserTest {
     private XML parse(String html, String encoding) {
         try {
             ByteBuffer buffer = Charset.forName(encoding).encode(html);
-            XMLWriter parser = new XMLWriter(new ByteArrayInputStream(buffer.array(), 0, buffer.limit()));
+            XMLUtil parser = new XMLUtil(new ByteArrayInputStream(buffer.array(), 0, buffer.limit()));
             return parser.parse(I.$encoding);
         } catch (Exception e) {
             throw I.quiet(e);
