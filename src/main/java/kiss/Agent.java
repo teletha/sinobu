@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
- * @version 2014/01/14 10:23:18
+ * @version 2014/01/28 23:05:39
  */
-@SuppressWarnings("serial")
 class Agent<V> implements Observer<V>, Disposable {
 
     /** The delegation. */
@@ -54,6 +53,8 @@ class Agent<V> implements Observer<V>, Disposable {
             error.accept(e);
         } else if (observer != null) {
             observer.onError(e);
+        } else {
+            Thread.currentThread().getThreadGroup().uncaughtException(null, e);
         }
     }
 
