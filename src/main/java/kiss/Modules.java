@@ -9,12 +9,9 @@
  */
 package kiss;
 
-import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import kiss.model.ClassUtil;
@@ -161,23 +158,6 @@ class Modules implements ClassListener {
                         for (Object[] types : this.types) {
                             for (Class provider : module.find((Class<?>) types[1], false)) {
                                 ((ClassListener) types[0]).unload(provider);
-                            }
-                        }
-
-                        // unload class key from module aware map
-                        for (WeakReference<Map> reference : I.awares) {
-                            Map aware = reference.get();
-
-                            if (aware == null) {
-                                I.awares.remove(reference);
-                            } else {
-                                Iterator<Class> iterator = aware.keySet().iterator();
-
-                                while (iterator.hasNext()) {
-                                    if (iterator.next().getClassLoader() == module.loader) {
-                                        iterator.remove();
-                                    }
-                                }
                             }
                         }
 
