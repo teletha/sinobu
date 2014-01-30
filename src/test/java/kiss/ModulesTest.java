@@ -11,13 +11,9 @@ package kiss;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import kiss.module.external.ExtendedClass1;
 import kiss.sample.MarkerInterface1;
-import kiss.sample.bean.Person;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -191,16 +187,5 @@ public class ModulesTest {
         assert 0 == modules.modules.size();
         modules.unload(Paths.get("not-exist"));
         assert 0 == modules.modules.size();
-    }
-
-    @Test
-    public void unloadAwaredClassCorrectly() throws Exception {
-        Map<Class, String> map = I.aware(new HashMap());
-        map.put(Person.class, "This entry will not be unloaded.");
-        map.put(module2.convert(ExtendedClass1.class), "This entry will be unloaded.");
-
-        assert 2 == map.size();
-        module2.unload();
-        assert 1 == map.size();
     }
 }

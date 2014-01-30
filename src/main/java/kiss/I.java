@@ -20,7 +20,6 @@ import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -56,8 +55,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -273,11 +272,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
-    /** The list of module aware maps. */
-    static final List<WeakReference<Map>> awares = new CopyOnWriteArrayList();
-
     /** The cache between Model and Lifestyle. */
-    private static final ConcurrentHashMap<Class, Lifestyle> lifestyles = I.aware(new ConcurrentHashMap<Class, Lifestyle>());
+    private static final ClassMap<Lifestyle> lifestyles = new ClassMap();
 
     /** The mapping from extension point to extensions. */
     private static final Table<Class, Class> extensions = new Table();
@@ -323,6 +319,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * This instantiator instantiates an object with out any side effects caused by the constructor.
      */
     private static final Constructor instantiator;
+
+    private static final WeakHashMap<Object, Map> weak = new WeakHashMap();
 
     // initialization
     static {
@@ -397,26 +395,21 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     private I() {
     }
 
-    /**
-     * <p>
-     * Make the {@link Map} which has {@link Class} key be recognized to the module unloading event
-     * and disposes the key which is associated with the module automatically.
-     * </p>
-     * <p>
-     * This method has same syntax of {@link Collections#synchronizedMap(Map)}.
-     * </p>
-     * 
-     * @param map A target {@link Map} object to be aware of module unloading event.
-     * @return The given {@link Map} object.
-     */
-    public static <M extends Map<Class, ?>> M aware(M map) {
-        // We don't need to check whether the given map is already passed or not.
-        // Because this method will be not called so frequently and duplicated item
-        // will rise no problem except for amount of memory usage.
-        I.awares.add(new WeakReference(map));
+    public static <T> T associate(Object host, Class<T> type) {
+        Map map = weak.get(host);
 
-        // API definition
-        return map;
+        if (map == null) {
+            map = new ConcurrentHashMap();
+            weak.put(host, map);
+        }
+
+        Object value = map.get(type);
+
+        if (value == null) {
+            value = I.make(type);
+            map.put(type, value);
+        }
+        return (T) value;
     }
 
     /**
@@ -1016,7 +1009,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 Manageable manageable = (Manageable) actualClass.getAnnotation(Manageable.class);
 
                 // Create new lifestyle for the actual model class
-                lifestyle = (Lifestyle) make(manageable == null ? Prototype.class : (Class) manageable.lifestyle());
+                lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
             }
 
             // Trace dependency graph to detect circular dependencies.
@@ -1031,10 +1024,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             }
 
             // This lifestyle is safe and has no circular dependencies.
-            lifestyles.putIfAbsent(modelClass, lifestyle);
-
-            // API definition
-            return lifestyles.get(modelClass);
+            return lifestyles.put(modelClass, lifestyle);
         } finally {
             dependency.pollLast();
         }

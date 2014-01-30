@@ -9,9 +9,6 @@
  */
 package kiss.module;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import kiss.I;
 import kiss.model.Model;
 import kiss.module.external.ExtendedClass1;
@@ -23,7 +20,7 @@ import org.junit.Test;
 import antibug.PrivateModule;
 
 /**
- * @version 2011/03/22 17:08:49
+ * @version 2014/01/30 16:33:15
  */
 public class ClassCacheProblemTest {
 
@@ -110,29 +107,6 @@ public class ClassCacheProblemTest {
         assert object2b.equals(object2a);
 
         // check old class
-        Object object3 = I.make(class1);
-        assert object1a != object3;
-        assert object2a != object3;
-    }
-
-    /**
-     * Class as reference key will be removed automatically.
-     */
-    @Test
-    public void testClassCacheInMapKeyReference() {
-        Model model = Model.load(module.convert(ExtendedClass1.class));
-        assert model != null;
-
-        Class clazz = model.type;
-        assert clazz != null;
-
-        // create module aware map
-        Map<Class, Object> cache = I.aware(new HashMap());
-        cache.put(clazz, "1");
-        assert cache.containsKey(clazz);
-
-        // unload module
-        module.unload();
-        assert !cache.containsKey(clazz);
+        assert object2a != object1a;
     }
 }
