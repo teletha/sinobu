@@ -11,6 +11,7 @@ package kiss;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -18,10 +19,9 @@ import kiss.model.ClassUtil;
 import kiss.model.Model;
 
 /**
- * @version 2012/09/11 14:31:34
+ * @version 2014/01/31 10:54:06
  */
-@Manageable(lifestyle = Singleton.class)
-class Modules implements ClassListener {
+class Modules extends ClassValue<Lifestyle> implements ClassListener {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -49,7 +49,7 @@ class Modules implements ClassListener {
      * @param spi A service provider interface to find. An abstract class is only accepted.
      * @return A finded service provider class.
      */
-    public <S> Class<S> find(Class<S> spi) {
+    <S> Class<S> find(Class<S> spi) {
         for (Module module : modules) {
             List<Class<S>> list = module.find(spi, true);
 
@@ -61,7 +61,7 @@ class Modules implements ClassListener {
     }
 
     /**
-     * @see kiss.ClassListener#load(java.lang.Class)
+     * {@inheritDoc}
      */
     public void load(Class clazz) {
         if (clazz != Modules.class) {
@@ -86,7 +86,7 @@ class Modules implements ClassListener {
     }
 
     /**
-     * @see kiss.ClassListener#unload(java.lang.Class)
+     * {@inheritDoc}
      */
     public void unload(Class clazz) {
         for (Object[] types : this.types) {
@@ -172,6 +172,35 @@ class Modules implements ClassListener {
                     throw I.quiet(e);
                 }
             }
+        }
+    }
+
+    /** The initial value holder. */
+    private final HashMap values = new HashMap();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Lifestyle computeValue(Class<?> type) {
+        return (Lifestyle) values.remove(type);
+    }
+
+    /**
+     * <p>
+     * If the specified key is not already associated with a value (or is mapped to null) associates
+     * it with the given value and returns null, else returns the current value.
+     * </p>
+     * 
+     * @param type A key with which the specified value is to be associated.
+     * @param value A value to be associated with the specified key.
+     */
+    void set(Class type, Lifestyle value) {
+        Lifestyle prev = get(type);
+
+        if (prev == null) {
+            remove(type);
+            values.put(type, value);
         }
     }
 }

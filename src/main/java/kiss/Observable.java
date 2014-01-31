@@ -380,7 +380,7 @@ public class Observable<V> {
         }
 
         return new Observable<V>(observer -> {
-            return new Agent().and(subscribe(observer)).and(other.subscribe(observer));
+            return subscribe(observer).and(other.subscribe(observer));
         });
     }
 
@@ -450,7 +450,7 @@ public class Observable<V> {
                 if (repeat.decrementAndGet() == 0) {
                     unsubscriber.dispose();
                 } else {
-                    unsubscriber = agent.and(unsubscriber).and(subscribe(agent));
+                    unsubscriber = unsubscriber.and(subscribe(agent));
                 }
             };
             return subscribe(agent);
@@ -503,11 +503,11 @@ public class Observable<V> {
         return new Observable<V>(observer -> {
             flag = new AtomicBoolean();
 
-            return new Agent().and(subscribe(value -> {
+            return subscribe(value -> {
                 if (flag.get()) {
                     observer.onNext(value);
                 }
-            })).and(predicate.subscribe(value -> {
+            }).and(predicate.subscribe(value -> {
                 flag.set(true);
             }));
         });
@@ -594,7 +594,7 @@ public class Observable<V> {
         }
 
         return new Observable<V>(observer -> {
-            return unsubscriber = new Agent().and(subscribe(observer)).and(predicate.subscribe(value -> {
+            return unsubscriber = subscribe(observer).and(predicate.subscribe(value -> {
                 observer.onCompleted();
                 unsubscriber.dispose();
             }));
@@ -777,18 +777,19 @@ public class Observable<V> {
         }
 
         return new Observable<Boolean>(observer -> {
-            Agent agent = new Agent();
+            Disposable base = null;
             boolean[] conditions = new boolean[observables.length];
 
             for (int i = 0; i < observables.length; i++) {
                 int index = i;
-                agent.and(observables[index].subscribe(value -> {
+                Disposable disposable = observables[index].subscribe(value -> {
                     conditions[index] = !predicate.test(value);
 
                     observer.onNext(condition.test(conditions));
-                }));
+                });
+                base = i == 0 ? disposable : base.and(disposable);
             }
-            return agent;
+            return base;
         });
     }
 }

@@ -11,11 +11,11 @@ package kiss;
 
 /**
  * <p>
- * The Disposable interface is used when components need to deallocate and dispose resources prior
- * to their destruction.
+ * The {@link Disposable} interface is used when components need to deallocate and dispose resources
+ * prior to their destruction.
  * </p>
  * 
- * @version 2008/06/10 12:20:54
+ * @version 2014/01/31 16:28:17
  */
 public interface Disposable {
 
@@ -26,4 +26,19 @@ public interface Disposable {
      * </p>
      */
     void dispose();
+
+    /**
+     * <p>
+     * Returns a composed {@link Disposable}.
+     * </p>
+     * 
+     * @param other An another {@link Disposable} to compose.
+     * @return A composed {@link Disposable}.
+     */
+    default Disposable and(Disposable other) {
+        return () -> {
+            dispose();
+            other.dispose();
+        };
+    }
 }
