@@ -272,8 +272,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
-    /** The cache between Model and Lifestyle. */
-    private static final ClassMap<Lifestyle> lifestyles = new ClassMap();
+    /** The cache for Module, Model and Lifestyle. */
+    static final Modules modules = new Modules();
 
     /** The mapping from extension point to extensions. */
     private static final Table<Class, Class> extensions = new Table();
@@ -325,9 +325,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     // initialization
     static {
         // built-in lifestyles
-        lifestyles.put(List.class, new Prototype(ArrayList.class));
-        lifestyles.put(Map.class, new Prototype(HashMap.class));
-        lifestyles.put(Prototype.class, new Prototype(Prototype.class));
+        modules.set(List.class, new Prototype(ArrayList.class));
+        modules.set(Map.class, new Prototype(HashMap.class));
+        modules.set(Prototype.class, new Prototype(Prototype.class));
 
         try {
             // configure dom builder
@@ -938,7 +938,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
         // At first, we must confirm the cached lifestyle associated with the model class. If
         // there is no such cache, we will try to create newly lifestyle.
-        Lifestyle<M> lifestyle = lifestyles.get(modelClass);
+        Lifestyle<M> lifestyle = modules.get(modelClass);
 
         if (lifestyle != null) return lifestyle; // use cache
 
@@ -959,7 +959,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
             // TODO model provider finding strategy
             // This strategy is decided at execution phase.
-            actualClass = make(Modules.class).find(modelClass);
+            actualClass = modules.find(modelClass);
 
             // updata to the actual model class's modifier
             modifier = actualClass.getModifiers();
@@ -1024,7 +1024,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             }
 
             // This lifestyle is safe and has no circular dependencies.
-            return lifestyles.put(modelClass, lifestyle);
+            modules.set(modelClass, lifestyle);
+
+            // API definition
+            return modules.get(modelClass);
         } finally {
             dependency.pollLast();
         }
@@ -2294,7 +2297,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws NullPointerException If the input Java object is <code>null</code> .
      */
     public static void write(Object input) {
-        Lifestyle lifestyle = lifestyles.get(Model.load(input.getClass()).type);
+        Lifestyle lifestyle = modules.get(Model.load(input.getClass()).type);
 
         if (lifestyle instanceof Preference) {
             write(input, ((Preference) lifestyle).path, false);
@@ -2489,7 +2492,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     public static ClassLoader load(Class classPath, boolean filter) {
         Path path = ClassUtil.getArchive(classPath);
 
-        return filter ? make(Modules.class).load(path, classPath.getPackage().getName().replace('.', '/')) : load(path);
+        return filter ? modules.load(path, classPath.getPackage().getName().replace('.', '/')) : load(path);
     }
 
     /**
@@ -2521,7 +2524,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static ClassLoader load(Path classPath) {
-        return make(Modules.class).load(classPath, "");
+        return modules.load(classPath, "");
     }
 
     /**
@@ -2552,7 +2555,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static void unload(Path classPath) {
-        make(Modules.class).unload(classPath);
+        modules.unload(classPath);
     }
 
     /**
@@ -2581,7 +2584,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                     // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
-                        lifestyles.remove(params[0]);
+                        modules.remove(params[0]);
                     }
                 }
             }
@@ -2614,7 +2617,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                     // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
-                        lifestyles.remove(params[0]);
+                        modules.remove(params[0]);
                     }
                 }
             }

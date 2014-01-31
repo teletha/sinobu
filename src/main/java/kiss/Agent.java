@@ -9,13 +9,12 @@
  */
 package kiss;
 
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
  * @version 2014/01/28 23:05:39
  */
-class Agent<V> implements Observer<V>, Disposable {
+class Agent<V> implements Observer<V> {
 
     /** The delegation. */
     Observer<? super V> observer;
@@ -28,9 +27,6 @@ class Agent<V> implements Observer<V>, Disposable {
 
     /** The delegation. */
     Runnable complete;
-
-    /** The container of unsubscribers. */
-    private ArrayList<Disposable> list = new ArrayList();
 
     /**
      * {@inheritDoc}
@@ -68,31 +64,5 @@ class Agent<V> implements Observer<V>, Disposable {
         } else if (observer != null) {
             observer.onNext(value);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void dispose() {
-        for (Disposable disposable : list) {
-            disposable.dispose();
-        }
-        list.clear();
-    }
-
-    /**
-     * <p>
-     * Aggregate {@link Disposable} into this instance.
-     * </p>
-     * 
-     * @param disposable A target to dispose.
-     * @return Chainable API.
-     */
-    public Agent<V> and(Disposable disposable) {
-        list.add(disposable);
-
-        // API definition
-        return this;
     }
 }
