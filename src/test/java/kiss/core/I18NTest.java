@@ -67,9 +67,9 @@ public class I18NTest {
     private static class OverrideDefaultLocale implements Lifestyle<Locale> {
 
         /**
-         * @see kiss.Lifestyle#resolve()
+         * @see kiss.Lifestyle#get()
          */
-        public Locale resolve() {
+        public Locale get() {
             return Locale.JAPAN;
         }
     }

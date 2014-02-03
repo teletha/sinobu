@@ -17,7 +17,7 @@ import kiss.model.ClassUtil;
  * <p>
  * This lifestyle creates a new instance every time demanded. This is default lifestyle in Sinobu.
  * If you want to create new lifestyle in your application, you can extend this class and override
- * the method {@link #resolve()}.
+ * the method {@link #get()}.
  * </p>
  * 
  * @param <M> A {@link Manageable} class.
@@ -58,12 +58,12 @@ public class Prototype<M> implements Lifestyle<M> {
      * </p>
      * 
      * <pre>
-     * Object newInstance = super.resolve();
+     * Object newInstance = super.get();
      * </pre>
      * 
-     * @see kiss.Lifestyle#resolve()
+     * @see kiss.Lifestyle#get()
      */
-    public M resolve() {
+    public M get() {
         // constructor injection
         Object[] params = null;
 
@@ -76,7 +76,7 @@ public class Prototype<M> implements Lifestyle<M> {
                 if (this.params[i] == Lifestyle.class) {
                     params[i] = I.makeLifestyle(ClassUtil.getParameter(instantiator.getGenericParameterTypes()[i], Lifestyle.class)[0]);
                 } else if (this.params[i] == Class.class) {
-                    params[i] = I.dependencies.resolve().peekLast();
+                    params[i] = I.dependencies.get().peekLast();
                 } else {
                     params[i] = I.make(this.params[i]);
                 }

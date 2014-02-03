@@ -121,9 +121,9 @@ public class LifestyleTest {
         private static final Without object = new Without();
 
         /**
-         * @see kiss.Lifestyle#resolve()
+         * @see kiss.Lifestyle#get()
          */
-        public Without resolve() {
+        public Without get() {
             return object;
         }
     }
@@ -148,9 +148,9 @@ public class LifestyleTest {
     private static class WithLifestyle1 implements Lifestyle<With> {
 
         /**
-         * @see kiss.Lifestyle#resolve()
+         * @see kiss.Lifestyle#get()
          */
-        public With resolve() {
+        public With get() {
             return new With();
         }
     }
@@ -164,9 +164,9 @@ public class LifestyleTest {
     private static class WithLifestyle2 implements Lifestyle<With> {
 
         /**
-         * @see kiss.Lifestyle#resolve()
+         * @see kiss.Lifestyle#get()
          */
-        public With resolve() {
+        public With get() {
             return new With();
         }
     }
@@ -182,11 +182,11 @@ public class LifestyleTest {
         }
 
         /**
-         * @see kiss.Prototype#resolve()
+         * @see kiss.Prototype#get()
          */
         @Override
-        public Person resolve() {
-            Person person = super.resolve();
+        public Person get() {
+            Person person = super.get();
 
             person.setFirstName("default");
 
@@ -205,11 +205,11 @@ public class LifestyleTest {
         }
 
         /**
-         * @see kiss.Prototype#resolve()
+         * @see kiss.Prototype#get()
          */
         @Override
-        public Student resolve() {
-            Student person = super.resolve();
+        public Student get() {
+            Student person = super.get();
 
             person.setFirstName("default");
 
@@ -223,9 +223,9 @@ public class LifestyleTest {
     private static class LocalLifestyle implements Lifestyle<Locale> {
 
         /**
-         * @see kiss.Lifestyle#resolve()
+         * @see kiss.Lifestyle#get()
          */
-        public Locale resolve() {
+        public Locale get() {
             return Locale.ROOT;
         }
     }
@@ -243,11 +243,11 @@ public class LifestyleTest {
         }
 
         /**
-         * @see kiss.Prototype#resolve()
+         * @see kiss.Prototype#get()
          */
         @Override
-        public M resolve() {
-            M m = super.resolve();
+        public M get() {
+            M m = super.get();
 
             set.add(m);
 
@@ -280,10 +280,10 @@ public class LifestyleTest {
         private static InterfaceImplementation implementation = new InterfaceImplementation();
 
         /**
-         * @see kiss.Lifestyle#resolve()
+         * @see kiss.Lifestyle#get()
          */
         @Override
-        public Interface resolve() {
+        public Interface get() {
             return implementation;
         }
     }

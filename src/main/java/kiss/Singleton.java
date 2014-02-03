@@ -33,14 +33,14 @@ public class Singleton<M> extends Prototype<M> {
     protected Singleton(Class<M> modelClass) {
         super(modelClass);
 
-        instance = super.resolve();
+        instance = super.get();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public M resolve() {
+    public M get() {
         return instance;
     }
 }

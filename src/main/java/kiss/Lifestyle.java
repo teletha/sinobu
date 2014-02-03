@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import java.util.function.Supplier;
+
 /**
  * <p>
  * Lifestyle manages the instance in the specific context. Sinobu provides four commonly used
@@ -37,7 +39,7 @@ package kiss;
  * <pre>
  * public class CustomLifestyle implements Lifestyle&lt;ClassNotUnderYourControl&gt; {
  * 
- *     public ClassNotUnderYourControl resolve() {
+ *     public ClassNotUnderYourControl get() {
  *         return new ClassNotUnderYourControl();
  *     }
  * }
@@ -49,16 +51,7 @@ package kiss;
  * @see ThreadSpecific
  * @see Preference
  * @see Manageable#lifestyle()
- * @version 2011/11/04 0:03:20
+ * @version 2014/02/03 12:25:46
  */
-public interface Lifestyle<M> extends Extensible {
-
-    /**
-     * <p>
-     * Return the instance which is assosiated with the specific context.
-     * </p>
-     * 
-     * @return A retrieved object.
-     */
-    public M resolve();
+public interface Lifestyle<M> extends Supplier<M>, Extensible {
 }

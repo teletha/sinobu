@@ -440,7 +440,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     public static <S> Disposable bind(S sourcePath, S targetPath, boolean twoway) {
         // retrieve a tracer of the current processing thread
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         try {
             // create target binding
@@ -909,7 +909,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */
     public static <M> M make(Class<M> modelClass) {
-        return makeLifestyle(modelClass).resolve();
+        return makeLifestyle(modelClass).get();
     }
 
     /**
@@ -985,7 +985,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         }
 
         // Construct dependency graph for the current thred.
-        Deque<Class> dependency = dependencies.resolve();
+        Deque<Class> dependency = dependencies.get();
         dependency.add(actualClass);
 
         // Don't use 'contains' method check here to resolve singleton based
@@ -1047,7 +1047,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         if (model instanceof String) {
             // Internal process.
             // The specified model object indicates the property path.
-            tracers.resolve().peek().add(model);
+            tracers.get().peek().add(model);
 
             return null; // the returned value will not be used by Sinobu
         }
@@ -1066,7 +1066,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             modelClass = model.getClass();
 
             // retrieve the tracer context for current thread
-            Deque<List> tracer = tracers.resolve();
+            Deque<List> tracer = tracers.get();
 
             // for tracing, maximum necessary capacity is 2 (bind method needs it)
             if (1 < tracer.size()) {
@@ -1653,7 +1653,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws IndexOutOfBoundsException If the specified source's path is empty.
      */
     public static <T> Observable<T> observe(T property) {
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         try {
             List info = tracer.poll();

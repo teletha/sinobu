@@ -50,7 +50,7 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
     /**
      * {@inheritDoc}
      */
-    public Locale resolve() {
+    public Locale get() {
         return Locale.getDefault();
     }
 }

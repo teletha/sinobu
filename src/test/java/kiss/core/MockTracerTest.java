@@ -54,7 +54,7 @@ public class MockTracerTest {
     @Before
     @After
     public void clear() {
-        Deque tracer = tracers.resolve();
+        Deque tracer = tracers.get();
 
         if (tracer != null) {
             tracer.clear();
@@ -66,7 +66,7 @@ public class MockTracerTest {
         Person person = I.make(Person.class);
         I.mock(person).getAge();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == person;
@@ -78,7 +78,7 @@ public class MockTracerTest {
         Student student = I.make(Student.class);
         I.mock(student).getSchool().getName();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == student;
@@ -91,7 +91,7 @@ public class MockTracerTest {
         Primitive primitive = I.make(Primitive.class);
         I.mock(primitive).isBoolean();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == primitive;
@@ -103,7 +103,7 @@ public class MockTracerTest {
         Primitive primitive = I.make(Primitive.class);
         I.mock(primitive).getInt();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == primitive;
@@ -115,7 +115,7 @@ public class MockTracerTest {
         Primitive primitive = I.make(Primitive.class);
         I.mock(primitive).getLong();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == primitive;
@@ -127,7 +127,7 @@ public class MockTracerTest {
         Primitive primitive = I.make(Primitive.class);
         I.mock(primitive).getFloat();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == primitive;
@@ -139,7 +139,7 @@ public class MockTracerTest {
         Primitive primitive = I.make(Primitive.class);
         I.mock(primitive).getDouble();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == primitive;
@@ -151,7 +151,7 @@ public class MockTracerTest {
         Primitive primitive = I.make(Primitive.class);
         I.mock(primitive).getChar();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == primitive;
@@ -163,7 +163,7 @@ public class MockTracerTest {
         Primitive primitive = I.make(Primitive.class);
         I.mock(primitive).getShort();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == primitive;
@@ -175,7 +175,7 @@ public class MockTracerTest {
         Primitive primitive = I.make(Primitive.class);
         I.mock(primitive).getByte();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == primitive;
@@ -187,7 +187,7 @@ public class MockTracerTest {
         ArrayBean array = I.make(ArrayBean.class);
         I.mock(array).getObjects();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == array;
@@ -199,7 +199,7 @@ public class MockTracerTest {
         Subclass bean = I.make(Subclass.class);
         I.mock(bean).getFirstName();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == bean;
@@ -217,7 +217,7 @@ public class MockTracerTest {
         Generic bean = I.make(Generic.class);
         I.mock(bean).getGeneric();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == bean;
@@ -235,7 +235,7 @@ public class MockTracerTest {
         DependenciedBean bean = I.make(DependenciedBean.class);
         I.mock(bean).getName();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == bean;
@@ -252,7 +252,7 @@ public class MockTracerTest {
         // call at mock object
         mock.getName();
 
-        Deque<List> tracer = tracers.resolve();
+        Deque<List> tracer = tracers.get();
 
         assert tracer.size() == 1;
         assert tracer.getFirst().get(0) == call;

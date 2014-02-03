@@ -57,11 +57,11 @@ public class ThreadSpecific<M> extends Prototype<M> {
      * {@inheritDoc}
      */
     @Override
-    public M resolve() {
+    public M get() {
         M object = local.get();
 
         if (object == null) {
-            object = super.resolve();
+            object = super.get();
             local.set(object);
         }
         return object;

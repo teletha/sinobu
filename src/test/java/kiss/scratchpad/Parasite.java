@@ -64,10 +64,10 @@ public class Parasite<M> extends Prototype<M> {
     }
 
     /**
-     * @see kiss.Prototype#resolve()
+     * @see kiss.Prototype#get()
      */
     @Override
-    public M resolve() {
+    public M get() {
         try {
             return (M) field.get(I.make(host));
         } catch (Exception e) {
