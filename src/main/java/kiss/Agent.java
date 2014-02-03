@@ -9,18 +9,35 @@
  */
 package kiss;
 
+import java.nio.file.Path;
+import java.nio.file.WatchEvent;
 import java.util.function.Consumer;
 
 /**
- * @version 2014/01/28 23:05:39
+ * <p>
+ * Versatile wrapper or delegator.
+ * </p>
+ * 
+ * @version 2014/02/03 11:19:06
  */
-class Agent<V> implements Observer<V> {
+class Agent<T> implements Observer<T>, WatchEvent {
+
+    /**
+     * {@link Agent} must have this constructor only. Dont use instance field initialization to
+     * reduce creation cost.
+     */
+    Agent() {
+    }
+
+    // ============================================================
+    // For Observer
+    // ============================================================
 
     /** The delegation. */
-    Observer<? super V> observer;
+    Observer observer;
 
     /** The delegation. */
-    Consumer<? super V> next;
+    Consumer<T> next;
 
     /** The delegation. */
     Consumer<Throwable> error;
@@ -58,11 +75,45 @@ class Agent<V> implements Observer<V> {
      * {@inheritDoc}
      */
     @Override
-    public void onNext(V value) {
+    public void onNext(T value) {
         if (next != null) {
             next.accept(value);
         } else if (observer != null) {
             observer.onNext(value);
         }
+    }
+
+    // ============================================================
+    // For WatchEvent
+    // ============================================================
+
+    /** The event holder. */
+    WatchEvent watch;
+
+    /** The event holder. */
+    Path path;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Kind kind() {
+        return watch.kind();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int count() {
+        return watch.count();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object context() {
+        return path;
     }
 }

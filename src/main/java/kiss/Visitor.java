@@ -340,7 +340,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
                     // pattern matching
                     if (accept(from.relativize(path))) {
-                        Event e = new Event();
+                        Agent e = new Agent();
                         e.watch = event;
                         e.path = path;
 

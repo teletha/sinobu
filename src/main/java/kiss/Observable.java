@@ -494,7 +494,7 @@ public class Observable<V> {
      *            source sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <T> Observable<V> skipUntil(Observable<T> predicate) {
+    public final Observable<V> skipUntil(Observable predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
@@ -587,7 +587,7 @@ public class Observable<V> {
      *            source sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <T> Observable<V> takeUntil(Observable<T> predicate) {
+    public final Observable<V> takeUntil(Observable predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
