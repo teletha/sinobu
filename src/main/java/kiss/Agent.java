@@ -9,9 +9,12 @@
  */
 package kiss;
 
-import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.util.function.Consumer;
+
+import kiss.model.Model;
+import kiss.model.Property;
+import kiss.model.PropertyWalker;
 
 /**
  * <p>
@@ -20,7 +23,10 @@ import java.util.function.Consumer;
  * 
  * @version 2014/02/03 11:19:06
  */
-class Agent<T> implements Observer<T>, WatchEvent {
+class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker {
+
+    /** For reuse. */
+    Object object;
 
     /**
      * {@link Agent} must have this constructor only. Dont use instance field initialization to
@@ -90,9 +96,6 @@ class Agent<T> implements Observer<T>, WatchEvent {
     /** The event holder. */
     WatchEvent watch;
 
-    /** The event holder. */
-    Path path;
-
     /**
      * {@inheritDoc}
      */
@@ -114,6 +117,30 @@ class Agent<T> implements Observer<T>, WatchEvent {
      */
     @Override
     public Object context() {
-        return path;
+        return object;
+    }
+
+    // ============================================================
+    // For XML Desirialization and Bean Conversion
+    // ============================================================
+
+    /** The current model. */
+    Model model;
+
+    /** The property for xml deserialization process. */
+    Property property;
+
+    /** The current location for deserialization process. */
+    int index;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void walk(Model model, Property property, Object node) {
+        Property dest = this.model.getProperty(property.name);
+
+        // never check null because PropertyWalker traverses existing properties
+        this.model.set(object, dest, I.transform(node, dest.model.type));
     }
 }

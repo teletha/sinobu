@@ -13,9 +13,11 @@ import static jdk.internal.org.objectweb.asm.Opcodes.*;
 
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PushbackReader;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.StringReader;
@@ -27,7 +29,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.CharBuffer;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -68,7 +69,6 @@ import javax.script.ScriptException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import jdk.internal.org.objectweb.asm.AnnotationVisitor;
@@ -1921,7 +1921,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws ScriptException If the input data is empty or invalid format.
      */
     public static <M> M read(CharSequence input, M output) {
-        return read((Readable) (input == null ? null : CharBuffer.wrap(input)), output);
+        Objects.nonNull(input);
+
+        return read(new StringReader(input.toString()), output);
     }
 
     /**
@@ -1942,10 +1944,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IOError If the input data is empty or invalid format.
      */
-    public static <M> M read(Readable input, M output) {
-        Util reader = new Util(input, null);
+    public static <M> M read(Reader input, M output) {
+        PushbackReader reader = new PushbackReader(input, 4);
 
         Model model = Model.load(output.getClass());
 
@@ -1953,29 +1955,29 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // aquire lock
             lock.readLock().lock();
 
-            // Parse as XML
-            return read(model, output, reader);
-        } catch (Exception e) {
-            if (e instanceof XMLStreamException) {
-                // The user input has some error as XML so we should try it as JSON.
-                try {
-                    reader.i = 1; // set flag to push back data streaming
+            // read first character
+            int c = reader.read();
 
-                    // Parse as JSON.
-                    return read(model, output, script.eval(reader));
-                } catch (Exception se) {
-                    se.addSuppressed(e);
-                    throw quiet(se);
-                }
+            // revert stream
+            reader.unread(c);
+
+            if (c == '{') {
+                // Parse as JSON
+                reader.unread(new char[] {'a', '='});
+
+                return read(model, output, script.eval(reader));
             } else {
-                throw quiet(e);
+                // Parse as XML
+                return read(model, output, reader);
             }
+        } catch (Exception e) {
+            throw new IOError(e);
         } finally {
             // relese lock
             lock.readLock().unlock();
 
             // close carefuly
-            quiet(input);
+            quiet(reader);
         }
     }
 
@@ -1992,22 +1994,24 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     private static <M> M read(Model model, M root, Reader input) throws Exception {
         HashMap objects = new HashMap();
-        ArrayDeque<Util> states = new ArrayDeque();
+        ArrayDeque<Agent> states = new ArrayDeque();
 
         XMLStreamReader node = stax.createXMLStreamReader(input);
 
         while (node.hasNext()) {
             switch (node.next()) {
             case XMLStreamReader.START_ELEMENT:
-                Util state;
+                Agent state;
                 String name = node.getLocalName();
 
                 // create next state
                 if (states.size() == 0) {
                     // this is root object
-                    state = new Util(root, model);
+                    state = new Agent();
+                    state.model = model;
+                    state.object = root;
                 } else {
-                    Util parent = states.peekLast();
+                    Agent parent = states.peekLast();
 
                     // Compute property.
                     //
@@ -2017,7 +2021,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                         name = node.getAttributeValue(URI, "key");
 
                         if (name == null) {
-                            name = String.valueOf(parent.i++);
+                            name = String.valueOf(parent.index++);
                         }
                     }
 
@@ -2045,7 +2049,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                     }
 
                     // create next state
-                    state = new Util(object, property.model);
+                    state = new Agent();
+                    state.model = property.model;
+                    state.object = object;
                     state.property = property;
                 }
 
@@ -2090,8 +2096,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 break;
 
             case XMLStreamReader.END_ELEMENT:
-                Util current = states.pollLast();
-                Util parent = states.peekLast();
+                Agent current = states.pollLast();
+                Agent parent = states.peekLast();
 
                 if (parent != null) {
                     parent.model.set(parent.object, current.property, current.object);
@@ -2191,7 +2197,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             M m = make(output);
 
             // copy actually
-            inputModel.walk(input, new Util(m, outputModel));
+            Agent agent = new Agent();
+            agent.model = outputModel;
+            agent.object = m;
+
+            inputModel.walk(input, agent);
 
             // API definition
             return m;
@@ -2355,9 +2365,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
     public static void write(Object input, Appendable output, boolean json) {
-        if (output == null) {
-            throw new NullPointerException();
-        }
+        Objects.nonNull(output);
 
         try {
             // aquire lock
