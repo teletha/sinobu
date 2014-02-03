@@ -9,6 +9,7 @@
  */
 package kiss.serialization;
 
+import java.io.IOError;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -240,9 +241,9 @@ public class JSONTest {
         assert person.getFirstName().equals("\\");
     }
 
-    @Test
+    @Test(expected = IOError.class)
     public void readIncompatibleJSON() {
-        assert I.read("15", I.make(Person.class)) != null;
+        I.read("15", I.make(Person.class));
     }
 
     @Test(expected = ClassCircularityError.class)

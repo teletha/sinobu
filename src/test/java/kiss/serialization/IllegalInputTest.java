@@ -9,22 +9,20 @@
  */
 package kiss.serialization;
 
-
+import java.io.IOError;
+import java.io.Reader;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
-import javax.script.ScriptException;
+import kiss.I;
+import kiss.sample.bean.Person;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-
-
-import kiss.I;
-import kiss.sample.bean.Person;
 
 /**
  * @version 2011/03/31 17:29:31
@@ -58,8 +56,8 @@ public class IllegalInputTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void readNullReadable() {
-        I.read((Readable) null, bean);
+    public void readNullReader() {
+        I.read((Reader) null, bean);
     }
 
     @Test(expected = NullPointerException.class)
@@ -73,12 +71,12 @@ public class IllegalInputTest {
         assert clazz == Class.class;
     }
 
-    @Test(expected = ScriptException.class)
+    @Test(expected = IOError.class)
     public void readEmptyJSON() {
         assert I.read("", bean) != null;
     }
 
-    @Test(expected = ScriptException.class)
+    @Test(expected = IOError.class)
     public void readInvalidJSON() {
         assert I.read("@", bean) != null;
     }

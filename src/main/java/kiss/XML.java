@@ -646,27 +646,6 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
-     * Write this elements to the specified output.
-     * </p>
-     * 
-     * @param output A output channel.
-     */
-    public void to(ContentHandler output) {
-        try {
-            output.startDocument();
-            TreeWalker walker = new TreeWalker(output);
-
-            for (Node node : nodes) {
-                walker.traverseFragment(node);
-            }
-            output.endDocument();
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * <p>
      * Convert the first element to {@link Node}.
      * </p>
      * 
@@ -690,6 +669,27 @@ public class XML implements Iterable<XML> {
         format.setOmitXMLDeclaration(true);
 
         to(new XML11Serializer(output instanceof Writer ? (Writer) output : new XMLUtil(output), format));
+    }
+
+    /**
+     * <p>
+     * Write this elements to the specified output.
+     * </p>
+     * 
+     * @param output A output channel.
+     */
+    public void to(ContentHandler output) {
+        try {
+            output.startDocument();
+            TreeWalker walker = new TreeWalker(output);
+    
+            for (Node node : nodes) {
+                walker.traverseFragment(node);
+            }
+            output.endDocument();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
