@@ -442,12 +442,13 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == null;
         assert emitter.emitAndRetrieve(10) == null;
 
-        chronus.wait(20);
+        chronus.freeze(20);
         assert emitter.emitAndRetrieve(10) == 10;
     }
 
     @Test
     public void debounce() throws Exception {
+        System.out.println("start");
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().debounce(10, MILLISECONDS).subscribe(emitter);
 

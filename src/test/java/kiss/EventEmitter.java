@@ -52,6 +52,7 @@ public class EventEmitter<E> implements Observer<E> {
      */
     @Override
     public void onNext(E event) {
+        System.out.println("   add on emitter " + event);
         events.add(event);
     }
 
@@ -102,7 +103,9 @@ public class EventEmitter<E> implements Observer<E> {
      * @return
      */
     public E retrieve() {
-        return events.pollFirst();
+        E v = events.pollFirst();
+        System.out.println("  retrive from emitter " + v);
+        return v;
     }
 
     /**

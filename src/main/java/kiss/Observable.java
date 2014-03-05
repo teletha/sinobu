@@ -13,7 +13,9 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,6 +59,9 @@ public class Observable<V> {
 
     /** The common set. */
     private Set<V> set;
+
+    /** The common deque. */
+    private Queue<V> queue;
 
     /**
      * <p>
@@ -230,7 +235,9 @@ public class Observable<V> {
                 latest.set(null);
                 observer.onNext(value);
             };
-            latest.set(I.schedule(time, unit, task));
+            Future future2 = I.schedule(time, unit, task);
+            System.out.println(future2);
+            latest.set(future2);
         });
     }
 
@@ -251,9 +258,16 @@ public class Observable<V> {
             return this;
         }
 
+        queue = new ConcurrentLinkedQueue();
+
         return on((observer, value) -> {
+            System.out.println("   add " + value + " on observable queue");
+            queue.add(value);
+
             I.schedule(time, unit, () -> {
-                observer.onNext(value);
+                V v = queue.poll();
+                System.out.println("   retrive " + value + " on observable queue");
+                observer.onNext(v);
             });
         });
     }

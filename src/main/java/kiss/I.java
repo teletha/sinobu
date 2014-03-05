@@ -59,9 +59,10 @@ import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -317,7 +318,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     private static final WeakHashMap<Object, Map> weak = new WeakHashMap();
 
     /** The delayed task manager. */
-    private static ExecutorService pool = Executors.newCachedThreadPool(runnable -> {
+    private static ExecutorService pool = new ThreadPoolExecutor(4, 32, 60, TimeUnit.SECONDS, new SynchronousQueue(), runnable -> {
         Thread thread = new Thread(runnable);
         thread.setDaemon(true);
 
@@ -2196,9 +2197,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 }
             };
         }
-        pool = Executors.newCachedThreadPool();
-        System.out.println(pool);
-
         return pool.submit(runnable);
     }
 
