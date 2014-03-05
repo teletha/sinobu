@@ -16,18 +16,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
-import antibug.Async;
+import antibug.Chronus;
 
 /**
  * @version 2014/01/11 2:51:33
  */
 public class ObservableTest {
 
-    static {
-        I.$scheduler = Async.use();
-    }
+    @ClassRule
+    public static final Chronus chronus = new Chronus(I.class);
 
     @Test
     public void subscribe() throws Exception {
@@ -442,7 +442,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == null;
         assert emitter.emitAndRetrieve(10) == null;
 
-        Async.wait(20);
+        chronus.wait(20);
         assert emitter.emitAndRetrieve(10) == 10;
     }
 
@@ -455,7 +455,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(20) == null;
         assert emitter.emitAndRetrieve(30) == null;
 
-        Async.awaitTasks();
+        chronus.await();
         assert emitter.retrieve() == 30;
     }
 
@@ -468,18 +468,18 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(20) == null;
         assert emitter.emitAndRetrieve(30) == null;
 
-        Async.awaitTasks();
+        chronus.await();
         assert emitter.retrieve() == null;
 
         emitter.emit(10);
-        Async.awaitTasks();
+        chronus.await();
         assert emitter.retrieve() == 10;
 
         emitter.emit(10);
-        Async.awaitTasks();
+        chronus.await();
         assert emitter.retrieve() == null;
         emitter.emit(10);
-        Async.awaitTasks();
+        chronus.await();
         assert emitter.retrieve() == 10;
     }
 
@@ -489,12 +489,12 @@ public class ObservableTest {
         emitter.observe().delay(10, MILLISECONDS).subscribe(emitter);
 
         assert emitter.emitAndRetrieve(10) == null;
-        Async.awaitTasks();
+        chronus.await();
         assert emitter.retrieve() == 10;
 
         assert emitter.emitAndRetrieve(20) == null;
         assert emitter.emitAndRetrieve(30) == null;
-        Async.awaitTasks();
+        chronus.await();
         assert emitter.retrieve() == 20;
         assert emitter.retrieve() == 30;
     }
