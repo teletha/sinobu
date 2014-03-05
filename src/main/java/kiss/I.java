@@ -58,9 +58,11 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.script.ScriptEngine;
@@ -258,14 +260,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     public static Path $working = Paths.get(""); // Poplar Taneshima
 
-    /**
-     * <p>
-     * The configuration of task scheduler in Sinobu, default value is {@link Executors}
-     * <em>{@link Executors#newScheduledThreadPool(int)}</em>.
-     * </p>
-     */
-    public static ScheduledExecutorService $scheduler = Executors.newScheduledThreadPool(4, new I());
-
     /** The namespace uri of Sinobu. */
     static final String URI = "sinobu";
 
@@ -321,6 +315,14 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     private static final Constructor instantiator;
 
     private static final WeakHashMap<Object, Map> weak = new WeakHashMap();
+
+    /** The delayed task manager. */
+    private static ExecutorService pool = Executors.newCachedThreadPool(runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setDaemon(true);
+
+        return thread;
+    });
 
     // initialization
     static {
@@ -1633,7 +1635,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             Visitor watcher = new Visitor(path, (Observer) observer, patterns);
 
             // Run in anothor thread.
-            $scheduler.execute(watcher);
+            schedule(watcher);
 
             // API definition
             return watcher;
@@ -2159,6 +2161,45 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
         // API definition
         return java;
+    }
+
+    /**
+     * <p>
+     * Execute the specified task in background {@link Thread}.
+     * </p>
+     * 
+     * @param task A task to execute.
+     */
+    public static Future<?> schedule(Runnable task) {
+        return schedule(0, null, task);
+    }
+
+    /**
+     * <p>
+     * Execute the specified task in background {@link Thread} with the specified delay.
+     * </p>
+     * 
+     * @param time A delay time.
+     * @param unit A delay time unit.
+     * @param task A task to execute.
+     */
+    public static Future<?> schedule(long time, TimeUnit unit, Runnable task) {
+        Runnable runnable = task;
+
+        if (time != 0 && unit != null) {
+            runnable = () -> {
+                try {
+                    Thread.sleep(unit.toMillis(time));
+                    task.run();
+                } catch (InterruptedException e) {
+                    throw I.quiet(e);
+                }
+            };
+        }
+        pool = Executors.newCachedThreadPool();
+        System.out.println(pool);
+
+        return pool.submit(runnable);
     }
 
     /**

@@ -14,7 +14,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -217,10 +217,10 @@ public class Observable<V> {
             return this;
         }
 
-        AtomicReference<ScheduledFuture> latest = new AtomicReference();
+        AtomicReference<Future> latest = new AtomicReference();
 
         return on((observer, value) -> {
-            ScheduledFuture future = latest.get();
+            Future future = latest.get();
 
             if (future != null) {
                 future.cancel(true);
@@ -230,7 +230,7 @@ public class Observable<V> {
                 latest.set(null);
                 observer.onNext(value);
             };
-            latest.set(I.$scheduler.schedule(task, time, unit));
+            latest.set(I.schedule(time, unit, task));
         });
     }
 
@@ -252,9 +252,9 @@ public class Observable<V> {
         }
 
         return on((observer, value) -> {
-            I.$scheduler.schedule(() -> {
+            I.schedule(time, unit, () -> {
                 observer.onNext(value);
-            }, time, unit);
+            });
         });
     }
 
