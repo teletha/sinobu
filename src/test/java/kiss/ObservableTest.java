@@ -565,6 +565,52 @@ public class ObservableTest {
     }
 
     @Test
+    public void mergeIterable() throws Exception {
+        EventEmitter<Integer> emitter1 = new EventEmitter();
+        EventEmitter<Integer> emitter2 = new EventEmitter();
+        EventEmitter<Integer> emitter3 = new EventEmitter();
+        EventEmitter<Integer> emitter4 = new EventEmitter();
+
+        List<Observable<Integer>> list = new ArrayList();
+        list.add(emitter2.observe());
+        list.add(emitter3.observe());
+        list.add(emitter4.observe());
+
+        Disposable disposable = emitter1.observe().merge(list).subscribe(emitter1);
+
+        assert emitter1.isSubscribed();
+        assert emitter2.isSubscribed();
+        assert emitter3.isSubscribed();
+        assert emitter4.isSubscribed();
+        assert emitter1.emitAndRetrieve(10) == 10;
+
+        emitter2.emit(100);
+        emitter3.emit(200);
+        emitter4.emit(300);
+        assert emitter1.retrieve() == 100;
+        assert emitter1.retrieve() == 200;
+        assert emitter1.retrieve() == 300;
+
+        disposable.dispose();
+        assert emitter1.isUnsubscribed() == true;
+        assert emitter2.isUnsubscribed() == true;
+        assert emitter3.isUnsubscribed() == true;
+        assert emitter4.isUnsubscribed() == true;
+    }
+
+    @Test
+    public void mergeNull() throws Exception {
+        EventEmitter<Integer> emitter1 = new EventEmitter();
+        Disposable disposable = emitter1.observe().merge((Observable) null).subscribe(emitter1);
+
+        assert emitter1.isSubscribed();
+        assert emitter1.emitAndRetrieve(10) == 10;
+
+        disposable.dispose();
+        assert emitter1.isUnsubscribed() == true;
+    }
+
+    @Test
     public void all() throws Exception {
         EventEmitter<Integer> emitter1 = new EventEmitter();
         EventEmitter<Integer> emitter2 = new EventEmitter();
