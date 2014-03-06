@@ -59,10 +59,9 @@ import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -317,13 +316,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
     private static final WeakHashMap<Object, Map> weak = new WeakHashMap();
 
-    /** The delayed task manager. */
-    private static ExecutorService pool = new ThreadPoolExecutor(4, 32, 60, TimeUnit.SECONDS, new SynchronousQueue(), runnable -> {
-        Thread thread = new Thread(runnable);
-        thread.setDaemon(true);
+    /** The parallel task manager. */
+    // private static final ExecutorService parallel = Executors.newWorkStealingPool(4);
+    private static final ExecutorService parallel = Executors.newCachedThreadPool(new I());
 
-        return thread;
-    });
+    /** The serial task manager. */
+    private static final ExecutorService serial = Executors.newSingleThreadExecutor(new I());
 
     // initialization
     static {
@@ -1009,7 +1007,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             if (lifestyle == null) {
                 // If the actual model class doesn't provide its lifestyle explicitly, we use
                 // Prototype lifestyle which is default lifestyle in Sinobu.
-                Manageable manageable = (Manageable) actualClass.getAnnotation(Manageable.class);
+                Manageable manageable = actualClass.getAnnotation(Manageable.class);
 
                 // Create new lifestyle for the actual model class
                 lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
@@ -2172,7 +2170,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param task A task to execute.
      */
     public static Future<?> schedule(Runnable task) {
-        return schedule(0, null, task);
+        return schedule(0, null, true, task);
     }
 
     /**
@@ -2182,9 +2180,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * 
      * @param time A delay time.
      * @param unit A delay time unit.
+     * @param parallelExecution The <code>true</code> will execute task in parallel,
+     *            <code>false</code> will execute task in serial.
      * @param task A task to execute.
      */
-    public static Future<?> schedule(long time, TimeUnit unit, Runnable task) {
+    public static Future<?> schedule(long time, TimeUnit unit, boolean parallelExecution, Runnable task) {
         Runnable runnable = task;
 
         if (time != 0 && unit != null) {
@@ -2192,12 +2192,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 try {
                     Thread.sleep(unit.toMillis(time));
                     task.run();
-                } catch (InterruptedException e) {
-                    throw I.quiet(e);
+                } catch (Throwable e) {
+                    throw quiet(e);
                 }
             };
         }
-        return pool.submit(runnable);
+        return (parallelExecution ? parallel : serial).submit(runnable);
     }
 
     /**
@@ -2217,7 +2217,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             return null;
         }
 
-        Model inputModel = Model.load((Class) input.getClass());
+        Model inputModel = Model.load(input.getClass());
         Model outputModel = Model.load(output);
 
         // no conversion

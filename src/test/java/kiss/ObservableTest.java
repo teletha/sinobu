@@ -448,7 +448,6 @@ public class ObservableTest {
 
     @Test
     public void debounce() throws Exception {
-        System.out.println("start");
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().debounce(10, MILLISECONDS).subscribe(emitter);
 
@@ -465,23 +464,23 @@ public class ObservableTest {
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().debounce(10, MILLISECONDS).skip(1).take(1).repeat().subscribe(emitter);
 
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == null;
-        assert emitter.emitAndRetrieve(30) == null;
+        assert emitter.emitAndRetrieve(11) == null;
+        assert emitter.emitAndRetrieve(22) == null;
+        assert emitter.emitAndRetrieve(33) == null;
 
         chronus.await();
         assert emitter.retrieve() == null;
 
-        emitter.emit(10);
+        emitter.emit(44);
         chronus.await();
-        assert emitter.retrieve() == 10;
+        assert emitter.retrieve() == 44;
 
-        emitter.emit(10);
+        emitter.emit(55);
         chronus.await();
         assert emitter.retrieve() == null;
-        emitter.emit(10);
+        emitter.emit(66);
         chronus.await();
-        assert emitter.retrieve() == 10;
+        assert emitter.retrieve() == 66;
     }
 
     @Test
