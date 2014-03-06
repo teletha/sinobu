@@ -10,6 +10,7 @@
 package kiss;
 
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Objects;
@@ -374,13 +375,33 @@ public class Observable<V> {
      * @return Chainable API.
      */
     public final Observable<V> merge(Observable<? extends V> other) {
+        return merge(Collections.singletonList(other));
+    }
+
+    /**
+     * <p>
+     * Flattens a sequence of {@link Observable} emitted by an {@link Observable} into one
+     * {@link Observable}, without any transformation.
+     * </p>
+     * 
+     * @param others A target {@link Observable} set to merge. <code>null</code> will be ignroed.
+     * @return Chainable API.
+     */
+    public final Observable<V> merge(Iterable<? extends Observable<? extends V>> others) {
         // ignore invalid parameters
-        if (other == null) {
+        if (others == null) {
             return this;
         }
 
         return new Observable<V>(observer -> {
-            return subscribe(observer).and(other.subscribe(observer));
+            Disposable disposable = subscribe(observer);
+
+            for (Observable<? extends V> other : others) {
+                if (other != null) {
+                    disposable = disposable.and(other.subscribe(observer));
+                }
+            }
+            return disposable;
         });
     }
 
