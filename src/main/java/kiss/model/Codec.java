@@ -73,9 +73,9 @@ public class Codec<T> extends StringConverter<T> implements Extensible {
         }
     }
 
-    Codec(Function<T, String> encoder, Function<String, T> decoder) {
-        this.encoder = encoder;
+    Codec(Function<String, T> decoder, Function<T, String> encoder) {
         this.decoder = decoder;
+        this.encoder = encoder;
     }
 
     /**
