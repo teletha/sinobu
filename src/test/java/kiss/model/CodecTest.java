@@ -32,7 +32,7 @@ public class CodecTest {
         Codec converter = new Codec(BigInteger.class);
         BigInteger test = new BigInteger("0");
 
-        assert converter.decode(converter.encode(test)).equals(new BigInteger("0"));
+        assert converter.fromString(converter.toString(test)).equals(new BigInteger("0"));
     }
 
     /**
@@ -43,7 +43,7 @@ public class CodecTest {
         Codec converter = new Codec(BigDecimal.class);
         BigDecimal test = new BigDecimal("0");
 
-        assert converter.decode(converter.encode(test)).equals(new BigDecimal("0"));
+        assert converter.fromString(converter.toString(test)).equals(new BigDecimal("0"));
     }
 
     /**
@@ -54,7 +54,7 @@ public class CodecTest {
         Codec converter = new Codec(StringBuilder.class);
         StringBuilder test = new StringBuilder("test");
 
-        assert converter.decode(converter.encode(test)).toString().equals(new StringBuilder("test").toString());
+        assert converter.fromString(converter.toString(test)).toString().equals(new StringBuilder("test").toString());
     }
 
     /**
@@ -65,7 +65,7 @@ public class CodecTest {
         Codec converter = new Codec(StringBuffer.class);
         StringBuffer test = new StringBuffer("test");
 
-        assert converter.decode(converter.encode(test)).toString().equals(new StringBuffer("test").toString());
+        assert converter.fromString(converter.toString(test)).toString().equals(new StringBuffer("test").toString());
     }
 
     /**
@@ -76,7 +76,7 @@ public class CodecTest {
         Codec converter = new Codec(Locale.class);
         Locale test = new Locale("en");
 
-        assert converter.decode(converter.encode(test)).equals(new Locale("en"));
+        assert converter.fromString(converter.toString(test)).equals(new Locale("en"));
     }
 
     /**
@@ -87,7 +87,7 @@ public class CodecTest {
         Codec converter = new Codec(URL.class);
         URL test = new URL("http://localhost/");
 
-        assert converter.decode(converter.encode(test)).equals(new URL("http://localhost/"));
+        assert converter.fromString(converter.toString(test)).equals(new URL("http://localhost/"));
     }
 
     /**
@@ -98,6 +98,6 @@ public class CodecTest {
         Codec converter = new Codec(URI.class);
         URI test = new URI("http://localhost/");
 
-        assert converter.decode(converter.encode(test)).equals(new URI("http://localhost/"));
+        assert converter.fromString(converter.toString(test)).equals(new URI("http://localhost/"));
     }
 }

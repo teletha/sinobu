@@ -2042,7 +2042,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                         if (value == null) {
                             object = null;
                         } else {
-                            object = codec.decode(value);
+                            object = codec.fromString(value);
                         }
                     } else {
                         // collection model and normal model
@@ -2086,7 +2086,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                             Codec codec = property.model.getCodec();
 
                             if (codec != null) {
-                                state.model.set(state.object, property, codec.decode(node.getAttributeValue(i)));
+                                state.model.set(state.object, property, codec.fromString(node.getAttributeValue(i)));
                             }
                         }
                     }
@@ -2247,11 +2247,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         } else {
             // type conversion
             if (output == String.class) {
-                return (M) ((inputCodec != null) ? inputCodec.encode(input) : input.toString());
+                return (M) ((inputCodec != null) ? inputCodec.toString(input) : input.toString());
             }
 
             if (inputModel.type == String.class && outputCodec != null) {
-                return outputCodec.decode((String) input);
+                return outputCodec.fromString((String) input);
             }
             return (M) input;
         }
