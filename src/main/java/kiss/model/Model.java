@@ -29,8 +29,14 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +65,7 @@ import kiss.I;
  * which is neither Immutable nor Collection are Basic.</dd>
  * </dl>
  * 
- * @version 2013/09/26 14:01:55
+ * @version 2014/03/11 2:41:54
  */
 public class Model {
 
@@ -68,6 +74,9 @@ public class Model {
 
     /** The repository of built-in codecs. */
     private static final ArrayList<Class> codecs = new ArrayList();
+
+    /** The repository of built-in codecs. */
+    private static final HashMap<Class, Codec> codecMap = new HashMap();
 
     // initialize
     static {
@@ -82,6 +91,11 @@ public class Model {
 
         // util
         codecs.add(Locale.class);
+        codecMap.put(Date.class, new Codec<Date>(value -> {
+            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC));
+        }, value -> {
+            return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+        }));
 
         // net
         codecs.add(URL.class);
@@ -93,6 +107,30 @@ public class Model {
 
         // io, nio
         codecs.add(File.class);
+        codecMap.put(Path.class, new Codec<Path>(value -> {
+            return value.toString().replace(File.separatorChar, '/');
+        }, value -> {
+            return I.locate(value);
+        }));
+
+        // time
+        codecMap.put(LocalTime.class, new Codec<LocalTime>(value -> {
+            return DateTimeFormatter.ISO_LOCAL_TIME.format(value);
+        }, value -> {
+            return LocalTime.parse(value);
+        }));
+
+        codecMap.put(LocalDate.class, new Codec<LocalDate>(value -> {
+            return DateTimeFormatter.ISO_LOCAL_DATE.format(value);
+        }, value -> {
+            return LocalDate.parse(value);
+        }));
+
+        codecMap.put(LocalDateTime.class, new Codec<LocalDateTime>(value -> {
+            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(value);
+        }, value -> {
+            return LocalDateTime.parse(value);
+        }));
     }
 
     /** The {@link Class} which is represented by this {@link Model}. */
@@ -125,7 +163,8 @@ public class Model {
         models.put(type, this);
 
         // search from built-in codecs
-        codec = codecs.contains(type) || type.isEnum() ? new Codec(type) : I.find(Codec.class, type);
+        codec = codecs.contains(type) || type.isEnum() ? new Codec(type)
+                : codecMap.containsKey(type) ? codecMap.get(type) : I.find(Codec.class, type);
 
         // examine all methods without private, final, static or native
         Map<String, Method[]> candidates = new HashMap();

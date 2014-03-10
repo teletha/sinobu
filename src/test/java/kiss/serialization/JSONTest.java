@@ -185,7 +185,7 @@ public class JSONTest {
 
         // write
         String json = json(bean);
-        assert json.equals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T09:00:00\",\"someClass\":\"java.lang.String\"}");
+        assert json.equals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T00:00:00\",\"someClass\":\"java.lang.String\"}");
 
         // read
         bean = I.read(json, I.make(BuiltinBean.class));
