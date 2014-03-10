@@ -29,6 +29,7 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Class fromString(String value) {
         for (Module module : I.modules.modules) {
             try {
@@ -43,6 +44,7 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString(Class value) {
         return value.getName();
     }
@@ -50,6 +52,7 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Locale get() {
         return Locale.getDefault();
     }

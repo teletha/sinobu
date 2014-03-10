@@ -10,6 +10,7 @@
 package kiss.model;
 
 import java.lang.reflect.Constructor;
+import java.util.function.Function;
 
 import javafx.util.StringConverter;
 
@@ -38,16 +39,22 @@ import kiss.Singleton;
 public class Codec<T> extends StringConverter<T> implements Extensible {
 
     /** The raw type information for this codec. */
-    private final Class type;
+    private Class type;
 
     /** The actual constructer for decode. */
     private Constructor<T> constructor;
+
+    /** The encoder function. */
+    private Function<T, String> encoder;
+
+    /** The decoder function. */
+    private Function<String, T> decoder;
 
     /**
      * Exposed constructor for extension.
      */
     protected Codec() {
-        this(null);
+        this(null, null);
     }
 
     /**
@@ -58,14 +65,17 @@ public class Codec<T> extends StringConverter<T> implements Extensible {
     Codec(Class type) {
         this.type = type;
 
-        if (type != null) {
-            // check whether the specified class is stringizable or not
-            try {
-                constructor = ClassUtil.wrap(type).getConstructor(String.class);
-            } catch (Exception e) {
-                // do nothing
-            }
+        // check whether the specified class is stringizable or not
+        try {
+            constructor = ClassUtil.wrap(type).getConstructor(String.class);
+        } catch (Exception e) {
+            // do nothing
         }
+    }
+
+    Codec(Function<T, String> encoder, Function<String, T> decoder) {
+        this.encoder = encoder;
+        this.decoder = decoder;
     }
 
     /**
@@ -77,7 +87,11 @@ public class Codec<T> extends StringConverter<T> implements Extensible {
      */
     @Override
     public String toString(T value) {
-        return value.toString();
+        if (encoder != null) {
+            return encoder.apply(value);
+        } else {
+            return value.toString();
+        }
     }
 
     /**
@@ -89,21 +103,25 @@ public class Codec<T> extends StringConverter<T> implements Extensible {
      */
     @Override
     public T fromString(String value) {
-        // for enum
-        if (type != null && type.isEnum()) {
-            return (T) Enum.valueOf(type, value);
-        }
-
-        try {
-            if (constructor != null) {
-                // for stringizable class
-                return constructor.newInstance(value);
-            } else {
-                // for character class
-                return (T) (Object) value.charAt(0);
+        if (decoder != null) {
+            return decoder.apply(value);
+        } else {
+            // for enum
+            if (type != null && type.isEnum()) {
+                return (T) Enum.valueOf(type, value);
             }
-        } catch (Exception e) {
-            throw I.quiet(e);
+
+            try {
+                if (constructor != null) {
+                    // for stringizable class
+                    return constructor.newInstance(value);
+                } else {
+                    // for character class
+                    return (T) (Object) value.charAt(0);
+                }
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
         }
     }
 }
