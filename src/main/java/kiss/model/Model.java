@@ -122,53 +122,67 @@ public class Model {
         }));
 
         // time
-        codecMap.put(LocalTime.class, new Codec<LocalTime>(value -> {
-            return LocalTime.parse(value);
-        }, null));
+        Class[] classes = {LocalTime.class, LocalDate.class, LocalDateTime.class, OffsetDateTime.class,
+                OffsetTime.class, ZonedDateTime.class, MonthDay.class, YearMonth.class, Year.class, Duration.class,
+                Period.class, Instant.class};
 
-        codecMap.put(LocalDate.class, new Codec<LocalDate>(value -> {
-            return LocalDate.parse(value);
-        }, null));
-
-        codecMap.put(LocalDateTime.class, new Codec<LocalDateTime>(value -> {
-            return LocalDateTime.parse(value);
-        }, null));
-
-        codecMap.put(OffsetDateTime.class, new Codec<OffsetDateTime>(value -> {
-            return OffsetDateTime.parse(value);
-        }, null));
-
-        codecMap.put(OffsetTime.class, new Codec<OffsetTime>(value -> {
-            return OffsetTime.parse(value);
-        }, null));
-
-        codecMap.put(ZonedDateTime.class, new Codec<ZonedDateTime>(value -> {
-            return ZonedDateTime.parse(value);
-        }, null));
-
-        codecMap.put(MonthDay.class, new Codec<MonthDay>(value -> {
-            return MonthDay.parse(value);
-        }, null));
-
-        codecMap.put(YearMonth.class, new Codec<YearMonth>(value -> {
-            return YearMonth.parse(value);
-        }, null));
-
-        codecMap.put(Year.class, new Codec<Year>(value -> {
-            return Year.parse(value);
-        }, null));
-
-        codecMap.put(Duration.class, new Codec<Duration>(value -> {
-            return Duration.parse(value);
-        }, null));
-
-        codecMap.put(Period.class, new Codec<Period>(value -> {
-            return Period.parse(value);
-        }, null));
-
-        codecMap.put(Instant.class, new Codec<Instant>(value -> {
-            return Instant.parse(value);
-        }, null));
+        for (Class clazz : classes) {
+            codecMap.put(clazz, new Codec(value -> {
+                try {
+                    return clazz.getMethod("parse", CharSequence.class).invoke(null, value);
+                } catch (Exception e) {
+                    throw I.quiet(e);
+                }
+            }, null));
+        }
+        //
+        // codecMap.put(LocalTime.class, new Codec<LocalTime>(value -> {
+        // return LocalTime.parse(value);
+        // }, null));
+        //
+        // codecMap.put(LocalDate.class, new Codec<LocalDate>(value -> {
+        // return LocalDate.parse(value);
+        // }, null));
+        //
+        // codecMap.put(LocalDateTime.class, new Codec<LocalDateTime>(value -> {
+        // return LocalDateTime.parse(value);
+        // }, null));
+        //
+        // codecMap.put(OffsetDateTime.class, new Codec<OffsetDateTime>(value -> {
+        // return OffsetDateTime.parse(value);
+        // }, null));
+        //
+        // codecMap.put(OffsetTime.class, new Codec<OffsetTime>(value -> {
+        // return OffsetTime.parse(value);
+        // }, null));
+        //
+        // codecMap.put(ZonedDateTime.class, new Codec<ZonedDateTime>(value -> {
+        // return ZonedDateTime.parse(value);
+        // }, null));
+        //
+        // codecMap.put(MonthDay.class, new Codec<MonthDay>(value -> {
+        // return MonthDay.parse(value);
+        // }, null));
+        //
+        // codecMap.put(YearMonth.class, new Codec<YearMonth>(value -> {
+        // return YearMonth.parse(value);
+        // }, null));
+        //
+        // codecMap.put(Year.class, new Codec<Year>(value -> {
+        // return Year.parse(value);
+        // }, null));
+        //
+        // codecMap.put(Duration.class, new Codec<Duration>(value -> {
+        // return Duration.parse(value);
+        // }, null));
+        //
+        // codecMap.put(Period.class, new Codec<Period>(value -> {
+        // return Period.parse(value);
+        // }, null));
+        //
+        // codecMap.put(Instant.class, new Codec<Instant>(value -> {
+        // return Instant.parse(value);
+        // }, null));
     }
 
     /** The {@link Class} which is represented by this {@link Model}. */
