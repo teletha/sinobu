@@ -29,7 +29,7 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
     /**
      * {@inheritDoc}
      */
-    public Class decode(String value) {
+    public Class fromString(String value) {
         for (Module module : I.modules.modules) {
             try {
                 return Class.forName(value, false, module.loader);
@@ -43,7 +43,7 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
     /**
      * {@inheritDoc}
      */
-    public String encode(Class value) {
+    public String toString(Class value) {
         return value.getName();
     }
 

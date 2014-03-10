@@ -31,9 +31,9 @@ class CodecDate extends Codec<Date> {
     private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /**
-     * @see kiss.model.Codec#decode(java.lang.String)
+     * @see kiss.model.Codec#fromString(java.lang.String)
      */
-    public synchronized Date decode(String value) {
+    public synchronized Date fromString(String value) {
         try {
             return format.parse(value);
         } catch (ParseException e) {
@@ -42,9 +42,9 @@ class CodecDate extends Codec<Date> {
     }
 
     /**
-     * @see kiss.model.Codec#encode(java.lang.Object)
+     * @see kiss.model.Codec#toString(java.lang.Object)
      */
-    public synchronized String encode(Date value) {
+    public synchronized String toString(Date value) {
         return format.format(value);
     }
 }

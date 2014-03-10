@@ -23,7 +23,7 @@ class CodecPath extends Codec<Path> {
      * {@inheritDoc}
      */
     @Override
-    public String encode(Path value) {
+    public String toString(Path value) {
         return value.toString().replace(File.separatorChar, '/');
     }
 
@@ -31,7 +31,7 @@ class CodecPath extends Codec<Path> {
      * {@inheritDoc}
      */
     @Override
-    public Path decode(String value) {
+    public Path fromString(String value) {
         return I.locate(value);
     }
 }

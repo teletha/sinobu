@@ -25,17 +25,17 @@ public class ClassCodecTest {
     @Test
     public void systemClass() throws Exception {
         ClassCodec codec = new ClassCodec();
-        Class clazz = codec.decode("java.lang.String");
+        Class clazz = codec.fromString("java.lang.String");
         assert clazz != null;
-        assert codec.encode(clazz).equals("java.lang.String");
+        assert codec.toString(clazz).equals("java.lang.String");
     }
 
     @Test
     public void systemClassArray() throws Exception {
         ClassCodec codec = new ClassCodec();
-        Class clazz = codec.decode("[Ljava.lang.String;");
+        Class clazz = codec.fromString("[Ljava.lang.String;");
         assert clazz != null;
-        assert codec.encode(clazz).equals("[Ljava.lang.String;");
+        assert codec.toString(clazz).equals("[Ljava.lang.String;");
     }
 
     @Test
@@ -44,9 +44,9 @@ public class ClassCodecTest {
         assert Private.class != clazz;
 
         ClassCodec codec = new ClassCodec();
-        String fqcn = codec.encode(clazz);
+        String fqcn = codec.toString(clazz);
         assert Private.class.getName() != fqcn;
-        assert codec.decode(fqcn).equals(clazz);
+        assert codec.fromString(fqcn).equals(clazz);
     }
 
     @Test
@@ -55,9 +55,9 @@ public class ClassCodecTest {
         assert Private[].class != clazz;
 
         ClassCodec codec = new ClassCodec();
-        String fqcn = codec.encode(clazz);
+        String fqcn = codec.toString(clazz);
         assert Private[].class.getName() != fqcn;
-        assert codec.decode(fqcn).equals(clazz);
+        assert codec.fromString(fqcn).equals(clazz);
     }
 
     /**

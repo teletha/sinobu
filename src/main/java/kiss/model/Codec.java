@@ -11,7 +11,10 @@ package kiss.model;
 
 import java.lang.reflect.Constructor;
 
+import javafx.util.StringConverter;
+
 import kiss.Extensible;
+import kiss.I;
 import kiss.Manageable;
 import kiss.Singleton;
 
@@ -28,19 +31,17 @@ import kiss.Singleton;
  * </p>
  * 
  * @param <T> A target type to decode and encode.
+ * @see StringConverter
  * @version 2014/03/10 23:23:02
  */
 @Manageable(lifestyle = Singleton.class)
-public class Codec<T> implements Extensible {
+public class Codec<T> extends StringConverter<T> implements Extensible {
 
     /** The raw type information for this codec. */
     private final Class type;
 
     /** The actual constructer for decode. */
     private Constructor<T> constructor;
-
-    /** The construct mode. <code>true</code> is String, <code>false</code> is char. */
-    private boolean mode = true;
 
     /**
      * Exposed constructor for extension.
@@ -57,18 +58,13 @@ public class Codec<T> implements Extensible {
     Codec(Class type) {
         this.type = type;
 
-        // convert primitive class to wrapper class
-        type = ClassUtil.wrap(type);
-
-        // chech whether the specified class is stringizable or not
-        try {
-            if (type == Character.class) {
-                mode = false;
-            } else {
-                constructor = type.getConstructor(String.class);
+        if (type != null) {
+            // check whether the specified class is stringizable or not
+            try {
+                constructor = ClassUtil.wrap(type).getConstructor(String.class);
+            } catch (Exception e) {
+                // do nothing
             }
-        } catch (Exception e) {
-            // do nothing
         }
     }
 
@@ -79,7 +75,8 @@ public class Codec<T> implements Extensible {
      * @return A encoded object.
      * @throws IllegalArgumentException If the given value is illegal format.
      */
-    public String encode(T value) {
+    @Override
+    public String toString(T value) {
         return value.toString();
     }
 
@@ -90,14 +87,15 @@ public class Codec<T> implements Extensible {
      * @return A decoded object.
      * @throws IllegalArgumentException If the given value is illegal format.
      */
-    public T decode(String value) {
+    @Override
+    public T fromString(String value) {
         // for enum
         if (type != null && type.isEnum()) {
             return (T) Enum.valueOf(type, value);
         }
 
         try {
-            if (mode) {
+            if (constructor != null) {
                 // for stringizable class
                 return constructor.newInstance(value);
             } else {
@@ -105,7 +103,7 @@ public class Codec<T> implements Extensible {
                 return (T) (Object) value.charAt(0);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+            throw I.quiet(e);
         }
     }
 }
