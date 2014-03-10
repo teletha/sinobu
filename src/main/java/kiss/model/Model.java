@@ -29,11 +29,19 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -92,9 +100,9 @@ public class Model {
         // util
         codecs.add(Locale.class);
         codecMap.put(Date.class, new Codec<Date>(value -> {
-            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC));
-        }, value -> {
             return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+        }, value -> {
+            return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
         }));
 
         // net
@@ -108,29 +116,59 @@ public class Model {
         // io, nio
         codecs.add(File.class);
         codecMap.put(Path.class, new Codec<Path>(value -> {
-            return value.toString().replace(File.separatorChar, '/');
-        }, value -> {
             return I.locate(value);
+        }, value -> {
+            return value.toString().replace(File.separatorChar, '/');
         }));
 
         // time
         codecMap.put(LocalTime.class, new Codec<LocalTime>(value -> {
-            return DateTimeFormatter.ISO_LOCAL_TIME.format(value);
-        }, value -> {
             return LocalTime.parse(value);
-        }));
+        }, null));
 
         codecMap.put(LocalDate.class, new Codec<LocalDate>(value -> {
-            return DateTimeFormatter.ISO_LOCAL_DATE.format(value);
-        }, value -> {
             return LocalDate.parse(value);
-        }));
+        }, null));
 
         codecMap.put(LocalDateTime.class, new Codec<LocalDateTime>(value -> {
-            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(value);
-        }, value -> {
             return LocalDateTime.parse(value);
-        }));
+        }, null));
+
+        codecMap.put(OffsetDateTime.class, new Codec<OffsetDateTime>(value -> {
+            return OffsetDateTime.parse(value);
+        }, null));
+
+        codecMap.put(OffsetTime.class, new Codec<OffsetTime>(value -> {
+            return OffsetTime.parse(value);
+        }, null));
+
+        codecMap.put(ZonedDateTime.class, new Codec<ZonedDateTime>(value -> {
+            return ZonedDateTime.parse(value);
+        }, null));
+
+        codecMap.put(MonthDay.class, new Codec<MonthDay>(value -> {
+            return MonthDay.parse(value);
+        }, null));
+
+        codecMap.put(YearMonth.class, new Codec<YearMonth>(value -> {
+            return YearMonth.parse(value);
+        }, null));
+
+        codecMap.put(Year.class, new Codec<Year>(value -> {
+            return Year.parse(value);
+        }, null));
+
+        codecMap.put(Duration.class, new Codec<Duration>(value -> {
+            return Duration.parse(value);
+        }, null));
+
+        codecMap.put(Period.class, new Codec<Period>(value -> {
+            return Period.parse(value);
+        }, null));
+
+        codecMap.put(Instant.class, new Codec<Instant>(value -> {
+            return Instant.parse(value);
+        }, null));
     }
 
     /** The {@link Class} which is represented by this {@link Model}. */
