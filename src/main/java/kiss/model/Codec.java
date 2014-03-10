@@ -28,7 +28,7 @@ import kiss.Singleton;
  * </p>
  * 
  * @param <T> A target type to decode and encode.
- * @version 2009/12/30 22:11:00
+ * @version 2014/03/10 23:23:02
  */
 @Manageable(lifestyle = Singleton.class)
 public class Codec<T> implements Extensible {
@@ -64,7 +64,6 @@ public class Codec<T> implements Extensible {
         try {
             if (type == Character.class) {
                 mode = false;
-                constructor = type.getConstructor(char.class);
             } else {
                 constructor = type.getConstructor(String.class);
             }
@@ -103,7 +102,7 @@ public class Codec<T> implements Extensible {
                 return constructor.newInstance(value);
             } else {
                 // for character class
-                return constructor.newInstance(value.charAt(0));
+                return (T) (Object) value.charAt(0);
             }
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
