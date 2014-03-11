@@ -30,7 +30,7 @@ public class PropertyWatchTest {
         Listener listener = new Listener();
 
         // start observing
-        I.observe(I.mock(person).getFirstName()).subscribe(listener);
+        I.observe(I.mock(person).getFirstName()).to(listener);
 
         // change property
         person.setFirstName("miku");
@@ -43,7 +43,7 @@ public class PropertyWatchTest {
         Listener listener = new Listener();
 
         // start observing
-        I.observe(I.mock(person).getAge()).subscribe(listener);
+        I.observe(I.mock(person).getAge()).to(listener);
 
         // change property
         person.setAge(10);
@@ -59,7 +59,7 @@ public class PropertyWatchTest {
         Listener listener = new Listener();
 
         // start observing
-        I.observe(I.mock(student).getSchool().getName()).subscribe(listener);
+        I.observe(I.mock(student).getSchool().getName()).to(listener);
 
         // set nested property
         student.setSchool(school);
@@ -88,7 +88,7 @@ public class PropertyWatchTest {
         Listener listener = new Listener();
 
         // observe
-        I.observe(I.mock(bean).getGeneric()).subscribe(listener);
+        I.observe(I.mock(bean).getGeneric()).to(listener);
 
         // change property
         bean.setGeneric("test");
@@ -101,7 +101,7 @@ public class PropertyWatchTest {
         Listener listener = new Listener();
 
         // start observing
-        Disposable disposable = I.observe(I.mock(person).getFirstName()).subscribe(listener);
+        Disposable disposable = I.observe(I.mock(person).getFirstName()).to(listener);
 
         // change property
         person.setFirstName("Miku");
@@ -121,7 +121,7 @@ public class PropertyWatchTest {
         Listener listener = new Listener();
 
         // start observing
-        I.observe(I.mock(person).getFirstName()).subscribe(listener);
+        I.observe(I.mock(person).getFirstName()).to(listener);
 
         // change property
         person.setFirstName(null);

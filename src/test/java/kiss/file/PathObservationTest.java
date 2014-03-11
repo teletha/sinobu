@@ -487,7 +487,7 @@ public class PathObservationTest {
      * @param path
      */
     private Disposable observe(Path path) {
-        Disposable disposable = I.observe(path).subscribe(queue);
+        Disposable disposable = I.observe(path).to(queue);
 
         disposables.add(disposable);
 
@@ -502,7 +502,7 @@ public class PathObservationTest {
      * @param path
      */
     private Disposable observe(Path path, String pattern) {
-        Disposable disposable = I.observe(path, pattern).subscribe(queue);
+        Disposable disposable = I.observe(path, pattern).to(queue);
 
         disposables.add(disposable);
 
