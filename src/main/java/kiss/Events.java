@@ -27,12 +27,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * @version 2014/01/14 11:04:04
+ * @version 2014/03/11 14:52:00
  */
-public class Observable<V> {
+public class Events<V> {
 
     /** For reuse. */
-    public static final Observable NEVER = new Observable(observer -> {
+    public static final Events NEVER = new Events(observer -> {
         return new Agent();
     });
 
@@ -61,48 +61,48 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Create {@link Observable} with the specified subscriber {@link Function} which will be
-     * invoked whenever you calls {@link #subscribe(Observer)} related methods.
+     * Create {@link Events} with the specified subscriber {@link Function} which will be invoked
+     * whenever you calls {@link #to(Observer)} related methods.
      * </p>
      * 
      * @param subscriber A subscriber {@link Function}.
-     * @see #subscribe(Observer)
-     * @see #subscribe(Consumer)
-     * @see #subscribe(Consumer, Consumer)
-     * @see #subscribe(Consumer, Consumer, Runnable)
+     * @see #to(Observer)
+     * @see #to(Consumer)
+     * @see #to(Consumer, Consumer)
+     * @see #to(Consumer, Consumer, Runnable)
      */
-    public Observable(Function<Observer<? super V>, Disposable> subscriber) {
+    public Events(Function<Observer<? super V>, Disposable> subscriber) {
         this.subscriber = subscriber;
     }
 
     /**
      * <p>
-     * Receive values from this {@link Observable}.
+     * Receive values from this {@link Events}.
      * </p>
      * 
      * @param next A delegator method of {@link Observer#onNext(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable subscribe(Consumer<? super V> next) {
-        return subscribe(next, null);
+    public final Disposable to(Consumer<? super V> next) {
+        return to(next, null);
     }
 
     /**
      * <p>
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
-     * items and notifications from the Observable.
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to
+     * receive items and notifications from the Observable.
      * 
      * @param next A delegator method of {@link Observer#onNext(Object)}.
      * @param error A delegator method of {@link Observer#onError(Throwable)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable subscribe(Consumer<? super V> next, Consumer<Throwable> error) {
-        return subscribe(next, error, null);
+    public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error) {
+        return to(next, error, null);
     }
 
     /**
      * <p>
-     * Receive values from this {@link Observable}.
+     * Receive values from this {@link Events}.
      * </p>
      * 
      * @param next A delegator method of {@link Observer#onNext(Object)}.
@@ -110,60 +110,60 @@ public class Observable<V> {
      * @param complete A delegator method of {@link Observer#onCompleted()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable subscribe(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
+    public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
         Agent agent = new Agent();
         agent.next = next;
         agent.error = error;
         agent.complete = complete;
 
-        return subscribe(agent);
+        return to(agent);
     }
 
     /**
      * <p>
-     * Receive values from this {@link Observable}.
+     * Receive values from this {@link Events}.
      * </p>
      * 
-     * @param observer A value observer of this {@link Observable}.
+     * @param observer A value observer of this {@link Events}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable subscribe(Observer<? super V> observer) {
+    public final Disposable to(Observer<? super V> observer) {
         return unsubscriber = subscriber.apply(observer);
     }
 
     /**
      * <p>
-     * Filters the values of an {@link Observable} sequence based on the specified type.
+     * Filters the values of an {@link Events} sequence based on the specified type.
      * </p>
      * 
      * @param type The type of result. <code>null</code> throws {@link NullPointerException}.
      * @return Chainable API.
      * @throws NullPointerException If the type is <code>null</code>.
      */
-    public final <R> Observable<R> as(Class<R> type) {
+    public final <R> Events<R> as(Class<R> type) {
         Objects.nonNull(type);
 
-        return (Observable<R>) filter(value -> {
+        return (Events<R>) filter(value -> {
             return type.isInstance(value);
         });
     }
 
     /**
      * <p>
-     * Indicates each value of an {@link Observable} sequence into consecutive non-overlapping
-     * buffers which are produced based on value count information.
+     * Indicates each value of an {@link Events} sequence into consecutive non-overlapping buffers
+     * which are produced based on value count information.
      * </p>
      * 
      * @param size A length of each buffer.
      * @return Chainable API.
      */
-    public final Observable<V[]> buffer(int size) {
+    public final Events<V[]> buffer(int size) {
         return buffer(size, size);
     }
 
     /**
      * <p>
-     * Indicates each values of an {@link Observable} sequence into zero or more buffers which are
+     * Indicates each values of an {@link Events} sequence into zero or more buffers which are
      * produced based on value count information.
      * </p>
      * 
@@ -173,15 +173,15 @@ public class Observable<V> {
      *            negative number are treated exactly the same way as 1.
      * @return Chainable API.
      */
-    public final Observable<V[]> buffer(int size, int interval) {
+    public final Events<V[]> buffer(int size, int interval) {
         int creationSize = 0 < size ? size : 1;
         int creationInterval = 0 < interval ? interval : 1;
 
-        return new Observable<V[]>(observer -> {
+        return new Events<V[]>(observer -> {
             Deque<V> buffer = new ArrayDeque();
             AtomicInteger timing = new AtomicInteger();
 
-            return subscribe(value -> {
+            return to(value -> {
                 buffer.offer(value);
 
                 boolean validTiming = timing.incrementAndGet() == creationInterval;
@@ -212,7 +212,7 @@ public class Observable<V> {
      * @param unit A time unit. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final Observable<V> debounce(long time, TimeUnit unit) {
+    public final Events<V> debounce(long time, TimeUnit unit) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -237,16 +237,16 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Indicates the {@link Observable} sequence by due time with the specified source and time.
+     * Indicates the {@link Events} sequence by due time with the specified source and time.
      * </p>
      * 
-     * @param time The absolute time used to shift the {@link Observable} sequence. Zero or negative
+     * @param time The absolute time used to shift the {@link Events} sequence. Zero or negative
      *            number will ignore this instruction.
      * @param unit A unit of time for the specified time. <code>null</code> will ignore this
      *            instruction.
      * @return Chainable API.
      */
-    public final Observable<V> delay(long time, TimeUnit unit) {
+    public final Events<V> delay(long time, TimeUnit unit) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -261,17 +261,17 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns an {@link Observable} consisting of the distinct values (according to
+     * Returns an {@link Events} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
      * </p>
      * 
      * @return Chainable API.
      */
-    public final Observable<V> diff() {
-        return new Observable<V>(observer -> {
+    public final Events<V> diff() {
+        return new Events<V>(observer -> {
             ref = new AtomicReference();
 
-            return subscribe(value -> {
+            return to(value -> {
                 V prev = ref.getAndSet(value);
 
                 if (!Objects.equals(prev, value)) {
@@ -283,17 +283,17 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns an {@link Observable} consisting of the distinct values (according to
+     * Returns an {@link Events} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
      * </p>
      * 
      * @return Chainable API.
      */
-    public final Observable<V> distinct() {
-        return new Observable<V>(observer -> {
+    public final Events<V> distinct() {
+        return new Events<V>(observer -> {
             set = new HashSet();
 
-            return subscribe(value -> {
+            return to(value -> {
                 if (set.add(value)) {
                     observer.onNext(value);
                 }
@@ -303,16 +303,16 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns an {@link Observable} consisting of the values of this {@link Observable} that match
-     * the given predicate.
+     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
+     * given predicate.
      * </p>
      * 
-     * @param predicate A function that evaluates the values emitted by the source
-     *            {@link Observable}, returning {@code true} if they pass the filter.
-     *            <code>null</code> will ignore this instruction.
+     * @param predicate A function that evaluates the values emitted by the source {@link Events},
+     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *            instruction.
      * @return Chainable API.
      */
-    public final Observable<V> filter(Predicate<? super V> predicate) {
+    public final Events<V> filter(Predicate<? super V> predicate) {
         // ignore invalid parameters
         if (predicate == null) {
             return this;
@@ -327,16 +327,16 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns an {@link Observable} that applies the given constant to each item emitted by an
-     * {@link Observable} and emits the result.
+     * Returns an {@link Events} that applies the given constant to each item emitted by an
+     * {@link Events} and emits the result.
      * </p>
      * 
-     * @param constant A constant to apply to each value emitted by this {@link Observable}.
+     * @param constant A constant to apply to each value emitted by this {@link Events}.
      * @return Chainable API.
      */
-    public final <R> Observable<R> map(R constant) {
-        return new Observable<R>(observer -> {
-            return subscribe(value -> {
+    public final <R> Events<R> map(R constant) {
+        return new Events<R>(observer -> {
+            return to(value -> {
                 observer.onNext(constant);
             });
         });
@@ -344,22 +344,22 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns an {@link Observable} that applies the given function to each value emitted by an
-     * {@link Observable} and emits the result.
+     * Returns an {@link Events} that applies the given function to each value emitted by an
+     * {@link Events} and emits the result.
      * </p>
      * 
-     * @param converter A converter function to apply to each value emitted by this
-     *            {@link Observable}. <code>null</code> will ignore this instruction.
+     * @param converter A converter function to apply to each value emitted by this {@link Events} .
+     *            <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <R> Observable<R> map(Function<? super V, R> converter) {
+    public final <R> Events<R> map(Function<? super V, R> converter) {
         // ignore invalid parameters
         if (converter == null) {
-            return (Observable<R>) this;
+            return (Events<R>) this;
         }
 
-        return new Observable<R>(observer -> {
-            return subscribe(value -> {
+        return new Events<R>(observer -> {
+            return to(value -> {
                 observer.onNext(converter.apply(value));
             });
         });
@@ -367,38 +367,38 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Flattens a sequence of {@link Observable} emitted by an {@link Observable} into one
-     * {@link Observable}, without any transformation.
+     * Flattens a sequence of {@link Events} emitted by an {@link Events} into one {@link Events},
+     * without any transformation.
      * </p>
      * 
-     * @param other A target {@link Observable} to merge. <code>null</code> will be ignroed.
+     * @param other A target {@link Events} to merge. <code>null</code> will be ignroed.
      * @return Chainable API.
      */
-    public final Observable<V> merge(Observable<? extends V> other) {
+    public final Events<V> merge(Events<? extends V> other) {
         return merge(Collections.singletonList(other));
     }
 
     /**
      * <p>
-     * Flattens a sequence of {@link Observable} emitted by an {@link Observable} into one
-     * {@link Observable}, without any transformation.
+     * Flattens a sequence of {@link Events} emitted by an {@link Events} into one {@link Events},
+     * without any transformation.
      * </p>
      * 
-     * @param others A target {@link Observable} set to merge. <code>null</code> will be ignroed.
+     * @param others A target {@link Events} set to merge. <code>null</code> will be ignroed.
      * @return Chainable API.
      */
-    public final Observable<V> merge(Iterable<? extends Observable<? extends V>> others) {
+    public final Events<V> merge(Iterable<? extends Events<? extends V>> others) {
         // ignore invalid parameters
         if (others == null) {
             return this;
         }
 
-        return new Observable<V>(observer -> {
-            Disposable disposable = subscribe(observer);
+        return new Events<V>(observer -> {
+            Disposable disposable = to(observer);
 
-            for (Observable<? extends V> other : others) {
+            for (Events<? extends V> other : others) {
                 if (other != null) {
-                    disposable = disposable.and(other.subscribe(observer));
+                    disposable = disposable.and(other.to(observer));
                 }
             }
             return disposable;
@@ -407,56 +407,56 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Invokes an action for each value in the {@link Observable} sequence.
+     * Invokes an action for each value in the {@link Events} sequence.
      * </p>
      * 
-     * @param next An action to invoke for each value in the {@link Observable} sequence.
+     * @param next An action to invoke for each value in the {@link Events} sequence.
      * @return Chainable API.
      */
-    public final Observable<V> on(BiConsumer<Observer<? super V>, V> next) {
+    public final Events<V> on(BiConsumer<Observer<? super V>, V> next) {
         // ignore invalid parameters
         if (next == null) {
             return this;
         }
 
-        return new Observable<V>(observer -> {
+        return new Events<V>(observer -> {
             Agent<V> agent = new Agent();
             agent.observer = observer;
             agent.next = value -> {
                 next.accept(observer, value);
             };
-            return subscribe(agent);
+            return to(agent);
         });
     }
 
     /**
      * <p>
-     * Generates an {@link Observable} sequence that repeats the given value infinitely.
+     * Generates an {@link Events} sequence that repeats the given value infinitely.
      * </p>
      * 
      * @return Chainable API.
      */
-    public final Observable<V> repeat() {
-        return new Observable<V>(observer -> {
+    public final Events<V> repeat() {
+        return new Events<V>(observer -> {
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
                 observer.onCompleted();
-                subscribe(agent);
+                to(agent);
             };
-            return subscribe(agent);
+            return to(agent);
         });
     }
 
     /**
      * <p>
-     * Generates an {@link Observable} sequence that repeats the given value finitely.
+     * Generates an {@link Events} sequence that repeats the given value finitely.
      * </p>
      * 
      * @param count A number of repeat. Zero or negative number will ignore this instruction.
      * @return Chainable API.
      */
-    public final Observable<V> repeat(int count) {
+    public final Events<V> repeat(int count) {
         // ignore invalid parameter
         if (count < 1) {
             return this;
@@ -464,23 +464,23 @@ public class Observable<V> {
 
         AtomicInteger repeat = new AtomicInteger(count);
 
-        return new Observable<V>(observer -> {
+        return new Events<V>(observer -> {
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
                 if (repeat.decrementAndGet() == 0) {
                     unsubscriber.dispose();
                 } else {
-                    unsubscriber = unsubscriber.and(subscribe(agent));
+                    unsubscriber = unsubscriber.and(to(agent));
                 }
             };
-            return subscribe(agent);
+            return to(agent);
         });
     }
 
     /**
      * <p>
-     * Bypasses a specified number of values in an {@link Observable} sequence and then returns the
+     * Bypasses a specified number of values in an {@link Events} sequence and then returns the
      * remaining values.
      * </p>
      * 
@@ -488,16 +488,16 @@ public class Observable<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Observable<V> skip(int count) {
+    public final Events<V> skip(int count) {
         // ignore invalid parameter
         if (count <= 0) {
             return this;
         }
 
-        return new Observable<V>(observer -> {
+        return new Events<V>(observer -> {
             counter = new AtomicInteger();
 
-            return subscribe(value -> {
+            return to(value -> {
                 if (count < counter.incrementAndGet()) {
                     observer.onNext(value);
                 }
@@ -507,28 +507,28 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Observable} sequence only after the other
-     * {@link Observable} sequence produces a value.
+     * Returns the values from the source {@link Events} sequence only after the other
+     * {@link Events} sequence produces a value.
      * </p>
      * 
-     * @param predicate An {@link Observable} sequence that triggers propagation of values of the
-     *            source sequence. <code>null</code> will ignore this instruction.
+     * @param predicate An {@link Events} sequence that triggers propagation of values of the source
+     *            sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final Observable<V> skipUntil(Observable predicate) {
+    public final Events<V> skipUntil(Events predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
         }
 
-        return new Observable<V>(observer -> {
+        return new Events<V>(observer -> {
             flag = new AtomicBoolean();
 
-            return subscribe(value -> {
+            return to(value -> {
                 if (flag.get()) {
                     observer.onNext(value);
                 }
-            }).and(predicate.subscribe(value -> {
+            }).and(predicate.to(value -> {
                 flag.set(true);
             }));
         });
@@ -536,24 +536,24 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Observable} sequence only after the other
-     * {@link Observable} sequence produces a value.
+     * Returns the values from the source {@link Events} sequence only after the other
+     * {@link Events} sequence produces a value.
      * </p>
      * 
-     * @param predicate An {@link Observable} sequence that triggers propagation of values of the
-     *            source sequence. <code>null</code> will ignore this instruction.
+     * @param predicate An {@link Events} sequence that triggers propagation of values of the source
+     *            sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <T> Observable<V> skipUntil(Predicate<V> predicate) {
+    public final <T> Events<V> skipUntil(Predicate<V> predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
         }
 
-        return new Observable<V>(observer -> {
+        return new Events<V>(observer -> {
             flag = new AtomicBoolean();
 
-            return subscribe(value -> {
+            return to(value -> {
                 if (flag.get()) {
                     observer.onNext(value);
                 } else if (predicate.test(value)) {
@@ -566,24 +566,23 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns a specified number of contiguous values from the start of an {@link Observable}
-     * sequence.
+     * Returns a specified number of contiguous values from the start of an {@link Events} sequence.
      * </p>
      * 
      * @param count A number of values to emit. Zero or negative number will ignore this
      *            instruction.
      * @return Chainable API.
      */
-    public final Observable<V> take(int count) {
+    public final Events<V> take(int count) {
         // ignore invalid parameter
         if (count <= 0) {
             return this;
         }
 
-        return new Observable<V>(observer -> {
+        return new Events<V>(observer -> {
             counter = new AtomicInteger(count);
 
-            return subscribe(value -> {
+            return to(value -> {
                 long current = counter.decrementAndGet();
 
                 if (0 <= current) {
@@ -600,22 +599,22 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Observable} sequence until the other
-     * {@link Observable} sequence produces a value.
+     * Returns the values from the source {@link Events} sequence until the other {@link Events}
+     * sequence produces a value.
      * </p>
      * 
-     * @param predicate An {@link Observable} sequence that terminates propagation of values of the
+     * @param predicate An {@link Events} sequence that terminates propagation of values of the
      *            source sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final Observable<V> takeUntil(Observable predicate) {
+    public final Events<V> takeUntil(Events predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
         }
 
-        return new Observable<V>(observer -> {
-            return unsubscriber = subscribe(observer).and(predicate.subscribe(value -> {
+        return new Events<V>(observer -> {
+            return unsubscriber = to(observer).and(predicate.to(value -> {
                 observer.onCompleted();
                 unsubscriber.dispose();
             }));
@@ -624,15 +623,15 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Observable} sequence until the other
-     * {@link Observable} sequence produces a value.
+     * Returns the values from the source {@link Events} sequence until the other {@link Events}
+     * sequence produces a value.
      * </p>
      * 
-     * @param predicate An {@link Observable} sequence that terminates propagation of values of the
+     * @param predicate An {@link Events} sequence that terminates propagation of values of the
      *            source sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <T> Observable<V> takeUntil(Predicate<V> predicate) {
+    public final <T> Events<V> takeUntil(Predicate<V> predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
@@ -655,8 +654,8 @@ public class Observable<V> {
      * value.
      * </p>
      * <p>
-     * Ignores the values from an {@link Observable} sequence which are followed by another value
-     * before due time with the specified source and time.
+     * Ignores the values from an {@link Events} sequence which are followed by another value before
+     * due time with the specified source and time.
      * </p>
      * 
      * @param time Time to wait before sending another item after emitting the last item. Zero or
@@ -665,7 +664,7 @@ public class Observable<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Observable<V> throttle(long time, TimeUnit unit) {
+    public final Events<V> throttle(long time, TimeUnit unit) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -682,28 +681,28 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Create an {@link Observable} that emits true if all specified observables emit true as latest
+     * Create an {@link Events} that emits true if all specified observables emit true as latest
      * event.
      * </p>
      * 
-     * @param observables A list of target {@link Observable} to test.
+     * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    public static Observable<Boolean> all(Observable<Boolean>... observables) {
+    public static Events<Boolean> all(Events<Boolean>... observables) {
         return all(IdenticalPredicate, observables);
     }
 
     /**
      * <p>
-     * Create an {@link Observable} that emits true if all specified observables emit true as latest
+     * Create an {@link Events} that emits true if all specified observables emit true as latest
      * event.
      * </p>
      * 
      * @param predicate A test function.
-     * @param observables A list of target {@link Observable} to test.
+     * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    public static <V> Observable<Boolean> all(Predicate<V> predicate, Observable<V>... observables) {
+    public static <V> Events<Boolean> all(Predicate<V> predicate, Events<V>... observables) {
         return condition(values -> {
             for (boolean value : values) {
                 if (value) {
@@ -716,28 +715,28 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Create an {@link Observable} that emits true if any specified observable emits true as latest
+     * Create an {@link Events} that emits true if any specified observable emits true as latest
      * event.
      * </p>
      * 
-     * @param observables A list of target {@link Observable} to test.
+     * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    public static Observable<Boolean> any(Observable<Boolean>... observables) {
+    public static Events<Boolean> any(Events<Boolean>... observables) {
         return any(IdenticalPredicate, observables);
     }
 
     /**
      * <p>
-     * Create an {@link Observable} that emits true if any specified observable emits true as latest
+     * Create an {@link Events} that emits true if any specified observable emits true as latest
      * event.
      * </p>
      * 
      * @param predicate A test function.
-     * @param observables A list of target {@link Observable} to test.
+     * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    public static <V> Observable<Boolean> any(Predicate<V> predicate, Observable<V>... observables) {
+    public static <V> Events<Boolean> any(Predicate<V> predicate, Events<V>... observables) {
         return condition(values -> {
             for (boolean value : values) {
                 if (!value) {
@@ -750,28 +749,28 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Create an {@link Observable} that emits true if all specified observables emit false as
-     * latest event.
+     * Create an {@link Events} that emits true if all specified observables emit false as latest
+     * event.
      * </p>
      * 
-     * @param observables A list of target {@link Observable} to test.
+     * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    public static Observable<Boolean> none(Observable<Boolean>... observables) {
+    public static Events<Boolean> none(Events<Boolean>... observables) {
         return none(IdenticalPredicate, observables);
     }
 
     /**
      * <p>
-     * Create an {@link Observable} that emits true if all specified observables emit false as
-     * latest event.
+     * Create an {@link Events} that emits true if all specified observables emit false as latest
+     * event.
      * </p>
      * 
      * @param predicate A test function.
-     * @param observables A list of target {@link Observable} to test.
+     * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    public static <V> Observable<Boolean> none(Predicate<V> predicate, Observable<V>... observables) {
+    public static <V> Events<Boolean> none(Predicate<V> predicate, Events<V>... observables) {
         return condition(values -> {
             for (boolean value : values) {
                 if (!value) {
@@ -784,26 +783,26 @@ public class Observable<V> {
 
     /**
      * <p>
-     * Helper method to merge the test result of each {@link Observable}.
+     * Helper method to merge the test result of each {@link Events}.
      * </p>
      * 
      * @param condition A test function for result.
-     * @param predicate A test function for each {@link Observable}.
-     * @param observables A list of target {@link Observable} to test.
+     * @param predicate A test function for each {@link Events}.
+     * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    private static <V> Observable<Boolean> condition(Predicate<boolean[]> condition, Predicate<V> predicate, Observable<V>... observables) {
+    private static <V> Events<Boolean> condition(Predicate<boolean[]> condition, Predicate<V> predicate, Events<V>... observables) {
         if (observables == null || observables.length == 0 || predicate == null) {
             return NEVER;
         }
 
-        return new Observable<Boolean>(observer -> {
+        return new Events<Boolean>(observer -> {
             Disposable base = null;
             boolean[] conditions = new boolean[observables.length];
 
             for (int i = 0; i < observables.length; i++) {
                 int index = i;
-                Disposable disposable = observables[index].subscribe(value -> {
+                Disposable disposable = observables[index].to(value -> {
                     conditions[index] = !predicate.test(value);
 
                     observer.onNext(condition.test(conditions));

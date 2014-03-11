@@ -1584,7 +1584,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static Observable<WatchEvent<Path>> observe(Path path) {
+    public static Events<WatchEvent<Path>> observe(Path path) {
         return observe(path, new String[0]);
     }
 
@@ -1624,12 +1624,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static Observable<WatchEvent<Path>> observe(Path path, String... patterns) {
+    public static Events<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
             return observe(path.getParent(), new String[] {path.getFileName().toString()});
         }
 
-        return new Observable(observer -> {
+        return new Events(observer -> {
             // Create logical file system watch service.
             Visitor watcher = new Visitor(path, (Observer) observer, patterns);
 
@@ -1648,18 +1648,18 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * 
      * @param property A property path from the source object. Multiple path (e.g. parent.name) is
      *            acceptable.
-     * @return A {@link Observable} object for this observation.
+     * @return A {@link Events} object for this observation.
      * @throws NullPointerException If the specified source's path or the specified listener is
      *             <code>null</code>.
      * @throws IndexOutOfBoundsException If the specified source's path is empty.
      */
-    public static <T> Observable<T> observe(T property) {
+    public static <T> Events<T> observe(T property) {
         Deque<List> tracer = tracers.get();
 
         try {
             List info = tracer.poll();
 
-            return new Observable<T>(observer -> {
+            return new Events<T>(observer -> {
                 return new Watch(info, observer);
             });
         } finally {

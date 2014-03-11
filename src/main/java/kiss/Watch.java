@@ -25,7 +25,7 @@ import kiss.model.Property;
  * @version 2014/01/24 16:10:58
  */
 @SuppressWarnings("all")
-public class Watch extends Interceptor<Oneway> implements Disposable, Observer<PropertyChangeEvent>, Oneway {
+class Watch extends Interceptor<Oneway> implements Disposable, Observer<PropertyChangeEvent>, Oneway {
 
     // =======================================================
     // For Interceptor

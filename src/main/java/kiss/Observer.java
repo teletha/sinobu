@@ -14,9 +14,9 @@ package kiss;
  * Provides a mechanism for receiving push-based notifications.
  * </p>
  * <p>
- * After an {@link Observer} calls an {@link Observable#subscribe(Observer)} method, the
- * {@link Observable} calls the {@link #onNext(Object)} method to provide notifications. A
- * well-behaved {@link Observable} will call an {@link #onCompleted()} closure exactly once or the
+ * After an {@link Observer} calls an {@link Events#to(Observer)} method, the
+ * {@link Events} calls the {@link #onNext(Object)} method to provide notifications. A
+ * well-behaved {@link Events} will call an {@link #onCompleted()} closure exactly once or the
  * Observer's {@link #onError(Throwable)} closure exactly once.
  * </p>
  * 
@@ -29,7 +29,7 @@ public interface Observer<V> {
      * Notifies the observer that the provider has finished sending push-based notifications.
      * </p>
      * <p>
-     * The {@link Observable} will not call this closure if it calls {@link #onError(Throwable)}.
+     * The {@link Events} will not call this closure if it calls {@link #onError(Throwable)}.
      * </p>
      */
     public default void onCompleted() {
@@ -41,7 +41,7 @@ public interface Observer<V> {
      * Notifies the observer that the provider has experienced an error condition.
      * </p>
      * <p>
-     * If the {@link Observable} calls this closure, it will not thereafter call
+     * If the {@link Events} calls this closure, it will not thereafter call
      * {@link #onNext(Object)} or {@link #onCompleted()}.
      * </p>
      * 
@@ -56,11 +56,11 @@ public interface Observer<V> {
      * Provides the observer with new data.
      * </p>
      * <p>
-     * The {@link Observable} calls this closure 1 or more times, unless it calls
+     * The {@link Events} calls this closure 1 or more times, unless it calls
      * <code>onError</code> in which case this closure may never be called.
      * </p>
      * <p>
-     * The {@link Observable} will not call this closure again after it calls either
+     * The {@link Events} will not call this closure again after it calls either
      * {@link #onCompleted()} or {@link #onError(Throwable)}.
      * </p>
      * 
