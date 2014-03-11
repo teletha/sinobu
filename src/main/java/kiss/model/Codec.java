@@ -10,10 +10,10 @@
 package kiss.model;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.function.Function;
 
 import javafx.util.StringConverter;
-
 import kiss.Extensible;
 import kiss.I;
 import kiss.Manageable;
@@ -33,49 +33,30 @@ import kiss.Singleton;
  * 
  * @param <T> A target type to decode and encode.
  * @see StringConverter
- * @version 2014/03/10 23:23:02
+ * @version 2014/03/11 13:52:32
  */
 @Manageable(lifestyle = Singleton.class)
 public class Codec<T> extends StringConverter<T> implements Extensible {
 
     /** The raw type information for this codec. */
-    private Class type;
+    Class type;
 
     /** The actual constructer for decode. */
-    private Constructor<T> constructor;
+    Constructor<T> constructor;
+
+    /** The actual constructer for decode. */
+    Method method;
 
     /** The encoder function. */
-    private Function<T, String> encoder;
+    Function<T, String> encoder;
 
     /** The decoder function. */
-    private Function<String, T> decoder;
+    Function<String, T> decoder;
 
     /**
      * Exposed constructor for extension.
      */
     protected Codec() {
-        this(null, null);
-    }
-
-    /**
-     * Internal constructor.
-     * 
-     * @param type A codec type.
-     */
-    Codec(Class type) {
-        this.type = type;
-
-        // check whether the specified class is stringizable or not
-        try {
-            constructor = ClassUtil.wrap(type).getConstructor(String.class);
-        } catch (Exception e) {
-            // do nothing
-        }
-    }
-
-    Codec(Function<String, T> decoder, Function<T, String> encoder) {
-        this.decoder = decoder;
-        this.encoder = encoder;
     }
 
     /**
@@ -89,9 +70,8 @@ public class Codec<T> extends StringConverter<T> implements Extensible {
     public String toString(T value) {
         if (encoder != null) {
             return encoder.apply(value);
-        } else {
-            return value.toString();
         }
+        return value.toString();
     }
 
     /**
@@ -105,23 +85,27 @@ public class Codec<T> extends StringConverter<T> implements Extensible {
     public T fromString(String value) {
         if (decoder != null) {
             return decoder.apply(value);
-        } else {
-            // for enum
-            if (type != null && type.isEnum()) {
-                return (T) Enum.valueOf(type, value);
+        }
+
+        // for enum
+        if (type != null) {
+            return (T) Enum.valueOf(type, value);
+        }
+
+        try {
+            if (method != null) {
+                return (T) method.invoke(null, value);
             }
 
-            try {
-                if (constructor != null) {
-                    // for stringizable class
-                    return constructor.newInstance(value);
-                } else {
-                    // for character class
-                    return (T) (Object) value.charAt(0);
-                }
-            } catch (Exception e) {
-                throw I.quiet(e);
+            if (constructor != null) {
+                // for stringizable class
+                return constructor.newInstance(value);
             }
+
+            // for character class
+            return (T) (Object) value.charAt(0);
+        } catch (Exception e) {
+            throw I.quiet(e);
         }
     }
 }

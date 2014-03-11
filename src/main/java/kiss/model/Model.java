@@ -24,34 +24,19 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URL;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.MonthDay;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Period;
-import java.time.Year;
-import java.time.YearMonth;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import kiss.I;
 
@@ -73,117 +58,12 @@ import kiss.I;
  * which is neither Immutable nor Collection are Basic.</dd>
  * </dl>
  * 
- * @version 2014/03/11 2:41:54
+ * @version 2014/03/11 13:52:21
  */
 public class Model {
 
     /** The model repository. */
     private static final Map<Class, Model> models = new ConcurrentHashMap();
-
-    /** The repository of built-in codecs. */
-    private static final ArrayList<Class> codecs = new ArrayList();
-
-    /** The repository of built-in codecs. */
-    private static final HashMap<Class, Codec> codecMap = new HashMap();
-
-    // initialize
-    static {
-        // primitives and wrappers
-        for (int i = 0; i < 8; i++) {
-            codecs.add(ClassUtil.PRIMITIVES[i]);
-            codecs.add(ClassUtil.WRAPPERS[i]);
-        }
-
-        // lang
-        codecs.add(String.class);
-
-        // util
-        codecs.add(Locale.class);
-        codecMap.put(Date.class, new Codec<Date>(value -> {
-            return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
-        }, value -> {
-            return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
-        }));
-
-        // net
-        codecs.add(URL.class);
-        codecs.add(URI.class);
-
-        // arbitrary-precision numeric numbers
-        codecs.add(BigInteger.class);
-        codecs.add(BigDecimal.class);
-
-        // io, nio
-        codecs.add(File.class);
-        codecMap.put(Path.class, new Codec<Path>(value -> {
-            return I.locate(value);
-        }, value -> {
-            return value.toString().replace(File.separatorChar, '/');
-        }));
-
-        // time
-        Class[] classes = {LocalTime.class, LocalDate.class, LocalDateTime.class, OffsetDateTime.class,
-                OffsetTime.class, ZonedDateTime.class, MonthDay.class, YearMonth.class, Year.class, Duration.class,
-                Period.class, Instant.class};
-
-        for (Class clazz : classes) {
-            codecMap.put(clazz, new Codec(value -> {
-                try {
-                    return clazz.getMethod("parse", CharSequence.class).invoke(null, value);
-                } catch (Exception e) {
-                    throw I.quiet(e);
-                }
-            }, null));
-        }
-        //
-        // codecMap.put(LocalTime.class, new Codec<LocalTime>(value -> {
-        // return LocalTime.parse(value);
-        // }, null));
-        //
-        // codecMap.put(LocalDate.class, new Codec<LocalDate>(value -> {
-        // return LocalDate.parse(value);
-        // }, null));
-        //
-        // codecMap.put(LocalDateTime.class, new Codec<LocalDateTime>(value -> {
-        // return LocalDateTime.parse(value);
-        // }, null));
-        //
-        // codecMap.put(OffsetDateTime.class, new Codec<OffsetDateTime>(value -> {
-        // return OffsetDateTime.parse(value);
-        // }, null));
-        //
-        // codecMap.put(OffsetTime.class, new Codec<OffsetTime>(value -> {
-        // return OffsetTime.parse(value);
-        // }, null));
-        //
-        // codecMap.put(ZonedDateTime.class, new Codec<ZonedDateTime>(value -> {
-        // return ZonedDateTime.parse(value);
-        // }, null));
-        //
-        // codecMap.put(MonthDay.class, new Codec<MonthDay>(value -> {
-        // return MonthDay.parse(value);
-        // }, null));
-        //
-        // codecMap.put(YearMonth.class, new Codec<YearMonth>(value -> {
-        // return YearMonth.parse(value);
-        // }, null));
-        //
-        // codecMap.put(Year.class, new Codec<Year>(value -> {
-        // return Year.parse(value);
-        // }, null));
-        //
-        // codecMap.put(Duration.class, new Codec<Duration>(value -> {
-        // return Duration.parse(value);
-        // }, null));
-        //
-        // codecMap.put(Period.class, new Codec<Period>(value -> {
-        // return Period.parse(value);
-        // }, null));
-        //
-        // codecMap.put(Instant.class, new Codec<Instant>(value -> {
-        // return Instant.parse(value);
-        // }, null));
-    }
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class type;
@@ -195,7 +75,7 @@ public class Model {
     public final List<Property> properties;
 
     /** The built-in codec. */
-    private Codec codec = null;
+    private Codec codec = new Codec();
 
     /**
      * Create Model instance.
@@ -214,93 +94,168 @@ public class Model {
         // this model in here.
         models.put(type, this);
 
-        // search from built-in codecs
-        codec = codecs.contains(type) || type.isEnum() ? new Codec(type)
-                : codecMap.containsKey(type) ? codecMap.get(type) : I.find(Codec.class, type);
+        try {
+            // search from built-in codecs
+            if (type.isEnum()) {
+                codec.type = type;
+            } else {
+                switch (type.getName().hashCode()) {
+                case 64711720: // boolean
+                case 344809556: // java.lang.Boolean
+                case 104431: // int
+                case -2056817302: // java.lang.Integer
+                case 3327612: // long
+                case 398795216: // java.lang.Long
+                case 97526364: // float
+                case -527879800: // java.lang.Float
+                case -1325958191: // double
+                case 761287205: // java.lang.Double
+                case 3039496: // byte
+                case 398507100: // java.lang.Byte
+                case 109413500: // short
+                case -515992664: // java.lang.Short
+                case 1195259493: // java.lang.String
+                case -1555282570: // java.lang.StringBuilder
+                case 1196660485: // java.lang.StringBuffer
+                case -1165211622: // java.util.Locale
+                case 2130072984: // java.io.File
+                case 2050244018: // java.net.URL
+                case 2050244015: // java.net.URI
+                case -989675752: // java.math.BigInteger
+                case -1405464277: // java.math.BigDecimal
+                    // constructer pattern
+                    codec.constructor = ClassUtil.wrap(type).getConstructor(String.class);
+                    break;
 
-        // examine all methods without private, final, static or native
-        Map<String, Method[]> candidates = new HashMap();
+                case 3052374: // char
+                case 155276373: // java.lang.Character
+                    break;
 
-        for (Class clazz : ClassUtil.getTypes(type)) {
-            for (Method method : clazz.getDeclaredMethods()) {
-                // exclude the method which modifier is final, static, private or native
-                if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
-                    // exclude the method which is created by compiler
-                    if (!method.isBridge() && !method.isSynthetic()) {
-                        // if (method.getAnnotations().length != 0) {
-                        // intercepts.add(method);
-                        // }
+                case -1246033885: // java.time.LocalTime
+                case -1246518012: // java.time.LocalDate
+                case -1179039247: // java.time.LocalDateTime
+                case -682591005: // java.time.OffsetDateTime
+                case -1917484011: // java.time.OffsetTime
+                case 1505337278: // java.time.ZonedDateTime
+                case 649475153: // java.time.MonthDay
+                case -537503858: // java.time.YearMonth
+                case -1062742510: // java.time.Year
+                case -1023498007: // java.time.Duration
+                case 649503318: // java.time.Period
+                case 1296075756: // java.time.Instant
+                    // parse method pattern
+                    codec.method = type.getMethod("parse", CharSequence.class);
+                    break;
 
-                        int length = 1;
-                        String prefix = "set";
-                        String name = method.getName();
+                case 65575278:// java.util.Date
+                    codec.decoder = (Function<String, Date>) (value) -> {
+                        return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+                    };
 
-                        if (method.getGenericReturnType() != Void.TYPE) {
-                            length = 0;
-                            prefix = name.charAt(0) == 'i' ? "is" : "get";
-                        }
+                    codec.encoder = (Function<Date, String>) (value) -> {
+                        return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
+                    };
+                    break;
 
-                        // exclude the method (by name)
-                        if (prefix.length() < name.length() && name.startsWith(prefix) && !Character.isLowerCase(name.charAt(prefix.length()))) {
-                            // exclude the method (by parameter signature)
-                            if (method.getGenericParameterTypes().length == length) {
-                                // compute property name
-                                name = Introspector.decapitalize(name.substring(prefix.length()));
+                case 1464606545: // java.nio.file.Path
+                    codec.decoder = (Function<String, Path>) (value) -> {
+                        return I.locate(value);
+                    };
 
-                                // store a candidate of property accessor
-                                Method[] methods = candidates.get(name);
+                    codec.encoder = (Function<Path, String>) (value) -> {
+                        return value.toString().replace(File.separatorChar, '/');
+                    };
+                    break;
 
-                                if (methods == null) {
-                                    methods = new Method[2];
-                                    candidates.put(name, methods);
-                                }
+                default:
+                    codec = I.find(Codec.class, type);
+                    break;
+                }
+            }
 
-                                if (methods[length] == null) {
-                                    methods[length] = method;
+            // examine all methods without private, final, static or native
+            Map<String, Method[]> candidates = new HashMap();
+
+            for (Class clazz : ClassUtil.getTypes(type)) {
+                for (Method method : clazz.getDeclaredMethods()) {
+                    // exclude the method which modifier is final, static, private or native
+                    if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
+                        // exclude the method which is created by compiler
+                        if (!method.isBridge() && !method.isSynthetic()) {
+                            // if (method.getAnnotations().length != 0) {
+                            // intercepts.add(method);
+                            // }
+
+                            int length = 1;
+                            String prefix = "set";
+                            String name = method.getName();
+
+                            if (method.getGenericReturnType() != Void.TYPE) {
+                                length = 0;
+                                prefix = name.charAt(0) == 'i' ? "is" : "get";
+                            }
+
+                            // exclude the method (by name)
+                            if (prefix.length() < name.length() && name.startsWith(prefix) && !Character.isLowerCase(name.charAt(prefix.length()))) {
+                                // exclude the method (by parameter signature)
+                                if (method.getGenericParameterTypes().length == length) {
+                                    // compute property name
+                                    name = Introspector.decapitalize(name.substring(prefix.length()));
+
+                                    // store a candidate of property accessor
+                                    Method[] methods = candidates.get(name);
+
+                                    if (methods == null) {
+                                        methods = new Method[2];
+                                        candidates.put(name, methods);
+                                    }
+
+                                    if (methods[length] == null) {
+                                        methods[length] = method;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        Lookup look = MethodHandles.lookup();
+            Lookup look = MethodHandles.lookup();
 
-        // build valid properties
-        ArrayList properties = new ArrayList(); // don't use type parameter to reduce footprint
-        Iterator<Entry<String, Method[]>> iterator = candidates.entrySet().iterator();
+            // build valid properties
+            ArrayList properties = new ArrayList(); // don't use type parameter to reduce footprint
+            Iterator<Entry<String, Method[]>> iterator = candidates.entrySet().iterator();
 
-        while (iterator.hasNext()) {
-            Entry<String, Method[]> entry = iterator.next();
-            Method[] methods = entry.getValue();
+            while (iterator.hasNext()) {
+                Entry<String, Method[]> entry = iterator.next();
+                Method[] methods = entry.getValue();
 
-            if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
-                // create model for the property
-                try {
-                    Model model = load(methods[0].getGenericReturnType(), type);
+                if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
+                    // create model for the property
+                    try {
+                        Model model = load(methods[0].getGenericReturnType(), type);
 
-                    if (model.type == load(methods[1].getGenericParameterTypes()[0], type).type) {
-                        methods[0].setAccessible(true);
-                        methods[1].setAccessible(true);
+                        if (model.type == load(methods[1].getGenericParameterTypes()[0], type).type) {
+                            methods[0].setAccessible(true);
+                            methods[1].setAccessible(true);
 
-                        // this property is valid
-                        Property property = new Property(model, entry.getKey());
-                        property.accessors = new MethodHandle[] {look.unreflect(methods[0]), look.unreflect(methods[1])};
-                        property.addAnnotation(methods[0]);
-                        property.addAnnotation(methods[1]);
+                            // this property is valid
+                            Property property = new Property(model, entry.getKey());
+                            property.accessors = new MethodHandle[] {look.unreflect(methods[0]),
+                                    look.unreflect(methods[1])};
+                            property.addAnnotation(methods[0]);
+                            property.addAnnotation(methods[1]);
 
-                        // register it
-                        properties.add(property);
+                            // register it
+                            properties.add(property);
+                        }
+                    } catch (Exception e) {
+                        throw I.quiet(e);
                     }
-                } catch (Exception e) {
-                    throw I.quiet(e);
                 }
             }
-        }
 
-        // Search field properties.
-        try {
+            // Search field properties.
             for (Field field : type.getFields()) {
                 // exclude the field which modifier is final, static, private or native
                 if (((STATIC | PRIVATE | NATIVE | FINAL) & field.getModifiers()) == 0) {
@@ -319,16 +274,16 @@ public class Model {
                     properties.add(property);
                 }
             }
+
+            // trim and sort property list
+            properties.trimToSize();
+            Collections.sort(properties);
+
+            // exposed property list must be unmodifiable
+            this.properties = Collections.unmodifiableList(properties);
         } catch (Exception e) {
             throw I.quiet(e);
         }
-
-        // trim and sort property list
-        properties.trimToSize();
-        Collections.sort(properties);
-
-        // exposed property list must be unmodifiable
-        this.properties = Collections.unmodifiableList(properties);
     }
 
     /**
