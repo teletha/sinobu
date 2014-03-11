@@ -151,7 +151,6 @@ public class Model {
                     codec.decoder = (Function<String, Date>) (value) -> {
                         return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
                     };
-
                     codec.encoder = (Function<Date, String>) (value) -> {
                         return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
                     };
@@ -161,7 +160,6 @@ public class Model {
                     codec.decoder = (Function<String, Path>) (value) -> {
                         return I.locate(value);
                     };
-
                     codec.encoder = (Function<Path, String>) (value) -> {
                         return value.toString().replace(File.separatorChar, '/');
                     };
