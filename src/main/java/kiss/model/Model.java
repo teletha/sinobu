@@ -25,8 +25,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -61,6 +60,13 @@ import kiss.I;
  * @version 2014/03/11 13:52:21
  */
 public class Model {
+
+    /**
+     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
+     * separate format instances for each thread. If multiple threads access a format concurrently,
+     * it must be synchronized externally.
+     */
+    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /** The model repository. */
     private static final Map<Class, Model> models = new ConcurrentHashMap();
@@ -149,10 +155,17 @@ public class Model {
 
                 case 65575278:// java.util.Date
                     codec.decoder = (Function<String, Date>) (value) -> {
-                        return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+                        try {
+                            return format.parse(value);
+                        } catch (Exception e) {
+                            throw I.quiet(e);
+                        }
+                        // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
                     };
                     codec.encoder = (Function<Date, String>) (value) -> {
-                        return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
+                        return format.format(value);
+                        // return LocalDateTime.ofInstant(value.toInstant(),
+                        // ZoneOffset.UTC).toString();
                     };
                     break;
 
