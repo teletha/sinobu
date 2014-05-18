@@ -105,8 +105,8 @@ public class TransformTest {
 
     @Test
     public void date() throws Exception {
-        assert I.transform(new Date(0), String.class).equals("1970-01-01T00:00");
-        assert I.transform("1970-01-01T00:00:00", Date.class).equals(new Date(0));
+        assert I.transform(new Date(0), String.class).equals("1970-01-01T09:00:00");
+        assert I.transform("1970-01-01T09:00:00", Date.class).equals(new Date(0));
     }
 
     @Test

@@ -422,7 +422,7 @@ public class XMLTest {
 
         // validate format
         XML xml = xml(config);
-        assert xml.select("/BuiltinBean/@date").getTextContent().equals("1970-01-01T00:00");
+        assert xml.select("/BuiltinBean/@date").getTextContent().equals("1970-01-01T09:00:00");
     }
 
     /**
