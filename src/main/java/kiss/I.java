@@ -11,7 +11,6 @@ package kiss;
 
 import static jdk.internal.org.objectweb.asm.Opcodes.*;
 
-import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
@@ -88,8 +87,6 @@ import kiss.model.Property;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-
-import sun.reflect.ReflectionFactory;
 
 /**
  * <p>
@@ -302,18 +299,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /** The accessible internal method for class loading. */
     private static final Method define;
 
-    /**
-     * The tracer context per thread. The tracer context consists of the following. The first
-     * element is must be a source object that you want to trace the property paths. The other
-     * elements are property names as {@link java.lang.String}.
-     */
-    private static final ThreadSpecific<Deque<List>> tracers = new ThreadSpecific(ArrayDeque.class);
-
-    /**
-     * This instantiator instantiates an object with out any side effects caused by the constructor.
-     */
-    private static final Constructor instantiator;
-
     private static final WeakHashMap<Object, Map> weak = new WeakHashMap();
 
     /** The parallel task manager. */
@@ -372,10 +357,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             find.setAccessible(true);
             define = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
             define.setAccessible(true);
-
-            // Instantiates a class by using reflection to make a call to private method
-            // ObjectStreamClass.newInstance, present in many JVM implementations.
-            instantiator = Object.class.getConstructor();
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -411,61 +392,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             map.put(type, value);
         }
         return (T) value;
-    }
-
-    /**
-     * <p>
-     * Bind between two properties. You can specify the binding type (one-way and two-way). This
-     * binding supports the following binding types :
-     * </p>
-     * <dl>
-     * <dt>Oneway</dt>
-     * <dd>The change to the target property is not transmitted to the data source though the value
-     * with a new data source is forwarded to the target property.</dd>
-     * <dt>Twoway</dt>
-     * <dd>The change on source and target is interactively transmitted.</dd>
-     * </dl>
-     * 
-     * @param sourcePath A property path from the source object. Multiple path (e.g. parent.name) is
-     *            acceptable.
-     * @param targetPath A property path from the target object. Multiple path (e.g. parent.name) is
-     *            acceptable.
-     * @param twoway A flag for binding type. If <code>true</code> is specified, source and target
-     *            properties bind each other. If <code>false</code> is specified, only the source
-     *            property binds to the target property.
-     * @return A {@link Disposable} object for this binding. You can unbind this binding to call the
-     *         method {@link Disposable#dispose()} of the returned object.
-     * @throws NullPointerException If the specified source's path or target's path is
-     *             <code>null</code>.
-     * @throws IllegalArgumentException If the specified source's path or target's path is empty.
-     */
-    public static <S> Disposable bind(S sourcePath, S targetPath, boolean twoway) {
-        // retrieve a tracer of the current processing thread
-        Deque<List> tracer = tracers.get();
-
-        try {
-            // create target binding
-            Watch targetBind = new Watch(tracer.poll(), null);
-
-            // create source binding
-            Watch sourceBind = new Watch(tracer.poll(), targetBind);
-
-            if (twoway) {
-                // bind each other
-                targetBind.observer = sourceBind;
-            } else {
-                // dispose target binding
-                targetBind.dispose();
-            }
-
-            // initial property binding
-            sourceBind.onNext(new PropertyChangeEvent(sourceBind.that, sourceBind.path.get(0), null, null));
-
-            // API definition
-            return sourceBind;
-        } finally {
-            tracer.clear(); // clean up property path tracing context
-        }
     }
 
     // /**
@@ -943,154 +869,89 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
         if (lifestyle != null) return lifestyle; // use cache
 
-        // Skip null check because this method can throw NullPointerException.
-        // if (modelClass == null) throw new NullPointerException("NPE");
+        synchronized (I.class) {
+            // Skip null check because this method can throw NullPointerException.
+            // if (modelClass == null) throw new NullPointerException("NPE");
 
-        // The model class have some preconditions to have to meet.
-        if (modelClass.isLocalClass()) {
-            throw new UnsupportedOperationException(modelClass + " is  inner class.");
-        }
+            // The model class have some preconditions to have to meet.
+            if (modelClass.isLocalClass()) {
+                throw new UnsupportedOperationException(modelClass + " is  inner class.");
+            }
 
-        int modifier = modelClass.getModifiers();
+            int modifier = modelClass.getModifiers();
 
-        // In the second place, we must find the actual model class which is associated with this
-        // model class. If the actual model class is a concreate, we can use it directly.
-        Class<M> actualClass = modelClass;
+            // In the second place, we must find the actual model class which is associated with
+            // this
+            // model class. If the actual model class is a concreate, we can use it directly.
+            Class<M> actualClass = modelClass;
 
-        if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
-            // TODO model provider finding strategy
-            // This strategy is decided at execution phase.
-            actualClass = modules.find(modelClass);
+            if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
+                // TODO model provider finding strategy
+                // This strategy is decided at execution phase.
+                actualClass = modules.find(modelClass);
 
-            // updata to the actual model class's modifier
-            modifier = actualClass.getModifiers();
-        }
+                // updata to the actual model class's modifier
+                modifier = actualClass.getModifiers();
+            }
 
-        // If this model is non-private or final class, we can extend it for interceptor mechanism.
-        if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
-            Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
+            // If this model is non-private or final class, we can extend it for interceptor
+            // mechanism.
+            if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
+                Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
 
-            // property must be interceptable to observe it
-            for (Property property : Model.load(modelClass).properties) {
-                Method method = property.accessor(false);
-
-                if (method != null) {
-                    interceptables.push(method, new Watch());
+                // Enhance the actual model class if needed.
+                if (!interceptables.isEmpty()) {
+                    actualClass = define(actualClass, interceptables);
                 }
             }
 
-            // Enhance the actual model class if needed.
-            if (!interceptables.isEmpty()) {
-                actualClass = define(actualClass, interceptables);
-            }
-        }
+            // Construct dependency graph for the current thred.
+            Deque<Class> dependency = dependencies.get();
+            dependency.add(actualClass);
 
-        // Construct dependency graph for the current thred.
-        Deque<Class> dependency = dependencies.get();
-        dependency.add(actualClass);
-
-        // Don't use 'contains' method check here to resolve singleton based
-        // circular reference. So we must judge it from the size of context. If the
-        // context contains too many classes, it has a circular reference
-        // independencies.
-        if (16 < dependency.size()) {
-            // Deque will be contain repeated Classes so we must shrink it with
-            // maintaining its class order.
-            throw new ClassCircularityError(new LinkedHashSet(dependency).toString());
-        }
-
-        try {
-            // At first, we should search the associated lifestyle from extension points.
-            lifestyle = find(Lifestyle.class, modelClass);
-
-            // Then, check its Manageable annotation.
-            if (lifestyle == null) {
-                // If the actual model class doesn't provide its lifestyle explicitly, we use
-                // Prototype lifestyle which is default lifestyle in Sinobu.
-                Manageable manageable = actualClass.getAnnotation(Manageable.class);
-
-                // Create new lifestyle for the actual model class
-                lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
+            // Don't use 'contains' method check here to resolve singleton based
+            // circular reference. So we must judge it from the size of context. If the
+            // context contains too many classes, it has a circular reference
+            // independencies.
+            if (16 < dependency.size()) {
+                // Deque will be contain repeated Classes so we must shrink it with
+                // maintaining its class order.
+                throw new ClassCircularityError(new LinkedHashSet(dependency).toString());
             }
 
-            // Trace dependency graph to detect circular dependencies.
-            Constructor constructor = ClassUtil.getMiniConstructor(actualClass);
+            try {
+                // At first, we should search the associated lifestyle from extension points.
+                lifestyle = find(Lifestyle.class, modelClass);
 
-            if (constructor != null) {
-                for (Class param : constructor.getParameterTypes()) {
-                    if (param != Lifestyle.class && param != Class.class) {
-                        makeLifestyle(param);
+                // Then, check its Manageable annotation.
+                if (lifestyle == null) {
+                    // If the actual model class doesn't provide its lifestyle explicitly, we use
+                    // Prototype lifestyle which is default lifestyle in Sinobu.
+                    Manageable manageable = actualClass.getAnnotation(Manageable.class);
+
+                    // Create new lifestyle for the actual model class
+                    lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
+                }
+
+                // Trace dependency graph to detect circular dependencies.
+                Constructor constructor = ClassUtil.getMiniConstructor(actualClass);
+
+                if (constructor != null) {
+                    for (Class param : constructor.getParameterTypes()) {
+                        if (param != Lifestyle.class && param != Class.class) {
+                            makeLifestyle(param);
+                        }
                     }
                 }
+
+                // This lifestyle is safe and has no circular dependencies.
+                modules.set(modelClass, lifestyle);
+
+                // API definition
+                return modules.get(modelClass);
+            } finally {
+                dependency.pollLast();
             }
-
-            // This lifestyle is safe and has no circular dependencies.
-            modules.set(modelClass, lifestyle);
-
-            // API definition
-            return modules.get(modelClass);
-        } finally {
-            dependency.pollLast();
-        }
-    }
-
-    /**
-     * <p>
-     * Create a mock object which can trace the property paths with calling accessor methods.
-     * </p>
-     * 
-     * @param <M> A model object to trace property paths.
-     * @param type A model class to trace.
-     * @return A tracing object.
-     * @throws NullPointerException If the specified tracer is <code>null</code>.
-     */
-    public static <M> M mock(M model) {
-        if (model instanceof String) {
-            // Internal process.
-            // The specified model object indicates the property path.
-            tracers.get().peek().add(model);
-
-            return null; // the returned value will not be used by Sinobu
-        }
-
-        // compute model class
-        Class modelClass;
-
-        if (model instanceof Class) {
-            // Internal process.
-            // The specified model object indicates the model class itself.
-            modelClass = (Class) model;
-        } else {
-            // Sinobu user uses this process with calling mock method from external.
-            // The specified model object indicates the actual bean, so we must create new trace
-            // context.
-            modelClass = model.getClass();
-
-            // retrieve the tracer context for current thread
-            Deque<List> tracer = tracers.get();
-
-            // for tracing, maximum necessary capacity is 2 (bind method needs it)
-            if (1 < tracer.size()) {
-                tracer.removeLast();
-            }
-
-            // create new tracer context for property path tracing
-            tracer.addFirst(new ArrayList(4));
-
-            // tracer context must have the source object at first element
-            tracer.peek().add(model);
-        }
-
-        try {
-            // ObjectStreamClass.lookup method will cache the instance of ObjectStreamClass (at
-            // least Sun's implementation), so we don't use it.
-            return (M) ReflectionFactory.getReflectionFactory()
-                    .newConstructorForSerialization(define(modelClass, null), instantiator)
-                    .newInstance();
-        } catch (Exception e) {
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error(e);
         }
     }
 
@@ -1154,7 +1015,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      */
     private static void write(ClassVisitor cv, Class model, String className, Table<Method, Annotation> interceptables) {
-        Model m = Model.load(model);
         Type type = Type.getType(model);
 
         // ================================================
@@ -1252,150 +1112,80 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         mv.visitMaxs(5, 4);
         mv.visitEnd();
 
-        if (interceptables == null) {
-            // -----------------------------------------------------------------------------------
-            // Define Tracer Methods
-            // -----------------------------------------------------------------------------------
-            /**
-             * <p>
-             * Define trace getter method.
-             * </p>
-             * <p>
-             * This is an example about attribute property.
-             * </p>
-             * 
-             * <pre>
-             * public int getSome() {
-             *     // track property path
-             *     I.mock(&quot;some&quot;);
-             * 
-             *     return super.getSome();
-             * }
-             * </pre>
-             * <p>
-             * This is an example about none attribute property.
-             * </p>
-             * 
-             * <pre>
-             * public Some getSome() {
-             *     // track property path
-             *     I.mock(&quot;some&quot;);
-             * 
-             *     // return the trackable mock object
-             *     return I.mock(Some.class);
-             * }
-             * </pre>
-             */
-            for (Property property : m.properties) {
-                Method accessor = property.accessor(true);
+        // -----------------------------------------------------------------------------------
+        // Define Interceptable Methods
+        // -----------------------------------------------------------------------------------
+        Type context = Type.getType(Table.class);
 
-                if (accessor != null) {
-                    Type propertyType = Type.getType(property.model.type);
+        for (Entry<Method, List<Annotation>> entry : interceptables.entrySet()) {
+            Method method = entry.getKey();
 
-                    mv = cv.visitMethod(ACC_PUBLIC, accessor.getName(), Type.getMethodDescriptor(accessor), null, null);
-                    mv.visitCode();
-                    // invoke I.mock method with property name
-                    mv.visitLdcInsn(property.name); // load 1st arguments
-                    mv.visitMethodInsn(INVOKESTATIC, "kiss/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
-                    mv.visitInsn(POP);
-
-                    if (property.isAttribute()) {
-                        // This code is tricky because of footprint shurinking.
-                        //
-                        // Type.getOpcode(0) returns 1(long), 2(float), 3(double), 4(object array)
-                        // or 0(other). The current type's sort is 7(long), 6(float), 8(double),
-                        // 9(array), 10(object) or 1-5 (other). So the following code returns
-                        // 10(long), 11(float), 15(double), 1(object array) or 2-6(other). These
-                        // values are equivalent to the constant value code of itself.
-                        mv.visitInsn((propertyType.getOpcode(0) * 2 + 1 + Math.min(propertyType.getSort(), 9)) % 17);
-                    } else {
-                        mv.visitLdcInsn(propertyType); // load 1st arguments
-                        mv.visitMethodInsn(INVOKESTATIC, "kiss/I", "mock", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
-                        mv.visitTypeInsn(CHECKCAST, propertyType.getInternalName());
-                    }
-
-                    // end method
-                    mv.visitInsn(propertyType.getOpcode(IRETURN));
-                    mv.visitMaxs(0, 0); // compute by ASM
-                    mv.visitEnd();
-                }
-            }
-        } else {
-            // -----------------------------------------------------------------------------------
-            // Define Interceptable Methods
-            // -----------------------------------------------------------------------------------
-            Type context = Type.getType(Table.class);
-
-            for (Entry<Method, List<Annotation>> entry : interceptables.entrySet()) {
-                Method method = entry.getKey();
-
-                // exclude the method which modifier is final, static, private or native
-                if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method.getModifiers()) != 0) {
-                    continue;
-                }
-
-                Type methodType = Type.getType(method);
-
-                mv = cv.visitMethod(ACC_PUBLIC, method.getName(), methodType.getDescriptor(), null, null);
-
-                // Write annotations
-                for (Annotation annotation : entry.getValue()) {
-                    annotate(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
-                }
-
-                // Write code
-                mv.visitCode();
-
-                // Zero parameter : Method name
-                mv.visitLdcInsn(method.getName());
-
-                // First parameter : Method delegation
-                Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
-                mv.visitLdcInsn(handle);
-
-                // Second parameter : Callee instance
-                mv.visitVarInsn(ALOAD, 0);
-
-                // Third parameter : Method parameter delegation
-                Class[] params = method.getParameterTypes();
-
-                mv.visitIntInsn(BIPUSH, params.length);
-                mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
-
-                // objects[0] ~ [n] are method parameter
-                for (int i = 0; i < params.length; i++) {
-                    mv.visitInsn(DUP);
-                    mv.visitIntInsn(BIPUSH, i);
-                    mv.visitVarInsn(Type.getType(params[i]).getOpcode(ILOAD), i + 1);
-                    wrap(params[i], mv);
-                    mv.visitInsn(AASTORE);
-                }
-
-                // Fourth parameter : Pass annotation information
-                mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
-                mv.visitLdcInsn(method.getName().concat(Arrays.toString(method.getParameterTypes())));
-                mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
-                mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
-
-                // Invoke interceptor method
-                mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
-                cast(method.getReturnType(), mv);
-                mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
-                mv.visitMaxs(0, 0); // compute by ASM
-                mv.visitEnd();
+            // exclude the method which modifier is final, static, private or native
+            if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method.getModifiers()) != 0) {
+                continue;
             }
 
-            /**
-             * <p>
-             * Make context field.
-             * </p>
-             * 
-             * <pre>
+            Type methodType = Type.getType(method);
+
+            mv = cv.visitMethod(ACC_PUBLIC, method.getName(), methodType.getDescriptor(), null, null);
+
+            // Write annotations
+            for (Annotation annotation : entry.getValue()) {
+                annotate(annotation, mv.visitAnnotation(Type.getDescriptor(annotation.annotationType()), true));
+            }
+
+            // Write code
+            mv.visitCode();
+
+            // Zero parameter : Method name
+            mv.visitLdcInsn(method.getName());
+
+            // First parameter : Method delegation
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
+            mv.visitLdcInsn(handle);
+
+            // Second parameter : Callee instance
+            mv.visitVarInsn(ALOAD, 0);
+
+            // Third parameter : Method parameter delegation
+            Class[] params = method.getParameterTypes();
+
+            mv.visitIntInsn(BIPUSH, params.length);
+            mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+
+            // objects[0] ~ [n] are method parameter
+            for (int i = 0; i < params.length; i++) {
+                mv.visitInsn(DUP);
+                mv.visitIntInsn(BIPUSH, i);
+                mv.visitVarInsn(Type.getType(params[i]).getOpcode(ILOAD), i + 1);
+                wrap(params[i], mv);
+                mv.visitInsn(AASTORE);
+            }
+
+            // Fourth parameter : Pass annotation information
+            mv.visitFieldInsn(GETSTATIC, className, "pool", "Ljava/util/Map;");
+            mv.visitLdcInsn(method.getName().concat(Arrays.toString(method.getParameterTypes())));
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
+            mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
+
+            // Invoke interceptor method
+            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
+            cast(method.getReturnType(), mv);
+            mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
+            mv.visitMaxs(0, 0); // compute by ASM
+            mv.visitEnd();
+        }
+
+        /**
+         * <p>
+         * Make context field.
+         * </p>
+         * 
+         * <pre>
              * private transient Table context;
              * </pre>
-             */
-            cv.visitField(ACC_PUBLIC | ACC_TRANSIENT, "context", context.getDescriptor(), null, null).visitEnd();
-        }
+         */
+        cv.visitField(ACC_PUBLIC | ACC_TRANSIENT, "context", context.getDescriptor(), null, null).visitEnd();
 
         // -----------------------------------------------------------------------------------
         // Finish Writing Source Code
@@ -1639,32 +1429,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             // API definition
             return watcher;
         });
-    }
-
-    /**
-     * <p>
-     * Observe the property change event of the specified property path.
-     * </p>
-     * 
-     * @param property A property path from the source object. Multiple path (e.g. parent.name) is
-     *            acceptable.
-     * @return A {@link Events} object for this observation.
-     * @throws NullPointerException If the specified source's path or the specified listener is
-     *             <code>null</code>.
-     * @throws IndexOutOfBoundsException If the specified source's path is empty.
-     */
-    public static <T> Events<T> observe(T property) {
-        Deque<List> tracer = tracers.get();
-
-        try {
-            List info = tracer.poll();
-
-            return new Events<T>(observer -> {
-                return new Watch(info, observer);
-            });
-        } finally {
-            tracer.clear(); // clean up property path tracing context
-        }
     }
 
     //

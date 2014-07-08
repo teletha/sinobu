@@ -9,7 +9,6 @@
  */
 package kiss.lifestyle;
 
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -21,8 +20,6 @@ import kiss.ThreadSpecific;
 import org.junit.Test;
 
 import antibug.MultiThreadTestCase;
-
-
 
 /**
  * @version 2011/03/22 16:28:30
@@ -53,12 +50,18 @@ public class ThreadSpecificTest extends MultiThreadTestCase {
                 /**
                  * @see java.util.concurrent.Callable#call()
                  */
+                @Override
                 public ThreadSpecificClass call() throws Exception {
-                    ThreadSpecificClass instance = I.make(ThreadSpecificClass.class);
+                    try {
+                        ThreadSpecificClass instance = I.make(ThreadSpecificClass.class);
 
-                    countDownLatch.countDown();
+                        countDownLatch.countDown();
 
-                    return instance;
+                        return instance;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw I.quiet(e);
+                    }
                 }
             });
         }
