@@ -63,6 +63,7 @@ class Modules extends ClassValue<Lifestyle> implements ClassListener {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void load(Class clazz) {
         if (clazz != Modules.class) {
             Object[] types = {I.make(clazz), Object.class};
@@ -88,6 +89,7 @@ class Modules extends ClassValue<Lifestyle> implements ClassListener {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void unload(Class clazz) {
         for (Object[] types : this.types) {
             if (Model.load(types[0].getClass()).type == clazz) {
@@ -195,7 +197,7 @@ class Modules extends ClassValue<Lifestyle> implements ClassListener {
      * @param type A key with which the specified value is to be associated.
      * @param value A value to be associated with the specified key.
      */
-    void set(Class type, Lifestyle value) {
+    synchronized void set(Class type, Lifestyle value) {
         Lifestyle prev = get(type);
 
         if (prev == null) {
