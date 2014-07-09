@@ -311,9 +311,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     // initialization
     static {
         // built-in lifestyles
-        modules.values.put(List.class, new Prototype(ArrayList.class));
-        modules.values.put(Map.class, new Prototype(HashMap.class));
-        modules.values.put(Prototype.class, new Prototype(Prototype.class));
+        modules.set(List.class, new Prototype(ArrayList.class));
+        modules.set(Map.class, new Prototype(HashMap.class));
+        modules.set(Prototype.class, new Prototype(Prototype.class));
 
         try {
             // configure dom builder

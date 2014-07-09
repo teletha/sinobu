@@ -413,8 +413,6 @@ public class Model {
         // check whether the specified model class is enhanced or not
         if (modelClass.isSynthetic()) {
             modelClass = modelClass.getSuperclass();
-        } else if (Path.class.isAssignableFrom(modelClass)) {
-            modelClass = Path.class;
         }
 
         // check cache
