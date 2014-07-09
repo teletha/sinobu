@@ -263,7 +263,7 @@ public final class ClassUtil {
 
                     for (int i = 0; i < args.length; i++) {
                         // resolve various type (TypeVariable, ParameterizedType and WildcardType)
-                        classes[i] = args[i] instanceof Class ? (Class) args[i] : Model.load(args[i], base).type;
+                        classes[i] = Model.load(args[i], base).type;
                     }
                     return classes;
                 }
