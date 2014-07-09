@@ -311,9 +311,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     // initialization
     static {
         // built-in lifestyles
-        modules.set(List.class, new Prototype(ArrayList.class));
-        modules.set(Map.class, new Prototype(HashMap.class));
-        modules.set(Prototype.class, new Prototype(Prototype.class));
+        modules.values.put(List.class, new Prototype(ArrayList.class));
+        modules.values.put(Map.class, new Prototype(HashMap.class));
+        modules.values.put(Prototype.class, new Prototype(Prototype.class));
 
         try {
             // configure dom builder
@@ -850,7 +850,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      * 
      * @param <M>
-     * @param modelClass
+     * @param type
      * @return A instance of the specified model class. This instance is managed by Sinobu.
      * @throws NullPointerException If the model class is <code>null</code>.
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
@@ -859,98 +859,92 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */
     static <M> Lifestyle<M> makeLifestyle(Class<M> modelClass) {
+        // Skip null check because this method can throw NullPointerException.
+        // if (modelClass == null) throw new NullPointerException("NPE");
         if (modelClass.isSynthetic()) {
             modelClass = (Class<M>) modelClass.getSuperclass();
         }
 
         // At first, we must confirm the cached lifestyle associated with the model class. If
         // there is no such cache, we will try to create newly lifestyle.
-        Lifestyle<M> lifestyle = modules.get(modelClass);
-
-        if (lifestyle != null) return lifestyle; // use cache
-
-        // Skip null check because this method can throw NullPointerException.
-        // if (modelClass == null) throw new NullPointerException("NPE");
-
-        // The model class have some preconditions to have to meet.
-        if (modelClass.isLocalClass()) {
-            throw new UnsupportedOperationException(modelClass + " is  inner class.");
-        }
-
-        int modifier = modelClass.getModifiers();
-
-        // In the second place, we must find the actual model class which is associated with
-        // this
-        // model class. If the actual model class is a concreate, we can use it directly.
-        Class<M> actualClass = modelClass;
-
-        if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
-            // TODO model provider finding strategy
-            // This strategy is decided at execution phase.
-            actualClass = modules.find(modelClass);
-
-            // updata to the actual model class's modifier
-            modifier = actualClass.getModifiers();
-        }
-
-        // If this model is non-private or final class, we can extend it for interceptor
-        // mechanism.
-        if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
-            Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
-
-            // Enhance the actual model class if needed.
-            if (!interceptables.isEmpty()) {
-                actualClass = define(actualClass, interceptables);
-            }
-        }
-
-        // Construct dependency graph for the current thred.
-        Deque<Class> dependency = dependencies.get();
-        dependency.add(actualClass);
-
-        // Don't use 'contains' method check here to resolve singleton based
-        // circular reference. So we must judge it from the size of context. If the
-        // context contains too many classes, it has a circular reference
-        // independencies.
-        if (16 < dependency.size()) {
-            // Deque will be contain repeated Classes so we must shrink it with
-            // maintaining its class order.
-            throw new ClassCircularityError(new LinkedHashSet(dependency).toString());
-        }
-
-        try {
-            // At first, we should search the associated lifestyle from extension points.
-            lifestyle = find(Lifestyle.class, modelClass);
-
-            // Then, check its Manageable annotation.
-            if (lifestyle == null) {
-                // If the actual model class doesn't provide its lifestyle explicitly, we use
-                // Prototype lifestyle which is default lifestyle in Sinobu.
-                Manageable manageable = actualClass.getAnnotation(Manageable.class);
-
-                // Create new lifestyle for the actual model class
-                lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
+        return modules.get(modelClass, type -> {
+            // The model class have some preconditions to have to meet.
+            if (type.isLocalClass()) {
+                throw new UnsupportedOperationException(type + " is  inner class.");
             }
 
-            // Trace dependency graph to detect circular dependencies.
-            Constructor constructor = ClassUtil.getMiniConstructor(actualClass);
+            int modifier = type.getModifiers();
 
-            if (constructor != null) {
-                for (Class param : constructor.getParameterTypes()) {
-                    if (param != Lifestyle.class && param != Class.class) {
-                        makeLifestyle(param);
-                    }
+            // In the second place, we must find the actual model class which is associated with
+            // this
+            // model class. If the actual model class is a concreate, we can use it directly.
+            Class<M> actualClass = type;
+
+            if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
+                // TODO model provider finding strategy
+                // This strategy is decided at execution phase.
+                actualClass = modules.find(type);
+
+                // updata to the actual model class's modifier
+                modifier = actualClass.getModifiers();
+            }
+
+            // If this model is non-private or final class, we can extend it for interceptor
+            // mechanism.
+            if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
+                Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
+
+                // Enhance the actual model class if needed.
+                if (!interceptables.isEmpty()) {
+                    actualClass = define(actualClass, interceptables);
                 }
             }
 
-            // This lifestyle is safe and has no circular dependencies.
-            modules.set(modelClass, lifestyle);
+            // Construct dependency graph for the current thred.
+            Deque<Class> dependency = dependencies.get();
+            dependency.add(actualClass);
 
-            // API definition
-            return modules.get(modelClass);
-        } finally {
-            dependency.pollLast();
-        }
+            // Don't use 'contains' method check here to resolve singleton based
+            // circular reference. So we must judge it from the size of context. If the
+            // context contains too many classes, it has a circular reference
+            // independencies.
+            if (16 < dependency.size()) {
+                // Deque will be contain repeated Classes so we must shrink it with
+                // maintaining its class order.
+                throw new ClassCircularityError(new LinkedHashSet(dependency).toString());
+            }
+
+            try {
+                // At first, we should search the associated lifestyle from extension points.
+                Lifestyle lifestyle = find(Lifestyle.class, type);
+
+                // Then, check its Manageable annotation.
+                if (lifestyle == null) {
+                    // If the actual model class doesn't provide its lifestyle explicitly, we use
+                    // Prototype lifestyle which is default lifestyle in Sinobu.
+                    Manageable manageable = actualClass.getAnnotation(Manageable.class);
+
+                    // Create new lifestyle for the actual model class
+                    lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
+                }
+
+                // Trace dependency graph to detect circular dependencies.
+                Constructor constructor = ClassUtil.getMiniConstructor(actualClass);
+
+                if (constructor != null) {
+                    for (Class param : constructor.getParameterTypes()) {
+                        if (param != Lifestyle.class && param != Class.class) {
+                            makeLifestyle(param);
+                        }
+                    }
+                }
+
+                // API definition
+                return lifestyle;
+            } finally {
+                dependency.pollLast();
+            }
+        });
     }
 
     /**

@@ -18,7 +18,7 @@ import java.util.function.Function;
  */
 public class ClassLocal<T> extends ClassValue<T> {
 
-    private final Map<Class, T> values = new HashMap();
+    final Map<Class, T> values = new HashMap();
 
     private Function<Class, T> supplier;
 
@@ -27,18 +27,14 @@ public class ClassLocal<T> extends ClassValue<T> {
      */
     @Override
     protected T computeValue(Class type) {
-        return values.compute(type, (model, prev) -> {
-            return null;
-        });
+        T value = values.remove(type);
+
+        return value != null ? value : supplier.apply(type);
     }
 
     public T get(Class type, Function<Class, T> supplier) {
         this.supplier = supplier;
 
         return get(type);
-    }
-
-    public void set(Class type, T value) {
-
     }
 }
