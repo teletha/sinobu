@@ -11,7 +11,6 @@ package kiss;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,7 +20,7 @@ import kiss.model.Model;
 /**
  * @version 2014/01/31 10:54:06
  */
-class Modules extends ClassValue<Lifestyle> implements ClassListener {
+class Modules extends ClassLocal<Lifestyle> implements ClassListener {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -174,35 +173,6 @@ class Modules extends ClassValue<Lifestyle> implements ClassListener {
                     throw I.quiet(e);
                 }
             }
-        }
-    }
-
-    /** The initial value holder. */
-    private final HashMap values = new HashMap();
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Lifestyle computeValue(Class<?> type) {
-        return (Lifestyle) values.remove(type);
-    }
-
-    /**
-     * <p>
-     * If the specified key is not already associated with a value (or is mapped to null) associates
-     * it with the given value and returns null, else returns the current value.
-     * </p>
-     * 
-     * @param type A key with which the specified value is to be associated.
-     * @param value A value to be associated with the specified key.
-     */
-    synchronized void set(Class type, Lifestyle value) {
-        Lifestyle prev = get(type);
-
-        if (prev == null) {
-            remove(type);
-            values.put(type, value);
         }
     }
 }
