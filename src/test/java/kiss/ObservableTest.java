@@ -727,4 +727,11 @@ public class ObservableTest {
         assert list.get(0) == 10;
         assert list.get(1) == 20;
     }
+
+    @Test
+    public void never() throws Exception {
+        Events.NEVER.to(value -> {
+            // none
+        });
+    }
 }
