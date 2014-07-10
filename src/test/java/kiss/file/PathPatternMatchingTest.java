@@ -9,15 +9,13 @@
  */
 package kiss.file;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.function.Consumer;
 
 import kiss.I;
 
@@ -25,19 +23,64 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
+import antibug.CleanRoom.FileSystemDSL;
 
 /**
- * @version 2012/01/05 9:20:57
+ * @version 2014/07/11 8:42:50
  */
 public class PathPatternMatchingTest {
 
     @Rule
-    public static final CleanRoom test01 = new CleanRoom("test01");
-
-    @Rule
-    public static final CleanRoom test02 = new CleanRoom("test02");
+    public static final CleanRoom room = new CleanRoom();
 
     private Counter counter = new Counter();
+
+    private void pattern1(FileSystemDSL $) {
+        $.dir("directory1", () -> {
+            $.file("01.file");
+            $.file("01.txt");
+            $.file("02.txt");
+        });
+        $.dir("directory2", () -> {
+            $.file("01.file");
+            $.file("01.txt");
+            $.file("02.txt");
+        });
+        $.file("01.file");
+        $.file("01.txt");
+        $.file("02.txt");
+    }
+
+    private void pattern2(FileSystemDSL $) {
+        $.dir("directory1", () -> {
+            $.dir("child1", () -> {
+                $.dir("decendant1", () -> {
+                    $.dir("lowest", () -> {
+                        $.file("01.txt");
+                    });
+                });
+                $.dir("decendant2", () -> {
+                    $.file("01.txt");
+                });
+            });
+
+            $.dir("child2", () -> {
+                $.file("01.txt");
+            });
+
+            $.file("01.txt");
+            $.file("02.txt");
+        });
+        $.dir("directory2", () -> {
+            $.dir("child1", () -> {
+                $.file("01.txt");
+            });
+
+            $.dir("child2", () -> {
+                $.file("02.txt");
+            });
+        });
+    }
 
     @Test
     public void all() throws Exception {
@@ -126,57 +169,57 @@ public class PathPatternMatchingTest {
 
     @Test
     public void directory1() throws Exception {
-        assertDirectoryCount(3, test01);
+        assertDirectoryCount(3, this::pattern1);
     }
 
     @Test
     public void directory2() throws Exception {
-        assertDirectoryCount(10, test02);
+        assertDirectoryCount(10, this::pattern2);
     }
 
     @Test
     public void directoryPatternTopLevelPartialWildcard() throws Exception {
-        assertDirectoryCount(2, test02, "directory*");
+        assertDirectoryCount(2, this::pattern2, "directory*");
     }
 
     @Test
     public void directoryPatternTopLevelWildcard() throws Exception {
-        assertDirectoryCount(2, test02, "*");
+        assertDirectoryCount(2, this::pattern2, "*");
     }
 
     @Test
     public void directoryPatternWildcard() throws Exception {
-        assertDirectoryCount(9, test02, "**");
+        assertDirectoryCount(9, this::pattern2, "**");
     }
 
     @Test
     public void directoryPattern() throws Exception {
-        assertDirectoryCount(1, test02, "directory1");
+        assertDirectoryCount(1, this::pattern2, "directory1");
     }
 
     @Test
     public void directoryPatternDeepWildcard() throws Exception {
-        assertDirectoryCount(2, test02, "**/child1");
+        assertDirectoryCount(2, this::pattern2, "**/child1");
     }
 
     @Test
     public void directoryPatternWildcardRight() throws Exception {
-        assertDirectoryCount(2, test02, "**/d*");
+        assertDirectoryCount(2, this::pattern2, "**/d*");
     }
 
     @Test
     public void directoryPatternWildcardLeft() throws Exception {
-        assertDirectoryCount(3, test02, "**/*2");
+        assertDirectoryCount(3, this::pattern2, "**/*2");
     }
 
     @Test
     public void directoryPatternWildcardBoth() throws Exception {
-        assertDirectoryCount(3, test02, "**/*e*");
+        assertDirectoryCount(3, this::pattern2, "**/*e*");
     }
 
     @Test
     public void directoryPatternNegative() throws Exception {
-        assertDirectoryCount(4, test02, "!directory1");
+        assertDirectoryCount(4, this::pattern2, "!directory1");
     }
 
     /**
@@ -186,14 +229,15 @@ public class PathPatternMatchingTest {
      * @param patterns
      */
     private void assertCount(int expected, String... patterns) {
+        room.with(this::pattern1);
+
         try {
             // by user
-            I.walk(test01.root, counter, patterns);
-
-            assertThat(counter.count, equalTo(expected));
+            I.walk(room.root, counter, patterns);
+            assert counter.count == expected;
 
             // by walker
-            assert expected == I.walk(test01.root, patterns).size();
+            assert expected == I.walk(room.root, patterns).size();
         } finally {
             counter.count = 0;
         }
@@ -207,11 +251,12 @@ public class PathPatternMatchingTest {
      * @param includeFilesOnly
      * @param patterns
      */
-    private void assertDirectoryCount(int expected, CleanRoom room, String... patterns) {
+    private void assertDirectoryCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
+        room.with(pattern);
+
         try {
             List result = I.walkDirectory(room.root, patterns);
-
-            assertThat(result.size(), equalTo(expected));
+            assert result.size() == expected;
         } finally {
             counter.count = 0;
         }
@@ -232,30 +277,6 @@ public class PathPatternMatchingTest {
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
             count++;
             return super.visitFile(file, attrs);
-        }
-
-        /**
-         * @see java.nio.file.SimpleFileVisitor#preVisitDirectory(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
-         */
-        @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            if (dir.equals(test01.root)) {
-                throw new AssertionError("Root directory is passed.");
-            }
-            return super.preVisitDirectory(dir, attrs);
-        }
-
-        /**
-         * @see java.nio.file.SimpleFileVisitor#postVisitDirectory(java.lang.Object,
-         *      java.io.IOException)
-         */
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            if (dir.equals(test01.root)) {
-                throw new AssertionError("Root directory is passed.");
-            }
-            return super.postVisitDirectory(dir, exc);
         }
     }
 }
