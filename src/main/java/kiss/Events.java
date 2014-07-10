@@ -89,8 +89,8 @@ public class Events<V> {
 
     /**
      * <p>
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to
-     * receive items and notifications from the Observable.
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
      * 
      * @param next A delegator method of {@link Observer#onNext(Object)}.
      * @param error A delegator method of {@link Observer#onError(Throwable)}.
@@ -177,7 +177,7 @@ public class Events<V> {
         int creationSize = 0 < size ? size : 1;
         int creationInterval = 0 < interval ? interval : 1;
 
-        return new Events<V[]>(observer -> {
+        return new Events<>(observer -> {
             Deque<V> buffer = new ArrayDeque();
             AtomicInteger timing = new AtomicInteger();
 
@@ -268,7 +268,7 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> diff() {
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             ref = new AtomicReference();
 
             return to(value -> {
@@ -290,7 +290,7 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> distinct() {
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             set = new HashSet();
 
             return to(value -> {
@@ -335,7 +335,7 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final <R> Events<R> map(R constant) {
-        return new Events<R>(observer -> {
+        return new Events<>(observer -> {
             return to(value -> {
                 observer.onNext(constant);
             });
@@ -358,7 +358,7 @@ public class Events<V> {
             return (Events<R>) this;
         }
 
-        return new Events<R>(observer -> {
+        return new Events<>(observer -> {
             return to(value -> {
                 observer.onNext(converter.apply(value));
             });
@@ -393,7 +393,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             Disposable disposable = to(observer);
 
             for (Events<? extends V> other : others) {
@@ -419,7 +419,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             Agent<V> agent = new Agent();
             agent.observer = observer;
             agent.next = value -> {
@@ -437,7 +437,7 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> repeat() {
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
@@ -464,7 +464,7 @@ public class Events<V> {
 
         AtomicInteger repeat = new AtomicInteger(count);
 
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
@@ -494,7 +494,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             counter = new AtomicInteger();
 
             return to(value -> {
@@ -521,7 +521,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             flag = new AtomicBoolean();
 
             return to(value -> {
@@ -550,7 +550,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             flag = new AtomicBoolean();
 
             return to(value -> {
@@ -579,7 +579,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             counter = new AtomicInteger(count);
 
             return to(value -> {
@@ -613,7 +613,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             return unsubscriber = to(observer).and(predicate.to(value -> {
                 observer.onCompleted();
                 unsubscriber.dispose();
@@ -796,7 +796,7 @@ public class Events<V> {
             return NEVER;
         }
 
-        return new Events<Boolean>(observer -> {
+        return new Events<>(observer -> {
             Disposable base = null;
             boolean[] conditions = new boolean[observables.length];
 

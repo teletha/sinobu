@@ -715,7 +715,7 @@ public class ObservableTest {
 
     @Test
     public void onNext() throws Exception {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().on((observer, value) -> {
             list.add(value);

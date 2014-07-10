@@ -34,7 +34,7 @@ public class EventEmitter<E> implements Observer<E> {
      * @return
      */
     public Events<E> observe() {
-        return new Events<E>(observer -> {
+        return new Events<>(observer -> {
             Listener<E> listener = event -> {
                 observer.onNext(event);
             };
