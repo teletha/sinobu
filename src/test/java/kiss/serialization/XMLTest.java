@@ -152,7 +152,7 @@ public class XMLTest {
     @Test
     public void testReadAndWrite3() throws Exception {
         NestingList nestingList = I.make(NestingList.class);
-        List<List<Integer>> root = new ArrayList<List<Integer>>();
+        List<List<Integer>> root = new ArrayList<>();
 
         List<Integer> list1 = new ArrayList();
         list1.add(1);
@@ -284,7 +284,7 @@ public class XMLTest {
     @Test
     public void testReadAndWrite8() throws Exception {
         StringMapProperty stringMap = I.make(StringMapProperty.class);
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("1", "one");
         map.put("2", "two");
         map.put("3", "three");
@@ -312,7 +312,7 @@ public class XMLTest {
     @Test
     public void testReadAndWrite9() throws Exception {
         StringMapProperty stringMap = I.make(StringMapProperty.class);
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("\"", "one");
         map.put(" ", "two");
         map.put("<", "three");
@@ -340,7 +340,7 @@ public class XMLTest {
     @Test
     public void compatibleKeyMap() throws Exception {
         CompatibleKeyMap bean = I.make(CompatibleKeyMap.class);
-        Map<Integer, Class> map = new HashMap<Integer, Class>();
+        Map<Integer, Class> map = new HashMap<>();
         map.put(1, String.class);
         map.put(2, Class.class);
         map.put(3, Integer.class);
@@ -368,7 +368,7 @@ public class XMLTest {
     @Test
     public void incompatibleKeyMap() throws Exception {
         IncompatibleKeyMap bean = I.make(IncompatibleKeyMap.class);
-        Map<Serializable, Class> map = new HashMap<Serializable, Class>();
+        Map<Serializable, Class> map = new HashMap<>();
         map.put("1", String.class);
         map.put("2", Class.class);
         map.put("3", Integer.class);
@@ -559,7 +559,7 @@ public class XMLTest {
     @Test
     public void readAndWriteList() throws Exception {
         StringListProperty stringList = I.make(StringListProperty.class);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("1");
         list.add("2");
         list.add("3");
@@ -621,7 +621,7 @@ public class XMLTest {
     @Test
     public void readAndWriteMap() throws Exception {
         StringMapProperty stringMap = I.make(StringMapProperty.class);
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("one", "one");
         map.put("two", "two");
         map.put("three", "three");
@@ -758,7 +758,7 @@ public class XMLTest {
     @Test
     public void multipleAttributeReference() throws Exception {
         StringListProperty stringList = I.make(StringListProperty.class);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("1");
         list.add("1");
         list.add("2");
@@ -788,7 +788,7 @@ public class XMLTest {
     @Test
     public void setCompleteObject() throws Exception {
         Checker checker = I.make(Checker.class);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("1");
         list.add("2");
         list.add("3");
