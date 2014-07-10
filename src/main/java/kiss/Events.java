@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 public class Events<V> {
 
     /** For reuse. */
-    public static final Events NEVER = new Events(observer -> {
+    public static final Events NEVER = new Events<>(observer -> {
         return new Agent();
     });
 
