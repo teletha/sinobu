@@ -32,14 +32,12 @@ import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.LinkPermission;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -65,9 +63,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -380,57 +375,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      */
     private I() {
-    }
-
-    public static Predicate PredicateUnconditionally = (p) -> {
-        return true;
-    };
-
-    public static BiPredicate BiPredicateUnconditionally = (p, q) -> {
-        return true;
-    };
-
-    public static Stream<Path> traverse(Path start, String... patterns) {
-        return traverse(start, null, patterns);
-    }
-
-    public static Stream<Path> traverse(Path start, BiPredicate<Path, BasicFileAttributes> filter, String... patterns) {
-        if (filter == null) {
-            filter = BiPredicateUnconditionally;
-        }
-
-        int depth = Integer.MAX_VALUE;
-
-        FileSystem system = start.getFileSystem();
-
-        for (String pattern : patterns) {
-            // convert pattern to reduce unnecessary file system scanning
-            if (pattern.equals("*")) {
-                depth = 1;
-            } else {
-                if (pattern.charAt(0) == '!') {
-                    // exclude files
-                    filter = filter.and(glob(system, pattern.substring(1)).negate());
-                } else {
-                    // include
-                    filter = filter.and(glob(system, pattern));
-                }
-            }
-        }
-
-        try {
-            return Files.find(start, depth, filter);
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
-
-    private static BiPredicate<Path, BasicFileAttributes> glob(FileSystem system, String pattern) {
-        PathMatcher filter = system.getPathMatcher("glob:".concat(pattern));
-
-        return (path, attrs) -> {
-            return filter.matches(path);
-        };
     }
 
     public static <T> T associate(Object host, Class<T> type) {

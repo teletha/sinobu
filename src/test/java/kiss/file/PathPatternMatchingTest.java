@@ -14,7 +14,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.List;
 import java.util.function.Consumer;
 
 import kiss.I;
@@ -254,12 +253,7 @@ public class PathPatternMatchingTest {
     private void assertDirectoryCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
         room.with(pattern);
 
-        try {
-            List result = I.walkDirectory(room.root, patterns);
-            assert result.size() == expected;
-        } finally {
-            counter.count = 0;
-        }
+        assert I.walkDirectory(room.root, patterns).size() == expected;
     }
 
     /**
