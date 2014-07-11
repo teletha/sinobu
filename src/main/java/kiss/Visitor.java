@@ -9,10 +9,6 @@
  */
 package kiss;
 
-import static java.nio.file.FileVisitResult.*;
-import static java.nio.file.StandardCopyOption.*;
-import static java.nio.file.StandardWatchEventKinds.*;
-
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystem;
@@ -27,7 +23,10 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.function.BiPredicate;
+
+import static java.nio.file.FileVisitResult.*;
+import static java.nio.file.StandardCopyOption.*;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
  * @version 2014/01/14 9:37:54
@@ -51,16 +50,20 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     private FileVisitor<Path> visitor;
 
     /** The include file patterns. */
-    private BiPredicate<Path, BasicFileAttributes>[] includes;
+    private PathMatcher[] includes;
 
     /** The exclude file patterns. */
-    private BiPredicate<Path, BasicFileAttributes>[] excludes;
+    private PathMatcher[] excludes;
 
     /** The exclude directory pattern. */
-    private BiPredicate<Path, BasicFileAttributes>[] directories;
+    private PathMatcher[] directories;
 
     /** We must skip root directory? */
     private boolean root = false;
+    /** The actual file event notification facility. */
+    private WatchService service;
+    /** The user speecified event listener. */
+    private Observer observer;
 
     /**
      * <p>
@@ -106,9 +109,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
             // Default file system doesn't support close method, so we can ignore to release
             // resource.
             FileSystem system = from.getFileSystem();
-            ArrayList<BiPredicate> includes = new ArrayList();
-            ArrayList<BiPredicate> excludes = new ArrayList();
-            ArrayList<BiPredicate> directories = new ArrayList();
+            ArrayList<PathMatcher> includes = new ArrayList();
+            ArrayList<PathMatcher> excludes = new ArrayList();
+            ArrayList<PathMatcher> directories = new ArrayList();
 
             for (String pattern : patterns) {
                 // convert pattern to reduce unnecessary file system scanning
@@ -127,24 +130,24 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
                 if (pattern.charAt(0) != '!') {
                     // include
-                    includes.add(filter(system, pattern));
+                    includes.add(system.getPathMatcher("glob:".concat(pattern)));
                 } else if (!pattern.endsWith("/**")) {
                     // exclude files
                     if (type < 5) {
-                        excludes.add(filter(system, pattern.substring(1)));
+                        excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
                     } else {
-                        directories.add(filter(system, pattern.substring(1)));
+                        directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
                     }
                 } else {
                     // exclude directory
-                    directories.add(filter(system, pattern.substring(1, pattern.length() - 3)));
+                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
                 }
             }
 
             // Convert into Array
-            this.includes = includes.toArray(new BiPredicate[includes.size()]);
-            this.excludes = excludes.toArray(new BiPredicate[excludes.size()]);
-            this.directories = directories.toArray(new BiPredicate[directories.size()]);
+            this.includes = includes.toArray(new PathMatcher[includes.size()]);
+            this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
+            this.directories = directories.toArray(new PathMatcher[directories.size()]);
 
             // Walk file tree actually.
             if (type <= 5) Files.walkFileTree(from, Collections.EMPTY_SET, Integer.MAX_VALUE, this);
@@ -153,176 +156,19 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
         }
     }
 
-    private BiPredicate<Path, BasicFileAttributes> filter(FileSystem fs, String pattern) {
-        PathMatcher matcher = fs.getPathMatcher("glob:".concat(pattern));
-
-        return (path, attr) -> matcher.matches(path);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attr) throws IOException {
-        // Retrieve relative path from base.
-        Path relative = from.relativize(path);
-
-        // Skip root directory.
-        // Directory exclusion make fast traversing file tree.
-        for (BiPredicate<Path, BasicFileAttributes> matcher : directories) {
-            // Normally, we can't use identical equal against path object. But only root path object
-            // is passed as parameter value, so we can use identical equal here.
-            if (from != path && matcher.test(relative, attr)) {
-                return SKIP_SUBTREE;
-            }
-        }
-
-        switch (type) {
-        case 0: // copy
-        case 1: // move
-            Files.createDirectories(to.resolve(relative));
-            // fall-through to reduce footprint
-
-        case 2: // delete
-        case 3: // walk file
-            return CONTINUE;
-
-        case 5: // walk directory
-            if ((!root || from != path) && accept(relative, attr)) add(path);
-            // fall-through to reduce footprint
-
-        case 6: // observe dirctory
-            return CONTINUE;
-
-        default: // walk file and directory with visitor
-            // Skip root directory
-            return from == path ? CONTINUE : visitor.preVisitDirectory(path, attr);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FileVisitResult postVisitDirectory(Path path, IOException e) throws IOException {
-        switch (type) {
-        case 0: // copy
-        case 1: // move
-            Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
-            if (type == 0) return CONTINUE;
-            // fall-through to reduce footprint
-
-        case 2: // delete
-            if (!root || from != path) Files.delete(path);
-            // fall-through to reduce footprint
-
-        case 3: // walk file
-        case 5: // walk directory
-            return CONTINUE;
-
-        default: // walk file and directory with visitor
-            // Skip root directory.
-            return from == path ? CONTINUE : visitor.postVisitDirectory(path, e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FileVisitResult visitFile(Path path, BasicFileAttributes attr) throws IOException {
-        if (type < 5) {
-            // Retrieve relative path from base.
-            Path relative = from.relativize(path);
-
-            if (accept(relative, attr)) {
-                switch (type) {
-                case 0: // copy
-                    Path dest = to.resolve(relative);
-
-                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attr.lastModifiedTime())) {
-                        Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
-                    }
-                    break;
-
-                case 1: // move
-                    dest = to.resolve(relative);
-
-                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attr.lastModifiedTime())) {
-                        Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
-                        break;
-                    }
-
-                case 2: // delete
-                    Files.delete(path);
-                    break;
-
-                case 3: // walk file
-                    add(path);
-                    break;
-
-                default: // walk file and directory with visitor
-                    return visitor.visitFile(path, attr);
-                }
-            }
-        }
-        return CONTINUE;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FileVisitResult visitFileFailed(Path path, IOException e) throws IOException {
-        return CONTINUE;
-    }
-
-    /**
-     * <p>
-     * Helper method to test whether the path is acceptable or not.
-     * </p>
-     * 
-     * @param path A target path.
-     * @return A result.
-     */
-    private boolean accept(Path path, BasicFileAttributes attr) {
-        // File exclusion
-        for (BiPredicate<Path, BasicFileAttributes> matcher : excludes) {
-            if (matcher.test(path, attr)) {
-                return false;
-            }
-        }
-
-        // File inclusion
-        for (BiPredicate<Path, BasicFileAttributes> matcher : includes) {
-            if (matcher.test(path, attr)) {
-                return true;
-            }
-        }
-        return includes.length == 0;
-    }
-
-    // =======================================================
-    // For File Watching Facility
-    // =======================================================
-    /** The actual file event notification facility. */
-    private WatchService service;
-
-    /** The user speecified event listener. */
-    private Observer observer;
-
     /**
      * <p>
      * Sinobu's file event notification facility.
      * </p>
-     * 
-     * @param path A target directory.
+     *
+     * @param path     A target directory.
      * @param listener A event listener.
-     * @param visitor Name matching patterns.
+     * @param visitor  Name matching patterns.
      */
     Visitor(Path path, Observer observer, String... patterns) {
         this(path, null, 6, null, patterns);
 
+        int a = 0;
         try {
             this.observer = observer;
             this.service = path.getFileSystem().newWatchService();
@@ -344,6 +190,153 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * {@inheritDoc}
      */
     @Override
+    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+        // Retrieve relative path from base.
+        Path relative = from.relativize(path);
+
+        // Skip root directory.
+        // Directory exclusion make fast traversing file tree.
+        for (PathMatcher matcher : directories) {
+            // Normally, we can't use identical equal against path object. But only root path object
+            // is passed as parameter value, so we can use identical equal here.
+            if (from != path && matcher.matches(relative)) {
+                return SKIP_SUBTREE;
+            }
+        }
+
+        switch (type) {
+            case 0: // copy
+            case 1: // move
+                Files.createDirectories(to.resolve(relative));
+                // fall-through to reduce footprint
+
+            case 2: // delete
+            case 3: // walk file
+                return CONTINUE;
+
+            case 5: // walk directory
+                if ((!root || from != path) && accept(relative)) add(path);
+                // fall-through to reduce footprint
+
+            case 6: // observe dirctory
+                return CONTINUE;
+
+            default: // walk file and directory with visitor
+                // Skip root directory
+                return from == path ? CONTINUE : visitor.preVisitDirectory(path, attrs);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FileVisitResult postVisitDirectory(Path path, IOException e) throws IOException {
+        switch (type) {
+            case 0: // copy
+            case 1: // move
+                Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
+                if (type == 0) return CONTINUE;
+                // fall-through to reduce footprint
+
+            case 2: // delete
+                if (!root || from != path) Files.delete(path);
+                // fall-through to reduce footprint
+
+            case 3: // walk file
+            case 5: // walk directory
+                return CONTINUE;
+
+            default: // walk file and directory with visitor
+                // Skip root directory.
+                return from == path ? CONTINUE : visitor.postVisitDirectory(path, e);
+        }
+    }
+
+    // =======================================================
+    // For File Watching Facility
+    // =======================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+        if (type < 5) {
+            // Retrieve relative path from base.
+            Path relative = from.relativize(path);
+
+            if (accept(relative)) {
+                switch (type) {
+                    case 0: // copy
+                        Path dest = to.resolve(relative);
+
+                        if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                            Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
+                        }
+                        break;
+
+                    case 1: // move
+                        dest = to.resolve(relative);
+
+                        if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                            Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
+                            break;
+                        }
+
+                    case 2: // delete
+                        Files.delete(path);
+                        break;
+
+                    case 3: // walk file
+                        add(path);
+                        break;
+
+                    default: // walk file and directory with visitor
+                        return visitor.visitFile(path, attrs);
+                }
+            }
+        }
+        return CONTINUE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FileVisitResult visitFileFailed(Path path, IOException e) throws IOException {
+        return CONTINUE;
+    }
+
+    /**
+     * <p>
+     * Helper method to test whether the path is acceptable or not.
+     * </p>
+     *
+     * @param path A target path.
+     * @return A result.
+     */
+    private boolean accept(Path path) {
+        // File exclusion
+        for (PathMatcher matcher : excludes) {
+            if (matcher.matches(path)) {
+                return false;
+            }
+        }
+
+        // File inclusion
+        for (PathMatcher matcher : includes) {
+            if (matcher.matches(path)) {
+                return true;
+            }
+        }
+        return includes.length == 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void run() {
         while (true) {
             try {
@@ -354,7 +347,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
 
                     // pattern matching
-                    if (accept(from.relativize(path), null)) {
+                    if (accept(from.relativize(path))) {
                         Agent e = new Agent();
                         e.watch = event;
                         e.object = path;

@@ -63,7 +63,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.BiPredicate;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -2024,19 +2023,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @return All matched files. (<em>not</em> including directory)
      */
     public static List<Path> walk(Path start, String... patterns) {
-        return new Visitor(start, null, 3, null, patterns);
-    }
-
-    /**
-     * <p>
-     * Walk a file tree and collect files you want to filter by pattern matching.
-     * </p>
-     * 
-     * @param start A depature point. The result list doesn't include this starting path.
-     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
-     * @return All matched files. (<em>not</em> including directory)
-     */
-    public static List<Path> walk(Path start, BiPredicate<Path, BasicFileAttributes> filter) {
         return new Visitor(start, null, 3, null, patterns);
     }
 
