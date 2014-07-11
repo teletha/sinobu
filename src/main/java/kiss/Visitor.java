@@ -27,6 +27,7 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.BiPredicate;
 
 /**
  * @version 2014/01/14 9:37:54
@@ -50,13 +51,13 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     private FileVisitor<Path> visitor;
 
     /** The include file patterns. */
-    private PathMatcher[] includes;
+    private BiPredicate<Path, BasicFileAttributes>[] includes;
 
     /** The exclude file patterns. */
-    private PathMatcher[] excludes;
+    private BiPredicate<Path, BasicFileAttributes>[] excludes;
 
     /** The exclude directory pattern. */
-    private PathMatcher[] directories;
+    private BiPredicate<Path, BasicFileAttributes>[] directories;
 
     /** We must skip root directory? */
     private boolean root = false;
@@ -105,9 +106,9 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
             // Default file system doesn't support close method, so we can ignore to release
             // resource.
             FileSystem system = from.getFileSystem();
-            ArrayList<PathMatcher> includes = new ArrayList();
-            ArrayList<PathMatcher> excludes = new ArrayList();
-            ArrayList<PathMatcher> directories = new ArrayList();
+            ArrayList<BiPredicate> includes = new ArrayList();
+            ArrayList<BiPredicate> excludes = new ArrayList();
+            ArrayList<BiPredicate> directories = new ArrayList();
 
             for (String pattern : patterns) {
                 // convert pattern to reduce unnecessary file system scanning
@@ -126,24 +127,24 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
                 if (pattern.charAt(0) != '!') {
                     // include
-                    includes.add(system.getPathMatcher("glob:".concat(pattern)));
+                    includes.add(filter(system, pattern));
                 } else if (!pattern.endsWith("/**")) {
                     // exclude files
                     if (type < 5) {
-                        excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                        excludes.add(filter(system, pattern.substring(1)));
                     } else {
-                        directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                        directories.add(filter(system, pattern.substring(1)));
                     }
                 } else {
                     // exclude directory
-                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
+                    directories.add(filter(system, pattern.substring(1, pattern.length() - 3)));
                 }
             }
 
             // Convert into Array
-            this.includes = includes.toArray(new PathMatcher[includes.size()]);
-            this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
-            this.directories = directories.toArray(new PathMatcher[directories.size()]);
+            this.includes = includes.toArray(new BiPredicate[includes.size()]);
+            this.excludes = excludes.toArray(new BiPredicate[excludes.size()]);
+            this.directories = directories.toArray(new BiPredicate[directories.size()]);
 
             // Walk file tree actually.
             if (type <= 5) Files.walkFileTree(from, Collections.EMPTY_SET, Integer.MAX_VALUE, this);
@@ -152,20 +153,26 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
         }
     }
 
+    private BiPredicate<Path, BasicFileAttributes> filter(FileSystem fs, String pattern) {
+        PathMatcher matcher = fs.getPathMatcher("glob:".concat(pattern));
+
+        return (path, attr) -> matcher.matches(path);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attr) throws IOException {
         // Retrieve relative path from base.
         Path relative = from.relativize(path);
 
         // Skip root directory.
         // Directory exclusion make fast traversing file tree.
-        for (PathMatcher matcher : directories) {
+        for (BiPredicate<Path, BasicFileAttributes> matcher : directories) {
             // Normally, we can't use identical equal against path object. But only root path object
             // is passed as parameter value, so we can use identical equal here.
-            if (from != path && matcher.matches(relative)) {
+            if (from != path && matcher.test(relative, attr)) {
                 return SKIP_SUBTREE;
             }
         }
@@ -181,7 +188,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
             return CONTINUE;
 
         case 5: // walk directory
-            if ((!root || from != path) && accept(relative)) add(path);
+            if ((!root || from != path) && accept(relative, attr)) add(path);
             // fall-through to reduce footprint
 
         case 6: // observe dirctory
@@ -189,7 +196,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
         default: // walk file and directory with visitor
             // Skip root directory
-            return from == path ? CONTINUE : visitor.preVisitDirectory(path, attrs);
+            return from == path ? CONTINUE : visitor.preVisitDirectory(path, attr);
         }
     }
 
@@ -223,17 +230,17 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * {@inheritDoc}
      */
     @Override
-    public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+    public FileVisitResult visitFile(Path path, BasicFileAttributes attr) throws IOException {
         if (type < 5) {
             // Retrieve relative path from base.
             Path relative = from.relativize(path);
 
-            if (accept(relative)) {
+            if (accept(relative, attr)) {
                 switch (type) {
                 case 0: // copy
                     Path dest = to.resolve(relative);
 
-                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attr.lastModifiedTime())) {
                         Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
                     }
                     break;
@@ -241,7 +248,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
                 case 1: // move
                     dest = to.resolve(relative);
 
-                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attr.lastModifiedTime())) {
                         Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
                         break;
                     }
@@ -255,7 +262,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
                     break;
 
                 default: // walk file and directory with visitor
-                    return visitor.visitFile(path, attrs);
+                    return visitor.visitFile(path, attr);
                 }
             }
         }
@@ -278,17 +285,17 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * @param path A target path.
      * @return A result.
      */
-    private boolean accept(Path path) {
+    private boolean accept(Path path, BasicFileAttributes attr) {
         // File exclusion
-        for (PathMatcher matcher : excludes) {
-            if (matcher.matches(path)) {
+        for (BiPredicate<Path, BasicFileAttributes> matcher : excludes) {
+            if (matcher.test(path, attr)) {
                 return false;
             }
         }
 
         // File inclusion
-        for (PathMatcher matcher : includes) {
-            if (matcher.matches(path)) {
+        for (BiPredicate<Path, BasicFileAttributes> matcher : includes) {
+            if (matcher.test(path, attr)) {
                 return true;
             }
         }
@@ -347,7 +354,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
 
                     // pattern matching
-                    if (accept(from.relativize(path))) {
+                    if (accept(from.relativize(path), null)) {
                         Agent e = new Agent();
                         e.watch = event;
                         e.object = path;
