@@ -65,6 +65,18 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * <p>
      * Utility for file tree traversal.
      * </p>
+     * <p>
+     * Type parameter represents the following:
+     * </p>
+     * <ol>
+     * <li>0 - copy</li>
+     * <li>1 - move</li>
+     * <li>2 - delete</li>
+     * <li>3 - file scan</li>
+     * <li>4 - file and directory with {@link FileVisitor}</li>
+     * <li>5 - directory scan</li>
+     * <li>6 - observe</li>
+     * </ol>
      */
     Visitor(Path from, Path to, int type, FileVisitor visitor, String... patterns) {
         this.type = type;
@@ -165,17 +177,17 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
             // fall-through to reduce footprint
 
         case 2: // delete
+        case 3: // walk file
             return CONTINUE;
 
         case 5: // walk directory
             if ((!root || from != path) && accept(relative)) add(path);
             // fall-through to reduce footprint
 
-        case 3: // walk file
         case 6: // observe dirctory
             return CONTINUE;
 
-        default:
+        default: // walk file and directory with visitor
             // Skip root directory
             return from == path ? CONTINUE : visitor.preVisitDirectory(path, attrs);
         }
@@ -185,29 +197,25 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * {@inheritDoc}
      */
     @Override
-    public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
+    public FileVisitResult postVisitDirectory(Path path, IOException e) throws IOException {
         switch (type) {
         case 0: // copy
-            Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
-            return CONTINUE;
-
         case 1: // move
             Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
+            if (type == 0) return CONTINUE;
             // fall-through to reduce footprint
 
         case 2: // delete
-            if (!root || from != path) {
-                Files.delete(path);
-            }
+            if (!root || from != path) Files.delete(path);
             // fall-through to reduce footprint
 
         case 3: // walk file
         case 5: // walk directory
             return CONTINUE;
 
-        default:
+        default: // walk file and directory with visitor
             // Skip root directory.
-            return from == path ? CONTINUE : visitor.postVisitDirectory(path, exc);
+            return from == path ? CONTINUE : visitor.postVisitDirectory(path, e);
         }
     }
 
@@ -228,25 +236,25 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
                     if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
                         Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
                     }
-                    return CONTINUE;
+                    break;
 
                 case 1: // move
                     dest = to.resolve(relative);
 
                     if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
                         Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
-                        return CONTINUE;
+                        break;
                     }
 
                 case 2: // delete
                     Files.delete(path);
-                    return CONTINUE;
+                    break;
 
                 case 3: // walk file
                     add(path);
-                    return CONTINUE;
+                    break;
 
-                default:
+                default: // walk file and directory with visitor
                     return visitor.visitFile(path, attrs);
                 }
             }
@@ -258,7 +266,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * {@inheritDoc}
      */
     @Override
-    public FileVisitResult visitFileFailed(Path path, IOException exc) throws IOException {
+    public FileVisitResult visitFileFailed(Path path, IOException e) throws IOException {
         return CONTINUE;
     }
 
