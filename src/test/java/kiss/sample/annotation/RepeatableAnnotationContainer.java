@@ -13,10 +13,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * @version 2013/12/27 9:59:17
+ * @version 2014/07/12 11:41:03
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface RepeatableAnnotationContainer {
+public @interface RepeatableAnnotationContainer {
 
     RepeatableAnnotation[] value();
 }

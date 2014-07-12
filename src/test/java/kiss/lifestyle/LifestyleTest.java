@@ -9,16 +9,9 @@
  */
 package kiss.lifestyle;
 
-
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-
-import org.junit.Rule;
-import org.junit.Test;
-
-import antibug.PrivateModule;
-
 
 import kiss.I;
 import kiss.Lifestyle;
@@ -28,13 +21,20 @@ import kiss.Singleton;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Student;
 
+import org.junit.Rule;
+import org.junit.Test;
+
+import antibug.PrivateModule;
+
 /**
- * @version 2011/03/22 16:32:28
+ * @version 2014/07/12 11:40:46
  */
 public class LifestyleTest {
 
     @Rule
     public static final PrivateModule module = new PrivateModule();
+
+    private static final String CONSTANT = "Set by " + LifestyleTest.class.getSimpleName();
 
     @Test
     public void override() {
@@ -74,14 +74,14 @@ public class LifestyleTest {
     @Test
     public void extendPrototype() {
         Person person = I.make(Person.class);
-        assert "default".equals(person.getFirstName());
+        assert CONSTANT.equals(person.getFirstName());
     }
 
     @Test
     public void extendPrototypeWithClassParameter() {
         Student person = I.make(Student.class);
         assert person instanceof Student;
-        assert "default".equals(person.getFirstName());
+        assert CONSTANT.equals(person.getFirstName());
     }
 
     @Test
@@ -123,6 +123,7 @@ public class LifestyleTest {
         /**
          * @see kiss.Lifestyle#get()
          */
+        @Override
         public Without get() {
             return object;
         }
@@ -150,6 +151,7 @@ public class LifestyleTest {
         /**
          * @see kiss.Lifestyle#get()
          */
+        @Override
         public With get() {
             return new With();
         }
@@ -166,6 +168,7 @@ public class LifestyleTest {
         /**
          * @see kiss.Lifestyle#get()
          */
+        @Override
         public With get() {
             return new With();
         }
@@ -188,7 +191,7 @@ public class LifestyleTest {
         public Person get() {
             Person person = super.get();
 
-            person.setFirstName("default");
+            person.setFirstName(CONSTANT);
 
             return person;
         }
@@ -211,7 +214,7 @@ public class LifestyleTest {
         public Student get() {
             Student person = super.get();
 
-            person.setFirstName("default");
+            person.setFirstName(CONSTANT);
 
             return person;
         }
@@ -225,6 +228,7 @@ public class LifestyleTest {
         /**
          * @see kiss.Lifestyle#get()
          */
+        @Override
         public Locale get() {
             return Locale.ROOT;
         }
