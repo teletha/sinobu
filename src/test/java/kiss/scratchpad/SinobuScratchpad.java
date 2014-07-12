@@ -49,16 +49,6 @@ public class SinobuScratchpad {
      * @param key
      * @return An extension.
      */
-    public static <E extends Extension> E find(Class<E> extensionPoint, Class<?> key) {
-        return null;
-    }
-
-    /**
-     * @param <E>
-     * @param extensionPoint
-     * @param key
-     * @return An extension.
-     */
     public static <E extends Extension<? extends ExtensionKeyProvider<? super K>>, K> E find(Class<E> extensionPoint, K key) {
         return null;
     }
