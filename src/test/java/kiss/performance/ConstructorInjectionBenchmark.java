@@ -10,9 +10,7 @@
 package kiss.performance;
 
 import kiss.I;
-import kiss.model.ClassUtil;
 
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -20,17 +18,12 @@ import antibug.benchmark.Benchmark;
 import antibug.benchmark.Benchmark.Code;
 
 /**
- * @version 2012/01/31 16:16:39
+ * @version 2014/07/12 14:53:42
  */
 public class ConstructorInjectionBenchmark {
 
     @Rule
     public static final Benchmark benchmark = new Benchmark();
-
-    @BeforeClass
-    public static void initialize() {
-        I.load(ClassUtil.getArchive(InstantiationBenchmark.class));
-    }
 
     @Test
     public void instantiate() {
