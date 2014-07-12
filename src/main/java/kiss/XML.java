@@ -21,24 +21,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import com.sun.org.apache.xerces.internal.util.DOMUtil;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
+import com.sun.org.apache.xml.internal.utils.TreeWalker;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ContentHandler;
-
-import com.sun.org.apache.xerces.internal.util.DOMUtil;
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
-import com.sun.org.apache.xml.internal.utils.TreeWalker;
 
 /**
  * @version 2012/11/18 22:33:02
@@ -47,7 +45,7 @@ public class XML implements Iterable<XML> {
 
     /**
      * Original pattern.
-     * 
+     * <p>
      * <pre>
      * ([>~+\-, ]*)?((?:(?:\w+|\*)\|)?(?:\w+(?:\\.\w+)*|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
@@ -80,7 +78,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * From node set.
      * </p>
-     * 
+     *
      * @param nodes
      */
     XML(Document doc, List nodes) {
@@ -93,7 +91,7 @@ public class XML implements Iterable<XML> {
      * Insert content, specified by the parameter, to the end of each element in the set of matched
      * elements.
      * </p>
-     * 
+     *
      * @param xml
      * @return Chainable API.
      */
@@ -113,7 +111,7 @@ public class XML implements Iterable<XML> {
      * Insert content, specified by the parameter, to the beginning of each element in the set of
      * matched elements.
      * </p>
-     * 
+     *
      * @param xml
      * @return Chainable API.
      */
@@ -133,7 +131,7 @@ public class XML implements Iterable<XML> {
      * Insert content, specified by the parameter, before each element in the set of matched
      * elements.
      * </p>
-     * 
+     *
      * @param xml
      * @return Chainable API.
      */
@@ -153,7 +151,7 @@ public class XML implements Iterable<XML> {
      * Insert content, specified by the parameter, after each element in the set of matched
      * elements.
      * </p>
-     * 
+     *
      * @param xml
      * @return Chainable API.
      */
@@ -172,7 +170,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Remove all child nodes of the set of matched elements from the DOM.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public XML empty() {
@@ -195,7 +193,7 @@ public class XML implements Iterable<XML> {
      * {@link #remove()} when you want to remove the element itself, as well as everything inside
      * it.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public XML remove() {
@@ -211,7 +209,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Wrap an HTML structure around each element in the set of matched elements.
      * </p>
-     * 
+     *
      * @param xml
      * @return Chainable API.
      */
@@ -230,7 +228,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Wrap an HTML structure around all elements in the set of matched elements.
      * </p>
-     * 
+     *
      * @param xml
      * @return Chainable API.
      */
@@ -268,7 +266,7 @@ public class XML implements Iterable<XML> {
      * Get the combined text contents of each element in the set of matched elements, including
      * their descendants.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public String text() {
@@ -284,7 +282,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Set the content of each element in the set of matched elements to the specified text.
      * </p>
-     * 
+     *
      * @param text
      * @return Chainable API.
      */
@@ -301,9 +299,8 @@ public class XML implements Iterable<XML> {
      * <p>
      * Get the element name for the first element in the set of matched elements.
      * </p>
-     * 
-     * @param name An element name.
-     * @return Chainable API.
+     *
+     * @return An element name.
      */
     public String name() {
         return ((org.w3c.dom.Element) nodes.iterator().next()).getTagName();
@@ -313,7 +310,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Get the value of an attribute for the first element in the set of matched elements.
      * </p>
-     * 
+     *
      * @param name An attribute name.
      * @return Chainable API.
      */
@@ -325,7 +322,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Set one or more attributes for the set of matched elements.
      * </p>
-     * 
+     *
      * @param name
      * @param value
      * @return Chainable API.
@@ -372,7 +369,7 @@ public class XML implements Iterable<XML> {
      * appending it to any which may already be assigned to the elements. More than one class may be
      * added at a time, separated by a space, to the set of matched elements.
      * </p>
-     * 
+     *
      * @param names
      * @return Chainable API.
      */
@@ -403,7 +400,7 @@ public class XML implements Iterable<XML> {
      * removed. More than one class may be removed at a time, separated by a space, from the set of
      * matched elements.
      * </p>
-     * 
+     *
      * @param names
      * @return Chainable API.
      */
@@ -426,7 +423,7 @@ public class XML implements Iterable<XML> {
      * Add or remove one class from each element in the set of matched elements, depending on either
      * the class's presence or the value of the switch argument.
      * </p>
-     * 
+     *
      * @param name
      * @return Chainable API.
      */
@@ -447,7 +444,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Determine whether any of the matched elements are assigned the given class.
      * </p>
-     * 
+     *
      * @param name
      * @return Chainable API.
      */
@@ -470,7 +467,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Reduce the set of matched elements to the first in the set.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public XML first() {
@@ -481,7 +478,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Reduce the set of matched elements to the final one in the set.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public XML last() {
@@ -492,7 +489,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Get the immediately following sibling of each element in the set of matched elements.
      * </p>
-     * 
+     *
      * @return A set of matched elements.
      */
     public XML next() {
@@ -513,7 +510,7 @@ public class XML implements Iterable<XML> {
      * Get all following siblings of each element up to but not including the element matched by the
      * given selector.
      * </p>
-     * 
+     *
      * @param selector CSS selector.
      * @return A set of matched elements.
      */
@@ -540,7 +537,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Append the given xml as child element and traverse into them.
      * </p>
-     * 
+     *
      * @param xml A xml element.
      * @return A created child elements.
      */
@@ -563,7 +560,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Get the children of each element in the current set of matched elements.
      * </p>
-     * 
+     *
      * @return A set of children elements.
      */
     public XML children() {
@@ -579,7 +576,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Get the parent of each element in the current set of matched elements.
      * </p>
-     * 
+     *
      * @return A set of parent elements.
      */
     public XML parent() {
@@ -602,7 +599,7 @@ public class XML implements Iterable<XML> {
      * Get the descendants of each element in the current set of matched elements, filtered by a css
      * selector.
      * </p>
-     * 
+     *
      * @param selector A string containing a css selector expression to match elements against.
      * @return Chainable API.
      */
@@ -624,7 +621,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Return size of the current node set.
      * </p>
-     * 
+     *
      * @return A size of current node set.
      */
     public int size() {
@@ -648,7 +645,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Convert the first element to {@link Node}.
      * </p>
-     * 
+     *
      * @return A first {@link Node} or <code>null</code>.
      */
     public Node to() {
@@ -659,7 +656,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Write this elements to the specified output.
      * </p>
-     * 
+     *
      * @param output A output channel.
      */
     public void to(Appendable output) {
@@ -675,14 +672,14 @@ public class XML implements Iterable<XML> {
      * <p>
      * Write this elements to the specified output.
      * </p>
-     * 
+     *
      * @param output A output channel.
      */
     public void to(ContentHandler output) {
         try {
             output.startDocument();
             TreeWalker walker = new TreeWalker(output);
-    
+
             for (Node node : nodes) {
                 walker.traverseFragment(node);
             }
@@ -708,7 +705,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Helper method to convert {@link XML} to single {@link Node}.
      * </p>
-     * 
+     *
      * @param xml
      * @return
      */
@@ -736,8 +733,8 @@ public class XML implements Iterable<XML> {
      * <p>
      * Helper method to convert {@link NodeList} to single {@link List}.
      * </p>
-     * 
-     * @param xml
+     *
+     * @param list A {@link NodeList} to convert.
      * @return
      */
     static List convert(NodeList list) {
@@ -757,7 +754,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Compile and cache the specified selector.
      * </p>
-     * 
+     *
      * @param selector A css selector.
      * @return A compiled xpath expression.
      */
@@ -785,7 +782,7 @@ public class XML implements Iterable<XML> {
      * <p>
      * Helper method to convert css selector to xpath.
      * </p>
-     * 
+     *
      * @param selector A css selector.
      * @return A xpath.
      */
@@ -817,27 +814,27 @@ public class XML implements Iterable<XML> {
                     xpath.append("//");
                 } else {
                     switch (match.charAt(0)) {
-                    case '>': // Child combinator
-                        xpath.append('/');
-                        break;
+                        case '>': // Child combinator
+                            xpath.append('/');
+                            break;
 
-                    case '~': // General sibling combinator
-                        xpath.append("/following-sibling::");
-                        break;
+                        case '~': // General sibling combinator
+                            xpath.append("/following-sibling::");
+                            break;
 
-                    case '+': // Adjacent sibling combinator
-                        xpath.append("/following-sibling::");
-                        suffix = "[1]";
-                        break;
+                        case '+': // Adjacent sibling combinator
+                            xpath.append("/following-sibling::");
+                            suffix = "[1]";
+                            break;
 
-                    case '-': // Adjacent previous sibling combinator (EXTENSION)
-                        xpath.append("/preceding-sibling::");
-                        suffix = "[1]";
-                        break;
+                        case '-': // Adjacent previous sibling combinator (EXTENSION)
+                            xpath.append("/preceding-sibling::");
+                            suffix = "[1]";
+                            break;
 
-                    case ',': // selector separator
-                        xpath.append("|descendant::");
-                        break;
+                        case ',': // selector separator
+                            xpath.append("|descendant::");
+                            break;
                     }
 
                     if (contextual) {
@@ -902,63 +899,63 @@ public class XML implements Iterable<XML> {
                         xpath.append("[@").append(match).append("='").append(value).append("']");
                     } else {
                         switch (type.charAt(0)) {
-                        case '~':
-                            // [att~=val]
-                            //
-                            // Represents an element with the att attribute whose value is a
-                            // whitespace-separated list of words, one of which is exactly
-                            // "val". If "val" contains whitespace, it will never represent
-                            // anything (since the words are separated by spaces). Also if "val"
-                            // is the empty string, it will never represent anything.
-                            xpath.append("[contains(concat(' ',@")
-                                    .append(match)
-                                    .append(",' '),' ")
-                                    .append(value)
-                                    .append(" ')]");
-                            break;
+                            case '~':
+                                // [att~=val]
+                                //
+                                // Represents an element with the att attribute whose value is a
+                                // whitespace-separated list of words, one of which is exactly
+                                // "val". If "val" contains whitespace, it will never represent
+                                // anything (since the words are separated by spaces). Also if "val"
+                                // is the empty string, it will never represent anything.
+                                xpath.append("[contains(concat(' ',@")
+                                        .append(match)
+                                        .append(",' '),' ")
+                                        .append(value)
+                                        .append(" ')]");
+                                break;
 
-                        case '*':
-                            // [att*=val]
-                            //
-                            // Represents an element with the att attribute whose value contains
-                            // at least one instance of the substring "val". If "val" is the
-                            // empty string then the selector does not represent anything.
-                            xpath.append("[contains(@").append(match).append(",'").append(value).append("')]");
-                            break;
+                            case '*':
+                                // [att*=val]
+                                //
+                                // Represents an element with the att attribute whose value contains
+                                // at least one instance of the substring "val". If "val" is the
+                                // empty string then the selector does not represent anything.
+                                xpath.append("[contains(@").append(match).append(",'").append(value).append("')]");
+                                break;
 
-                        case '^':
-                            // [att^=val]
-                            //
-                            // Represents an element with the att attribute whose value begins
-                            // with the prefix "val". If "val" is the empty string then the
-                            // selector does not represent anything.
-                            xpath.append("[starts-with(@").append(match).append(",'").append(value).append("')]");
-                            break;
+                            case '^':
+                                // [att^=val]
+                                //
+                                // Represents an element with the att attribute whose value begins
+                                // with the prefix "val". If "val" is the empty string then the
+                                // selector does not represent anything.
+                                xpath.append("[starts-with(@").append(match).append(",'").append(value).append("')]");
+                                break;
 
-                        case '$':
-                            // [att$=val]
-                            //
-                            // Represents an element with the att attribute whose value ends
-                            // with the suffix "val". If "val" is the empty string then the
-                            // selector does not represent anything.
-                            xpath.append("[substring(@")
-                                    .append(match)
-                                    .append(", string-length(@")
-                                    .append(match)
-                                    .append(") - string-length('")
-                                    .append(value)
-                                    .append("') + 1) = '")
-                                    .append(value)
-                                    .append("']");
-                            break;
+                            case '$':
+                                // [att$=val]
+                                //
+                                // Represents an element with the att attribute whose value ends
+                                // with the suffix "val". If "val" is the empty string then the
+                                // selector does not represent anything.
+                                xpath.append("[substring(@")
+                                        .append(match)
+                                        .append(", string-length(@")
+                                        .append(match)
+                                        .append(") - string-length('")
+                                        .append(value)
+                                        .append("') + 1) = '")
+                                        .append(value)
+                                        .append("']");
+                                break;
 
-                        case '|':
-                            // [att|=val]
-                            //
-                            // Represents an element with the att attribute, its value either
-                            // being exactly "val" or beginning with "val" immediately followed
-                            // by "-" (U+002D).
-                            break;
+                            case '|':
+                                // [att|=val]
+                                //
+                                // Represents an element with the att attribute, its value either
+                                // being exactly "val" or beginning with "val" immediately followed
+                                // by "-" (U+002D).
+                                break;
                         }
                     }
                 }
@@ -971,109 +968,109 @@ public class XML implements Iterable<XML> {
 
             if (match != null) {
                 switch (match.hashCode()) {
-                case -947996741: // only-child
-                    xpath.append("[count(../*) = 1]");
-                    break;
+                    case -947996741: // only-child
+                        xpath.append("[count(../*) = 1]");
+                        break;
 
-                case 1455900751: // only-of-type
-                    xpath.append("[count(../").append(matcher.group(2)).append(")=1]");
-                    break;
+                    case 1455900751: // only-of-type
+                        xpath.append("[count(../").append(matcher.group(2)).append(")=1]");
+                        break;
 
-                case 96634189: // empty
-                    xpath.append("[not(node())]");
-                    break;
+                    case 96634189: // empty
+                        xpath.append("[not(node())]");
+                        break;
 
-                case 109267: // not
-                case 103066: // has
-                    xpath.append('[');
+                    case 109267: // not
+                    case 103066: // has
+                        xpath.append('[');
 
-                    if (match.charAt(0) == 'n') {
-                        xpath.append("not");
-                    }
-                    xpath.append('(');
-
-                    String sub = convert(matcher.group(9));
-
-                    if (sub.startsWith("descendant::")) {
-                        sub = sub.replace("descendant::", "descendant-or-self::");
-                    }
-                    xpath.append(sub).append(")]");
-                    break;
-
-                case -995424086: // parent
-                    xpath.append("/..");
-                    break;
-
-                case 3506402: // root
-                    xpath.delete(0, xpath.length()).append("/*");
-                    break;
-
-                case -567445985: // contains
-                    xpath.append("[contains(text(),'").append(matcher.group(9)).append("')]");
-                    break;
-
-                case 835834661: // last-child
-                    xpath.append("[not(following-sibling::*)]");
-                    break;
-
-                case -2136991809: // first-child
-                case 1292941139: // first-of-type
-                case 2025926969: // last-of-type
-                case -1754914063: // nth-child
-                case -1629748624: // nth-last-child
-                case -897532411: // nth-of-type
-                case -872629820: // nth-last-of-type
-                    String coefficient = matcher.group(10);
-                    String remainder = matcher.group(9);
-
-                    if (remainder == null) {
-                        // coefficient = null; // coefficient is already null
-                        remainder = "1";
-                    } else if (matcher.group(11) == null) {
-                        coefficient = null;
-                        // remainder = matcher.group(9); // remainder is already assigned
-
-                        if (remainder.equals("even")) {
-                            coefficient = "2";
-                            remainder = "0";
-                        } else if (remainder.equals("odd")) {
-                            coefficient = "2";
-                            remainder = "1";
+                        if (match.charAt(0) == 'n') {
+                            xpath.append("not");
                         }
-                    } else {
-                        // coefficient = matcher.group(10); // coefficient is already assigned
-                        remainder = matcher.group(12);
+                        xpath.append('(');
+
+                        String sub = convert(matcher.group(9));
+
+                        if (sub.startsWith("descendant::")) {
+                            sub = sub.replace("descendant::", "descendant-or-self::");
+                        }
+                        xpath.append(sub).append(")]");
+                        break;
+
+                    case -995424086: // parent
+                        xpath.append("/..");
+                        break;
+
+                    case 3506402: // root
+                        xpath.delete(0, xpath.length()).append("/*");
+                        break;
+
+                    case -567445985: // contains
+                        xpath.append("[contains(text(),'").append(matcher.group(9)).append("')]");
+                        break;
+
+                    case 835834661: // last-child
+                        xpath.append("[not(following-sibling::*)]");
+                        break;
+
+                    case -2136991809: // first-child
+                    case 1292941139: // first-of-type
+                    case 2025926969: // last-of-type
+                    case -1754914063: // nth-child
+                    case -1629748624: // nth-last-child
+                    case -897532411: // nth-of-type
+                    case -872629820: // nth-last-of-type
+                        String coefficient = matcher.group(10);
+                        String remainder = matcher.group(9);
 
                         if (remainder == null) {
-                            remainder = "0";
+                            // coefficient = null; // coefficient is already null
+                            remainder = "1";
+                        } else if (matcher.group(11) == null) {
+                            coefficient = null;
+                            // remainder = matcher.group(9); // remainder is already assigned
+
+                            if (remainder.equals("even")) {
+                                coefficient = "2";
+                                remainder = "0";
+                            } else if (remainder.equals("odd")) {
+                                coefficient = "2";
+                                remainder = "1";
+                            }
+                        } else {
+                            // coefficient = matcher.group(10); // coefficient is already assigned
+                            remainder = matcher.group(12);
+
+                            if (remainder == null) {
+                                remainder = "0";
+                            }
                         }
-                    }
 
-                    xpath.append("[(count(");
+                        xpath.append("[(count(");
 
-                    if (match.contains("last")) {
-                        xpath.append("following");
-                    } else {
-                        xpath.append("preceding");
-                    }
-
-                    xpath.append("-sibling::");
-
-                    if (match.endsWith("child")) {
-                        xpath.append("*");
-                    } else {
-                        xpath.append(matcher.group(2));
-                    }
-                    xpath.append(")+1)");
-
-                    if (coefficient != null) {
-                        if (coefficient.length() == 0) {
-                            coefficient = "1";
+                        if (match.contains("last")) {
+                            xpath.append("following");
+                        } else {
+                            xpath.append("preceding");
                         }
-                        xpath.append(" mod ").append(coefficient);
-                    }
-                    xpath.append('=').append(remainder).append("]");
-                    break;
+
+                        xpath.append("-sibling::");
+
+                        if (match.endsWith("child")) {
+                            xpath.append("*");
+                        } else {
+                            xpath.append(matcher.group(2));
+                        }
+                        xpath.append(")+1)");
+
+                        if (coefficient != null) {
+                            if (coefficient.length() == 0) {
+                                coefficient = "1";
+                            }
+                            xpath.append(" mod ").append(coefficient);
+                        }
+                        xpath.append('=').append(remainder).append("]");
+                        break;
                 }
             }
 
