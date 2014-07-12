@@ -25,15 +25,15 @@ import kiss.Singleton;
  * </p>
  * <p>
  * This class provides all-purpose codec for literalization. The class which is provided by the
- * constructor {@link Codec#Codec(Class)} must fit the following two requirements. One is that it
+ * constructor {@link kiss.model.Codec#Codec()} must fit the following two requirements. One is that it
  * have the constructor which has a single {@link String} argument like
  * {@link StringBuilder#StringBuilder(String)}. The other is that the constructor can restore to the
  * original state from a return value of its method {@link #toString()}.
  * </p>
- * 
+ *
  * @param <T> A target type to decode and encode.
- * @see StringConverter
  * @version 2014/03/11 13:52:32
+ * @see StringConverter
  */
 @Manageable(lifestyle = Singleton.class)
 public class Codec<T> extends StringConverter<T> implements Extensible {
@@ -61,7 +61,7 @@ public class Codec<T> extends StringConverter<T> implements Extensible {
 
     /**
      * Encode the source model object to the target model object.
-     * 
+     *
      * @param value A object to encode.
      * @return A encoded object.
      * @throws IllegalArgumentException If the given value is illegal format.
@@ -76,7 +76,7 @@ public class Codec<T> extends StringConverter<T> implements Extensible {
 
     /**
      * Decode the target model object to the source model object.
-     * 
+     *
      * @param value A object to decode.
      * @return A decoded object.
      * @throws IllegalArgumentException If the given value is illegal format.

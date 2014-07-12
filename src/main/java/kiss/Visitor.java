@@ -37,6 +37,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     // =======================================================
     // For Pattern Matching Facility
     // =======================================================
+
     /** The source. */
     private Path from;
 
@@ -171,25 +172,25 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
         }
 
         switch (type) {
-        case 0: // copy
-        case 1: // move
-            Files.createDirectories(to.resolve(relative));
-            // fall-through to reduce footprint
+            case 0: // copy
+            case 1: // move
+                Files.createDirectories(to.resolve(relative));
+                // fall-through to reduce footprint
 
-        case 2: // delete
-        case 3: // walk file
-            return CONTINUE;
+            case 2: // delete
+            case 3: // walk file
+                return CONTINUE;
 
-        case 5: // walk directory
-            if ((!root || from != path) && accept(relative)) add(path);
-            // fall-through to reduce footprint
+            case 5: // walk directory
+                if ((!root || from != path) && accept(relative)) add(path);
+                // fall-through to reduce footprint
 
-        case 6: // observe dirctory
-            return CONTINUE;
+            case 6: // observe dirctory
+                return CONTINUE;
 
-        default: // walk file and directory with visitor
-            // Skip root directory
-            return from == path ? CONTINUE : visitor.preVisitDirectory(path, attrs);
+            default: // walk file and directory with visitor
+                // Skip root directory
+                return from == path ? CONTINUE : visitor.preVisitDirectory(path, attrs);
         }
     }
 
@@ -199,23 +200,23 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     @Override
     public FileVisitResult postVisitDirectory(Path path, IOException e) throws IOException {
         switch (type) {
-        case 0: // copy
-        case 1: // move
-            Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
-            if (type == 0) return CONTINUE;
-            // fall-through to reduce footprint
+            case 0: // copy
+            case 1: // move
+                Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
+                if (type == 0) return CONTINUE;
+                // fall-through to reduce footprint
 
-        case 2: // delete
-            if (!root || from != path) Files.delete(path);
-            // fall-through to reduce footprint
+            case 2: // delete
+                if (!root || from != path) Files.delete(path);
+                // fall-through to reduce footprint
 
-        case 3: // walk file
-        case 5: // walk directory
-            return CONTINUE;
+            case 3: // walk file
+            case 5: // walk directory
+                return CONTINUE;
 
-        default: // walk file and directory with visitor
-            // Skip root directory.
-            return from == path ? CONTINUE : visitor.postVisitDirectory(path, e);
+            default: // walk file and directory with visitor
+                // Skip root directory.
+                return from == path ? CONTINUE : visitor.postVisitDirectory(path, e);
         }
     }
 
@@ -230,32 +231,32 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
 
             if (accept(relative)) {
                 switch (type) {
-                case 0: // copy
-                    Path dest = to.resolve(relative);
+                    case 0: // copy
+                        Path dest = to.resolve(relative);
 
-                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
-                        Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
-                    }
-                    break;
-
-                case 1: // move
-                    dest = to.resolve(relative);
-
-                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
-                        Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
+                        if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                            Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
+                        }
                         break;
-                    }
 
-                case 2: // delete
-                    Files.delete(path);
-                    break;
+                    case 1: // move
+                        dest = to.resolve(relative);
 
-                case 3: // walk file
-                    add(path);
-                    break;
+                        if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
+                            Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
+                            break;
+                        }
 
-                default: // walk file and directory with visitor
-                    return visitor.visitFile(path, attrs);
+                    case 2: // delete
+                        Files.delete(path);
+                        break;
+
+                    case 3: // walk file
+                        add(path);
+                        break;
+
+                    default: // walk file and directory with visitor
+                        return visitor.visitFile(path, attrs);
                 }
             }
         }
@@ -274,7 +275,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * <p>
      * Helper method to test whether the path is acceptable or not.
      * </p>
-     * 
+     *
      * @param path A target path.
      * @return A result.
      */
@@ -298,6 +299,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     // =======================================================
     // For File Watching Facility
     // =======================================================
+
     /** The actual file event notification facility. */
     private WatchService service;
 
@@ -308,10 +310,10 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
      * <p>
      * Sinobu's file event notification facility.
      * </p>
-     * 
-     * @param path A target directory.
-     * @param listener A event listener.
-     * @param visitor Name matching patterns.
+     *
+     * @param path     A target directory.
+     * @param observer A event listener.
+     * @param patterns Name matching patterns.
      */
     Visitor(Path path, Observer observer, String... patterns) {
         this(path, null, 6, null, patterns);

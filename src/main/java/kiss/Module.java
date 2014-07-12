@@ -57,7 +57,7 @@ import kiss.model.ClassUtil;
  * AnotherClass-). But this strategy has problem against to core package classes (e.g.
  * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
  * </p>
- * 
+ *
  * @version 2012/09/11 14:31:17
  */
 class Module extends ClassVisitor {
@@ -84,7 +84,7 @@ class Module extends ClassVisitor {
      * <p>
      * Module constructor should be package private.
      * </p>
-     * 
+     *
      * @param path A module path as classpath, A <code>null</code> is not accepted.
      */
     Module(Path path, String pattern) throws MalformedURLException {
@@ -96,7 +96,7 @@ class Module extends ClassVisitor {
         // Store original module path for unloading.
         this.path = path;
         this.pattern = pattern;
-        this.loader = new URLClassLoader(new URL[] {path.toUri().toURL()}, I.$loader);
+        this.loader = new URLClassLoader(new URL[]{path.toUri().toURL()}, I.$loader);
 
         Path base = path;
 
@@ -146,11 +146,11 @@ class Module extends ClassVisitor {
 
     /**
      * Collect all service provider classes which is managed by this module.
-     * 
-     * @param <S> A type of service provider interface.
-     * @param spi A service provider interface.
+     *
+     * @param <S>    A type of service provider interface.
+     * @param spi    A service provider interface.
      * @param single A flag for finding mode. <code>true</code> is single mode, <code>false</code>
-     *            is all mode.
+     *               is all mode.
      * @return A list of all service provider classes in this module. Never be <code>null</code>.
      */
     <S> List<Class<S>> find(Class<S> spi, boolean single) {
@@ -186,7 +186,7 @@ class Module extends ClassVisitor {
 
     /**
      * Check whether the class is a subclass of the class which is represented by the hash or not.
-     * 
+     *
      * @param hash A hash to find.
      * @param info A class information.
      * @return A result.
@@ -226,9 +226,9 @@ class Module extends ClassVisitor {
     }
 
     /**
-     * @see org.objectweb.asm.ClassAdapter#visit(int, int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String[])
+     * {@inheritDoc}
      */
+    @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         // exclude a class file which is in invalid location
         if (!name.equals(fqcn.replace('.', '/'))) {
@@ -245,7 +245,7 @@ class Module extends ClassVisitor {
 
         // verify super class
         if (verify(superName)) {
-            infos.add(new Object[] {fqcn, null});
+            infos.add(new Object[]{fqcn, null});
 
             // this class may be extention point, we can stop scanning
             throw STOP;
@@ -254,7 +254,7 @@ class Module extends ClassVisitor {
         // verify interfaces
         for (String interfaceClassName : interfaces) {
             if (verify(interfaceClassName)) {
-                infos.add(new Object[] {fqcn, null});
+                infos.add(new Object[]{fqcn, null});
 
                 // this class may be extention point, we can stop scanning
                 throw STOP;
@@ -263,14 +263,15 @@ class Module extends ClassVisitor {
     }
 
     /**
-     * @see org.objectweb.asm.ClassAdapter#visitAnnotation(java.lang.String, boolean)
+     * {@inheritDoc}
      */
+    @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         // exclude runtime invisible
         if (visible) {
             // verify annotation
             if (verify(desc.substring(1, desc.length() - 1))) {
-                infos.add(new Object[] {fqcn, null});
+                infos.add(new Object[]{fqcn, null});
 
                 // this class may be extention point, we can stop scanning
                 throw STOP;
@@ -282,27 +283,27 @@ class Module extends ClassVisitor {
     }
 
     /**
-     * @see org.objectweb.asm.ClassAdapter#visitField(int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.Object)
+     * {@inheritDoc}
      */
+    @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         // all needed information was scanned, stop parsing
         throw STOP;
     }
 
     /**
-     * @see org.objectweb.asm.ClassAdapter#visitMethod(int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String[])
+     * {@inheritDoc}
      */
+    @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         // all needed information was scanned, stop parsing
         throw STOP;
     }
 
     /**
-     * @see org.objectweb.asm.ClassAdapter#visitInnerClass(java.lang.String, java.lang.String,
-     *      java.lang.String, int)
+     * {@inheritDoc}
      */
+    @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         // all needed information was scanned, stop parsing
         throw STOP;
@@ -310,7 +311,7 @@ class Module extends ClassVisitor {
 
     /**
      * Helper method to check whether the given class is non system class or not.
-     * 
+     *
      * @param className A class name.
      * @return A result.
      */
