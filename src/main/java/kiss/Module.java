@@ -96,7 +96,7 @@ class Module extends ClassVisitor {
         // Store original module path for unloading.
         this.path = path;
         this.pattern = pattern;
-        this.loader = new URLClassLoader(new URL[]{path.toUri().toURL()}, I.$loader);
+        this.loader = new URLClassLoader(new URL[] {path.toUri().toURL()}, I.$loader);
 
         Path base = path;
 
@@ -147,10 +147,10 @@ class Module extends ClassVisitor {
     /**
      * Collect all service provider classes which is managed by this module.
      *
-     * @param <S>    A type of service provider interface.
-     * @param spi    A service provider interface.
+     * @param <S> A type of service provider interface.
+     * @param spi A service provider interface.
      * @param single A flag for finding mode. <code>true</code> is single mode, <code>false</code>
-     *               is all mode.
+     *            is all mode.
      * @return A list of all service provider classes in this module. Never be <code>null</code>.
      */
     <S> List<Class<S>> find(Class<S> spi, boolean single) {
@@ -245,7 +245,7 @@ class Module extends ClassVisitor {
 
         // verify super class
         if (verify(superName)) {
-            infos.add(new Object[]{fqcn, null});
+            infos.add(new Object[] {fqcn, null});
 
             // this class may be extention point, we can stop scanning
             throw STOP;
@@ -254,7 +254,7 @@ class Module extends ClassVisitor {
         // verify interfaces
         for (String interfaceClassName : interfaces) {
             if (verify(interfaceClassName)) {
-                infos.add(new Object[]{fqcn, null});
+                infos.add(new Object[] {fqcn, null});
 
                 // this class may be extention point, we can stop scanning
                 throw STOP;
@@ -271,7 +271,7 @@ class Module extends ClassVisitor {
         if (visible) {
             // verify annotation
             if (verify(desc.substring(1, desc.length() - 1))) {
-                infos.add(new Object[]{fqcn, null});
+                infos.add(new Object[] {fqcn, null});
 
                 // this class may be extention point, we can stop scanning
                 throw STOP;
