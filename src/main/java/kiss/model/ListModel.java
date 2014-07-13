@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * @version 2009/07/22 23:37:56
  */
+@SuppressWarnings("unchecked")
 class ListModel extends Model {
 
     /** The prameterized item of this model. */
