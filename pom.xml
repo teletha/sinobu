@@ -44,9 +44,7 @@
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
-            <manifestEntries>
-              <Built-By>Sinobu</Built-By>
-            </manifestEntries>
+            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
           </archive>
         </configuration>
       </plugin>
@@ -71,7 +69,7 @@
           <charset>UTF-8</charset>
           <encoding>UTF-8</encoding>
           <links>
-            <link>http://download.oracle.com/javase/7/docs/api/</link>
+            <link>http://docs.oracle.com/javase/8/docs/api/</link>
           </links>
         </configuration>
       </plugin>
@@ -104,6 +102,31 @@
           <strictCheck>true</strictCheck>
         </configuration>
       </plugin>
+
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <showDeprecation>false</showDeprecation>
+          <compilerArgument>-XDignore.symbol.file</compilerArgument>
+        </configuration>
+      </plugin>
+
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+  <properties>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 </project>
