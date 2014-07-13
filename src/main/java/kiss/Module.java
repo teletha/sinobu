@@ -89,7 +89,7 @@ class Module extends ClassVisitor {
      * @param path A module path as classpath, A <code>null</code> is not accepted.
      */
     Module(Path path, String pattern) throws MalformedURLException {
-        super(ASM4);
+        super(ASM5);
         // we don't need to check null because this is internal class
         // if (moduleFile == null) {
         // }
