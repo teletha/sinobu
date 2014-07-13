@@ -63,6 +63,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -82,6 +83,7 @@ import kiss.model.ClassUtil;
 import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -424,14 +426,14 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * input internally, so there is no need to use a buffered stream.
      * </p>
      *
-     * @param input  A {@link InputStream} to read from.
+     * @param input A {@link InputStream} to read from.
      * @param output An {@link OutputStream} to write to.
-     * @param close  Whether input and output steream will be closed automatically or not.
-     * @throws IOException          If an I/O error occurs.
+     * @param close Whether input and output steream will be closed automatically or not.
+     * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the input or output is null.
-     * @throws SecurityException    If a security manager exists and its
-     *                              {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *                              created.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static void copy(InputStream input, OutputStream output, boolean close) {
         int size = 0;
@@ -457,6 +459,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * is the following:
      * </p>
      * <p>
+     * 
      * <pre>
      * if (input.isFile) {
      *   if (output.isFile) {
@@ -486,19 +489,19 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * copied from the input file.
      * </p>
      *
-     * @param input    A input {@link Path} object which can be file or directory.
-     * @param output   An output {@link Path} object which can be file or directory.
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An output {@link Path} object which can be file or directory.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
-     * @throws IOException          If an I/O error occurs.
+     * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the specified input or output file is <code>null</code>.
-     * @throws NoSuchFileException  If the input file is directory and the output file is
-     *                              <em>not</em> directory.
-     * @throws SecurityException    In the case of the default provider, and a security manager is
-     *                              installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     *                              check read access to the source file, the
-     *                              {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     *                              the target file. If a symbolic link is copied the security manager is invoked to
-     *                              check {@link LinkPermission}("symbolic").
+     * @throws NoSuchFileException If the input file is directory and the output file is
+     *             <em>not</em> directory.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void copy(Path input, Path output, String... patterns) {
         new Visitor(input, output, 0, null, patterns);
@@ -509,6 +512,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Delete a input {@link Path}. Simplified strategy is the following:
      * </p>
      * <p>
+     * 
      * <pre>
      * if (input.isFile) {
      *   // Delete input file unconditionaly.
@@ -522,16 +526,16 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * by this Java virtual machine or other programs.
      * </p>
      *
-     * @param input    A input {@link Path} object which can be file or directory.
+     * @param input A input {@link Path} object which can be file or directory.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
-     * @throws IOException          If an I/O error occurs.
+     * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the specified input file is <code>null</code>.
-     * @throws SecurityException    In the case of the default provider, and a security manager is
-     *                              installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     *                              check read access to the source file, the
-     *                              {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     *                              the target file. If a symbolic link is copied the security manager is invoked to
-     *                              check {@link LinkPermission}("symbolic").
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void delete(Path input, String... patterns) {
         if (input != null) {
@@ -550,10 +554,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * returned list.
      * </p>
      *
-     * @param <E>            An Extension Point.
+     * @param <E> An Extension Point.
      * @param extensionPoint An extension point class. The <a
-     *                       href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     *                       otherwise this method will return empty list.
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return empty list.
      * @return All Extensions of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
@@ -576,13 +580,13 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * <a href="Extensible#ExtensionPoint">Extension Point</a> and the given key.
      * </p>
      *
-     * @param <E>            An Extension Point.
+     * @param <E> An Extension Point.
      * @param extensionPoint An Extension Point class. The <a
-     *                       href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     *                       otherwise this method will return <code>null</code>.
-     * @param key            An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return <code>null</code>.
+     * @param key An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.
      * @return A associated Extension of the given Extension Point and the given Extension Key or
-     * <code>null</code>.
+     *         <code>null</code>.
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
         Class<E> clazz = keys.find(Objects.hash(extensionPoint, key));
@@ -601,10 +605,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * returned list.
      * </p>
      *
-     * @param <E>            An Extension Point.
+     * @param <E> An Extension Point.
      * @param extensionPoint An extension point class. The <a
-     *                       href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     *                       otherwise this method will return empty list.
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return empty list.
      * @return All Extension classes of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
@@ -671,9 +675,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * <li>Locale("es"): result MyResources.class</li>
      * </ol>
      *
-     * @param <B>         A resource bundle.
+     * @param <B> A resource bundle.
      * @param bundleClass A resource bundle class. <code>null</code> will throw
-     *                    {@link NullPointerException}.
+     *            {@link NullPointerException}.
      * @return A suitable resource bundle class for the given bundle class and locale.
      * @throws NullPointerException If the bundle class is <code>null</code>.
      */
@@ -714,8 +718,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      *
      * @param delimiter A sequence of characters that is used to separate each of the elements in
-     *                  the resulting String.
-     * @param items     A {@link Iterable} items.
+     *            the resulting String.
+     * @param items A {@link Iterable} items.
      * @return A concat expression.
      * @throws NullPointerException If items is <code>null</code>.
      */
@@ -730,8 +734,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      *
      * @param delimiter A sequence of characters that is used to separate each of the elements in
-     *                  the resulting String.
-     * @param items     A {@link Iterable} items.
+     *            the resulting String.
+     * @param items A {@link Iterable} items.
      * @return A concat expression.
      */
     public static String join(CharSequence delimiter, Iterable items) {
@@ -760,9 +764,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param filePath A location path.
      * @return A located {@link Path}.
      * @throws NullPointerException If the given file path is null.
-     * @throws SecurityException    If a security manager exists and its
-     *                              {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *                              created.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static Path locate(URL filePath) {
         try {
@@ -781,9 +785,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param filePath A location path.
      * @return A located {@link Path}.
      * @throws NullPointerException If the given file path is null.
-     * @throws SecurityException    If a security manager exists and its
-     *                              {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *                              created.
+     * @throws SecurityException If a security manager exists and its
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static Path locate(String filePath) {
         return Paths.get(filePath);
@@ -797,8 +801,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *
      * @return A newly created temporary file which is not exist yet.
      * @throws SecurityException If a security manager exists and its
-     *                           {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *                           created.
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static Path locateTemporary() {
         try {
@@ -827,11 +831,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * @param <M>
      * @param modelClass
      * @return A instance of the specified model class. This instance is managed by Sinobu.
-     * @throws NullPointerException          If the model class is <code>null</code>.
-     * @throws IllegalArgumentException      If the model class is non-accessible or final class.
+     * @throws NullPointerException If the model class is <code>null</code>.
+     * @throws IllegalArgumentException If the model class is non-accessible or final class.
      * @throws UnsupportedOperationException If the model class is inner-class.
-     * @throws ClassCircularityError         If the model has circular dependency.
-     * @throws InstantiationException        If Sinobu can't instantiate(resolve) the model class.
+     * @throws ClassCircularityError If the model has circular dependency.
+     * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */
     public static <M> M make(Class<M> modelClass) {
         return makeLifestyle(modelClass).get();
@@ -849,11 +853,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *
      * @param <M>
      * @return A instance of the specified model class. This instance is managed by Sinobu.
-     * @throws NullPointerException          If the model class is <code>null</code>.
-     * @throws IllegalArgumentException      If the model class is non-accessible or final class.
+     * @throws NullPointerException If the model class is <code>null</code>.
+     * @throws IllegalArgumentException If the model class is non-accessible or final class.
      * @throws UnsupportedOperationException If the model class is inner-class.
-     * @throws ClassCircularityError         If the model has circular dependency.
-     * @throws InstantiationException        If Sinobu can't instantiate(resolve) the model class.
+     * @throws ClassCircularityError If the model has circular dependency.
+     * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */
     static <M> Lifestyle<M> makeLifestyle(Class<M> modelClass) {
         // Skip null check because this method can throw NullPointerException.
@@ -947,7 +951,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
     /**
      * Returns the automatic generated class which implements or extends the given model.
      *
-     * @param model          A class information of the model.
+     * @param model A class information of the model.
      * @param interceptables Information of interceptable methods.
      * @return A generated {@link Class} object.
      */
@@ -1187,7 +1191,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      *
      * @param annotation An annotation you want to write.
-     * @param visitor    An annotation target.
+     * @param visitor An annotation target.
      */
     private static void annotate(Annotation annotation, AnnotationVisitor visitor) {
         // For access non-public annotation class, use "getDeclaredMethods" instead of "getMethods".
@@ -1283,6 +1287,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * is the following:
      * </p>
      * <p>
+     * 
      * <pre>
      * if (input.isFile) {
      *   if (output.isFile) {
@@ -1310,19 +1315,19 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Moving a file is an atomic operation.
      * </p>
      *
-     * @param input    A input {@link Path} object which can be file or directory.
-     * @param output   An output {@link Path} object which can be file or directory.
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An output {@link Path} object which can be file or directory.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out.
-     * @throws IOException          If an I/O error occurs.
+     * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the specified input or output file is <code>null</code>.
-     * @throws NoSuchFileException  If the input file is directory and the output file is
-     *                              <em>not</em> directory.
-     * @throws SecurityException    In the case of the default provider, and a security manager is
-     *                              installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     *                              check read access to the source file, the
-     *                              {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     *                              the target file. If a symbolic link is copied the security manager is invoked to
-     *                              check {@link LinkPermission}("symbolic").
+     * @throws NoSuchFileException If the input file is directory and the output file is
+     *             <em>not</em> directory.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void move(Path input, Path output, String... patterns) {
         new Visitor(input, output, 1, null, patterns);
@@ -1352,14 +1357,14 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
      * @return A {@link Disposable} object for this observation. You can stop observing to call the
-     * method {@link Disposable#dispose()} of the returned object.
+     *         method {@link Disposable#dispose()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
-     * @throws SecurityException    In the case of the default provider, and a security manager is
-     *                              installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     *                              check read access to the source file, the
-     *                              {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     *                              the target file. If a symbolic link is copied the security manager is invoked to
-     *                              check {@link LinkPermission}("symbolic").
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static Events<WatchEvent<Path>> observe(Path path) {
         return observe(path, new String[0]);
@@ -1387,22 +1392,22 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * system events that are detected by the {@link Observer}.
      * </p>
      *
-     * @param path     A target path you want to observe. (file and directory are acceptable)
+     * @param path A target path you want to observe. (file and directory are acceptable)
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
-     *                 patterns if you want to observe a file.
+     *            patterns if you want to observe a file.
      * @return A {@link Disposable} object for this observation. You can stop observing to call the
-     * method {@link Disposable#dispose()} of the returned object.
+     *         method {@link Disposable#dispose()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
-     * @throws SecurityException    In the case of the default provider, and a security manager is
-     *                              installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     *                              check read access to the source file, the
-     *                              {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     *                              the target file. If a symbolic link is copied the security manager is invoked to
-     *                              check {@link LinkPermission}("symbolic").
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static Events<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
-            return observe(path.getParent(), new String[]{path.getFileName().toString()});
+            return observe(path.getParent(), new String[] {path.getFileName().toString()});
         }
 
         return new Events(observer -> {
@@ -1544,6 +1549,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * in finally block like the following.
      * </p>
      * <p>
+     * 
      * <pre>
      * AutoCloseable input = null;
      *
@@ -1566,6 +1572,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * caller of the method which calls this method.
      * </p>
      * <p>
+     * 
      * <pre>
      * private void callerWithoutErrorHandling() {
      *     methodQuietly();
@@ -1600,7 +1607,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1620,7 +1627,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Deceive complier that the specified checked exception is unchecked exception.
      * </p>
      *
-     * @param <T>       A dummy type for {@link RuntimeException}.
+     * @param <T> A dummy type for {@link RuntimeException}.
      * @param throwable Any error.
      * @return A runtime error.
      * @throws T Dummy error to deceive compiler.
@@ -1635,17 +1642,17 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Reads Java object tree from the given XML or JSON input.
      * </p>
      *
-     * @param input  A serialized Java object tree data as XML or JSON. If the input is incompatible
-     *               with Java object, this method ignores the input. <code>null</code> will throw
-     *               {@link NullPointerException}. The empty or invalid format data will throw
-     *               {@link ScriptException}.
+     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
      * @param output A root Java object. All properties will be assigned from the given data deeply.
-     *               If the input is incompatible with Java object, this method ignores the input.
-     *               <code>null</code> will throw {@link java.lang.NullPointerException}.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
-     * @throws NullPointerException  If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException       If the input data is empty or invalid format.
-     * @throws NoSuchFileException   If the input path doesn't exist.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws NoSuchFileException If the input path doesn't exist.
      * @throws AccessDeniedException If the input is not regular file but directory.
      */
     public static <M> M read(Path input, M output) {
@@ -1661,16 +1668,16 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Reads Java object tree from the given XML or JSON input.
      * </p>
      *
-     * @param input  A serialized Java object tree data as XML or JSON. If the input is incompatible
-     *               with Java object, this method ignores the input. <code>null</code> will throw
-     *               {@link NullPointerException}. The empty or invalid format data will throw
-     *               {@link ScriptException}.
+     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
      * @param output A root Java object. All properties will be assigned from the given data deeply.
-     *               If the input is incompatible with Java object, this method ignores the input.
-     *               <code>null</code> will throw {@link java.lang.NullPointerException}.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException      If the input data is empty or invalid format.
+     * @throws ScriptException If the input data is empty or invalid format.
      */
     public static <M> M read(CharSequence input, M output) {
         Objects.nonNull(input);
@@ -1687,16 +1694,16 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * will be invoked certainly.
      * </p>
      *
-     * @param input  A serialized Java object tree data as XML or JSON. If the input is incompatible
-     *               with Java object, this method ignores the input. <code>null</code> will throw
-     *               {@link NullPointerException}. The empty or invalid format data will throw
-     *               {@link ScriptException}.
+     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
      * @param output A root Java object. All properties will be assigned from the given data deeply.
-     *               If the input is incompatible with Java object, this method ignores the input.
-     *               <code>null</code> will throw {@link java.lang.NullPointerException}.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IOError              If the input data is empty or invalid format.
+     * @throws IOError If the input data is empty or invalid format.
      */
     public static <M> M read(Reader input, M output) {
         PushbackReader reader = new PushbackReader(input, 4);
@@ -1715,7 +1722,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             if (c == '{') {
                 // Parse as JSON
-                reader.unread(new char[]{'a', '='});
+                reader.unread(new char[] {'a', '='});
 
                 return read(model, output, script.eval(reader));
             } else {
@@ -1738,9 +1745,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * XML reader for Object Graph deserialization.
      * </p>
      *
-     * @param <M>   A current model type.
+     * @param <M> A current model type.
      * @param model A java object model.
-     * @param root  A root java value.
+     * @param root A root java value.
      * @param input A data input.
      * @return A restored java object.
      */
@@ -1752,109 +1759,109 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
         while (node.hasNext()) {
             switch (node.next()) {
-                case XMLStreamReader.START_ELEMENT:
-                    Agent state;
-                    String name = node.getLocalName();
+            case XMLStreamReader.START_ELEMENT:
+                Agent state;
+                String name = node.getLocalName();
 
-                    // create next state
-                    if (states.size() == 0) {
-                        // this is root object
-                        state = new Agent();
-                        state.model = model;
-                        state.object = root;
-                    } else {
-                        Agent parent = states.peekLast();
-
-                        // Compute property.
-                        //
-                        // A name of the current element indicates the hint of the property name.
-                        // So you can get a valid property from the parent state.
-                        if (parent.model.isCollection()) {
-                            name = node.getAttributeValue(URI, "key");
-
-                            if (name == null) {
-                                name = String.valueOf(parent.index++);
-                            }
-                        }
-
-                        Property property = parent.model.getProperty(name);
-
-                        // Compute object
-                        //
-                        // Property indicates a object, so you should create a suitable object.
-                        Object object = null;
-
-                        // check attribute model
-                        Codec codec = property.model.getCodec();
-
-                        if (codec != null) {
-                            String value = node.getAttributeValue("", "value");
-
-                            if (value == null) {
-                                object = null;
-                            } else {
-                                object = codec.fromString(value);
-                            }
-                        } else {
-                            // collection model and normal model
-                            object = make(property.model.type);
-                        }
-
-                        // create next state
-                        state = new Agent();
-                        state.model = property.model;
-                        state.object = object;
-                        state.property = property;
-                    }
-
-                    // assign properties which are represented by attributes
-                    for (int i = 0; i < node.getAttributeCount(); i++) {
-                        // check namespace
-                        if (URI.equals(node.getAttributeNamespace(i))) {
-                            if (node.getAttributeLocalName(i).equals("id")) {
-                                // retrieve identifier for the current object
-                                name = node.getAttributeValue(i);
-
-                                // retrieve object for the identifier
-                                Object object = objects.get(name);
-
-                                if (object == null) {
-                                    // Object is not registered for the identifier, so this is first
-                                    // encounter of thie object.
-                                    objects.put(name, state.object);
-                                } else {
-                                    // Object is registered for the identifier, so this is
-                                    // referenced object.
-                                    state.object = object;
-                                }
-                            }
-                        } else {
-                            Property property = state.model.getProperty(node.getAttributeLocalName(i));
-
-                            // ignore deprecated property
-                            if (property != null) {
-                                // restore a property value form an attribute value
-                                Codec codec = property.model.getCodec();
-
-                                if (codec != null) {
-                                    state.model.set(state.object, property, codec.fromString(node.getAttributeValue(i)));
-                                }
-                            }
-                        }
-                    }
-
-                    // stack current state for reference
-                    states.offer(state);
-                    break;
-
-                case XMLStreamReader.END_ELEMENT:
-                    Agent current = states.pollLast();
+                // create next state
+                if (states.size() == 0) {
+                    // this is root object
+                    state = new Agent();
+                    state.model = model;
+                    state.object = root;
+                } else {
                     Agent parent = states.peekLast();
 
-                    if (parent != null) {
-                        parent.model.set(parent.object, current.property, current.object);
+                    // Compute property.
+                    //
+                    // A name of the current element indicates the hint of the property name.
+                    // So you can get a valid property from the parent state.
+                    if (parent.model.isCollection()) {
+                        name = node.getAttributeValue(URI, "key");
+
+                        if (name == null) {
+                            name = String.valueOf(parent.index++);
+                        }
                     }
-                    break;
+
+                    Property property = parent.model.getProperty(name);
+
+                    // Compute object
+                    //
+                    // Property indicates a object, so you should create a suitable object.
+                    Object object = null;
+
+                    // check attribute model
+                    Codec codec = property.model.getCodec();
+
+                    if (codec != null) {
+                        String value = node.getAttributeValue("", "value");
+
+                        if (value == null) {
+                            object = null;
+                        } else {
+                            object = codec.fromString(value);
+                        }
+                    } else {
+                        // collection model and normal model
+                        object = make(property.model.type);
+                    }
+
+                    // create next state
+                    state = new Agent();
+                    state.model = property.model;
+                    state.object = object;
+                    state.property = property;
+                }
+
+                // assign properties which are represented by attributes
+                for (int i = 0; i < node.getAttributeCount(); i++) {
+                    // check namespace
+                    if (URI.equals(node.getAttributeNamespace(i))) {
+                        if (node.getAttributeLocalName(i).equals("id")) {
+                            // retrieve identifier for the current object
+                            name = node.getAttributeValue(i);
+
+                            // retrieve object for the identifier
+                            Object object = objects.get(name);
+
+                            if (object == null) {
+                                // Object is not registered for the identifier, so this is first
+                                // encounter of thie object.
+                                objects.put(name, state.object);
+                            } else {
+                                // Object is registered for the identifier, so this is
+                                // referenced object.
+                                state.object = object;
+                            }
+                        }
+                    } else {
+                        Property property = state.model.getProperty(node.getAttributeLocalName(i));
+
+                        // ignore deprecated property
+                        if (property != null) {
+                            // restore a property value form an attribute value
+                            Codec codec = property.model.getCodec();
+
+                            if (codec != null) {
+                                state.model.set(state.object, property, codec.fromString(node.getAttributeValue(i)));
+                            }
+                        }
+                    }
+                }
+
+                // stack current state for reference
+                states.offer(state);
+                break;
+
+            case XMLStreamReader.END_ELEMENT:
+                Agent current = states.pollLast();
+                Agent parent = states.peekLast();
+
+                if (parent != null) {
+                    parent.model.set(parent.object, current.property, current.object);
+                }
+                break;
             }
         }
         return root;
@@ -1865,10 +1872,10 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Helper method to traverse json structure using Java Object {@link Model}.
      * </p>
      *
-     * @param <M>   A current model type.
+     * @param <M> A current model type.
      * @param model A java object model.
-     * @param java  A java value.
-     * @param js    A javascript value.
+     * @param java A java value.
+     * @param js A javascript value.
      * @return A restored java object.
      */
     private static <M> M read(Model model, M java, Object js) {
@@ -1929,11 +1936,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Execute the specified task in background {@link Thread} with the specified delay.
      * </p>
      *
-     * @param time              A delay time.
-     * @param unit              A delay time unit.
+     * @param time A delay time.
+     * @param unit A delay time unit.
      * @param parallelExecution The <code>true</code> will execute task in parallel,
-     *                          <code>false</code> will execute task in serial.
-     * @param task              A task to execute.
+     *            <code>false</code> will execute task in serial.
+     * @param task A task to execute.
      */
     public static Future<?> schedule(long time, TimeUnit unit, boolean parallelExecution, Runnable task) {
         Runnable runnable = task;
@@ -1956,8 +1963,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Transform any type object into the specified type possible.
      * </p>
      *
-     * @param <M>    A output type you want to transform into.
-     * @param input  A target object.
+     * @param <M> A output type you want to transform into.
+     * @param input A target object.
      * @param output A target type.
      * @return A transformed object.
      * @throws NullPointerException If the output type is <code>null</code>.
@@ -2013,7 +2020,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Walk a file tree and collect files you want to filter by pattern matching.
      * </p>
      *
-     * @param start    A depature point. The result list doesn't include this starting path.
+     * @param start A depature point. The result list doesn't include this starting path.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      * @return All matched files. (<em>not</em> including directory)
      */
@@ -2026,7 +2033,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * Walk a file tree and collect directories you want to filter by various conditions.
      * </p>
      *
-     * @param start    A depature point. The result list include this starting path.
+     * @param start A depature point. The result list include this starting path.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      * @return All matched directories. (<em>not</em> including file)
      */
@@ -2076,8 +2083,8 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * is ignored and the visitor is not invoked for that file (or directory).
      * </p>
      *
-     * @param start    A depature point. This starting path is not notified to your visitor.
-     * @param visitor  A file tree visitor to invoke for each file and directory.
+     * @param start A depature point. This starting path is not notified to your visitor.
+     * @param visitor A file tree visitor to invoke for each file and directory.
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      */
     public static void walk(Path start, FileVisitor visitor, String... patterns) {
@@ -2093,7 +2100,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      *
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
-     *              throw {@link java.lang.NullPointerException}.
+     *            throw {@link java.lang.NullPointerException}.
      * @throws NullPointerException If the input Java object is <code>null</code> .
      */
     public static void write(Object input) {
@@ -2116,13 +2123,13 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * will be invoked certainly.
      * </p>
      *
-     * @param input  A Java object. All properties will be serialized deeply. <code>null</code> will
-     *               throw {@link java.lang.NullPointerException}.
+     * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
+     *            throw {@link java.lang.NullPointerException}.
      * @param output A serialized data output. <code>null</code> will throw
-     *               {@link NullPointerException}.
-     * @param json   <code>true</code> will produce JSON expression, <code>false</code> will produce
-     *               XML expression.
-     * @throws NullPointerException  If the input Java object or the output is <code>null</code> .
+     *            {@link NullPointerException}.
+     * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
+     *            XML expression.
+     * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      * @throws AccessDeniedException If the output is not regular file but directory.
      */
     public static void write(Object input, Path output, boolean json) {
@@ -2146,12 +2153,12 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * will be invoked certainly.
      * </p>
      *
-     * @param input  A Java object. All properties will be serialized deeply. <code>null</code> will
-     *               throw {@link java.lang.NullPointerException}.
+     * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
+     *            throw {@link java.lang.NullPointerException}.
      * @param output A serialized data output. <code>null</code> will throw
-     *               {@link NullPointerException}.
-     * @param json   <code>true</code> will produce JSON expression, <code>false</code> will produce
-     *               XML expression.
+     *            {@link NullPointerException}.
+     * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
+     *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
     public static void write(Object input, Appendable output, boolean json) {
@@ -2281,7 +2288,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      * </p>
      *
      * @param classPath A classpath to load.
-     * @param filter    Filter classes by package of the specified class.
+     * @param filter Filter classes by package of the specified class.
      * @return A managed {@link ClassLoader}.
      * @see #unload(Path)
      * @see kiss.ClassListener#load(Class)
