@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 /**
  * @version 2014/03/11 14:52:00
  */
+@SuppressWarnings("unchecked")
 public class Events<V> {
 
     /** For reuse. */
@@ -143,9 +144,7 @@ public class Events<V> {
     public final <R> Events<R> as(Class<R> type) {
         Objects.nonNull(type);
 
-        return (Events<R>) filter(value -> {
-            return type.isInstance(value);
-        });
+        return (Events<R>) filter(type::isInstance);
     }
 
     /**
@@ -688,6 +687,7 @@ public class Events<V> {
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
+    @SafeVarargs
     public static Events<Boolean> all(Events<Boolean>... observables) {
         return all(IdenticalPredicate, observables);
     }
@@ -702,6 +702,7 @@ public class Events<V> {
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
+    @SafeVarargs
     public static <V> Events<Boolean> all(Predicate<V> predicate, Events<V>... observables) {
         return condition(values -> {
             for (boolean value : values) {
@@ -722,6 +723,7 @@ public class Events<V> {
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
+    @SafeVarargs
     public static Events<Boolean> any(Events<Boolean>... observables) {
         return any(IdenticalPredicate, observables);
     }
@@ -736,6 +738,7 @@ public class Events<V> {
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
+    @SafeVarargs
     public static <V> Events<Boolean> any(Predicate<V> predicate, Events<V>... observables) {
         return condition(values -> {
             for (boolean value : values) {
@@ -756,6 +759,7 @@ public class Events<V> {
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
+    @SafeVarargs
     public static Events<Boolean> none(Events<Boolean>... observables) {
         return none(IdenticalPredicate, observables);
     }
@@ -770,6 +774,7 @@ public class Events<V> {
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
+    @SafeVarargs
     public static <V> Events<Boolean> none(Predicate<V> predicate, Events<V>... observables) {
         return condition(values -> {
             for (boolean value : values) {
