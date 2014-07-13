@@ -24,18 +24,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 import kiss.I;
 
@@ -59,6 +55,7 @@ import kiss.I;
  * 
  * @version 2014/03/11 13:52:21
  */
+@SuppressWarnings("unchecked")
 public class Model {
 
     /**
@@ -154,28 +151,22 @@ public class Model {
                     break;
 
                 case 65575278:// java.util.Date
-                    codec.decoder = (Function<String, Date>) (value) -> {
+                    codec.decoder = (value) -> {
                         try {
-                            return format.parse(value);
+                            return format.parse((String) value);
                         } catch (Exception e) {
                             throw I.quiet(e);
                         }
                         // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
                     };
-                    codec.encoder = (Function<Date, String>) (value) -> {
-                        return format.format(value);
-                        // return LocalDateTime.ofInstant(value.toInstant(),
-                        // ZoneOffset.UTC).toString();
-                    };
+                    codec.encoder = value -> format.format(value);
+                    // return LocalDateTime.ofInstant(value.toInstant(),
+                    // ZoneOffset.UTC).toString();
                     break;
 
                 case 1464606545: // java.nio.file.Path
-                    codec.decoder = (Function<String, Path>) (value) -> {
-                        return I.locate(value);
-                    };
-                    codec.encoder = (Function<Path, String>) (value) -> {
-                        return value.toString().replace(File.separatorChar, '/');
-                    };
+                    codec.decoder = value -> I.locate((String) value);
+                    codec.encoder = value -> value.toString().replace(File.separatorChar, '/');
                     break;
 
                 default:
@@ -235,10 +226,8 @@ public class Model {
 
             // build valid properties
             ArrayList properties = new ArrayList(); // don't use type parameter to reduce footprint
-            Iterator<Entry<String, Method[]>> iterator = candidates.entrySet().iterator();
 
-            while (iterator.hasNext()) {
-                Entry<String, Method[]> entry = iterator.next();
+            for (Entry<String, java.lang.reflect.Method[]> entry : candidates.entrySet()) {
                 Method[] methods = entry.getValue();
 
                 if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
