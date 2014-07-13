@@ -31,6 +31,7 @@ import java.util.Map;
  * 
  * @version 2009/07/17 15:03:16
  */
+@SuppressWarnings("unchecked")
 public class Property implements Comparable<Property> {
 
     /** The assosiated object model with this property. */
@@ -57,6 +58,20 @@ public class Property implements Comparable<Property> {
     public Property(Model model, String name) {
         this.model = model;
         this.name = name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compareTo(Property o) {
+        // compare type
+        if (isAttribute() != o.isAttribute()) {
+            return isAttribute() ? -1 : 1;
+        }
+
+        // compare name
+        return name.compareTo(o.name);
     }
 
     /**
@@ -111,23 +126,9 @@ public class Property implements Comparable<Property> {
      * 
      * @param element Annotations you want to add.
      */
-    public void addAnnotation(AnnotatedElement element) {
+    void addAnnotation(AnnotatedElement element) {
         for (Annotation annotation : element.getAnnotations()) {
             annotations.put(annotation.annotationType(), annotation);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compareTo(Property o) {
-        // compare type
-        if (isAttribute() != o.isAttribute()) {
-            return isAttribute() ? -1 : 1;
-        }
-
-        // compare name
-        return name.compareTo(o.name);
     }
 }

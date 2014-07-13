@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 
 import javafx.util.StringConverter;
+
 import kiss.Extensible;
 import kiss.I;
 import kiss.Manageable;
@@ -25,8 +26,8 @@ import kiss.Singleton;
  * </p>
  * <p>
  * This class provides all-purpose codec for literalization. The class which is provided by the
- * constructor {@link kiss.model.Codec#Codec()} must fit the following two requirements. One is that it
- * have the constructor which has a single {@link String} argument like
+ * constructor {@link kiss.model.Codec#Codec()} must fit the following two requirements. One is that
+ * it have the constructor which has a single {@link String} argument like
  * {@link StringBuilder#StringBuilder(String)}. The other is that the constructor can restore to the
  * original state from a return value of its method {@link #toString()}.
  * </p>
@@ -35,6 +36,7 @@ import kiss.Singleton;
  * @version 2014/03/11 13:52:32
  * @see StringConverter
  */
+@SuppressWarnings("unchecked")
 @Manageable(lifestyle = Singleton.class)
 public class Codec<T> extends StringConverter<T> implements Extensible {
 

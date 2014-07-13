@@ -18,6 +18,7 @@ import kiss.I;
 /**
  * @version 2010/01/10 17:10:23
  */
+@SuppressWarnings("unchecked")
 class MapModel extends Model {
 
     /** The prameterized key of this model. */
