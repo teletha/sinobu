@@ -40,7 +40,7 @@ public class Property implements Comparable<Property> {
     public final String name;
 
     /** The annotated element. */
-    Map annotations = new HashMap(2);
+    final Map annotations = new HashMap(2);
 
     /** The actual accessor methods. */
     MethodHandle[] accessors;
@@ -118,8 +118,9 @@ public class Property implements Comparable<Property> {
     }
 
     /**
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     * {@inheritDoc}
      */
+    @Override
     public int compareTo(Property o) {
         // compare type
         if (isAttribute() != o.isAttribute()) {

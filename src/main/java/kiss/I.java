@@ -1407,7 +1407,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
      */
     public static Events<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
-            return observe(path.getParent(), new String[] {path.getFileName().toString()});
+            return observe(path.getParent(), path.getFileName().toString());
         }
 
         return new Events(observer -> {

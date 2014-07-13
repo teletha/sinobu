@@ -36,6 +36,7 @@ import kiss.Table;
  * 
  * @version 2011/12/11 20:16:03
  */
+@SuppressWarnings("unchecked")
 public final class ClassUtil {
 
     /** The list of primitive classes. (except for void type) */
@@ -137,11 +138,7 @@ public final class ClassUtil {
                                     if (repeatable != null && repeatable.value() == annotationType) {
                                         value.setAccessible(true);
 
-                                        Annotation[] items = (Annotation[]) value.invoke(annotation);
-
-                                        for (Annotation item : items) {
-                                            list.add(item);
-                                        }
+                                        Collections.addAll(list, (Annotation[]) value.invoke(annotation));
                                         continue;
                                     }
                                 }
@@ -245,10 +242,7 @@ public final class ClassUtil {
         Set<Type> types = new HashSet();
         types.add(clazz);
         types.add(raw.getGenericSuperclass());
-
-        for (Type type : raw.getGenericInterfaces()) {
-            types.add(type);
-        }
+        Collections.addAll(types, raw.getGenericInterfaces());
 
         // check them all
         for (Type type : types) {
