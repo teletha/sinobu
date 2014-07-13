@@ -20,6 +20,7 @@ import kiss.model.Model;
 /**
  * @version 2014/01/31 10:54:06
  */
+@SuppressWarnings("unchecked")
 class Modules extends ClassLocal<Lifestyle> implements ClassListener {
 
     /** The module list. */

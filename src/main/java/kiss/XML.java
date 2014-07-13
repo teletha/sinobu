@@ -43,6 +43,7 @@ import com.sun.org.apache.xml.internal.utils.TreeWalker;
 /**
  * @version 2012/11/18 22:33:02
  */
+@SuppressWarnings("unchecked")
 public class XML implements Iterable<XML> {
 
     /**
@@ -864,7 +865,7 @@ public class XML implements Iterable<XML> {
             match = matcher.group(3);
 
             if (match != null) {
-                xpath.append("[@id='" + match + "']");
+                xpath.append("[@id='").append(match).append("']");
             }
 
             // =================================================
@@ -874,7 +875,9 @@ public class XML implements Iterable<XML> {
 
             if (match != null && match.length() != 0) {
                 for (String className : match.substring(1).split("\\.")) {
-                    xpath.append("[contains(concat(' ',normalize-space(@class),' '),' " + className + " ')]");
+                    xpath.append("[contains(concat(' ',normalize-space(@class),' '),' ")
+                            .append(className)
+                            .append(" ')]");
                 }
             }
 

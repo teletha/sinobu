@@ -31,7 +31,7 @@ import java.util.Collections;
 /**
  * @version 2014/01/14 9:37:54
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unchecked"})
 class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, Runnable {
 
     // =======================================================
@@ -371,7 +371,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
             } catch (ClosedWatchServiceException e) {
                 break; // Dispose this file watching service.
             } catch (Exception e) {
-                continue;
+                // TODO Can we ignore error?
             }
         }
     }

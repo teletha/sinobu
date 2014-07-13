@@ -200,7 +200,7 @@ import org.xml.sax.InputSource;
  *
  * @version 2014/01/24 16:01:56
  */
-@SuppressWarnings("resource")
+@SuppressWarnings({"resource", "unchecked"})
 public class I implements ClassListener<Extensible>, ThreadFactory {
 
     // Candidates of Method Name
@@ -1884,7 +1884,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
 
             for (String id : map.keySet()) {
                 // compute property
-                Property property = model.getProperty(id.toString());
+                Property property = model.getProperty(id);
 
                 if (property != null) {
                     // calculate value

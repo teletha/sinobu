@@ -60,6 +60,7 @@ import kiss.model.ClassUtil;
  *
  * @version 2012/09/11 14:31:17
  */
+@SuppressWarnings("unchecked")
 class Module extends ClassVisitor {
 
     /** The dirty process management. */
@@ -130,10 +131,12 @@ class Module extends ClassVisitor {
                     // static field reference will be inlined by compiler, so we should pass all
                     // flags to ClassReader (it doesn't increase byte code size)
                     new ClassReader(input).accept(this, SKIP_CODE | SKIP_DEBUG | SKIP_FRAMES);
-                } catch (FileNotFoundException e) {
+                } catch (FileNotFoundException | IllegalStateException e) {
+                    // FileNotFoundException
                     // this exception means that the given class name may indicate some external
                     // extension class or interface, so we can ignore it
-                } catch (IllegalStateException e) {
+
+                    // IllegalStateException
                     // scanning was stoped normally
                 } finally {
                     I.quiet(input);
@@ -320,10 +323,6 @@ class Module extends ClassVisitor {
             char c = className.charAt(4);
             return c != '/' && (c != 'x' || className.charAt(5) != '/');
         }
-
-        if (className.startsWith("org/w3c/") || className.startsWith("org/xml/")) {
-            return false;
-        }
-        return true;
+        return !(className.startsWith("org/w3c/") || className.startsWith("org/xml/"));
     }
 }
