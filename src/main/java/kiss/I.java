@@ -313,6 +313,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         modules.set(List.class, new Prototype(ArrayList.class));
         modules.set(Map.class, new Prototype(HashMap.class));
         modules.set(Prototype.class, new Prototype(Prototype.class));
+        modules.set(Locale.class, Locale::getDefault);
 
         try {
             // configure dom builder
