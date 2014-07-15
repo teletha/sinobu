@@ -13,10 +13,10 @@ import static java.lang.reflect.Modifier.*;
 
 import java.beans.Introspector;
 import java.beans.Transient;
-import java.io.File;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -24,7 +24,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import kiss.ClassVariable;
+import kiss.Codec;
 import kiss.I;
 
 /**
@@ -58,13 +58,6 @@ import kiss.I;
 @SuppressWarnings("unchecked")
 public class Model {
 
-    /**
-     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
-     * separate format instances for each thread. If multiple threads access a format concurrently,
-     * it must be synchronized externally.
-     */
-    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
     /** The model repository. */
     private static final ClassVariable<Model> models = new ClassVariable(false);
 
@@ -78,7 +71,7 @@ public class Model {
     public final List<Property> properties;
 
     /** The built-in codec. */
-    private Codec codec = new Codec();
+    private Codec codec;
 
     /**
      * Create Model instance.
@@ -100,7 +93,7 @@ public class Model {
         try {
             // search from built-in codecs
             if (type.isEnum()) {
-                codec.type = type;
+                codec = value -> Enum.valueOf(type, value);
             } else {
                 switch (type.getName().hashCode()) {
                 case 64711720: // boolean
@@ -127,11 +120,20 @@ public class Model {
                 case -989675752: // java.math.BigInteger
                 case -1405464277: // java.math.BigDecimal
                     // constructer pattern
-                    codec.constructor = ClassUtil.wrap(type).getConstructor(String.class);
+                    Constructor constructor = ClassUtil.wrap(type).getConstructor(String.class);
+
+                    codec = value -> {
+                        try {
+                            return constructor.newInstance(value);
+                        } catch (Exception e) {
+                            throw I.quiet(e);
+                        }
+                    };
                     break;
 
                 case 3052374: // char
                 case 155276373: // java.lang.Character
+                    codec = value -> value.charAt(0);
                     break;
 
                 case -1246033885: // java.time.LocalTime
@@ -147,26 +149,19 @@ public class Model {
                 case 649503318: // java.time.Period
                 case 1296075756: // java.time.Instant
                     // parse method pattern
-                    codec.method = type.getMethod("parse", CharSequence.class);
-                    break;
+                    Method method = type.getMethod("parse", CharSequence.class);
 
-                case 65575278:// java.util.Date
-                    codec.decoder = (value) -> {
+                    codec = value -> {
                         try {
-                            return format.parse((String) value);
+                            return method.invoke(null, value);
                         } catch (Exception e) {
                             throw I.quiet(e);
                         }
-                        // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
                     };
-                    codec.encoder = value -> format.format(value);
-                    // return LocalDateTime.ofInstant(value.toInstant(),
-                    // ZoneOffset.UTC).toString();
                     break;
 
                 case 1464606545: // java.nio.file.Path
-                    codec.decoder = value -> I.locate((String) value);
-                    codec.encoder = value -> value.toString().replace(File.separatorChar, '/');
+                    codec = value -> I.locate(value);
                     break;
 
                 default:
