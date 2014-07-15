@@ -17,8 +17,6 @@ import java.nio.file.Path;
 import kiss.I;
 import kiss.Manageable;
 import kiss.Singleton;
-import kiss.scratchpad.ExtensionKeyTest.Extension;
-import kiss.scratchpad.ExtensionKeyTest.ExtensionKeyProvider;
 
 /**
  * @version 2008/06/18 8:42:37
@@ -41,16 +39,6 @@ public class SinobuScratchpad {
      */
     public static <M> M create(M... m) {
         return (M) I.make(m.getClass().getComponentType());
-    }
-
-    /**
-     * @param <E>
-     * @param extensionPoint
-     * @param key
-     * @return An extension.
-     */
-    public static <E extends Extension<? extends ExtensionKeyProvider<? super K>>, K> E find(Class<E> extensionPoint, K key) {
-        return null;
     }
 
     /**
