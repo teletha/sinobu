@@ -11,7 +11,10 @@ package kiss;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import kiss.model.ClassUtil;
@@ -21,7 +24,15 @@ import kiss.model.Model;
  * @version 2014/01/31 10:54:06
  */
 @SuppressWarnings("unchecked")
-class Modules extends ClassVariable<Lifestyle> implements ClassListener {
+@Manageable(lifestyle = Singleton.class)
+class Modules extends ClassVariable<Lifestyle> implements ClassListener, Lifestyle<Locale>, Codec<Date> {
+
+    /**
+     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
+     * separate format instances for each thread. If multiple threads access a format concurrently,
+     * it must be synchronized externally.
+     */
+    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -177,5 +188,35 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener {
                 }
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Locale get() {
+        return Locale.getDefault();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Date decode(String value) {
+        try {
+            return format.parse(value);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+        // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String encode(Date value) {
+        return format.format(value);
+        // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
     }
 }

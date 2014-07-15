@@ -80,7 +80,6 @@ import jdk.internal.org.objectweb.asm.Label;
 import jdk.internal.org.objectweb.asm.MethodVisitor;
 import jdk.internal.org.objectweb.asm.Type;
 import kiss.model.ClassUtil;
-import kiss.model.Codec;
 import kiss.model.Model;
 import kiss.model.Property;
 
@@ -1805,7 +1804,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                         if (value == null) {
                             object = null;
                         } else {
-                            object = codec.fromString(value);
+                            object = codec.decode(value);
                         }
                     } else {
                         // collection model and normal model
@@ -1849,7 +1848,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                             Codec codec = property.model.getCodec();
 
                             if (codec != null) {
-                                state.model.set(state.object, property, codec.fromString(node.getAttributeValue(i)));
+                                state.model.set(state.object, property, codec.decode(node.getAttributeValue(i)));
                             }
                         }
                     }
@@ -2010,11 +2009,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         } else {
             // type conversion
             if (output == String.class) {
-                return (M) ((inputCodec != null) ? inputCodec.toString(input) : input.toString());
+                return (M) ((inputCodec != null) ? inputCodec.encode(input) : input.toString());
             }
 
             if (inputModel.type == String.class && outputCodec != null) {
-                return outputCodec.fromString((String) input);
+                return outputCodec.decode((String) input);
             }
             return (M) input;
         }

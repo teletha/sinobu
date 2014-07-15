@@ -11,8 +11,6 @@ package kiss;
 
 import java.util.Locale;
 
-import kiss.model.Codec;
-
 /**
  * <p>
  * This is dual-purpose implementation class. One is codec for {@link Class}. The other is lifestyle
@@ -24,13 +22,13 @@ import kiss.model.Codec;
  * 
  * @version 2013/07/27 4:11:17
  */
-class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
+class ClassCodec implements Codec<Class> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Class fromString(String value) {
+    public Class decode(String value) {
         for (Module module : I.modules.modules) {
             try {
                 return Class.forName(value, false, module.loader);
@@ -45,15 +43,7 @@ class ClassCodec extends Codec<Class> implements Lifestyle<Locale> {
      * {@inheritDoc}
      */
     @Override
-    public String toString(Class value) {
+    public String encode(Class value) {
         return value.getName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Locale get() {
-        return Locale.getDefault();
     }
 }
