@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import kiss.model.ClassUtil;
@@ -25,7 +24,7 @@ import kiss.model.Model;
  */
 @SuppressWarnings("unchecked")
 @Manageable(lifestyle = Singleton.class)
-class Modules extends ClassVariable<Lifestyle> implements ClassListener, Lifestyle<Locale>, Codec<Date> {
+class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<Date> {
 
     /**
      * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
@@ -188,14 +187,6 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Lifesty
                 }
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Locale get() {
-        return Locale.getDefault();
     }
 
     /**

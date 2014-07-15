@@ -161,7 +161,7 @@ public class Model {
                     break;
 
                 case 1464606545: // java.nio.file.Path
-                    codec = value -> I.locate(value);
+                    codec = I::locate;
                     break;
 
                 default:
