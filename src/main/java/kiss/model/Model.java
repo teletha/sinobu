@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
+import kiss.ClassVariable;
 import kiss.I;
 
 /**
@@ -66,7 +66,7 @@ public class Model {
     private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /** The model repository. */
-    private static final Map<Class, Model> models = new ConcurrentHashMap();
+    private static final ClassVariable<Model> models = new ClassVariable(false);
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class type;
@@ -95,7 +95,7 @@ public class Model {
 
         // To avoid StackOverFlowException caused by circular reference of Model, you must define
         // this model in here.
-        models.put(type, this);
+        models.set(type, this);
 
         try {
             // search from built-in codecs

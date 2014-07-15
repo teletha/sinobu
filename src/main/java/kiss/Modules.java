@@ -21,7 +21,7 @@ import kiss.model.Model;
  * @version 2014/01/31 10:54:06
  */
 @SuppressWarnings("unchecked")
-class Modules extends ClassLocal<Lifestyle> implements ClassListener {
+class Modules extends ClassVariable<Lifestyle> implements ClassListener {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -36,6 +36,8 @@ class Modules extends ClassLocal<Lifestyle> implements ClassListener {
      * Avoid construction
      */
     Modules() {
+        super(true);
+
         // built-in ClassLoadListener
         types.add(new Object[] {this, ClassListener.class});
     }
