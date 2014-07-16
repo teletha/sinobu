@@ -63,6 +63,7 @@ public class ExtensionKeyTest {
          * @see kiss.scratchpad.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
          *      java.lang.Class)
          */
+        @Override
         public String key(Class extensionPoint, Class extension) {
             return null;
         }
@@ -77,6 +78,7 @@ public class ExtensionKeyTest {
          * @see kiss.scratchpad.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
          *      java.lang.Class)
          */
+        @Override
         public Class key(Class extensionPoint, Class extension) {
             return null;
         }
@@ -91,6 +93,7 @@ public class ExtensionKeyTest {
          * @see kiss.scratchpad.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
          *      java.lang.Class)
          */
+        @Override
         public Class key(Class extensionPoint, Class extension) {
             return null;
         }
@@ -98,20 +101,31 @@ public class ExtensionKeyTest {
 
     @Test
     public void user() {
-        AExtensionPoint extensionA1 = SinobuScratchpad.find(AExtensionPoint.class, "test");
-        BExtensionPoint extensionB1 = SinobuScratchpad.find(BExtensionPoint.class, String.class);
-        CExtensionPoint extensionC1 = SinobuScratchpad.find(CExtensionPoint.class, String.class);
-        DExtensionPoint extensionD1 = SinobuScratchpad.find(DExtensionPoint.class, int.class);
+        AExtensionPoint extensionA1 = find(AExtensionPoint.class, "test");
+        BExtensionPoint extensionB1 = find(BExtensionPoint.class, String.class);
+        CExtensionPoint extensionC1 = find(CExtensionPoint.class, String.class);
+        DExtensionPoint extensionD1 = find(DExtensionPoint.class, int.class);
 
         assert extensionA1 == null;
         assert extensionB1 == null;
         assert extensionC1 == null;
         assert extensionD1 == null;
 
-        // compile error
-        // AExtensionPoint extensionA2 = SinobuScratchpad.find(AExtensionPoint.class, 1);
-        // BExtensionPoint extensionB2 = SinobuScratchpad.find(BExtensionPoint.class, 1);
-        // CExtensionPoint extensionC2 = SinobuScratchpad.find(CExtensionPoint.class, 1);
-        // DExtensionPoint extensionD2 = SinobuScratchpad.find(DExtensionPoint.class, 1);
+        // should be compile error
+        // find(AExtensionPoint.class, 1);
+        // find(AExtensionPoint.class, Class.class);
+        // find(BExtensionPoint.class, 1);
+        // CExtensionPoint extensionC2 = find(CExtensionPoint.class, 1);
+        // DExtensionPoint extensionD2 = find(DExtensionPoint.class, 1);
+    }
+
+    /**
+     * @param <E>
+     * @param extensionPoint
+     * @param key
+     * @return An extension.
+     */
+    public static <E extends Extension<EKP>, K, EKP extends ExtensionKeyProvider<K>> E find(Class<E> extensionPoint, K key) {
+        return null;
     }
 }
