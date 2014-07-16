@@ -313,7 +313,6 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
         modules.set(List.class, new Prototype(ArrayList.class));
         modules.set(Map.class, new Prototype(HashMap.class));
         modules.set(Prototype.class, new Prototype(Prototype.class));
-        modules.set(Locale.class, Locale::getDefault);
 
         try {
             // configure dom builder
@@ -936,11 +935,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             }
 
             // Trace dependency graph to detect circular dependencies.
-            Constructor constructor = ClassUtil.getMiniConstructor(actualClass);
-
-            if (constructor != null) {
-                for (Class param : constructor.getParameterTypes()) {
-                    if (param != Lifestyle.class && param != Class.class) {
+            if (lifestyle instanceof Prototype) {
+                for (Class param : ((Prototype) lifestyle).instantiator.getParameterTypes()) {
+                    if (param != Class.class) {
                         makeLifestyle(param);
                     }
                 }
