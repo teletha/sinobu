@@ -944,7 +944,11 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
             }
 
             // This lifestyle is safe and has no circular dependencies.
-            return modules.set(modelClass, lifestyle);
+            if (lifestyle.isContextual()) {
+                return modules.let(modelClass, lifestyle);
+            } else {
+                return modules.set(modelClass, lifestyle);
+            }
         } finally {
             dependency.pollLast();
         }

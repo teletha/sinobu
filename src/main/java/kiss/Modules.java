@@ -47,8 +47,6 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
      * Avoid construction
      */
     Modules() {
-        super(true);
-
         // built-in ClassLoadListener
         types.add(new Object[] {this, ClassListener.class});
     }
