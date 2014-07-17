@@ -200,7 +200,7 @@ import org.xml.sax.InputSource;
  * @version 2014/01/24 16:01:56
  */
 @SuppressWarnings({"resource", "unchecked"})
-public class I implements ClassListener<Extensible>, ThreadFactory {
+public class I implements ClassListener<Extensible>, ThreadFactory, ClassListenerNG<Extensible> {
 
     // Candidates of Method Name
     //
@@ -2433,6 +2433,50 @@ public class I implements ClassListener<Extensible>, ThreadFactory {
                 }
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Disposable subscribe(Class<Extensible> extension, Disposable disposer) {
+        // search and collect information for all extension points
+        for (Class extensionPoint : ClassUtil.getTypes(extension)) {
+            if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
+                // register new extension
+                extensions.push(extensionPoint, extension);
+
+                // Task : unregister extension
+                disposer = disposer.and(() -> extensions.pull(extensionPoint, extension));
+
+                // register extension key
+                Class[] params = ClassUtil.getParameter(extension, extensionPoint);
+
+                if (params.length != 0 && params[0] != Object.class) {
+                    Integer hash = Objects.hash(extensionPoint, params[0]);
+
+                    // register extension by key
+                    keys.push(hash, extension);
+
+                    // Task : unregister extension by key
+                    disposer = disposer.and(() -> keys.pull(hash, extension));
+
+                    // The user has registered a newly custom lifestyle, so we should update
+                    // lifestyle for this extension key class. Normally, when we update some data,
+                    // it is desirable to store the previous data to be able to restore it later.
+                    // But, in this case, the contextual sensitive instance that the lifestyle emits
+                    // changes twice on "load" and "unload" event from the point of view of the
+                    // user. So the previous data becomes all but meaningless for a cacheable
+                    // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
+                    // refresh lifestyles associated with this extension key class.
+                    if (extensionPoint == Lifestyle.class) {
+                        modules.remove(params[0]);
+                        disposer = disposer.and(() -> modules.remove(params[0]));
+                    }
+                }
+            }
+        }
+        return disposer;
     }
 
     /**
