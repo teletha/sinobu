@@ -89,14 +89,5 @@ public interface ClassListener<T> {
      * 
      * @param clazz A loaded class. <code>null</code> is never passed.
      */
-    void load(Class<T> clazz);
-
-    /**
-     * <p>
-     * This method is invoked whenever Sinobu unloads a specified class.
-     * </p>
-     * 
-     * @param clazz An unloaded class. <code>null</code> is never passed.
-     */
-    void unload(Class<T> clazz);
+    Disposable load(Class<T> clazz, Disposable unload);
 }
