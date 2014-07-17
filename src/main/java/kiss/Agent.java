@@ -26,7 +26,7 @@ import kiss.model.PropertyWalker;
 class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker, Disposable {
 
     /** For reuse. */
-    Object object;
+    T object;
 
     /**
      * {@link Agent} must have this constructor only. Dont use instance field initialization to
@@ -123,7 +123,7 @@ class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker, Disposable {
      * {@inheritDoc}
      */
     @Override
-    public Object context() {
+    public T context() {
         return object;
     }
 

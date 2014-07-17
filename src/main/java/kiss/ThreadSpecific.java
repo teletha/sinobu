@@ -66,4 +66,12 @@ public class ThreadSpecific<M> extends Prototype<M> {
         }
         return object;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isContextual() {
+        return true;
+    }
 }

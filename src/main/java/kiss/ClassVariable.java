@@ -12,30 +12,14 @@ package kiss;
 /**
  * @version 2014/07/15 19:03:30
  */
-public class ClassVariable<T> extends ClassValue<T> {
-
-    /** The variable type. */
-    private final boolean invariance;
-
-    /** The placeholder. */
-    private T value;
-
-    /**
-     * <p>
-     * </p>
-     * 
-     * @param invariance
-     */
-    public ClassVariable(boolean invariance) {
-        this.invariance = invariance;
-    }
+public class ClassVariable<T> extends ClassValue {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected T computeValue(Class type) {
-        return value;
+    protected Object computeValue(Class type) {
+        return new Agent();
     }
 
     /**
@@ -49,18 +33,39 @@ public class ClassVariable<T> extends ClassValue<T> {
      * @return The current value.
      */
     public synchronized T set(Class type, T value) {
-        T current = get(type);
+        Agent<T> holder = (Agent<T>) super.get(type);
 
-        // ignore null
-        if (value != null && (!invariance || current == null)) {
-            // remove the current value
-            remove(type);
-
-            // then, set new value
-            this.value = value;
-            current = get(type);
-            this.value = null;
+        if (value != null && holder.index == 0) {
+            holder.object = value;
         }
-        return current;
+        return holder.object;
+    }
+
+    /**
+     * <p>
+     * Set the value for the given {@link Class}. If some value has been associateed already and
+     * this variable is variance, the given value will override the current value.
+     * </p>
+     * 
+     * @param type
+     * @param value
+     * @return The current value.
+     */
+    public synchronized T let(Class type, T value) {
+        Agent<T> holder = (Agent<T>) super.get(type);
+
+        if (value != null && holder.index == 0) {
+            holder.index = 1;
+            holder.object = value;
+        }
+        return holder.object;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T get(Class type) {
+        return ((Agent<T>) super.get(type)).object;
     }
 }

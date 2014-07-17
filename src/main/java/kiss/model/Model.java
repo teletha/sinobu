@@ -59,7 +59,7 @@ import kiss.I;
 public class Model {
 
     /** The model repository. */
-    private static final ClassVariable<Model> models = new ClassVariable(false);
+    private static final ClassVariable<Model> models = new ClassVariable();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class type;
