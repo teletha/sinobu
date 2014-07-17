@@ -43,7 +43,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(Interface1Listener.class);
+        modules.subscribe(Interface1Listener.class, Disposable.NONE);
 
         // load module
         modules.load(module.path, "");
@@ -62,7 +62,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(Interface2Listener.class);
+        modules.subscribe(Interface2Listener.class, Disposable.NONE);
 
         // load module
         modules.load(module.path, "");
@@ -81,7 +81,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(AnnotationListener.class);
+        modules.subscribe(AnnotationListener.class, Disposable.NONE);
 
         // load module
         modules.load(module.path, "");
@@ -100,7 +100,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(ClassLoadListener.class);
+        modules.subscribe(ClassLoadListener.class, Disposable.NONE);
 
         // load module
         modules.load(module.path, "");
@@ -117,24 +117,22 @@ public class ClassListenerTest {
      * @version 2010/11/13 23:33:35
      */
     @Manageable(lifestyle = Singleton.class)
-    private abstract static class AbstractCounter<T> implements ClassListener<T> {
+    private abstract static class AbstractCounter<T> implements ClassListenerNG<T> {
 
         private int loaded = 0;
 
         private int unloaded = 0;
 
         /**
-         * @see kiss.ClassListener#load(java.lang.Class)
+         * {@inheritDoc}
          */
-        public void load(Class<T> clazz) {
+        @Override
+        public Disposable subscribe(Class<T> clazz, Disposable disposer) {
             loaded++;
-        }
 
-        /**
-         * @see kiss.ClassListener#unload(java.lang.Class)
-         */
-        public void unload(Class<T> clazz) {
-            unloaded++;
+            return () -> {
+                unloaded++;
+            };
         }
 
         /**
@@ -181,24 +179,22 @@ public class ClassListenerTest {
      * @version 2010/11/13 23:33:35
      */
     @Manageable(lifestyle = Singleton.class)
-    private static class ClassLoadListener implements ClassListener {
+    private static class ClassLoadListener implements ClassListenerNG {
 
         private int loaded = 0;
 
         private int unloaded = 0;
 
         /**
-         * @see kiss.ClassListener#load(java.lang.Class)
+         * {@inheritDoc}
          */
-        public void load(Class clazz) {
+        @Override
+        public Disposable subscribe(Class clazz, Disposable disposer) {
             loaded++;
-        }
 
-        /**
-         * @see kiss.ClassListener#unload(java.lang.Class)
-         */
-        public void unload(Class clazz) {
-            unloaded++;
+            return () -> {
+                unloaded++;
+            };
         }
 
         /**

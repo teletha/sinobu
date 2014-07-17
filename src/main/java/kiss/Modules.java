@@ -25,7 +25,7 @@ import kiss.model.Model;
  */
 @SuppressWarnings("unchecked")
 @Manageable(lifestyle = Singleton.class)
-class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<Date>, Lifestyle<Locale> {
+class Modules extends ClassVariable<Lifestyle> implements ClassListenerNG, Codec<Date>, Lifestyle<Locale> {
 
     /**
      * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
@@ -48,7 +48,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
      */
     Modules() {
         // built-in ClassLoadListener
-        types.add(new Object[] {this, ClassListener.class});
+        types.add(new Object[] {this, ClassListener.class, Disposable.NONE});
     }
 
     /**
@@ -75,10 +75,10 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
      * {@inheritDoc}
      */
     @Override
-    public void load(Class clazz) {
+    public Disposable subscribe(Class clazz, Disposable disposer) {
         if (clazz != Modules.class) {
-            Object[] types = {I.make(clazz), Object.class};
-            Class[] params = ClassUtil.getParameter(clazz, ClassListener.class);
+            Object[] types = {I.make(clazz), Object.class, Disposable.NONE};
+            Class[] params = ClassUtil.getParameter(clazz, ClassListenerNG.class);
 
             if (params.length != 0) {
                 types[1] = params[0];
@@ -88,26 +88,22 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
             // that is unknown. So we must notify this event to all modules.
             for (Module module : modules) {
                 for (Class provider : module.find((Class<?>) types[1], false)) {
-                    ((ClassListener) types[0]).load(provider);
+                    types[2] = ((Disposable) types[2]).and(((ClassListenerNG) types[0]).subscribe(provider, Disposable.NONE));
                 }
             }
 
             // register
             this.types.add(types);
         }
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void unload(Class clazz) {
-        for (Object[] types : this.types) {
-            if (Model.load(types[0].getClass()).type == clazz) {
-                this.types.remove(types);
-                return;
+        return () -> {
+            for (Object[] types : this.types) {
+                if (Model.load(types[0].getClass()).type == clazz) {
+                    this.types.remove(types);
+                    return;
+                }
             }
-        }
+        };
     }
 
     /**
@@ -140,7 +136,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
                 // fire event
                 for (Object[] types : this.types) {
                     for (Class provider : module.find((Class<?>) types[1], false)) {
-                        ((ClassListener) types[0]).load(provider);
+                        types[2] = ((Disposable) types[2]).and(((ClassListenerNG) types[0]).subscribe(provider, Disposable.NONE));
                     }
                 }
                 return module.loader;
@@ -169,9 +165,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
                     if (Files.isSameFile(path, module.path)) {
                         // fire event
                         for (Object[] types : this.types) {
-                            for (Class provider : module.find((Class<?>) types[1], false)) {
-                                ((ClassListener) types[0]).unload(provider);
-                            }
+                            ((Disposable) types[2]).dispose();
                         }
 
                         // unload
