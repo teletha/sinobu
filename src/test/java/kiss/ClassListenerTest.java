@@ -43,7 +43,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.subscribe(Interface1Listener.class, Disposable.NONE);
+        modules.load(Interface1Listener.class, Disposable.NONE);
 
         // load module
         modules.load(module.path, "");
@@ -62,7 +62,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.subscribe(Interface2Listener.class, Disposable.NONE);
+        modules.load(Interface2Listener.class, Disposable.NONE);
 
         // load module
         modules.load(module.path, "");
@@ -81,7 +81,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.subscribe(AnnotationListener.class, Disposable.NONE);
+        modules.load(AnnotationListener.class, Disposable.NONE);
 
         // load module
         modules.load(module.path, "");
@@ -100,7 +100,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.subscribe(ClassLoadListener.class, Disposable.NONE);
+        modules.load(ClassLoadListener.class, Disposable.NONE);
 
         // load module
         modules.load(module.path, "");
@@ -117,7 +117,7 @@ public class ClassListenerTest {
      * @version 2010/11/13 23:33:35
      */
     @Manageable(lifestyle = Singleton.class)
-    private abstract static class AbstractCounter<T> implements ClassListenerNG<T> {
+    private abstract static class AbstractCounter<T> implements ClassListener<T> {
 
         private int loaded = 0;
 
@@ -127,7 +127,7 @@ public class ClassListenerTest {
          * {@inheritDoc}
          */
         @Override
-        public Disposable subscribe(Class<T> clazz, Disposable disposer) {
+        public Disposable load(Class<T> clazz, Disposable disposer) {
             loaded++;
 
             return () -> {
@@ -179,7 +179,7 @@ public class ClassListenerTest {
      * @version 2010/11/13 23:33:35
      */
     @Manageable(lifestyle = Singleton.class)
-    private static class ClassLoadListener implements ClassListenerNG {
+    private static class ClassLoadListener implements ClassListener {
 
         private int loaded = 0;
 
@@ -189,7 +189,7 @@ public class ClassListenerTest {
          * {@inheritDoc}
          */
         @Override
-        public Disposable subscribe(Class clazz, Disposable disposer) {
+        public Disposable load(Class clazz, Disposable disposer) {
             loaded++;
 
             return () -> {

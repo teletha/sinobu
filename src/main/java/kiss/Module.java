@@ -57,8 +57,8 @@ import kiss.model.ClassUtil;
  * AnotherClass-). But this strategy has problem against to core package classes (e.g.
  * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
  * </p>
- *
- * @version 2012/09/11 14:31:17
+ * 
+ * @version 2014/07/17 21:57:29
  */
 @SuppressWarnings("unchecked")
 class Module extends ClassVisitor {
@@ -74,6 +74,9 @@ class Module extends ClassVisitor {
 
     /** The module classloader. */
     final ClassLoader loader;
+
+    /** The unload task. */
+    Disposable unloader = Disposable.NONE;
 
     /** The list of service provider classes (by class and interface). [java.lang.String, int[]] */
     private List<Object[]> infos = new CopyOnWriteArrayList();

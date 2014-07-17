@@ -61,15 +61,15 @@ public class LifestyleTest {
         assert object != I.make(Without.class);
     }
 
-    @Test
-    public void unloadOverridden() {
-        assert Locale.ROOT.equals(I.make(Locale.class));
-
-        // unload lifestyle definition
-        I.make(I.class).unload(LocalLifestyle.class);
-
-        assert Locale.getDefault().equals(I.make(Locale.class));
-    }
+    // @Test
+    // public void unloadOverridden() {
+    // assert Locale.ROOT.equals(I.make(Locale.class));
+    //
+    // // unload lifestyle definition
+    // I.make(I.class).unload(LocalLifestyle.class);
+    //
+    // assert Locale.getDefault().equals(I.make(Locale.class));
+    // }
 
     @Test
     public void extendPrototype() {

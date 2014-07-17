@@ -63,6 +63,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -200,7 +201,7 @@ import org.xml.sax.InputSource;
  * @version 2014/01/24 16:01:56
  */
 @SuppressWarnings({"resource", "unchecked"})
-public class I implements ClassListener<Extensible>, ThreadFactory, ClassListenerNG<Extensible> {
+public class I implements ThreadFactory, ClassListener<Extensible> {
 
     // Candidates of Method Name
     //
@@ -269,7 +270,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory, ClassListene
     private static final Table<Class, Class> extensions = new Table();
 
     /** The mapping from extension point to assosiated extension mapping. */
-    private static final Table<Integer, Class> keys = new Table();
+    private static final Table<Integer, Supplier> keys = new Table();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -313,6 +314,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory, ClassListene
         modules.set(List.class, new Prototype(ArrayList.class));
         modules.set(Map.class, new Prototype(HashMap.class));
         modules.set(Prototype.class, new Prototype(Prototype.class));
+        keys.push(Objects.hash(Lifestyle.class, Locale.class), (Supplier<Lifestyle>) () -> () -> Locale.getDefault());
 
         try {
             // configure dom builder
@@ -588,9 +590,9 @@ public class I implements ClassListener<Extensible>, ThreadFactory, ClassListene
      *         <code>null</code>.
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
-        Class<E> clazz = keys.find(Objects.hash(extensionPoint, key));
+        Supplier<E> supplier = keys.find(Objects.hash(extensionPoint, key));
 
-        return clazz == null ? null : make(clazz);
+        return supplier == null ? null : supplier.get();
     }
 
     /**
@@ -2373,73 +2375,7 @@ public class I implements ClassListener<Extensible>, ThreadFactory, ClassListene
      * {@inheritDoc}
      */
     @Override
-    public final void load(Class extension) {
-        // search and collect information for all extension points
-        for (Class extensionPoint : ClassUtil.getTypes(extension)) {
-            if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
-                // register new extension
-                extensions.push(extensionPoint, extension);
-
-                // register extension key
-                Class[] params = ClassUtil.getParameter(extension, extensionPoint);
-
-                if (params.length != 0 && params[0] != Object.class) {
-                    keys.push(Objects.hash(extensionPoint, params[0]), extension);
-
-                    // The user has registered a newly custom lifestyle, so we should update
-                    // lifestyle for this extension key class. Normally, when we update some data,
-                    // it is desirable to store the previous data to be able to restore it later.
-                    // But, in this case, the contextual sensitive instance that the lifestyle emits
-                    // changes twice on "load" and "unload" event from the point of view of the
-                    // user. So the previous data becomes all but meaningless for a cacheable
-                    // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
-                    // refresh lifestyles associated with this extension key class.
-                    if (extensionPoint == Lifestyle.class) {
-                        modules.remove(params[0]);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final void unload(Class extension) {
-        // search and collect information for all extension points
-        for (Class extensionPoint : ClassUtil.getTypes(extension)) {
-            if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
-                // unregister extension
-                extensions.pull(extensionPoint, extension);
-
-                // unregister extension key
-                Class[] params = ClassUtil.getParameter(extension, extensionPoint);
-
-                if (params.length != 0 && params[0] != Object.class) {
-                    keys.pull(Objects.hash(extensionPoint, params[0]), extension);
-
-                    // The user has registered a newly custom lifestyle, so we should update
-                    // lifestyle for this extension key class. Normally, when we update some data,
-                    // it is desirable to store the previous data to be able to restore it later.
-                    // But, in this case, the contextual sensitive instance that the lifestyle emits
-                    // changes twice on "load" and "unload" event from the point of view of the
-                    // user. So the previous data becomes all but meaningless for a cacheable
-                    // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
-                    // refresh lifestyles associated with this extension key class.
-                    if (extensionPoint == Lifestyle.class) {
-                        modules.remove(params[0]);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Disposable subscribe(Class<Extensible> extension, Disposable disposer) {
+    public Disposable load(Class<Extensible> extension, Disposable disposer) {
         // search and collect information for all extension points
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
@@ -2455,11 +2391,13 @@ public class I implements ClassListener<Extensible>, ThreadFactory, ClassListene
                 if (params.length != 0 && params[0] != Object.class) {
                     Integer hash = Objects.hash(extensionPoint, params[0]);
 
+                    Supplier<Extensible> supplier = () -> make(extension);
+
                     // register extension by key
-                    keys.push(hash, extension);
+                    keys.push(hash, supplier);
 
                     // Task : unregister extension by key
-                    disposer = disposer.and(() -> keys.pull(hash, extension));
+                    disposer = disposer.and(() -> keys.pull(hash, supplier));
 
                     // The user has registered a newly custom lifestyle, so we should update
                     // lifestyle for this extension key class. Normally, when we update some data,
