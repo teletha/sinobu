@@ -395,9 +395,6 @@ public class XMLFindTest {
      * <p>
      * Format to human-redable xml for display when assertion is fail..
      * </p>
-     * 
-     * @param text
-     * @return
      */
     private static final String xml(String text) {
         return text;

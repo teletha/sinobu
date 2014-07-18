@@ -96,18 +96,10 @@ public class ConstructorBypassTest {
          */
         // private static final byte[] tail = {2, 0, 0, 120, 112};
 
-        /**
-         * @param clazz
-         */
         private Mock(Class clazz) throws IOException {
             super(build(clazz));
         }
 
-        /**
-         * @param clazz
-         * @return
-         * @throws IOException
-         */
         private static InputStream build(Class clazz) throws IOException {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             DataOutputStream writer = new DataOutputStream(output);

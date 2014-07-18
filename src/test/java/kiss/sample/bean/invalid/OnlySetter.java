@@ -19,22 +19,16 @@ public interface OnlySetter {
 
     /**
      * Setter.
-     * 
-     * @param value
      */
     void setString(String value);
 
     /**
      * Setter.
-     * 
-     * @param value
      */
     void setInt(int value);
 
     /**
      * Setter.
-     * 
-     * @param value
      */
     void setMyself(OnlySetter value);
 }

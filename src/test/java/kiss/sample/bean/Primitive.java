@@ -13,7 +13,7 @@ package kiss.sample.bean;
  * DOCUMENT.
  * 
  * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: PrimitiveType.java,v 1.0 2006/12/07 22:22:25 Teletha Exp $
+ * @version $ Id: Primitive.java,v 1.0 2006/12/07 22:22:25 Teletha Exp $
  */
 public class Primitive {
 
@@ -34,7 +34,7 @@ public class Primitive {
     private boolean Boolean;
 
     /**
-     * Get the boolean property of this {@link PrimitiveType}.
+     * Get the boolean property of this {@link Primitive}.
      * 
      * @return The boolean prperty.
      */
@@ -43,7 +43,7 @@ public class Primitive {
     }
 
     /**
-     * Set the boolean property of this {@link PrimitiveType}.
+     * Set the boolean property of this {@link Primitive}.
      * 
      * @param b The boolean value to set.
      */
@@ -52,7 +52,7 @@ public class Primitive {
     }
 
     /**
-     * Get the byte property of this {@link PrimitiveType}.
+     * Get the byte property of this {@link Primitive}.
      * 
      * @return The byte prperty.
      */
@@ -61,7 +61,7 @@ public class Primitive {
     }
 
     /**
-     * Set the byte property of this {@link PrimitiveType}.
+     * Set the byte property of this {@link Primitive}.
      * 
      * @param b The byte value to set.
      */
@@ -70,7 +70,7 @@ public class Primitive {
     }
 
     /**
-     * Get the char property of this {@link PrimitiveType}.
+     * Get the char property of this {@link Primitive}.
      * 
      * @return The char prperty.
      */
@@ -79,7 +79,7 @@ public class Primitive {
     }
 
     /**
-     * Set the char property of this {@link PrimitiveType}.
+     * Set the char property of this {@link Primitive}.
      * 
      * @param c The char value to set.
      */
@@ -88,7 +88,7 @@ public class Primitive {
     }
 
     /**
-     * Get the double property of this {@link PrimitiveType}.
+     * Get the double property of this {@link Primitive}.
      * 
      * @return The double prperty.
      */
@@ -97,7 +97,7 @@ public class Primitive {
     }
 
     /**
-     * Set the double property of this {@link PrimitiveType}.
+     * Set the double property of this {@link Primitive}.
      * 
      * @param d The double value to set.
      */
@@ -106,7 +106,7 @@ public class Primitive {
     }
 
     /**
-     * Get the float property of this {@link PrimitiveType}.
+     * Get the float property of this {@link Primitive}.
      * 
      * @return The float prperty.
      */
@@ -115,7 +115,7 @@ public class Primitive {
     }
 
     /**
-     * Set the float property of this {@link PrimitiveType}.
+     * Set the float property of this {@link Primitive}.
      * 
      * @param f The float value to set.
      */
@@ -124,7 +124,7 @@ public class Primitive {
     }
 
     /**
-     * Get the int property of this {@link PrimitiveType}.
+     * Get the int property of this {@link Primitive}.
      * 
      * @return The int prperty.
      */
@@ -133,7 +133,7 @@ public class Primitive {
     }
 
     /**
-     * Set the int property of this {@link PrimitiveType}.
+     * Set the int property of this {@link Primitive}.
      * 
      * @param i The int value to set.
      */
@@ -142,7 +142,7 @@ public class Primitive {
     }
 
     /**
-     * Get the long property of this {@link PrimitiveType}.
+     * Get the long property of this {@link Primitive}.
      * 
      * @return The long prperty.
      */
@@ -151,7 +151,7 @@ public class Primitive {
     }
 
     /**
-     * Set the long property of this {@link PrimitiveType}.
+     * Set the long property of this {@link Primitive}.
      * 
      * @param l The long value to set.
      */
@@ -160,7 +160,7 @@ public class Primitive {
     }
 
     /**
-     * Get the short property of this {@link PrimitiveType}.
+     * Get the short property of this {@link Primitive}.
      * 
      * @return The short prperty.
      */
@@ -169,7 +169,7 @@ public class Primitive {
     }
 
     /**
-     * Set the short property of this {@link PrimitiveType}.
+     * Set the short property of this {@link Primitive}.
      * 
      * @param s The short value to set.
      */

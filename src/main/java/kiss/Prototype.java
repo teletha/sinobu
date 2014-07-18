@@ -37,7 +37,7 @@ public class Prototype<M> implements Lifestyle<M> {
     /**
      * Create Prototype instance.
      * 
-     * @param modelClass
+     * @param modelClass A target class.
      */
     protected Prototype(Class<M> modelClass) {
         // find default constructor as instantiator
@@ -63,6 +63,7 @@ public class Prototype<M> implements Lifestyle<M> {
      * 
      * @see kiss.Lifestyle#get()
      */
+    @Override
     public M get() {
         // constructor injection
         Object[] params = null;

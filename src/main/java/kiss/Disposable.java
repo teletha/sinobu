@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.util.function.Supplier;
 
 /**
  * <p>
@@ -44,36 +43,6 @@ public interface Disposable {
         return () -> {
             dispose();
             other.dispose();
-        };
-    }
-
-    /**
-     * <p>
-     * Returns a composed {@link Disposable}.
-     * </p>
-     * 
-     * @param other An another {@link Disposable} to compose.
-     * @return A composed {@link Disposable}.
-     */
-    default Disposable and(Runnable other) {
-        return () -> {
-            dispose();
-            other.run();
-        };
-    }
-
-    /**
-     * <p>
-     * Returns a composed {@link Disposable}.
-     * </p>
-     * 
-     * @param other An another {@link Disposable} to compose.
-     * @return A composed {@link Disposable}.
-     */
-    default Disposable and(Supplier other) {
-        return () -> {
-            dispose();
-            other.get();
         };
     }
 }

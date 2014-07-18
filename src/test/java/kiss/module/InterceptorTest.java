@@ -9,20 +9,18 @@
  */
 package kiss.module;
 
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
+import kiss.I;
+import kiss.Interceptor;
+
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
-
-
-import kiss.I;
-import kiss.Interceptor;
 
 /**
  * @version 2011/03/22 17:06:39
@@ -186,7 +184,7 @@ public class InterceptorTest {
     protected static class CheckNullInterceptor extends Interceptor<CheckNull> {
 
         /**
-         * @see kiss.Interceptor#invoke(java.lang.Object)
+         * {@inheritDoc}
          */
         @Override
         protected Object invoke(Object... params) {
@@ -223,7 +221,7 @@ public class InterceptorTest {
     protected static class FirstInterceptor extends Interceptor<First> {
 
         /**
-         * @see kiss.Interceptor#invoke(java.lang.Object)
+         * {@inheritDoc}
          */
         @Override
         protected Object invoke(Object... param) {
@@ -242,7 +240,7 @@ public class InterceptorTest {
     protected static class SecondInterceptor extends Interceptor<Second> {
 
         /**
-         * @see kiss.Interceptor#invoke(java.lang.Object)
+         * {@inheritDoc}
          */
         @Override
         protected Object invoke(Object... param) {
@@ -270,7 +268,7 @@ public class InterceptorTest {
     protected static class ValueInterceptor extends Interceptor<Value> {
 
         /**
-         * @see kiss.Interceptor#invoke(java.lang.Object)
+         * {@inheritDoc}
          */
         @Override
         protected Object invoke(Object... param) {

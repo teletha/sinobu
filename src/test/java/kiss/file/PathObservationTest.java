@@ -483,8 +483,6 @@ public class PathObservationTest {
      * <p>
      * Helper method to observe the specified path.
      * </p>
-     * 
-     * @param path
      */
     private Disposable observe(Path path) {
         Disposable disposable = I.observe(path).to(queue);
@@ -498,8 +496,6 @@ public class PathObservationTest {
      * <p>
      * Helper method to observe the specified path.
      * </p>
-     * 
-     * @param path
      */
     private Disposable observe(Path path, String pattern) {
         Disposable disposable = I.observe(path, pattern).to(queue);
@@ -513,8 +509,6 @@ public class PathObservationTest {
      * <p>
      * Helper method to create file with no data.
      * </p>
-     * 
-     * @param path
      */
     private void create(Path path) {
         if (Files.notExists(path)) {
@@ -531,8 +525,6 @@ public class PathObservationTest {
      * <p>
      * Helper method to modify file attribute.
      * </p>
-     * 
-     * @param path
      */
     private void touch(Path path) {
         try {
@@ -546,8 +538,6 @@ public class PathObservationTest {
      * <p>
      * Helper method to write file with some data.
      * </p>
-     * 
-     * @param path
      */
     private void write(Path path) {
         try {
@@ -561,8 +551,6 @@ public class PathObservationTest {
      * <p>
      * Helper method to delete file.
      * </p>
-     * 
-     * @param path
      */
     private void delete(Path path) {
         I.delete(path);
@@ -572,8 +560,6 @@ public class PathObservationTest {
      * <p>
      * Verify events of the specified path.
      * </p>
-     * 
-     * @param path
      */
     private void verify(Path path, String... events) {
         for (String event : events) {
@@ -645,7 +631,7 @@ public class PathObservationTest {
     }
 
     /**
-     * @version 2011/04/04 15:09:12
+     * @version 2014/07/18 22:29:13
      */
     private static class Event {
 
@@ -655,17 +641,13 @@ public class PathObservationTest {
         /** The event type. */
         private final String type;
 
-        /**
-         * @param path
-         * @param type
-         */
         private Event(Path path, String type) {
             this.path = path;
             this.type = type;
         }
 
         /**
-         * @see java.lang.Object#toString()
+         * {@inheritDoc}
          */
         @Override
         public String toString() {

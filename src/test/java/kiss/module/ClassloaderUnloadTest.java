@@ -106,8 +106,6 @@ public class ClassloaderUnloadTest {
 
     /**
      * Try to execute Garbage colletion if possible.
-     * 
-     * @param threshold
      */
     private void tryGC(long threshold) {
         long previous = countGC();

@@ -33,8 +33,8 @@ public class SinobuScratchpad {
      * Person person = I.create();
      * </pre>
      * 
-     * @param <M>
-     * @param m
+     * @param <M> A model type.
+     * @param m A model type indicator.
      * @return A created object.
      */
     public static <M> M create(M... m) {
@@ -44,8 +44,8 @@ public class SinobuScratchpad {
     /**
      * Copy the specified object deeply.
      * 
-     * @param <M>
-     * @param model
+     * @param <M> A model type.
+     * @param model A model type indicator.
      * @return A clone object.
      */
     public static <M> M xerox(M model) {
@@ -114,9 +114,6 @@ public class SinobuScratchpad {
      * int sum = I.xpath(school, &quot;sum(/School/students/item/@age)&quot;);
      * assertEquals(6, sum);
      * </pre>
-     * 
-     * @param model
-     * @param xpath
      */
     public static void xpath(Object model, String xpath) {
         // create writer

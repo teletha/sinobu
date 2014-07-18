@@ -29,9 +29,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Observe EventEmitter.
      * </p>
-     * 
-     * @param emitter
-     * @return
      */
     public Events<E> observe() {
         return new Events<>(observer -> {
@@ -59,8 +56,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Add event listener.
      * </p>
-     * 
-     * @param listner
      */
     public void add(Listener<E> listner) {
         if (listner != null) {
@@ -72,8 +67,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Remove event listener.
      * </p>
-     * 
-     * @param listener
      */
     public void remove(Listener<E> listener) {
         if (listener != null) {
@@ -85,8 +78,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Emit the specified event.
      * </p>
-     * 
-     * @param event
      */
     public void emit(E event) {
         for (Listener<E> listener : listeners) {
@@ -98,8 +89,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Retrieve the oldest event.
      * </p>
-     * 
-     * @return
      */
     public E retrieve() {
         return events.pollFirst();
@@ -109,8 +98,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Retrieve the oldest event.
      * </p>
-     * 
-     * @return
      */
     public E retrieveLast() {
         E event = events.pollLast();
@@ -122,9 +109,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Helper method to emit the specified event and retrieve the oldest event.
      * </p>
-     * 
-     * @param event
-     * @return
      */
     public E emitAndRetrieve(E event) {
         emit(event);
@@ -142,7 +126,7 @@ public class EventEmitter<E> implements Observer<E> {
          * Event listener.
          * </p>
          * 
-         * @param event
+         d
          */
         public void listen(E event);
     }
@@ -151,8 +135,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Check state.
      * </p>
-     * 
-     * @return
      */
     public boolean isSubscribed() {
         return !listeners.isEmpty();
@@ -162,8 +144,6 @@ public class EventEmitter<E> implements Observer<E> {
      * <p>
      * Check state.
      * </p>
-     * 
-     * @return
      */
     public boolean isUnsubscribed() {
         return listeners.isEmpty();

@@ -289,7 +289,7 @@ public class TransformTest {
         private int value;
 
         /**
-         * Get the value property of this {@link TransformTest.BeanA1}.
+         * Get the value property of this {@link TransformTest.BeanA}.
          * 
          * @return The value property.
          */
@@ -298,7 +298,7 @@ public class TransformTest {
         }
 
         /**
-         * Set the value property of this {@link TransformTest.BeanA1}.
+         * Set the value property of this {@link TransformTest.BeanA}.
          * 
          * @param value The value value to set.
          */
@@ -316,7 +316,7 @@ public class TransformTest {
         private String value;
 
         /**
-         * Get the value property of this {@link TransformTest.BeanA1}.
+         * Get the value property of this {@link TransformTest.BeanB}.
          * 
          * @return The value property.
          */
@@ -325,7 +325,7 @@ public class TransformTest {
         }
 
         /**
-         * Set the value property of this {@link TransformTest.BeanA1}.
+         * Set the value property of this {@link TransformTest.BeanB}.
          * 
          * @param value The value value to set.
          */

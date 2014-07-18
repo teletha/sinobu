@@ -120,10 +120,8 @@ public class ExtensionKeyTest {
     }
 
     /**
-     * @param <E>
-     * @param extensionPoint
-     * @param key
-     * @return An extension.
+     *
+     *
      */
     public static <E extends Extension<EKP>, K, EKP extends ExtensionKeyProvider<K>> E find(Class<E> extensionPoint, K key) {
         return null;

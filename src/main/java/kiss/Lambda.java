@@ -35,6 +35,22 @@ public class Lambda {
      * Apply parameter partially for the given function.
      * </p>
      * 
+     * @param function An actual function to apply parameter partially. If this function is
+     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+     * @return The parameter binded function.
+     */
+    public static Runnable run(Supplier function) {
+        if (function == null) {
+            return Φ;
+        }
+        return () -> function.get();
+    }
+
+    /**
+     * <p>
+     * Apply parameter partially for the given function.
+     * </p>
+     * 
      * @param param A input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
      *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
@@ -58,8 +74,8 @@ public class Lambda {
      *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
      * @return The parameter binded function.
      */
-    public static <Param1, Param2> Runnable run(Param1 param1, Param2 param2, BiConsumer<Param1, Param2> consumer) {
-        return run(param2, consume(param1, consumer));
+    public static <Param1, Param2> Runnable run(Param1 param1, Param2 param2, BiConsumer<Param1, Param2> function) {
+        return run(param2, consume(param1, function));
     }
 
     /**
@@ -120,5 +136,31 @@ public class Lambda {
      */
     public static <Param1, Param2, Return> Function<Param2, Return> function(Param1 param1, BiFunction<Param1, Param2, Return> function) {
         return param -> function.apply(param1, param);
+    }
+
+    /**
+     * <p>
+     * Apply parameter partially for the given function.
+     * </p>
+     * 
+     * @param function An actual function to apply parameter partially. If this function is
+     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+     * @return The parameter binded function.
+     */
+    public static <Return> Disposable dispose(Runnable function) {
+        return () -> function.run();
+    }
+
+    /**
+     * <p>
+     * Apply parameter partially for the given function.
+     * </p>
+     * 
+     * @param function An actual function to apply parameter partially. If this function is
+     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+     * @return The parameter binded function.
+     */
+    public static <Return> Disposable dispose(Supplier<Return> function) {
+        return dispose((Runnable) function::get);
     }
 }

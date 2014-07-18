@@ -137,9 +137,6 @@ public class ClassListenerTest {
 
         /**
          * Helper method to assert class loading and unloading.
-         * 
-         * @param loaded
-         * @param unloaded
          */
         protected void assertClass(int loaded, int unloaded) {
             assert loaded == this.loaded;
@@ -199,9 +196,6 @@ public class ClassListenerTest {
 
         /**
          * Helper method to assert class loading and unloading.
-         * 
-         * @param loaded
-         * @param unloaded
          */
         protected void assertClass(int loaded, int unloaded) {
             assert loaded == this.loaded;

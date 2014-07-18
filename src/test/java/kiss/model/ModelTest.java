@@ -52,10 +52,6 @@ public class ModelTest {
 
     /**
      * Helper method to assert property.
-     * 
-     * @param model
-     * @param propertyName
-     * @param propertyType
      */
     private void assertProperty(Model model, String propertyName, Class propertyType) {
         assert model != null;
@@ -81,7 +77,7 @@ public class ModelTest {
 
         // from instance
         Person person = I.make(Person.class);
-        Model model2 = Model.load((Class) person.getClass());
+        Model model2 = Model.load(person.getClass());
         assert model != null;
         assert Person.class == model.type;
 

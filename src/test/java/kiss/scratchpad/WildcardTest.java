@@ -206,10 +206,6 @@ public class WildcardTest {
 
     /**
      * Helper method to match.
-     * 
-     * @param value
-     * @param pattern
-     * @return
      */
     private boolean match(String value, String pattern) {
         return new Wildcard(pattern).match(value);

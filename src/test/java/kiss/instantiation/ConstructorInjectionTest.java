@@ -9,12 +9,12 @@
  */
 package kiss.instantiation;
 
-import org.junit.Test;
-
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.Manageable;
 import kiss.Singleton;
+
+import org.junit.Test;
 
 /**
  * @version 2011/03/22 16:54:08
@@ -68,8 +68,6 @@ public class ConstructorInjectionTest {
 
         /**
          * Create ConstructorInjection instance.
-         * 
-         * @param injected
          */
         private ConstructorInjection(Injected injected) {
             this.injected = injected;
@@ -86,8 +84,6 @@ public class ConstructorInjectionTest {
 
         /**
          * Create ConstructorSingletonInjection instance.
-         * 
-         * @param injected
          */
         private ConstructorSingletonInjection(SingletonInjected injected) {
             this.injected = injected;
@@ -104,16 +100,12 @@ public class ConstructorInjectionTest {
 
         /**
          * Create TooManyConstructors instance.
-         * 
-         * @param invalid
          */
         private TooManyConstructors() {
         }
 
         /**
          * Create TooManyConstructors instance.
-         * 
-         * @param injected
          */
         private TooManyConstructors(Injected injected) {
             this.injected = injected;

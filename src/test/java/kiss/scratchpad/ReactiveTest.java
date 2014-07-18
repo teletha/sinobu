@@ -22,9 +22,6 @@ public class ReactiveTest {
 
         public T current;
 
-        /**
-         * @param subscriber
-         */
         public Value() {
             this(null);
         }

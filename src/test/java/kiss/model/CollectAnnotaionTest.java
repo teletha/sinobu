@@ -108,10 +108,6 @@ public class CollectAnnotaionTest {
      * <p>
      * Filter by method name.
      * </p>
-     * 
-     * @param methodName
-     * @param table
-     * @return
      */
     private List<Annotation> filter(String methodName, Table<Method, Annotation> table) {
         for (Entry<Method, List<Annotation>> entry : table.entrySet()) {

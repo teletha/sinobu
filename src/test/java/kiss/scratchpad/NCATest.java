@@ -24,7 +24,7 @@ public class NCATest {
      * Retrieve the nearest common ancestor class of the given classes.
      * </p>
      * 
-     * @param <X>
+     * @param <X> A type.
      * @param classes A set of classes.
      * @return A nearest common ancestor class.
      */
