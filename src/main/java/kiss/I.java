@@ -1419,15 +1419,15 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return observe(path.getParent(), path.getFileName().toString());
         }
 
-        return new Events(observer -> {
+        return new Events<>(observer -> {
             // Create logical file system watch service.
-            Visitor watcher = new Visitor(path, (Observer) observer, patterns);
+            Visitor watcher = new Visitor(path, observer, patterns);
 
             // Run in anothor thread.
             schedule(watcher);
 
             // API definition
-            return watcher;
+            return run(watcher.service, I::quiet);
         });
     }
 

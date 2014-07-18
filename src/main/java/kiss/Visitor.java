@@ -32,7 +32,7 @@ import java.util.Collections;
  * @version 2014/01/14 9:37:54
  */
 @SuppressWarnings({"serial", "unchecked"})
-class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, Runnable {
+class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable {
 
     // =======================================================
     // For Pattern Matching Facility
@@ -301,7 +301,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
     // =======================================================
 
     /** The actual file event notification facility. */
-    private WatchService service;
+    WatchService service;
 
     /** The user speecified event listener. */
     private Observer observer;
@@ -374,13 +374,5 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Disposable, 
                 // TODO Can we ignore error?
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void dispose() {
-        I.quiet(service);
     }
 }
