@@ -28,8 +28,8 @@ public class ClassVariable<T> extends ClassValue {
      * this variable is variance, the given value will override the current value.
      * </p>
      * 
-     * @param type
-     * @param value
+     * @param type A class type as key.
+     * @param value An associated value.
      * @return The current value.
      */
     public synchronized T set(Class type, T value) {
@@ -47,8 +47,8 @@ public class ClassVariable<T> extends ClassValue {
      * this variable is variance, the given value will override the current value.
      * </p>
      * 
-     * @param type
-     * @param value
+     * @param type A class type as key.
+     * @param value An associated value.
      * @return The current value.
      */
     public synchronized T let(Class type, T value) {

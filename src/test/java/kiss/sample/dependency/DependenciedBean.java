@@ -21,9 +21,6 @@ public class DependenciedBean implements Serializable {
 
     private String name;
 
-    /**
-     * @param singleton
-     */
     public DependenciedBean(NoDependencySingleton singleton) {
         this.singleton = singleton;
     }

@@ -50,9 +50,6 @@ public class ConstructorInjectionBenchmark {
 
         /**
          * Create ConstructorInjection instance.
-         * 
-         * @param injected1
-         * @param injected2
          */
         public ConstructorInjection(Injected1 injected1, Injected2 injected2) {
             this.injected1 = injected1;

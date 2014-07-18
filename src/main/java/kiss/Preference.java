@@ -37,7 +37,7 @@ public class Preference<M> extends Singleton<M> implements Runnable {
     /**
      * Create Preference instance.
      * 
-     * @param modelClass
+     * @param modelClass A target class.
      */
     protected Preference(Class<M> modelClass) {
         super(modelClass);

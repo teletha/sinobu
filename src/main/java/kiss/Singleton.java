@@ -28,7 +28,7 @@ public class Singleton<M> extends Prototype<M> {
     /**
      * Create Singleton instance.
      * 
-     * @param modelClass
+     * @param modelClass A target class.
      */
     protected Singleton(Class<M> modelClass) {
         super(modelClass);

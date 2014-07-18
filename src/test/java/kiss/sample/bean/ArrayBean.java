@@ -10,7 +10,7 @@
 package kiss.sample.bean;
 
 /**
- * @version 2009/07/03 17:33:46
+ * @version 2014/07/18 22:32:53
  */
 public class ArrayBean {
 
@@ -29,8 +29,6 @@ public class ArrayBean {
 
     /**
      * Set the objects property of this {@link ArrayBean}.
-     * 
-     * @param The objects value to set.
      */
     public void setObjects(String[] objects) {
         this.objects = objects;
@@ -47,11 +45,8 @@ public class ArrayBean {
 
     /**
      * Set the primitives property of this {@link ArrayBean}.
-     * 
-     * @param The primitives value to set.
      */
     public void setPrimitives(int[] primitives) {
         this.primitives = primitives;
     }
-
 }

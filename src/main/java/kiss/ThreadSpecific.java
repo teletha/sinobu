@@ -47,7 +47,7 @@ public class ThreadSpecific<M> extends Prototype<M> {
     /**
      * Create ThreadSpecific instance.
      * 
-     * @param modelClass
+     * @param modelClass A target class.
      */
     protected ThreadSpecific(Class<M> modelClass) {
         super(modelClass);

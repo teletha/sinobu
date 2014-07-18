@@ -33,7 +33,7 @@ public class ConstructorInterception {
     }
 
     /**
-     * @param args
+     * 
      */
     public static void main(String[] args) throws Exception {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);

@@ -96,7 +96,7 @@ public class XML implements Iterable<XML> {
      * elements.
      * </p>
      *
-     * @param xml
+     * @param xml A element set to append.
      * @return Chainable API.
      */
     public XML append(Object xml) {
@@ -116,7 +116,7 @@ public class XML implements Iterable<XML> {
      * matched elements.
      * </p>
      *
-     * @param xml
+     * @param xml A element set to prepend.
      * @return Chainable API.
      */
     public XML prepend(Object xml) {
@@ -136,7 +136,7 @@ public class XML implements Iterable<XML> {
      * elements.
      * </p>
      *
-     * @param xml
+     * @param xml A element set to add.
      * @return Chainable API.
      */
     public XML before(Object xml) {
@@ -156,7 +156,7 @@ public class XML implements Iterable<XML> {
      * elements.
      * </p>
      *
-     * @param xml
+     * @param xml A element set to add
      * @return Chainable API.
      */
     public XML after(Object xml) {
@@ -214,7 +214,7 @@ public class XML implements Iterable<XML> {
      * Wrap an HTML structure around each element in the set of matched elements.
      * </p>
      *
-     * @param xml
+     * @param xml A element set to wrap.
      * @return Chainable API.
      */
     public XML wrap(Object xml) {
@@ -233,7 +233,7 @@ public class XML implements Iterable<XML> {
      * Wrap an HTML structure around all elements in the set of matched elements.
      * </p>
      *
-     * @param xml
+     * @param xml A element set to wrap.
      * @return Chainable API.
      */
     public XML wrapAll(Object xml) {
@@ -288,7 +288,7 @@ public class XML implements Iterable<XML> {
      * Set the content of each element in the set of matched elements to the specified text.
      * </p>
      *
-     * @param text
+     * @param text A text to set.
      * @return Chainable API.
      */
     public XML text(String text) {
@@ -328,8 +328,8 @@ public class XML implements Iterable<XML> {
      * Set one or more attributes for the set of matched elements.
      * </p>
      *
-     * @param name
-     * @param value
+     * @param name An attribute name.
+     * @param value An attribute value.
      * @return Chainable API.
      */
     public XML attr(String name, Object value) {
@@ -375,7 +375,7 @@ public class XML implements Iterable<XML> {
      * added at a time, separated by a space, to the set of matched elements.
      * </p>
      *
-     * @param names
+     * @param names Space separated class name list.
      * @return Chainable API.
      */
     public XML addClass(String names) {
@@ -406,7 +406,7 @@ public class XML implements Iterable<XML> {
      * matched elements.
      * </p>
      *
-     * @param names
+     * @param names Space separated class name list.
      * @return Chainable API.
      */
     public XML removeClass(String names) {
@@ -429,7 +429,7 @@ public class XML implements Iterable<XML> {
      * the class's presence or the value of the switch argument.
      * </p>
      *
-     * @param name
+     * @param name A class name.
      * @return Chainable API.
      */
     public XML toggleClass(String name) {
@@ -450,7 +450,7 @@ public class XML implements Iterable<XML> {
      * Determine whether any of the matched elements are assigned the given class.
      * </p>
      *
-     * @param name
+     * @param name A class name.
      * @return Chainable API.
      */
     public boolean hasClass(String name) {

@@ -29,16 +29,13 @@ public class SinobuSetting extends ReusableRule {
     /** The original working directory. */
     private final Path workingOriginal;
 
-    /**
-     * @param working
-     */
     public SinobuSetting(Path working) {
         this.working = working;
         this.workingOriginal = I.$working;
     }
 
     /**
-     * @see antibug.ReusableRule#before(java.lang.reflect.Method)
+     * {@inheritDoc}
      */
     @Override
     protected void before(Method method) throws Exception {
@@ -46,7 +43,7 @@ public class SinobuSetting extends ReusableRule {
     }
 
     /**
-     * @see antibug.ReusableRule#after(java.lang.reflect.Method)
+     * {@inheritDoc}
      */
     @Override
     protected void after(Method method) {

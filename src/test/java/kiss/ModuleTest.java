@@ -202,9 +202,6 @@ public class ModuleTest {
 
     /**
      * Helper method to assert classes.
-     * 
-     * @param providers
-     * @param classes
      */
     private void check(List providers, Class... classes) {
         // collect names to assert

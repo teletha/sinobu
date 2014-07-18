@@ -40,9 +40,6 @@ public class Parasite<M> extends Prototype<M> {
 
     /**
      * Create Parasite instance.
-     * 
-     * @param modelClass
-     * @param hostClass
      */
     public Parasite(Class modelClass, Class hostClass) {
         super(modelClass);

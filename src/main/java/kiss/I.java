@@ -830,8 +830,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * thrown. There is a possibility that a part of this limitation will be removed in the future.
      * </p>
      *
-     * @param <M>
-     * @param modelClass
+     * @param <M> A model type.
+     * @param modelClass A target class to create instance.
      * @return A instance of the specified model class. This instance is managed by Sinobu.
      * @throws NullPointerException If the model class is <code>null</code>.
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
@@ -2384,7 +2384,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.push(extensionPoint, extension);
 
                 // Task : unregister extension
-                disposer = disposer.and(supply(extensionPoint, extension, extensions::pull));
+                disposer = disposer.and(dispose(supply(extensionPoint, extension, extensions::pull)));
                 // disposer = disposer.and(() -> extensions.pull(extensionPoint, extension));
 
                 // register extension key
@@ -2399,7 +2399,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     keys.push(hash, supplier);
 
                     // Task : unregister extension by key
-                    disposer = disposer.and(supply(hash, supplier, keys::pull));
+                    disposer = disposer.and(dispose(supply(hash, supplier, keys::pull)));
 
                     // The user has registered a newly custom lifestyle, so we should update
                     // lifestyle for this extension key class. Normally, when we update some data,
@@ -2411,7 +2411,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
                         modules.remove(params[0]);
-                        disposer = disposer.and(run(params[0], modules::remove));
+                        disposer = disposer.and(dispose(run(params[0], modules::remove)));
                     }
                 }
             }

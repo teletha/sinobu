@@ -271,9 +271,6 @@ public class XMLParserTest {
      * <p>
      * Parse as HTML.
      * </p>
-     * 
-     * @param html
-     * @return
      */
     @SuppressWarnings("resource")
     private XML parse(String html) {
@@ -289,9 +286,6 @@ public class XMLParserTest {
      * <p>
      * Parse as HTML.
      * </p>
-     * 
-     * @param html
-     * @return
      */
     @SuppressWarnings("resource")
     private XML parse(String html, String encoding) {

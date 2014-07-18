@@ -223,9 +223,6 @@ public class PathPatternMatchingTest {
 
     /**
      * Helper method to test.
-     * 
-     * @param expected
-     * @param patterns
      */
     private void assertCount(int expected, String... patterns) {
         room.with(this::pattern1);
@@ -244,11 +241,6 @@ public class PathPatternMatchingTest {
 
     /**
      * Helper method to test.
-     * 
-     * @param expected
-     * @param depth
-     * @param includeFilesOnly
-     * @param patterns
      */
     private void assertDirectoryCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
         room.with(pattern);

@@ -43,8 +43,8 @@ public class StereotypeTest {
      * it will have no effect on the arrays returned to other callers.
      * </p>
      * 
-     * @param <T>
-     * @param element
+     * @param <T> An annotation type.
+     * @param element A target.
      * @return All annotations present on this element (including stereotype).
      */
     public static <T extends Annotation> Map<Class<T>, T> getAnnotations(AnnotatedElement element) {
@@ -67,8 +67,8 @@ public class StereotypeTest {
      * else <code>null</code>.
      * </p>
      * 
-     * @param <T>
-     * @param element
+     * @param <T> An annotation type.
+     * @param element A target.
      * @param clazz A Class object corresponding to the annotation type.
      * @return This element's annotation for the specified annotation type if present on this
      *         element, else <code>null</code>.

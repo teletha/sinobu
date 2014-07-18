@@ -62,9 +62,6 @@ public class XMLCuncurrentTest {
         pool.shutdownNow();
     }
 
-    /**
-     * Test method for {@link kiss.Configuration#read(java.io.File, java.lang.Object)}.
-     */
     @Test
     public void testReadAndWrite1() throws Exception {
         StringListProperty bean = createBigList();
@@ -82,9 +79,6 @@ public class XMLCuncurrentTest {
         assert 10000 == result.getList().size();
     }
 
-    /**
-     * @return
-     */
     private StringListProperty createBigList() {
         List list = new ArrayList(10000);
 
@@ -106,6 +100,7 @@ public class XMLCuncurrentTest {
         /**
          * @see java.util.concurrent.Callable#call()
          */
+        @Override
         public StringListProperty call() throws Exception {
             if (Files.notExists(testFile)) {
 
@@ -123,8 +118,6 @@ public class XMLCuncurrentTest {
 
         /**
          * Create Writer instance.
-         * 
-         * @param bean
          */
         private Writer(Object bean) {
             this.bean = bean;
@@ -133,6 +126,7 @@ public class XMLCuncurrentTest {
         /**
          * @see java.lang.Runnable#run()
          */
+        @Override
         public void run() {
             try {
                 I.write(bean, Files.newBufferedWriter(testFile, I.$encoding), false);
