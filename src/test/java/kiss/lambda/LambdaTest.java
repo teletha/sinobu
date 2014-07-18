@@ -29,15 +29,15 @@ public class LambdaTest {
     @Test
     public void runs() throws Exception {
         assert count == 0;
-        run(10, this::addFunction).run();
+        run(10, this::addFunction).dispose();
         assert count == 10;
-        run(20, this::addConsumer).run();
+        run(20, this::addConsumer).dispose();
         assert count == 30;
-        run(5, 5, this::addBiConsumer).run();
+        run(5, 5, this::addBiConsumer).dispose();
         assert count == 40;
-        run(2, 1, this::addBiFunction).run();
+        run(2, 1, this::addBiFunction).dispose();
         assert count == 43;
-        run(this::addSupplier).run();
+        run(this::addSupplier).dispose();
         assert count == 44;
     }
 
