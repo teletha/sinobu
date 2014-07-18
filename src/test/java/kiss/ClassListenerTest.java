@@ -43,7 +43,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(Interface1Listener.class, Disposable.Φ);
+        modules.load(Interface1Listener.class, Procedure.Φ);
 
         // load module
         modules.load(module.path, "");
@@ -62,7 +62,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(Interface2Listener.class, Disposable.Φ);
+        modules.load(Interface2Listener.class, Procedure.Φ);
 
         // load module
         modules.load(module.path, "");
@@ -81,7 +81,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(AnnotationListener.class, Disposable.Φ);
+        modules.load(AnnotationListener.class, Procedure.Φ);
 
         // load module
         modules.load(module.path, "");
@@ -100,7 +100,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(ClassLoadListener.class, Disposable.Φ);
+        modules.load(ClassLoadListener.class, Procedure.Φ);
 
         // load module
         modules.load(module.path, "");
@@ -127,7 +127,7 @@ public class ClassListenerTest {
          * {@inheritDoc}
          */
         @Override
-        public Disposable load(Class<T> clazz, Disposable disposer) {
+        public Procedure load(Class<T> clazz, Procedure disposer) {
             loaded++;
 
             return () -> {
@@ -186,7 +186,7 @@ public class ClassListenerTest {
          * {@inheritDoc}
          */
         @Override
-        public Disposable load(Class clazz, Disposable disposer) {
+        public Procedure load(Class clazz, Procedure disposer) {
             loaded++;
 
             return () -> {

@@ -74,7 +74,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
      * {@inheritDoc}
      */
     @Override
-    public Disposable load(Class clazz, Disposable unload) {
+    public Procedure load(Class clazz, Procedure unload) {
         if (clazz != Modules.class) {
             Object[] types = {I.make(clazz), Object.class};
             Class[] params = ClassUtil.getParameter(clazz, ClassListener.class);
@@ -87,7 +87,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
             // that is unknown. So we must notify this event to all modules.
             for (Module module : modules) {
                 for (Class provider : module.find((Class<?>) types[1], false)) {
-                    module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Disposable.Φ));
+                    module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Procedure.Φ));
                 }
             }
 
@@ -131,7 +131,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
                 // fire event
                 for (Object[] types : this.types) {
                     for (Class provider : module.find((Class<?>) types[1], false)) {
-                        module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Disposable.Φ));
+                        module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Procedure.Φ));
                     }
                 }
                 return module.loader;
@@ -159,7 +159,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
                 try {
                     if (Files.isSameFile(path, module.path)) {
                         // fire event
-                        module.unloader.dispose();
+                        module.unloader.run();
 
                         // unload
                         modules.remove(module);

@@ -12,37 +12,37 @@ package kiss;
 import org.junit.Test;
 
 /**
- * @version 2014/01/31 16:40:27
+ * @version 2014/07/19 0:51:19
  */
-public class DisposableTest {
+public class ProcedureTest {
 
     @Test
     public void and() throws Exception {
-        End end1 = new End();
-        End end2 = new End();
-        Disposable composed = end1.and(end2);
+        Task task1 = new Task();
+        Task task2 = new Task();
+        Procedure composed = task1.and(task2);
 
-        assert end1.disposed == false;
-        assert end2.disposed == false;
+        assert task1.executed == false;
+        assert task2.executed == false;
 
-        composed.dispose();
-        assert end1.disposed == true;
-        assert end2.disposed == true;
+        composed.run();
+        assert task1.executed == true;
+        assert task2.executed == true;
     }
 
     /**
      * @version 2014/01/31 16:41:02
      */
-    private static class End implements Disposable {
+    private static class Task implements Procedure {
 
-        private boolean disposed;
+        private boolean executed;
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void dispose() {
-            disposed = true;
+        public void run() {
+            executed = true;
         }
     }
 }

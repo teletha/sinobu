@@ -23,7 +23,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2014/02/03 11:19:06
  */
-class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker, Disposable {
+class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker {
 
     /** For reuse. */
     T object;
@@ -38,13 +38,6 @@ class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker, Disposable {
     // ============================================================
     // For Observer
     // ============================================================
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void dispose() {
-    }
 
     /** The delegation. */
     Observer observer;

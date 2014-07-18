@@ -10,7 +10,7 @@
 package kiss;
 
 import static jdk.internal.org.objectweb.asm.Opcodes.*;
-import static kiss.Lambda.*;
+import static kiss.Procedure.*;
 
 import java.io.File;
 import java.io.IOError;
@@ -1365,8 +1365,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
-     * @return A {@link Disposable} object for this observation. You can stop observing to call the
-     *         method {@link Disposable#dispose()} of the returned object.
+     * @return A {@link Procedure} object for this observation. You can stop observing to call the
+     *         method {@link Procedure#dispose()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
@@ -1404,8 +1404,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param path A target path you want to observe. (file and directory are acceptable)
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
      *            patterns if you want to observe a file.
-     * @return A {@link Disposable} object for this observation. You can stop observing to call the
-     *         method {@link Disposable#dispose()} of the returned object.
+     * @return A {@link Procedure} object for this observation. You can stop observing to call the
+     *         method {@link Procedure#dispose()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
@@ -1427,7 +1427,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             schedule(watcher);
 
             // API definition
-            return run(watcher.service, I::quiet);
+            return λ(I::quiet, watcher.service);
         });
     }
 
@@ -2376,7 +2376,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * {@inheritDoc}
      */
     @Override
-    public Disposable load(Class<Extensible> extension, Disposable disposer) {
+    public Procedure load(Class<Extensible> extension, Procedure disposer) {
         // search and collect information for all extension points
         for (Class extensionPoint : ClassUtil.getTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
@@ -2384,7 +2384,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.push(extensionPoint, extension);
 
                 // Task : unregister extension
-                disposer = disposer.and(run(extensionPoint, extension, extensions::pull));
+                disposer = disposer.and(λ(extensions::pull, extensionPoint, extension));
                 // disposer = disposer.and(() -> extensions.pull(extensionPoint, extension));
 
                 // register extension key
@@ -2399,7 +2399,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     keys.push(hash, supplier);
 
                     // Task : unregister extension by key
-                    disposer = disposer.and(run(hash, supplier, keys::pull));
+                    disposer = disposer.and(λ(keys::pull, hash, supplier));
 
                     // The user has registered a newly custom lifestyle, so we should update
                     // lifestyle for this extension key class. Normally, when we update some data,
@@ -2411,7 +2411,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
                         modules.remove(params[0]);
-                        disposer = disposer.and(run(params[0], modules::remove));
+                        disposer = disposer.and(λ(modules::remove, params[0]));
                     }
                 }
             }
