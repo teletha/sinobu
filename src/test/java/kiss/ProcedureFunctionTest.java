@@ -41,6 +41,15 @@ public class ProcedureFunctionTest {
         assert count == 44;
     }
 
+    @Test
+    public void error() throws Exception {
+        assert count == 0;
+        // Can't call because of throw
+        // λ(this::addFunctionError, 2).run();
+        λ(δ(this::addFunctionError), 2).run();
+        assert count == 2;
+    }
+
     /**
      * Test helper.
      */
@@ -68,6 +77,12 @@ public class ProcedureFunctionTest {
      * Test helper.
      */
     private int addFunction(int value) {
+        count += value;
+
+        return count;
+    }
+
+    private int addFunctionError(int value) throws Exception {
         count += value;
 
         return count;
