@@ -7,9 +7,9 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.lambda;
+package kiss;
 
-import static kiss.Lambda.*;
+import static kiss.Procedure.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import org.junit.Test;
 /**
  * @version 2014/07/18 8:50:57
  */
-public class LambdaTest {
+public class ProcedureFunctionTest {
 
     private int count;
 
@@ -29,15 +29,15 @@ public class LambdaTest {
     @Test
     public void runs() throws Exception {
         assert count == 0;
-        run(10, this::addFunction).dispose();
+        λ(this::addFunction, 10).run();
         assert count == 10;
-        run(20, this::addConsumer).dispose();
+        λ(this::addConsumer, 20).run();
         assert count == 30;
-        run(5, 5, this::addBiConsumer).dispose();
+        λ(this::addBiConsumer, 5, 5).run();
         assert count == 40;
-        run(2, 1, this::addBiFunction).dispose();
+        λ(this::addBiFunction, 2, 1).run();
         assert count == 43;
-        run(this::addSupplier).dispose();
+        λ(this::addSupplier).run();
         assert count == 44;
     }
 
