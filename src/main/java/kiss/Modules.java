@@ -87,7 +87,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
             // that is unknown. So we must notify this event to all modules.
             for (Module module : modules) {
                 for (Class provider : module.find((Class<?>) types[1], false)) {
-                    module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Disposable.NONE));
+                    module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Disposable.Φ));
                 }
             }
 
@@ -131,7 +131,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
                 // fire event
                 for (Object[] types : this.types) {
                     for (Class provider : module.find((Class<?>) types[1], false)) {
-                        module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Disposable.NONE));
+                        module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Disposable.Φ));
                     }
                 }
                 return module.loader;

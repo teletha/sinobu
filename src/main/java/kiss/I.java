@@ -2384,7 +2384,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.push(extensionPoint, extension);
 
                 // Task : unregister extension
-                disposer = disposer.and(dispose(supply(extensionPoint, extension, extensions::pull)));
+                disposer = disposer.and(run(extensionPoint, extension, extensions::pull));
                 // disposer = disposer.and(() -> extensions.pull(extensionPoint, extension));
 
                 // register extension key
@@ -2399,7 +2399,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     keys.push(hash, supplier);
 
                     // Task : unregister extension by key
-                    disposer = disposer.and(dispose(supply(hash, supplier, keys::pull)));
+                    disposer = disposer.and(run(hash, supplier, keys::pull));
 
                     // The user has registered a newly custom lifestyle, so we should update
                     // lifestyle for this extension key class. Normally, when we update some data,
@@ -2411,7 +2411,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
                         modules.remove(params[0]);
-                        disposer = disposer.and(dispose(run(params[0], modules::remove)));
+                        disposer = disposer.and(run(params[0], modules::remove));
                     }
                 }
             }

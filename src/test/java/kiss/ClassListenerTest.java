@@ -43,7 +43,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(Interface1Listener.class, Disposable.NONE);
+        modules.load(Interface1Listener.class, Disposable.Φ);
 
         // load module
         modules.load(module.path, "");
@@ -62,7 +62,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(Interface2Listener.class, Disposable.NONE);
+        modules.load(Interface2Listener.class, Disposable.Φ);
 
         // load module
         modules.load(module.path, "");
@@ -81,7 +81,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(AnnotationListener.class, Disposable.NONE);
+        modules.load(AnnotationListener.class, Disposable.Φ);
 
         // load module
         modules.load(module.path, "");
@@ -100,7 +100,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(ClassLoadListener.class, Disposable.NONE);
+        modules.load(ClassLoadListener.class, Disposable.Φ);
 
         // load module
         modules.load(module.path, "");

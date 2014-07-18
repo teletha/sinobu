@@ -9,7 +9,6 @@
  */
 package kiss;
 
-
 /**
  * <p>
  * The {@link Disposable} interface is used when components need to deallocate and dispose resources
@@ -20,7 +19,9 @@ package kiss;
  */
 public interface Disposable {
 
-    public static final Disposable NONE = () -> {
+    /** The task to do nothing. */
+    public static final Disposable Φ = () -> {
+        // do nothing
     };
 
     /**
