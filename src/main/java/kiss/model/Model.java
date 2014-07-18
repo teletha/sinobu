@@ -120,7 +120,7 @@ public class Model {
                 case -989675752: // java.math.BigInteger
                 case -1405464277: // java.math.BigDecimal
                     // constructer pattern
-                    Constructor constructor = ClassUtil.wrap(type).getConstructor(String.class);
+                    Constructor<?> constructor = ClassUtil.wrap(type).getConstructor(String.class);
 
                     codec = value -> {
                         try {
