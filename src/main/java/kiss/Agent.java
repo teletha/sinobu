@@ -10,6 +10,8 @@
 package kiss;
 
 import java.nio.file.WatchEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.function.Consumer;
 
 import kiss.model.Model;
@@ -23,7 +25,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2014/02/03 11:19:06
  */
-class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker {
+class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker, Codec<Date> {
 
     /** For reuse. */
     T object;
@@ -143,4 +145,38 @@ class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker {
         // never check null because PropertyWalker traverses existing properties
         this.model.set(object, dest, I.transform(node, dest.model.type));
     }
+
+    // ============================================================
+    // For XML Desirialization and Bean Conversion
+    // ============================================================
+
+    /**
+     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
+     * separate format instances for each thread. If multiple threads access a format concurrently,
+     * it must be synchronized externally.
+     */
+    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Date decode(String value) {
+        try {
+            return format.parse(value);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+        // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String encode(Date value) {
+        return format.format(value);
+        // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
+    }
+
 }

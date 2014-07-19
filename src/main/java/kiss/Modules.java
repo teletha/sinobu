@@ -11,8 +11,6 @@ package kiss;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,14 +23,7 @@ import kiss.model.Model;
  */
 @SuppressWarnings("unchecked")
 @Manageable(lifestyle = Singleton.class)
-class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<Date>, Lifestyle<Locale> {
-
-    /**
-     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
-     * separate format instances for each thread. If multiple threads access a format concurrently,
-     * it must be synchronized externally.
-     */
-    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<Class>, Lifestyle<Locale> {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -192,22 +183,23 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
      * {@inheritDoc}
      */
     @Override
-    public Date decode(String value) {
-        try {
-            return format.parse(value);
-        } catch (Exception e) {
-            throw I.quiet(e);
+    public Class decode(String value) {
+        for (Module module : I.modules.modules) {
+            try {
+                return Class.forName(value, false, module.loader);
+            } catch (ClassNotFoundException e) {
+                // continue
+            }
         }
-        // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+        throw new IllegalArgumentException(value);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String encode(Date value) {
-        return format.format(value);
-        // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
+    public String encode(Class value) {
+        return value.getName();
     }
 
     /**

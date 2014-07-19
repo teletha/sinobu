@@ -24,7 +24,7 @@ public class ClassCodecTest {
 
     @Test
     public void systemClass() throws Exception {
-        ClassCodec codec = new ClassCodec();
+        Modules codec = new Modules();
         Class clazz = codec.decode("java.lang.String");
         assert clazz != null;
         assert codec.encode(clazz).equals("java.lang.String");
@@ -32,7 +32,7 @@ public class ClassCodecTest {
 
     @Test
     public void systemClassArray() throws Exception {
-        ClassCodec codec = new ClassCodec();
+        Modules codec = new Modules();
         Class clazz = codec.decode("[Ljava.lang.String;");
         assert clazz != null;
         assert codec.encode(clazz).equals("[Ljava.lang.String;");
@@ -43,7 +43,7 @@ public class ClassCodecTest {
         Class clazz = module.convert(Private.class);
         assert Private.class != clazz;
 
-        ClassCodec codec = new ClassCodec();
+        Modules codec = new Modules();
         String fqcn = codec.encode(clazz);
         assert Private.class.getName() != fqcn;
         assert codec.decode(fqcn).equals(clazz);
@@ -54,7 +54,7 @@ public class ClassCodecTest {
         Class clazz = module.convert(Private[].class);
         assert Private[].class != clazz;
 
-        ClassCodec codec = new ClassCodec();
+        Modules codec = new Modules();
         String fqcn = codec.encode(clazz);
         assert Private[].class.getName() != fqcn;
         assert codec.decode(fqcn).equals(clazz);
