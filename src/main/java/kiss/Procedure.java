@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * <p>
@@ -21,12 +19,14 @@ import java.util.function.Consumer;
  * 
  * @version 2014/07/19 0:48:17
  */
-public interface Procedure extends Runnable {
+public interface Procedure {
 
     /** The task to do nothing. */
     public static final Procedure Φ = () -> {
         // do nothing
     };
+
+    void call();
 
     /**
      * <p>
@@ -38,53 +38,55 @@ public interface Procedure extends Runnable {
      */
     default Procedure and(Procedure next) {
         return () -> {
-            run();
-            next.run();
+            call();
+            next.call();
         };
     }
 
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
-     * @param param A input paramter to bind.
-     * @return The parameter binded function.
-     */
-    public static <Param> Procedure call(Consumer<Param> function, Param param) {
-        if (function == null) {
-            return Φ;
-        }
-        return () -> function.accept(param);
-    }
-
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #φ}) will be returned.
-     * @param param First input paramter to bind.
-     */
-    public static <Param1, Param2> Consumer<Param2> call(BiConsumer<Param1, Param2> function, Param1 param) {
-        return param2 -> function.accept(param, param2);
-    }
-
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
-     * @param param1 First input paramter to bind.
-     * @param param2 Second input paramter to bind.
-     * @return The parameter binded function.
-     */
-    public static <Param1, Param2> Procedure call(BiConsumer<Param1, Param2> function, Param1 param1, Param2 param2) {
-        return call(call(function, param1), param2);
-    }
+    // /**
+    // * <p>
+    // * Apply parameter partially for the given function.
+    // * </p>
+    // *
+    // * @param function An actual function to apply parameter partially. If this function is
+    // * <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+    // * @param param A input paramter to bind.
+    // * @return The parameter binded function.
+    // */
+    // public static <Param> Procedure call(Consumer<Param> function, Param param) {
+    // if (function == null) {
+    // return Φ;
+    // }
+    // return () -> function.accept(param);
+    // }
+    //
+    // /**
+    // * <p>
+    // * Apply parameter partially for the given function.
+    // * </p>
+    // *
+    // * @param function An actual function to apply parameter partially. If this function is
+    // * <code>null</code>, empty fuction ({@link #φ}) will be returned.
+    // * @param param First input paramter to bind.
+    // */
+    // public static <Param1, Param2> Consumer<Param2> call(BiConsumer<Param1, Param2> function,
+    // Param1 param) {
+    // return param2 -> function.accept(param, param2);
+    // }
+    //
+    // /**
+    // * <p>
+    // * Apply parameter partially for the given function.
+    // * </p>
+    // *
+    // * @param function An actual function to apply parameter partially. If this function is
+    // * <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+    // * @param param1 First input paramter to bind.
+    // * @param param2 Second input paramter to bind.
+    // * @return The parameter binded function.
+    // */
+    // public static <Param1, Param2> Procedure call(BiConsumer<Param1, Param2> function, Param1
+    // param1, Param2 param2) {
+    // return call(call(function, param1), param2);
+    // }
 }

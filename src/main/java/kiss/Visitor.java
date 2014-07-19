@@ -32,7 +32,7 @@ import java.util.Collections;
  * @version 2014/01/14 9:37:54
  */
 @SuppressWarnings({"serial", "unchecked"})
-class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable {
+class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Procedure {
 
     // =======================================================
     // For Pattern Matching Facility
@@ -301,7 +301,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable {
     // =======================================================
 
     /** The actual file event notification facility. */
-    WatchService service;
+    private WatchService service;
 
     /** The user speecified event listener. */
     private Observer observer;
@@ -374,5 +374,13 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable {
                 // TODO Can we ignore error?
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void call() {
+        I.quiet(service);
     }
 }
