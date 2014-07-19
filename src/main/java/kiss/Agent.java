@@ -16,7 +16,6 @@ import java.util.function.Consumer;
 
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.model.PropertyWalker;
 
 /**
  * <p>
@@ -25,7 +24,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2014/02/03 11:19:06
  */
-class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker, Codec<Date> {
+class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
 
     /** For reuse. */
     T object;
@@ -134,17 +133,6 @@ class Agent<T> implements Observer<T>, WatchEvent, PropertyWalker, Codec<Date> {
 
     /** The current location for deserialization process. */
     int index;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void walk(Model model, Property property, Object node) {
-        Property dest = this.model.getProperty(property.name);
-
-        // never check null because PropertyWalker traverses existing properties
-        this.model.set(object, dest, I.transform(node, dest.model.type));
-    }
 
     // ============================================================
     // For XML Desirialization and Bean Conversion
