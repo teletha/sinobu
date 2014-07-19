@@ -9,13 +9,14 @@
  */
 package kiss;
 
+import static kiss.Procedure.*;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 import kiss.model.ClassUtil;
 
@@ -95,8 +96,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
             this.types.add(types);
 
             // unregister
-            Consumer<Object[]> remove = this.types::remove;
-            unload = unload.and(() -> this.types.remove(types));
+            unload = unload.and(call(this.types::remove, types));
         }
         return unload;
     }

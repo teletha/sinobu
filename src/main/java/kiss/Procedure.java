@@ -11,8 +11,6 @@ package kiss;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * <p>
@@ -52,26 +50,10 @@ public interface Procedure extends Runnable {
      * 
      * @param function An actual function to apply parameter partially. If this function is
      *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
-     * @return The parameter binded function.
-     */
-    public static Procedure λ(Supplier function) {
-        if (function == null) {
-            return Φ;
-        }
-        return () -> function.get();
-    }
-
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
      * @param param A input paramter to bind.
      * @return The parameter binded function.
      */
-    public static <Param> Procedure λ(Consumer<Param> function, Param param) {
+    public static <Param> Procedure call(Consumer<Param> function, Param param) {
         if (function == null) {
             return Φ;
         }
@@ -84,15 +66,11 @@ public interface Procedure extends Runnable {
      * </p>
      * 
      * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
-     * @param param A input paramter to bind.
-     * @return The parameter binded function.
+     *            <code>null</code>, empty fuction ({@link #φ}) will be returned.
+     * @param param First input paramter to bind.
      */
-    public static <Param, Return> Procedure λ(Function<Param, Return> function, Param param) {
-        if (function == null) {
-            return Φ;
-        }
-        return () -> function.apply(param);
+    public static <Param1, Param2> Consumer<Param2> call(BiConsumer<Param1, Param2> function, Param1 param) {
+        return param2 -> function.accept(param, param2);
     }
 
     /**
@@ -106,41 +84,7 @@ public interface Procedure extends Runnable {
      * @param param2 Second input paramter to bind.
      * @return The parameter binded function.
      */
-    public static <Param1, Param2> Procedure λ(BiConsumer<Param1, Param2> function, Param1 param1, Param2 param2) {
-        if (function == null) {
-            return Φ;
-        }
-        return λ(λ(function, param1), param2);
-    }
-
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #φ}) will be returned.
-     * @param param First input paramter to bind.
-     */
-    public static <Param1, Param2> Consumer<Param2> λ(BiConsumer<Param1, Param2> function, Param1 param) {
-        return param2 -> function.accept(param, param2);
-    }
-
-    public static <Param, Return> Function<Param, Return> δ(Ignorable<Param, Return> function) {
-        return function;
-    }
-
-    public static interface Ignorable<P, R> extends Function<P, R> {
-
-        @Override
-        public default R apply(P param) {
-            try {
-                return run(param);
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-        }
-
-        R run(P param) throws Exception;
+    public static <Param1, Param2> Procedure call(BiConsumer<Param1, Param2> function, Param1 param1, Param2 param2) {
+        return call(call(function, param1), param2);
     }
 }

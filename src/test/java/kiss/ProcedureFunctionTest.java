@@ -29,34 +29,14 @@ public class ProcedureFunctionTest {
     @Test
     public void runs() throws Exception {
         assert count == 0;
-        λ(this::addFunction, 10).run();
+        call(this::addFunction, 10).run();
         assert count == 10;
-        λ(this::addConsumer, 20).run();
+        call(this::addConsumer, 20).run();
         assert count == 30;
-        λ(this::addBiConsumer, 5, 5).run();
+        call(this::addBiConsumer, 5, 5).run();
         assert count == 40;
-        λ(this::addBiFunction, 2, 1).run();
+        call(this::addBiFunction, 2, 1).run();
         assert count == 43;
-        λ(this::addSupplier).run();
-        assert count == 44;
-    }
-
-    @Test
-    public void error() throws Exception {
-        assert count == 0;
-        // Can't call because of throw
-        // λ(this::addFunctionError, 2).run();
-        λ(δ(this::addFunctionError), 2).run();
-        assert count == 2;
-    }
-
-    /**
-     * Test helper.
-     */
-    private int addSupplier() {
-        count += 1;
-
-        return count;
     }
 
     /**
@@ -77,12 +57,6 @@ public class ProcedureFunctionTest {
      * Test helper.
      */
     private int addFunction(int value) {
-        count += value;
-
-        return count;
-    }
-
-    private int addFunctionError(int value) throws Exception {
         count += value;
 
         return count;
