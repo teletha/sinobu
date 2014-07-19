@@ -1996,11 +1996,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             M m = make(output);
 
             // copy actually
-            Agent agent = new Agent();
-            agent.model = outputModel;
-            agent.object = m;
+            inputModel.walk(input, (model, property, value) -> {
+                Property dest = outputModel.getProperty(property.name);
 
-            inputModel.walk(input, agent);
+                // never check null because PropertyWalker traverses existing properties
+                outputModel.set(m, dest, I.transform(value, dest.model.type));
+            });
 
             // API definition
             return m;
