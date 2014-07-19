@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import static kiss.Procedure.*;
+
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
@@ -248,9 +250,7 @@ public class Events<V> {
         }
 
         return on((observer, value) -> {
-            I.schedule(time, unit, false, () -> {
-                observer.onNext(value);
-            });
+            I.schedule(time, unit, false, call(observer::onNext, value));
         });
     }
 

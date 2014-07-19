@@ -1427,7 +1427,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             schedule(watcher);
 
             // API definition
-            return λ(I::quiet, watcher.service);
+            return call(I::quiet, watcher.service);
         });
     }
 
@@ -2384,7 +2384,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.push(extensionPoint, extension);
 
                 // Task : unregister extension
-                disposer = disposer.and(λ(extensions::pull, extensionPoint, extension));
+                disposer = disposer.and(call(extensions::pull, extensionPoint, extension));
                 // disposer = disposer.and(() -> extensions.pull(extensionPoint, extension));
 
                 // register extension key
@@ -2399,7 +2399,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     keys.push(hash, supplier);
 
                     // Task : unregister extension by key
-                    disposer = disposer.and(λ(keys::pull, hash, supplier));
+                    disposer = disposer.and(call(keys::pull, hash, supplier));
 
                     // The user has registered a newly custom lifestyle, so we should update
                     // lifestyle for this extension key class. Normally, when we update some data,
@@ -2411,7 +2411,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
                         modules.remove(params[0]);
-                        disposer = disposer.and(λ(modules::remove, params[0]));
+                        disposer = disposer.and(call(modules::remove, params[0]));
                     }
                 }
             }
