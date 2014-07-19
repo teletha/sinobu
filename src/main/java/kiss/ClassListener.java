@@ -89,5 +89,7 @@ public interface ClassListener<T> {
      * 
      * @param clazz A loaded class. <code>null</code> is never passed.
      */
-    Procedure load(Class<T> clazz, Procedure unload);
+    void load(Class<T> clazz);
+
+    void unload(Class<T> clazz);
 }

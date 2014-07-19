@@ -43,7 +43,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(Interface1Listener.class, Procedure.Φ);
+        modules.load(Interface1Listener.class);
 
         // load module
         modules.load(module.path, "");
@@ -62,7 +62,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(Interface2Listener.class, Procedure.Φ);
+        modules.load(Interface2Listener.class);
 
         // load module
         modules.load(module.path, "");
@@ -81,7 +81,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(AnnotationListener.class, Procedure.Φ);
+        modules.load(AnnotationListener.class);
 
         // load module
         modules.load(module.path, "");
@@ -100,7 +100,7 @@ public class ClassListenerTest {
         listener.reset();
 
         // load listener
-        modules.load(ClassLoadListener.class, Procedure.Φ);
+        modules.load(ClassLoadListener.class);
 
         // load module
         modules.load(module.path, "");
@@ -124,15 +124,19 @@ public class ClassListenerTest {
         private int unloaded = 0;
 
         /**
-         * {@inheritDoc}
+         * @see kiss.ClassListener#load(java.lang.Class)
          */
         @Override
-        public Procedure load(Class<T> clazz, Procedure disposer) {
+        public void load(Class<T> clazz) {
             loaded++;
+        }
 
-            return () -> {
-                unloaded++;
-            };
+        /**
+         * @see kiss.ClassListener#unload(java.lang.Class)
+         */
+        @Override
+        public void unload(Class<T> clazz) {
+            unloaded++;
         }
 
         /**
@@ -183,15 +187,19 @@ public class ClassListenerTest {
         private int unloaded = 0;
 
         /**
-         * {@inheritDoc}
+         * @see kiss.ClassListener#load(java.lang.Class)
          */
         @Override
-        public Procedure load(Class clazz, Procedure disposer) {
+        public void load(Class clazz) {
             loaded++;
+        }
 
-            return () -> {
-                unloaded++;
-            };
+        /**
+         * @see kiss.ClassListener#unload(java.lang.Class)
+         */
+        @Override
+        public void unload(Class clazz) {
+            unloaded++;
         }
 
         /**
