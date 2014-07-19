@@ -10,7 +10,6 @@
 package kiss;
 
 import static jdk.internal.org.objectweb.asm.Opcodes.*;
-import static kiss.Procedure.*;
 
 import java.io.File;
 import java.io.IOError;
@@ -1419,15 +1418,15 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return observe(path.getParent(), path.getFileName().toString());
         }
 
-        return new Events<>(observer -> {
+        return new Events(observer -> {
             // Create logical file system watch service.
-            Visitor watcher = new Visitor(path, observer, patterns);
+            Visitor watcher = new Visitor(path, (Observer) observer, patterns);
 
             // Run in anothor thread.
             schedule(watcher);
 
             // API definition
-            return call(I::quiet, watcher.service);
+            return watcher;
         });
     }
 
@@ -2384,8 +2383,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.push(extensionPoint, extension);
 
                 // Task : unregister extension
-                disposer = disposer.and(call(extensions::pull, extensionPoint, extension));
-                // disposer = disposer.and(() -> extensions.pull(extensionPoint, extension));
+                disposer = disposer.and(() -> extensions.pull(extensionPoint, extension));
 
                 // register extension key
                 Class[] params = ClassUtil.getParameter(extension, extensionPoint);
@@ -2399,7 +2397,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     keys.push(hash, supplier);
 
                     // Task : unregister extension by key
-                    disposer = disposer.and(call(keys::pull, hash, supplier));
+                    disposer = disposer.and(() -> keys.pull(hash, supplier));
 
                     // The user has registered a newly custom lifestyle, so we should update
                     // lifestyle for this extension key class. Normally, when we update some data,
@@ -2411,7 +2409,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
                         modules.remove(params[0]);
-                        disposer = disposer.and(call(modules::remove, params[0]));
+                        disposer = disposer.and(() -> modules.remove(params[0]));
                     }
                 }
             }

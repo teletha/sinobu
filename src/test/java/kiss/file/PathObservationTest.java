@@ -21,9 +21,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.SynchronousQueue;
 
-import kiss.Procedure;
 import kiss.I;
 import kiss.Observer;
+import kiss.Procedure;
 
 import org.junit.After;
 import org.junit.Before;
@@ -63,7 +63,7 @@ public class PathObservationTest {
     @After
     public void after() {
         for (Procedure disposable : disposables) {
-            disposable.run();
+            disposable.call();
         }
     }
 
@@ -147,7 +147,7 @@ public class PathObservationTest {
         write(path2);
         verify(path2, Modified);
 
-        disposable.run();
+        disposable.call();
 
         // modify and verify
         write(path1);
@@ -331,7 +331,7 @@ public class PathObservationTest {
         verify(path, Modified);
 
         // dispose
-        disposable.run();
+        disposable.call();
 
         // modify
         write(path);
@@ -357,7 +357,7 @@ public class PathObservationTest {
         Procedure disposer = observe(path);
 
         // dispose
-        disposer.run();
+        disposer.call();
 
         // modify
         write(path);
@@ -374,8 +374,8 @@ public class PathObservationTest {
         Procedure disposer = observe(path);
 
         // dispose
-        disposer.run();
-        disposer.run();
+        disposer.call();
+        disposer.call();
 
         // modify
         write(path);

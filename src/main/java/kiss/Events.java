@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import static kiss.Procedure.*;
-
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
@@ -250,7 +248,9 @@ public class Events<V> {
         }
 
         return on((observer, value) -> {
-            I.schedule(time, unit, false, call(observer::onNext, value));
+            I.schedule(time, unit, false, () -> {
+                observer.onNext(value);
+            });
         });
     }
 
@@ -464,7 +464,7 @@ public class Events<V> {
             agent.observer = observer;
             agent.complete = () -> {
                 if (repeat.decrementAndGet() == 0) {
-                    unsubscriber.run();
+                    unsubscriber.call();
                 } else {
                     unsubscriber = unsubscriber.and(to(agent));
                 }
@@ -585,7 +585,7 @@ public class Events<V> {
 
                     if (0 == current) {
                         observer.onCompleted();
-                        unsubscriber.run();
+                        unsubscriber.call();
                     }
                 }
             });
@@ -611,7 +611,7 @@ public class Events<V> {
         return new Events<>(observer -> {
             return unsubscriber = to(observer).and(predicate.to(value -> {
                 observer.onCompleted();
-                unsubscriber.run();
+                unsubscriber.call();
             }));
         });
     }
@@ -636,7 +636,7 @@ public class Events<V> {
             if (predicate.test(value)) {
                 observer.onNext(value);
                 observer.onCompleted();
-                unsubscriber.run();
+                unsubscriber.call();
             } else {
                 observer.onNext(value);
             }

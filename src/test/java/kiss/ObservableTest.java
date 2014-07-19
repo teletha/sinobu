@@ -37,7 +37,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == 10;
         assert emitter.emitAndRetrieve(20) == 20;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.emitAndRetrieve(30) == null;
     }
 
@@ -49,7 +49,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == null;
         assert emitter.emitAndRetrieve(20) == 20;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.emitAndRetrieve(30) == null;
     }
 
@@ -68,7 +68,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == 10;
         assert emitter.emitAndRetrieve(20) == 20;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert condition.isUnsubscribed() == true;
         assert emitter.isUnsubscribed() == true;
         assert emitter.emitAndRetrieve(10) == null;
@@ -88,7 +88,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == 10;
         assert emitter.emitAndRetrieve(20) == 20;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed() == true;
         assert emitter.emitAndRetrieve(10) == null;
     }
@@ -110,7 +110,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(90) == 90;
         assert emitter.emitAndRetrieve(100) == null;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed() == true;
         assert emitter.emitAndRetrieve(30) == null;
     }
@@ -134,7 +134,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == 10;
         assert emitter.emitAndRetrieve(20) == null;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert condition.isUnsubscribed() == true;
         assert emitter.isUnsubscribed() == true;
         assert emitter.emitAndRetrieve(10) == null;
@@ -156,7 +156,7 @@ public class ObservableTest {
         emitter.emit(40);
         assert Arrays.equals(reciever.retrieve(), new Integer[] {30, 40});
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed();
 
         emitter.emit(50);
@@ -184,7 +184,7 @@ public class ObservableTest {
         emitter.emit(80);
         assert Arrays.equals(reciever.retrieve(), new Integer[] {70, 80});
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed();
 
         emitter.emit(90);
@@ -210,7 +210,7 @@ public class ObservableTest {
         emitter.emit(40);
         assert Arrays.equals(reciever.retrieve(), new Integer[] {30, 40});
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed();
 
         emitter.emit(50);
@@ -236,7 +236,7 @@ public class ObservableTest {
         emitter.emit(60);
         assert Arrays.equals(reciever.retrieve(), new Integer[] {50, 60});
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed();
 
         emitter.emit(70);
@@ -273,7 +273,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == null;
         assert emitter.emitAndRetrieve(20) == 20;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed();
         assert emitter.emitAndRetrieve(10) == null;
     }
@@ -338,7 +338,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(80) == 80;
         assert emitter.emitAndRetrieve(100) == 100;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed();
         assert emitter.emitAndRetrieve(110) == null;
     }
@@ -368,7 +368,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(40) == 40;
         assert emitter.isSubscribed();
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed() == true;
         assert emitter.emitAndRetrieve(50) == null;
     }
@@ -411,7 +411,7 @@ public class ObservableTest {
         sub.emit(200);
         assert emitter.retrieve() == 200;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed() == true;
         assert emitter.emitAndRetrieve(50) == null;
 
@@ -509,7 +509,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == 20;
         assert emitter.emitAndRetrieve(20) == 40;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.emitAndRetrieve(30) == null;
     }
 
@@ -538,7 +538,7 @@ public class ObservableTest {
         assert emitter.emitAndRetrieve(10) == null;
         assert emitter.emitAndRetrieve(20) == 20;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter.isUnsubscribed() == true;
         assert emitter.emitAndRetrieve(10) == null;
     }
@@ -559,7 +559,7 @@ public class ObservableTest {
         assert emitter1.retrieve() == 100;
         assert emitter1.retrieve() == 200;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter1.isUnsubscribed() == true;
         assert emitter2.isUnsubscribed() == true;
     }
@@ -591,7 +591,7 @@ public class ObservableTest {
         assert emitter1.retrieve() == 200;
         assert emitter1.retrieve() == 300;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter1.isUnsubscribed() == true;
         assert emitter2.isUnsubscribed() == true;
         assert emitter3.isUnsubscribed() == true;
@@ -606,7 +606,7 @@ public class ObservableTest {
         assert emitter1.isSubscribed();
         assert emitter1.emitAndRetrieve(10) == 10;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter1.isUnsubscribed() == true;
     }
 
@@ -644,7 +644,7 @@ public class ObservableTest {
         emitter2.emit(10);
         assert reciever.retrieveLast() == false;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter1.isUnsubscribed() == true;
         assert emitter2.isUnsubscribed() == true;
     }
@@ -676,7 +676,7 @@ public class ObservableTest {
         emitter2.emit(20);
         assert reciever.retrieveLast() == true;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter1.isUnsubscribed() == true;
         assert emitter2.isUnsubscribed() == true;
     }
@@ -708,7 +708,7 @@ public class ObservableTest {
         emitter2.emit(20);
         assert reciever.retrieveLast() == false;
 
-        unsubscribe.run();
+        unsubscribe.call();
         assert emitter1.isUnsubscribed() == true;
         assert emitter2.isUnsubscribed() == true;
     }

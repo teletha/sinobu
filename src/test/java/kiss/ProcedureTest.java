@@ -25,7 +25,7 @@ public class ProcedureTest {
         assert task1.executed == false;
         assert task2.executed == false;
 
-        composed.run();
+        composed.call();
         assert task1.executed == true;
         assert task2.executed == true;
     }
@@ -41,7 +41,7 @@ public class ProcedureTest {
          * {@inheritDoc}
          */
         @Override
-        public void run() {
+        public void call() {
             executed = true;
         }
     }

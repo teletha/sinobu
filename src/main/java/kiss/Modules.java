@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import static kiss.Procedure.*;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -96,7 +94,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
             this.types.add(types);
 
             // unregister
-            unload = unload.and(call(this.types::remove, types));
+            unload = unload.and(() -> this.types.remove(types));
         }
         return unload;
     }
@@ -159,7 +157,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
                 try {
                     if (Files.isSameFile(path, module.path)) {
                         // fire event
-                        module.unloader.run();
+                        module.unloader.call();
 
                         // unload
                         modules.remove(module);
