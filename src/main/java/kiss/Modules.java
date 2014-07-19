@@ -14,16 +14,18 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import kiss.model.ClassUtil;
+import kiss.model.Model;
 
 /**
  * @version 2014/01/31 10:54:06
  */
 @SuppressWarnings("unchecked")
 @Manageable(lifestyle = Singleton.class)
-class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<Date> {
+class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<Date>, Lifestyle<Locale> {
 
     /**
      * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
@@ -73,7 +75,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
      * {@inheritDoc}
      */
     @Override
-    public Procedure load(Class clazz, Procedure unload) {
+    public void load(Class clazz) {
         if (clazz != Modules.class) {
             Object[] types = {I.make(clazz), Object.class};
             Class[] params = ClassUtil.getParameter(clazz, ClassListener.class);
@@ -86,17 +88,26 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
             // that is unknown. So we must notify this event to all modules.
             for (Module module : modules) {
                 for (Class provider : module.find((Class<?>) types[1], false)) {
-                    module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Procedure.Φ));
+                    ((ClassListener) types[0]).load(provider);
                 }
             }
 
             // register
             this.types.add(types);
-
-            // unregister
-            unload = unload.and(() -> this.types.remove(types));
         }
-        return unload;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unload(Class clazz) {
+        for (Object[] types : this.types) {
+            if (Model.load(types[0].getClass()).type == clazz) {
+                this.types.remove(types);
+                return;
+            }
+        }
     }
 
     /**
@@ -129,7 +140,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
                 // fire event
                 for (Object[] types : this.types) {
                     for (Class provider : module.find((Class<?>) types[1], false)) {
-                        module.unloader = module.unloader.and(((ClassListener) types[0]).load(provider, Procedure.Φ));
+                        ((ClassListener) types[0]).load(provider);
                     }
                 }
                 return module.loader;
@@ -157,7 +168,11 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
                 try {
                     if (Files.isSameFile(path, module.path)) {
                         // fire event
-                        module.unloader.call();
+                        for (Object[] types : this.types) {
+                            for (Class provider : module.find((Class<?>) types[1], false)) {
+                                ((ClassListener) types[0]).unload(provider);
+                            }
+                        }
 
                         // unload
                         modules.remove(module);
@@ -193,5 +208,13 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Codec<D
     public String encode(Date value) {
         return format.format(value);
         // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Locale get() {
+        return Locale.getDefault();
     }
 }

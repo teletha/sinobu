@@ -75,9 +75,6 @@ class Module extends ClassVisitor {
     /** The module classloader. */
     final ClassLoader loader;
 
-    /** The unload task. */
-    Procedure unloader = Procedure.Φ;
-
     /** The list of service provider classes (by class and interface). [java.lang.String, int[]] */
     private List<Object[]> infos = new CopyOnWriteArrayList();
 
