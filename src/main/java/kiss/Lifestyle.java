@@ -54,15 +54,4 @@ import java.util.function.Supplier;
  * @version 2014/02/03 12:25:46
  */
 public interface Lifestyle<M> extends Supplier<M>, Extensible {
-
-    /**
-     * <p>
-     * Detect this {@link Lifestyle} is contextual or not.
-     * </p>
-     * 
-     * @return A result.
-     */
-    default boolean isContextual() {
-        return false;
-    }
 }

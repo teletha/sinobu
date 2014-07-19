@@ -43,12 +43,4 @@ public class Singleton<M> extends Prototype<M> {
     public M get() {
         return instance;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isContextual() {
-        return true;
-    }
 }
