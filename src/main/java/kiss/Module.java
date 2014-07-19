@@ -202,7 +202,7 @@ class Module extends ClassVisitor {
         }
 
         // lazy evaluation
-        Class<?> clazz = loader.loadClass((String) info[0]);
+        Class clazz = loader.loadClass((String) info[0]);
         Set<Class<?>> set = ClassUtil.getTypes(clazz);
         Annotation[] annotations = clazz.getAnnotations();
 
