@@ -35,7 +35,7 @@ public class ClassCodecTest {
         Modules codec = new Modules();
         Class clazz = codec.decode("[Ljava.lang.String;");
         assert clazz != null;
-        assert codec.encode(clazz).equals("[Ljava.lang.Strsing;");
+        assert codec.encode(clazz).equals("[Ljava.lang.String;");
     }
 
     @Test
@@ -64,6 +64,5 @@ public class ClassCodecTest {
      * @version 2010/02/04 9:43:23
      */
     private static class Private {
-
     }
 }

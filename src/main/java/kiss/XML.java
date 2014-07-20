@@ -28,17 +28,17 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import com.sun.org.apache.xerces.internal.util.DOMUtil;
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
-import com.sun.org.apache.xml.internal.utils.TreeWalker;
-
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ContentHandler;
+
+import com.sun.org.apache.xerces.internal.util.DOMUtil;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
+import com.sun.org.apache.xml.internal.utils.TreeWalker;
 
 /**
  * @version 2012/11/18 22:33:02
@@ -48,6 +48,8 @@ public class XML implements Iterable<XML> {
 
     /**
      * Original pattern.
+     * <p>
+     * 
      * <pre>
      * ([>~+\-, ]*)?((?:(?:\w+|\*)\|)?(?:\w+(?:\\.\w+)*|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
