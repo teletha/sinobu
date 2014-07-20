@@ -78,7 +78,7 @@ public class Events<V> {
      * </p>
      * 
      * @param next A delegator method of {@link Observer#onNext(Object)}.
-     * @return Calling {@link Procedure#dispose()} will dispose this subscription.
+     * @return Calling {@link Procedure#call()} will dispose this subscription.
      */
     public final Procedure to(Consumer<? super V> next) {
         return to(next, null);
@@ -91,7 +91,7 @@ public class Events<V> {
      * 
      * @param next A delegator method of {@link Observer#onNext(Object)}.
      * @param error A delegator method of {@link Observer#onError(Throwable)}.
-     * @return Calling {@link Procedure#dispose()} will dispose this subscription.
+     * @return Calling {@link Procedure#call()} will dispose this subscription.
      */
     public final Procedure to(Consumer<? super V> next, Consumer<Throwable> error) {
         return to(next, error, null);
@@ -105,7 +105,7 @@ public class Events<V> {
      * @param next A delegator method of {@link Observer#onNext(Object)}.
      * @param error A delegator method of {@link Observer#onError(Throwable)}.
      * @param complete A delegator method of {@link Observer#onCompleted()}.
-     * @return Calling {@link Procedure#dispose()} will dispose this subscription.
+     * @return Calling {@link Procedure#call()} will dispose this subscription.
      */
     public final Procedure to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
         Agent agent = new Agent();
@@ -122,7 +122,7 @@ public class Events<V> {
      * </p>
      * 
      * @param observer A value observer of this {@link Events}.
-     * @return Calling {@link Procedure#dispose()} will dispose this subscription.
+     * @return Calling {@link Procedure#call()} will dispose this subscription.
      */
     public final Procedure to(Observer<? super V> observer) {
         return unsubscriber = subscriber.apply(observer);

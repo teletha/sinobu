@@ -435,7 +435,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             created.
      */
     public static void copy(InputStream input, OutputStream output, boolean close) {
-        int size = 0;
+        int size;
         byte[] buffer = new byte[8192];
 
         try {
@@ -850,7 +850,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * thrown. There is a possibility that a part of this limitation will be removed in the future.
      * </p>
      *
-     * @param <M>
+     * @param <M> A model class.
      * @return A instance of the specified model class. This instance is managed by Sinobu.
      * @throws NullPointerException If the model class is <code>null</code>.
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
@@ -1412,9 +1412,9 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return observe(path.getParent(), path.getFileName().toString());
         }
 
-        return new Events(observer -> {
+        return new Events<>(observer -> {
             // Create logical file system watch service.
-            Visitor watcher = new Visitor(path, (Observer) observer, patterns);
+            Visitor watcher = new Visitor(path, observer, patterns);
 
             // Run in anothor thread.
             schedule(watcher);
@@ -1791,7 +1791,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     // Compute object
                     //
                     // Property indicates a object, so you should create a suitable object.
-                    Object object = null;
+                    Object object;
 
                     // check attribute model
                     Codec codec = property.model.getCodec();
