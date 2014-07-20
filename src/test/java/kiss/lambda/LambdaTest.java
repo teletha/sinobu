@@ -24,9 +24,7 @@ public class LambdaTest {
     @Test
     public void testname() throws Exception {
         Function<BigInteger, BigInteger> fib = recursive(f -> n -> {
-            if (n.intValue() <= 2) {
-                return BigInteger.ONE;
-            }
+            if (n.intValue() <= 2) return BigInteger.ONE;
             return f.apply(n.subtract(BigInteger.ONE)).add(f.apply(n.subtract(BigInteger.valueOf(2))));
         });
         System.out.println(fib.apply(BigInteger.valueOf(40)));

@@ -79,14 +79,13 @@ import jdk.internal.org.objectweb.asm.Handle;
 import jdk.internal.org.objectweb.asm.Label;
 import jdk.internal.org.objectweb.asm.MethodVisitor;
 import jdk.internal.org.objectweb.asm.Type;
+import kiss.model.ClassUtil;
+import kiss.model.Model;
+import kiss.model.Property;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-
-import kiss.model.ClassUtil;
-import kiss.model.Model;
-import kiss.model.Property;
 
 /**
  * <p>
@@ -432,8 +431,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the input or output is null.
      * @throws SecurityException If a security manager exists and its
-     * {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     * created.
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static void copy(InputStream input, OutputStream output, boolean close) {
         int size = 0;
@@ -459,7 +458,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * is the following:
      * </p>
      * <p>
-     * <p>
+     * 
      * <pre>
      * if (input.isFile) {
      *   if (output.isFile) {
@@ -495,13 +494,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the specified input or output file is <code>null</code>.
      * @throws NoSuchFileException If the input file is directory and the output file is
-     * <em>not</em> directory.
+     *             <em>not</em> directory.
      * @throws SecurityException In the case of the default provider, and a security manager is
-     * installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     * check read access to the source file, the
-     * {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     * the target file. If a symbolic link is copied the security manager is invoked to
-     * check {@link LinkPermission}("symbolic").
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void copy(Path input, Path output, String... patterns) {
         new Visitor(input, output, 0, null, patterns);
@@ -512,7 +511,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * Delete a input {@link Path}. Simplified strategy is the following:
      * </p>
      * <p>
-     * <p>
+     * 
      * <pre>
      * if (input.isFile) {
      *   // Delete input file unconditionaly.
@@ -531,11 +530,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the specified input file is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
-     * installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     * check read access to the source file, the
-     * {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     * the target file. If a symbolic link is copied the security manager is invoked to
-     * check {@link LinkPermission}("symbolic").
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void delete(Path input, String... patterns) {
         if (input != null) {
@@ -556,8 +555,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @param <E> An Extension Point.
      * @param extensionPoint An extension point class. The <a
-     * href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     * otherwise this method will return empty list.
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return empty list.
      * @return All Extensions of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
@@ -582,11 +581,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @param <E> An Extension Point.
      * @param extensionPoint An Extension Point class. The <a
-     * href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     * otherwise this method will return <code>null</code>.
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return <code>null</code>.
      * @param key An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.
      * @return A associated Extension of the given Extension Point and the given Extension Key or
-     * <code>null</code>.
+     *         <code>null</code>.
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
         Class<E> supplier = keys.find(Objects.hash(extensionPoint, key));
@@ -607,8 +606,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @param <E> An Extension Point.
      * @param extensionPoint An extension point class. The <a
-     * href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     * otherwise this method will return empty list.
+     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     *            otherwise this method will return empty list.
      * @return All Extension classes of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
@@ -677,7 +676,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @param <B> A resource bundle.
      * @param bundleClass A resource bundle class. <code>null</code> will throw
-     * {@link NullPointerException}.
+     *            {@link NullPointerException}.
      * @return A suitable resource bundle class for the given bundle class and locale.
      * @throws NullPointerException If the bundle class is <code>null</code>.
      */
@@ -718,7 +717,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param delimiter A sequence of characters that is used to separate each of the elements in
-     * the resulting String.
+     *            the resulting String.
      * @param items A {@link Iterable} items.
      * @return A concat expression.
      * @throws NullPointerException If items is <code>null</code>.
@@ -734,7 +733,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param delimiter A sequence of characters that is used to separate each of the elements in
-     * the resulting String.
+     *            the resulting String.
      * @param items A {@link Iterable} items.
      * @return A concat expression.
      */
@@ -765,8 +764,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return A located {@link Path}.
      * @throws NullPointerException If the given file path is null.
      * @throws SecurityException If a security manager exists and its
-     * {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     * created.
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static Path locate(URL filePath) {
         try {
@@ -786,8 +785,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return A located {@link Path}.
      * @throws NullPointerException If the given file path is null.
      * @throws SecurityException If a security manager exists and its
-     * {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     * created.
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static Path locate(String filePath) {
         return Paths.get(filePath);
@@ -801,8 +800,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @return A newly created temporary file which is not exist yet.
      * @throws SecurityException If a security manager exists and its
-     * {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     * created.
+     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
+     *             created.
      */
     public static Path locateTemporary() {
         try {
@@ -870,9 +869,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         // there is no such cache, we will try to create newly lifestyle.
         Lifestyle<M> lifestyle = modules.get(modelClass);
 
-        if (lifestyle != null) {
-            return lifestyle; // use cache
-        }
+        if (lifestyle != null) return lifestyle; // use cache
 
         // Skip null check because this method can throw NullPointerException.
         // if (modelClass == null) throw new NullPointerException("NPE");
@@ -1138,8 +1135,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
-                    .getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -1293,7 +1289,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * is the following:
      * </p>
      * <p>
-     * <p>
+     * 
      * <pre>
      * if (input.isFile) {
      *   if (output.isFile) {
@@ -1327,13 +1323,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the specified input or output file is <code>null</code>.
      * @throws NoSuchFileException If the input file is directory and the output file is
-     * <em>not</em> directory.
+     *             <em>not</em> directory.
      * @throws SecurityException In the case of the default provider, and a security manager is
-     * installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     * check read access to the source file, the
-     * {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     * the target file. If a symbolic link is copied the security manager is invoked to
-     * check {@link LinkPermission}("symbolic").
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static void move(Path input, Path output, String... patterns) {
         new Visitor(input, output, 1, null, patterns);
@@ -1363,14 +1359,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
      * @return A {@link Procedure} object for this observation. You can stop observing to call the
-     * method {@link kiss.Procedure#call()} of the returned object.
+     *         method {@link Procedure#dispose()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
-     * installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     * check read access to the source file, the
-     * {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     * the target file. If a symbolic link is copied the security manager is invoked to
-     * check {@link LinkPermission}("symbolic").
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static Events<WatchEvent<Path>> observe(Path path) {
         return observe(path, new String[0]);
@@ -1400,16 +1396,16 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
-     * patterns if you want to observe a file.
+     *            patterns if you want to observe a file.
      * @return A {@link Procedure} object for this observation. You can stop observing to call the
-     * method {@link kiss.Procedure#call()} of the returned object.
+     *         method {@link Procedure#dispose()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
-     * installed, the {@link SecurityManager#checkRead(String)} method is invoked to
-     * check read access to the source file, the
-     * {@link SecurityManager#checkWrite(String)} is invoked to check write access to
-     * the target file. If a symbolic link is copied the security manager is invoked to
-     * check {@link LinkPermission}("symbolic").
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
      */
     public static Events<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
@@ -1418,7 +1414,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
         return new Events(observer -> {
             // Create logical file system watch service.
-            Visitor watcher = new Visitor(path, observer, patterns);
+            Visitor watcher = new Visitor(path, (Observer) observer, patterns);
 
             // Run in anothor thread.
             schedule(watcher);
@@ -1555,9 +1551,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * in finally block like the following.
      * </p>
      * <p>
-     * <p>
+     * 
      * <pre>
      * AutoCloseable input = null;
+     *
      * try {
      *     // some IO action
      * } catch (Exception e) {
@@ -1576,10 +1573,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * the checked exception is unchecked one. So you can catch a raw checked exception in the
      * caller of the method which calls this method.
      * </p>
+     * <p>
+     * 
      * <pre>
      * private void callerWithoutErrorHandling() {
      *     methodQuietly();
      * }
+     *
      * private void callerWithErrorHandling() {
      *     try {
      *         methodQuietly();
@@ -1587,6 +1587,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *         // you can catch the checked exception here
      *     }
      * }
+     *
      * private void methodQuietly() {
      *     try {
      *         // throw some cheched exception
@@ -1605,12 +1606,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             Throwable throwable = (Throwable) object;
 
             // retrieve original exception from the specified wrapped exception
-            if (throwable instanceof InvocationTargetException) {
-                throwable = throwable.getCause();
-            }
+            if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1646,12 +1645,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
-     * with Java object, this method ignores the input. <code>null</code> will throw
-     * {@link NullPointerException}. The empty or invalid format data will throw
-     * {@link ScriptException}.
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
      * @param output A root Java object. All properties will be assigned from the given data deeply.
-     * If the input is incompatible with Java object, this method ignores the input.
-     * <code>null</code> will throw {@link java.lang.NullPointerException}.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws ScriptException If the input data is empty or invalid format.
@@ -1672,12 +1671,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
-     * with Java object, this method ignores the input. <code>null</code> will throw
-     * {@link NullPointerException}. The empty or invalid format data will throw
-     * {@link ScriptException}.
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
      * @param output A root Java object. All properties will be assigned from the given data deeply.
-     * If the input is incompatible with Java object, this method ignores the input.
-     * <code>null</code> will throw {@link java.lang.NullPointerException}.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws ScriptException If the input data is empty or invalid format.
@@ -1698,12 +1697,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
-     * with Java object, this method ignores the input. <code>null</code> will throw
-     * {@link NullPointerException}. The empty or invalid format data will throw
-     * {@link ScriptException}.
+     *            with Java object, this method ignores the input. <code>null</code> will throw
+     *            {@link NullPointerException}. The empty or invalid format data will throw
+     *            {@link ScriptException}.
      * @param output A root Java object. All properties will be assigned from the given data deeply.
-     * If the input is incompatible with Java object, this method ignores the input.
-     * <code>null</code> will throw {@link java.lang.NullPointerException}.
+     *            If the input is incompatible with Java object, this method ignores the input.
+     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IOError If the input data is empty or invalid format.
@@ -1942,7 +1941,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param time A delay time.
      * @param unit A delay time unit.
      * @param parallelExecution The <code>true</code> will execute task in parallel,
-     * <code>false</code> will execute task in serial.
+     *            <code>false</code> will execute task in serial.
      * @param task A task to execute.
      */
     public static Future<?> schedule(long time, TimeUnit unit, boolean parallelExecution, Runnable task) {
@@ -2104,7 +2103,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
-     * throw {@link java.lang.NullPointerException}.
+     *            throw {@link java.lang.NullPointerException}.
      * @throws NullPointerException If the input Java object is <code>null</code> .
      */
     public static void write(Object input) {
@@ -2128,11 +2127,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
-     * throw {@link java.lang.NullPointerException}.
+     *            throw {@link java.lang.NullPointerException}.
      * @param output A serialized data output. <code>null</code> will throw
-     * {@link NullPointerException}.
+     *            {@link NullPointerException}.
      * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
-     * XML expression.
+     *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      * @throws AccessDeniedException If the output is not regular file but directory.
      */
@@ -2158,11 +2157,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
-     * throw {@link java.lang.NullPointerException}.
+     *            throw {@link java.lang.NullPointerException}.
      * @param output A serialized data output. <code>null</code> will throw
-     * {@link NullPointerException}.
+     *            {@link NullPointerException}.
      * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
-     * XML expression.
+     *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
     public static void write(Object input, Appendable output, boolean json) {
