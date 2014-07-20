@@ -9,15 +9,14 @@
  */
 package kiss;
 
-import kiss.sample.MarkerInterface1;
-import kiss.sample.MarkerInterface2;
-import kiss.sample.RuntimeAnnotation1;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
+import kiss.sample.MarkerInterface1;
+import kiss.sample.MarkerInterface2;
+import kiss.sample.RuntimeAnnotation1;
 
 /**
  * @version 2011/04/09 7:09:57
@@ -162,18 +161,21 @@ public class ClassListenerTest {
      * @version 2010/11/13 23:28:29
      */
     private static class Interface1Listener extends AbstractCounter<MarkerInterface1> {
+
     }
 
     /**
      * @version 2010/11/13 23:28:29
      */
     private static class Interface2Listener extends AbstractCounter<MarkerInterface2> {
+
     }
 
     /**
      * @version 2010/11/13 23:28:29
      */
     private static class AnnotationListener extends AbstractCounter<RuntimeAnnotation1> {
+
     }
 
     /**
