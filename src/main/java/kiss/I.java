@@ -79,13 +79,14 @@ import jdk.internal.org.objectweb.asm.Handle;
 import jdk.internal.org.objectweb.asm.Label;
 import jdk.internal.org.objectweb.asm.MethodVisitor;
 import jdk.internal.org.objectweb.asm.Type;
-import kiss.model.ClassUtil;
-import kiss.model.Model;
-import kiss.model.Property;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+
+import kiss.model.ClassUtil;
+import kiss.model.Model;
+import kiss.model.Property;
 
 /**
  * <p>
@@ -1359,7 +1360,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
      * @return A {@link Procedure} object for this observation. You can stop observing to call the
-     *         method {@link Procedure#dispose()} of the returned object.
+     *         method {@link Procedure#call()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
@@ -1398,7 +1399,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
      *            patterns if you want to observe a file.
      * @return A {@link Procedure} object for this observation. You can stop observing to call the
-     *         method {@link Procedure#dispose()} of the returned object.
+     *         method {@link Procedure#call()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
