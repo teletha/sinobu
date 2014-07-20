@@ -31,10 +31,10 @@ public class Lambda {
      * <p>
      * Apply parameter partially for the given function.
      * </p>
-     * 
+     *
      * @param param First input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #φ}) will be returned.
+     * <code>null</code>, empty fuction ({@link #φ}) will be returned.
      * @return The parameter binded function.
      */
     public static <Param1, Param2> Consumer<Param2> consume(Param1 param, BiConsumer<Param1, Param2> function) {
@@ -48,10 +48,10 @@ public class Lambda {
      * <p>
      * Apply parameter partially for the given function.
      * </p>
-     * 
+     *
      * @param param First input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, {@link NullPointerException} will be thrown.
+     * <code>null</code>, {@link NullPointerException} will be thrown.
      * @return The parameter binded function.
      */
     public static <Param, Return> Supplier<Return> supply(Param param, Function<Param, Return> function) {
@@ -62,11 +62,11 @@ public class Lambda {
      * <p>
      * Apply parameter partially for the given function.
      * </p>
-     * 
+     *
      * @param param1 First input paramter to bind.
      * @param param2 Second input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, {@link NullPointerException} will be thrown.
+     * <code>null</code>, {@link NullPointerException} will be thrown.
      * @return The parameter binded function.
      */
     public static <Param1, Param2, Return> Supplier<Return> supply(Param1 param1, Param2 param2, BiFunction<Param1, Param2, Return> function) {
@@ -77,10 +77,10 @@ public class Lambda {
      * <p>
      * Apply parameter partially for the given function.
      * </p>
-     * 
+     *
      * @param param1 First input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, {@link NullPointerException} will be thrown.
+     * <code>null</code>, {@link NullPointerException} will be thrown.
      * @return The parameter binded function.
      */
     public static <Param1, Param2, Return> Function<Param2, Return> function(Param1 param1, BiFunction<Param1, Param2, Return> function) {
@@ -91,7 +91,7 @@ public class Lambda {
      * <p>
      * Create recursive function.
      * </p>
-     * 
+     *
      * @param function A target function to convert.
      * @return A converted recursive function.
      */
@@ -109,5 +109,6 @@ public class Lambda {
      * @version 2014/07/20 9:37:18
      */
     private interface Recursive<F> extends Function<Recursive<F>, F> {
+
     }
 }
