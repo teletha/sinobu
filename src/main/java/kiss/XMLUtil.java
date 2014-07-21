@@ -104,7 +104,7 @@ class XMLUtil extends Writer implements PropertyWalker {
      */
     @Override
     public void walk(Model model, Property property, Object node) {
-        if (!property.isTransient()) {
+        if (!property.isTransient) {
             // ========================================
             // Enter Node
             // ========================================

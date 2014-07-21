@@ -12,7 +12,6 @@ package kiss.model;
 import static java.lang.reflect.Modifier.*;
 
 import java.beans.Introspector;
-import java.beans.Transient;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -235,11 +234,9 @@ public class Model {
                             methods[1].setAccessible(true);
 
                             // this property is valid
-                            Property property = new Property(model, entry.getKey());
+                            Property property = new Property(model, entry.getKey(), methods);
                             property.accessors = new MethodHandle[] {look.unreflect(methods[0]),
                                     look.unreflect(methods[1])};
-                            property.addAnnotation(methods[0]);
-                            property.addAnnotation(methods[1]);
 
                             // register it
                             properties.add(property);
@@ -256,14 +253,9 @@ public class Model {
                 if (((STATIC | PRIVATE | NATIVE | FINAL) & field.getModifiers()) == 0) {
                     field.setAccessible(true);
 
-                    Property property = new Property(load(field.getGenericType(), type), field.getName());
+                    Property property = new Property(load(field.getGenericType(), type), field.getName(), field);
                     property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
-                    property.addAnnotation(field);
                     property.isField = true;
-
-                    if ((TRANSIENT & field.getModifiers()) != 0) {
-                        property.annotations.put(Transient.class, "");
-                    }
 
                     // register it
                     properties.add(property);

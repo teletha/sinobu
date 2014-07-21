@@ -9,14 +9,15 @@
  */
 package kiss.model;
 
+import static java.lang.reflect.Modifier.*;
+
 import java.beans.Transient;
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>
@@ -32,32 +33,43 @@ import java.util.Map;
  * @version 2009/07/17 15:03:16
  */
 @SuppressWarnings("unchecked")
-public class Property implements Comparable<Property> {
+public class Property implements Comparable<Property>, Accessible {
 
-    /** The assosiated object model with this property. */
+    /** The assosiated object model with this {@link Property}. */
     public final Model model;
 
-    /** The human readable identifier of this property. */
+    /** The human readable identifier of this {@link Property}. */
     public final String name;
 
-    /** The annotated element. */
-    final Map annotations = new HashMap(2);
+    /** The flag whether this {@link Property} is transient or not. */
+    public final boolean isTransient;
 
     /** The actual accessor methods. */
     MethodHandle[] accessors;
 
-    /** The property type. */
+    /** The {@link Property} type. */
     boolean isField;
 
     /**
      * Create a property.
      * 
+     * @param T The type which can treat as {@link Property}. (i.e. {@link Field} or {@link Method})
      * @param model A model that this property belongs to.
      * @param name A property name.
      */
-    public Property(Model model, String name) {
+    public <T extends AccessibleObject & Member> Property(Model model, String name, T... elements) {
         this.model = model;
         this.name = name;
+
+        boolean serializable = false;
+
+        for (T element : elements) {
+            if ((element.getModifiers() & TRANSIENT) != 0 || element.isAnnotationPresent(Transient.class)) {
+                serializable = true;
+                break;
+            }
+        }
+        this.isTransient = serializable;
     }
 
     /**
@@ -96,39 +108,42 @@ public class Property implements Comparable<Property> {
     }
 
     /**
-     * Check whether this property is transient or not.
-     * 
-     * @return A result.
+     * {@inheritDoc}
      */
+    @Override
+    public Model type() {
+        return model;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String name() {
+        return name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isTransient() {
-        return annotations.get(Transient.class) != null;
+        return isTransient;
     }
 
     /**
-     * <p>
-     * Returns this property's annotation for the specified type if such an annotation is present,
-     * else null.
-     * </p>
-     * 
-     * @param annotationClass A Class object corresponding to the annotation type
-     * @return This property's annotation for the specified annotation type if present on this
-     *         element, else null
-     * @throws NullPointerException if the given annotation class is null
+     * {@inheritDoc}
      */
-    public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
-        return (A) annotations.get(annotationClass);
+    @Override
+    public MethodHandle getter() {
+        return accessors[0];
     }
 
     /**
-     * <p>
-     * Register the specified annotations to this property.
-     * </p>
-     * 
-     * @param element Annotations you want to add.
+     * {@inheritDoc}
      */
-    void addAnnotation(AnnotatedElement element) {
-        for (Annotation annotation : element.getAnnotations()) {
-            annotations.put(annotation.annotationType(), annotation);
-        }
+    @Override
+    public MethodHandle setter() {
+        return accessors[1];
     }
 }

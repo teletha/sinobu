@@ -9,13 +9,13 @@
  */
 package kiss.model;
 
-import org.junit.Test;
-
 import kiss.I;
 import kiss.sample.bean.TransientBean;
 
+import org.junit.Test;
+
 /**
- * @version 2011/03/22 16:56:26
+ * @version 2014/07/21 17:07:32
  */
 public class TransientPropertyTest {
 
@@ -29,34 +29,34 @@ public class TransientPropertyTest {
     public void transientGetter() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("onlyGetter");
-        assert property.isTransient();
+        assert property.isTransient;
     }
 
     @Test
     public void transientSetter() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("onlySetter");
-        assert property.isTransient();
+        assert property.isTransient;
     }
 
     @Test
     public void transientBoth() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("both");
-        assert property.isTransient();
+        assert property.isTransient;
     }
 
     @Test
     public void transientInverse() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("inverse");
-        assert property.isTransient();
+        assert property.isTransient;
     }
 
     @Test
     public void transientNone() throws Exception {
         Model model = Model.load(TransientBean.class);
         Property property = model.getProperty("none");
-        assert !property.isTransient();
+        assert !property.isTransient;
     }
 }
