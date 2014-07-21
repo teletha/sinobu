@@ -32,6 +32,7 @@ import kiss.sample.bean.NestedCollection;
 import kiss.sample.bean.NestingList;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
+import kiss.sample.bean.PropertyAtField;
 import kiss.sample.bean.School;
 import kiss.sample.bean.SchoolEnum;
 import kiss.sample.bean.StringList;
@@ -525,6 +526,23 @@ public class XMLTest {
         bean = I.read(config, I.make(GenericFieldProperty.class));
         assert bean != null;
         assert bean.genericField.get(0).equals("test");
+    }
+
+    @Test
+    public void publicFieldFxProperty() {
+        PropertyAtField bean = I.make(PropertyAtField.class);
+        bean.string.set("value");
+        bean.integer.set(10);
+
+        // write
+        I.write(bean, config, false);
+
+        System.out.println(I.xml(config));
+
+        // read
+        bean = I.read(config, I.make(PropertyAtField.class));
+        assert bean.string.get().equals("value");
+        assert bean.integer.get() == 10;
     }
 
     @Test

@@ -1806,6 +1806,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                         }
                     } else {
                         // collection model and normal model
+                        System.out.println(model.name + "  " + property.name + "  " + property.model.type);
                         object = make(property.model.type);
                     }
 
