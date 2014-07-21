@@ -226,12 +226,7 @@ public class ExtensibleTest {
     /**
      * @version 2009/12/30 15:40:55
      */
+    @SuppressWarnings("unused")
     private static class SameKEP1 extends KEPClass<Integer> {
-    }
-
-    /**
-     * @version 2009/12/30 15:40:55
-     */
-    private static class SameKEP2 extends KEPClass<Integer> {
     }
 }

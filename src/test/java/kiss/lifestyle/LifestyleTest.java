@@ -10,7 +10,6 @@
 package kiss.lifestyle;
 
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import kiss.I;
@@ -217,20 +216,6 @@ public class LifestyleTest {
             person.setFirstName(CONSTANT);
 
             return person;
-        }
-    }
-
-    /**
-     * @version 2010/01/18 18:25:34
-     */
-    private static class LocalLifestyle implements Lifestyle<Locale> {
-
-        /**
-         * @see kiss.Lifestyle#get()
-         */
-        @Override
-        public Locale get() {
-            return Locale.ROOT;
         }
     }
 
