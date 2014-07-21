@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
+
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
@@ -25,6 +28,7 @@ import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.IncompatibleKeyMap;
 import kiss.sample.bean.InheritanceBean;
 import kiss.sample.bean.Person;
+import kiss.sample.bean.PropertyAtField;
 import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.StringMapProperty;
@@ -163,21 +167,48 @@ public class ModelTest {
     }
 
     @Test
-    public void fieldProperty() throws Exception {
+    public void fieldObject() {
         Model model = Model.load(FieldProperty.class);
-        assert model != null;
+        assert 2 == model.properties.size();
 
-        List<Property> list = model.properties;
-        assert 2 == list.size();
+        Property string = model.properties.get(0);
+        Property generic = model.properties.get(1);
+        assert string.model.type == String.class;
+        assert generic.model.type == Object.class;
     }
 
     @Test
-    public void fieldPropertyGeneric() throws Exception {
+    public void fieldGeneric() {
         Model model = Model.load(GenericFieldProperty.class);
-        assert model != null;
+        assert 2 == model.properties.size();
 
-        List<Property> list = model.properties;
-        assert 2 == list.size();
+        Property string = model.properties.get(0);
+        Property generic = model.properties.get(1);
+        assert string.model.type == String.class;
+        assert generic.model.type == List.class;
+    }
+
+    @Test
+    public void fieldProperty() {
+        Model model = Model.load(PropertyAtField.class);
+        assert model.properties.size() == 2;
+
+        Property integer = model.properties.get(0);
+        Property string = model.properties.get(1);
+        assert integer.model.type == IntegerProperty.class;
+        assert string.model.type == StringProperty.class;
+
+        PropertyAtField bean = I.make(PropertyAtField.class);
+        assert bean.integer.get() == 0;
+        assert bean.string.get() == null;
+
+        model.set(bean, integer, 10);
+        assert bean.integer.get() == 10;
+        assert (Integer) model.get(bean, integer) == 10;
+
+        model.set(bean, string, "value");
+        assert bean.string.get().equals("value");
+        assert model.get(bean, string).equals("value");
     }
 
     @Test

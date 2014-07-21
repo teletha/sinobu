@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javafx.beans.value.WritableValue;
+
 import kiss.ClassVariable;
 import kiss.Codec;
 import kiss.I;
@@ -221,7 +223,7 @@ public class Model {
             // build valid properties
             ArrayList properties = new ArrayList(); // don't use type parameter to reduce footprint
 
-            for (Entry<String, java.lang.reflect.Method[]> entry : candidates.entrySet()) {
+            for (Entry<String, Method[]> entry : candidates.entrySet()) {
                 Method[] methods = entry.getValue();
 
                 if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
@@ -229,7 +231,7 @@ public class Model {
                     try {
                         Model model = load(methods[0].getGenericReturnType(), type);
 
-                        if (model.type == load(methods[1].getGenericParameterTypes()[0], type).type) {
+                        if (load(methods[1].getGenericParameterTypes()[0], type).type.isAssignableFrom(model.type)) {
                             methods[0].setAccessible(true);
                             methods[1].setAccessible(true);
 
@@ -249,16 +251,32 @@ public class Model {
 
             // Search field properties.
             for (Field field : type.getFields()) {
-                // exclude the field which modifier is final, static, private or native
-                if (((STATIC | PRIVATE | NATIVE | FINAL) & field.getModifiers()) == 0) {
-                    field.setAccessible(true);
+                // exclude the field which modifier is static, private or native
+                int modifier = field.getModifiers();
 
-                    Property property = new Property(load(field.getGenericType(), type), field.getName(), field);
-                    property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
-                    property.isField = true;
+                if (((STATIC | PRIVATE | NATIVE) & modifier) == 0) {
+                    Model fieldModel = load(field.getGenericType(), type);
 
-                    // register it
-                    properties.add(property);
+                    if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
+                        // property
+                        Property property = new Property(fieldModel, field.getName(), field);
+                        property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
+                        property.type = 1;
+
+                        // register it
+                        properties.add(property);
+                    } else if ((FINAL & modifier) == 0) {
+                        // field
+                        field.setAccessible(true);
+
+                        Property property = new Property(fieldModel, field.getName(), field);
+                        property.accessors = new MethodHandle[] {look.unreflectGetter(field),
+                                look.unreflectSetter(field)};
+                        property.type = 1;
+
+                        // register it
+                        properties.add(property);
+                    }
                 }
             }
 
@@ -324,7 +342,13 @@ public class Model {
      */
     public Object get(Object object, Property property) {
         try {
-            return property.accessors[0].invoke(object);
+            if (property.type == 2) {
+                // property access
+                return ((WritableValue) property.accessors[0].invoke(object)).getValue();
+            } else {
+                // field or method access
+                return property.accessors[0].invoke(object);
+            }
         } catch (Throwable e) {
             throw I.quiet(e);
         }
@@ -341,7 +365,13 @@ public class Model {
      */
     public void set(Object object, Property property, Object propertyValue) {
         try {
-            property.accessors[1].invoke(object, propertyValue);
+            if (property.type == 2) {
+                // property access
+                ((WritableValue) property.accessors[0].invoke(object)).setValue(propertyValue);
+            } else {
+                // field or method access
+                property.accessors[1].invoke(object, propertyValue);
+            }
         } catch (Throwable e) {
             throw I.quiet(e);
         }

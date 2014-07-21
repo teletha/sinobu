@@ -48,7 +48,7 @@ public class Property implements Comparable<Property>, Accessible {
     MethodHandle[] accessors;
 
     /** The {@link Property} type. */
-    boolean isField;
+    int type;
 
     /**
      * Create a property.
@@ -95,7 +95,7 @@ public class Property implements Comparable<Property>, Accessible {
      * @return A property accessor.
      */
     public Method accessor(boolean getter) {
-        return isField ? null : MethodHandles.reflectAs(Method.class, accessors[getter ? 0 : 1]);
+        return type != 0 ? null : MethodHandles.reflectAs(Method.class, accessors[getter ? 0 : 1]);
     }
 
     /**
