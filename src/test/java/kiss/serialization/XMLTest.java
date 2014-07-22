@@ -25,6 +25,7 @@ import kiss.core.CoreMethodsTest;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
+import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.GenericFieldProperty;
 import kiss.sample.bean.GenericPersonBean;
 import kiss.sample.bean.IncompatibleKeyMap;
@@ -32,7 +33,6 @@ import kiss.sample.bean.NestedCollection;
 import kiss.sample.bean.NestingList;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
-import kiss.sample.bean.PropertyAtField;
 import kiss.sample.bean.School;
 import kiss.sample.bean.SchoolEnum;
 import kiss.sample.bean.StringList;
@@ -49,11 +49,10 @@ import antibug.CleanRoom;
 import antibug.xml.XML;
 
 /**
- * @version 2012/11/09 10:45:34
+ * @version 2014/07/22 15:33:45
  */
 public class XMLTest {
 
-    /** The temporaries. */
     @Rule
     public static final CleanRoom room = new CleanRoom();
 
@@ -68,7 +67,7 @@ public class XMLTest {
     }
 
     @Test
-    public void linefeed() throws Exception {
+    public void linefeed() {
         StringList list = I.make(StringList.class);
         list.add("A\r\nA");
 
@@ -81,7 +80,7 @@ public class XMLTest {
     }
 
     @Test
-    public void list() throws Exception {
+    public void list() {
         Student student = I.make(Student.class);
         student.setName("test");
 
@@ -97,7 +96,7 @@ public class XMLTest {
     }
 
     @Test
-    public void listModel() throws Exception {
+    public void listModel() {
         StringList list = I.make(StringList.class);
         list.add("10");
         list.add("20");
@@ -113,7 +112,7 @@ public class XMLTest {
     }
 
     @Test
-    public void map() throws Exception {
+    public void map() {
         Person teacher = I.make(Person.class);
         teacher.setFirstName("test");
 
@@ -132,7 +131,7 @@ public class XMLTest {
     }
 
     @Test
-    public void mapModel() throws Exception {
+    public void mapModel() {
         StringMap map = I.make(StringMap.class);
         map.put("one", "1");
         map.put("two", "2");
@@ -147,11 +146,8 @@ public class XMLTest {
         assert map.get("two").equals("2");
     }
 
-    /**
-     * Test nesting List.
-     */
     @Test
-    public void testReadAndWrite3() throws Exception {
+    public void nestList() {
         NestingList nestingList = I.make(NestingList.class);
         List<List<Integer>> root = new ArrayList<>();
 
@@ -194,11 +190,8 @@ public class XMLTest {
         assert list2.get(2).intValue() == 12;
     }
 
-    /**
-     * Test Primitives.
-     */
     @Test
-    public void testReadAndWrite4() throws Exception {
+    public void primitive() {
         Primitive primitive = I.make(Primitive.class);
         primitive.setBoolean(true);
         primitive.setChar('c');
@@ -225,11 +218,8 @@ public class XMLTest {
         assert primitive.getShort() == 21;
     }
 
-    /**
-     * Test invalid XML charcater.
-     */
     @Test
-    public void testReadAndWrite5() throws Exception {
+    public void listStringXMLIdentifier() {
         List<String> list = new ArrayList();
         list.add("<");
         list.add(">");
@@ -253,11 +243,8 @@ public class XMLTest {
         assert list.get(3).equals("'");
     }
 
-    /**
-     * Test non-ASCII character.
-     */
     @Test
-    public void testReadAndWrite6() throws Exception {
+    public void listStringNonAscii() {
         List<String> list = new ArrayList();
         list.add("ﾃｽﾄ");
         list.add("です");
@@ -279,11 +266,8 @@ public class XMLTest {
         assert list.get(2).equals("(´･ω･`)");
     }
 
-    /**
-     * Test Map with invalid element name.
-     */
     @Test
-    public void testReadAndWrite8() throws Exception {
+    public void mapKeyIsNumber() {
         StringMapProperty stringMap = I.make(StringMapProperty.class);
         Map<String, String> map = new HashMap<>();
         map.put("1", "one");
@@ -307,11 +291,8 @@ public class XMLTest {
         assert map.get("3").equals("three");
     }
 
-    /**
-     * Test Map with invalid element name.
-     */
     @Test
-    public void testReadAndWrite9() throws Exception {
+    public void mapKeyIsXMLIdentifier() {
         StringMapProperty stringMap = I.make(StringMapProperty.class);
         Map<String, String> map = new HashMap<>();
         map.put("\"", "one");
@@ -335,11 +316,8 @@ public class XMLTest {
         assert map.get("<").equals("three");
     }
 
-    /**
-     * Test Map with non-string key.
-     */
     @Test
-    public void compatibleKeyMap() throws Exception {
+    public void compatibleKeyMap() {
         CompatibleKeyMap bean = I.make(CompatibleKeyMap.class);
         Map<Integer, Class> map = new HashMap<>();
         map.put(1, String.class);
@@ -363,11 +341,8 @@ public class XMLTest {
         assert map.get(3).equals(Integer.class);
     }
 
-    /**
-     * Test Map with non-string key.
-     */
     @Test
-    public void incompatibleKeyMap() throws Exception {
+    public void incompatibleKeyMap() {
         IncompatibleKeyMap bean = I.make(IncompatibleKeyMap.class);
         Map<Serializable, Class> map = new HashMap<>();
         map.put("1", String.class);
@@ -392,7 +367,7 @@ public class XMLTest {
      * Test {@link Enum}.
      */
     @Test
-    public void javaEnum() throws Exception {
+    public void javaEnum() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         bean.setSchoolEnum(SchoolEnum.Miator);
 
@@ -409,7 +384,7 @@ public class XMLTest {
      * Test {@link Date}.
      */
     @Test
-    public void javaDate() throws Exception {
+    public void javaDate() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         bean.setDate(new Date(0L));
 
@@ -430,7 +405,7 @@ public class XMLTest {
      * Test {@link Class}.
      */
     @Test
-    public void javaClass() throws Exception {
+    public void javaClass() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         bean.setSomeClass(CoreMethodsTest.class);
 
@@ -451,7 +426,7 @@ public class XMLTest {
      * Test {@link File}.
      */
     @Test
-    public void javaFile() throws Exception {
+    public void javaFile() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         bean.setFile(config.toFile());
 
@@ -468,7 +443,7 @@ public class XMLTest {
      * Test {@link Path}.
      */
     @Test
-    public void javaPath() throws Exception {
+    public void javaPath() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         bean.setPath(config);
 
@@ -482,7 +457,7 @@ public class XMLTest {
     }
 
     @Test
-    public void transientProperty() throws Exception {
+    public void transientProperty() {
         TransientBean bean = I.make(TransientBean.class);
         bean.setNone(10);
         bean.setBoth(20);
@@ -498,7 +473,7 @@ public class XMLTest {
     }
 
     @Test
-    public void publicFieldProperty() throws Exception {
+    public void publicFieldProperty() {
         FieldProperty bean = I.make(FieldProperty.class);
         bean.publicField = "me";
 
@@ -512,7 +487,7 @@ public class XMLTest {
     }
 
     @Test
-    public void genericFieldProperty() throws Exception {
+    public void genericFieldProperty() {
         List<String> list = new ArrayList();
         list.add("test");
 
@@ -529,8 +504,8 @@ public class XMLTest {
     }
 
     @Test
-    public void publicFieldFxProperty() {
-        PropertyAtField bean = I.make(PropertyAtField.class);
+    public void fxPropertyAtField() {
+        FxPropertyAtField bean = I.make(FxPropertyAtField.class);
         bean.string.set("value");
         bean.integer.set(10);
         bean.list.add("first");
@@ -542,7 +517,7 @@ public class XMLTest {
         I.write(bean, config, false);
 
         // read
-        bean = I.read(config, I.make(PropertyAtField.class));
+        bean = I.read(config, I.make(FxPropertyAtField.class));
         assert bean.string.get().equals("value");
         assert bean.integer.get() == 10;
         assert bean.list.get(0).equals("first");
@@ -552,7 +527,7 @@ public class XMLTest {
     }
 
     @Test
-    public void readAndWriteNestedCollection() throws Exception {
+    public void readAndWriteNestedCollection() {
         NestedCollection bean = I.make(NestedCollection.class);
         Map<String, List<Person>> map = new HashMap();
         List<Person> list = new ArrayList();
@@ -581,7 +556,7 @@ public class XMLTest {
      * Test List.
      */
     @Test
-    public void readAndWriteList() throws Exception {
+    public void readAndWriteList() {
         StringListProperty stringList = I.make(StringListProperty.class);
         List<String> list = new ArrayList<>();
         list.add("1");
@@ -611,7 +586,7 @@ public class XMLTest {
     }
 
     @Test
-    public void readAndWriteNullContainsList() throws Exception {
+    public void readAndWriteNullContainsList() {
         List<String> list = new ArrayList();
         list.add(null);
         list.add("");
@@ -643,7 +618,7 @@ public class XMLTest {
      * Test Map.
      */
     @Test
-    public void readAndWriteMap() throws Exception {
+    public void readAndWriteMap() {
         StringMapProperty stringMap = I.make(StringMapProperty.class);
         Map<String, String> map = new HashMap<>();
         map.put("one", "one");
@@ -672,7 +647,7 @@ public class XMLTest {
     }
 
     @Test
-    public void readAndWriteNullContainsMap() throws Exception {
+    public void readAndWriteNullContainsMap() {
         Map<String, String> map = new HashMap();
         map.put("", "");
         map.put("null", null);
@@ -696,7 +671,7 @@ public class XMLTest {
     }
 
     @Test
-    public void readAndWriteGeneric() throws Exception {
+    public void readAndWriteGeneric() {
         Person saki = I.make(Person.class);
         saki.setFirstName("miyanaga");
         saki.setLastName("saki");
@@ -735,7 +710,7 @@ public class XMLTest {
     }
 
     @Test
-    public void multipleReference() throws Exception {
+    public void multipleReference() {
         Person koume = I.make(Person.class);
         koume.setFirstName("Koume");
         koume.setLastName("Suzukawa");
@@ -780,7 +755,7 @@ public class XMLTest {
     }
 
     @Test
-    public void multipleAttributeReference() throws Exception {
+    public void multipleAttributeReference() {
         StringListProperty stringList = I.make(StringListProperty.class);
         List<String> list = new ArrayList<>();
         list.add("1");
@@ -810,7 +785,7 @@ public class XMLTest {
     }
 
     @Test
-    public void setCompleteObject() throws Exception {
+    public void setCompleteObject() {
         Checker checker = I.make(Checker.class);
         List<String> list = new ArrayList<>();
         list.add("1");
@@ -850,7 +825,7 @@ public class XMLTest {
      * Test circular reference.
      */
     @Test
-    public void circularReference() throws Exception {
+    public void circularReference() {
         School school = I.make(School.class);
         school.setName("OtoTatibana");
 
