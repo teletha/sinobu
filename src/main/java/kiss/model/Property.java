@@ -12,12 +12,15 @@ package kiss.model;
 import static java.lang.reflect.Modifier.*;
 
 import java.beans.Transient;
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -44,6 +47,9 @@ public class Property implements Comparable<Property> {
     /** The flag whether this {@link Property} is transient or not. */
     public final boolean isTransient;
 
+    /** The annotated element. */
+    private final Map annotations = new HashMap(2);
+
     /** The actual accessor methods. */
     MethodHandle[] accessors;
 
@@ -66,7 +72,10 @@ public class Property implements Comparable<Property> {
         for (T element : elements) {
             if ((element.getModifiers() & TRANSIENT) != 0 || element.isAnnotationPresent(Transient.class)) {
                 serializable = true;
-                break;
+            }
+
+            for (Annotation annotation : element.getAnnotations()) {
+                annotations.put(annotation.annotationType(), annotation);
             }
         }
         this.isTransient = serializable;
@@ -105,5 +114,20 @@ public class Property implements Comparable<Property> {
      */
     public boolean isAttribute() {
         return model.getCodec() != null || model.type.isArray();
+    }
+
+    /**
+     * <p>
+     * Returns this property's annotation for the specified type if such an annotation is present,
+     * else null.
+     * </p>
+     * 
+     * @param annotationClass A Class object corresponding to the annotation type
+     * @return This property's annotation for the specified annotation type if present on this
+     *         element, else null
+     * @throws NullPointerException if the given annotation class is null
+     */
+    public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
+        return (A) annotations.get(annotationClass);
     }
 }

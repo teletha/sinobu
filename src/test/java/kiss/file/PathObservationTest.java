@@ -23,7 +23,7 @@ import java.util.concurrent.SynchronousQueue;
 
 import kiss.I;
 import kiss.Observer;
-import kiss.Procedure;
+import kiss.Disposable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +53,7 @@ public class PathObservationTest {
     private EventQueue queue = new EventQueue();
 
     /** The disposable instances. */
-    private List<Procedure> disposables = new ArrayList();
+    private List<Disposable> disposables = new ArrayList();
 
     @Before
     public void before() {
@@ -62,8 +62,8 @@ public class PathObservationTest {
 
     @After
     public void after() {
-        for (Procedure disposable : disposables) {
-            disposable.call();
+        for (Disposable disposable : disposables) {
+            disposable.dispose();
         }
     }
 
@@ -136,7 +136,7 @@ public class PathObservationTest {
         Path path2 = room.locateFile("sameDirectory2");
 
         // observe
-        Procedure disposable = observe(path1);
+        Disposable disposable = observe(path1);
         observe(path2);
 
         // modify and verify
@@ -147,7 +147,7 @@ public class PathObservationTest {
         write(path2);
         verify(path2, Modified);
 
-        disposable.call();
+        disposable.dispose();
 
         // modify and verify
         write(path1);
@@ -322,7 +322,7 @@ public class PathObservationTest {
         Path path = room.locateFile("test");
 
         // observe
-        Procedure disposable = observe(path);
+        Disposable disposable = observe(path);
 
         // modify
         write(path);
@@ -331,7 +331,7 @@ public class PathObservationTest {
         verify(path, Modified);
 
         // dispose
-        disposable.call();
+        disposable.dispose();
 
         // modify
         write(path);
@@ -354,10 +354,10 @@ public class PathObservationTest {
         Path path = room.locateFile("test");
 
         // observe
-        Procedure disposer = observe(path);
+        Disposable disposer = observe(path);
 
         // dispose
-        disposer.call();
+        disposer.dispose();
 
         // modify
         write(path);
@@ -371,11 +371,11 @@ public class PathObservationTest {
         Path path = room.locateFile("test");
 
         // observe
-        Procedure disposer = observe(path);
+        Disposable disposer = observe(path);
 
         // dispose
-        disposer.call();
-        disposer.call();
+        disposer.dispose();
+        disposer.dispose();
 
         // modify
         write(path);
@@ -484,8 +484,8 @@ public class PathObservationTest {
      * Helper method to observe the specified path.
      * </p>
      */
-    private Procedure observe(Path path) {
-        Procedure disposable = I.observe(path).to(queue);
+    private Disposable observe(Path path) {
+        Disposable disposable = I.observe(path).to(queue);
 
         disposables.add(disposable);
 
@@ -497,8 +497,8 @@ public class PathObservationTest {
      * Helper method to observe the specified path.
      * </p>
      */
-    private Procedure observe(Path path, String pattern) {
-        Procedure disposable = I.observe(path, pattern).to(queue);
+    private Disposable observe(Path path, String pattern) {
+        Disposable disposable = I.observe(path, pattern).to(queue);
 
         disposables.add(disposable);
 

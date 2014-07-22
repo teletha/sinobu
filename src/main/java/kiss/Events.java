@@ -33,16 +33,16 @@ import java.util.function.Predicate;
 public class Events<V> {
 
     /** For reuse. */
-    public static final Events NEVER = new Events<>(observer -> Procedure.Φ);
+    public static final Events NEVER = new Events<>(observer -> Disposable.Φ);
 
     /** For reuse. */
     private static final Predicate<Boolean> IdenticalPredicate = value -> value;
 
     /** The subscriber. */
-    private Function<Observer<? super V>, Procedure> subscriber;
+    private Function<Observer<? super V>, Disposable> subscriber;
 
     /** The unsubscriber. */
-    private Procedure unsubscriber;
+    private Disposable unsubscriber;
 
     /** The common value holder. */
     private AtomicReference<V> ref;
@@ -68,7 +68,7 @@ public class Events<V> {
      * @see #to(Consumer, Consumer)
      * @see #to(Consumer, Consumer, Runnable)
      */
-    public Events(Function<Observer<? super V>, Procedure> subscriber) {
+    public Events(Function<Observer<? super V>, Disposable> subscriber) {
         this.subscriber = subscriber;
     }
 
@@ -78,9 +78,9 @@ public class Events<V> {
      * </p>
      * 
      * @param next A delegator method of {@link Observer#onNext(Object)}.
-     * @return Calling {@link Procedure#call()} will dispose this subscription.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Procedure to(Consumer<? super V> next) {
+    public final Disposable to(Consumer<? super V> next) {
         return to(next, null);
     }
 
@@ -91,9 +91,9 @@ public class Events<V> {
      * 
      * @param next A delegator method of {@link Observer#onNext(Object)}.
      * @param error A delegator method of {@link Observer#onError(Throwable)}.
-     * @return Calling {@link Procedure#call()} will dispose this subscription.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Procedure to(Consumer<? super V> next, Consumer<Throwable> error) {
+    public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error) {
         return to(next, error, null);
     }
 
@@ -105,9 +105,9 @@ public class Events<V> {
      * @param next A delegator method of {@link Observer#onNext(Object)}.
      * @param error A delegator method of {@link Observer#onError(Throwable)}.
      * @param complete A delegator method of {@link Observer#onCompleted()}.
-     * @return Calling {@link Procedure#call()} will dispose this subscription.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Procedure to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
+    public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
         Agent agent = new Agent();
         agent.next = next;
         agent.error = error;
@@ -122,9 +122,9 @@ public class Events<V> {
      * </p>
      * 
      * @param observer A value observer of this {@link Events}.
-     * @return Calling {@link Procedure#call()} will dispose this subscription.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Procedure to(Observer<? super V> observer) {
+    public final Disposable to(Observer<? super V> observer) {
         return unsubscriber = subscriber.apply(observer);
     }
 
@@ -389,7 +389,7 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            Procedure disposable = to(observer);
+            Disposable disposable = to(observer);
 
             for (Events<? extends V> other : others) {
                 if (other != null) {
@@ -464,7 +464,7 @@ public class Events<V> {
             agent.observer = observer;
             agent.complete = () -> {
                 if (repeat.decrementAndGet() == 0) {
-                    unsubscriber.call();
+                    unsubscriber.dispose();
                 } else {
                     unsubscriber = unsubscriber.and(to(agent));
                 }
@@ -585,7 +585,7 @@ public class Events<V> {
 
                     if (0 == current) {
                         observer.onCompleted();
-                        unsubscriber.call();
+                        unsubscriber.dispose();
                     }
                 }
             });
@@ -611,7 +611,7 @@ public class Events<V> {
         return new Events<>(observer -> {
             return unsubscriber = to(observer).and(predicate.to(value -> {
                 observer.onCompleted();
-                unsubscriber.call();
+                unsubscriber.dispose();
             }));
         });
     }
@@ -636,7 +636,7 @@ public class Events<V> {
             if (predicate.test(value)) {
                 observer.onNext(value);
                 observer.onCompleted();
-                unsubscriber.call();
+                unsubscriber.dispose();
             } else {
                 observer.onNext(value);
             }
@@ -798,12 +798,12 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            Procedure base = null;
+            Disposable base = null;
             boolean[] conditions = new boolean[observables.length];
 
             for (int i = 0; i < observables.length; i++) {
                 int index = i;
-                Procedure disposable = observables[index].to(value -> {
+                Disposable disposable = observables[index].to(value -> {
                     conditions[index] = !predicate.test(value);
 
                     observer.onNext(condition.test(conditions));
