@@ -533,16 +533,22 @@ public class XMLTest {
         PropertyAtField bean = I.make(PropertyAtField.class);
         bean.string.set("value");
         bean.integer.set(10);
+        bean.list.add("first");
+        bean.list.add("second");
+        bean.map.put("one", 11L);
+        bean.map.put("two", 222L);
 
         // write
         I.write(bean, config, false);
-
-        System.out.println(I.xml(config));
 
         // read
         bean = I.read(config, I.make(PropertyAtField.class));
         assert bean.string.get().equals("value");
         assert bean.integer.get() == 10;
+        assert bean.list.get(0).equals("first");
+        assert bean.list.get(1).equals("second");
+        assert bean.map.get("one") == 11;
+        assert bean.map.get("two") == 222;
     }
 
     @Test

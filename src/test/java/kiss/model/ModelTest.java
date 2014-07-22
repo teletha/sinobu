@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
@@ -191,12 +191,16 @@ public class ModelTest {
     @Test
     public void fieldProperty() {
         Model model = Model.load(PropertyAtField.class);
-        assert model.properties.size() == 2;
+        assert model.properties.size() == 4;
 
         Property integer = model.properties.get(0);
         Property string = model.properties.get(1);
-        assert integer.model.type == IntegerProperty.class;
-        assert string.model.type == StringProperty.class;
+        Property list = model.properties.get(2);
+        Property map = model.properties.get(3);
+        assert integer.model.type == Integer.class;
+        assert string.model.type == String.class;
+        assert list.model.type == ObservableList.class;
+        assert map.model.type == ObservableMap.class;
 
         PropertyAtField bean = I.make(PropertyAtField.class);
         assert bean.integer.get() == 0;

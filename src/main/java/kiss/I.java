@@ -72,6 +72,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleSetProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
+
 import jdk.internal.org.objectweb.asm.AnnotationVisitor;
 import jdk.internal.org.objectweb.asm.ClassVisitor;
 import jdk.internal.org.objectweb.asm.ClassWriter;
@@ -313,6 +324,18 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         modules.set(List.class, new Prototype(ArrayList.class));
         modules.set(Map.class, new Prototype(HashMap.class));
         modules.set(Prototype.class, new Prototype(Prototype.class));
+        modules.set(ListProperty.class, () -> {
+            return new SimpleListProperty(FXCollections.observableArrayList());
+        });
+        modules.set(ObservableList.class, FXCollections::observableArrayList);
+        modules.set(MapProperty.class, () -> {
+            return new SimpleMapProperty(FXCollections.observableHashMap());
+        });
+        modules.set(ObservableMap.class, FXCollections::observableHashMap);
+        modules.set(SetProperty.class, () -> {
+            return new SimpleSetProperty(FXCollections.observableSet());
+        });
+        modules.set(ObservableSet.class, FXCollections::observableSet);
 
         try {
             // configure dom builder
@@ -1806,7 +1829,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                         }
                     } else {
                         // collection model and normal model
-                        System.out.println(model.name + "  " + property.name + "  " + property.model.type);
                         object = make(property.model.type);
                     }
 

@@ -7,9 +7,11 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.model;
+package kiss.scratchpad;
 
 import java.lang.invoke.MethodHandle;
+
+import kiss.model.Model;
 
 /**
  * @version 2014/07/21 17:13:05

@@ -210,7 +210,6 @@ class XMLUtil extends Writer implements PropertyWalker {
         findSpace();
 
         while (pos != html.length()) {
-            // System.out.println(pos);
             if (test("<!--")) {
                 // =====================
                 // Comment

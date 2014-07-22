@@ -33,7 +33,7 @@ import java.lang.reflect.Method;
  * @version 2009/07/17 15:03:16
  */
 @SuppressWarnings("unchecked")
-public class Property implements Comparable<Property>, Accessible {
+public class Property implements Comparable<Property> {
 
     /** The assosiated object model with this {@link Property}. */
     public final Model model;
@@ -105,45 +105,5 @@ public class Property implements Comparable<Property>, Accessible {
      */
     public boolean isAttribute() {
         return model.getCodec() != null || model.type.isArray();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Model type() {
-        return model;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String name() {
-        return name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isTransient() {
-        return isTransient;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public MethodHandle getter() {
-        return accessors[0];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public MethodHandle setter() {
-        return accessors[1];
     }
 }

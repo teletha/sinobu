@@ -259,9 +259,10 @@ public class Model {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(fieldModel, field.getName(), field);
+                        Property property = new Property(load(fieldModel.type.getMethod("getValue")
+                                .getGenericReturnType(), field.getGenericType()), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
-                        property.type = 1;
+                        property.type = 2;
 
                         // register it
                         properties.add(property);
