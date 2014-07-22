@@ -148,4 +148,15 @@ public class EventEmitter<E> implements Observer<E> {
     public boolean isUnsubscribed() {
         return listeners.isEmpty();
     }
+
+    /**
+     * <p>
+     * Check event queue.
+     * </p>
+     * 
+     * @return A result.
+     */
+    public boolean isEmpty() {
+        return events.isEmpty();
+    }
 }

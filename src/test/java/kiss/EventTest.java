@@ -24,7 +24,7 @@ import antibug.Chronus;
 /**
  * @version 2014/01/11 2:51:33
  */
-public class ObservableTest {
+public class EventTest {
 
     @ClassRule
     public static final Chronus chronus = new Chronus(I.class);
