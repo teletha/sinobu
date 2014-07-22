@@ -72,12 +72,16 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleSetProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -1358,6 +1362,190 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         new Visitor(input, output, 1, null, patterns);
     }
 
+    //
+    // /**
+    // * <p>
+    // * Parse the specified xml {@link Path} using the specified sequence of {@link
+    // XMLFilter} .
+    // The
+    // * application can use this method to instruct the XML reader to begin parsing an
+    // XML document
+    // * from the specified path.
+    // * </p>
+    // * <p>
+    // * Sinobu use the {@link XMLReader} which has the following features.
+    // * </p>
+    // * <ul>
+    // * <li>Support XML namespaces.</li>
+    // * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude)
+    // Version
+    // * 1.0</a>.</li>
+    // * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
+    // * <li><em>Not</em> support external DTD completely (parser doesn't even access
+    // DTD, using
+    // * "http://apache.org/xml/features/nonvalidating/load-external-dtd"
+    // feature).</li>
+    // * </ul>
+    // *
+    // * @param source A path to xml source.
+    // * @param filters A list of filters to parse a sax event. This may be
+    // <code>null</code>.
+    // * @throws NullPointerException If the specified source is <code>null</code>. If
+    // one of the
+    // * specified filter is <code>null</code>.
+    // * @throws SAXException Any SAX exception, possibly wrapping another exception.
+    // * @throws IOException An IO exception from the parser, possibly from a byte
+    // stream or
+    // character
+    // * stream supplied by the application.
+    // */
+    // public static void parse(Path source, XMLFilter... filters) {
+    // try {
+    // InputSource input = new InputSource(Files.newBufferedReader(source, $encoding));
+    // input.setPublicId(source.toString());
+    //
+    // parse(input, filters);
+    // } catch (Exception e) {
+    // throw quiet(e);
+    // }
+    // }
+    //
+    // /**
+    // * <p>
+    // * Parse the specified xml {@link InputSource} using the specified sequence of
+    // {@link
+    // XMLFilter}
+    // * . The application can use this method to instruct the XML reader to begin
+    // parsing an XML
+    // * document from any valid input source (a character stream, a byte stream, or a
+    // URI).
+    // * </p>
+    // * <p>
+    // * Sinobu use the {@link XMLReader} which has the following features.
+    // * </p>
+    // * <ul>
+    // * <li>Support XML namespaces.</li>
+    // * <li>Support <a href="http://www.w3.org/TR/xinclude/">XML Inclusions (XInclude)
+    // Version
+    // * 1.0</a>.</li>
+    // * <li><em>Not</em> support any validations (DTD or XML Schema).</li>
+    // * <li><em>Not</em> support external DTD completely (parser doesn't even access
+    // DTD, using
+    // * "http://apache.org/xml/features/nonvalidating/load-external-dtd"
+    // feature).</li>
+    // * </ul>
+    // *
+    // * @param source A xml source.
+    // * @param filters A list of filters to parse a sax event. This may be
+    // <code>null</code>.
+    // * @throws NullPointerException If the specified source is <code>null</code>. If
+    // one of the
+    // * specified filter is <code>null</code>.
+    // * @throws SAXException Any SAX exception, possibly wrapping another exception.
+    // * @throws IOException An IO exception from the parser, possibly from a byte
+    // stream or
+    // character
+    // * stream supplied by the application.
+    // */
+    // public static void parse(InputSource source, XMLFilter... filters) {
+    // try {
+    // // create new xml reader
+    // XMLReader reader = sax.newSAXParser().getXMLReader();
+    //
+    // // chain filters if needed
+    // for (int i = 0; i < filters.length; i++) {
+    // // find the root filter of the current multilayer filter
+    // XMLFilter filter = filters[i];
+    //
+    // while (filter.getParent() instanceof XMLFilter) {
+    // filter = (XMLFilter) filter.getParent();
+    // }
+    //
+    // // the root filter makes previous filter as parent xml reader
+    // filter.setParent(reader);
+    //
+    // if (filter instanceof LexicalHandler) {
+    // reader.setProperty("http://xml.org/sax/properties/lexical-handler", filter);
+    // }
+    //
+    // // current filter is a xml reader in next step
+    // reader = filters[i];
+    // }
+    //
+    // // start parsing
+    // reader.parse(source);
+    // } catch (Exception e) {
+    // // We must throw the checked exception quietly and pass the original exception
+    // instead
+    // // of wrapped exception.
+    // throw quiet(e);
+    // }
+    // }
+
+    /**
+     * <p>
+     * Observe the specified {@link ObservableValue}.
+     * </p>
+     * <p>
+     * An implementation of {@link ObservableValue} may support lazy evaluation, which means that
+     * the value is not immediately recomputed after changes, but lazily the next time the value is
+     * requested.
+     * </p>
+     * 
+     * @param observable A target to observe.
+     * @return A observable event stream.
+     */
+    public static <E extends Observable> Events<E> observe(E observable) {
+        if (observable == null) {
+            return Events.NEVER;
+        }
+
+        return new Events<>(observer -> {
+            // create actual listener
+            InvalidationListener listener = value -> {
+                observer.onNext((E) value);
+            };
+
+            observable.addListener(listener); // register listener
+
+            return () -> {
+                observable.removeListener(listener); // unregister listener
+            };
+        });
+    }
+
+    /**
+     * <p>
+     * Observe the specified {@link ObservableValue}.
+     * </p>
+     * <p>
+     * An implementation of {@link ObservableValue} may support lazy evaluation, which means that
+     * the value is not immediately recomputed after changes, but lazily the next time the value is
+     * requested.
+     * </p>
+     * 
+     * @param observable A target to observe.
+     * @return A observable event stream.
+     */
+    public static <E> Events<E> observe(ObservableValue<E> observable) {
+        if (observable == null) {
+            return Events.NEVER;
+        }
+
+        return new Events<>(observer -> {
+            // create actual listener
+            ChangeListener<E> listener = (o, oldValue, newValue) -> {
+                observer.onNext(newValue);
+            };
+
+            observable.addListener(listener); // register listener
+
+            return () -> {
+                observable.removeListener(listener); // unregister listener
+            };
+        });
+    }
+
     /**
      * <p>
      * Observe the file system change and raises events when a file, directory, or file in a
@@ -1381,8 +1569,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
-     * @return A {@link Disposable} object for this observation. You can stop observing to call the
-     *         method {@link Disposable#dispose()} of the returned object.
+     * @return A observable event stream.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
@@ -1420,8 +1607,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param path A target path you want to observe. (file and directory are acceptable)
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
      *            patterns if you want to observe a file.
-     * @return A {@link Disposable} object for this observation. You can stop observing to call the
-     *         method {@link Disposable#dispose()} of the returned object.
+     * @return A observable event stream.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
