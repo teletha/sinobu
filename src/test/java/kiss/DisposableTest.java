@@ -14,18 +14,18 @@ import org.junit.Test;
 /**
  * @version 2014/07/19 0:51:19
  */
-public class ProcedureTest {
+public class DisposableTest {
 
     @Test
     public void and() throws Exception {
         Task task1 = new Task();
         Task task2 = new Task();
-        Procedure composed = task1.and(task2);
+        Disposable composed = task1.and(task2);
 
         assert task1.executed == false;
         assert task2.executed == false;
 
-        composed.call();
+        composed.dispose();
         assert task1.executed == true;
         assert task2.executed == true;
     }
@@ -33,7 +33,7 @@ public class ProcedureTest {
     /**
      * @version 2014/01/31 16:41:02
      */
-    private static class Task implements Procedure {
+    private static class Task implements Disposable {
 
         private boolean executed;
 
@@ -41,7 +41,7 @@ public class ProcedureTest {
          * {@inheritDoc}
          */
         @Override
-        public void call() {
+        public void dispose() {
             executed = true;
         }
     }

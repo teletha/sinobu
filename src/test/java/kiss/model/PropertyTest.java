@@ -9,28 +9,27 @@
  */
 package kiss.model;
 
+import java.beans.Transient;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * @version 2012/03/16 13:34:05
+ * @version 2014/07/22 16:04:33
  */
 public class PropertyTest {
 
     @Test
-    @Ignore
     public void annotation() throws Exception {
         Model model = Model.load(Annotated.class);
         Property property = model.getProperty("name");
-        // assert property.getAnnotation(KarenBee.class) != null;
-        // assert property.getAnnotation(Transient.class) == null;
-        //
-        // property = model.getProperty("field");
-        // assert property.getAnnotation(KarenBee.class) != null;
-        // assert property.getAnnotation(Transient.class) == null;
+        assert property.getAnnotation(KarenBee.class) != null;
+        assert property.getAnnotation(Transient.class) == null;
+
+        property = model.getProperty("field");
+        assert property.getAnnotation(KarenBee.class) != null;
+        assert property.getAnnotation(Transient.class) == null;
     }
 
     /**

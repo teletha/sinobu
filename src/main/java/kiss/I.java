@@ -1381,8 +1381,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
-     * @return A {@link Procedure} object for this observation. You can stop observing to call the
-     *         method {@link Procedure#call()} of the returned object.
+     * @return A {@link Disposable} object for this observation. You can stop observing to call the
+     *         method {@link Disposable#dispose()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
@@ -1420,8 +1420,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param path A target path you want to observe. (file and directory are acceptable)
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to sort out. Ignore
      *            patterns if you want to observe a file.
-     * @return A {@link Procedure} object for this observation. You can stop observing to call the
-     *         method {@link Procedure#call()} of the returned object.
+     * @return A {@link Disposable} object for this observation. You can stop observing to call the
+     *         method {@link Disposable#dispose()} of the returned object.
      * @throws NullPointerException If the specified path or listener is <code>null</code>.
      * @throws SecurityException In the case of the default provider, and a security manager is
      *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to

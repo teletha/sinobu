@@ -9,37 +9,41 @@
  */
 package kiss;
 
-
 /**
  * <p>
- * The {@link Procedure} interface is a sequence of program instructions that perform a specific
- * task, packaged as a unit. This unit can then be used in programs wherever that particular task
- * should be performed.
+ * The {@link Disposable} interface is used when components need to deallocate and dispose resources
+ * prior to their destruction.
  * </p>
  * 
- * @version 2014/07/19 0:48:17
+ * @version 2014/07/22 15:54:50
  */
-public interface Procedure {
+public interface Disposable {
 
     /** The task to do nothing. */
-    public static final Procedure Φ = () -> {
+    public static final Disposable Φ = () -> {
         // do nothing
     };
 
-    void call();
+    /**
+     * <p>
+     * The dispose operation is called at the end of a components lifecycle. Components use this
+     * method to release and destroy any resources that the Component owns.
+     * </p>
+     */
+    void dispose();
 
     /**
      * <p>
-     * Returns a composed {@link Procedure}.
+     * Returns a composed {@link Disposable}.
      * </p>
      * 
-     * @param next An next {@link Procedure} to execute.
-     * @return A composed {@link Procedure}.
+     * @param next An next {@link Disposable} to execute.
+     * @return A composed {@link Disposable}.
      */
-    default Procedure and(Procedure next) {
+    default Disposable and(Disposable next) {
         return () -> {
-            call();
-            next.call();
+            dispose();
+            next.dispose();
         };
     }
 

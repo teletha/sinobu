@@ -32,7 +32,7 @@ import java.util.Collections;
  * @version 2014/01/14 9:37:54
  */
 @SuppressWarnings({"serial", "unchecked"})
-class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Procedure {
+class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Disposable {
 
     // =======================================================
     // For Pattern Matching Facility
@@ -380,7 +380,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Pr
      * {@inheritDoc}
      */
     @Override
-    public void call() {
+    public void dispose() {
         I.quiet(service);
     }
 }
