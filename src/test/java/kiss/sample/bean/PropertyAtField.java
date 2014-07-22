@@ -10,9 +10,13 @@
 package kiss.sample.bean;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
+import kiss.I;
 
 /**
  * @version 2014/07/21 21:03:05
@@ -22,4 +26,8 @@ public class PropertyAtField {
     public final StringProperty string = new SimpleStringProperty();
 
     public final IntegerProperty integer = new SimpleIntegerProperty();
+
+    public final ListProperty<String> list = I.make(ListProperty.class);
+
+    public final MapProperty<String, Long> map = I.make(MapProperty.class);
 }
