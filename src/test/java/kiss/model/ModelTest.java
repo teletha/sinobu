@@ -19,6 +19,7 @@ import javafx.collections.ObservableMap;
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
+import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.GenericBean;
 import kiss.sample.bean.GenericBoundedTypedBean;
 import kiss.sample.bean.GenericFieldProperty;
@@ -28,7 +29,6 @@ import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.IncompatibleKeyMap;
 import kiss.sample.bean.InheritanceBean;
 import kiss.sample.bean.Person;
-import kiss.sample.bean.PropertyAtField;
 import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.StringMapProperty;
@@ -45,7 +45,7 @@ import kiss.sample.bean.invalid.StaticAccessor;
 import org.junit.Test;
 
 /**
- * @version 2011/03/22 17:02:48
+ * @version 2014/07/22 15:38:17
  */
 public class ModelTest {
 
@@ -69,11 +69,8 @@ public class ModelTest {
         assert property.accessors[1] != null;
     }
 
-    /**
-     * Test identical equality of {@link Model}.
-     */
     @Test
-    public void testGetModel() throws Exception {
+    public void identicalCehck() throws Exception {
         // from class
         Model model = Model.load(Person.class);
         assert model != null;
@@ -89,21 +86,15 @@ public class ModelTest {
         assert model == model2;
     }
 
-    /**
-     * Valid Bean Model.
-     */
     @Test
-    public void testModel01() {
+    public void load() {
         Model model = Model.load(Model.class);
         assert model != null;
         assert Model.class == model.type;
     }
 
-    /**
-     * Valid Bean Model.
-     */
     @Test
-    public void testModel02() {
+    public void wildcardProperty() {
         Model model = Model.load(WildcardBean.class);
         assert model != null;
 
@@ -122,11 +113,8 @@ public class ModelTest {
         assert Object.class == property.model.type;
     }
 
-    /**
-     * Valid Bean Model.
-     */
     @Test
-    public void testModel03() {
+    public void inheritProperty() {
         Model model = Model.load(InheritanceBean.class);
         assert model != null;
         assert InheritanceBean.class == model.type;
@@ -140,11 +128,8 @@ public class ModelTest {
         assert 2 == model.properties.size();
     }
 
-    /**
-     * Test {@link Map} model.
-     */
     @Test
-    public void testModel04() {
+    public void stringMap() {
         Model model = Model.load(StringMapProperty.class);
         assert model != null;
 
@@ -167,7 +152,7 @@ public class ModelTest {
     }
 
     @Test
-    public void fieldObject() {
+    public void fieldProperty() {
         Model model = Model.load(FieldProperty.class);
         assert 2 == model.properties.size();
 
@@ -178,7 +163,7 @@ public class ModelTest {
     }
 
     @Test
-    public void fieldGeneric() {
+    public void fieldGenericProperty() {
         Model model = Model.load(GenericFieldProperty.class);
         assert 2 == model.properties.size();
 
@@ -189,8 +174,8 @@ public class ModelTest {
     }
 
     @Test
-    public void fieldProperty() {
-        Model model = Model.load(PropertyAtField.class);
+    public void fxPropertyAtFieldProperty() {
+        Model model = Model.load(FxPropertyAtField.class);
         assert model.properties.size() == 4;
 
         Property integer = model.properties.get(0);
@@ -202,7 +187,7 @@ public class ModelTest {
         assert list.model.type == ObservableList.class;
         assert map.model.type == ObservableMap.class;
 
-        PropertyAtField bean = I.make(PropertyAtField.class);
+        FxPropertyAtField bean = I.make(FxPropertyAtField.class);
         assert bean.integer.get() == 0;
         assert bean.string.get() == null;
 

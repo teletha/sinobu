@@ -21,7 +21,7 @@ import kiss.I;
 /**
  * @version 2014/07/21 21:03:05
  */
-public class PropertyAtField {
+public class FxPropertyAtField {
 
     public final StringProperty string = new SimpleStringProperty();
 

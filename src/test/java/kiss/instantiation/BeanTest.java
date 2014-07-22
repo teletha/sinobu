@@ -21,7 +21,7 @@ import kiss.sample.bean.ArrayBean;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
-import kiss.sample.bean.PropertyAtField;
+import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.SchoolEnum;
 
 import org.junit.Test;
@@ -149,7 +149,7 @@ public class BeanTest {
      */
     @Test
     public void property() throws Exception {
-        PropertyAtField bean = I.make(PropertyAtField.class);
+        FxPropertyAtField bean = I.make(FxPropertyAtField.class);
         assert bean != null;
         assert bean.list instanceof SimpleListProperty;
         assert bean.map instanceof SimpleMapProperty;
