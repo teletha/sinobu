@@ -17,6 +17,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import kiss.Disposable;
+
 /**
  * @version 2014/07/18 14:29:28
  */
@@ -26,6 +28,54 @@ public class Lambda {
     public static final Consumer φ = value -> {
         // do nothing
     };
+
+    /**
+     * <p>
+     * Apply parameter partially for the given function.
+     * </p>
+     * 
+     * @param function An actual function to apply parameter partially. If this function is
+     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+     * @return The parameter binded function.
+     */
+    public static Disposable run(Supplier function) {
+        if (function == null) {
+            return Disposable.Φ;
+        }
+        return () -> function.get();
+    }
+
+    /**
+     * <p>
+     * Apply parameter partially for the given function.
+     * </p>
+     * 
+     * @param param A input paramter to bind.
+     * @param function An actual function to apply parameter partially. If this function is
+     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+     * @return The parameter binded function.
+     */
+    public static <Param> Disposable run(Param param, Consumer<Param> function) {
+        if (function == null) {
+            return Disposable.Φ;
+        }
+        return () -> function.accept(param);
+    }
+
+    /**
+     * <p>
+     * Apply parameter partially for the given function.
+     * </p>
+     * 
+     * @param param1 First input paramter to bind.
+     * @param param2 Second input paramter to bind.
+     * @param function An actual function to apply parameter partially. If this function is
+     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+     * @return The parameter binded function.
+     */
+    public static <Param1, Param2> Disposable run(Param1 param1, Param2 param2, BiConsumer<Param1, Param2> function) {
+        return run(param2, consume(param1, function));
+    }
 
     /**
      * <p>
@@ -99,7 +149,12 @@ public class Lambda {
         Map<Param, Return> memo = new HashMap<>();
 
         Recursive<Function<Param, Return>> recursive = recursiveFunction -> function.apply(param -> {
-            return memo.computeIfAbsent(param, value -> recursiveFunction.apply(recursiveFunction).apply(param));
+            Return r = memo.computeIfAbsent(param, value -> {
+                return recursiveFunction.apply(recursiveFunction).apply(param);
+            });
+
+            System.out.println(r);
+            return r;
         });
 
         return recursive.apply(recursive);
