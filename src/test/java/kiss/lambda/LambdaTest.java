@@ -27,6 +27,6 @@ public class LambdaTest {
             if (n.intValue() <= 2) return BigInteger.ONE;
             return f.apply(n.subtract(BigInteger.ONE)).add(f.apply(n.subtract(BigInteger.valueOf(2))));
         });
-        System.out.println(fib.apply(BigInteger.valueOf(40)));
+        System.out.println(fib.apply(BigInteger.valueOf(10)));
     }
 }
