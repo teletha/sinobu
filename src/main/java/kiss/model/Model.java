@@ -32,7 +32,7 @@ import java.util.Map.Entry;
 
 import javafx.beans.value.WritableValue;
 
-import kiss.ClassVariable;
+import kiss.Variable;
 import kiss.Codec;
 import kiss.I;
 
@@ -60,7 +60,7 @@ import kiss.I;
 public class Model {
 
     /** The model repository. */
-    private static final ClassVariable<Model> models = new ClassVariable();
+    private static final Variable<Model> models = new Variable();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class type;

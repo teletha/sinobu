@@ -10,9 +10,14 @@
 package kiss;
 
 /**
- * @version 2014/07/15 19:03:30
+ * <p>
+ * {@link Variable} provides the GC-aware variable which is associated with the specific
+ * {@link Class}.
+ * </p>
+ * 
+ * @version 2014/07/24 9:11:42
  */
-public class ClassVariable<T> extends ClassValue {
+public class Variable<T> extends ClassValue {
 
     /**
      * {@inheritDoc}
@@ -24,8 +29,8 @@ public class ClassVariable<T> extends ClassValue {
 
     /**
      * <p>
-     * Set the value for the given {@link Class}. If some value has been associateed already and
-     * this variable is variance, the given value will override the current value.
+     * Set the value for the given {@link Class}. If some value has been associated already and this
+     * variable is variance, the given value will override the current value.
      * </p>
      * 
      * @param type A class type as key.
@@ -43,8 +48,8 @@ public class ClassVariable<T> extends ClassValue {
 
     /**
      * <p>
-     * Set the value for the given {@link Class}. If some value has been associateed already and
-     * this variable is variance, the given value will override the current value.
+     * Set the value for the given {@link Class}. If some value has been associated already and this
+     * variable is variance, the given value will override the current value.
      * </p>
      * 
      * @param type A class type as key.
