@@ -571,7 +571,7 @@ public class EventTest {
         EventEmitter<Integer> emitter3 = new EventEmitter();
         EventEmitter<Integer> emitter4 = new EventEmitter();
 
-        List<Events<Integer>> list = new ArrayList();
+        List<Event<Integer>> list = new ArrayList();
         list.add(emitter2.observe());
         list.add(emitter3.observe());
         list.add(emitter4.observe());
@@ -601,7 +601,7 @@ public class EventTest {
     @Test
     public void mergeNull() throws Exception {
         EventEmitter<Integer> emitter1 = new EventEmitter();
-        Disposable unsubscribe = emitter1.observe().merge((Events) null).to(emitter1);
+        Disposable unsubscribe = emitter1.observe().merge((Event) null).to(emitter1);
 
         assert emitter1.isSubscribed();
         assert emitter1.emitAndRetrieve(10) == 10;
@@ -616,7 +616,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Events.all(value -> {
+        Disposable unsubscribe = Event.all(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -655,7 +655,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Events.any(value -> {
+        Disposable unsubscribe = Event.any(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -687,7 +687,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Events.none(value -> {
+        Disposable unsubscribe = Event.none(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -730,7 +730,7 @@ public class EventTest {
 
     @Test
     public void never() throws Exception {
-        Events.NEVER.to(value -> {
+        Event.NEVER.to(value -> {
             // none
         });
     }

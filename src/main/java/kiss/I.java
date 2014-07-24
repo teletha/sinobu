@@ -1495,12 +1495,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param observable A target to observe.
      * @return A observable event stream.
      */
-    public static <E extends Observable> Events<E> observe(E observable) {
+    public static <E extends Observable> Event<E> observe(E observable) {
         if (observable == null) {
-            return Events.NEVER;
+            return Event.NEVER;
         }
 
-        return new Events<>(observer -> {
+        return new Event<>(observer -> {
             // create actual listener
             InvalidationListener listener = value -> {
                 observer.onNext((E) value);
@@ -1527,12 +1527,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param observable A target to observe.
      * @return A observable event stream.
      */
-    public static <E> Events<E> observe(ObservableValue<E> observable) {
+    public static <E> Event<E> observe(ObservableValue<E> observable) {
         if (observable == null) {
-            return Events.NEVER;
+            return Event.NEVER;
         }
 
-        return new Events<>(observer -> {
+        return new Event<>(observer -> {
             // create actual listener
             ChangeListener<E> listener = (o, oldValue, newValue) -> {
                 observer.onNext(newValue);
@@ -1578,7 +1578,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static Events<WatchEvent<Path>> observe(Path path) {
+    public static Event<WatchEvent<Path>> observe(Path path) {
         return observe(path, new String[0]);
     }
 
@@ -1616,12 +1616,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static Events<WatchEvent<Path>> observe(Path path, String... patterns) {
+    public static Event<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
             return observe(path.getParent(), path.getFileName().toString());
         }
 
-        return new Events<>(observer -> {
+        return new Event<>(observer -> {
             // Create logical file system watch service.
             Visitor watcher = new Visitor(path, observer, patterns);
 
