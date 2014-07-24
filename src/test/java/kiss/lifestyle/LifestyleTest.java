@@ -37,14 +37,14 @@ public class LifestyleTest {
 
     @Test
     public void override() {
-        With object = I.make(With.class);
-        assert object != I.make(With.class);
+        HasCustomLifestyleInPrivateModule object = I.make(HasCustomLifestyleInPrivateModule.class);
+        assert object != I.make(HasCustomLifestyleInPrivateModule.class);
 
         // unload module
         module.unload();
 
-        object = I.make(With.class);
-        assert object == I.make(With.class);
+        object = I.make(HasCustomLifestyleInPrivateModule.class);
+        assert object == I.make(HasCustomLifestyleInPrivateModule.class);
     }
 
     @Test
@@ -136,40 +136,40 @@ public class LifestyleTest {
      * @version 2010/01/15 18:55:45
      */
     @Manageable(lifestyle = Singleton.class)
-    private static class With {
-    }
-
-    /**
-     * Custom lifestyle.
-     * 
-     * @version 2010/01/15 18:54:13
-     */
-    @SuppressWarnings("unused")
-    private static class WithLifestyle1 implements Lifestyle<With> {
+    private static class HasCustomLifestyleInPrivateModule {
 
         /**
-         * @see kiss.Lifestyle#get()
+         * Custom lifestyle.
+         * 
+         * @version 2010/01/15 18:54:13
          */
-        @Override
-        public With get() {
-            return new With();
+        @SuppressWarnings("unused")
+        private static class Custom1 implements Lifestyle<HasCustomLifestyleInPrivateModule> {
+
+            /**
+             * @see kiss.Lifestyle#get()
+             */
+            @Override
+            public HasCustomLifestyleInPrivateModule get() {
+                return new HasCustomLifestyleInPrivateModule();
+            }
         }
-    }
-
-    /**
-     * Custom lifestyle.
-     * 
-     * @version 2010/01/15 18:54:13
-     */
-    @SuppressWarnings("unused")
-    private static class WithLifestyle2 implements Lifestyle<With> {
 
         /**
-         * @see kiss.Lifestyle#get()
+         * Custom lifestyle.
+         * 
+         * @version 2010/01/15 18:54:13
          */
-        @Override
-        public With get() {
-            return new With();
+        @SuppressWarnings("unused")
+        private static class Custom2 implements Lifestyle<HasCustomLifestyleInPrivateModule> {
+
+            /**
+             * @see kiss.Lifestyle#get()
+             */
+            @Override
+            public HasCustomLifestyleInPrivateModule get() {
+                return new HasCustomLifestyleInPrivateModule();
+            }
         }
     }
 

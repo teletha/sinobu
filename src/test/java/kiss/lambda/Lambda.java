@@ -145,16 +145,11 @@ public class Lambda {
      * @param function A target function to convert.
      * @return A converted recursive function.
      */
-    public static <Param, Return> Function<Param, Return> recursive(Function<Function<? super Param, ? extends Return>, Function<Param, Return>> function) {
+    public static <Param, Return> Function<Param, Return> recursive(Function<Function<Param, Return>, Function<Param, Return>> function) {
         Map<Param, Return> memo = new HashMap<>();
 
         Recursive<Function<Param, Return>> recursive = recursiveFunction -> function.apply(param -> {
-            Return r = memo.computeIfAbsent(param, value -> {
-                return recursiveFunction.apply(recursiveFunction).apply(param);
-            });
-
-            System.out.println(r);
-            return r;
+            return memo.computeIfAbsent(param, value -> recursiveFunction.apply(recursiveFunction).apply(param));
         });
 
         return recursive.apply(recursive);
