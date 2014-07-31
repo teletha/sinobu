@@ -2424,7 +2424,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return A constructed {@link XML}.
      */
     public static XML xml(Object xml) {
-        return xml(xml, true);
+        return xml(xml, false);
     }
 
     /**
@@ -2475,7 +2475,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 // ================================
                 String value = xml.toString();
 
-                if (value.charAt(0) == '<') {
+                if (value.charAt(0) == '<' && 3 < value.length()) {
                     // ========================
                     // XML Literal
                     // ========================
@@ -2495,11 +2495,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 // Element Name or Text
                 // ========================
                 doc = dom.newDocument();
-
-                List list = new ArrayList();
-                list.add(text ? doc.createTextNode(value) : doc.createElement(value));
-
-                return new XML(doc, list);
+                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text);
             }
         } catch (Exception e) {
             throw quiet(e);
