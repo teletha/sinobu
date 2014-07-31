@@ -27,6 +27,15 @@ public class XMLManipulationTest {
     }
 
     @Test
+    public void appendText() throws Exception {
+        String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
+
+        XML e = I.xml(xml);
+        assert e.find("Q").append("text").find("P").size() == 2;
+        assert e.find("Q").text().equals("texttext");
+    }
+
+    @Test
     public void prepend() throws Exception {
         String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
 
@@ -34,6 +43,15 @@ public class XMLManipulationTest {
         assert e.find("Q").prepend("<R/><R/>").find("R").size() == 4;
         assert e.find("Q > R").size() == 4;
         assert e.find("Q > R:first-child").size() == 2;
+    }
+
+    @Test
+    public void prependText() throws Exception {
+        String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
+
+        XML e = I.xml(xml);
+        assert e.find("Q").prepend("text").find("P").size() == 2;
+        assert e.find("Q").text().equals("texttext");
     }
 
     @Test
@@ -49,6 +67,17 @@ public class XMLManipulationTest {
     }
 
     @Test
+    public void beforeText() throws Exception {
+        String xml = "<m><P/><Q/></m>";
+
+        XML e = I.xml(xml);
+        e.find("Q").before("text");
+
+        assert e.find("P,Q").size() == 2;
+        assert e.text().equals("text");
+    }
+
+    @Test
     public void after() throws Exception {
         String xml = "<m><P/><Q/></m>";
 
@@ -58,6 +87,17 @@ public class XMLManipulationTest {
         assert e.find("R:first-child").size() == 0;
         assert e.find("R:last-child").size() == 0;
         assert e.find("R:nth-child(2)").size() == 1;
+    }
+
+    @Test
+    public void afterText() throws Exception {
+        String xml = "<m><P/><Q/></m>";
+
+        XML e = I.xml(xml);
+        e.find("P").before("text");
+
+        assert e.find("P,Q").size() == 2;
+        assert e.text().equals("text");
     }
 
     @Test
@@ -119,28 +159,6 @@ public class XMLManipulationTest {
         e.find("P").text("set");
 
         assert e.find("P:contains(set)").size() == 1;
-    }
-
-    @Test
-    public void textEdit() throws Exception {
-        String xml = "<Q><P>aaa</P></Q>";
-
-        XML e = I.xml(xml);
-        e.find("P").edit("b");
-
-        assert e.find("P:contains(aaab)").size() == 1;
-    }
-
-    @Test
-    public void textEditWithElement() throws Exception {
-        String xml = "<Q><P><A/></P></Q>";
-
-        XML e = I.xml(xml);
-        e.find("P").edit("aaa");
-
-        assert e.find("P:contains(aaa)").size() == 1;
-        assert e.find("A").size() == 1;
-        assert e.find("A").parent().name().equals("P");
     }
 
     @Test
