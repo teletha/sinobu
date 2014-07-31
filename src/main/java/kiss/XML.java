@@ -268,23 +268,6 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
-     * Append the content of each element in the set of matched elements to the specified text.
-     * </p>
-     *
-     * @param text A text to append.
-     * @return Chainable API.
-     */
-    public XML edit(String text) {
-        for (Node node : nodes) {
-            node.appendChild(doc.createTextNode(text));
-        }
-
-        // API definition
-        return this;
-    }
-
-    /**
-     * <p>
      * Get the combined text contents of each element in the set of matched elements, including
      * their descendants.
      * </p>
@@ -565,7 +548,7 @@ public class XML implements Iterable<XML> {
      */
     public XML child(Object xml) {
         ArrayList list = new ArrayList();
-        Node child = convert(I.xml(xml));
+        Node child = convert(I.xml(xml, false));
 
         for (Node node : nodes) {
             Node copy = child.cloneNode(true);

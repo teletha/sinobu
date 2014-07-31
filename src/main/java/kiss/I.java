@@ -2424,6 +2424,32 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return A constructed {@link XML}.
      */
     public static XML xml(Object xml) {
+        return xml(xml, true);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     * <ul>
+     * <li>{@link XML}</li>
+     * <li>{@link Path}</li>
+     * <li>{@link InputSource}</li>
+     * <li>{@link URL}</li>
+     * <li>{@link Node}</li>
+     * <li>{@link String}</li>
+     * </ul>
+     * <ul>
+     * <li>URL Expression (http and https)</li>
+     * <li>XML Literal</li>
+     * <li>Element Name</li>
+     * </ul>
+     *
+     * @param xml A xml expression.
+     * @param text Allow text contents.
+     * @return A constructed {@link XML}.
+     */
+    static XML xml(Object xml, boolean text) {
         Document doc;
 
         try {
@@ -2466,10 +2492,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 }
 
                 // ========================
-                // Element Name
+                // Element Name or Text
                 // ========================
                 doc = dom.newDocument();
-                doc.appendChild(doc.createElement(value));
+
+                List list = new ArrayList();
+                list.add(text ? doc.createTextNode(value) : doc.createElement(value));
+
+                return new XML(doc, list);
             }
         } catch (Exception e) {
             throw quiet(e);
