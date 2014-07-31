@@ -41,7 +41,7 @@ import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
 import com.sun.org.apache.xml.internal.utils.TreeWalker;
 
 /**
- * @version 2012/11/18 22:33:02
+ * @version 2014/07/31 23:06:05
  */
 @SuppressWarnings("unchecked")
 public class XML implements Iterable<XML> {
@@ -264,6 +264,23 @@ public class XML implements Iterable<XML> {
         }
         return new XML(doc, list);
 
+    }
+
+    /**
+     * <p>
+     * Append the content of each element in the set of matched elements to the specified text.
+     * </p>
+     *
+     * @param text A text to append.
+     * @return Chainable API.
+     */
+    public XML edit(String text) {
+        for (Node node : nodes) {
+            node.appendChild(doc.createTextNode(text));
+        }
+
+        // API definition
+        return this;
     }
 
     /**

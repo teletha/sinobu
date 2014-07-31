@@ -12,7 +12,7 @@ package kiss;
 import org.junit.Test;
 
 /**
- * @version 2012/02/07 11:15:35
+ * @version 2014/07/31 23:05:55
  */
 public class XMLManipulationTest {
 
@@ -119,6 +119,28 @@ public class XMLManipulationTest {
         e.find("P").text("set");
 
         assert e.find("P:contains(set)").size() == 1;
+    }
+
+    @Test
+    public void textEdit() throws Exception {
+        String xml = "<Q><P>aaa</P></Q>";
+
+        XML e = I.xml(xml);
+        e.find("P").edit("b");
+
+        assert e.find("P:contains(aaab)").size() == 1;
+    }
+
+    @Test
+    public void textEditWithElement() throws Exception {
+        String xml = "<Q><P><A/></P></Q>";
+
+        XML e = I.xml(xml);
+        e.find("P").edit("aaa");
+
+        assert e.find("P:contains(aaa)").size() == 1;
+        assert e.find("A").size() == 1;
+        assert e.find("A").parent().name().equals("P");
     }
 
     @Test
