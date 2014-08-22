@@ -44,6 +44,9 @@ public class Event<V> {
     /** The unsubscriber. */
     private Disposable unsubscriber;
 
+    /** The observer. */
+    private Agent<V> observer;
+
     /** The common value holder. */
     private AtomicReference<V> ref;
 
@@ -125,7 +128,13 @@ public class Event<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return unsubscriber = subscriber.apply(observer);
+        if (observer instanceof Agent) {
+            this.observer = (Agent) observer;
+        } else {
+            this.observer = new Agent();
+            this.observer.observer = observer;
+        }
+        return unsubscriber = subscriber.apply(this.observer);
     }
 
     /**
@@ -298,8 +307,8 @@ public class Event<V> {
 
     /**
      * <p>
-     * Returns an {@link Event} consisting of the values of this {@link Event} that match the
-     * given predicate.
+     * Returns an {@link Event} consisting of the values of this {@link Event} that match the given
+     * predicate.
      * </p>
      * 
      * @param predicate A function that evaluates the values emitted by the source {@link Event},
@@ -318,6 +327,25 @@ public class Event<V> {
                 observer.onNext(value);
             }
         });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Event} that applies the given {@link Predicate} function to each value
+     * emitted by an {@link Event} and emits the result.
+     * </p>
+     * 
+     * @param converter A converter function to apply to each value emitted by this {@link Event} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final Event<Boolean> is(Predicate<? super V> converter) {
+        // ignore invalid parameters
+        if (converter == null) {
+            return NEVER;
+        }
+
+        return map(value -> converter.test(value));
     }
 
     /**
@@ -502,8 +530,8 @@ public class Event<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Event} sequence only after the other
-     * {@link Event} sequence produces a value.
+     * Returns the values from the source {@link Event} sequence only after the other {@link Event}
+     * sequence produces a value.
      * </p>
      * 
      * @param predicate An {@link Event} sequence that triggers propagation of values of the source
@@ -531,8 +559,8 @@ public class Event<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Event} sequence only after the other
-     * {@link Event} sequence produces a value.
+     * Returns the values from the source {@link Event} sequence only after the other {@link Event}
+     * sequence produces a value.
      * </p>
      * 
      * @param predicate An {@link Event} sequence that triggers propagation of values of the source
@@ -671,6 +699,45 @@ public class Event<V> {
         return filter(value -> {
             long now = System.currentTimeMillis();
             return latest.getAndSet(now) + delay <= now;
+        });
+    }
+
+    /**
+     * <p>
+     * Retrieve the current value.
+     * </p>
+     * 
+     * @return A current value.
+     */
+    public final V value() {
+        return observer.object;
+    }
+
+    /**
+     * <p>
+     * Retrieve the current value.
+     * </p>
+     * 
+     * @return A current value.
+     */
+    public final void value(V value) {
+        observer.onNext(value);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Event} that applies the given constant to each item emitted by an
+     * {@link Event} and emits the result.
+     * </p>
+     * 
+     * @param constant A constant to apply to each value emitted by this {@link Event}.
+     * @return Chainable API.
+     */
+    public final <R> Event<R> map3(R constant) {
+        return new Event<>(observer -> {
+            return to(value -> {
+                observer.onNext(constant);
+            });
         });
     }
 

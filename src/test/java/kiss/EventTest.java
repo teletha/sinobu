@@ -734,4 +734,42 @@ public class EventTest {
             // none
         });
     }
+
+    @Test
+    public void value() {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        Event<Integer> event = emitter.observe();
+        Disposable unsubscribe = event.to(emitter);
+
+        assert event.value() == null;
+        assert emitter.emitAndRetrieve(10) == 10;
+        assert event.value() == 10;
+        assert emitter.emitAndRetrieve(20) == 20;
+        assert event.value() == 20;
+
+        unsubscribe.dispose();
+        assert emitter.emitAndRetrieve(30) == null;
+        assert event.value() == 20;
+    }
+
+    @Test
+    public void setValue() {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        Event<Integer> event = emitter.observe();
+        Disposable unsubscribe = event.to(emitter);
+
+        assert event.value() == null;
+        event.value(10);
+        assert event.value() == 10;
+        assert emitter.retrieve() == 10;
+
+        event.value(20);
+        assert event.value() == 20;
+        assert emitter.retrieve() == 20;
+
+        unsubscribe.dispose();
+        event.value(30);
+        assert event.value() == 30;
+        assert emitter.retrieve() == 30;
+    }
 }
