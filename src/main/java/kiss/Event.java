@@ -718,7 +718,7 @@ public class Event<V> {
      * Retrieve the current value.
      * </p>
      * 
-     * @return A current value.
+     * @param value A current value.
      */
     public final void value(V value) {
         observer.onNext(value);
