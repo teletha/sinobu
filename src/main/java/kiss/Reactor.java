@@ -14,10 +14,10 @@ package kiss;
  * Provides a mechanism for receiving push-based notifications.
  * </p>
  * <p>
- * After an {@link Reactor} calls an {@link Reactive#to(Reactor)} method, the
- * {@link Reactive} calls the {@link #onNext(Object)} method to provide notifications. A
- * well-behaved {@link Reactive} will call an {@link #onCompleted()} closure exactly once or the
- * Observer's {@link #onError(Throwable)} closure exactly once.
+ * After an {@link Reactor} calls an {@link Reactive#to(Reactor)} method, the {@link Reactive} calls
+ * the {@link #onNext(Object)} method to provide notifications. A well-behaved {@link Reactive} will
+ * call an {@link #onCompleted()} closure exactly once or the Observer's {@link #onError(Throwable)}
+ * closure exactly once.
  * </p>
  * 
  * @param <V> The object that provides notification information.
@@ -56,8 +56,8 @@ public interface Reactor<V> {
      * Provides the observer with new data.
      * </p>
      * <p>
-     * The {@link Reactive} calls this closure 1 or more times, unless it calls
-     * <code>onError</code> in which case this closure may never be called.
+     * The {@link Reactive} calls this closure 1 or more times, unless it calls <code>onError</code>
+     * in which case this closure may never be called.
      * </p>
      * <p>
      * The {@link Reactive} will not call this closure again after it calls either
