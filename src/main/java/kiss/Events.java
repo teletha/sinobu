@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -610,7 +611,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<V>(observer -> {
             flag = new AtomicBoolean();
 
             return to(value -> {
@@ -887,6 +888,19 @@ public class Events<V> {
                 base = i == 0 ? disposable : base.and(disposable);
             }
             return base;
+        });
+    }
+
+    /**
+
+     */
+    public static <V1, V2, R> Events<R> combine(Events<V1> one, Events<V2> other, BiFunction<V1, V2, R> function) {
+        return new Events<R>(observer -> {
+            return one.to(v -> {
+                observer.onNext(function.apply(v, other.value()));
+            }).and(other.to(v -> {
+                observer.onNext(function.apply(one.value(), v));
+            }));
         });
     }
 }

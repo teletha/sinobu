@@ -645,6 +645,23 @@ public class EventsTest {
     }
 
     @Test
+    public void value() {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        Events<Integer> event = emitter.observe();
+        Disposable unsubscribe = event.to(emitter);
+
+        assert event.value() == null;
+        assert emitter.emitAndRetrieve(10) == 10;
+        assert event.value() == 10;
+        assert emitter.emitAndRetrieve(20) == 20;
+        assert event.value() == 20;
+
+        unsubscribe.dispose();
+        assert emitter.emitAndRetrieve(30) == null;
+        assert event.value() == 20;
+    }
+
+    @Test
     public void all() throws Exception {
         EventEmitter<Integer> emitter1 = new EventEmitter();
         EventEmitter<Integer> emitter2 = new EventEmitter();
@@ -770,19 +787,19 @@ public class EventsTest {
     }
 
     @Test
-    public void value() {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Events<Integer> event = emitter.observe();
-        Disposable unsubscribe = event.to(emitter);
+    public void combine() {
+        EventEmitter<Integer> emitter1 = new EventEmitter();
+        EventEmitter<Integer> emitter2 = new EventEmitter();
+        EventEmitter<Integer> reciever = new EventEmitter();
 
-        assert event.value() == null;
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert event.value() == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert event.value() == 20;
+        Disposable unsubscribe = Events.combine(emitter1.observe(), emitter2.observe(), (v1, v2) -> {
+            return v1 + v2;
+        }).to(reciever);
 
-        unsubscribe.dispose();
-        assert emitter.emitAndRetrieve(30) == null;
-        assert event.value() == 20;
+        assert emitter1.isSubscribed();
+        assert emitter2.isSubscribed();
+
+        emitter1.emit(30);
+        assert reciever.retrieve() == 30;
     }
 }
