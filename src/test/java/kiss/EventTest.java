@@ -264,11 +264,13 @@ public class EventTest {
 
         emitter.emit(10);
         emitter.emit(20);
-        chronus.freeze(30);
+        // chronus.freeze(30);
+        Thread.sleep(300);
         emitter.emit(30);
         emitter.emit(40);
         emitter.emit(50);
-        chronus.freeze(30);
+        // chronus.freeze(30);
+        Thread.sleep(300);
         emitter.emit(60);
 
         assertList(reciever.retrieve(), 10, 20);
@@ -474,7 +476,7 @@ public class EventTest {
         assert emitter.emitAndRetrieve(10) == null;
         assert emitter.emitAndRetrieve(10) == null;
 
-        chronus.freeze(20);
+        Thread.sleep(20);
         assert emitter.emitAndRetrieve(10) == 10;
     }
 
@@ -603,7 +605,7 @@ public class EventTest {
         EventEmitter<Integer> emitter3 = new EventEmitter();
         EventEmitter<Integer> emitter4 = new EventEmitter();
 
-        List<Reactive<Integer>> list = new ArrayList();
+        List<Events<Integer>> list = new ArrayList();
         list.add(emitter2.observe());
         list.add(emitter3.observe());
         list.add(emitter4.observe());
@@ -633,7 +635,7 @@ public class EventTest {
     @Test
     public void mergeNull() throws Exception {
         EventEmitter<Integer> emitter1 = new EventEmitter();
-        Disposable unsubscribe = emitter1.observe().merge((Reactive) null).to(emitter1);
+        Disposable unsubscribe = emitter1.observe().merge((Events) null).to(emitter1);
 
         assert emitter1.isSubscribed();
         assert emitter1.emitAndRetrieve(10) == 10;
@@ -648,7 +650,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Reactive.all(value -> {
+        Disposable unsubscribe = Events.all(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -687,7 +689,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Reactive.any(value -> {
+        Disposable unsubscribe = Events.any(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -719,7 +721,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Reactive.none(value -> {
+        Disposable unsubscribe = Events.none(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -762,7 +764,7 @@ public class EventTest {
 
     @Test
     public void never() throws Exception {
-        Reactive.NEVER.to(value -> {
+        Events.NEVER.to(value -> {
             // none
         });
     }
@@ -770,7 +772,7 @@ public class EventTest {
     @Test
     public void value() {
         EventEmitter<Integer> emitter = new EventEmitter();
-        Reactive<Integer> event = emitter.observe();
+        Events<Integer> event = emitter.observe();
         Disposable unsubscribe = event.to(emitter);
 
         assert event.value() == null;
