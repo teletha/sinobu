@@ -71,9 +71,6 @@ public class Reactive {
         }
 
         /**
-         * @param object
-         * @param bean1
-         * @param bean2
          */
         public static <Param1, Param2> Disposable bind(Param1 param1, Consumer<Param1> reference) {
             try {
@@ -121,7 +118,6 @@ public class Reactive {
         private final PropertySearch search;
 
         /**
-         * @param method
          */
         public MethodSearch(String name, PropertySearch search) {
             super(Opcodes.ASM5);
@@ -157,7 +153,6 @@ public class Reactive {
         final Set<Property> properties = new HashSet();
 
         /**
-         * @param arg0
          */
         protected PropertySearch(Model model) {
             super(Opcodes.ASM5);
