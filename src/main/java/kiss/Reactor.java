@@ -14,22 +14,22 @@ package kiss;
  * Provides a mechanism for receiving push-based notifications.
  * </p>
  * <p>
- * After an {@link Observer} calls an {@link Event#to(Observer)} method, the
- * {@link Event} calls the {@link #onNext(Object)} method to provide notifications. A
- * well-behaved {@link Event} will call an {@link #onCompleted()} closure exactly once or the
+ * After an {@link Reactor} calls an {@link Reactive#to(Reactor)} method, the
+ * {@link Reactive} calls the {@link #onNext(Object)} method to provide notifications. A
+ * well-behaved {@link Reactive} will call an {@link #onCompleted()} closure exactly once or the
  * Observer's {@link #onError(Throwable)} closure exactly once.
  * </p>
  * 
  * @param <V> The object that provides notification information.
  */
-public interface Observer<V> {
+public interface Reactor<V> {
 
     /**
      * <p>
      * Notifies the observer that the provider has finished sending push-based notifications.
      * </p>
      * <p>
-     * The {@link Event} will not call this closure if it calls {@link #onError(Throwable)}.
+     * The {@link Reactive} will not call this closure if it calls {@link #onError(Throwable)}.
      * </p>
      */
     public default void onCompleted() {
@@ -41,7 +41,7 @@ public interface Observer<V> {
      * Notifies the observer that the provider has experienced an error condition.
      * </p>
      * <p>
-     * If the {@link Event} calls this closure, it will not thereafter call
+     * If the {@link Reactive} calls this closure, it will not thereafter call
      * {@link #onNext(Object)} or {@link #onCompleted()}.
      * </p>
      * 
@@ -56,11 +56,11 @@ public interface Observer<V> {
      * Provides the observer with new data.
      * </p>
      * <p>
-     * The {@link Event} calls this closure 1 or more times, unless it calls
+     * The {@link Reactive} calls this closure 1 or more times, unless it calls
      * <code>onError</code> in which case this closure may never be called.
      * </p>
      * <p>
-     * The {@link Event} will not call this closure again after it calls either
+     * The {@link Reactive} will not call this closure again after it calls either
      * {@link #onCompleted()} or {@link #onError(Throwable)}.
      * </p>
      * 

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.SynchronousQueue;
 
 import kiss.I;
-import kiss.Observer;
+import kiss.Reactor;
 import kiss.Disposable;
 
 import org.junit.After;
@@ -611,7 +611,7 @@ public class PathObservationTest {
      * @version 2011/04/03 14:14:01
      */
     @SuppressWarnings("serial")
-    private static class EventQueue extends SynchronousQueue<Event> implements Observer<WatchEvent<Path>> {
+    private static class EventQueue extends SynchronousQueue<Event> implements Reactor<WatchEvent<Path>> {
 
         private EventQueue() {
             super(true);

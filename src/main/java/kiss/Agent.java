@@ -24,7 +24,7 @@ import kiss.model.Property;
  * 
  * @version 2014/02/03 11:19:06
  */
-class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
+class Agent<T> implements Reactor<T>, WatchEvent, Codec<Date> {
 
     /** For reuse. */
     T object;
@@ -41,7 +41,7 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
     // ============================================================
 
     /** The delegation. */
-    Observer observer;
+    Reactor observer;
 
     /** The delegation. */
     Consumer<T> next;

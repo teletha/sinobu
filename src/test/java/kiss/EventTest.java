@@ -12,7 +12,6 @@ package kiss;
 import static java.util.concurrent.TimeUnit.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -140,21 +139,35 @@ public class EventTest {
         assert emitter.emitAndRetrieve(10) == null;
     }
 
+    /**
+     * Helper method to assert list items.
+     * 
+     * @param list
+     * @param items
+     */
+    private <V> void assertList(List<V> list, V... items) {
+        assert list.size() == items.length;
+
+        for (int i = 0; i < items.length; i++) {
+            assert list.get(i) == items[i];
+        }
+    }
+
     @Test
     public void buffer() throws Exception {
-        EventEmitter<Integer[]> reciever = new EventEmitter();
+        EventEmitter<List<Integer>> reciever = new EventEmitter();
         EventEmitter<Integer> emitter = new EventEmitter();
         Disposable unsubscribe = emitter.observe().buffer(2).to(reciever);
 
         emitter.emit(10);
         assert reciever.retrieve() == null;
         emitter.emit(20);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {10, 20});
+        assertList(reciever.retrieve(), 10, 20);
 
         emitter.emit(30);
         assert reciever.retrieve() == null;
         emitter.emit(40);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {30, 40});
+        assertList(reciever.retrieve(), 30, 40);
 
         unsubscribe.dispose();
         assert emitter.isUnsubscribed();
@@ -166,7 +179,7 @@ public class EventTest {
 
     @Test
     public void bufferRepeat() throws Exception {
-        EventEmitter<Integer[]> reciever = new EventEmitter();
+        EventEmitter<List<Integer>> reciever = new EventEmitter();
         EventEmitter<Integer> emitter = new EventEmitter();
         Disposable unsubscribe = emitter.observe().buffer(2).skip(1).take(1).repeat().to(reciever);
 
@@ -175,14 +188,14 @@ public class EventTest {
         assert reciever.retrieve() == null;
         emitter.emit(30);
         emitter.emit(40);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {30, 40});
+        assertList(reciever.retrieve(), 30, 40);
 
         emitter.emit(50);
         emitter.emit(60);
         assert reciever.retrieve() == null;
         emitter.emit(70);
         emitter.emit(80);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {70, 80});
+        assertList(reciever.retrieve(), 70, 80);
 
         unsubscribe.dispose();
         assert emitter.isUnsubscribed();
@@ -196,19 +209,19 @@ public class EventTest {
 
     @Test
     public void bufferInterval1() throws Exception {
-        EventEmitter<Integer[]> reciever = new EventEmitter();
+        EventEmitter<List<Integer>> reciever = new EventEmitter();
         EventEmitter<Integer> emitter = new EventEmitter();
         Disposable unsubscribe = emitter.observe().buffer(2, 1).to(reciever);
 
         emitter.emit(10);
         assert reciever.retrieve() == null;
         emitter.emit(20);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {10, 20});
+        assertList(reciever.retrieve(), 10, 20);
 
         emitter.emit(30);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {20, 30});
+        assertList(reciever.retrieve(), 20, 30);
         emitter.emit(40);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {30, 40});
+        assertList(reciever.retrieve(), 30, 40);
 
         unsubscribe.dispose();
         assert emitter.isUnsubscribed();
@@ -219,7 +232,7 @@ public class EventTest {
 
     @Test
     public void bufferInterval2() throws Exception {
-        EventEmitter<Integer[]> reciever = new EventEmitter();
+        EventEmitter<List<Integer>> reciever = new EventEmitter();
         EventEmitter<Integer> emitter = new EventEmitter();
         Disposable unsubscribe = emitter.observe().buffer(2, 3).to(reciever);
 
@@ -228,19 +241,38 @@ public class EventTest {
         emitter.emit(20);
         assert reciever.retrieve() == null;
         emitter.emit(30);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {20, 30});
+        assertList(reciever.retrieve(), 20, 30);
         emitter.emit(40);
         assert reciever.retrieve() == null;
         emitter.emit(50);
         assert reciever.retrieve() == null;
         emitter.emit(60);
-        assert Arrays.equals(reciever.retrieve(), new Integer[] {50, 60});
+        assertList(reciever.retrieve(), 50, 60);
 
         unsubscribe.dispose();
         assert emitter.isUnsubscribed();
 
         emitter.emit(70);
         assert reciever.retrieve() == null;
+    }
+
+    @Test
+    public void bufferTime() throws Exception {
+        EventEmitter<List<Integer>> reciever = new EventEmitter();
+        EventEmitter<Integer> emitter = new EventEmitter();
+        emitter.observe().buffer(30, MILLISECONDS).to(reciever);
+
+        emitter.emit(10);
+        emitter.emit(20);
+        chronus.freeze(30);
+        emitter.emit(30);
+        emitter.emit(40);
+        emitter.emit(50);
+        chronus.freeze(30);
+        emitter.emit(60);
+
+        assertList(reciever.retrieve(), 10, 20);
+        assertList(reciever.retrieve(), 30, 40, 50);
     }
 
     @Test
@@ -571,7 +603,7 @@ public class EventTest {
         EventEmitter<Integer> emitter3 = new EventEmitter();
         EventEmitter<Integer> emitter4 = new EventEmitter();
 
-        List<Event<Integer>> list = new ArrayList();
+        List<Reactive<Integer>> list = new ArrayList();
         list.add(emitter2.observe());
         list.add(emitter3.observe());
         list.add(emitter4.observe());
@@ -601,7 +633,7 @@ public class EventTest {
     @Test
     public void mergeNull() throws Exception {
         EventEmitter<Integer> emitter1 = new EventEmitter();
-        Disposable unsubscribe = emitter1.observe().merge((Event) null).to(emitter1);
+        Disposable unsubscribe = emitter1.observe().merge((Reactive) null).to(emitter1);
 
         assert emitter1.isSubscribed();
         assert emitter1.emitAndRetrieve(10) == 10;
@@ -616,7 +648,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Event.all(value -> {
+        Disposable unsubscribe = Reactive.all(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -655,7 +687,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Event.any(value -> {
+        Disposable unsubscribe = Reactive.any(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -687,7 +719,7 @@ public class EventTest {
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Boolean> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Event.none(value -> {
+        Disposable unsubscribe = Reactive.none(value -> {
             return 20 <= value;
         }, emitter1.observe(), emitter2.observe()).to(reciever);
 
@@ -730,7 +762,7 @@ public class EventTest {
 
     @Test
     public void never() throws Exception {
-        Event.NEVER.to(value -> {
+        Reactive.NEVER.to(value -> {
             // none
         });
     }
@@ -738,7 +770,7 @@ public class EventTest {
     @Test
     public void value() {
         EventEmitter<Integer> emitter = new EventEmitter();
-        Event<Integer> event = emitter.observe();
+        Reactive<Integer> event = emitter.observe();
         Disposable unsubscribe = event.to(emitter);
 
         assert event.value() == null;
@@ -750,26 +782,5 @@ public class EventTest {
         unsubscribe.dispose();
         assert emitter.emitAndRetrieve(30) == null;
         assert event.value() == 20;
-    }
-
-    @Test
-    public void setValue() {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Event<Integer> event = emitter.observe();
-        Disposable unsubscribe = event.to(emitter);
-
-        assert event.value() == null;
-        event.value(10);
-        assert event.value() == 10;
-        assert emitter.retrieve() == 10;
-
-        event.value(20);
-        assert event.value() == 20;
-        assert emitter.retrieve() == 20;
-
-        unsubscribe.dispose();
-        event.value(30);
-        assert event.value() == 30;
-        assert emitter.retrieve() == 30;
     }
 }

@@ -304,7 +304,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
     private WatchService service;
 
     /** The user speecified event listener. */
-    private Observer observer;
+    private Reactor observer;
 
     /**
      * <p>
@@ -315,7 +315,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
      * @param observer A event listener.
      * @param patterns Name matching patterns.
      */
-    Visitor(Path path, Observer observer, String... patterns) {
+    Visitor(Path path, Reactor observer, String... patterns) {
         this(path, null, 6, null, patterns);
 
         try {

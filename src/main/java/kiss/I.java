@@ -1495,12 +1495,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param observable A target to observe.
      * @return A observable event stream.
      */
-    public static <E extends Observable> Event<E> observe(E observable) {
+    public static <E extends Observable> Reactive<E> observe(E observable) {
         if (observable == null) {
-            return Event.NEVER;
+            return Reactive.NEVER;
         }
 
-        return new Event<>(observer -> {
+        return new Reactive<>(observer -> {
             // create actual listener
             InvalidationListener listener = value -> {
                 observer.onNext((E) value);
@@ -1527,12 +1527,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param observable A target to observe.
      * @return A observable event stream.
      */
-    public static <E> Event<E> observe(ObservableValue<E> observable) {
+    public static <E> Reactive<E> observe(ObservableValue<E> observable) {
         if (observable == null) {
-            return Event.NEVER;
+            return Reactive.NEVER;
         }
 
-        return new Event<>(observer -> {
+        return new Reactive<>(observer -> {
             // create actual listener
             ChangeListener<E> listener = (o, oldValue, newValue) -> {
                 observer.onNext(newValue);
@@ -1557,7 +1557,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * <p>
      * The operating system interpret a cut-and-paste action or a move action as a rename action for
      * a directory and its contents. If you cut and paste a folder with files into a directory being
-     * watched, the {@link Observer} object reports only the directory as new, but not its contents
+     * watched, the {@link Reactor} object reports only the directory as new, but not its contents
      * because they are essentially only renamed.
      * </p>
      * <p>
@@ -1565,7 +1565,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * moved from one directory to another, several Modify and some Create and Delete events might
      * be raised. Moving a file is a complex operation that consists of multiple simple operations,
      * therefore raising multiple events. Likewise, some applications might cause additional file
-     * system events that are detected by the {@link Observer}.
+     * system events that are detected by the {@link Reactor}.
      * </p>
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
@@ -1578,7 +1578,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static Event<WatchEvent<Path>> observe(Path path) {
+    public static Reactive<WatchEvent<Path>> observe(Path path) {
         return observe(path, new String[0]);
     }
 
@@ -1593,7 +1593,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * <p>
      * The operating system interpret a cut-and-paste action or a move action as a rename action for
      * a directory and its contents. If you cut and paste a folder with files into a directory being
-     * watched, the {@link Observer} object reports only the directory as new, but not its contents
+     * watched, the {@link Reactor} object reports only the directory as new, but not its contents
      * because they are essentially only renamed.
      * </p>
      * <p>
@@ -1601,7 +1601,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * moved from one directory to another, several Modify and some Create and Delete events might
      * be raised. Moving a file is a complex operation that consists of multiple simple operations,
      * therefore raising multiple events. Likewise, some applications might cause additional file
-     * system events that are detected by the {@link Observer}.
+     * system events that are detected by the {@link Reactor}.
      * </p>
      *
      * @param path A target path you want to observe. (file and directory are acceptable)
@@ -1616,12 +1616,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static Event<WatchEvent<Path>> observe(Path path, String... patterns) {
+    public static Reactive<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
             return observe(path.getParent(), path.getFileName().toString());
         }
 
-        return new Event<>(observer -> {
+        return new Reactive<>(observer -> {
             // Create logical file system watch service.
             Visitor watcher = new Visitor(path, observer, patterns);
 

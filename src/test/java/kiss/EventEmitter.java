@@ -17,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @version 2014/01/09 2:57:23
  */
-public class EventEmitter<E> implements Observer<E> {
+public class EventEmitter<E> implements Reactor<E> {
 
     /** The listener holder. */
     private final List<Listener> listeners = new CopyOnWriteArrayList();
@@ -30,8 +30,8 @@ public class EventEmitter<E> implements Observer<E> {
      * Observe EventEmitter.
      * </p>
      */
-    public Event<E> observe() {
-        return new Event<>(observer -> {
+    public Reactive<E> observe() {
+        return new Reactive<>(observer -> {
             Listener<E> listener = event -> {
                 observer.onNext(event);
             };
