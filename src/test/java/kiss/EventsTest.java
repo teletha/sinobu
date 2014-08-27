@@ -883,51 +883,51 @@ public class EventsTest {
         assert emitter2.isUnsubscribed();
     }
 
-    // @Test
-    // public void flatMap() {
-    // EventEmitter<Integer> emitter = new EventEmitter();
-    // Disposable unsubscribe = emitter.observe().flatMap(value -> {
-    // return new Reducer(value).observe();
-    // }).to(emitter);
-    //
-    // emitter.emit(3);
-    // assert emitter.retrieve() == 3;
-    // assert emitter.retrieve() == 2;
-    // assert emitter.retrieve() == 1;
-    //
-    // emitter.emit(2);
-    // assert emitter.retrieve() == 2;
-    // assert emitter.retrieve() == 1;
-    //
-    // unsubscribe.dispose();
-    // emitter.emit(1);
-    // assert emitter.retrieve() == null;
-    // }
-    //
-    // /**
-    // * @version 2014/08/27 11:40:53
-    // */
-    // private static class Reducer {
-    //
-    // private int value;
-    //
-    // /**
-    // * @param value
-    // */
-    // private Reducer(int value) {
-    // this.value = value;
-    // }
-    //
-    // /**
-    // * @return
-    // */
-    // private Events<Integer> observe() {
-    // return new Events<>(observer -> {
-    // for (int i = value; 0 < i; i--) {
-    // observer.onNext(i);
-    // }
-    // return Disposable.Φ;
-    // });
-    // }
-    // }
+    @Test
+    public void flatMap() {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        Disposable unsubscribe = emitter.observe().flatMap(value -> {
+            return new Reducer(value).observe();
+        }).to(emitter);
+
+        emitter.emit(3);
+        assert emitter.retrieve() == 3;
+        assert emitter.retrieve() == 2;
+        assert emitter.retrieve() == 1;
+
+        emitter.emit(2);
+        assert emitter.retrieve() == 2;
+        assert emitter.retrieve() == 1;
+
+        unsubscribe.dispose();
+        emitter.emit(1);
+        assert emitter.retrieve() == null;
+    }
+
+    /**
+     * @version 2014/08/27 11:40:53
+     */
+    private static class Reducer {
+
+        private int value;
+
+        /**
+         * @param value
+         */
+        private Reducer(int value) {
+            this.value = value;
+        }
+
+        /**
+         * @return
+         */
+        private Events<Integer> observe() {
+            return new Events<>(observer -> {
+                for (int i = value; 0 < i; i--) {
+                    observer.onNext(i);
+                }
+                return Disposable.Φ;
+            });
+        }
+    }
 }
