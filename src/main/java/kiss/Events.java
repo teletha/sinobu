@@ -12,7 +12,6 @@ package kiss;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -368,21 +367,34 @@ public class Events<V> {
         });
     }
 
-    // public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
-    // return new Events<>(observer -> {
-    // List<Disposable> disposables = new ArrayList();
-    //
-    // disposables.add(to(value -> {
-    // disposables.add(function.apply(value).to(observer));
-    // }));
-    //
-    // return () -> {
-    // for (Disposable disposable : disposables) {
-    // disposable.dispose();
-    // }
-    // };
-    // });
-    // }
+    /**
+     * <p>
+     * Returns an {@link Events} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
+     * , and then merging those resulting {@link Events} and emitting the results of this merger.
+     * </p>
+     * 
+     * @param function A function that, when applied to an item emitted by the source {@link Events}
+     *            , returns an {@link Events}.
+     * @return An {@link Events} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Events} and merging the results of the
+     *         {@link Events} obtained from this transformation.
+     */
+    public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
+        return new Events<>(observer -> {
+            List<Disposable> disposables = new ArrayList();
+
+            disposables.add(to(value -> {
+                disposables.add(function.apply(value).to(observer));
+            }));
+
+            return () -> {
+                for (Disposable disposable : disposables) {
+                    disposable.dispose();
+                }
+            };
+        });
+    }
 
     /**
      * <p>
@@ -470,6 +482,23 @@ public class Events<V> {
         });
     }
 
+    public final Events<V> merge(Events<? extends Events<? extends V>> others) {
+        return new Events<>(observer -> {
+            List<Disposable> disposables = new ArrayList();
+            disposables.add(to(observer));
+
+            disposables.add(others.to(value -> {
+                disposables.add(value.to(observer));
+            }));
+
+            return () -> {
+                for (Disposable disposable : disposables) {
+                    disposable.dispose();
+                }
+            };
+        });
+    }
+
     /**
      * <p>
      * Flattens a sequence of {@link Events} emitted by an {@link Events} into one {@link Events},
@@ -479,8 +508,8 @@ public class Events<V> {
      * @param other A target {@link Events} to merge. <code>null</code> will be ignroed.
      * @return Chainable API.
      */
-    public final Events<V> merge(Events<? extends V> other) {
-        return merge(Collections.singletonList(other));
+    public final Events<V> merge(Events<? extends V>... others) {
+        return merge(Arrays.asList(others));
     }
 
     /**
@@ -810,28 +839,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, R> Events<R> zip(Events<O> other, BiFunction<V, O, R> function) {
-        return new Events<>(observer -> {
-            Deque<V> values = new ArrayDeque();
-            Deque<O> others = new ArrayDeque();
-
-            return to(value -> {
-                if (value != null) {
-                    if (others.isEmpty()) {
-                        values.offer(value);
-                    } else {
-                        observer.onNext(function.apply(value, others.poll()));
-                    }
-                }
-            }).and(other.to(value -> {
-                if (value != null) {
-                    if (values.isEmpty()) {
-                        others.offer(value);
-                    } else {
-                        observer.onNext(function.apply(values.poll(), value));
-                    }
-                }
-            }));
-        });
+        return zip(this, other).map(v -> function.apply(v.get(0), v.get(1)));
     }
 
     /**
@@ -944,7 +952,7 @@ public class Events<V> {
      * @param list A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    public static <V> Events<List<V>> join(List<Events<? super V>> list) {
+    public static <V> Events<List<V>> join(Iterable<Events<? super V>> list) {
         return new Events<>(observer -> {
             Disposable base = Disposable.Φ;
 
@@ -965,7 +973,7 @@ public class Events<V> {
         });
     }
 
-    public static <V> Events<List<V>> zip(Events<V>... list) {
+    public static <V> Events<List<V>> zip(Events<? super V>... list) {
         return zip(Arrays.asList(list));
     }
 
@@ -978,18 +986,18 @@ public class Events<V> {
      * @param list A list of target {@link Events} to test.
      * @return Chainable API.
      */
-    public static <V> Events<List<V>> zip(List<Events<V>> list) {
+    public static <V> Events<List<V>> zip(Iterable<Events<? super V>> list) {
         return new Events<>(observer -> {
             Disposable base = Disposable.Φ;
             List<Deque<V>> queues = new ArrayList();
 
-            for (Events<V> event : list) {
-                Deque<V> queue = new ArrayDeque();
+            for (Events event : list) {
+                Deque queue = new ArrayDeque();
                 queues.add(queue);
 
                 base = base.and(event.to(value -> {
                     if (value != null) {
-                        List<V> values = new ArrayList();
+                        List values = new ArrayList();
 
                         for (Deque<V> q : queues) {
                             if (q != queue && q.isEmpty()) {
