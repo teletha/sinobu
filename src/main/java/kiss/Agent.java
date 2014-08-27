@@ -84,7 +84,7 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
     @Override
     public void onNext(T value) {
         if (next != null) {
-            next.accept(value);
+            next.accept(object = value);
         } else if (observer != null) {
             observer.onNext(object = value);
         }

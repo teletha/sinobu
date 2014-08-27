@@ -313,6 +313,17 @@ public class EventsTest {
     }
 
     @Test
+    public void scan() {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        emitter.observe().scan(1, (accumulated, value) -> accumulated + value).to(emitter);
+
+        assert emitter.isSubscribed();
+        assert emitter.emitAndRetrieve(2) == 3;
+        assert emitter.emitAndRetrieve(3) == 6;
+        assert emitter.emitAndRetrieve(4) == 10;
+    }
+
+    @Test
     public void take() throws Exception {
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().take(1).to(emitter);
@@ -765,6 +776,30 @@ public class EventsTest {
     }
 
     @Test
+    public void join() throws Exception {
+        EventEmitter<Integer> emitter1 = new EventEmitter();
+        EventEmitter<Integer> emitter2 = new EventEmitter();
+        EventEmitter<List<Integer>> reciever = new EventEmitter();
+
+        Disposable unsubscribe = Events.join(emitter1.observe(), emitter2.observe()).to(reciever);
+
+        assert emitter1.isSubscribed();
+        assert emitter2.isSubscribed();
+        assert reciever.retrieve() == null;
+
+        emitter1.emit(30);
+        assert reciever.retrieve() == null;
+        emitter2.emit(20);
+        assertList(reciever.retrieve(), 30, 20);
+        emitter2.emit(10);
+        assertList(reciever.retrieve(), 30, 10);
+
+        unsubscribe.dispose();
+        assert emitter1.isUnsubscribed();
+        assert emitter2.isUnsubscribed();
+    }
+
+    @Test
     public void onNext() throws Exception {
         List<Integer> list = new ArrayList<>();
         EventEmitter<Integer> emitter = new EventEmitter();
@@ -787,19 +822,112 @@ public class EventsTest {
     }
 
     @Test
-    public void combine() {
+    public void zip() {
         EventEmitter<Integer> emitter1 = new EventEmitter();
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Integer> reciever = new EventEmitter();
 
-        Disposable unsubscribe = Events.combine(emitter1.observe(), emitter2.observe(), (v1, v2) -> {
+        Disposable unsubscribe = Events.zip(emitter1.observe(), emitter2.observe()).map(values -> {
+            return values.get(0) + values.get(1);
+        }).to(reciever);
+
+        assert emitter1.isSubscribed();
+        assert emitter2.isSubscribed();
+
+        emitter1.emit(10);
+        emitter1.emit(20);
+        emitter1.emit(30);
+        assert reciever.retrieve() == null;
+
+        emitter2.emit(100);
+        assert reciever.retrieve() == 110;
+
+        emitter2.emit(200);
+        assert reciever.retrieve() == 220;
+
+        emitter2.emit(300);
+        assert reciever.retrieve() == 330;
+
+        emitter2.emit(400);
+        assert reciever.retrieve() == null;
+
+        emitter1.emit(40);
+        assert reciever.retrieve() == 440;
+
+        unsubscribe.dispose();
+        assert emitter1.isUnsubscribed();
+        assert emitter2.isUnsubscribed();
+    }
+
+    @Test
+    public void combineLatest() {
+        EventEmitter<Integer> emitter1 = new EventEmitter();
+        EventEmitter<Integer> emitter2 = new EventEmitter();
+        EventEmitter<Integer> reciever = new EventEmitter();
+
+        Disposable unsubscribe = emitter1.observe().join(emitter2.observe(), (v1, v2) -> {
             return v1 + v2;
         }).to(reciever);
 
         assert emitter1.isSubscribed();
         assert emitter2.isSubscribed();
 
-        emitter1.emit(30);
+        emitter1.emit(10);
+        assert reciever.retrieve() == null;
+
+        emitter2.emit(20);
         assert reciever.retrieve() == 30;
+
+        unsubscribe.dispose();
+        assert emitter1.isUnsubscribed();
+        assert emitter2.isUnsubscribed();
     }
+
+    // @Test
+    // public void flatMap() {
+    // EventEmitter<Integer> emitter = new EventEmitter();
+    // Disposable unsubscribe = emitter.observe().flatMap(value -> {
+    // return new Reducer(value).observe();
+    // }).to(emitter);
+    //
+    // emitter.emit(3);
+    // assert emitter.retrieve() == 3;
+    // assert emitter.retrieve() == 2;
+    // assert emitter.retrieve() == 1;
+    //
+    // emitter.emit(2);
+    // assert emitter.retrieve() == 2;
+    // assert emitter.retrieve() == 1;
+    //
+    // unsubscribe.dispose();
+    // emitter.emit(1);
+    // assert emitter.retrieve() == null;
+    // }
+    //
+    // /**
+    // * @version 2014/08/27 11:40:53
+    // */
+    // private static class Reducer {
+    //
+    // private int value;
+    //
+    // /**
+    // * @param value
+    // */
+    // private Reducer(int value) {
+    // this.value = value;
+    // }
+    //
+    // /**
+    // * @return
+    // */
+    // private Events<Integer> observe() {
+    // return new Events<>(observer -> {
+    // for (int i = value; 0 < i; i--) {
+    // observer.onNext(i);
+    // }
+    // return Disposable.Φ;
+    // });
+    // }
+    // }
 }
