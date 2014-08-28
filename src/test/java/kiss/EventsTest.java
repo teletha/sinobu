@@ -313,14 +313,37 @@ public class EventsTest {
     }
 
     @Test
-    public void scan() {
+    public void flatMap() {
         EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().scan(1, (accumulated, value) -> accumulated + value).to(emitter);
+        Disposable unsubscribe = emitter.observe().flatMap(value -> {
+            return just(value, value + 1);
+        }).to(emitter);
 
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(2) == 3;
-        assert emitter.emitAndRetrieve(3) == 6;
-        assert emitter.emitAndRetrieve(4) == 10;
+        emitter.emit(10);
+        assert emitter.retrieve() == 10;
+        assert emitter.retrieve() == 11;
+
+        emitter.emit(20);
+        assert emitter.retrieve() == 20;
+        assert emitter.retrieve() == 21;
+
+        unsubscribe.dispose();
+        emitter.emit(30);
+        assert emitter.retrieve() == null;
+    }
+
+    @Test
+    public void map() throws Exception {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        Disposable unsubscribe = emitter.observe().map((Function<Integer, Integer>) value -> {
+            return value * 2;
+        }).to(emitter);
+
+        assert emitter.emitAndRetrieve(10) == 20;
+        assert emitter.emitAndRetrieve(20) == 40;
+
+        unsubscribe.dispose();
+        assert emitter.emitAndRetrieve(30) == null;
     }
 
     @Test
@@ -545,20 +568,6 @@ public class EventsTest {
     }
 
     @Test
-    public void map() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().map((Function<Integer, Integer>) value -> {
-            return value * 2;
-        }).to(emitter);
-
-        assert emitter.emitAndRetrieve(10) == 20;
-        assert emitter.emitAndRetrieve(20) == 40;
-
-        unsubscribe.dispose();
-        assert emitter.emitAndRetrieve(30) == null;
-    }
-
-    @Test
     public void distinct() throws Exception {
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().distinct().to(emitter);
@@ -653,6 +662,17 @@ public class EventsTest {
 
         unsubscribe.dispose();
         assert emitter1.isUnsubscribed() == true;
+    }
+
+    @Test
+    public void scan() {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        emitter.observe().scan(1, (accumulated, value) -> accumulated + value).to(emitter);
+
+        assert emitter.isSubscribed();
+        assert emitter.emitAndRetrieve(2) == 3;
+        assert emitter.emitAndRetrieve(3) == 6;
+        assert emitter.emitAndRetrieve(4) == 10;
     }
 
     @Test
@@ -883,51 +903,20 @@ public class EventsTest {
         assert emitter2.isUnsubscribed();
     }
 
-    @Test
-    public void flatMap() {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().flatMap(value -> {
-            return new Reducer(value).observe();
-        }).to(emitter);
-
-        emitter.emit(3);
-        assert emitter.retrieve() == 3;
-        assert emitter.retrieve() == 2;
-        assert emitter.retrieve() == 1;
-
-        emitter.emit(2);
-        assert emitter.retrieve() == 2;
-        assert emitter.retrieve() == 1;
-
-        unsubscribe.dispose();
-        emitter.emit(1);
-        assert emitter.retrieve() == null;
-    }
-
     /**
-     * @version 2014/08/27 11:40:53
+     * <p>
+     * Helper method.
+     * </p>
+     * 
+     * @param value
+     * @return
      */
-    private static class Reducer {
-
-        private int value;
-
-        /**
-         * @param value
-         */
-        private Reducer(int value) {
-            this.value = value;
-        }
-
-        /**
-         * @return
-         */
-        private Events<Integer> observe() {
-            return new Events<>(observer -> {
-                for (int i = value; 0 < i; i--) {
-                    observer.onNext(i);
-                }
-                return Disposable.Φ;
-            });
-        }
+    private static <T> Events<T> just(T... values) {
+        return new Events<>(observer -> {
+            for (T value : values) {
+                observer.onNext(value);
+            }
+            return Disposable.Φ;
+        });
     }
 }

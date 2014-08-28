@@ -42,7 +42,7 @@ public class Events<V> {
     private static final Predicate<Boolean> IdenticalPredicate = value -> value;
 
     /** The subscriber. */
-    private Function<Observer<? super V>, Disposable> subscriber;
+    private BiFunction<Observer<? super V>, Events<V>, Disposable> subscriber;
 
     /** The unsubscriber. */
     private Disposable unsubscriber;
@@ -75,6 +75,24 @@ public class Events<V> {
      * @see #to(Consumer, Consumer, Runnable)
      */
     public Events(Function<Observer<? super V>, Disposable> subscriber) {
+        this.subscriber = (observer, that) -> {
+            return subscriber.apply(observer);
+        };
+    }
+
+    /**
+     * <p>
+     * Create {@link Events} with the specified subscriber {@link Function} which will be invoked
+     * whenever you calls {@link #to(Observer)} related methods.
+     * </p>
+     * 
+     * @param subscriber A subscriber {@link Function}.
+     * @see #to(Observer)
+     * @see #to(Consumer)
+     * @see #to(Consumer, Consumer)
+     * @see #to(Consumer, Consumer, Runnable)
+     */
+    private Events(BiFunction<Observer<? super V>, Events<V>, Disposable> subscriber) {
         this.subscriber = subscriber;
     }
 
@@ -137,7 +155,7 @@ public class Events<V> {
             this.observer = new Agent();
             this.observer.observer = observer;
         }
-        return unsubscriber = subscriber.apply(this.observer);
+        return unsubscriber = subscriber.apply(this.observer, this);
     }
 
     /**
@@ -431,17 +449,6 @@ public class Events<V> {
         return join(this, other).map(v -> function.apply(v.get(0), v.get(1)));
     }
 
-    public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
-        AtomicReference<R> result = new AtomicReference(init);
-
-        return new Events<>(observer -> {
-            return to(value -> {
-                result.set(function.apply(result.get(), value));
-                observer.onNext(result.get());
-            });
-        });
-    }
-
     /**
      * <p>
      * Returns an {@link Events} that applies the given constant to each item emitted by an
@@ -479,23 +486,6 @@ public class Events<V> {
             return to(value -> {
                 observer.onNext(converter.apply(value));
             });
-        });
-    }
-
-    public final Events<V> merge(Events<? extends Events<? extends V>> others) {
-        return new Events<>(observer -> {
-            List<Disposable> disposables = new ArrayList();
-            disposables.add(to(observer));
-
-            disposables.add(others.to(value -> {
-                disposables.add(value.to(observer));
-            }));
-
-            return () -> {
-                for (Disposable disposable : disposables) {
-                    disposable.dispose();
-                }
-            };
         });
     }
 
@@ -609,6 +599,32 @@ public class Events<V> {
                 }
             };
             return to(agent);
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies a function of your choosing to the first item emitted
+     * by a source {@link Events} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Events} into the same function, and so on
+     * until all items have been emitted by the source {@link Events}, emitting the result of each
+     * of these iterations.
+     * </p>
+     * 
+     * @param init An initial (seed) accumulator item.
+     * @param function An accumulator function to be invoked on each item emitted by the source
+     *            {@link Events}, whose result will be emitted to {@link Events} via
+     *            {@link Observer#onNext} and used in the next accumulator call.
+     * @return An {@link Events} that emits initial value followed by the results of each call to
+     *         the accumulator function.
+     */
+    public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
+        return new Events<>((observer, that) -> {
+            that.observer.object = init;
+
+            return to(value -> {
+                observer.onNext(function.apply(that.value(), value));
+            });
         });
     }
 
