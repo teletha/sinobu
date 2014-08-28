@@ -11,7 +11,9 @@ package kiss;
 
 import static java.util.concurrent.TimeUnit.*;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.function.Function;
 
@@ -666,30 +668,56 @@ public class EventsTest {
 
     @Test
     public void scan() {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().scan(1, (accumulated, value) -> accumulated + value).to(emitter);
+        EventSource<Integer> source = new EventSource();
+        EventRecorder<Integer> recorder = new EventRecorder();
 
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(2) == 3;
-        assert emitter.emitAndRetrieve(3) == 6;
-        assert emitter.emitAndRetrieve(4) == 10;
+        // create event stream
+        Events<Integer> events = createEventsFrom(source);
+
+        // **declare event handling**
+        events.scan(10, (accumulated, value) -> accumulated + value).to(recorder);
+
+        // verify
+        assert recorder.retrieveValue() == null;
+
+        source.publish(1);
+        assert recorder.retrieveValue() == 11; // 10 + 1
+
+        source.publish(2);
+        assert recorder.retrieveValue() == 13; // 11 + 2
+
+        source.publish(3);
+        assert recorder.retrieveValue() == 16; // 13 + 3
     }
 
     @Test
     public void value() {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Events<Integer> event = emitter.observe();
-        Disposable unsubscribe = event.to(emitter);
+        EventSource<Integer> source = new EventSource();
+        EventRecorder<Integer> recorder = new EventRecorder();
 
-        assert event.value() == null;
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert event.value() == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert event.value() == 20;
+        // create event stream
+        Events<Integer> events = createEventsFrom(source);
+        Disposable unsubscribe = events.to(recorder);
 
+        // verify
+        assert events.value() == null;
+        assert recorder.retrieveValue() == null;
+
+        source.publish(10);
+        assert events.value() == 10;
+        assert recorder.retrieveValue() == 10;
+
+        source.publish(20);
+        assert events.value() == 20;
+        assert recorder.retrieveValue() == 20;
+
+        // unsubscribe events from source
         unsubscribe.dispose();
-        assert emitter.emitAndRetrieve(30) == null;
-        assert event.value() == 20;
+
+        // event doesn't propagate anymore
+        source.publish(30);
+        assert events.value() == 20; // maintain latest value
+        assert recorder.retrieveValue() == null;
     }
 
     @Test
@@ -796,30 +824,6 @@ public class EventsTest {
     }
 
     @Test
-    public void join() throws Exception {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        EventEmitter<List<Integer>> reciever = new EventEmitter();
-
-        Disposable unsubscribe = Events.join(emitter1.observe(), emitter2.observe()).to(reciever);
-
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
-        assert reciever.retrieve() == null;
-
-        emitter1.emit(30);
-        assert reciever.retrieve() == null;
-        emitter2.emit(20);
-        assertList(reciever.retrieve(), 30, 20);
-        emitter2.emit(10);
-        assertList(reciever.retrieve(), 30, 10);
-
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed();
-        assert emitter2.isUnsubscribed();
-    }
-
-    @Test
     public void onNext() throws Exception {
         List<Integer> list = new ArrayList<>();
         EventEmitter<Integer> emitter = new EventEmitter();
@@ -880,6 +884,70 @@ public class EventsTest {
     }
 
     @Test
+    public void join() throws Exception {
+        EventEmitter<Integer> emitter1 = new EventEmitter();
+        EventEmitter<Integer> emitter2 = new EventEmitter();
+        EventEmitter<List<Integer>> reciever = new EventEmitter();
+
+        Disposable unsubscribe = Events.join(emitter1.observe(), emitter2.observe()).to(reciever);
+
+        assert emitter1.isSubscribed();
+        assert emitter2.isSubscribed();
+        assert reciever.retrieve() == null;
+
+        emitter1.emit(30);
+        assert reciever.retrieve() == null;
+        emitter2.emit(20);
+        assertList(reciever.retrieve(), 30, 20);
+        emitter2.emit(10);
+        assertList(reciever.retrieve(), 30, 10);
+
+        unsubscribe.dispose();
+        assert emitter1.isUnsubscribed();
+        assert emitter2.isUnsubscribed();
+    }
+
+    @Test
+    public void join2() {
+        EventSource<Integer> source1 = new EventSource();
+        EventSource<Integer> source2 = new EventSource();
+        EventRecorder<List<Integer>> recorder = new EventRecorder();
+
+        // create event stream
+        Events<Integer> events1 = createEventsFrom(source1);
+        Events<Integer> events2 = createEventsFrom(source2);
+
+        // **declare event handling**
+        Disposable unsubscribe = Events.join(events1, events2).to(recorder);
+
+        // verify
+        // no source publish
+        assert recorder.retrieveValue() == null;
+
+        // one source only publish
+        source1.publish(1);
+        assert recorder.retrieveValue() == null;
+
+        // all sources publish
+        source2.publish(10);
+        List<Integer> values = recorder.retrieveValue();
+        assert values.size() == 2;
+        assert values.get(0) == 1;
+        assert values.get(1) == 10;
+
+        // finish one source only, then the next publish will fail because this source is dead
+        source1.complete().publish(2);
+        assert recorder.retrieveValue() == null;
+
+        // success to publish
+        source2.publish(20);
+        values = recorder.retrieveValue();
+        assert values.size() == 2;
+        assert values.get(0) == 1;
+        assert values.get(1) == 20;
+    }
+
+    @Test
     public void combineLatest() {
         EventEmitter<Integer> emitter1 = new EventEmitter();
         EventEmitter<Integer> emitter2 = new EventEmitter();
@@ -918,5 +986,77 @@ public class EventsTest {
             }
             return Disposable.Φ;
         });
+    }
+
+    /**
+     * Create {@link Events} from source.
+     * 
+     * @param source A source to observer.
+     * @return An {@link Events} for the specified source event.
+     */
+    private static <T> Events<T> createEventsFrom(EventSource<T> source) {
+        return new Events<>(observer -> {
+            source.list.add(observer);
+
+            return () -> {
+                source.list.remove(observer);
+            };
+        });
+    }
+
+    /**
+     * @version 2014/08/28 13:34:51
+     */
+    private static class EventSource<T> {
+
+        /** The event listeners. */
+        private final List<Observer> list = new ArrayList();
+
+        /**
+         * Publish event.
+         * 
+         * @param value
+         */
+        public void publish(T value) {
+            for (Observer observer : list) {
+                observer.onNext(value);
+            }
+        }
+
+        /**
+         * This source will be disposed.
+         */
+        public EventSource complete() {
+            for (Observer observer : list) {
+                observer.onCompleted();
+            }
+            return this;
+        }
+    }
+
+    /**
+     * @version 2014/08/28 13:41:16
+     */
+    private static class EventRecorder<T> implements Observer<T> {
+
+        /** The event holder. */
+        private final Deque<T> events = new ArrayDeque();
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void onNext(T event) {
+            events.add(event);
+        }
+
+        /**
+         * Retrieve the latest event.
+         * 
+         * @return
+         */
+        public T retrieveValue() {
+            return events.pollFirst();
+        }
     }
 }

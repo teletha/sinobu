@@ -983,6 +983,8 @@ public class Events<V> {
                         values.add((V) e.value());
                     }
                     observer.onNext(values);
+                }, null, () -> {
+
                 }));
             }
             return base;
