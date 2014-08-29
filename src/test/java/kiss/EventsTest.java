@@ -1014,8 +1014,6 @@ public class EventsTest {
 
         /**
          * Publish event.
-         * 
-         * @param value
          */
         public void publish(T value) {
             for (Observer observer : list) {
@@ -1052,8 +1050,6 @@ public class EventsTest {
 
         /**
          * Retrieve the latest event.
-         * 
-         * @return
          */
         public T retrieveValue() {
             return events.pollFirst();
