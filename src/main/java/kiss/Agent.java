@@ -74,7 +74,7 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
         } else if (observer != null) {
             observer.onError(e);
         } else {
-            Thread.currentThread().getThreadGroup().uncaughtException(null, e);
+            Thread.currentThread().getThreadGroup().uncaughtException(Thread.currentThread(), e);
         }
     }
 
