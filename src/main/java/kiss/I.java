@@ -284,7 +284,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     private static final Table<Class, Class> extensions = new Table();
 
     /** The mapping from extension point to assosiated extension mapping. */
-    private static final Table<Integer, Class> keys = new Table();
+    private static final Table<String, Class> keys = new Table();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -381,7 +381,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // reflect class loading related methods
             find = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
             find.setAccessible(true);
-            define = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
+            define = ClassLoader.class
+                    .getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
             define.setAccessible(true);
         } catch (Exception e) {
             throw I.quiet(e);
@@ -615,7 +616,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *         <code>null</code>.
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
-        Class<E> supplier = keys.find(Objects.hash(extensionPoint, key));
+        Class<E> supplier = keys.find(extensionPoint.getName().concat(key.getName()));
 
         return supplier == null ? null : make(supplier);
     }
@@ -909,8 +910,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         int modifier = modelClass.getModifiers();
 
         // In the second place, we must find the actual model class which is associated with
-        // this
-        // model class. If the actual model class is a concreate, we can use it directly.
+        // this model class. If the actual model class is a concreate, we can use it directly.
         Class<M> actualClass = modelClass;
 
         if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
@@ -1100,7 +1100,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         mv.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
         mv.visitFieldInsn(PUTSTATIC, className, "pool", "Ljava/util/Map;");
         mv.visitLdcInsn(Type.getType("L" + className + ";"));
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;", false);
+        mv
+                .visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;", false);
         mv.visitInsn(DUP);
         mv.visitVarInsn(ASTORE, 3);
         mv.visitInsn(ARRAYLENGTH);
@@ -1117,12 +1118,17 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getName", "()Ljava/lang/String;", false);
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;", false);
-        mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;", false);
+        mv
+                .visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;", false);
+        mv
+                .visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false);
+        mv
+                .visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;", false);
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;", false);
-        mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
+        mv
+                .visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;", false);
+        mv
+                .visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
         mv.visitInsn(POP);
         mv.visitIincInsn(1, 1); // increment counter
         mv.visitLabel(end);
@@ -1162,7 +1168,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
+                    .getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -1190,7 +1197,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
 
             // Invoke interceptor method
-            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
+            mv
+                    .visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
             cast(method.getReturnType(), mv);
             mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
             mv.visitMaxs(0, 0); // compute by ASM
@@ -1248,7 +1256,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     for (int i = 0; i < Array.getLength(value); i++) {
                         if (clazz.isAnnotation()) {
                             // Annotation Array
-                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
+                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type
+                                    .getDescriptor(clazz)));
                         } else if (clazz == Class.class) {
                             // Class Array
                             array.visit(null, Type.getType((Class) Array.get(value, i)));
@@ -1286,7 +1295,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             if (clazz != Void.TYPE) {
                 Type wrapper = Type.getType(ClassUtil.wrap(clazz));
                 mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
-                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type
+                        .getDescriptor(), false);
             }
         } else {
             mv.visitTypeInsn(CHECKCAST, type.getInternalName());
@@ -1305,7 +1315,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     private static void wrap(Class clazz, MethodVisitor mv) {
         if (clazz.isPrimitive() && clazz != Void.TYPE) {
             Type wrapper = Type.getType(ClassUtil.wrap(clazz));
-            mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type.getType(clazz)
+            mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type
+                    .getType(clazz)
                     .getDescriptor() + ")" + wrapper.getDescriptor(), false);
         }
     }
@@ -2617,7 +2628,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
                 if (params.length != 0 && params[0] != Object.class) {
                     // register extension by key
-                    keys.push(Objects.hash(extensionPoint, params[0]), extension);
+                    keys.push(extensionPoint.getName().concat(params[0].getName()), extension);
 
                     // Task : unregister extension by key
 
@@ -2653,7 +2664,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
                 if (params.length != 0 && params[0] != Object.class) {
                     // register extension by key
-                    keys.pull(Objects.hash(extensionPoint, params[0]), extension);
+                    keys.pull(extensionPoint.getName().concat(params[0].getName()), extension);
 
                     // Task : unregister extension by key
 
