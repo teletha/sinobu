@@ -616,6 +616,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *         <code>null</code>.
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
+        if (extensionPoint == null || key == null) {
+            return null;
+        }
+
         Class<E> supplier = keys.find(extensionPoint.getName().concat(key.getName()));
 
         return supplier == null ? null : make(supplier);

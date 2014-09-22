@@ -118,7 +118,8 @@ public final class ClassUtil {
             for (Method method : type.getDeclaredMethods()) {
                 // exclude the method which is created by compiler
                 // exclude the private method which is not declared in the specified class
-                if (!method.isBridge() && !method.isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
+                if (!method.isBridge() && !method.isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method
+                        .getDeclaringClass() == clazz)) {
                     Annotation[] annotations = method.getAnnotations();
 
                     if (annotations.length != 0) {
@@ -150,7 +151,8 @@ public final class ClassUtil {
 
                         // check method overriding
                         for (Method candidate : table.keySet()) {
-                            if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
+                            if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate
+                                    .getParameterTypes(), method.getParameterTypes())) {
                                 method = candidate; // detect overriding
                                 break;
                             }
@@ -265,7 +267,21 @@ public final class ClassUtil {
         }
 
         // search from superclass
-        return getParameter(raw.getGenericSuperclass(), target, base);
+        Class[] parameters = getParameter(raw.getGenericSuperclass(), target, base);
+
+        if (parameters.length != 0) {
+            return parameters;
+        }
+
+        // search from interfaces
+        for (Type type : raw.getInterfaces()) {
+            parameters = getParameter(type, target, base);
+
+            if (parameters.length != 0) {
+                return parameters;
+            }
+        }
+        return parameters;
     }
 
     /**

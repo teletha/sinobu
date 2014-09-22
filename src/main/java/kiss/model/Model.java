@@ -32,9 +32,9 @@ import java.util.Map.Entry;
 
 import javafx.beans.value.WritableValue;
 
-import kiss.Variable;
 import kiss.Codec;
 import kiss.I;
+import kiss.Variable;
 
 /**
  * <p>
@@ -194,7 +194,8 @@ public class Model {
                             }
 
                             // exclude the method (by name)
-                            if (prefix.length() < name.length() && name.startsWith(prefix) && !Character.isLowerCase(name.charAt(prefix.length()))) {
+                            if (prefix.length() < name.length() && name.startsWith(prefix) && !Character
+                                    .isLowerCase(name.charAt(prefix.length()))) {
                                 // exclude the method (by parameter signature)
                                 if (method.getGenericParameterTypes().length == length) {
                                     // compute property name
@@ -259,7 +260,8 @@ public class Model {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(load(fieldModel.type.getMethod("getValue")
+                        Property property = new Property(load(fieldModel.type
+                                .getMethod("getValue")
                                 .getGenericReturnType(), field.getGenericType()), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;

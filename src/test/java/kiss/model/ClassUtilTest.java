@@ -21,6 +21,8 @@ import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import javafx.beans.value.ObservableValue;
+
 import kiss.I;
 import kiss.sample.bean.GenericBoundedBean;
 import kiss.sample.bean.StringList;
@@ -95,6 +97,20 @@ public class ClassUtilTest {
         Constructor constructor = ClassUtil.getMiniConstructor(HashMap.class);
         assert constructor != null;
         assert 0 == constructor.getParameterTypes().length;
+    }
+
+    @Test
+    public void parameterIsVariable() {
+        Class[] parameters = ClassUtil.getParameter(ArrayList.class, List.class);
+        assert parameters.length == 1;
+        assert parameters[0] == Object.class;
+    }
+
+    @Test
+    public void parameterIsVariableOnInterface() {
+        Class[] parameters = ClassUtil.getParameter(javafx.beans.property.Property.class, ObservableValue.class);
+        assert parameters.length == 1;
+        assert parameters[0] == Object.class;
     }
 
     /**
@@ -328,7 +344,8 @@ public class ClassUtilTest {
 
     @Test
     public void parameterVariableFromInterface() {
-        Type[] types = ClassUtil.getParameter(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
+        Type[] types = ClassUtil
+                .getParameter(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
