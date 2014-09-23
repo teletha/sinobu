@@ -50,12 +50,12 @@ public class Lambda {
      * Apply parameter partially for the given function.
      * </p>
      * 
-     * @param param A input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
      *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+     * @param param A input paramter to bind.
      * @return The parameter binded function.
      */
-    public static <Param> Disposable run(Param param, Consumer<Param> function) {
+    public static <Param> Disposable run(Consumer<Param> function, Param param) {
         if (function == null) {
             return Disposable.Φ;
         }
@@ -67,14 +67,14 @@ public class Lambda {
      * Apply parameter partially for the given function.
      * </p>
      * 
-     * @param param1 First input paramter to bind.
-     * @param param2 Second input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
      *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
+     * @param param1 First input paramter to bind.
+     * @param param2 Second input paramter to bind.
      * @return The parameter binded function.
      */
-    public static <Param1, Param2> Disposable run(Param1 param1, Param2 param2, BiConsumer<Param1, Param2> function) {
-        return run(param2, consume(param1, function));
+    public static <Param1, Param2> Disposable run(BiConsumer<Param1, Param2> function, Param1 param1, Param2 param2) {
+        return run(consume(function, param1), param2);
     }
 
     /**
@@ -82,12 +82,12 @@ public class Lambda {
      * Apply parameter partially for the given function.
      * </p>
      * 
-     * @param param First input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
      *            <code>null</code>, empty fuction ({@link #φ}) will be returned.
+     * @param param First input paramter to bind.
      * @return The parameter binded function.
      */
-    public static <Param1, Param2> Consumer<Param2> consume(Param1 param, BiConsumer<Param1, Param2> function) {
+    public static <Param1, Param2> Consumer<Param2> consume(BiConsumer<Param1, Param2> function, Param1 param) {
         if (function == null) {
             return φ;
         }
@@ -99,12 +99,12 @@ public class Lambda {
      * Apply parameter partially for the given function.
      * </p>
      * 
-     * @param param First input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
      *            <code>null</code>, {@link NullPointerException} will be thrown.
+     * @param param First input paramter to bind.
      * @return The parameter binded function.
      */
-    public static <Param, Return> Supplier<Return> supply(Param param, Function<Param, Return> function) {
+    public static <Param, Return> Supplier<Return> supply(Function<Param, Return> function, Param param) {
         return () -> function.apply(param);
     }
 
@@ -113,14 +113,14 @@ public class Lambda {
      * Apply parameter partially for the given function.
      * </p>
      * 
-     * @param param1 First input paramter to bind.
-     * @param param2 Second input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
      *            <code>null</code>, {@link NullPointerException} will be thrown.
+     * @param param1 First input paramter to bind.
+     * @param param2 Second input paramter to bind.
      * @return The parameter binded function.
      */
-    public static <Param1, Param2, Return> Supplier<Return> supply(Param1 param1, Param2 param2, BiFunction<Param1, Param2, Return> function) {
-        return supply(param2, function(param1, function));
+    public static <Param1, Param2, Return> Supplier<Return> supply(BiFunction<Param1, Param2, Return> function, Param1 param1, Param2 param2) {
+        return supply(function(function, param1), param2);
     }
 
     /**
@@ -128,13 +128,13 @@ public class Lambda {
      * Apply parameter partially for the given function.
      * </p>
      * 
-     * @param param1 First input paramter to bind.
      * @param function An actual function to apply parameter partially. If this function is
      *            <code>null</code>, {@link NullPointerException} will be thrown.
+     * @param param1 First input paramter to bind.
      * @return The parameter binded function.
      */
-    public static <Param1, Param2, Return> Function<Param2, Return> function(Param1 param1, BiFunction<Param1, Param2, Return> function) {
-        return param -> function.apply(param1, param);
+    public static <Param1, Param2, Return> Function<Param2, Return> function(BiFunction<Param1, Param2, Return> function, Param1 param1) {
+        return param2 -> function.apply(param1, param2);
     }
 
     /**

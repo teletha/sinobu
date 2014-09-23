@@ -11,18 +11,37 @@ package kiss.scratchpad;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import kiss.I;
 import kiss.Manageable;
 import kiss.Singleton;
+
+import sun.reflect.ConstantPool;
 
 /**
  * @version 2008/06/18 8:42:37
  */
 @Manageable(lifestyle = Singleton.class)
 public class SinobuScratchpad {
+
+    /** The accessible internal method for lambda info. */
+    private static final Method findConstants;
+
+    static {
+        try {
+            // reflect lambda info related methods
+            findConstants = Class.class.getDeclaredMethod("getConstantPool");
+            findConstants.setAccessible(true);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
 
     /**
      * <p>
@@ -39,6 +58,38 @@ public class SinobuScratchpad {
      */
     public static <M> M create(M... m) {
         return (M) I.make(m.getClass().getComponentType());
+    }
+
+    public static <M, P1, P2> M make(BiFunction<P1, P2, M> modelConstructor, P1 param1, P2 param2) {
+        try {
+            ConstantPool constantPool = (ConstantPool) findConstants.invoke(modelConstructor.getClass());
+
+            // MethodInfo
+            // [0] : Declared Class Name (internal qualified name)
+            // [1] : Method Name
+            // [2] : Method Descriptor (internal qualified signature)
+            String[] methodInfo = constantPool.getMemberRefInfoAt(19);
+            System.out.println(Arrays.toString(methodInfo));
+            return null;
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    public static <M, P1> M make(Function<P1, M> modelConstructor, P1 param) {
+        try {
+            ConstantPool constantPool = (ConstantPool) findConstants.invoke(modelConstructor.getClass());
+
+            // MethodInfo
+            // [0] : Declared Class Name (internal qualified name)
+            // [1] : Method Name
+            // [2] : Method Descriptor (internal qualified signature)
+            String[] methodInfo = constantPool.getMemberRefInfoAt(19);
+            System.out.println(Arrays.toString(methodInfo));
+            return null;
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
