@@ -387,6 +387,33 @@ public class Events<V> {
 
     /**
      * <p>
+     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
+     * given predicate.
+     * </p>
+     * 
+     * @param predicate An external boolean {@link Events}. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Events<V> filter(Events<Boolean> predicate) {
+        // ignore invalid parameter
+        if (predicate == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> {
+            flag = new AtomicBoolean();
+            
+            return predicate.to(v -> flag.set(v)).and(to(v -> {
+                if (flag.get()) {
+                    observer.onNext(v);
+                }
+            }));
+        });
+    }
+
+    /**
+     * <p>
      * Returns an {@link Events} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Events}, where that function returns an {@link Events}
      * , and then merging those resulting {@link Events} and emitting the results of this merger.
@@ -781,7 +808,7 @@ public class Events<V> {
      *            source sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <T> Events<V> takeUntil(Predicate<V> predicate) {
+    public final Events<V> takeUntil(Predicate<V> predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
@@ -988,6 +1015,23 @@ public class Events<V> {
                 }));
             }
             return base;
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits the specified values.
+     * </p>
+     * 
+     * @param value A list of values to emit.
+     * @return An {@link Events} that emits values as a first sequence.
+     */
+    public static <V> Events<V> just(V... values) {
+        return new Events<>(observer -> {
+            for (V value : values) {
+                observer.onNext(value);
+            }
+            return Disposable.Φ;
         });
     }
 
