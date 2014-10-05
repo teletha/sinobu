@@ -318,7 +318,7 @@ public class EventsTest {
     public void flatMap() {
         EventEmitter<Integer> emitter = new EventEmitter();
         Disposable unsubscribe = emitter.observe().flatMap(value -> {
-            return just(value, value + 1);
+            return Events.just(value, value + 1);
         }).to(emitter);
 
         emitter.emit(10);
@@ -842,7 +842,7 @@ public class EventsTest {
     public void never() throws Exception {
         Events.NEVER.to(value -> {
             // none
-        });
+            });
     }
 
     @Test
@@ -971,21 +971,15 @@ public class EventsTest {
         assert emitter2.isUnsubscribed();
     }
 
-    /**
-     * <p>
-     * Helper method.
-     * </p>
-     * 
-     * @param value
-     * @return
-     */
-    private static <T> Events<T> just(T... values) {
-        return new Events<>(observer -> {
-            for (T value : values) {
-                observer.onNext(value);
-            }
-            return Disposable.Φ;
-        });
+    @Test
+    public void just() throws Exception {
+        EventEmitter<Integer> reciever = new EventEmitter();
+
+        Events.just(1, 2, 3).to(reciever);
+
+        assert reciever.retrieve() == 1;
+        assert reciever.retrieve() == 2;
+        assert reciever.retrieve() == 3;
     }
 
     /**
