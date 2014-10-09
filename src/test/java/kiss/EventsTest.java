@@ -908,7 +908,7 @@ public class EventsTest {
     }
 
     @Test
-    public void join2() {
+    public void joinComplete() {
         EventSource<Integer> source1 = new EventSource();
         EventSource<Integer> source2 = new EventSource();
         EventRecorder<List<Integer>> recorder = new EventRecorder();
@@ -948,7 +948,7 @@ public class EventsTest {
     }
 
     @Test
-    public void combineLatest() {
+    public void joinCombine() {
         EventEmitter<Integer> emitter1 = new EventEmitter();
         EventEmitter<Integer> emitter2 = new EventEmitter();
         EventEmitter<Integer> reciever = new EventEmitter();
@@ -1003,6 +1003,9 @@ public class EventsTest {
      */
     private static class EventSource<T> {
 
+        /** The complete state. */
+        private boolean completed;
+
         /** The event listeners. */
         private final List<Observer> list = new ArrayList();
 
@@ -1010,8 +1013,10 @@ public class EventsTest {
          * Publish event.
          */
         public void publish(T value) {
-            for (Observer observer : list) {
-                observer.onNext(value);
+            if (!completed) {
+                for (Observer observer : list) {
+                    observer.onNext(value);
+                }
             }
         }
 
@@ -1019,6 +1024,8 @@ public class EventsTest {
          * This source will be disposed.
          */
         public EventSource complete() {
+            completed = true;
+
             for (Observer observer : list) {
                 observer.onCompleted();
             }

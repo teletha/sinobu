@@ -403,7 +403,7 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             flag = new AtomicBoolean();
-            
+
             return predicate.to(v -> flag.set(v)).and(to(v -> {
                 if (flag.get()) {
                     observer.onNext(v);
@@ -462,15 +462,16 @@ public class Events<V> {
 
     /**
      * <p>
-     * Combines this {@link Events} and the other specified {@link Events} by emitting an item that
-     * aggregates the latest values of each of the {@link Events} each time an item is received from
-     * any of {@link Events}, where this aggregation is defined by a specified function.
+     * Combines two source {@link Events} by emitting an item that aggregates the latest values of
+     * each of the source {@link Events} each time an item is received from either of the source
+     * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
      * 
      * @param other An other {@link Events} to combine.
-     * @param function An aggregation function used to combine the items emitted by {@link Events}.
-     * @return A {@link Events} that emits items that are the result of combining the items emitted
-     *         by source {@link Events} by means of the given aggregation function.
+     * @param function An aggregation function used to combine the items emitted by the source
+     *            {@link Events}.
+     * @return An {@link Events} that emits items that are the result of combining the items emitted
+     *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, R> Events<R> join(Events<O> other, BiFunction<V, O, R> function) {
         return join(this, other).map(v -> function.apply(v.get(0), v.get(1)));
@@ -974,28 +975,31 @@ public class Events<V> {
 
     /**
      * <p>
-     * Create an {@link Events} that emits true if all specified observables emit true as latest
-     * event.
+     * Rendezvous with all source {@link Events} by emitting an item that aggregates the latest
+     * values of each of the source {@link Events} each time an item is received from any of the
+     * source {@link Events}.
      * </p>
      * 
-     * @param list A list of target {@link Events} to test.
-     * @return Chainable API.
+     * @param observables A list of source {@link Events}.
+     * @return An {@link Events} that emits items that are the result of coordinating the items
+     *         emitted by the source {@link Events}.
      */
-    @SafeVarargs
     public static <V> Events<List<V>> join(Events<? super V>... observables) {
         return join(Arrays.asList(observables));
     }
 
     /**
      * <p>
-     * Create an {@link Events} that emits true if all specified observables emit true as latest
-     * event.
+     * Rendezvous with all source {@link Events} by emitting an item that aggregates the latest
+     * values of each of the source {@link Events} each time an item is received from any of the
+     * source {@link Events}.
      * </p>
      * 
-     * @param list A list of target {@link Events} to test.
-     * @return Chainable API.
+     * @param observables A list of source {@link Events}.
+     * @return An {@link Events} that emits items that are the result of coordinating the items
+     *         emitted by the source {@link Events}.
      */
-    public static <V> Events<List<V>> join(Iterable<Events<? super V>> list) {
+    public static <V> Events<List<V>> join(Iterable<? extends Events<? super V>> list) {
         return new Events<>(observer -> {
             Disposable base = Disposable.Φ;
 
@@ -1010,8 +1014,6 @@ public class Events<V> {
                         values.add((V) e.value());
                     }
                     observer.onNext(values);
-                }, null, () -> {
-
                 }));
             }
             return base;
@@ -1035,20 +1037,33 @@ public class Events<V> {
         });
     }
 
+    /**
+     * <p>
+     * Rendezvous with all source {@link Events} by emitting an item that aggregates all values of
+     * each of the source {@link Events} each time an item is received from all of the source
+     * {@link Events}.
+     * </p>
+     * 
+     * @param observables A list of source {@link Events}.
+     * @return An {@link Events} that emits items that are the result of coordinating the items
+     *         emitted by the source {@link Events}.
+     */
     public static <V> Events<List<V>> zip(Events<? super V>... list) {
         return zip(Arrays.asList(list));
     }
 
     /**
      * <p>
-     * Create an {@link Events} that emits true if all specified observables emit true as latest
-     * event.
+     * Rendezvous with all source {@link Events} by emitting an item that aggregates all values of
+     * each of the source {@link Events} each time an item is received from all of the source
+     * {@link Events}.
      * </p>
      * 
-     * @param list A list of target {@link Events} to test.
-     * @return Chainable API.
+     * @param observables A list of source {@link Events}.
+     * @return An {@link Events} that emits items that are the result of coordinating the items
+     *         emitted by the source {@link Events}.
      */
-    public static <V> Events<List<V>> zip(Iterable<Events<? super V>> list) {
+    public static <V> Events<List<V>> zip(Iterable<? extends Events<? super V>> list) {
         return new Events<>(observer -> {
             Disposable base = Disposable.Φ;
             List<Deque<V>> queues = new ArrayList();
