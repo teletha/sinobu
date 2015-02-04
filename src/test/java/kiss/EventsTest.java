@@ -17,6 +17,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.function.Function;
 
+import javafx.beans.property.Property;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -691,33 +693,20 @@ public class EventsTest {
     }
 
     @Test
-    public void value() {
+    public void toProperty() {
         EventSource<Integer> source = new EventSource();
-        EventRecorder<Integer> recorder = new EventRecorder();
 
         // create event stream
-        Events<Integer> events = createEventsFrom(source);
-        Disposable unsubscribe = events.to(recorder);
+        Property<Integer> property = createEventsFrom(source).to();
 
         // verify
-        assert events.value() == null;
-        assert recorder.retrieveValue() == null;
+        assert property.getValue() == null;
 
         source.publish(10);
-        assert events.value() == 10;
-        assert recorder.retrieveValue() == 10;
+        assert property.getValue() == 10;
 
         source.publish(20);
-        assert events.value() == 20;
-        assert recorder.retrieveValue() == 20;
-
-        // unsubscribe events from source
-        unsubscribe.dispose();
-
-        // event doesn't propagate anymore
-        source.publish(30);
-        assert events.value() == 20; // maintain latest value
-        assert recorder.retrieveValue() == null;
+        assert property.getValue() == 20;
     }
 
     @Test

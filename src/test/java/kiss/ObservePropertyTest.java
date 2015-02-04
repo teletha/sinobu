@@ -48,6 +48,7 @@ public class ObservePropertyTest {
 
         // observe
         Disposable disposer = I.observe(property).to(emitter);
+        assert emitter.retrieve().intValue() == 0;
 
         // change property
         property.set(10);
@@ -68,6 +69,7 @@ public class ObservePropertyTest {
 
         // observe
         Disposable disposer = I.observe(property).to(emitter);
+        assert emitter.retrieve().intValue() == 0;
 
         // change property
         property.set(10);

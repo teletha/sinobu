@@ -1104,8 +1104,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         mv.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
         mv.visitFieldInsn(PUTSTATIC, className, "pool", "Ljava/util/Map;");
         mv.visitLdcInsn(Type.getType("L" + className + ";"));
-        mv
-                .visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethods", "()[Ljava/lang/reflect/Method;", false);
         mv.visitInsn(DUP);
         mv.visitVarInsn(ASTORE, 3);
         mv.visitInsn(ARRAYLENGTH);
@@ -1122,17 +1121,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getName", "()Ljava/lang/String;", false);
         mv.visitVarInsn(ALOAD, 0);
-        mv
-                .visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;", false);
-        mv
-                .visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false);
-        mv
-                .visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getParameterTypes", "()[Ljava/lang/Class;", false);
+        mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;", false);
         mv.visitVarInsn(ALOAD, 0);
-        mv
-                .visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;", false);
-        mv
-                .visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "getAnnotations", "()[Ljava/lang/annotation/Annotation;", false);
+        mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
         mv.visitInsn(POP);
         mv.visitIincInsn(1, 1); // increment counter
         mv.visitLabel(end);
@@ -1201,8 +1195,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitTypeInsn(CHECKCAST, "[Ljava/lang/annotation/Annotation;");
 
             // Invoke interceptor method
-            mv
-                    .visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
+            mv.visitMethodInsn(INVOKESTATIC, "kiss/Interceptor", "invoke", "(Ljava/lang/String;Ljava/lang/invoke/MethodHandle;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/annotation/Annotation;)Ljava/lang/Object;", false);
             cast(method.getReturnType(), mv);
             mv.visitInsn(methodType.getReturnType().getOpcode(IRETURN));
             mv.visitMaxs(0, 0); // compute by ASM
@@ -1319,8 +1312,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     private static void wrap(Class clazz, MethodVisitor mv) {
         if (clazz.isPrimitive() && clazz != Void.TYPE) {
             Type wrapper = Type.getType(ClassUtil.wrap(clazz));
-            mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type
-                    .getType(clazz)
+            mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type.getType(clazz)
                     .getDescriptor() + ")" + wrapper.getDescriptor(), false);
         }
     }
@@ -1554,6 +1546,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             };
 
             observable.addListener(listener); // register listener
+
+            // notify the current value
+            E value = observable.getValue();
+
+            if (value != null) {
+                listener.changed(observable, null, value);
+            }
 
             return () -> {
                 observable.removeListener(listener); // unregister listener
