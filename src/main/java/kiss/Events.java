@@ -29,6 +29,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+
 /**
  * @version 2014/03/11 14:52:00
  */
@@ -94,6 +98,24 @@ public class Events<V> {
      */
     private Events(BiFunction<Observer<? super V>, Events<V>, Disposable> subscriber) {
         this.subscriber = subscriber;
+    }
+
+    /**
+     * <p>
+     * Receive values from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link Property} as value receiver.
+     */
+    public final Property<V> to() {
+        // value receiver
+        ObjectProperty property = new SimpleObjectProperty();
+    
+        // start receiving values
+        to(property::set);
+    
+        // API definition
+        return property;
     }
 
     /**
@@ -651,7 +673,7 @@ public class Events<V> {
             that.observer.object = init;
 
             return to(value -> {
-                observer.onNext(function.apply(that.value(), value));
+                observer.onNext(function.apply(that.observer.object, value));
             });
         });
     }
@@ -859,17 +881,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Retrieve the latest value.
-     * </p>
-     * 
-     * @return A latest value.
-     */
-    public final V value() {
-        return observer.object;
-    }
-
-    /**
-     * <p>
      * Returns an {@link Events} that emits the results of a function of your choosing applied to
      * combinations of two items emitted, in sequence, by this {@link Events} and the other
      * specified {@link Events}.
@@ -1008,10 +1019,10 @@ public class Events<V> {
                     List<V> values = new ArrayList();
 
                     for (Events e : list) {
-                        if (e.value() == null) {
+                        if (e.observer.object == null) {
                             return;
                         }
-                        values.add((V) e.value());
+                        values.add((V) e.observer.object);
                     }
                     observer.onNext(values);
                 }));
