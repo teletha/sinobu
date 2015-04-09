@@ -26,5 +26,7 @@ public class TupleTest {
         assert value.く == "String";
         assert value.巜 == 10;
         assert value.巛 == 30L;
+
+        value = value.く("Replace");
     }
 }

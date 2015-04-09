@@ -33,4 +33,34 @@ public class Ternary<Param1, Param2, Param3> {
         this.巜 = param2;
         this.巛 = param3;
     }
+
+    /**
+     * Create new tuple which replace the first parameter.
+     * 
+     * @param param New first parameter.
+     * @return A created new tuple.
+     */
+    public <NewParam> Ternary<NewParam, Param2, Param3> く(NewParam param) {
+        return I.pair(param, 巜, 巛);
+    }
+
+    /**
+     * Create new tuple which replace the second parameter.
+     * 
+     * @param param New second parameter.
+     * @return A created new tuple.
+     */
+    public <NewParam> Ternary<Param1, NewParam, Param3> 巜(NewParam param) {
+        return I.pair(く, param, 巛);
+    }
+
+    /**
+     * Create new tuple which replace the third parameter.
+     * 
+     * @param param New third parameter.
+     * @return A created new tuple.
+     */
+    public <NewParam> Ternary<Param1, Param2, NewParam> 巛(NewParam param) {
+        return I.pair(く, 巜, param);
+    }
 }
