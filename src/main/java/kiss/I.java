@@ -381,8 +381,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // reflect class loading related methods
             find = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
             find.setAccessible(true);
-            define = ClassLoader.class
-                    .getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
+            define = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
             define.setAccessible(true);
         } catch (Exception e) {
             throw I.quiet(e);
@@ -1166,8 +1165,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
-                    .getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -1253,8 +1251,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     for (int i = 0; i < Array.getLength(value); i++) {
                         if (clazz.isAnnotation()) {
                             // Annotation Array
-                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type
-                                    .getDescriptor(clazz)));
+                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
                         } else if (clazz == Class.class) {
                             // Class Array
                             array.visit(null, Type.getType((Class) Array.get(value, i)));
@@ -1292,8 +1289,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             if (clazz != Void.TYPE) {
                 Type wrapper = Type.getType(ClassUtil.wrap(clazz));
                 mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
-                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type
-                        .getDescriptor(), false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
             }
         } else {
             mv.visitTypeInsn(CHECKCAST, type.getInternalName());
@@ -1766,6 +1762,33 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     // throw quiet(e);
     // }
     // }
+
+    /**
+     * <p>
+     * Create value set.
+     * </p>
+     * 
+     * @param param1 A first parameter.
+     * @param param2 A second parameter.
+     * @return
+     */
+    public static <Param1, Param2> Binary<Param1, Param2> pair(Param1 param1, Param2 param2) {
+        return new Binary(param1, param2);
+    }
+
+    /**
+     * <p>
+     * Create value set.
+     * </p>
+     * 
+     * @param param1 A first parameter.
+     * @param param2 A second parameter.
+     * @param param3 A third parameter.
+     * @return
+     */
+    public static <Param1, Param2, Param3> Ternary<Param1, Param2, Param3> pair(Param1 param1, Param2 param2, Param3 param3) {
+        return new Ternary(param1, param2, param3);
+    }
 
     /**
      * <p>
