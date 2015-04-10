@@ -9,19 +9,21 @@
  */
 package kiss;
 
+import java.util.function.Function;
+
 /**
  * @version 2015/04/10 1:17:24
  */
 public class Ternary<Param1, Param2, Param3> {
 
     /** The first parameter. */
-    public final Param1 く;
+    public final Param1 a;
 
     /** The second parameter. */
-    public final Param2 巜;
+    public final Param2 e;
 
     /** The third parameter. */
-    public final Param3 巛;
+    public final Param3 o;
 
     /**
      * @param param1
@@ -29,9 +31,9 @@ public class Ternary<Param1, Param2, Param3> {
      * @param param3
      */
     Ternary(Param1 param1, Param2 param2, Param3 param3) {
-        this.く = param1;
-        this.巜 = param2;
-        this.巛 = param3;
+        this.a = param1;
+        this.e = param2;
+        this.o = param3;
     }
 
     /**
@@ -40,8 +42,18 @@ public class Ternary<Param1, Param2, Param3> {
      * @param param New first parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Ternary<NewParam, Param2, Param3> く(NewParam param) {
-        return I.pair(param, 巜, 巛);
+    public <NewParam> Ternary<NewParam, Param2, Param3> a(NewParam param) {
+        return I.pair(param, e, o);
+    }
+
+    /**
+     * Create new tuple which calculate the first parameter.
+     * 
+     * @param calculation A calculation expression.
+     * @return A created new tuple.
+     */
+    public <CalculationResult> Ternary<CalculationResult, Param2, Param3> a(Function<Param1, CalculationResult> calculation) {
+        return I.pair(calculation.apply(a), e, o);
     }
 
     /**
@@ -50,8 +62,18 @@ public class Ternary<Param1, Param2, Param3> {
      * @param param New second parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Ternary<Param1, NewParam, Param3> 巜(NewParam param) {
-        return I.pair(く, param, 巛);
+    public <NewParam> Ternary<Param1, NewParam, Param3> e(NewParam param) {
+        return I.pair(a, param, o);
+    }
+
+    /**
+     * Create new tuple which calculate the second parameter.
+     * 
+     * @param calculation A calculation expression.
+     * @return A created new tuple.
+     */
+    public <CalculationResult> Ternary<Param1, CalculationResult, Param3> e(Function<Param2, CalculationResult> calculation) {
+        return I.pair(a, calculation.apply(e), o);
     }
 
     /**
@@ -60,7 +82,44 @@ public class Ternary<Param1, Param2, Param3> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Ternary<Param1, Param2, NewParam> 巛(NewParam param) {
-        return I.pair(く, 巜, param);
+    public <NewParam> Ternary<Param1, Param2, NewParam> o(NewParam param) {
+        return I.pair(a, e, param);
+    }
+
+    /**
+     * Create new tuple which calculate the third parameter.
+     * 
+     * @param calculation A calculation expression.
+     * @return A created new tuple.
+     */
+    public <CalculationResult> Ternary<Param1, Param2, CalculationResult> o(Function<Param3, CalculationResult> calculation) {
+        return I.pair(a, e, calculation.apply(o));
+    }
+
+    /**
+     * Create new tuple which remove the first parameter.
+     * 
+     * @return A created new tuple.
+     */
+    public Binary<Param2, Param3> á() {
+        return I.pair(e, o);
+    }
+
+    /**
+     * Create new tuple which remove the second parameter.
+     * 
+     * @return A created new tuple.
+     */
+    public Binary<Param1, Param3> é() {
+        return I.pair(a, o);
+    }
+
+    /**
+     * Create new tuple which remove the third parameter.
+     * 
+     * @return A created new tuple.
+     */
+    public Binary<Param1, Param2> ó() {
+        return I.pair(a, e);
     }
 }

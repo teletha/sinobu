@@ -15,18 +15,18 @@ package kiss;
 public class Binary<Param1, Param2> {
 
     /** The first parameter. */
-    public final Param1 く;
+    public final Param1 a;
 
     /** The second parameter. */
-    public final Param2 巜;
+    public final Param2 e;
 
     /**
      * @param param1
      * @param param2
      */
     Binary(Param1 param1, Param2 param2) {
-        this.く = param1;
-        this.巜 = param2;
+        this.a = param1;
+        this.e = param2;
     }
 
     /**
@@ -35,8 +35,8 @@ public class Binary<Param1, Param2> {
      * @param param New first parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Binary<NewParam, Param2> く(NewParam param) {
-        return I.pair(param, 巜);
+    public <NewParam> Binary<NewParam, Param2> a(NewParam param) {
+        return I.pair(param, e);
     }
 
     /**
@@ -45,8 +45,8 @@ public class Binary<Param1, Param2> {
      * @param param New second parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Binary<Param1, NewParam> 巜(NewParam param) {
-        return I.pair(く, param);
+    public <NewParam> Binary<Param1, NewParam> e(NewParam param) {
+        return I.pair(a, param);
     }
 
     /**
@@ -55,7 +55,27 @@ public class Binary<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ternary<Param1, Param2, AdditionalParam> 巛(AdditionalParam param) {
-        return I.pair(く, 巜, param);
+    public <AdditionalParam> Ternary<AdditionalParam, Param1, Param2> à(AdditionalParam param) {
+        return I.pair(param, a, e);
+    }
+
+    /**
+     * Create new tuple which add the third parameter.
+     * 
+     * @param param New third parameter.
+     * @return A created new tuple.
+     */
+    public <AdditionalParam> Ternary<Param1, AdditionalParam, Param2> è(AdditionalParam param) {
+        return I.pair(a, param, e);
+    }
+
+    /**
+     * Create new tuple which add the third parameter.
+     * 
+     * @param param New third parameter.
+     * @return A created new tuple.
+     */
+    public <AdditionalParam> Ternary<Param1, Param2, AdditionalParam> ò(AdditionalParam param) {
+        return I.pair(a, e, param);
     }
 }
