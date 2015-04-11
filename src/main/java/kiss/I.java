@@ -87,6 +87,10 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+
 import jdk.internal.org.objectweb.asm.AnnotationVisitor;
 import jdk.internal.org.objectweb.asm.ClassVisitor;
 import jdk.internal.org.objectweb.asm.ClassWriter;
@@ -97,10 +101,6 @@ import jdk.internal.org.objectweb.asm.Type;
 import kiss.model.ClassUtil;
 import kiss.model.Model;
 import kiss.model.Property;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -168,7 +168,8 @@ import org.xml.sax.InputSource;
  * </p>
  * <dl>
  * <dt>*</dt>
- * <dd>Matches zero or more characters of a name component without crossing directory boundaries.</dd>
+ * <dd>Matches zero or more characters of a name component without crossing directory boundaries.
+ * </dd>
  * <dt>**</dt>
  * <dd>Matches zero or more characters of a name component with crossing directory boundaries.</dd>
  * <dt>?</dt>
@@ -330,15 +331,15 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         modules.set(Prototype.class, new Prototype(Prototype.class));
         modules.set(ListProperty.class, () -> {
             return new SimpleListProperty(FXCollections.observableArrayList());
-        });
+        } );
         modules.set(ObservableList.class, FXCollections::observableArrayList);
         modules.set(MapProperty.class, () -> {
             return new SimpleMapProperty(FXCollections.observableHashMap());
-        });
+        } );
         modules.set(ObservableMap.class, FXCollections::observableHashMap);
         modules.set(SetProperty.class, () -> {
             return new SimpleSetProperty(FXCollections.observableSet());
-        });
+        } );
         modules.set(ObservableSet.class, FXCollections::observableSet);
 
         try {
@@ -381,7 +382,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // reflect class loading related methods
             find = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
             find.setAccessible(true);
-            define = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
+            define = ClassLoader.class
+                    .getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
             define.setAccessible(true);
         } catch (Exception e) {
             throw I.quiet(e);
@@ -485,7 +487,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * is the following:
      * </p>
      * <p>
-     * 
      * <pre>
      * if (input.isFile) {
      *   if (output.isFile) {
@@ -538,7 +539,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * Delete a input {@link Path}. Simplified strategy is the following:
      * </p>
      * <p>
-     * 
      * <pre>
      * if (input.isFile) {
      *   // Delete input file unconditionaly.
@@ -581,8 +581,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param <E> An Extension Point.
-     * @param extensionPoint An extension point class. The <a
-     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     * @param extensionPoint An extension point class. The
+     *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
      *            otherwise this method will return empty list.
      * @return All Extensions of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
@@ -607,8 +607,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param <E> An Extension Point.
-     * @param extensionPoint An Extension Point class. The <a
-     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     * @param extensionPoint An Extension Point class. The
+     *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
      *            otherwise this method will return <code>null</code>.
      * @param key An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.
      * @return A associated Extension of the given Extension Point and the given Extension Key or
@@ -636,8 +636,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      *
      * @param <E> An Extension Point.
-     * @param extensionPoint An extension point class. The <a
-     *            href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+     * @param extensionPoint An extension point class. The
+     *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
      *            otherwise this method will return empty list.
      * @return All Extension classes of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
@@ -1145,7 +1145,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             Method method = entry.getKey();
 
             // exclude the method which modifier is final, static, private or native
-            if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method.getModifiers()) != 0) {
+            if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method
+                    .getModifiers()) != 0) {
                 continue;
             }
 
@@ -1165,7 +1166,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType.getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method
+                    .getName(), methodType.getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -1204,7 +1206,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
          * <p>
          * Make context field.
          * </p>
-         *
          * <pre>
          * private transient Table context;
          * </pre>
@@ -1251,7 +1252,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     for (int i = 0; i < Array.getLength(value); i++) {
                         if (clazz.isAnnotation()) {
                             // Annotation Array
-                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
+                            annotate((Annotation) Array.get(value, i), array
+                                    .visitAnnotation(null, Type.getDescriptor(clazz)));
                         } else if (clazz == Class.class) {
                             // Class Array
                             array.visit(null, Type.getType((Class) Array.get(value, i)));
@@ -1289,7 +1291,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             if (clazz != Void.TYPE) {
                 Type wrapper = Type.getType(ClassUtil.wrap(clazz));
                 mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
-                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper
+                        .getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
             }
         } else {
             mv.visitTypeInsn(CHECKCAST, type.getInternalName());
@@ -1319,7 +1322,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * is the following:
      * </p>
      * <p>
-     * 
      * <pre>
      * if (input.isFile) {
      *   if (output.isFile) {
@@ -1514,7 +1516,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return () -> {
                 observable.removeListener(listener); // unregister listener
             };
-        });
+        } );
     }
 
     /**
@@ -1553,7 +1555,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return () -> {
                 observable.removeListener(listener); // unregister listener
             };
-        });
+        } );
     }
 
     /**
@@ -1640,7 +1642,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             // API definition
             return watcher;
-        });
+        } );
     }
 
     //
@@ -1769,6 +1771,18 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      * 
      * @param param1 A first parameter.
+     * @return
+     */
+    public static <Param1> Unary<Param1> pair(Param1 param1) {
+        return new Unary(param1);
+    }
+
+    /**
+     * <p>
+     * Create value set.
+     * </p>
+     * 
+     * @param param1 A first parameter.
      * @param param2 A second parameter.
      * @return
      */
@@ -1797,7 +1811,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * in finally block like the following.
      * </p>
      * <p>
-     * 
      * <pre>
      * AutoCloseable input = null;
      *
@@ -1820,7 +1833,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * caller of the method which calls this method.
      * </p>
      * <p>
-     * 
      * <pre>
      * private void callerWithoutErrorHandling() {
      *     methodQuietly();
@@ -2247,7 +2259,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
                 // never check null because PropertyWalker traverses existing properties
                 outputModel.set(m, dest, I.transform(value, dest.model.type));
-            });
+            } );
 
             // API definition
             return m;
