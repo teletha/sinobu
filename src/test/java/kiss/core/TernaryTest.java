@@ -108,5 +108,7 @@ public class TernaryTest {
     public void testname() {
         Ternary<String, Integer, Long> value1 = I.pair("String", 10, 30L);
         Ternary<String, Integer, Long> value2 = I.pair("WoW", 20, 40L);
+        
+        value1.and(value2).
     }
 }
