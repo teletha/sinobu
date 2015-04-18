@@ -23,7 +23,7 @@ public class Group {
         this.leader = leader;
     }
 
-    public static final Lens<Group, Person> $leader$ = new Lens<Group, Person>() {
+    public static final Lens<Group, Person> _leader_ = new Lens<Group, Person>() {
 
         /**
          * {@inheritDoc}

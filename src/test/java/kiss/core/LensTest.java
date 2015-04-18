@@ -23,7 +23,7 @@ public class LensTest {
     public void single() throws Exception {
         Person bean = new Person("test");
 
-        bean = Lens.set(bean, $name$, "change");
+        bean = Lens.set(bean, _name_, "change");
     }
 
     @Test
@@ -31,6 +31,6 @@ public class LensTest {
         Person person = new Person("test");
         Group group = new Group(person);
 
-        group = Lens.set(group, $leader$, $name$, "change");
+        group = Lens.set(group, _leader_, _name_, "change");
     }
 }

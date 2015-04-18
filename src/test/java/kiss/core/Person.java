@@ -9,9 +9,12 @@
  */
 package kiss.core;
 
+import kiss.IcyManipulator;
+
 /**
  * @version 2015/04/17 23:34:25
  */
+@IcyManipulator
 public class Person {
 
     public final String name;
@@ -23,7 +26,7 @@ public class Person {
         this.name = name;
     }
 
-    public static final Lens<Person, String> $name$ = new Lens<Person, String>() {
+    public static final Lens<Person, String> _name_ = new Lens<Person, String>() {
 
         /**
          * {@inheritDoc}
