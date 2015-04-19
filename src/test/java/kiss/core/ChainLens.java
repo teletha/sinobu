@@ -9,6 +9,8 @@
  */
 package kiss.core;
 
+import java.util.Optional;
+
 /**
  * @version 2015/04/17 22:48:59
  */
@@ -31,8 +33,8 @@ class ChainLens<Model, Property, Nested> implements Lens<Model, Nested> {
      * {@inheritDoc}
      */
     @Override
-    public Nested get(Model model) {
-        return after.get(before.get(model));
+    public Optional<Nested> get(Model model) {
+        return after.get(before.get(model).get());
     }
 
     /**
@@ -40,6 +42,6 @@ class ChainLens<Model, Property, Nested> implements Lens<Model, Nested> {
      */
     @Override
     public Model set(Model model, Nested property) {
-        return before.set(model, after.set(before.get(model), property));
+        return before.set(model, after.set(before.get(model).get(), property));
     }
 }

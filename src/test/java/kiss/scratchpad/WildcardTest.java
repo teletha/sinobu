@@ -34,7 +34,7 @@ public class WildcardTest {
     public void wildcardRight() throws Exception {
         assert match("benchmarktest.java", "*.java");
         assert !match("short", "*patternIsLongerThanInputValue");
-        assert !match("Value", "*patternIsLongerThanInputValue");
+        assert !match("val", "*patternIsLongerThanInputValue");
     }
 
     @Test

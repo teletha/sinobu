@@ -7,31 +7,25 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.core;
-
+package kiss.icy;
 
 /**
- * @version 2015/04/17 23:34:25
+ * @version 2015/04/19 21:53:01
  */
-public class Person {
+public class Group {
 
+    /** The leader. */
+    public final Person leader;
+
+    /** The group name. */
     public final String name;
 
-    public final int age;
-
     /**
+     * @param leader
      * @param name
      */
-    Person(String name, int age) {
+    public Group(Person leader, String name) {
+        this.leader = leader;
         this.name = name;
-        this.age = age;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return "Person [name=" + name + ", age=" + age + "]";
     }
 }

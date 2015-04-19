@@ -9,6 +9,8 @@
  */
 package kiss.core;
 
+import java.util.Optional;
+
 /**
  * @version 2015/04/18 0:30:42
  */
@@ -23,14 +25,22 @@ public class Group {
         this.leader = leader;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "Group [leader=" + leader + "]";
+    }
+
     public static final Lens<Group, Person> _leader_ = new Lens<Group, Person>() {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public Person get(Group model) {
-            return model.leader;
+        public Optional<Person> get(Group model) {
+            return Optional.of(model.leader);
         }
 
         /**

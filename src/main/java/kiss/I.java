@@ -1292,7 +1292,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 Type wrapper = Type.getType(ClassUtil.wrap(clazz));
                 mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
                 mv.visitMethodInsn(INVOKEVIRTUAL, wrapper
-                        .getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
+                        .getInternalName(), clazz.getName() + "val", "()" + type.getDescriptor(), false);
             }
         } else {
             mv.visitTypeInsn(CHECKCAST, type.getInternalName());
