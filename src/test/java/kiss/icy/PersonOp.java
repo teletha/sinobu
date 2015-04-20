@@ -11,10 +11,15 @@ package kiss.icy;
 
 import java.util.function.UnaryOperator;
 
+import kiss.Binary;
+
 /**
  * @version 2015/04/19 19:23:20
  */
 public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
+
+    /** The lens for leader property. */
+    public static final Lens<Person, String> NAME = Lens.of(model -> model.name, (model, value) -> new Person(value, model.age, model.gender));
 
     /** Name property. */
     private String name;
@@ -60,18 +65,6 @@ public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
 
     /**
      * <p>
-     * Assign name property.
-     * </p>
-     * 
-     * @param name
-     * @return
-     */
-    public ModelOperation<PersonOp> nameWas(String name) {
-        return op -> this.name = name;
-    }
-
-    /**
-     * <p>
      * Assign age property.
      * </p>
      * 
@@ -107,8 +100,8 @@ public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
      * 
      * @param name
      */
-    public static ModelOperation<PersonOp> nameIs(String name) {
-        return op -> op.name(name);
+    public static Binary<Lens<Person, String>, String> nameIs(String name) {
+        return new Binary(NAME, name);
     }
 
     /**
@@ -136,5 +129,11 @@ public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
      * @version 2015/04/20 16:57:34
      */
     public static interface Name extends UnaryOperator<String> {
+    }
+
+    /**
+     * @version 2015/04/20 16:57:34
+     */
+    public static interface Age extends UnaryOperator<Integer> {
     }
 }

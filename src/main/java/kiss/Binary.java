@@ -24,7 +24,7 @@ public class Binary<Param1, Param2> {
      * @param param1
      * @param param2
      */
-    Binary(Param1 param1, Param2 param2) {
+    public Binary(Param1 param1, Param2 param2) {
         this.a = param1;
         this.e = param2;
     }

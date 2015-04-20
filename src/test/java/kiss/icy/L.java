@@ -9,8 +9,7 @@
  */
 package kiss.icy;
 
-import java.util.function.Function;
-
+import kiss.Binary;
 import kiss.I;
 
 /**
@@ -37,8 +36,15 @@ public class L {
         return ops.build();
     }
 
-    public static <M, P1, P2> M operate(M model, Function<P1, Function<P2, P2>> setter) {
-        return null;
+    public static <M, P> M operate(M model, Lens<M, P> lens, P value) {
+        return lens.set(model, value);
     }
 
+    public static <M, P1, P2> M operate(M model, Lens<M, P1> lens1, Lens<P1, P2> lens2, P2 value) {
+        return operate(model, lens1.then(lens2), value);
+    }
+
+    public static <M, P> M operate(M model, Binary<Lens<M, P>, P> lens) {
+        return lens.a.set(model, lens.e);
+    }
 }

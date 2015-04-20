@@ -11,10 +11,9 @@ package kiss.icy;
 
 import static kiss.icy.GroupOp.*;
 import static kiss.icy.PersonOp.*;
+import kiss.I;
 
 import org.junit.Test;
-
-import kiss.I;
 
 /**
  * @version 2015/04/19 19:25:09
@@ -45,10 +44,10 @@ public class ModelTest {
         assert person.age == 20;
         assert person.gender == Gender.Male;
 
-        person = L.operate(person, nameIs("New Name"), ageIs(30));
-        assert person.name.equals("New Name");
-        assert person.age == 30;
-        assert person.gender == Gender.Male;
+        // person = L.operate(person, nameIs("New Name"), ageIs(30));
+        // assert person.name.equals("New Name");
+        // assert person.age == 30;
+        // assert person.gender == Gender.Male;
     }
 
     @Test
@@ -61,7 +60,10 @@ public class ModelTest {
         assert group.leader.name.equals("Change");
         assert group.leader.age == 20;
 
-        group = L.operate(group, leader -> name -> "Set");
+        group = L.operate(group, LEADER, NAME, "Set");
         assert group.leader.name.equals("Set");
+
+        group = L.operate(group, leader(nameIs("Next")));
+        assert group.leader.name.equals("Next");
     }
 }

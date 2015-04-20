@@ -40,6 +40,35 @@ public interface Lens<M, V> {
 
     /**
      * <p>
+     * Compose {@link Lens}.
+     * </p>
+     * 
+     * @param lens
+     * @return
+     */
+    public default <P> Lens<M, P> then(Lens<V, P> lens) {
+        return new Lens<M, P>() {
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public P get(M model) {
+                return lens.get(Lens.this.get(model));
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public M set(M model, P property) {
+                return Lens.this.set(model, lens.set(Lens.this.get(model), property));
+            }
+        };
+    }
+
+    /**
+     * <p>
      * Helper function to create lens easily.
      * </p>
      * 

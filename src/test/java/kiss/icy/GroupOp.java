@@ -9,10 +9,7 @@
  */
 package kiss.icy;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
-
+import kiss.Binary;
 import kiss.I;
 
 /**
@@ -20,9 +17,8 @@ import kiss.I;
  */
 public class GroupOp<M extends Group> implements ModelOperationSet<Group> {
 
-    // /** The lens for leader property. */
-    // public static final Lens<Group, Person> _leader_ = Lens.of(model -> model.leader, (model,
-    // value) -> );
+    /** The lens for leader property. */
+    public static final Lens<Group, Person> LEADER = Lens.of(model -> model.leader, (model, value) -> new Group(value, model.name));
 
     /** Name property. */
     private String name;
@@ -36,15 +32,6 @@ public class GroupOp<M extends Group> implements ModelOperationSet<Group> {
     @Override
     public Group build() {
         return new Group(leader, name);
-    }
-
-    /**
-     * @param object
-     * @param object2
-     * @return
-     */
-    private static Lens<Group, Person> of(Function<Group, Person> object, BiFunction<GroupOp, Person, GroupOp> object2) {
-        return null;
     }
 
     /**
@@ -130,8 +117,8 @@ public class GroupOp<M extends Group> implements ModelOperationSet<Group> {
         };
     }
 
-    public static PersonOp leader() {
-        return (PersonOp) I.find(ModelOperationSet.class, Person.class);
+    public static <P> Binary<Lens<Group, P>, P> leader(Binary<Lens<Person, P>, P> property) {
+        return property.a(LEADER.then(property.a));
     }
 
     /**
@@ -141,11 +128,5 @@ public class GroupOp<M extends Group> implements ModelOperationSet<Group> {
      */
     public static Group with(String name, Person leader) {
         return new GroupOp().name(name).leader(leader).build();
-    }
-
-    /**
-     * @version 2015/04/20 16:58:49
-     */
-    public static interface Leader extends UnaryOperator<Person> {
     }
 }
