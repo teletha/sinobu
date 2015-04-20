@@ -9,6 +9,8 @@
  */
 package kiss.icy;
 
+import java.util.function.UnaryOperator;
+
 /**
  * @version 2015/04/19 19:23:20
  */
@@ -54,6 +56,18 @@ public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
 
         // Chainable API
         return this;
+    }
+
+    /**
+     * <p>
+     * Assign name property.
+     * </p>
+     * 
+     * @param name
+     * @return
+     */
+    public ModelOperation<PersonOp> nameWas(String name) {
+        return op -> this.name = name;
     }
 
     /**
@@ -116,5 +130,11 @@ public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
      */
     public static Person with(String name, int age, Gender gender) {
         return new PersonOp().name(name).age(age).gender(gender).build();
+    }
+
+    /**
+     * @version 2015/04/20 16:57:34
+     */
+    public static interface Name extends UnaryOperator<String> {
     }
 }

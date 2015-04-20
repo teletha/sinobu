@@ -9,6 +9,8 @@
  */
 package kiss.icy;
 
+import java.util.function.Function;
+
 import kiss.I;
 
 /**
@@ -34,4 +36,9 @@ public class L {
 
         return ops.build();
     }
+
+    public static <M, P1, P2> M operate(M model, Function<P1, Function<P2, P2>> setter) {
+        return null;
+    }
+
 }
