@@ -11,9 +11,11 @@ package kiss.icy;
 
 import static kiss.icy.GroupOp.*;
 import static kiss.icy.PersonOp.*;
-import kiss.I;
+import static kiss.icy.Seq.*;
 
 import org.junit.Test;
+
+import kiss.I;
 
 /**
  * @version 2015/04/19 19:25:09
@@ -53,7 +55,7 @@ public class ModelTest {
     @Test
     public void changeNestedValue() throws Exception {
         Person person = PersonOp.with("Name", 20, Gender.Male);
-        Group group = GroupOp.with("NPC", person);
+        Group group = GroupOp.with("NPC", person, null);
         assert group.leader.name.equals("Name");
 
         group = L.operate(group, leader(nameIs("Change")));
@@ -65,5 +67,22 @@ public class ModelTest {
 
         group = L.operate(group, leader(nameIs("Next")));
         assert group.leader.name.equals("Next");
+    }
+
+    @Test
+    public void addToSeq() {
+        Person person = PersonOp.with("Name", 20, Gender.Male);
+        Group group = GroupOp.with("NPC", person, Seq.of(person));
+        assert group.members.head().name.equals("Name");
+
+        Person newer = PersonOp.with("Newer", 21, Gender.Female);
+
+        group = L.operate(group, MEMBERS, ADD(0), newer);
+        assert group.members.head().name.equals("Newer");
+        assert group.members.tail().name.equals("Name");
+
+        group = L.operate(group, MEMBERS, NAME, name -> name.toUpperCase());
+        assert group.members.head().name.equals("NEWER");
+        assert group.members.tail().name.equals("NAME");
     }
 }

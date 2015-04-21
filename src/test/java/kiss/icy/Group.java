@@ -9,7 +9,6 @@
  */
 package kiss.icy;
 
-
 /**
  * @version 2015/04/19 21:53:01
  */
@@ -21,12 +20,15 @@ public class Group {
     /** The group name. */
     public final String name;
 
+    public final Seq<Person> members;
+
     /**
      * @param leader
      * @param name
      */
-    public Group(Person leader, String name) {
+    public Group(Person leader, String name, Seq<Person> members) {
         this.leader = leader;
         this.name = name;
+        this.members = members;
     }
 }

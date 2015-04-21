@@ -18,7 +18,12 @@ import kiss.I;
 public class GroupOp<M extends Group> implements ModelOperationSet<Group> {
 
     /** The lens for leader property. */
-    public static final Lens<Group, Person> LEADER = Lens.of(model -> model.leader, (model, value) -> new Group(value, model.name));
+    public static final Lens<Group, Person> LEADER = Lens
+            .of(model -> model.leader, (model, value) -> new Group(value, model.name, model.members));
+
+    /** The lens for member property. */
+    public static final Lens<Group, Seq<Person>> MEMBERS = Lens
+            .of(model -> model.members, (model, value) -> new Group(model.leader, model.name, value));
 
     /** Name property. */
     private String name;
@@ -26,12 +31,15 @@ public class GroupOp<M extends Group> implements ModelOperationSet<Group> {
     /** Leader property. */
     private Person leader;
 
+    /** Member property. */
+    private Seq<Person> members;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public Group build() {
-        return new Group(leader, name);
+        return new Group(leader, name, members);
     }
 
     /**
@@ -90,6 +98,21 @@ public class GroupOp<M extends Group> implements ModelOperationSet<Group> {
 
     /**
      * <p>
+     * Assign member property.
+     * </p>
+     * 
+     * @param members
+     * @return
+     */
+    public GroupOp members(Seq<Person> members) {
+        this.members = members;
+
+        // Chainable API
+        return this;
+    }
+
+    /**
+     * <p>
      * Create operation.
      * </p>
      * 
@@ -126,7 +149,7 @@ public class GroupOp<M extends Group> implements ModelOperationSet<Group> {
      * @param leader
      * @return
      */
-    public static Group with(String name, Person leader) {
-        return new GroupOp().name(name).leader(leader).build();
+    public static Group with(String name, Person leader, Seq<Person> members) {
+        return new GroupOp().name(name).leader(leader).members(members).build();
     }
 }
