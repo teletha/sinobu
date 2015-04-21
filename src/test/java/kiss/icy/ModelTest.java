@@ -84,5 +84,9 @@ public class ModelTest {
         group = L.operate(group, MEMBERS, NAME, name -> name.toUpperCase());
         assert group.members.head().name.equals("NEWER");
         assert group.members.tail().name.equals("NAME");
+
+        group = L.operate(group, MEMBERS, AGE, age -> age + 10);
+        assert group.members.head().age == 31;
+        assert group.members.tail().age == 30;
     }
 }

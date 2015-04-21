@@ -19,7 +19,12 @@ import kiss.Binary;
 public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
 
     /** The lens for leader property. */
-    public static final Lens<Person, String> NAME = Lens.of(model -> model.name, (model, value) -> new Person(value, model.age, model.gender));
+    public static final Lens<Person, String> NAME = Lens
+            .of(model -> model.name, (model, value) -> new Person(value, model.age, model.gender));
+
+    /** The lens for age property. */
+    public static final Lens<Person, Integer> AGE = Lens
+            .of(model -> model.age, (model, value) -> new Person(model.name, value, model.gender));
 
     /** Name property. */
     private String name;
