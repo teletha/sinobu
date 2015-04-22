@@ -19,12 +19,10 @@ import kiss.Binary;
 public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
 
     /** The lens for leader property. */
-    public static final Lens<Person, String> NAME = Lens
-            .of(model -> model.name, (model, value) -> new Person(value, model.age, model.gender));
+    public static final Lens<Person, String> NAME = Lens.of(model -> model.name, (model, value) -> new Person(value, model.age, model.gender));
 
     /** The lens for age property. */
-    public static final Lens<Person, Integer> AGE = Lens
-            .of(model -> model.age, (model, value) -> new Person(model.name, value, model.gender));
+    public static final Lens<Person, Integer> AGE = Lens.of(model -> model.age, (model, value) -> new Person(model.name, value, model.gender));
 
     /** Name property. */
     private String name;
@@ -34,6 +32,22 @@ public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
 
     /** Gender property. */
     private Gender gender;
+
+    private final Lens lens;
+
+    /**
+     * 
+     */
+    public PersonOp() {
+        this.lens = null;
+    }
+
+    /**
+     * @param lens
+     */
+    public PersonOp(Lens<?, Person> lens) {
+        this.lens = lens;
+    }
 
     /**
      * {@inheritDoc}
@@ -66,6 +80,10 @@ public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
 
         // Chainable API
         return this;
+    }
+
+    public <M> UnaryOperator<M> name2(String name) {
+        return model -> (M) lens.then(NAME).set(model, name);
     }
 
     /**
@@ -128,17 +146,5 @@ public class PersonOp<M extends Person> implements ModelOperationSet<Person> {
      */
     public static Person with(String name, int age, Gender gender) {
         return new PersonOp().name(name).age(age).gender(gender).build();
-    }
-
-    /**
-     * @version 2015/04/20 16:57:34
-     */
-    public static interface Name extends UnaryOperator<String> {
-    }
-
-    /**
-     * @version 2015/04/20 16:57:34
-     */
-    public static interface Age extends UnaryOperator<Integer> {
     }
 }

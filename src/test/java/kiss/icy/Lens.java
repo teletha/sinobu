@@ -17,6 +17,25 @@ import java.util.function.Function;
  */
 public interface Lens<M, V> {
 
+    Lens Φ = new Lens() {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Object get(Object model) {
+            return model;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Object set(Object model, Object property) {
+            return model;
+        }
+    };
+
     /**
      * <p>
      * Getter.

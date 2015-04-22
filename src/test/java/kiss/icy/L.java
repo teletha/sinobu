@@ -14,7 +14,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import kiss.Binary;
 import kiss.I;
 
 /**
@@ -58,7 +57,7 @@ public class L {
         return operate(model, lens1.then(lens2), value);
     }
 
-    public static <M, P> M operate(M model, Binary<Lens<M, P>, P> lens) {
-        return lens.a.set(model, lens.e);
+    public static <M, P1> M operate(M model, UnaryOperator<M> a) {
+        return a.apply(model);
     }
 }

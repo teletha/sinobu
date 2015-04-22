@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  */
 public class Seq<E> {
 
-    private LinkedList<E> list;
+    protected LinkedList<E> list;
 
     Seq(LinkedList<E> list) {
         this.list = list;
@@ -60,7 +60,7 @@ public class Seq<E> {
             list.add(index, value);
 
             return new Seq(list);
-        } );
+        });
     }
 
 }
