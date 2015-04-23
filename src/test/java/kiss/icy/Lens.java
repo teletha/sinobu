@@ -56,6 +56,20 @@ public interface Lens<M, V> {
      * @return
      */
     M set(M model, V property);
+    
+    /**
+     * <p>
+     * Setter by using current value.
+     * </p>
+     * <p></p>
+     * 
+     * @param model
+     * @param property
+     * @return
+     */
+    default M set(M model, Function<V, V> property) {
+        return set(model, property.apply(get(model)));
+    }
 
     /**
      * <p>

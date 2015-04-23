@@ -18,10 +18,12 @@ import java.util.function.UnaryOperator;
 public class PersonOp2<Model> extends ModelOperator<Model, Person> {
 
     /** The lens for leader property. */
-    private static final Lens<Person, String> NAME = Lens.of(model -> model.name, (model, value) -> new Person(value, model.age, model.gender));
+    private static final Lens<Person, String> NAME = Lens
+            .of(model -> model.name, (model, value) -> new Person(value, model.age, model.gender));
 
     /** The lens for age property. */
-    private static final Lens<Person, Integer> AGE = Lens.of(model -> model.age, (model, value) -> new Person(model.name, value, model.gender));
+    private static final Lens<Person, Integer> AGE = Lens
+            .of(model -> model.age, (model, value) -> new Person(model.name, value, model.gender));
 
     /**
      * @param lens
@@ -50,6 +52,18 @@ public class PersonOp2<Model> extends ModelOperator<Model, Person> {
      * @return
      */
     public Setter<Model> name(String name) {
+        return model -> lens.then(NAME).set(model, name);
+    }
+
+    /**
+     * <p>
+     * Setter kind.
+     * </p>
+     * 
+     * @param name
+     * @return
+     */
+    public Setter<Model> name(UnaryOperator<String> name) {
         return model -> lens.then(NAME).set(model, name);
     }
 

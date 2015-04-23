@@ -9,19 +9,22 @@
  */
 package kiss.icy;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
  * @version 2015/04/22 0:32:58
  */
-public class SeqOp<M, V> extends ModelOperator<M, Seq<V>> {
+public class SeqOp<M, V, O extends ModelOperator<M, V>> extends ModelOperator<M, Seq<V>> {
+
+    private O sub;
 
     /**
      * @param lens
      */
-    public SeqOp(Lens<M, Seq<V>> lens) {
+    public SeqOp(Lens<M, Seq<V>> lens, O sub) {
         super(lens);
+
+        this.sub = sub;
     }
 
     public Setter<M> add(int index, V item) {
@@ -34,41 +37,7 @@ public class SeqOp<M, V> extends ModelOperator<M, Seq<V>> {
         };
     }
 
-    public PersonOp2<M> all() {
-        return new PersonOp2<M>(new Lens<M, Person>() {
-
-            private Iterator<V> iterator;
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Person get(M model) {
-                if (iterator == null) {
-                    iterator = lens.get(model).list.iterator();
-                }
-
-                if (iterator.hasNext()) {
-                    return iterator.next();
-                }
-                return;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public M set(M model, Person property) {
-                Seq<V> seq = lens.get(model);
-                LinkedList<V> list = new LinkedList();
-
-                for (V value : seq.list) {
-                    list.add();
-                }
-
-                return lens.set(model, new Seq(list));
-            }
-
-        });
+    public O all() {
+        return sub;
     }
 }
