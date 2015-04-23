@@ -40,26 +40,7 @@ public class GroupOp2<M> extends ModelOperator<M, Group> {
         return new PersonOp2(LEADER);
     }
 
-    public static SeqOp<Group, Person, PersonOp2<Group>> members() {
-        return new SeqOp(MEMBERS, new PersonOp2(new Lens<Group, Person>() {
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Person get(Group model) {
-                System.err.println("Get " + model);
-                return null;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Group set(Group model, Person property) {
-                System.out.println("Set " + model + "  " + property);
-                return null;
-            }
-        }));
+    public static SeqOp<Group, Person, PersonOp2<Person>> members() {
+        return new SeqOp(MEMBERS, new PersonOp2(Lens.Φ));
     }
 }

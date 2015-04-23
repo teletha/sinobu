@@ -32,7 +32,7 @@ public interface Lens<M, V> {
          */
         @Override
         public Object set(Object model, Object property) {
-            return model;
+            return property;
         }
     };
 

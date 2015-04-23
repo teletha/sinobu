@@ -81,6 +81,18 @@ public class PersonOp2<Model> extends ModelOperator<Model, Person> {
 
     /**
      * <p>
+     * Setter operation of the age property.
+     * </p>
+     * 
+     * @param value
+     * @return
+     */
+    public static Setter<Person> age2(int value) {
+        return model -> AGE.set(model, value);
+    }
+
+    /**
+     * <p>
      * Setter operation of the name property.
      * </p>
      * 

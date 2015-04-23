@@ -11,9 +11,10 @@ package kiss.icy;
 
 import static kiss.icy.GroupOp2.*;
 import static kiss.icy.PersonOp2.*;
-import kiss.I;
 
 import org.junit.Test;
+
+import kiss.I;
 
 /**
  * @version 2015/04/19 19:25:09
@@ -44,10 +45,10 @@ public class ModelTest {
         assert person.age == 20;
         assert person.gender == Gender.Male;
 
-        // person = L.operate(person, nameIs("New Name"), ageIs(30));
-        // assert person.name.equals("New Name");
-        // assert person.age == 30;
-        // assert person.gender == Gender.Male;
+        person = L2.operate(person, name2("New Name"), age2(30));
+        assert person.name.equals("New Name");
+        assert person.age == 30;
+        assert person.gender == Gender.Male;
     }
 
     @Test
@@ -120,12 +121,13 @@ public class ModelTest {
         assert group.members.head().name.equals("Newer");
         assert group.members.tail().name.equals("Name");
 
-        group = L.operate(group, members().all().name(name -> name.toUpperCase()));
+        group = L2.operate(group, members().all(op -> op.name(name -> name.toUpperCase())));
         assert group.members.head().name.equals("NEWER");
         assert group.members.tail().name.equals("NAME");
 
-        // group = L.operate(group, MEMBERS, AGE, age -> age + 10);
-        // assert group.members.head().age == 31;
-        // assert group.members.tail().age == 30;
+        group = L2.operate(group, members()
+                .select(e -> e.gender == Gender.Male, op -> op.name(name -> name.toLowerCase())));
+        assert group.members.head().name.equals("NEWER");
+        assert group.members.tail().name.equals("name");
     }
 }
