@@ -14,5 +14,5 @@ import java.util.function.UnaryOperator;
 /**
  * @version 2015/04/21 23:25:59
  */
-public interface Setter<M> extends UnaryOperator<M> {
+public interface Operation<M> extends UnaryOperator<M> {
 }

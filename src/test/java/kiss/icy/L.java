@@ -14,11 +14,11 @@ package kiss.icy;
  */
 public class L {
 
-    public static <M, P> M operate(M model, Setter<M> setter) {
+    public static <M, P> M operate(M model, Operation<M> setter) {
         return setter.apply(model);
     }
 
-    public static <M> M operate(M model, Setter<M> operation1, Setter<M> operation2) {
+    public static <M> M operate(M model, Operation<M> operation1, Operation<M> operation2) {
         model = operate(model, operation1);
         model = operate(model, operation2);
 

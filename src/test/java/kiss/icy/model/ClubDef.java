@@ -9,20 +9,19 @@
  */
 package kiss.icy.model;
 
-import kiss.icy.Gender;
+import java.util.List;
+
 import kiss.icy.Icy;
 
 /**
- * @version 2015/04/24 16:35:11
+ * @version 2015/04/25 11:58:21
  */
 @Icy
-class PersonDef {
+public class ClubDef {
 
     public String name;
 
-    public int age;
+    public Person leader;
 
-    public Gender gender;
-
-    public Club club;
+    public List<Person> member;
 }

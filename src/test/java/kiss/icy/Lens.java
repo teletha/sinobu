@@ -48,7 +48,7 @@ public interface Lens<M, V> {
 
     /**
      * <p>
-     * Setter.
+     * Operation.
      * </p>
      * 
      * @param model
@@ -59,7 +59,7 @@ public interface Lens<M, V> {
     
     /**
      * <p>
-     * Setter by using current value.
+     * Operation by using current value.
      * </p>
      * <p></p>
      * 

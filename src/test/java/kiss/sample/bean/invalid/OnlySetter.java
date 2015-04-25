@@ -18,17 +18,17 @@ package kiss.sample.bean.invalid;
 public interface OnlySetter {
 
     /**
-     * Setter.
+     * Operation.
      */
     void setString(String value);
 
     /**
-     * Setter.
+     * Operation.
      */
     void setInt(int value);
 
     /**
-     * Setter.
+     * Operation.
      */
     void setMyself(OnlySetter value);
 }

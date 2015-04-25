@@ -45,61 +45,61 @@ public class PersonOp2<Model> extends ModelOperator<Model, Person> {
 
     /**
      * <p>
-     * Setter kind.
+     * Operation kind.
      * </p>
      * 
      * @param name
      * @return
      */
-    public Setter<Model> name(String name) {
+    public Operation<Model> name(String name) {
         return model -> lens.then(NAME).set(model, name);
     }
 
     /**
      * <p>
-     * Setter kind.
+     * Operation kind.
      * </p>
      * 
      * @param name
      * @return
      */
-    public Setter<Model> name(UnaryOperator<String> name) {
+    public Operation<Model> name(UnaryOperator<String> name) {
         return model -> lens.then(NAME).set(model, name);
     }
 
     /**
      * <p>
-     * Setter operation of the name property.
+     * Operation operation of the name property.
      * </p>
      * 
      * @param name
      * @return
      */
-    public static Setter<Person> name2(String name) {
+    public static Operation<Person> name2(String name) {
         return model -> NAME.set(model, name);
     }
 
     /**
      * <p>
-     * Setter operation of the age property.
+     * Operation operation of the age property.
      * </p>
      * 
      * @param value
      * @return
      */
-    public static Setter<Person> age2(int value) {
+    public static Operation<Person> age2(int value) {
         return model -> AGE.set(model, value);
     }
 
     /**
      * <p>
-     * Setter operation of the name property.
+     * Operation operation of the name property.
      * </p>
      * 
      * @param name
      * @return
      */
-    public static Setter<Person> name2(UnaryOperator<String> name) {
+    public static Operation<Person> name2(UnaryOperator<String> name) {
         return model -> NAME.set(model, name.apply(NAME.get(model)));
     }
 }

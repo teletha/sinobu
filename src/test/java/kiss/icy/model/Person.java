@@ -14,7 +14,7 @@ import java.util.function.UnaryOperator;
 import kiss.icy.Gender;
 import kiss.icy.Lens;
 import kiss.icy.ModelOperator;
-import kiss.icy.Setter;
+import kiss.icy.Operation;
 
 /**
  * @version 2015/04/24 16:34:57
@@ -22,40 +22,187 @@ import kiss.icy.Setter;
 public class Person {
 
     /** The lens for leader property. */
-    private static final Lens<Person, String> NAME = Lens
-            .of(model -> model.name, (model, value) -> new Person(value, model.age, model.gender));
+    private static final Lens<Person, String> NAME = Lens.of(model -> model.model.name, (model, value) -> model.name(value));
 
     /** The lens for age property. */
-    private static final Lens<Person, Integer> AGE = Lens
-            .of(model -> model.age, (model, value) -> new Person(model.name, value, model.gender));
+    private static final Lens<Person, Integer> AGE = Lens.of(model -> model.model.age, (model, value) -> model.age(value));
 
-    /** The name getter. */
-    public final String name;
-
-    /** The age getter. */
-    public final int age;
-
-    /** The gender getter. */
-    public final Gender gender;
+    /** The current model. */
+    final PersonDef model;
 
     /**
-     * @param name
-     * @param age
-     * @param gender
+     * <p>
+     * Create model with the specified property holder.
+     * </p>
+     * 
+     * @param model
      */
-    private Person(String name, int age, Gender gender) {
-        this.name = name;
-        this.age = age;
-        this.gender = gender;
+    private Person(PersonDef model) {
+        this.model = model;
+    }
+
+    /**
+     * <p>
+     * Retrieve name property.
+     * </p>
+     * 
+     * @return A name property
+     */
+    public String name() {
+        return model.name;
+    }
+
+    /**
+     * <p>
+     * Create new model with the specified property.
+     * </p>
+     * 
+     * @param value A new property.
+     * @return A created model.
+     */
+    public Person name(String value) {
+        if (model.name == value) {
+            return this;
+        }
+        return with(this).name(value).ice();
+    }
+
+    /**
+     * <p>
+     * Retrieve age property.
+     * </p>
+     * 
+     * @return A age property
+     */
+    public int age() {
+        return model.age;
+    }
+
+    /**
+     * <p>
+     * Create new model with the specified property.
+     * </p>
+     * 
+     * @param value A new property.
+     * @return A created model.
+     */
+    public Person age(int value) {
+        if (model.age == value) {
+            return this;
+        }
+        return with(this).age(value).ice();
+    }
+
+    /**
+     * <p>
+     * Retrieve gender property.
+     * </p>
+     * 
+     * @return A gender property
+     */
+    public Gender gender() {
+        return model.gender;
+    }
+
+    /**
+     * <p>
+     * Create new model with the specified property.
+     * </p>
+     * 
+     * @param value A new property.
+     * @return A created model.
+     */
+    public Person gender(Gender value) {
+        if (model.gender == value) {
+            return this;
+        }
+        return with(this).gender(value).ice();
+    }
+
+    /**
+     * <p>
+     * Retrieve club property.
+     * </p>
+     * 
+     * @return A club property
+     */
+    public Club club() {
+        return model.club;
+    }
+
+    /**
+     * <p>
+     * Create new model with the specified property.
+     * </p>
+     * 
+     * @param value A new property.
+     * @return A created model.
+     */
+    public Person club(Club value) {
+        if (model.club == value) {
+            return this;
+        }
+        return with(this).club(value).ice();
+    }
+
+    /**
+     * <p>
+     * Create new immutable model.
+     * </p>
+     * 
+     * @return An immutable model.
+     */
+    public final Person ice() {
+        return this instanceof Melty ? new Person(model) : this;
+    }
+
+    /**
+     * <p>
+     * Create new mutable model.
+     * </p>
+     * 
+     * @return An immutable model.
+     */
+    public final Person melt() {
+        return this instanceof Melty ? this : new Melty(this);
+    }
+
+    /**
+     * <p>
+     * Create model builder without base model.
+     * </p>
+     * 
+     * @return A new model builder.
+     */
+    public static final Person with() {
+        return with(null);
+    }
+
+    /**
+     * <p>
+     * Create model builder using the specified definition as base model.
+     * </p>
+     * 
+     * @return A new model builder.
+     */
+    public static final Person with(Person base) {
+        return new Melty(base);
     }
 
     /**
      * @version 2015/04/24 16:41:14
      */
-    public static final class Builder {
+    private static final class Melty extends Person {
 
-        /** The current building instance. */
-        private PersonDef instance;
+        /**
+         * @param name
+         * @param age
+         * @param gender
+         * @param club
+         */
+        private Melty(Person base) {
+            super(base == null ? new PersonDef() : base.model);
+        }
 
         /**
          * <p>
@@ -65,8 +212,9 @@ public class Person {
          * @param name A property to assign.
          * @return Chainable API.
          */
-        public Builder name(String name) {
-            instance.name = name;
+        @Override
+        public Melty name(String name) {
+            model.name = name;
 
             return this;
         }
@@ -79,8 +227,9 @@ public class Person {
          * @param age A property to assign.
          * @return Chainable API.
          */
-        public Builder age(int age) {
-            instance.age = age;
+        @Override
+        public Melty age(int age) {
+            model.age = age;
 
             return this;
         }
@@ -93,21 +242,26 @@ public class Person {
          * @param gender A property to assign.
          * @return Chainable API.
          */
-        public Builder gender(Gender gender) {
-            instance.gender = gender;
+        @Override
+        public Melty gender(Gender gender) {
+            model.gender = gender;
 
             return this;
         }
 
         /**
          * <p>
-         * Create new immutable model with assigned properties.
+         * Assign club property.
          * </p>
          * 
-         * @return A created immutable model.
+         * @param value A property to assign.
+         * @return Chainable API.
          */
-        public Person build() {
-            return new Person(instance.name, instance.age, instance.gender);
+        @Override
+        public Melty club(Club value) {
+            model.club = value;
+
+            return this;
         }
     }
 
@@ -119,31 +273,31 @@ public class Person {
         /**
          * @param lens
          */
-        private Operator(Lens<M, Person> lens) {
+        public Operator(Lens<M, Person> lens) {
             super(lens);
         }
 
         /**
          * <p>
-         * Setter kind.
+         * Operation kind.
          * </p>
          * 
          * @param name
          * @return
          */
-        public Setter<M> name(String name) {
+        public Operation<M> name(String name) {
             return model -> lens.then(NAME).set(model, name);
         }
 
         /**
          * <p>
-         * Setter kind.
+         * Operation kind.
          * </p>
          * 
          * @param name
          * @return
          */
-        public Setter<M> name(UnaryOperator<String> name) {
+        public Operation<M> name(UnaryOperator<String> name) {
             return model -> lens.then(NAME).set(model, name);
         }
     }

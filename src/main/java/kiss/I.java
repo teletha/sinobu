@@ -128,7 +128,7 @@ import kiss.model.Property;
  * <p>
  * Sinobu supports Constructor Injection <em>only</em>. The Constructor Injection is a dependency
  * injection variant where an object gets all its dependencies via the constructor. We can say that
- * there is no possibility that Setter Injection, Field Injection and Interface Injection will be
+ * there is no possibility that Operation Injection, Field Injection and Interface Injection will be
  * supported in the days to come. This is one of the most important policy in Sinobu. The following
  * is a benefit of Constructor Injection:
  * </p>

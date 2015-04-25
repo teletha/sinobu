@@ -30,7 +30,7 @@ public class SeqOp<M, V, O extends ModelOperator<V, ?>, O2 extends ModelOperator
         this.sub = sub;
     }
 
-    public Setter<M> add(int index, V item) {
+    public Operation<M> add(int index, V item) {
         return model -> {
             Seq<V> seq = lens.get(model);
             LinkedList list = new LinkedList(seq.list);
@@ -40,11 +40,11 @@ public class SeqOp<M, V, O extends ModelOperator<V, ?>, O2 extends ModelOperator
         };
     }
 
-    public Setter<M> all(Function<O, Setter<V>> operator) {
+    public Operation<M> all(Function<O, Operation<V>> operator) {
         return model -> {
             Seq<V> seq = lens.get(model);
             LinkedList<V> list = new LinkedList();
-            Setter<V> setter = operator.apply(sub);
+            Operation<V> setter = operator.apply(sub);
 
             for (V value : seq.list) {
                 list.add(L.operate(value, setter));
@@ -59,11 +59,11 @@ public class SeqOp<M, V, O extends ModelOperator<V, ?>, O2 extends ModelOperator
      * @param object2
      * @return
      */
-    public Setter<M> select(Predicate<V> condition, Function<O, Setter<V>> operator) {
+    public Operation<M> select(Predicate<V> condition, Function<O, Operation<V>> operator) {
         return model -> {
             Seq<V> seq = lens.get(model);
             LinkedList<V> list = new LinkedList();
-            Setter<V> setter = operator.apply(sub);
+            Operation<V> setter = operator.apply(sub);
 
             for (V value : seq.list) {
                 if (condition.test(value)) {
