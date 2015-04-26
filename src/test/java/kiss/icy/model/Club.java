@@ -21,13 +21,13 @@ import kiss.icy.Operation;
 public class Club {
 
     /** The lens for leader property. */
-    private static final Lens<Club, String> NAME = Lens.of(model -> model.model.name, (model, value) -> model.name(value));
+    public static final Lens<Club, String> NAME = Lens.of(Club::name, Club::name);
 
     /** The lens for leader property. */
-    private static final Lens<Club, Person> LEADER = Lens.of(model -> model.model.leader, (model, value) -> model.leader(value));
+    public static final Lens<Club, Person> LEADER = Lens.of(Club::leader, Club::leader);
 
     /** The current model. */
-    final ClubDef model;
+    ClubDef model;
 
     /**
      * <p>
@@ -36,8 +36,7 @@ public class Club {
      * 
      * @param model
      */
-    private Club(ClubDef model) {
-        this.model = model;
+    private Club() {
     }
 
     /**
@@ -60,7 +59,7 @@ public class Club {
      * @return A created model.
      */
     public Club name(String value) {
-        if (model.name == value) {
+        if (model.name.equals(value)) {
             return this;
         }
         return with(this).name(value).ice();
@@ -86,7 +85,7 @@ public class Club {
      * @return A created model.
      */
     public Club leader(Person value) {
-        if (model.leader == value) {
+        if (model.leader.equals(value)) {
             return this;
         }
         return with(this).leader(value).ice();
@@ -99,8 +98,8 @@ public class Club {
      * 
      * @return An immutable model.
      */
-    public final Club ice() {
-        return this instanceof Melty ? new Club(model) : this;
+    public Club ice() {
+        return this;
     }
 
     /**
@@ -110,8 +109,8 @@ public class Club {
      * 
      * @return An immutable model.
      */
-    public final Club melt() {
-        return this instanceof Melty ? this : new Melty(this);
+    public Club melt() {
+        return new Melty(this);
     }
 
     /**
@@ -137,6 +136,24 @@ public class Club {
     }
 
     /**
+     * @version 2015/04/26 16:49:59
+     */
+    private static final class Icy extends Club {
+
+        /**
+         * 
+         */
+        private Icy(Club base) {
+            model = new ClubDef();
+
+            if (base != null) {
+                model.name = base.name();
+                model.leader = base.leader().ice();
+            }
+        }
+    }
+
+    /**
      * @version 2015/04/24 16:41:14
      */
     private static final class Melty extends Club {
@@ -148,7 +165,11 @@ public class Club {
          * @param club
          */
         private Melty(Club base) {
-            super(base == null ? new ClubDef() : base.model);
+            if (base == null) {
+                model = new ClubDef();
+            } else {
+                model = base.model;
+            }
         }
 
         /**
@@ -178,6 +199,22 @@ public class Club {
         public Melty leader(Person value) {
             model.leader = value;
 
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Club ice() {
+            return new Icy(this);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Club melt() {
             return this;
         }
     }

@@ -22,23 +22,23 @@ import kiss.icy.Operation;
 public class Person {
 
     /** The lens for leader property. */
-    private static final Lens<Person, String> NAME = Lens.of(model -> model.model.name, (model, value) -> model.name(value));
+    public static final Lens<Person, String> NAME = Lens.of(Person::name, Person::name);
 
     /** The lens for age property. */
-    private static final Lens<Person, Integer> AGE = Lens.of(model -> model.model.age, (model, value) -> model.age(value));
+    public static final Lens<Person, Integer> AGE = Lens.of(Person::age, Person::age);
 
     /** The current model. */
-    final PersonDef model;
+    final PersonDef def;
 
     /**
      * <p>
      * Create model with the specified property holder.
      * </p>
      * 
-     * @param model
+     * @param def
      */
-    private Person(PersonDef model) {
-        this.model = model;
+    private Person(PersonDef def) {
+        this.def = def;
     }
 
     /**
@@ -49,7 +49,7 @@ public class Person {
      * @return A name property
      */
     public String name() {
-        return model.name;
+        return def.name;
     }
 
     /**
@@ -61,7 +61,7 @@ public class Person {
      * @return A created model.
      */
     public Person name(String value) {
-        if (model.name == value) {
+        if (def.name == value) {
             return this;
         }
         return with(this).name(value).ice();
@@ -75,7 +75,7 @@ public class Person {
      * @return A age property
      */
     public int age() {
-        return model.age;
+        return def.age;
     }
 
     /**
@@ -87,7 +87,7 @@ public class Person {
      * @return A created model.
      */
     public Person age(int value) {
-        if (model.age == value) {
+        if (def.age == value) {
             return this;
         }
         return with(this).age(value).ice();
@@ -101,7 +101,7 @@ public class Person {
      * @return A gender property
      */
     public Gender gender() {
-        return model.gender;
+        return def.gender;
     }
 
     /**
@@ -113,7 +113,7 @@ public class Person {
      * @return A created model.
      */
     public Person gender(Gender value) {
-        if (model.gender == value) {
+        if (def.gender == value) {
             return this;
         }
         return with(this).gender(value).ice();
@@ -127,7 +127,7 @@ public class Person {
      * @return A club property
      */
     public Club club() {
-        return model.club;
+        return def.club;
     }
 
     /**
@@ -139,7 +139,7 @@ public class Person {
      * @return A created model.
      */
     public Person club(Club value) {
-        if (model.club == value) {
+        if (def.club == value) {
             return this;
         }
         return with(this).club(value).ice();
@@ -153,7 +153,7 @@ public class Person {
      * @return An immutable model.
      */
     public final Person ice() {
-        return this instanceof Melty ? new Person(model) : this;
+        return this instanceof Melty ? new Person(def) : this;
     }
 
     /**
@@ -195,13 +195,10 @@ public class Person {
     private static final class Melty extends Person {
 
         /**
-         * @param name
-         * @param age
-         * @param gender
-         * @param club
+         * @param model
          */
-        private Melty(Person base) {
-            super(base == null ? new PersonDef() : base.model);
+        private Melty(Person model) {
+            super(model == null ? new PersonDef() : model.def);
         }
 
         /**
@@ -214,7 +211,7 @@ public class Person {
          */
         @Override
         public Melty name(String name) {
-            model.name = name;
+            def.name = name;
 
             return this;
         }
@@ -229,7 +226,7 @@ public class Person {
          */
         @Override
         public Melty age(int age) {
-            model.age = age;
+            def.age = age;
 
             return this;
         }
@@ -244,7 +241,7 @@ public class Person {
          */
         @Override
         public Melty gender(Gender gender) {
-            model.gender = gender;
+            def.gender = gender;
 
             return this;
         }
@@ -259,7 +256,7 @@ public class Person {
          */
         @Override
         public Melty club(Club value) {
-            model.club = value;
+            def.club = value;
 
             return this;
         }

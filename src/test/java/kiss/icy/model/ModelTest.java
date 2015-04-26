@@ -10,10 +10,10 @@
 package kiss.icy.model;
 
 import static kiss.icy.Gender.*;
-import static kiss.icy.model.Club.Operator.*;
-import kiss.icy.L;
 
 import org.junit.Test;
+
+import kiss.icy.Lens;
 
 /**
  * @version 2015/04/24 22:05:43
@@ -27,11 +27,12 @@ public class ModelTest {
     private static Person YUKINOSITA = Person.with().name("Yukinosita").age(17).gender(Female);
 
     /** The reusable club. */
-    private static Club MINISTRATION = Club.with().name("Housibu").leader(YUKINOSITA).ice();
+    private static Club MINISTRATION = Club.with().name("Housibu").leader(YUKINOSITA);
 
     static {
         HIKIGAYA = HIKIGAYA.club(MINISTRATION).ice();
         YUKINOSITA = YUKINOSITA.club(MINISTRATION).ice();
+        MINISTRATION = MINISTRATION.ice();
     }
 
     @Test
@@ -55,7 +56,8 @@ public class ModelTest {
 
     @Test
     public void changeNestedProperty() throws Exception {
-        Club club = L.operate(MINISTRATION, leader().name("Yukino"));
+        Lens<Club, String> lens = Club.LEADER.then(Person.NAME);
+        Club club = lens.set(MINISTRATION, "Yukino");
         assert club != MINISTRATION;
         assert club.leader() != YUKINOSITA;
         assert club.leader().name().equals("Yukino");
