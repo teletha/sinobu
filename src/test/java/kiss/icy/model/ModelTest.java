@@ -13,8 +13,6 @@ import static kiss.icy.Gender.*;
 
 import org.junit.Test;
 
-import kiss.icy.Operation;
-
 /**
  * @version 2015/04/24 22:05:43
  */
@@ -49,7 +47,7 @@ public class ModelTest {
 
     @Test
     public void changeNestedProperty() {
-        Operation<Club, String> changeLeaderName = Club.Operation.leader().name();
+        Action<Club, String> changeLeaderName = Club.Operation.leader().name();
 
         Club club = MINISTRATION.operate(changeLeaderName, "Yukino");
         assert club != MINISTRATION;

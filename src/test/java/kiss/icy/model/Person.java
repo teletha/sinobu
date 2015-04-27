@@ -279,6 +279,10 @@ public class Person {
             super(lens);
         }
 
+        public Action<M, String> name() {
+            return (model, value) -> lens.then(NAME).set(model, value);
+        }
+
         /**
          * <p>
          * Operation kind.

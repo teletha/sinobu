@@ -9,10 +9,10 @@
  */
 package kiss.icy.model;
 
+import java.util.function.BiFunction;
 
 /**
  * @version 2015/04/27 16:54:50
  */
-public interface Action<M, P> {
-
+public interface Action<M, P> extends BiFunction<M, P, M> {
 }

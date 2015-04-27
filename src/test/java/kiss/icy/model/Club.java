@@ -26,6 +26,8 @@ public class Club {
     /** The lens for leader property. */
     public static final Lens<Club, Person> LEADER = Lens.of(Club::leader, Club::leader);
 
+    public static final Operator<Club> Operation = new Operator(Lens.Φ);
+
     /** The current model. */
     ClubDef model;
 
@@ -115,6 +117,10 @@ public class Club {
 
     public <P> Club operate(Action<Club, P> operation, P value) {
         return operation.apply(this, value);
+    }
+
+    public <P> Club operate(Action<Club, P> operation, UnaryOperator<P> value) {
+        return operation.apply(this, value.apply(operation));
     }
 
     /**
@@ -237,6 +243,17 @@ public class Club {
 
         /**
          * <p>
+         * Router kind.
+         * </p>
+         * 
+         * @return
+         */
+        public Person.Operator<Club> leader() {
+            return new Person.Operator(LEADER);
+        }
+
+        /**
+         * <p>
          * Operation kind.
          * </p>
          * 
@@ -257,17 +274,6 @@ public class Club {
          */
         public Operation<M> leader(UnaryOperator<Person> value) {
             return model -> lens.then(LEADER).set(model, value);
-        }
-
-        /**
-         * <p>
-         * Router kind.
-         * </p>
-         * 
-         * @return
-         */
-        public static Person.Operator<Club> leader() {
-            return new Person.Operator(LEADER);
         }
     }
 }
