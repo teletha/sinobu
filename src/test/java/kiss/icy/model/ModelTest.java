@@ -13,7 +13,7 @@ import static kiss.icy.Gender.*;
 
 import org.junit.Test;
 
-import kiss.icy.Lens;
+import kiss.icy.Operation;
 
 /**
  * @version 2015/04/24 22:05:43
@@ -21,19 +21,13 @@ import kiss.icy.Lens;
 public class ModelTest {
 
     /** The reusable person. */
-    private static Person HIKIGAYA = Person.with().name("Hikigaya").age(17).gender(Male);
+    private static Person HIKIGAYA = Person.with().name("Hikigaya").age(17).gender(Male).ice();
 
     /** The reusable person. */
-    private static Person YUKINOSITA = Person.with().name("Yukinosita").age(17).gender(Female);
+    private static Person YUKINOSITA = Person.with().name("Yukinosita").age(17).gender(Female).ice();
 
     /** The reusable club. */
-    private static Club MINISTRATION = Club.with().name("Housibu").leader(YUKINOSITA);
-
-    static {
-        HIKIGAYA = HIKIGAYA.club(MINISTRATION).ice();
-        YUKINOSITA = YUKINOSITA.club(MINISTRATION).ice();
-        MINISTRATION = MINISTRATION.ice();
-    }
+    private static Club MINISTRATION = Club.with().name("Housibu").leader(YUKINOSITA).ice();
 
     @Test
     public void changeSingleProperty() {
@@ -42,7 +36,6 @@ public class ModelTest {
         assert hikigaya.name().equals("Hatiman");
         assert hikigaya.age() == HIKIGAYA.age();
         assert hikigaya.gender() == HIKIGAYA.gender();
-        assert hikigaya.club() == MINISTRATION;
     }
 
     @Test
@@ -55,10 +48,12 @@ public class ModelTest {
     }
 
     @Test
-    public void changeNestedProperty() throws Exception {
-        Lens<Club, String> lens = Club.LEADER.then(Person.NAME);
-        Club club = lens.set(MINISTRATION, "Yukino");
+    public void changeNestedProperty() {
+        Operation<Club, String> changeLeaderName = Club.Operation.leader().name();
+
+        Club club = MINISTRATION.operate(changeLeaderName, "Yukino");
         assert club != MINISTRATION;
+        assert club.name().equals("Housibu");
         assert club.leader() != YUKINOSITA;
         assert club.leader().name().equals("Yukino");
     }

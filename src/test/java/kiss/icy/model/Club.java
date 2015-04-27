@@ -113,6 +113,10 @@ public class Club {
         return new Melty(this);
     }
 
+    public <P> Club operate(Action<Club, P> operation, P value) {
+        return operation.apply(this, value);
+    }
+
     /**
      * <p>
      * Create model builder without base model.

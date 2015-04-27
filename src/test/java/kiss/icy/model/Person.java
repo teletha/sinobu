@@ -28,17 +28,16 @@ public class Person {
     public static final Lens<Person, Integer> AGE = Lens.of(Person::age, Person::age);
 
     /** The current model. */
-    final PersonDef def;
+    PersonDef model;
 
     /**
      * <p>
      * Create model with the specified property holder.
      * </p>
      * 
-     * @param def
+     * @param model
      */
-    private Person(PersonDef def) {
-        this.def = def;
+    private Person() {
     }
 
     /**
@@ -49,7 +48,7 @@ public class Person {
      * @return A name property
      */
     public String name() {
-        return def.name;
+        return model.name;
     }
 
     /**
@@ -61,7 +60,7 @@ public class Person {
      * @return A created model.
      */
     public Person name(String value) {
-        if (def.name == value) {
+        if (model.name == value) {
             return this;
         }
         return with(this).name(value).ice();
@@ -75,7 +74,7 @@ public class Person {
      * @return A age property
      */
     public int age() {
-        return def.age;
+        return model.age;
     }
 
     /**
@@ -87,7 +86,7 @@ public class Person {
      * @return A created model.
      */
     public Person age(int value) {
-        if (def.age == value) {
+        if (model.age == value) {
             return this;
         }
         return with(this).age(value).ice();
@@ -101,7 +100,7 @@ public class Person {
      * @return A gender property
      */
     public Gender gender() {
-        return def.gender;
+        return model.gender;
     }
 
     /**
@@ -113,36 +112,10 @@ public class Person {
      * @return A created model.
      */
     public Person gender(Gender value) {
-        if (def.gender == value) {
+        if (model.gender == value) {
             return this;
         }
         return with(this).gender(value).ice();
-    }
-
-    /**
-     * <p>
-     * Retrieve club property.
-     * </p>
-     * 
-     * @return A club property
-     */
-    public Club club() {
-        return def.club;
-    }
-
-    /**
-     * <p>
-     * Create new model with the specified property.
-     * </p>
-     * 
-     * @param value A new property.
-     * @return A created model.
-     */
-    public Person club(Club value) {
-        if (def.club == value) {
-            return this;
-        }
-        return with(this).club(value).ice();
     }
 
     /**
@@ -152,8 +125,16 @@ public class Person {
      * 
      * @return An immutable model.
      */
-    public final Person ice() {
-        return this instanceof Melty ? new Person(def) : this;
+    public Person ice() {
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return model.name + "  " + model.age + "  " + model.gender;
     }
 
     /**
@@ -163,8 +144,8 @@ public class Person {
      * 
      * @return An immutable model.
      */
-    public final Person melt() {
-        return this instanceof Melty ? this : new Melty(this);
+    public Person melt() {
+        return new Melty(this);
     }
 
     /**
@@ -190,15 +171,38 @@ public class Person {
     }
 
     /**
+     * @version 2015/04/26 16:49:59
+     */
+    private static final class Icy extends Person {
+
+        /**
+         * 
+         */
+        private Icy(Person base) {
+            model = new PersonDef();
+
+            if (base != null) {
+                model.name = base.name();
+                model.age = base.age();
+                model.gender = base.gender();
+            }
+        }
+    }
+
+    /**
      * @version 2015/04/24 16:41:14
      */
     private static final class Melty extends Person {
 
         /**
-         * @param model
+         * @param base
          */
-        private Melty(Person model) {
-            super(model == null ? new PersonDef() : model.def);
+        private Melty(Person base) {
+            if (base == null) {
+                model = new PersonDef();
+            } else {
+                model = base.model;
+            }
         }
 
         /**
@@ -211,7 +215,7 @@ public class Person {
          */
         @Override
         public Melty name(String name) {
-            def.name = name;
+            model.name = name;
 
             return this;
         }
@@ -226,7 +230,7 @@ public class Person {
          */
         @Override
         public Melty age(int age) {
-            def.age = age;
+            model.age = age;
 
             return this;
         }
@@ -241,23 +245,24 @@ public class Person {
          */
         @Override
         public Melty gender(Gender gender) {
-            def.gender = gender;
+            model.gender = gender;
 
             return this;
         }
 
         /**
-         * <p>
-         * Assign club property.
-         * </p>
-         * 
-         * @param value A property to assign.
-         * @return Chainable API.
+         * {@inheritDoc}
          */
         @Override
-        public Melty club(Club value) {
-            def.club = value;
+        public Person ice() {
+            return new Icy(this);
+        }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Person melt() {
             return this;
         }
     }

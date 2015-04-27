@@ -23,6 +23,4 @@ class PersonDef {
     public int age;
 
     public Gender gender;
-
-    public Club club;
 }
