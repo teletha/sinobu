@@ -11,18 +11,11 @@ package kiss.icy.model;
 
 import kiss.icy.Gender;
 import kiss.icy.Lens;
-import kiss.icy.ModelOperator;
 
 /**
  * @version 2015/04/24 16:34:57
  */
 public class Person {
-
-    /** The lens for leader property. */
-    public static final Lens<Person, String> NAME = Lens.of(Person::name, Person::name);
-
-    /** The lens for age property. */
-    public static final Lens<Person, Integer> AGE = Lens.of(Person::age, Person::age);
 
     /** The current model. */
     PersonDef model;
@@ -269,6 +262,15 @@ public class Person {
      */
     public static final class Operator<M> extends ModelOperator<M, Person> {
 
+        /** The lens for leader property. */
+        private static final Lens<Person, String> NAME = Lens.of(Person::name, Person::name);
+
+        /** The lens for age property. */
+        private static final Lens<Person, Integer> AGE = Lens.of(Person::age, Person::age);
+
+        /** The lens for age property. */
+        private static final Lens<Person, Gender> GENDER = Lens.of(Person::gender, Person::gender);
+
         /**
          * @param lens
          */
@@ -278,13 +280,35 @@ public class Person {
 
         /**
          * <p>
-         * Operation kind.
+         * Property operator.
          * </p>
          * 
          * @return
          */
         public Lens<M, String> name() {
             return lens.then(NAME);
+        }
+
+        /**
+         * <p>
+         * Property operator.
+         * </p>
+         * 
+         * @return
+         */
+        public Lens<M, Integer> age() {
+            return lens.then(AGE);
+        }
+
+        /**
+         * <p>
+         * Property operator.
+         * </p>
+         * 
+         * @return
+         */
+        public Lens<M, Gender> gender() {
+            return lens.then(GENDER);
         }
     }
 }

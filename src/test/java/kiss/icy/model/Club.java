@@ -12,21 +12,14 @@ package kiss.icy.model;
 import java.util.function.UnaryOperator;
 
 import kiss.icy.Lens;
-import kiss.icy.ModelOperator;
 
 /**
  * @version 2015/04/25 12:01:23
  */
 public class Club {
 
-    /** The lens for leader property. */
-    private static final Lens<Club, String> NAME = Lens.of(Club::name, Club::name);
-
-    /** The lens for leader property. */
-    private static final Lens<Club, Person> LEADER = Lens.of(Club::leader, Club::leader);
-
     /** The model operator. */
-    public static final Operator<Club> Operator = new Operator(Lens.Φ);
+    public static final Operator<Club> Operator = new Operator(null);
 
     /** The current model. */
     ClubDef model;
@@ -113,14 +106,6 @@ public class Club {
      */
     public Club melt() {
         return new Melty(this);
-    }
-
-    public <P> Club operate(Lens<Club, P> operation, P value) {
-        return operation.set(this, value);
-    }
-
-    public <P> Club operate(Lens<Club, P> operation, UnaryOperator<P> value) {
-        return operation.set(this, value);
     }
 
     /**
@@ -234,6 +219,12 @@ public class Club {
      */
     public static final class Operator<M> extends ModelOperator<M, Club> {
 
+        /** The lens for leader property. */
+        private static final Lens<Club, String> NAME = Lens.of(Club::name, Club::name);
+
+        /** The lens for leader property. */
+        private static final Lens<Club, Person> LEADER = Lens.of(Club::leader, Club::leader);
+
         /**
          * @param lens
          */
@@ -243,7 +234,18 @@ public class Club {
 
         /**
          * <p>
-         * Router kind.
+         * Property operator.
+         * </p>
+         * 
+         * @return
+         */
+        public Lens<M, String> name() {
+            return lens.then(NAME);
+        }
+
+        /**
+         * <p>
+         * Property operator.
          * </p>
          * 
          * @return

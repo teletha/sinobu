@@ -9,6 +9,8 @@
  */
 package kiss.icy;
 
+import kiss.icy.model.ModelOperator;
+
 /**
  * @version 2015/04/22 0:19:22
  */

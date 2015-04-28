@@ -12,6 +12,8 @@ package kiss.icy;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import kiss.icy.model.ModelOperator;
+
 /**
  * @version 2015/04/21 23:11:36
  */

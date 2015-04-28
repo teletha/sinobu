@@ -7,18 +7,20 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.icy;
+package kiss.icy.model;
+
+import kiss.icy.Lens;
 
 /**
- * @version 2015/04/22 0:27:15
+ * @version 2015/04/28 11:24:11
  */
 public abstract class ModelOperator<M, V> implements Lens<M, V> {
 
-    /** The pre process. */
+    /** The previous lens. */
     protected final Lens<M, V> lens;
 
     /**
-     * @param lens
+     * @param lens A previous lens.
      */
     protected ModelOperator(Lens<M, V> lens) {
         this.lens = lens == null ? Lens.Φ : lens;
