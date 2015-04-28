@@ -47,12 +47,23 @@ public class ModelTest {
 
     @Test
     public void changeNestedProperty() {
-        Action<Club, String> changeLeaderName = Club.Operation.leader().name();
+        Club club1 = Club.Operator.leader().name().set(MINISTRATION, "Yukino");
+        assert club1 != MINISTRATION;
+        assert club1.name().equals("Housibu");
+        assert club1.leader() != YUKINOSITA;
+        assert club1.leader().name().equals("Yukino");
 
-        Club club = MINISTRATION.operate(changeLeaderName, "Yukino");
-        assert club != MINISTRATION;
-        assert club.name().equals("Housibu");
-        assert club.leader() != YUKINOSITA;
-        assert club.leader().name().equals("Yukino");
+        Club club2 = Club.Operator.leader().set(MINISTRATION, HIKIGAYA);
+        assert club2 != MINISTRATION;
+        assert club2.name().equals("Housibu");
+        assert club2.leader() == HIKIGAYA;
+
+        // Lens<Club, String> lens = Club.LEADER.then(Person.NAME);
+        //
+        // Club club = MINISTRATION.operate(changeLeaderName, "Yukino");
+        // assert club != MINISTRATION;
+        // assert club.name().equals("Housibu");
+        // assert club.leader() != YUKINOSITA;
+        // assert club.leader().name().equals("Yukino");
     }
 }

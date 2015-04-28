@@ -13,7 +13,6 @@ import java.util.function.UnaryOperator;
 
 import kiss.icy.Lens;
 import kiss.icy.ModelOperator;
-import kiss.icy.Operation;
 
 /**
  * @version 2015/04/25 12:01:23
@@ -21,12 +20,13 @@ import kiss.icy.Operation;
 public class Club {
 
     /** The lens for leader property. */
-    public static final Lens<Club, String> NAME = Lens.of(Club::name, Club::name);
+    private static final Lens<Club, String> NAME = Lens.of(Club::name, Club::name);
 
     /** The lens for leader property. */
-    public static final Lens<Club, Person> LEADER = Lens.of(Club::leader, Club::leader);
+    private static final Lens<Club, Person> LEADER = Lens.of(Club::leader, Club::leader);
 
-    public static final Operator<Club> Operation = new Operator(Lens.Φ);
+    /** The model operator. */
+    public static final Operator<Club> Operator = new Operator(Lens.Φ);
 
     /** The current model. */
     ClubDef model;
@@ -115,12 +115,12 @@ public class Club {
         return new Melty(this);
     }
 
-    public <P> Club operate(Action<Club, P> operation, P value) {
-        return operation.apply(this, value);
+    public <P> Club operate(Lens<Club, P> operation, P value) {
+        return operation.set(this, value);
     }
 
-    public <P> Club operate(Action<Club, P> operation, UnaryOperator<P> value) {
-        return operation.apply(this, value.apply(operation));
+    public <P> Club operate(Lens<Club, P> operation, UnaryOperator<P> value) {
+        return operation.set(this, value);
     }
 
     /**
@@ -237,7 +237,7 @@ public class Club {
         /**
          * @param lens
          */
-        private Operator(Lens<M, Club> lens) {
+        public Operator(Lens<M, Club> lens) {
             super(lens);
         }
 
@@ -248,32 +248,8 @@ public class Club {
          * 
          * @return
          */
-        public Person.Operator<Club> leader() {
-            return new Person.Operator(LEADER);
-        }
-
-        /**
-         * <p>
-         * Operation kind.
-         * </p>
-         * 
-         * @param value
-         * @return
-         */
-        public Operation<M> leader(Person value) {
-            return model -> lens.then(LEADER).set(model, value);
-        }
-
-        /**
-         * <p>
-         * Operation kind.
-         * </p>
-         * 
-         * @param value
-         * @return
-         */
-        public Operation<M> leader(UnaryOperator<Person> value) {
-            return model -> lens.then(LEADER).set(model, value);
+        public Person.Operator<M> leader() {
+            return new Person.Operator(lens.then(LEADER));
         }
     }
 }

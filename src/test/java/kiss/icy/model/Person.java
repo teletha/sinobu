@@ -9,12 +9,9 @@
  */
 package kiss.icy.model;
 
-import java.util.function.UnaryOperator;
-
 import kiss.icy.Gender;
 import kiss.icy.Lens;
 import kiss.icy.ModelOperator;
-import kiss.icy.Operation;
 
 /**
  * @version 2015/04/24 16:34:57
@@ -279,32 +276,15 @@ public class Person {
             super(lens);
         }
 
-        public Action<M, String> name() {
-            return (model, value) -> lens.then(NAME).set(model, value);
-        }
-
         /**
          * <p>
          * Operation kind.
          * </p>
          * 
-         * @param name
          * @return
          */
-        public Operation<M> name(String name) {
-            return model -> lens.then(NAME).set(model, name);
-        }
-
-        /**
-         * <p>
-         * Operation kind.
-         * </p>
-         * 
-         * @param name
-         * @return
-         */
-        public Operation<M> name(UnaryOperator<String> name) {
-            return model -> lens.then(NAME).set(model, name);
+        public Lens<M, String> name() {
+            return lens.then(NAME);
         }
     }
 }

@@ -9,6 +9,8 @@
  */
 package kiss.icy;
 
+import java.util.function.Function;
+
 /**
  * @version 2015/04/21 23:20:12
  */
@@ -24,4 +26,18 @@ public class L {
 
         return model;
     }
+
+    public static <M, P1, P2> M operate(M model, Lens<M, P1> lens1, Lens<P1, P2> lens2, P2 value) {
+        return lens1.then(lens2).set(model, value);
+    }
+
+    public static <M, P1, P2> M operate(M model, Lens<M, P1> lens1, Lens<P1, P2> lens2, Function<P1, Function<P2, P2>> value) {
+        P1 property1 = lens1.get(model);
+        P2 property2 = lens2.get(property1);
+
+        property2 = value.apply(property1).apply(property2);
+
+        return lens1.set(model, lens2.set(property1, property2));
+    }
+
 }
