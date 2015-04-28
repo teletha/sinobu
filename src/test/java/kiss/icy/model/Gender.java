@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.icy;
+package kiss.icy.model;
 
 /**
  * @version 2015/04/19 19:21:49

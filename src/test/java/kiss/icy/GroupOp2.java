@@ -9,6 +9,7 @@
  */
 package kiss.icy;
 
+import kiss.icy.model.Lens;
 import kiss.icy.model.ModelOperator;
 
 /**

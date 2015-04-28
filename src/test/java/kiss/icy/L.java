@@ -11,6 +11,8 @@ package kiss.icy;
 
 import java.util.function.Function;
 
+import kiss.icy.model.Lens;
+
 /**
  * @version 2015/04/21 23:20:12
  */

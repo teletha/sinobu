@@ -12,6 +12,8 @@ package kiss.icy;
 import java.util.LinkedList;
 import java.util.stream.Stream;
 
+import kiss.icy.model.Lens;
+
 /**
  * @version 2015/04/21 10:45:23
  */

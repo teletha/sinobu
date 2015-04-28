@@ -9,7 +9,7 @@
  */
 package kiss.icy.model;
 
-import static kiss.icy.Gender.*;
+import static kiss.icy.model.Gender.*;
 
 import org.junit.Test;
 

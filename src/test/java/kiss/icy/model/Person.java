@@ -9,8 +9,6 @@
  */
 package kiss.icy.model;
 
-import kiss.icy.Gender;
-import kiss.icy.Lens;
 
 /**
  * @version 2015/04/24 16:34:57

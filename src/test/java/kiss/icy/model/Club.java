@@ -11,8 +11,6 @@ package kiss.icy.model;
 
 import java.util.function.UnaryOperator;
 
-import kiss.icy.Lens;
-
 /**
  * @version 2015/04/25 12:01:23
  */

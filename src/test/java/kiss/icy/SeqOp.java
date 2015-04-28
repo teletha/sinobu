@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import kiss.icy.model.Lens;
 import kiss.icy.model.ModelOperator;
 
 /**

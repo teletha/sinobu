@@ -12,6 +12,8 @@ package kiss.icy;
 import java.util.function.UnaryOperator;
 
 import kiss.Binary;
+import kiss.icy.model.Gender;
+import kiss.icy.model.Lens;
 
 /**
  * @version 2015/04/19 19:23:20

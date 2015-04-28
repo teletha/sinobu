@@ -11,6 +11,7 @@ package kiss.icy;
 
 import kiss.Binary;
 import kiss.I;
+import kiss.icy.model.Lens;
 
 /**
  * @version 2015/04/19 21:53:51

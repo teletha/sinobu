@@ -12,6 +12,7 @@ package kiss.icy;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import kiss.icy.model.Lens;
 import kiss.icy.model.ModelOperator;
 
 /**

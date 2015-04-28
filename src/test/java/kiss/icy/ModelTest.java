@@ -12,6 +12,7 @@ package kiss.icy;
 import static kiss.icy.GroupOp2.*;
 import static kiss.icy.PersonOp2.*;
 import kiss.I;
+import kiss.icy.model.Gender;
 
 import org.junit.Test;
 

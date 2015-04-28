@@ -9,17 +9,15 @@
  */
 package kiss.icy.model;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @version 2015/04/25 11:58:21
+ * @version 2015/04/24 16:36:52
  */
-@Icy
-public class ClubDef {
-
-    public String name;
-
-    public Person leader;
-
-    public List<Person> member;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.SOURCE)
+public @interface Icy {
 }
