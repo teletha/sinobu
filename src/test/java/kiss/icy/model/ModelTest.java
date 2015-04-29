@@ -25,7 +25,11 @@ public class ModelTest {
     private static Person YUKINOSITA = Person.with().name("Yukinosita").age(17).gender(Female).ice();
 
     /** The reusable club. */
-    private static Club MINISTRATION = Club.with().name("Housibu").leader(YUKINOSITA).ice();
+    private static Club MINISTRATION = Club.with()
+            .name("Housibu")
+            .leader(YUKINOSITA)
+            .members(Seq.of(YUKINOSITA, HIKIGAYA))
+            .ice();
 
     @Test
     public void changeSingleProperty() {
@@ -58,12 +62,10 @@ public class ModelTest {
         assert club2.name().equals("Housibu");
         assert club2.leader() == HIKIGAYA;
 
-        // Lens<Club, String> lens = Club.LEADER.then(Person.NAME);
-        //
-        // Club club = MINISTRATION.operate(changeLeaderName, "Yukino");
-        // assert club != MINISTRATION;
-        // assert club.name().equals("Housibu");
-        // assert club.leader() != YUKINOSITA;
-        // assert club.leader().name().equals("Yukino");
+        Club club3 = Club.Operator.memebers().at(0).name().set(MINISTRATION, "YUKINO");
+        assert club3 != MINISTRATION;
+        assert club3.name().equals("Housibu");
+        assert club3.members().get(0) != YUKINOSITA;
+        assert club3.members().get(0).name().equals("YUKINO");
     }
 }

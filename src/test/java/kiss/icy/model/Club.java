@@ -9,12 +9,10 @@
  */
 package kiss.icy.model;
 
-import java.util.function.UnaryOperator;
-
 /**
  * @version 2015/04/25 12:01:23
  */
-public class Club {
+public abstract class Club implements Operatable<Club> {
 
     /** The model operator. */
     public static final Operator<Club> Operator = new Operator(null);
@@ -86,24 +84,28 @@ public class Club {
 
     /**
      * <p>
-     * Create new immutable model.
+     * Getter kind.
      * </p>
      * 
-     * @return An immutable model.
+     * @return A property value.
      */
-    public Club ice() {
-        return this;
+    public Seq<Person> members() {
+        return model.members;
     }
 
     /**
      * <p>
-     * Create new mutable model.
+     * Create new model with the specified property.
      * </p>
      * 
-     * @return An immutable model.
+     * @param value A new property.
+     * @return A created model.
      */
-    public Club melt() {
-        return new Melty(this);
+    public Club members(Seq<Person> value) {
+        if (model.members.equals(value)) {
+            return this;
+        }
+        return with(this).members(value).ice();
     }
 
     /**
@@ -142,7 +144,20 @@ public class Club {
             if (base != null) {
                 model.name = base.name();
                 model.leader = base.leader().ice();
+                model.members = base.members().ice();
             }
+        }
+
+        /**
+         * <p>
+         * Create new mutable model.
+         * </p>
+         * 
+         * @return An immutable model.
+         */
+        @Override
+        public Club melt() {
+            return new Melty(this);
         }
     }
 
@@ -196,19 +211,26 @@ public class Club {
         }
 
         /**
-         * {@inheritDoc}
+         * <p>
+         * Assign memeber property.
+         * </p>
+         * 
+         * @param value A property to assign.
+         * @return Chainable API.
          */
         @Override
-        public Club ice() {
-            return new Icy(this);
+        public Melty members(Seq<Person> value) {
+            model.members = value;
+
+            return this;
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public Club melt() {
-            return this;
+        public Club ice() {
+            return new Icy(this);
         }
     }
 
@@ -222,6 +244,9 @@ public class Club {
 
         /** The lens for leader property. */
         private static final Lens<Club, Person> LEADER = Lens.of(Club::leader, Club::leader);
+
+        /** The lens for leader property. */
+        private static final Lens<Club, Seq<Person>> MEMBERS = Lens.of(Club::members, Club::members);
 
         /**
          * @param lens
@@ -250,6 +275,17 @@ public class Club {
          */
         public Person.Operator<M> leader() {
             return new Person.Operator(lens.then(LEADER));
+        }
+
+        /**
+         * <p>
+         * Property operator.
+         * </p>
+         * 
+         * @return
+         */
+        public Seq.Operator<M, Person, Person.Operator<M>> memebers() {
+            return new Seq.Operator(lens.then(MEMBERS), new Person.Operator<M>(null));
         }
     }
 }

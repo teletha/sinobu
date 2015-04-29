@@ -9,8 +9,6 @@
  */
 package kiss.icy.model;
 
-import java.util.List;
-
 /**
  * @version 2015/04/25 11:58:21
  */
@@ -21,5 +19,5 @@ public class ClubDef {
 
     public Person leader;
 
-    public List<Person> member;
+    public Seq<Person> members;
 }

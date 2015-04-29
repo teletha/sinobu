@@ -9,11 +9,10 @@
  */
 package kiss.icy.model;
 
-
 /**
  * @version 2015/04/24 16:34:57
  */
-public class Person {
+public abstract class Person implements Operatable<Person> {
 
     /** The current model. */
     PersonDef model;
@@ -107,33 +106,11 @@ public class Person {
     }
 
     /**
-     * <p>
-     * Create new immutable model.
-     * </p>
-     * 
-     * @return An immutable model.
-     */
-    public Person ice() {
-        return this;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         return model.name + "  " + model.age + "  " + model.gender;
-    }
-
-    /**
-     * <p>
-     * Create new mutable model.
-     * </p>
-     * 
-     * @return An immutable model.
-     */
-    public Person melt() {
-        return new Melty(this);
     }
 
     /**
@@ -174,6 +151,18 @@ public class Person {
                 model.age = base.age();
                 model.gender = base.gender();
             }
+        }
+
+        /**
+         * <p>
+         * Create new mutable model.
+         * </p>
+         * 
+         * @return An immutable model.
+         */
+        @Override
+        public Person melt() {
+            return new Melty(this);
         }
     }
 
@@ -244,14 +233,6 @@ public class Person {
         @Override
         public Person ice() {
             return new Icy(this);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Person melt() {
-            return this;
         }
     }
 

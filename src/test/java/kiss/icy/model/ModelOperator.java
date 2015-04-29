@@ -9,14 +9,13 @@
  */
 package kiss.icy.model;
 
-
 /**
  * @version 2015/04/28 11:24:11
  */
 public abstract class ModelOperator<M, V> implements Lens<M, V> {
 
     /** The previous lens. */
-    protected final Lens<M, V> lens;
+    protected Lens<M, V> lens;
 
     /**
      * @param lens A previous lens.
