@@ -195,14 +195,10 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
             return sub;
         }
 
-        public Operation<M> add(int index, V item) {
-            return model -> {
-                Seq<V> seq = lens.get(model);
-                LinkedList list = new LinkedList(seq.list);
-                list.add(index, item);
+        public Operator<M, V, O> add(V value) {
+            sub.lens = lens.then(Lens.of(model -> model.get(index), (model, value) -> model.set(index, value)));
 
-                return lens.set(model, new Melty(list));
-            };
+            return sub;
         }
 
         public <S> Lens<M, S> all(Function<O, ModelOperator<M, S>> operator) {
