@@ -102,8 +102,8 @@ public interface Lens<M, V> {
         };
     }
 
-    public default UnaryOperator<M> then(Function<V, M> operation) {
-        return model -> operation.apply(this.get(model));
+    public default UnaryOperator<M> then(UnaryOperator<V> operation) {
+        return model -> this.set(model, operation.apply(this.get(model)));
     }
 
     /**

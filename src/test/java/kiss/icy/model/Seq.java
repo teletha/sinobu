@@ -250,7 +250,7 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
         }
 
         public UnaryOperator<M> clear() {
-            return lens.then(values -> values.clear());
+            return lens.then(Seq::clear);
         }
 
         public <S> Lens<M, S> all(Function<O, ModelOperator<M, S>> operator) {
