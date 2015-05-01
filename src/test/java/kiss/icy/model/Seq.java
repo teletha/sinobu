@@ -10,10 +10,12 @@
 package kiss.icy.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import kiss.icy.L;
@@ -34,6 +36,14 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
     }
 
     public abstract Seq<E> set(int index, E value);
+
+    public abstract Seq<E> add(E value);
+
+    public int size() {
+        return list.size();
+    }
+
+    public abstract Seq<E> clear();
 
     public Stream<E> stream() {
         return list.stream();
@@ -113,6 +123,26 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
         }
 
         /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Seq<E> add(E value) {
+            List<E> created = new ArrayList(list);
+            created.add(value);
+
+            return new Icy(created);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Seq<E> clear() {
+            list.clear();
+            return new Icy(Collections.EMPTY_LIST);
+        }
+
+        /**
          * <p>
          * Create new mutable model.
          * </p>
@@ -168,6 +198,24 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
          * {@inheritDoc}
          */
         @Override
+        public Seq<E> add(E value) {
+            list.add(value);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Seq<E> clear() {
+            list.clear();
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public Seq<E> ice() {
             return new Icy(this);
         }
@@ -195,10 +243,14 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
             return sub;
         }
 
-        public Operator<M, V, O> add(V value) {
-            sub.lens = lens.then(Lens.of(model -> model.get(index), (model, value) -> model.set(index, value)));
+        public Lens<M, V> add() {
+            sub.lens = lens.then(Lens.of(null, Seq::add));
 
             return sub;
+        }
+
+        public UnaryOperator<M> clear() {
+            return lens.then(values -> values.clear());
         }
 
         public <S> Lens<M, S> all(Function<O, ModelOperator<M, S>> operator) {

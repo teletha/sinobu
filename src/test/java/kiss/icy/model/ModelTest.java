@@ -67,5 +67,16 @@ public class ModelTest {
         assert club3.name().equals("Housibu");
         assert club3.members().get(0) != YUKINOSITA;
         assert club3.members().get(0).name().equals("YUKINO");
+
+        Club club4 = Club.Operator.memebers().add().set(MINISTRATION, HIKIGAYA);
+        assert club4 != MINISTRATION;
+        assert club4.name().equals("Housibu");
+        assert club4.members().get(0) != YUKINOSITA;
+        assert club4.members().get(0).name().equals("YUKINO");
+        assert club4.members().size() == 3;
+
+        Club club5 = Club.Operator.memebers().clear().apply(MINISTRATION);
+        assert club5 != MINISTRATION;
+        assert club5.members().size() == 0;
     }
 }

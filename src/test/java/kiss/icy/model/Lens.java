@@ -11,6 +11,7 @@ package kiss.icy.model;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * @version 2015/04/19 22:00:04
@@ -56,12 +57,13 @@ public interface Lens<M, V> {
      * @return
      */
     M set(M model, V property);
-    
+
     /**
      * <p>
      * Operation by using current value.
      * </p>
-     * <p></p>
+     * <p>
+     * </p>
      * 
      * @param model
      * @param property
@@ -98,6 +100,10 @@ public interface Lens<M, V> {
                 return Lens.this.set(model, lens.set(Lens.this.get(model), property));
             }
         };
+    }
+
+    public default UnaryOperator<M> then(Function<V, M> operation) {
+        return model -> operation.apply(this.get(model));
     }
 
     /**
