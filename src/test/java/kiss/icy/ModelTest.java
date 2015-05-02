@@ -9,115 +9,74 @@
  */
 package kiss.icy;
 
-import static kiss.icy.GroupOp2.*;
-import static kiss.icy.PersonOp2.*;
-import kiss.I;
-import kiss.icy.model.Gender;
+import static kiss.icy.Gender.*;
 
 import org.junit.Test;
 
 /**
- * @version 2015/04/19 19:25:09
+ * @version 2015/04/24 22:05:43
  */
 public class ModelTest {
 
-    static {
-        I.load(ModelTest.class, true);
+    /** The reusable person. */
+    private static Person HIKIGAYA = Person.with().name("Hikigaya").age(17).gender(Male).ice();
+
+    /** The reusable person. */
+    private static Person YUKINOSITA = Person.with().name("Yukinosita").age(17).gender(Female).ice();
+
+    /** The reusable club. */
+    private static Club MINISTRATION = Club.with()
+            .name("Housibu")
+            .leader(YUKINOSITA)
+            .members(Seq.of(YUKINOSITA, HIKIGAYA))
+            .ice();
+
+    @Test
+    public void changeSingleProperty() {
+        Person hikigaya = HIKIGAYA.name("Hatiman");
+        assert hikigaya != HIKIGAYA;
+        assert hikigaya.name().equals("Hatiman");
+        assert hikigaya.age() == HIKIGAYA.age();
+        assert hikigaya.gender() == HIKIGAYA.gender();
     }
 
     @Test
-    public void changeSingleValue() throws Exception {
-        Person person = PersonOp.with("Name", 20, Gender.Male);
-        assert person.name.equals("Name");
-        assert person.age == 20;
-        assert person.gender == Gender.Male;
+    public void changePropertyWithIdenticalEqualityValue() {
+        Person yukinosita = YUKINOSITA.name("Yukinosita");
+        assert yukinosita == YUKINOSITA;
 
-        // person = person.name("New Name");
-        // assert person.name.equals("New Name");
-        // assert person.age == 20;
-        // assert person.gender == Gender.Male;
+        yukinosita = YUKINOSITA.age(17);
+        assert yukinosita == YUKINOSITA;
     }
 
     @Test
-    public void changeMultipleValues() throws Exception {
-        Person person = PersonOp.with("Name", 20, Gender.Male);
-        assert person.name.equals("Name");
-        assert person.age == 20;
-        assert person.gender == Gender.Male;
+    public void changeNestedProperty() {
+        Club club1 = Club.Operator.leader().name().set(MINISTRATION, "Yukino");
+        assert club1 != MINISTRATION;
+        assert club1.name().equals("Housibu");
+        assert club1.leader() != YUKINOSITA;
+        assert club1.leader().name().equals("Yukino");
 
-        person = L.operate(person, name2("New Name"), age2(30));
-        assert person.name.equals("New Name");
-        assert person.age == 30;
-        assert person.gender == Gender.Male;
-    }
+        Club club2 = Club.Operator.leader().set(MINISTRATION, HIKIGAYA);
+        assert club2 != MINISTRATION;
+        assert club2.name().equals("Housibu");
+        assert club2.leader() == HIKIGAYA;
 
-    @Test
-    public void changeNestedValue() throws Exception {
-        Person person = PersonOp.with("Name", 20, Gender.Male);
-        Group group = GroupOp.with("NPC", person, null);
-        assert group.leader.name.equals("Name");
+        Club club3 = Club.Operator.memebers().at(0).name().set(MINISTRATION, "YUKINO");
+        assert club3 != MINISTRATION;
+        assert club3.name().equals("Housibu");
+        assert club3.members().get(0) != YUKINOSITA;
+        assert club3.members().get(0).name().equals("YUKINO");
 
-        group = L.operate(group, leader().name("Change"));
-        assert group.leader.name.equals("Change");
-        assert group.leader.age == 20;
-    }
+        Club club4 = Club.Operator.memebers().add().set(MINISTRATION, HIKIGAYA);
+        assert club4 != MINISTRATION;
+        assert club4.name().equals("Housibu");
+        assert club4.members().get(0) != YUKINOSITA;
+        assert club4.members().get(0).name().equals("YUKINO");
+        assert club4.members().size() == 3;
 
-    @Test
-    public void testname() throws Exception {
-        Person person = PersonOp.with("Name", 20, Gender.Male);
-        assert person.name.equals("Name");
-        assert person.age == 20;
-        assert person.gender == Gender.Male;
-
-        person = L.operate(person, name2("New Name"));
-        assert person.name.equals("New Name");
-        assert person.age == 20;
-        assert person.gender == Gender.Male;
-
-        person = L.operate(person, name2(v -> v.toUpperCase()));
-        assert person.name.equals("NEW NAME");
-        assert person.age == 20;
-        assert person.gender == Gender.Male;
-    }
-
-    @Test
-    public void changeNestedValue2() throws Exception {
-        Person person = PersonOp.with("Name", 20, Gender.Male);
-        Group group = GroupOp.with("NPC", person, null);
-        assert group.leader.name.equals("Name");
-
-        group = L.operate(group, leader().name("Change"));
-        assert group.leader.name.equals("Change");
-        assert group.leader.age == 20;
-        //
-        // group = L.operate(group, LEADER, NAME, "Set");
-        // assert group.leader.name.equals("Set");
-        //
-        // group = L.operate(group, leader(nameIs("Next")));
-        // assert group.leader.name.equals("Next");
-
-        // group = L.operate(group, leader().name2("Set"));
-        // assert group.leader.name.equals("Set");
-    }
-
-    @Test
-    public void addToSeq() {
-        Person person = PersonOp.with("Name", 20, Gender.Male);
-        Group group = GroupOp.with("NPC", person, Seq.of(person));
-        assert group.members.head().name.equals("Name");
-
-        Person newer = PersonOp.with("Newer", 21, Gender.Female);
-
-        group = L.operate(group, members().add(0, newer));
-        assert group.members.head().name.equals("Newer");
-        assert group.members.tail().name.equals("Name");
-
-        group = L.operate(group, members().all(op -> op.name(String::toUpperCase)));
-        assert group.members.head().name.equals("NEWER");
-        assert group.members.tail().name.equals("NAME");
-
-        group = L.operate(group, members().select(e -> e.gender == Gender.Male, op -> op.name(String::toLowerCase)));
-        assert group.members.head().name.equals("NEWER");
-        assert group.members.tail().name.equals("name");
+        Club club5 = Club.Operator.memebers().clear().apply(MINISTRATION);
+        assert club5 != MINISTRATION;
+        assert club5.members().size() == 0;
     }
 }

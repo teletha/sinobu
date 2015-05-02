@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.icy.model;
+package kiss.icy;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

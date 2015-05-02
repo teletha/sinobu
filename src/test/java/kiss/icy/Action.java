@@ -9,10 +9,10 @@
  */
 package kiss.icy;
 
-import java.util.function.UnaryOperator;
+import java.util.function.BiFunction;
 
 /**
- * @version 2015/04/21 23:25:59
+ * @version 2015/04/27 16:54:50
  */
-public interface Operation<M> extends UnaryOperator<M> {
+public interface Action<M, P> extends BiFunction<M, P, M> {
 }

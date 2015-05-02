@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.icy.model;
+package kiss.icy;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

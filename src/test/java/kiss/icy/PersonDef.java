@@ -7,11 +7,18 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.icy.model;
+package kiss.icy;
+
 
 /**
- * @version 2015/04/19 19:21:49
+ * @version 2015/04/24 16:35:11
  */
-public enum Gender {
-    Male, Female;
+@Icy
+class PersonDef {
+
+    public String name;
+
+    public int age;
+
+    public Gender gender;
 }

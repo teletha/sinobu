@@ -7,12 +7,11 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.icy.model;
-
-import java.util.function.BiFunction;
+package kiss.icy;
 
 /**
- * @version 2015/04/27 16:54:50
+ * @version 2015/04/19 19:21:49
  */
-public interface Action<M, P> extends BiFunction<M, P, M> {
+public enum Gender {
+    Male, Female;
 }

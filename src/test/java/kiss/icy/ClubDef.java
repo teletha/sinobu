@@ -10,9 +10,14 @@
 package kiss.icy;
 
 /**
- * @version 2015/04/19 19:32:31
+ * @version 2015/04/25 11:58:21
  */
-public interface ModelOperation<Ops extends ModelOperationSet> {
+@Icy
+public class ClubDef {
 
-    void apply(Ops operations);
+    public String name;
+
+    public Person leader;
+
+    public Seq<Person> members;
 }
