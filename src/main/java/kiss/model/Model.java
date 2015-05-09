@@ -227,7 +227,8 @@ public class Model {
             for (Entry<String, Method[]> entry : candidates.entrySet()) {
                 Method[] methods = entry.getValue();
 
-                if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
+                if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1]
+                        .getModifiers()) & FINAL) == 0) {
                     // create model for the property
                     try {
                         Model model = load(methods[0].getGenericReturnType(), type);
@@ -260,8 +261,7 @@ public class Model {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(load(fieldModel.type
-                                .getMethod("getValue")
+                        Property property = new Property(load(fieldModel.type.getMethod("getValue")
                                 .getGenericReturnType(), field.getGenericType()), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;

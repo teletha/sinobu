@@ -331,15 +331,15 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         modules.set(Prototype.class, new Prototype(Prototype.class));
         modules.set(ListProperty.class, () -> {
             return new SimpleListProperty(FXCollections.observableArrayList());
-        } );
+        });
         modules.set(ObservableList.class, FXCollections::observableArrayList);
         modules.set(MapProperty.class, () -> {
             return new SimpleMapProperty(FXCollections.observableHashMap());
-        } );
+        });
         modules.set(ObservableMap.class, FXCollections::observableHashMap);
         modules.set(SetProperty.class, () -> {
             return new SimpleSetProperty(FXCollections.observableSet());
-        } );
+        });
         modules.set(ObservableSet.class, FXCollections::observableSet);
 
         try {
@@ -1292,7 +1292,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 Type wrapper = Type.getType(ClassUtil.wrap(clazz));
                 mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
                 mv.visitMethodInsn(INVOKEVIRTUAL, wrapper
-                        .getInternalName(), clazz.getName() + "val", "()" + type.getDescriptor(), false);
+                        .getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
             }
         } else {
             mv.visitTypeInsn(CHECKCAST, type.getInternalName());
@@ -1516,7 +1516,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return () -> {
                 observable.removeListener(listener); // unregister listener
             };
-        } );
+        });
     }
 
     /**
@@ -1555,7 +1555,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return () -> {
                 observable.removeListener(listener); // unregister listener
             };
-        } );
+        });
     }
 
     /**
@@ -1642,7 +1642,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             // API definition
             return watcher;
-        } );
+        });
     }
 
     //
@@ -2259,7 +2259,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
                 // never check null because PropertyWalker traverses existing properties
                 outputModel.set(m, dest, I.transform(value, dest.model.type));
-            } );
+            });
 
             // API definition
             return m;

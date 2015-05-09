@@ -9,6 +9,7 @@
  */
 package kiss.scratchpad;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -17,6 +18,7 @@ import org.junit.Test;
 public class ParameterPassingStyleTest {
 
     @Test
+    @Ignore
     public void param() {
         StringParam create = SinobuScratchpad.make(StringParam::new, "test");
     }

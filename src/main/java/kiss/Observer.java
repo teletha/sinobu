@@ -41,8 +41,8 @@ public interface Observer<V> {
      * Notifies the observer that the provider has experienced an error condition.
      * </p>
      * <p>
-     * If the {@link Events} calls this closure, it will not thereafter call
-     * {@link #onNext(Object)} or {@link #onCompleted()}.
+     * If the {@link Events} calls this closure, it will not thereafter call {@link #onNext(Object)}
+     * or {@link #onCompleted()}.
      * </p>
      * 
      * @param error An object that provides additional information about the error.
@@ -66,7 +66,5 @@ public interface Observer<V> {
      * 
      * @param value The current notification information.
      */
-    public default void onNext(V value) {
-        // do nothing
-    }
+    public void onNext(V value);
 }

@@ -110,24 +110,12 @@ public class Events<V> {
     public final Property<V> to() {
         // value receiver
         ObjectProperty property = new SimpleObjectProperty();
-    
+
         // start receiving values
         to(property::set);
-    
+
         // API definition
         return property;
-    }
-
-    /**
-     * <p>
-     * Receive values from this {@link Events}.
-     * </p>
-     * 
-     * @param next A delegator method of {@link Observer#onNext(Object)}.
-     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
-     */
-    public final Disposable to(Consumer<? super V> next) {
-        return to(next, null);
     }
 
     /**
