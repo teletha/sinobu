@@ -1508,7 +1508,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         return new Events<>(observer -> {
             // create actual listener
             InvalidationListener listener = value -> {
-                observer.onNext((E) value);
+                observer.accept((E) value);
             };
 
             observable.addListener(listener); // register listener
@@ -1540,7 +1540,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         return new Events<>(observer -> {
             // create actual listener
             ChangeListener<E> listener = (o, oldValue, newValue) -> {
-                observer.onNext(newValue);
+                observer.accept(newValue);
             };
 
             observable.addListener(listener); // register listener

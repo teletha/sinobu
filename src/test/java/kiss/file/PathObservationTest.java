@@ -621,7 +621,7 @@ public class PathObservationTest {
          * {@inheritDoc}
          */
         @Override
-        public void onNext(WatchEvent<Path> value) {
+        public void accept(WatchEvent<Path> value) {
             try {
                 put(new Event(value.context(), value.kind().name()));
             } catch (InterruptedException e) {

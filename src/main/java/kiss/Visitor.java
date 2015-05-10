@@ -354,7 +354,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
                         e.watch = event;
                         e.object = path;
 
-                        observer.onNext(e);
+                        observer.accept(e);
 
                         if (event.kind() == ENTRY_CREATE) {
                             if (Files.isDirectory(path) && preVisitDirectory(path, null) == CONTINUE) {

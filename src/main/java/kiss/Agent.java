@@ -56,11 +56,11 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
      * {@inheritDoc}
      */
     @Override
-    public void onCompleted() {
+    public void complete() {
         if (complete != null) {
             complete.run();
         } else if (observer != null) {
-            observer.onCompleted();
+            observer.complete();
         }
     }
 
@@ -68,11 +68,11 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
      * {@inheritDoc}
      */
     @Override
-    public void onError(Throwable e) {
+    public void error(Throwable e) {
         if (error != null) {
             error.accept(e);
         } else if (observer != null) {
-            observer.onError(e);
+            observer.error(e);
         } else {
             Thread.currentThread().getThreadGroup().uncaughtException(Thread.currentThread(), e);
         }
@@ -82,11 +82,11 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
      * {@inheritDoc}
      */
     @Override
-    public void onNext(T value) {
+    public void accept(T value) {
         if (next != null) {
             next.accept(object = value);
         } else if (observer != null) {
-            observer.onNext(object = value);
+            observer.accept(object = value);
         }
     }
 

@@ -123,8 +123,8 @@ public class Events<V> {
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
      * 
-     * @param next A delegator method of {@link Observer#onNext(Object)}.
-     * @param error A delegator method of {@link Observer#onError(Throwable)}.
+     * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @param error A delegator method of {@link Observer#error(Throwable)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error) {
@@ -136,9 +136,9 @@ public class Events<V> {
      * Receive values from this {@link Events}.
      * </p>
      * 
-     * @param next A delegator method of {@link Observer#onNext(Object)}.
-     * @param error A delegator method of {@link Observer#onError(Throwable)}.
-     * @param complete A delegator method of {@link Observer#onCompleted()}.
+     * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @param error A delegator method of {@link Observer#error(Throwable)}.
+     * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
@@ -223,7 +223,7 @@ public class Events<V> {
                 boolean validSize = buffer.size() == creationSize;
 
                 if (validTiming && validSize) {
-                    observer.onNext(new ArrayList(buffer));
+                    observer.accept(new ArrayList(buffer));
                 }
 
                 if (validTiming) {
@@ -263,7 +263,7 @@ public class Events<V> {
                         buffer = new ArrayList();
 
                         I.schedule(time, unit, true, () -> {
-                            observer.onNext(ref.getAndSet(null));
+                            observer.accept(ref.getAndSet(null));
                         });
                     }
                     return buffer;
@@ -299,7 +299,7 @@ public class Events<V> {
 
             Runnable task = () -> {
                 latest.set(null);
-                observer.onNext(value);
+                observer.accept(value);
             };
             latest.set(I.schedule(time, unit, true, task));
         });
@@ -324,7 +324,7 @@ public class Events<V> {
 
         return on((observer, value) -> {
             I.schedule(time, unit, false, () -> {
-                observer.onNext(value);
+                observer.accept(value);
             });
         });
     }
@@ -345,7 +345,7 @@ public class Events<V> {
                 V prev = ref.getAndSet(value);
 
                 if (!Objects.equals(prev, value)) {
-                    observer.onNext(value);
+                    observer.accept(value);
                 }
             });
         });
@@ -365,7 +365,7 @@ public class Events<V> {
 
             return to(value -> {
                 if (set.add(value)) {
-                    observer.onNext(value);
+                    observer.accept(value);
                 }
             });
         });
@@ -390,7 +390,7 @@ public class Events<V> {
 
         return on((observer, value) -> {
             if (predicate.test(value)) {
-                observer.onNext(value);
+                observer.accept(value);
             }
         });
     }
@@ -416,7 +416,7 @@ public class Events<V> {
 
             return predicate.to(v -> flag.set(v)).and(to(v -> {
                 if (flag.get()) {
-                    observer.onNext(v);
+                    observer.accept(v);
                 }
             }));
         });
@@ -499,7 +499,7 @@ public class Events<V> {
     public final <R> Events<R> map(R constant) {
         return new Events<>(observer -> {
             return to(value -> {
-                observer.onNext(constant);
+                observer.accept(constant);
             });
         });
     }
@@ -522,7 +522,7 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             return to(value -> {
-                observer.onNext(converter.apply(value));
+                observer.accept(converter.apply(value));
             });
         });
     }
@@ -603,7 +603,7 @@ public class Events<V> {
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
-                observer.onCompleted();
+                observer.complete();
                 to(agent);
             };
             return to(agent);
@@ -661,7 +661,7 @@ public class Events<V> {
             that.observer.object = init;
 
             return to(value -> {
-                observer.onNext(function.apply(that.observer.object, value));
+                observer.accept(function.apply(that.observer.object, value));
             });
         });
     }
@@ -687,7 +687,7 @@ public class Events<V> {
 
             return to(value -> {
                 if (count < counter.incrementAndGet()) {
-                    observer.onNext(value);
+                    observer.accept(value);
                 }
             });
         });
@@ -714,7 +714,7 @@ public class Events<V> {
 
             return to(value -> {
                 if (flag.get()) {
-                    observer.onNext(value);
+                    observer.accept(value);
                 }
             }).and(predicate.to(value -> {
                 flag.set(true);
@@ -743,10 +743,10 @@ public class Events<V> {
 
             return to(value -> {
                 if (flag.get()) {
-                    observer.onNext(value);
+                    observer.accept(value);
                 } else if (predicate.test(value)) {
                     flag.set(true);
-                    observer.onNext(value);
+                    observer.accept(value);
                 }
             });
         });
@@ -786,7 +786,7 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             for (V value : values) {
-                observer.onNext(value);
+                observer.accept(value);
             }
 
             return to(observer);
@@ -815,10 +815,10 @@ public class Events<V> {
                 long current = counter.decrementAndGet();
 
                 if (0 <= current) {
-                    observer.onNext(value);
+                    observer.accept(value);
 
                     if (0 == current) {
-                        observer.onCompleted();
+                        observer.complete();
                         unsubscriber.dispose();
                     }
                 }
@@ -844,7 +844,7 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             return unsubscriber = to(observer).and(predicate.to(value -> {
-                observer.onCompleted();
+                observer.complete();
                 unsubscriber.dispose();
             }));
         });
@@ -868,11 +868,11 @@ public class Events<V> {
 
         return on((observer, value) -> {
             if (predicate.test(value)) {
-                observer.onNext(value);
-                observer.onCompleted();
+                observer.accept(value);
+                observer.complete();
                 unsubscriber.dispose();
             } else {
-                observer.onNext(value);
+                observer.accept(value);
             }
         });
     }
@@ -1053,7 +1053,7 @@ public class Events<V> {
                         }
                         values.add((V) e.observer.object);
                     }
-                    observer.onNext(values);
+                    observer.accept(values);
                 }));
             }
             return base;
@@ -1118,7 +1118,7 @@ public class Events<V> {
                             }
                             values.add(q == queue ? value : q.poll());
                         }
-                        observer.onNext(values);
+                        observer.accept(values);
                     }
                 }));
             }

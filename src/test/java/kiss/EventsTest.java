@@ -818,7 +818,7 @@ public class EventsTest {
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().on((observer, value) -> {
             list.add(value);
-            observer.onNext(value);
+            observer.accept(value);
         }).to(emitter);
 
         assert emitter.emitAndRetrieve(10) == 10;
@@ -1021,7 +1021,7 @@ public class EventsTest {
         public void publish(T value) {
             if (!completed) {
                 for (Observer observer : list) {
-                    observer.onNext(value);
+                    observer.accept(value);
                 }
             }
         }
@@ -1033,7 +1033,7 @@ public class EventsTest {
             completed = true;
 
             for (Observer observer : list) {
-                observer.onCompleted();
+                observer.complete();
             }
             return this;
         }
@@ -1051,7 +1051,7 @@ public class EventsTest {
          * {@inheritDoc}
          */
         @Override
-        public void onNext(T event) {
+        public void accept(T event) {
             events.add(event);
         }
 

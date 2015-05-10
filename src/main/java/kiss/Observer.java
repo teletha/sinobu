@@ -9,30 +9,32 @@
  */
 package kiss;
 
+import java.util.function.Consumer;
+
 /**
  * <p>
  * Provides a mechanism for receiving push-based notifications.
  * </p>
  * <p>
  * After an {@link Observer} calls an {@link Events#to(Observer)} method, the {@link Events} calls
- * the {@link #onNext(Object)} method to provide notifications. A well-behaved {@link Events} will
- * call an {@link #onCompleted()} closure exactly once or the Observer's {@link #onError(Throwable)}
+ * the {@link #accept(Object)} method to provide notifications. A well-behaved {@link Events} will
+ * call an {@link #complete()} closure exactly once or the Observer's {@link #error(Throwable)}
  * closure exactly once.
  * </p>
  * 
  * @param <V> The object that provides notification information.
  */
-public interface Observer<V> {
+public interface Observer<V> extends Consumer<V> {
 
     /**
      * <p>
      * Notifies the observer that the provider has finished sending push-based notifications.
      * </p>
      * <p>
-     * The {@link Events} will not call this closure if it calls {@link #onError(Throwable)}.
+     * The {@link Events} will not call this closure if it calls {@link #error(Throwable)}.
      * </p>
      */
-    public default void onCompleted() {
+    public default void complete() {
         // do nothing
     }
 
@@ -41,30 +43,13 @@ public interface Observer<V> {
      * Notifies the observer that the provider has experienced an error condition.
      * </p>
      * <p>
-     * If the {@link Events} calls this closure, it will not thereafter call {@link #onNext(Object)}
-     * or {@link #onCompleted()}.
+     * If the {@link Events} calls this closure, it will not thereafter call {@link #accept(Object)}
+     * or {@link #complete()}.
      * </p>
      * 
      * @param error An object that provides additional information about the error.
      */
-    public default void onError(Throwable error) {
+    public default void error(Throwable error) {
         // do nothing
     }
-
-    /**
-     * <p>
-     * Provides the observer with new data.
-     * </p>
-     * <p>
-     * The {@link Events} calls this closure 1 or more times, unless it calls <code>onError</code>
-     * in which case this closure may never be called.
-     * </p>
-     * <p>
-     * The {@link Events} will not call this closure again after it calls either
-     * {@link #onCompleted()} or {@link #onError(Throwable)}.
-     * </p>
-     * 
-     * @param value The current notification information.
-     */
-    public void onNext(V value);
 }

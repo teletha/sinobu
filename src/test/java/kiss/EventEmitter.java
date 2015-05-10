@@ -33,7 +33,7 @@ public class EventEmitter<E> implements Observer<E> {
     public Events<E> observe() {
         return new Events<>(observer -> {
             Listener<E> listener = event -> {
-                observer.onNext(event);
+                observer.accept(event);
             };
 
             add(listener);
@@ -48,7 +48,7 @@ public class EventEmitter<E> implements Observer<E> {
      * {@inheritDoc}
      */
     @Override
-    public void onNext(E event) {
+    public void accept(E event) {
         events.add(event);
     }
 
