@@ -754,6 +754,47 @@ public class Events<V> {
 
     /**
      * <p>
+     * Emit a specified sequence of items before beginning to emit the items from the source
+     * {@link Events}.
+     * </p>
+     * 
+     * @param values The initial values.
+     * @return Chainable API.
+     */
+    public final Events<V> startWith(V... values) {
+        // ignore invalid parameter
+        if (values == null) {
+            return this;
+        }
+        return startWith(Arrays.asList(values));
+    }
+
+    /**
+     * <p>
+     * Emit a specified sequence of items before beginning to emit the items from the source
+     * {@link Events}.
+     * </p>
+     * 
+     * @param values The initial values.
+     * @return Chainable API.
+     */
+    public final Events<V> startWith(Iterable<V> values) {
+        // ignore invalid parameter
+        if (values == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> {
+            for (V value : values) {
+                observer.onNext(value);
+            }
+
+            return to(observer);
+        });
+    }
+
+    /**
+     * <p>
      * Returns a specified number of contiguous values from the start of an {@link Events} sequence.
      * </p>
      * 

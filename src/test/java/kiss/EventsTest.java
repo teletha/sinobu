@@ -355,7 +355,7 @@ public class EventsTest {
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().take(1).to(emitter);
 
-        assert !emitter.isUnsubscribed();
+        assert!emitter.isUnsubscribed();
         assert emitter.emitAndRetrieve(10) == 10;
         assert emitter.isUnsubscribed();
         assert emitter.emitAndRetrieve(20) == null;
@@ -420,7 +420,7 @@ public class EventsTest {
         EventEmitter<Integer> emitter = new EventEmitter();
         emitter.observe().skip(1).take(1).to(emitter);
 
-        assert !emitter.isUnsubscribed();
+        assert!emitter.isUnsubscribed();
         assert emitter.emitAndRetrieve(10) == null;
         assert emitter.emitAndRetrieve(20) == 20;
         assert emitter.isUnsubscribed();
@@ -717,7 +717,7 @@ public class EventsTest {
 
         Disposable unsubscribe = Events.all(value -> {
             return 20 <= value;
-        }, emitter1.observe(), emitter2.observe()).to(reciever);
+        } , emitter1.observe(), emitter2.observe()).to(reciever);
 
         assert emitter1.isSubscribed();
         assert emitter2.isSubscribed();
@@ -756,7 +756,7 @@ public class EventsTest {
 
         Disposable unsubscribe = Events.any(value -> {
             return 20 <= value;
-        }, emitter1.observe(), emitter2.observe()).to(reciever);
+        } , emitter1.observe(), emitter2.observe()).to(reciever);
 
         assert emitter1.isSubscribed();
         assert emitter2.isSubscribed();
@@ -788,7 +788,7 @@ public class EventsTest {
 
         Disposable unsubscribe = Events.none(value -> {
             return 20 <= value;
-        }, emitter1.observe(), emitter2.observe()).to(reciever);
+        } , emitter1.observe(), emitter2.observe()).to(reciever);
 
         assert emitter1.isSubscribed();
         assert emitter2.isSubscribed();
@@ -831,7 +831,7 @@ public class EventsTest {
     public void never() throws Exception {
         Events.NEVER.to(value -> {
             // none
-            });
+        });
     }
 
     @Test
@@ -969,6 +969,23 @@ public class EventsTest {
         assert reciever.retrieve() == 1;
         assert reciever.retrieve() == 2;
         assert reciever.retrieve() == 3;
+    }
+
+    @Test
+    public void startWith() throws Exception {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        emitter.observe().startWith(0).to(emitter);
+        assert emitter.retrieve() == 0;
+        assert emitter.emitAndRetrieve(10) == 10;
+    }
+
+    @Test
+    public void startWithTwice() throws Exception {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        emitter.observe().startWith(0).startWith(1).to(emitter);
+        assert emitter.retrieve() == 1;
+        assert emitter.retrieve() == 0;
+        assert emitter.emitAndRetrieve(10) == 10;
     }
 
     /**
