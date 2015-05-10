@@ -1069,12 +1069,7 @@ public class Events<V> {
      * @return An {@link Events} that emits values as a first sequence.
      */
     public static <V> Events<V> just(V... values) {
-        return new Events<>(observer -> {
-            for (V value : values) {
-                observer.onNext(value);
-            }
-            return Disposable.Φ;
-        });
+        return NEVER.startWith(values);
     }
 
     /**
