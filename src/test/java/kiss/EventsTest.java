@@ -988,6 +988,15 @@ public class EventsTest {
         assert emitter.emitAndRetrieve(10) == 10;
     }
 
+    @Test
+    public void index() throws Exception {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        emitter.observe().index().map(v -> v.a + v.e).to(emitter);
+        assert emitter.emitAndRetrieve(0) == 0;
+        assert emitter.emitAndRetrieve(10) == 11;
+        assert emitter.emitAndRetrieve(20) == 22;
+    }
+
     /**
      * Create {@link Events} from source.
      * 

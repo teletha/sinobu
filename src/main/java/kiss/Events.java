@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -382,7 +384,7 @@ public class Events<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Events<V> filter(Predicate<? super V> predicate) {
+    public final Events<V> filter(Predicate<V> predicate) {
         // ignore invalid parameters
         if (predicate == null) {
             return this;
@@ -529,6 +531,105 @@ public class Events<V> {
 
     /**
      * <p>
+     * Returns an {@link Events} that applies the given function to each value emitted by an
+     * {@link Events} and emits the result.
+     * </p>
+     * 
+     * @param converter A converter function to apply to each value emitted by this {@link Events} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <R> Events<R> map(BiFunction<V, V, R> converter) {
+        // ignore invalid parameters
+        if (converter == null) {
+            return (Events<R>) this;
+        }
+
+        ref = new AtomicReference();
+
+        return new Events<>(observer -> {
+            return to(value -> {
+                V prev = ref.getAndSet(value);
+
+                if (prev != null) {
+                    observer.accept(converter.apply(prev, value));
+                }
+            });
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies the given function to each value emitted by an
+     * {@link Events} and emits the result.
+     * </p>
+     * 
+     * @param init A initial value.
+     * @param converter A converter function to apply to each value emitted by this {@link Events} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <R> Events<R> map(V init, BiFunction<V, V, R> converter) {
+        // ignore invalid parameters
+        if (converter == null) {
+            return (Events<R>) this;
+        }
+
+        ref = new AtomicReference(init);
+
+        return new Events<>(observer -> {
+            return to(value -> {
+                observer.accept(converter.apply(ref.getAndSet(value), value));
+            });
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies the given function to each value emitted by an
+     * {@link Events} and emits the result.
+     * </p>
+     * 
+     * @param init A initial value.
+     * @param converter A converter function to apply to each value emitted by this {@link Events} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final Events<Binary<Integer, V>> index() {
+        // ignore invalid parameters
+        counter = new AtomicInteger();
+
+        return new Events<>(observer -> to(value -> observer.accept(I.pair(counter.getAndIncrement(), value))));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies a function of your choosing to the first item emitted
+     * by a source {@link Events} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Events} into the same function, and so on
+     * until all items have been emitted by the source {@link Events}, emitting the result of each
+     * of these iterations.
+     * </p>
+     * 
+     * @param init An initial (seed) accumulator item.
+     * @param function An accumulator function to be invoked on each item emitted by the source
+     *            {@link Events}, whose result will be emitted to {@link Events} via
+     *            {@link Observer#onNext} and used in the next accumulator call.
+     * @return An {@link Events} that emits initial value followed by the results of each call to
+     *         the accumulator function.
+     */
+    public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
+        return new Events<>((observer, that) -> {
+            that.observer.object = init;
+
+            return to(value -> {
+                observer.accept(function.apply(that.observer.object, value));
+            });
+        });
+    }
+
+    /**
+     * <p>
      * Flattens a sequence of {@link Events} emitted by an {@link Events} into one {@link Events},
      * without any transformation.
      * </p>
@@ -642,32 +743,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that applies a function of your choosing to the first item emitted
-     * by a source {@link Events} and a seed value, then feeds the result of that function along
-     * with the second item emitted by the source {@link Events} into the same function, and so on
-     * until all items have been emitted by the source {@link Events}, emitting the result of each
-     * of these iterations.
-     * </p>
-     * 
-     * @param init An initial (seed) accumulator item.
-     * @param function An accumulator function to be invoked on each item emitted by the source
-     *            {@link Events}, whose result will be emitted to {@link Events} via
-     *            {@link Observer#onNext} and used in the next accumulator call.
-     * @return An {@link Events} that emits initial value followed by the results of each call to
-     *         the accumulator function.
-     */
-    public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
-        return new Events<>((observer, that) -> {
-            that.observer.object = init;
-
-            return to(value -> {
-                observer.accept(function.apply(that.observer.object, value));
-            });
-        });
-    }
-
-    /**
-     * <p>
      * Bypasses a specified number of values in an {@link Events} sequence and then returns the
      * remaining values.
      * </p>
@@ -687,6 +762,36 @@ public class Events<V> {
 
             return to(value -> {
                 if (count < counter.incrementAndGet()) {
+                    observer.accept(value);
+                }
+            });
+        });
+    }
+
+    /**
+     * <p>
+     * Bypasses a specified duration in an {@link Events} sequence and then returns the remaining
+     * values.
+     * </p>
+     * 
+     * @param time Time to skip values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Events<V> skip(long time, TimeUnit unit) {
+        // ignore invalid parameters
+        if (time <= 0 || unit == null) {
+            return this;
+        }
+
+        // return timeElapsed().filter(v -> !v.e.minus(time, unit).isNegative()).map(v -> v.a);
+
+        return new Events<>(observer -> {
+            long timing = System.currentTimeMillis() + unit.toMillis(time);
+
+            return to(value -> {
+                if (timing < System.currentTimeMillis()) {
                     observer.accept(value);
                 }
             });
@@ -906,6 +1011,19 @@ public class Events<V> {
             long now = System.currentTimeMillis();
             return latest.getAndSet(now) + delay <= now;
         });
+    }
+
+    public final Events<Binary<V, Instant>> timeStamp() {
+        return map(value -> I.pair(value, Instant.now()));
+    }
+
+    public final Events<Binary<V, Duration>> timeInterval() {
+        return timeStamp().map(null, (prev, current) -> current
+                .e(prev == null ? Duration.ZERO : Duration.between(prev.e, current.e)));
+    }
+
+    public final Events<Binary<V, Duration>> timeElapsed() {
+        return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) -> now.e(sum.e.plus(now.e)));
     }
 
     /**
