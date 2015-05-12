@@ -499,11 +499,7 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final <R> Events<R> map(R constant) {
-        return new Events<>(observer -> {
-            return to(value -> {
-                observer.accept(constant);
-            });
-        });
+        return map(v -> constant);
     }
 
     /**
@@ -521,41 +517,7 @@ public class Events<V> {
         if (converter == null) {
             return (Events<R>) this;
         }
-
-        return new Events<>(observer -> {
-            return to(value -> {
-                observer.accept(converter.apply(value));
-            });
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Events} that applies the given function to each value emitted by an
-     * {@link Events} and emits the result.
-     * </p>
-     * 
-     * @param converter A converter function to apply to each value emitted by this {@link Events} .
-     *            <code>null</code> will ignore this instruction.
-     * @return Chainable API.
-     */
-    public final <R> Events<R> map(BiFunction<V, V, R> converter) {
-        // ignore invalid parameters
-        if (converter == null) {
-            return (Events<R>) this;
-        }
-
-        ref = new AtomicReference();
-
-        return new Events<>(observer -> {
-            return to(value -> {
-                V prev = ref.getAndSet(value);
-
-                if (prev != null) {
-                    observer.accept(converter.apply(prev, value));
-                }
-            });
-        });
+        return new Events<>(observer -> to(value -> observer.accept(converter.apply(value))));
     }
 
     /**
@@ -574,58 +536,9 @@ public class Events<V> {
         if (converter == null) {
             return (Events<R>) this;
         }
-
         ref = new AtomicReference(init);
 
-        return new Events<>(observer -> {
-            return to(value -> {
-                observer.accept(converter.apply(ref.getAndSet(value), value));
-            });
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Events} that applies the given function to each value emitted by an
-     * {@link Events} and emits the result.
-     * </p>
-     * 
-     * @param init A initial value.
-     * @param converter A converter function to apply to each value emitted by this {@link Events} .
-     *            <code>null</code> will ignore this instruction.
-     * @return Chainable API.
-     */
-    public final Events<Binary<Integer, V>> index() {
-        // ignore invalid parameters
-        counter = new AtomicInteger();
-
-        return new Events<>(observer -> to(value -> observer.accept(I.pair(counter.getAndIncrement(), value))));
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Events} that applies a function of your choosing to the first item emitted
-     * by a source {@link Events} and a seed value, then feeds the result of that function along
-     * with the second item emitted by the source {@link Events} into the same function, and so on
-     * until all items have been emitted by the source {@link Events}, emitting the result of each
-     * of these iterations.
-     * </p>
-     * 
-     * @param init An initial (seed) accumulator item.
-     * @param function An accumulator function to be invoked on each item emitted by the source
-     *            {@link Events}, whose result will be emitted to {@link Events} via
-     *            {@link Observer#onNext} and used in the next accumulator call.
-     * @return An {@link Events} that emits initial value followed by the results of each call to
-     *         the accumulator function.
-     */
-    public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
-        return new Events<>((observer, that) -> {
-            that.observer.object = init;
-
-            return to(value -> {
-                observer.accept(function.apply(that.observer.object, value));
-            });
-        });
+        return map(v -> converter.apply(ref.getAndSet(v), v));
     }
 
     /**
@@ -738,6 +651,32 @@ public class Events<V> {
                 }
             };
             return to(agent);
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies a function of your choosing to the first item emitted
+     * by a source {@link Events} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Events} into the same function, and so on
+     * until all items have been emitted by the source {@link Events}, emitting the result of each
+     * of these iterations.
+     * </p>
+     * 
+     * @param init An initial (seed) accumulator item.
+     * @param function An accumulator function to be invoked on each item emitted by the source
+     *            {@link Events}, whose result will be emitted to {@link Events} via
+     *            {@link Observer#onNext} and used in the next accumulator call.
+     * @return An {@link Events} that emits initial value followed by the results of each call to
+     *         the accumulator function.
+     */
+    public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
+        return new Events<>((observer, that) -> {
+            that.observer.object = init;
+    
+            return to(value -> {
+                observer.accept(function.apply(that.observer.object, value));
+            });
         });
     }
 
