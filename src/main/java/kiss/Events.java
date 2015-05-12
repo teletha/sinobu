@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -340,17 +341,7 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> diff() {
-        return new Events<>(observer -> {
-            ref = new AtomicReference();
-
-            return to(value -> {
-                V prev = ref.getAndSet(value);
-
-                if (!Objects.equals(prev, value)) {
-                    observer.accept(value);
-                }
-            });
-        });
+        return filter((V) null, (prev, now) -> !Objects.equals(prev, now));
     }
 
     /**
@@ -395,6 +386,27 @@ public class Events<V> {
                 observer.accept(value);
             }
         });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
+     * given predicate.
+     * </p>
+     * 
+     * @param predicate A function that evaluates the values emitted by the source {@link Events},
+     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Events<V> filter(V init, BiPredicate<V, V> predicate) {
+        // ignore invalid parameters
+        if (predicate == null) {
+            return this;
+        }
+        ref = new AtomicReference(init);
+
+        return filter(v -> predicate.test(ref.getAndSet(v), v));
     }
 
     /**
@@ -468,8 +480,7 @@ public class Events<V> {
         if (converter == null) {
             return NEVER;
         }
-
-        return map(value -> converter.test(value));
+        return map(converter::test);
     }
 
     /**
@@ -638,13 +649,13 @@ public class Events<V> {
             return this;
         }
 
-        AtomicInteger repeat = new AtomicInteger(count);
+        counter = new AtomicInteger(count);
 
         return new Events<>(observer -> {
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
-                if (repeat.decrementAndGet() == 0) {
+                if (counter.decrementAndGet() == 0) {
                     unsubscriber.dispose();
                 } else {
                     unsubscriber = unsubscriber.and(to(agent));
@@ -673,7 +684,7 @@ public class Events<V> {
     public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
         return new Events<>((observer, that) -> {
             that.observer.object = init;
-    
+
             return to(value -> {
                 observer.accept(function.apply(that.observer.object, value));
             });
@@ -952,15 +963,36 @@ public class Events<V> {
         });
     }
 
+    /**
+     * <p>
+     * Append the current time to each events.
+     * </p>
+     * 
+     * @return
+     */
     public final Events<Binary<V, Instant>> timeStamp() {
         return map(value -> I.pair(value, Instant.now()));
     }
 
+    /**
+     * <p>
+     * Append {@link Duration} between the current value and the previous value.
+     * </p>
+     * 
+     * @return
+     */
     public final Events<Binary<V, Duration>> timeInterval() {
         return timeStamp().map(null, (prev, current) -> current
                 .e(prev == null ? Duration.ZERO : Duration.between(prev.e, current.e)));
     }
 
+    /**
+     * <p>
+     * Append {@link Duration} between the current value and the first value.
+     * </p>
+     * 
+     * @return
+     */
     public final Events<Binary<V, Duration>> timeElapsed() {
         return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) -> now.e(sum.e.plus(now.e)));
     }
