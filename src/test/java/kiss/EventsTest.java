@@ -11,9 +11,7 @@ package kiss;
 
 import static java.util.concurrent.TimeUnit.*;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.function.Function;
 
@@ -377,6 +375,31 @@ public class EventsTest {
         assert emitter.emitAndRetrieve(10) == 10;
         assert emitter.isUnsubscribed();
         assert emitter.emitAndRetrieve(20) == null;
+    }
+
+    @Test
+    public void takeUsingFromMultipleObservers() throws Exception {
+        EventEmitter<Integer> emitter = new EventEmitter();
+        Events<Integer> taked = emitter.observe().take(1);
+        EventRecorder<Integer> recorder1 = record(taked);
+        EventRecorder<Integer> recorder2 = record(taked);
+
+        assert recorder1.isCompleted == false;
+        assert recorder1.isCompleted == false;
+
+        // emit and validate
+        emitter.emit(10);
+        assert recorder1.retrieveValue() == 10;
+        assert recorder2.retrieveValue() == 10;
+        assert recorder1.isCompleted;
+        assert recorder2.isCompleted;
+
+        // emit and validate
+        emitter.emit(20);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+        assert recorder1.isCompleted;
+        assert recorder2.isCompleted;
     }
 
     @Test
@@ -1023,6 +1046,21 @@ public class EventsTest {
     }
 
     /**
+     * <p>
+     * Helper method to create the listener of the specified {@link Events}.
+     * </p>
+     * 
+     * @param stream
+     * @return
+     */
+    private static <T> EventRecorder<T> record(Events<T> stream) {
+        EventRecorder<T> recorder = new EventRecorder();
+        stream.to(recorder);
+
+        return recorder;
+    }
+
+    /**
      * @version 2014/08/28 13:34:51
      */
     private static class EventSource<T> {
@@ -1063,7 +1101,10 @@ public class EventsTest {
     private static class EventRecorder<T> implements Observer<T> {
 
         /** The event holder. */
-        private final Deque<T> events = new ArrayDeque();
+        private final List<T> events = new ArrayList();
+
+        /** The subscription flag. */
+        private boolean isCompleted;
 
         /**
          * {@inheritDoc}
@@ -1074,10 +1115,18 @@ public class EventsTest {
         }
 
         /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void complete() {
+            isCompleted = true;
+        }
+
+        /**
          * Retrieve the latest event.
          */
         public T retrieveValue() {
-            return events.pollFirst();
+            return events.isEmpty() ? null : events.remove(0);
         }
     }
 }

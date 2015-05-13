@@ -28,6 +28,7 @@ public class ObservePropertyTest {
 
         // observe
         Disposable disposer = I.observe(property).to(emitter);
+        assert emitter.retrieve() == null;
 
         // change property
         property.set("fire");

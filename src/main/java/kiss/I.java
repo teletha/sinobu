@@ -1507,15 +1507,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
         return new Events<>(observer -> {
             // create actual listener
-            InvalidationListener listener = value -> {
-                observer.accept((E) value);
-            };
+            InvalidationListener listener = value -> observer.accept((E) value);
 
-            observable.addListener(listener); // register listener
+            // INITIALIZING STAGE : register listener and notify the current value
+            observable.addListener(listener);
+            observer.accept(observable);
 
-            return () -> {
-                observable.removeListener(listener); // unregister listener
-            };
+            // DISPOSING STAGE : unregister listener
+            return () -> observable.removeListener(listener);
         });
     }
 
@@ -1539,22 +1538,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
         return new Events<>(observer -> {
             // create actual listener
-            ChangeListener<E> listener = (o, oldValue, newValue) -> {
-                observer.accept(newValue);
-            };
+            ChangeListener<E> listener = (o, oldValue, newValue) -> observer.accept(newValue);
 
-            observable.addListener(listener); // register listener
+            // INITIALIZING STAGE : register listener and notify the current value
+            observable.addListener(listener);
+            observer.accept(observable.getValue());
 
-            // notify the current value
-            E value = observable.getValue();
-
-            if (value != null) {
-                listener.changed(observable, null, value);
-            }
-
-            return () -> {
-                observable.removeListener(listener); // unregister listener
-            };
+            // DISPOSING STAGE : unregister listener
+            return () -> observable.removeListener(listener);
         });
     }
 

@@ -629,6 +629,7 @@ public class Events<V> {
             agent.observer = observer;
             agent.complete = () -> {
                 observer.complete();
+                System.out.println("再接続 " + agent);
                 to(agent);
             };
             return to(agent);
@@ -708,9 +709,12 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            counter = new AtomicInteger();
+            AtomicInteger counter = new AtomicInteger();
+            System.out.println("Create Skip Counter  " + counter.hashCode());
 
             return to(value -> {
+                System.out
+                        .println("Skip " + value + "   " + count + "   " + counter.get() + "   " + counter.hashCode());
                 if (count < counter.incrementAndGet()) {
                     observer.accept(value);
                 }
@@ -817,10 +821,6 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> startWith(V... values) {
-        // ignore invalid parameter
-        if (values == null) {
-            return this;
-        }
         return startWith(Arrays.asList(values));
     }
 
@@ -843,7 +843,6 @@ public class Events<V> {
             for (V value : values) {
                 observer.accept(value);
             }
-
             return to(observer);
         });
     }
@@ -864,17 +863,19 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            counter = new AtomicInteger(count);
+            AtomicInteger counter = new AtomicInteger(count);
+            System.out.println("take start init with " + counter.hashCode() + "  " + observer);
 
             return to(value -> {
-                long current = counter.decrementAndGet();
+                System.out.println("value coming " + value + "   " + counter.hashCode() + "   ");
+                int current = counter.decrementAndGet();
 
                 if (0 <= current) {
                     observer.accept(value);
 
                     if (0 == current) {
-                        observer.complete();
                         unsubscriber.dispose();
+                        observer.complete();
                     }
                 }
             });

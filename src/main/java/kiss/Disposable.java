@@ -41,6 +41,10 @@ public interface Disposable {
      * @return A composed {@link Disposable}.
      */
     default Disposable and(Disposable next) {
+        if (next == null) {
+            return this;
+        }
+
         return () -> {
             dispose();
             next.dispose();

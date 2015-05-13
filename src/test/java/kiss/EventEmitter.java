@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Nameless Production Committee
+ * Copyright (C) 2015 Nameless Production Committee
  *
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,13 +9,12 @@
  */
 package kiss;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @version 2014/01/09 2:57:23
+ * @version 2015/05/13 10:07:56
  */
 public class EventEmitter<E> implements Observer<E> {
 
@@ -23,7 +22,7 @@ public class EventEmitter<E> implements Observer<E> {
     private final List<Listener> listeners = new CopyOnWriteArrayList();
 
     /** The event holder. */
-    private final Deque<E> events = new ArrayDeque();
+    private final List<E> events = new ArrayList();
 
     /**
      * <p>
@@ -36,9 +35,11 @@ public class EventEmitter<E> implements Observer<E> {
                 observer.accept(event);
             };
 
+            System.out.println("Subscribe listener " + listener);
             add(listener);
 
             return () -> {
+                System.out.println("Unsubscribe listener " + listener);
                 remove(listener);
             };
         });
@@ -91,7 +92,7 @@ public class EventEmitter<E> implements Observer<E> {
      * </p>
      */
     public E retrieve() {
-        return events.pollFirst();
+        return events.isEmpty() ? null : events.remove(0);
     }
 
     /**
@@ -100,7 +101,7 @@ public class EventEmitter<E> implements Observer<E> {
      * </p>
      */
     public E retrieveLast() {
-        E event = events.pollLast();
+        E event = events.isEmpty() ? null : events.remove(events.size() - 1);
         events.clear();
         return event;
     }
@@ -125,8 +126,7 @@ public class EventEmitter<E> implements Observer<E> {
          * <p>
          * Event listener.
          * </p>
-         * 
-         d
+         * d
          */
         public void listen(E event);
     }
