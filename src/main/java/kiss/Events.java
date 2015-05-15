@@ -168,7 +168,7 @@ public class Events<V> {
             this.observer = new Agent();
             this.observer.observer = observer;
         }
-        return unsubscriber = subscriber.apply(this.observer, this);
+        return unsubscriber = this.observer.and(subscriber.apply(this.observer, this));
     }
 
     /**
@@ -451,17 +451,13 @@ public class Events<V> {
      */
     public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
-            List<Disposable> disposables = new ArrayList();
+            Agent disposables = new Agent();
 
-            disposables.add(to(value -> {
-                disposables.add(function.apply(value).to(observer));
+            disposables.and(to(value -> {
+                disposables.and(function.apply(value).to(observer));
             }));
 
-            return () -> {
-                for (Disposable disposable : disposables) {
-                    disposable.dispose();
-                }
-            };
+            return disposables;
         });
     }
 
@@ -629,7 +625,6 @@ public class Events<V> {
             agent.observer = observer;
             agent.complete = () -> {
                 observer.complete();
-                System.out.println("再接続 " + agent);
                 to(agent);
             };
             return to(agent);
@@ -710,11 +705,8 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             AtomicInteger counter = new AtomicInteger();
-            System.out.println("Create Skip Counter  " + counter.hashCode());
 
             return to(value -> {
-                System.out
-                        .println("Skip " + value + "   " + count + "   " + counter.get() + "   " + counter.hashCode());
                 if (count < counter.incrementAndGet()) {
                     observer.accept(value);
                 }
@@ -864,10 +856,8 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             AtomicInteger counter = new AtomicInteger(count);
-            System.out.println("take start init with " + counter.hashCode() + "  " + observer);
 
             return to(value -> {
-                System.out.println("value coming " + value + "   " + counter.hashCode() + "   ");
                 int current = counter.decrementAndGet();
 
                 if (0 <= current) {
@@ -900,8 +890,8 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             return unsubscriber = to(observer).and(predicate.to(value -> {
-                observer.complete();
                 unsubscriber.dispose();
+                observer.complete();
             }));
         });
     }
@@ -925,8 +915,8 @@ public class Events<V> {
         return on((observer, value) -> {
             if (predicate.test(value)) {
                 observer.accept(value);
-                observer.complete();
                 unsubscriber.dispose();
+                observer.complete();
             } else {
                 observer.accept(value);
             }

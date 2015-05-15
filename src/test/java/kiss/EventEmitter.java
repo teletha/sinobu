@@ -35,11 +35,9 @@ public class EventEmitter<E> implements Observer<E> {
                 observer.accept(event);
             };
 
-            System.out.println("Subscribe listener " + listener);
             add(listener);
 
             return () -> {
-                System.out.println("Unsubscribe listener " + listener);
                 remove(listener);
             };
         });

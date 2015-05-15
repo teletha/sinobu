@@ -11,7 +11,9 @@ package kiss;
 
 import java.nio.file.WatchEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Consumer;
 
 import kiss.model.Model;
@@ -24,7 +26,7 @@ import kiss.model.Property;
  * 
  * @version 2014/02/03 11:19:06
  */
-class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
+class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable {
 
     /** For reuse. */
     T object;
@@ -34,6 +36,36 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date> {
      * reduce creation cost.
      */
     Agent() {
+    }
+
+    List<Disposable> disposables;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void dispose() {
+        if (disposables != null) {
+            for (Disposable disposable : disposables) {
+                disposable.dispose();
+            }
+        }
+        disposables = null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Disposable and(Disposable next) {
+        if (disposables == null) {
+            disposables = new ArrayList();
+        }
+
+        if (next != this) {
+            disposables.add(next);
+        }
+        return this;
     }
 
     // ============================================================
