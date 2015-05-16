@@ -451,13 +451,9 @@ public class Events<V> {
      */
     public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
-            Agent disposables = new Agent();
-
-            disposables.and(to(value -> {
-                disposables.and(function.apply(value).to(observer));
-            }));
-
-            return disposables;
+            return to(value -> {
+                function.apply(value).to(observer);
+            });
         });
     }
 

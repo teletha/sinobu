@@ -47,6 +47,7 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable {
     public void dispose() {
         if (disposables != null) {
             for (Disposable disposable : disposables) {
+                System.out.println(disposable);
                 disposable.dispose();
             }
         }
