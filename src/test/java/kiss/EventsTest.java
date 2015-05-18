@@ -14,7 +14,6 @@ import static java.util.concurrent.TimeUnit.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 import javafx.beans.property.Property;
 
@@ -317,12 +316,8 @@ public class EventsTest {
 
     @Test
     public void flatMap() {
-        CountableDisposer disposer = new CountableDisposer();
-
         EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().flatMap(value -> {
-            return new Events<Integer>(observer -> disposer).startWith(value, value + 1);
-        }).to(emitter);
+        Disposable unsubscribe = emitter.observe().flatMap(value -> emitter.stream(value, value + 1)).to(emitter);
 
         emitter.emit(10);
         assert emitter.retrieve() == 10;
@@ -332,55 +327,11 @@ public class EventsTest {
         assert emitter.retrieve() == 20;
         assert emitter.retrieve() == 21;
 
-        assert disposer.count == 0;
+        assert emitter.countDisposed() == 0;
         unsubscribe.dispose();
         emitter.emit(30);
         assert emitter.retrieve() == null;
-        assert disposer.count == 2;
-    }
-
-    @Test
-    public void flatMap2() {
-        Timesifter<Integer> sifter = Timesifter.of(events -> events.flatMap(value -> sifter.with(value, value + 1)));
-        sifter.emit(10);
-        assert sifter.next() == 10;
-        assert sifter.next() == 11;
-
-        sifter.emit(20);
-        assert sifter.next() == 20;
-        assert sifter.next() == 21;
-
-        assert sifter.dispose() == 3;
-
-        sifter.emit(30);
-        assert sifter.next() == null;
-    }
-
-    private static class Timesifter<T> {
-
-        public static <T> Timesifter<T> of(UnaryOperator<Events<T>> declaration) {
-            return null;
-        }
-
-        private Timesifter(UnaryOperator<Events<T>> declaration) {
-
-        }
-
-        public Events<T> with(T... values) {
-            return null;
-        }
-
-        public void emit(T value) {
-
-        }
-
-        public T next() {
-            return null;
-        }
-
-        public int dispose() {
-            return 1;
-        }
+        assert emitter.countDisposed() == 2;
     }
 
     @Test
@@ -449,6 +400,8 @@ public class EventsTest {
         assert recorder2.retrieveValue() == null;
         assert recorder1.isCompleted;
         assert recorder2.isCompleted;
+
+        // dispose
     }
 
     @Test
@@ -1104,7 +1057,7 @@ public class EventsTest {
      */
     private static <T> EventRecorder<T> record(Events<T> stream) {
         EventRecorder<T> recorder = new EventRecorder();
-        stream.to(recorder);
+        recorder.unsubscriber = stream.to(recorder);
 
         return recorder;
     }
@@ -1149,6 +1102,9 @@ public class EventsTest {
      */
     private static class EventRecorder<T> implements Observer<T> {
 
+        /** The unsubscriber. */
+        private Disposable unsubscriber;
+
         /** The event holder. */
         private final List<T> events = new ArrayList();
 
@@ -1176,22 +1132,6 @@ public class EventsTest {
          */
         public T retrieveValue() {
             return events.isEmpty() ? null : events.remove(0);
-        }
-    }
-
-    /**
-     * @version 2015/05/16 12:59:21
-     */
-    private static class CountableDisposer implements Disposable {
-
-        private int count;
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void dispose() {
-            count++;
         }
     }
 }

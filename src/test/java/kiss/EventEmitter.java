@@ -24,6 +24,9 @@ public class EventEmitter<E> implements Observer<E> {
     /** The event holder. */
     private final List<E> events = new ArrayList();
 
+    /** The dispose count. */
+    private int disposed;
+
     /**
      * <p>
      * Observe EventEmitter.
@@ -156,5 +159,21 @@ public class EventEmitter<E> implements Observer<E> {
      */
     public boolean isEmpty() {
         return events.isEmpty();
+    }
+
+    /**
+     * @param value
+     * @param i
+     * @return
+     */
+    public Events<E> stream(E... values) {
+        return new Events<E>(observer -> () -> disposed++).startWith(values);
+    }
+
+    /**
+     * @return
+     */
+    public int countDisposed() {
+        return disposed;
     }
 }
