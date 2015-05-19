@@ -23,7 +23,7 @@ import org.junit.Test;
 import antibug.Chronus;
 
 /**
- * @version 2014/01/11 2:51:33
+ * @version 2015/05/19 9:42:39
  */
 public class EventsTest {
 
@@ -31,114 +31,129 @@ public class EventsTest {
     public static final Chronus chronus = new Chronus(I.class);
 
     @Test
-    public void subscribe() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().to(emitter);
+    public void to() {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().to(facade);
 
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
 
-        unsubscribe.dispose();
-        assert emitter.emitAndRetrieve(30) == null;
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+        assert facade.emitAndRetrieve(30) == null;
     }
 
     @Test
-    public void skip() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().skip(1).to(emitter);
+    public void skip() {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().skip(1).to(facade);
 
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == 30;
 
-        unsubscribe.dispose();
-        assert emitter.emitAndRetrieve(30) == null;
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+        assert facade.emitAndRetrieve(100) == null;
     }
 
     @Test
-    public void skipUntil() throws Exception {
-        EventEmitter<String> condition = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().skipUntil(condition.observe()).to(emitter);
+    public void skipWithMultiSources() {
+        EventFacade<Integer> source = new EventFacade();
+        Events<Integer> skipped = source.observe().skip(1);
+        EventRecorder<Integer> recorder1 = record(skipped);
+        EventRecorder<Integer> recorder2 = record(skipped);
 
-        assert condition.isSubscribed();
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == null;
+        source.emit(10);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+
+        source.emit(20);
+        assert recorder1.retrieveValue() == 20;
+        assert recorder2.retrieveValue() == 20;
+
+        source.emit(30);
+        assert recorder1.retrieveValue() == 30;
+        assert recorder2.retrieveValue() == 30;
+    }
+
+    @Test
+    public void skipUntil() {
+        EventFacade<String> condition = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().skipUntil(condition.observe()).to(facade);
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
 
         condition.emit("start");
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
 
-        unsubscribe.dispose();
-        assert condition.isUnsubscribed() == true;
-        assert emitter.isUnsubscribed() == true;
-        assert emitter.emitAndRetrieve(10) == null;
+        disposer.dispose();
+        assert facade.emitAndRetrieve(100) == null;
+        assert facade.countDisposed() == 1;
+        assert condition.countDisposed() == 1;
     }
 
     @Test
-    public void skipUntilCondition() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().skipUntil(v -> {
-            return v % 3 == 0;
-        }).to(emitter);
+    public void skipUntilWithRepeat() throws Exception {
+        EventFacade<String> condition = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().skipUntil(condition.observe()).take(1).repeat().to(facade);
 
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == null;
-        assert emitter.emitAndRetrieve(30) == 30;
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
-
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed() == true;
-        assert emitter.emitAndRetrieve(10) == null;
-    }
-
-    @Test
-    public void skipUntilConditionRepeat() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().skipUntil(v -> {
-            return v % 3 == 0;
-        }).take(2).repeat().to(emitter);
-
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(20) == null;
-        assert emitter.emitAndRetrieve(30) == 30;
-        assert emitter.emitAndRetrieve(40) == 40;
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == null;
-        assert emitter.emitAndRetrieve(60) == 60;
-        assert emitter.emitAndRetrieve(90) == 90;
-        assert emitter.emitAndRetrieve(100) == null;
-
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed() == true;
-        assert emitter.emitAndRetrieve(30) == null;
-    }
-
-    @Test
-    public void skipUntilRepeat() throws Exception {
-        EventEmitter<String> condition = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().skipUntil(condition.observe()).take(1).repeat().to(emitter);
-
-        assert condition.isSubscribed();
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
 
         condition.emit("start");
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == null;
 
         condition.emit("start");
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == null;
 
-        unsubscribe.dispose();
-        assert condition.isUnsubscribed() == true;
-        assert emitter.isUnsubscribed() == true;
-        assert emitter.emitAndRetrieve(10) == null;
+        disposer.dispose();
+        assert facade.countDisposed() == 3;
+        assert condition.countDisposed() == 3;
+        assert facade.emitAndRetrieve(10) == null;
+    }
+
+    @Test
+    public void skipUntilCondition() {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().skipUntil(value -> value % 3 == 0).to(facade);
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+        assert facade.emitAndRetrieve(10) == null;
+    }
+
+    @Test
+    public void skipUntilConditionWithRepeat() {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().skipUntil(value -> value % 3 == 0).take(2).repeat().to(facade);
+
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(40) == 40;
+        assert facade.emitAndRetrieve(50) == null;
+        assert facade.emitAndRetrieve(50) == null;
+        assert facade.emitAndRetrieve(60) == 60;
+        assert facade.emitAndRetrieve(70) == 70;
+        assert facade.emitAndRetrieve(80) == null;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 3;
+        assert facade.emitAndRetrieve(30) == null;
     }
 
     /**
@@ -156,124 +171,122 @@ public class EventsTest {
     }
 
     @Test
-    public void buffer() throws Exception {
-        EventEmitter<List<Integer>> reciever = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().buffer(2).to(reciever);
+    public void buffer() {
+        EventFacade<Integer> publisher = new EventFacade();
+        EventFacade<List<Integer>> subscriber = new EventFacade();
+        Disposable disposer = publisher.observe().buffer(2).to(subscriber);
 
-        emitter.emit(10);
-        assert reciever.retrieve() == null;
-        emitter.emit(20);
-        assertList(reciever.retrieve(), 10, 20);
+        publisher.emit(10);
+        assert subscriber.retrieveNull();
+        publisher.emit(20);
+        assert subscriber.retrieve(10, 20);
 
-        emitter.emit(30);
-        assert reciever.retrieve() == null;
-        emitter.emit(40);
-        assertList(reciever.retrieve(), 30, 40);
+        publisher.emit(30);
+        assert subscriber.retrieveNull();
+        publisher.emit(40);
+        assert subscriber.retrieve(30, 40);
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed();
-
-        emitter.emit(50);
-        emitter.emit(60);
-        assert reciever.retrieve() == null;
+        disposer.dispose();
+        assert publisher.countDisposed() == 1;
+        publisher.emit(50, 60);
+        assert subscriber.retrieveNull();
     }
 
     @Test
     public void bufferRepeat() throws Exception {
-        EventEmitter<List<Integer>> reciever = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().buffer(2).skip(1).take(1).repeat().to(reciever);
+        EventFacade<List<Integer>> reciever = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().buffer(2).skip(1).take(1).repeat().to(reciever);
 
-        emitter.emit(10);
-        emitter.emit(20);
+        facade.emit(10);
+        facade.emit(20);
         assert reciever.retrieve() == null;
-        emitter.emit(30);
-        emitter.emit(40);
+        facade.emit(30);
+        facade.emit(40);
         assertList(reciever.retrieve(), 30, 40);
 
-        emitter.emit(50);
-        emitter.emit(60);
+        facade.emit(50);
+        facade.emit(60);
         assert reciever.retrieve() == null;
-        emitter.emit(70);
-        emitter.emit(80);
+        facade.emit(70);
+        facade.emit(80);
         assertList(reciever.retrieve(), 70, 80);
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed();
+        disposer.dispose();
+        assert facade.isUnsubscribed();
 
-        emitter.emit(90);
-        emitter.emit(100);
-        emitter.emit(110);
-        emitter.emit(120);
+        facade.emit(90);
+        facade.emit(100);
+        facade.emit(110);
+        facade.emit(120);
         assert reciever.retrieve() == null;
     }
 
     @Test
     public void bufferInterval1() throws Exception {
-        EventEmitter<List<Integer>> reciever = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().buffer(2, 1).to(reciever);
+        EventFacade<List<Integer>> reciever = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().buffer(2, 1).to(reciever);
 
-        emitter.emit(10);
+        facade.emit(10);
         assert reciever.retrieve() == null;
-        emitter.emit(20);
+        facade.emit(20);
         assertList(reciever.retrieve(), 10, 20);
 
-        emitter.emit(30);
+        facade.emit(30);
         assertList(reciever.retrieve(), 20, 30);
-        emitter.emit(40);
+        facade.emit(40);
         assertList(reciever.retrieve(), 30, 40);
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed();
+        disposer.dispose();
+        assert facade.isUnsubscribed();
 
-        emitter.emit(50);
+        facade.emit(50);
         assert reciever.retrieve() == null;
     }
 
     @Test
     public void bufferInterval2() throws Exception {
-        EventEmitter<List<Integer>> reciever = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().buffer(2, 3).to(reciever);
+        EventFacade<List<Integer>> reciever = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().buffer(2, 3).to(reciever);
 
-        emitter.emit(10);
+        facade.emit(10);
         assert reciever.retrieve() == null;
-        emitter.emit(20);
+        facade.emit(20);
         assert reciever.retrieve() == null;
-        emitter.emit(30);
+        facade.emit(30);
         assertList(reciever.retrieve(), 20, 30);
-        emitter.emit(40);
+        facade.emit(40);
         assert reciever.retrieve() == null;
-        emitter.emit(50);
+        facade.emit(50);
         assert reciever.retrieve() == null;
-        emitter.emit(60);
+        facade.emit(60);
         assertList(reciever.retrieve(), 50, 60);
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed();
+        disposer.dispose();
+        assert facade.isUnsubscribed();
 
-        emitter.emit(70);
+        facade.emit(70);
         assert reciever.retrieve() == null;
     }
 
     @Test
     public void bufferTime() throws Exception {
-        EventEmitter<List<Integer>> reciever = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().buffer(30, MILLISECONDS).to(reciever);
+        EventFacade<List<Integer>> reciever = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().buffer(30, MILLISECONDS).to(reciever);
 
-        emitter.emit(10);
-        emitter.emit(20);
+        facade.emit(10);
+        facade.emit(20);
         // chronus.freeze(30);
         Thread.sleep(300);
-        emitter.emit(30);
-        emitter.emit(40);
-        emitter.emit(50);
+        facade.emit(30);
+        facade.emit(40);
+        facade.emit(50);
         // chronus.freeze(30);
         Thread.sleep(300);
-        emitter.emit(60);
+        facade.emit(60);
 
         assertList(reciever.retrieve(), 10, 20);
         assertList(reciever.retrieve(), 30, 40, 50);
@@ -281,106 +294,104 @@ public class EventsTest {
 
     @Test
     public void as() throws Exception {
-        EventEmitter<Integer> reciever = new EventEmitter();
-        EventEmitter<Number> emitter = new EventEmitter();
-        emitter.observe().as(Integer.class).to(reciever);
+        EventFacade<Integer> reciever = new EventFacade();
+        EventFacade<Number> facade = new EventFacade();
+        facade.observe().as(Integer.class).to(reciever);
 
-        emitter.emit(10);
+        facade.emit(10);
         assert reciever.retrieve() == 10;
 
-        emitter.emit(2.1F);
+        facade.emit(2.1F);
         assert reciever.retrieve() == null;
-        emitter.emit(-1.1D);
+        facade.emit(-1.1D);
         assert reciever.retrieve() == null;
-        emitter.emit(20L);
+        facade.emit(20L);
         assert reciever.retrieve() == null;
     }
 
     @Test
     public void diff() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().diff().to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().diff().to(facade);
 
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.emitAndRetrieve(20) == null;
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
+        assert facade.isSubscribed();
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed();
-        assert emitter.emitAndRetrieve(10) == null;
+        disposer.dispose();
+        assert facade.isUnsubscribed();
+        assert facade.emitAndRetrieve(10) == null;
     }
 
     @Test
     public void flatMap() {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().flatMap(value -> emitter.stream(value, value + 1)).to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().flatMap(value -> facade.stream(value, value + 1)).to(facade);
 
-        emitter.emit(10);
-        assert emitter.retrieve() == 10;
-        assert emitter.retrieve() == 11;
+        facade.emit(10);
+        assert facade.retrieve() == 10;
+        assert facade.retrieve() == 11;
 
-        emitter.emit(20);
-        assert emitter.retrieve() == 20;
-        assert emitter.retrieve() == 21;
+        facade.emit(20);
+        assert facade.retrieve() == 20;
+        assert facade.retrieve() == 21;
 
-        assert emitter.countDisposed() == 0;
-        unsubscribe.dispose();
-        emitter.emit(30);
-        assert emitter.retrieve() == null;
-        assert emitter.countDisposed() == 2;
+        assert facade.countDisposed() == 0;
+        disposer.dispose();
+        facade.emit(30);
+        assert facade.retrieve() == null;
+        assert facade.countDisposed() == 3;
     }
 
     @Test
     public void map() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().map((Function<Integer, Integer>) value -> {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().map((Function<Integer, Integer>) value -> {
             return value * 2;
-        }).to(emitter);
+        }).to(facade);
 
-        assert emitter.emitAndRetrieve(10) == 20;
-        assert emitter.emitAndRetrieve(20) == 40;
+        assert facade.emitAndRetrieve(10) == 20;
+        assert facade.emitAndRetrieve(20) == 40;
 
-        unsubscribe.dispose();
-        assert emitter.emitAndRetrieve(30) == null;
+        disposer.dispose();
+        assert facade.emitAndRetrieve(30) == null;
     }
 
     @Test
     public void mapConstant() {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().map(100).to(emitter);
-        assert emitter.emitAndRetrieve(10) == 100;
-        assert emitter.emitAndRetrieve(20) == 100;
-        assert emitter.emitAndRetrieve(30) == 100;
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().map(100).to(facade);
+        assert facade.emitAndRetrieve(10) == 100;
+        assert facade.emitAndRetrieve(20) == 100;
+        assert facade.emitAndRetrieve(30) == 100;
     }
 
     @Test
     public void mapWithPreviousValue() {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().map(1, (prev, now) -> prev + now).to(emitter);
-        assert emitter.emitAndRetrieve(1) == 2;
-        assert emitter.emitAndRetrieve(2) == 3;
-        assert emitter.emitAndRetrieve(3) == 5;
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().map(1, (prev, now) -> prev + now).to(facade);
+        assert facade.emitAndRetrieve(1) == 2;
+        assert facade.emitAndRetrieve(2) == 3;
+        assert facade.emitAndRetrieve(3) == 5;
     }
 
     @Test
-    public void take() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().take(1).to(emitter);
+    public void take() {
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().take(1).to(facade);
 
-        assert!emitter.isUnsubscribed();
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.isUnsubscribed();
-        assert emitter.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == null;
     }
 
     @Test
-    public void takeUsingFromMultipleObservers() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Events<Integer> taked = emitter.observe().take(1);
+    public void takeWithMultiSources() throws Exception {
+        EventFacade<Integer> source = new EventFacade();
+        Events<Integer> taked = source.observe().take(1);
         EventRecorder<Integer> recorder1 = record(taked);
         EventRecorder<Integer> recorder2 = record(taked);
 
@@ -388,14 +399,14 @@ public class EventsTest {
         assert recorder1.isCompleted == false;
 
         // emit and validate
-        emitter.emit(10);
+        source.emit(10);
         assert recorder1.retrieveValue() == 10;
         assert recorder2.retrieveValue() == 10;
         assert recorder1.isCompleted;
         assert recorder2.isCompleted;
 
         // emit and validate
-        emitter.emit(20);
+        source.emit(20);
         assert recorder1.retrieveValue() == null;
         assert recorder2.retrieveValue() == null;
         assert recorder1.isCompleted;
@@ -406,309 +417,404 @@ public class EventsTest {
 
     @Test
     public void takeUntil() throws Exception {
-        EventEmitter<String> condition = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().takeUntil(condition.observe()).to(emitter);
+        EventFacade<String> condition = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().takeUntil(condition.observe()).to(facade);
 
         assert condition.isSubscribed();
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
+        assert facade.isSubscribed();
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
 
         condition.emit("start");
         assert condition.isUnsubscribed() == true;
-        assert emitter.isUnsubscribed() == true;
-        assert emitter.emitAndRetrieve(10) == null;
+        assert facade.isUnsubscribed() == true;
+        assert facade.emitAndRetrieve(10) == null;
     }
 
     @Test
     public void takeUntilCondition() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().takeUntil(v -> {
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().takeUntil(v -> {
             return v % 3 == 0;
-        }).to(emitter);
+        }).to(facade);
 
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == 30;
 
-        assert emitter.isUnsubscribed();
-        assert emitter.emitAndRetrieve(40) == null;
+        assert facade.isUnsubscribed();
+        assert facade.emitAndRetrieve(40) == null;
     }
 
     @Test
     public void takeUntilConditionRepeat() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().skip(1).takeUntil(v -> {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().skip(1).takeUntil(v -> {
             return v % 3 == 0;
-        }).repeat().to(emitter);
+        }).repeat().to(facade);
 
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == 30;
 
-        assert emitter.emitAndRetrieve(40) == null;
-        assert emitter.emitAndRetrieve(60) == 60;
-        assert emitter.emitAndRetrieve(70) == null;
-        assert emitter.emitAndRetrieve(80) == 80;
-        assert emitter.emitAndRetrieve(100) == 100;
+        assert facade.emitAndRetrieve(40) == null;
+        assert facade.emitAndRetrieve(60) == 60;
+        assert facade.emitAndRetrieve(70) == null;
+        assert facade.emitAndRetrieve(80) == 80;
+        assert facade.emitAndRetrieve(100) == 100;
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed();
-        assert emitter.emitAndRetrieve(110) == null;
+        disposer.dispose();
+        assert facade.isUnsubscribed();
+        assert facade.emitAndRetrieve(110) == null;
     }
 
     @Test
-    public void skipAndTake() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().skip(1).take(1).to(emitter);
+    public void skipAndTake() {
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().skip(2).take(2).to(facade);
 
-        assert!emitter.isUnsubscribed();
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.isUnsubscribed();
-        assert emitter.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(40) == 40;
+        assert facade.emitAndRetrieve(50) == null;
+        assert facade.emitAndRetrieve(60) == null;
     }
 
     @Test
-    public void repeat() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().skip(1).take(1).repeat().to(emitter);
+    public void skipAndTakeWithMultiSources() {
+        EventFacade<Integer> source = new EventFacade();
+        Events<Integer> events = source.observe().skip(1).take(1);
+        EventRecorder<Integer> recorder1 = record(events);
+        EventRecorder<Integer> recorder2 = record(events);
 
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(30) == null;
-        assert emitter.emitAndRetrieve(40) == 40;
-        assert emitter.isSubscribed();
+        source.emit(10);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed() == true;
-        assert emitter.emitAndRetrieve(50) == null;
+        source.emit(20);
+        assert recorder1.retrieveValue() == 20;
+        assert recorder2.retrieveValue() == 20;
+
+        source.emit(30);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+    }
+
+    @Test
+    public void repeat() {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().skip(1).take(1).repeat().to(facade);
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(40) == 40;
+        assert facade.emitAndRetrieve(50) == null;
+        assert facade.emitAndRetrieve(60) == 60;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 4;
+        assert facade.emitAndRetrieve(100) == null;
+        assert facade.emitAndRetrieve(200) == null;
+    }
+
+    @Test
+    public void repeatWithMultiSources() {
+        EventFacade<Integer> facade = new EventFacade();
+        Events<Integer> repeated = facade.observe().skip(1).take(1).repeat();
+        EventRecorder<Integer> recorder1 = record(repeated);
+        EventRecorder<Integer> recorder2 = record(repeated);
+
+        facade.emit(10);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+
+        facade.emit(20);
+        assert recorder1.retrieveValue() == 20;
+        assert recorder2.retrieveValue() == 20;
+
+        facade.emit(30);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+
+        facade.emit(40);
+        assert recorder1.retrieveValue() == 40;
+        assert recorder2.retrieveValue() == 40;
     }
 
     @Test
     public void repeatFinitely() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().skip(1).take(1).repeat(2).to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().skip(1).take(1).repeat(2).to(facade);
 
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(30) == null;
-        assert emitter.emitAndRetrieve(40) == 40;
-        assert emitter.isUnsubscribed();
-        assert emitter.emitAndRetrieve(30) == null;
+        assert facade.countDisposed() == 0;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.countDisposed() == 1;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(40) == 40;
+
+        assert facade.countDisposed() == 2;
+        assert facade.emitAndRetrieve(100) == null;
+        assert facade.emitAndRetrieve(200) == null;
+    }
+
+    @Test
+    public void repeatFinitelyWithMultiSource() throws Exception {
+        EventFacade<Integer> facade = new EventFacade();
+        Events<Integer> repeated = facade.observe().skip(1).take(1).repeat();
+        EventRecorder<Integer> recorder1 = record(repeated);
+        EventRecorder<Integer> recorder2 = record(repeated);
+
+        facade.emit(10);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+
+        facade.emit(20);
+        assert recorder1.retrieveValue() == 20;
+        assert recorder2.retrieveValue() == 20;
+
+        facade.emit(30);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+
+        facade.emit(40);
+        assert recorder1.retrieveValue() == 40;
+        assert recorder2.retrieveValue() == 40;
     }
 
     @Test
     public void repeatThen() throws Exception {
-        EventEmitter<Integer> sub = new EventEmitter();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().skip(1).take(2).repeat().merge(sub.observe()).to(emitter);
+        EventFacade<Integer> sub = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().skip(1).take(2).repeat().merge(sub.observe()).to(facade);
 
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.emitAndRetrieve(30) == 30;
-        assert emitter.isSubscribed();
-        assert emitter.emitAndRetrieve(30) == null;
-        assert emitter.emitAndRetrieve(40) == 40;
-        assert emitter.emitAndRetrieve(50) == 50;
-        assert emitter.isSubscribed();
+        assert facade.isSubscribed();
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.isSubscribed();
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(40) == 40;
+        assert facade.emitAndRetrieve(50) == 50;
+        assert facade.isSubscribed();
 
         // from sub
         assert sub.isSubscribed();
         sub.emit(100);
-        assert emitter.retrieve() == 100;
+        assert facade.retrieve() == 100;
         sub.emit(200);
-        assert emitter.retrieve() == 200;
+        assert facade.retrieve() == 200;
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed() == true;
-        assert emitter.emitAndRetrieve(50) == null;
+        disposer.dispose();
+        assert facade.isUnsubscribed() == true;
+        assert facade.emitAndRetrieve(50) == null;
 
         // from sub
         sub.emit(300);
-        assert emitter.retrieve() == null;
+        assert facade.retrieve() == null;
         assert sub.isUnsubscribed() == true;
     }
 
     @Test
-    public void filter() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().filter(value -> {
-            return value % 2 == 0;
-        }).to(emitter);
+    public void filter() {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().filter(value -> value % 2 == 0).to(facade);
 
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.emitAndRetrieve(25) == null;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(15) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(25) == null;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+    }
+
+    @Test
+    public void filterByEvent() {
+        EventFacade<Boolean> condition = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().filter(condition.observe()).to(facade);
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+
+        condition.emit(true);
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+
+        condition.emit(false);
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+        assert condition.countDisposed() == 1;
     }
 
     @Test
     public void throttle() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().throttle(20, MILLISECONDS).to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().throttle(20, MILLISECONDS).to(facade);
 
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(10) == null;
 
         Thread.sleep(20);
-        assert emitter.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(10) == 10;
     }
 
     @Test
     public void debounce() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().debounce(10, MILLISECONDS).to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().debounce(10, MILLISECONDS).to(facade);
 
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == null;
-        assert emitter.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == null;
 
         chronus.await();
-        assert emitter.retrieve() == 30;
+        assert facade.retrieve() == 30;
     }
 
     @Test
     public void debounceRepeat() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().debounce(10, MILLISECONDS).skip(1).take(1).repeat().to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().debounce(10, MILLISECONDS).skip(1).take(1).repeat().to(facade);
 
-        assert emitter.emitAndRetrieve(11) == null;
-        assert emitter.emitAndRetrieve(22) == null;
-        assert emitter.emitAndRetrieve(33) == null;
+        assert facade.emitAndRetrieve(11) == null;
+        assert facade.emitAndRetrieve(22) == null;
+        assert facade.emitAndRetrieve(33) == null;
 
         chronus.await();
-        assert emitter.retrieve() == null;
+        assert facade.retrieve() == null;
 
-        emitter.emit(44);
+        facade.emit(44);
         chronus.await();
-        assert emitter.retrieve() == 44;
+        assert facade.retrieve() == 44;
 
-        emitter.emit(55);
+        facade.emit(55);
         chronus.await();
-        assert emitter.retrieve() == null;
-        emitter.emit(66);
+        assert facade.retrieve() == null;
+        facade.emit(66);
         chronus.await();
-        assert emitter.retrieve() == 66;
+        assert facade.retrieve() == 66;
     }
 
     @Test
     public void delay() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().delay(10, MILLISECONDS).to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().delay(10, MILLISECONDS).to(facade);
 
-        assert emitter.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(10) == null;
         chronus.await();
-        assert emitter.retrieve() == 10;
+        assert facade.retrieve() == 10;
 
-        assert emitter.emitAndRetrieve(20) == null;
-        assert emitter.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == null;
         chronus.await();
-        assert emitter.retrieve() == 20;
-        assert emitter.retrieve() == 30;
+        assert facade.retrieve() == 20;
+        assert facade.retrieve() == 30;
     }
 
     @Test
     public void distinct() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().distinct().to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().distinct().to(facade);
 
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == null;
-        assert emitter.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == 30;
     }
 
     @Test
     public void distinctRepeat() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        Disposable unsubscribe = emitter.observe().distinct().take(2).repeat().to(emitter);
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().distinct().take(2).repeat().to(facade);
 
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
 
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(10) == null;
-        assert emitter.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
 
-        unsubscribe.dispose();
-        assert emitter.isUnsubscribed() == true;
-        assert emitter.emitAndRetrieve(10) == null;
+        disposer.dispose();
+        assert facade.isUnsubscribed() == true;
+        assert facade.emitAndRetrieve(10) == null;
     }
 
     @Test
     public void merge() throws Exception {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        Disposable unsubscribe = emitter1.observe().merge(emitter2.observe()).to(emitter1);
+        EventFacade<Integer> facade1 = new EventFacade();
+        EventFacade<Integer> facade2 = new EventFacade();
+        Disposable disposer = facade1.observe().merge(facade2.observe()).to(facade1);
 
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
-        assert emitter1.emitAndRetrieve(10) == 10;
-        assert emitter1.emitAndRetrieve(20) == 20;
+        assert facade1.isSubscribed();
+        assert facade2.isSubscribed();
+        assert facade1.emitAndRetrieve(10) == 10;
+        assert facade1.emitAndRetrieve(20) == 20;
 
-        emitter2.emit(100);
-        emitter2.emit(200);
-        assert emitter1.retrieve() == 100;
-        assert emitter1.retrieve() == 200;
+        facade2.emit(100);
+        facade2.emit(200);
+        assert facade1.retrieve() == 100;
+        assert facade1.retrieve() == 200;
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed() == true;
-        assert emitter2.isUnsubscribed() == true;
+        disposer.dispose();
+        assert facade1.isUnsubscribed() == true;
+        assert facade2.isUnsubscribed() == true;
     }
 
     @Test
     public void mergeIterable() throws Exception {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        EventEmitter<Integer> emitter3 = new EventEmitter();
-        EventEmitter<Integer> emitter4 = new EventEmitter();
+        EventFacade<Integer> facade1 = new EventFacade();
+        EventFacade<Integer> facade2 = new EventFacade();
+        EventFacade<Integer> facade3 = new EventFacade();
+        EventFacade<Integer> facade4 = new EventFacade();
 
         List<Events<Integer>> list = new ArrayList();
-        list.add(emitter2.observe());
-        list.add(emitter3.observe());
-        list.add(emitter4.observe());
+        list.add(facade2.observe());
+        list.add(facade3.observe());
+        list.add(facade4.observe());
 
-        Disposable unsubscribe = emitter1.observe().merge(list).to(emitter1);
+        Disposable disposer = facade1.observe().merge(list).to(facade1);
 
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
-        assert emitter3.isSubscribed();
-        assert emitter4.isSubscribed();
-        assert emitter1.emitAndRetrieve(10) == 10;
+        assert facade1.isSubscribed();
+        assert facade2.isSubscribed();
+        assert facade3.isSubscribed();
+        assert facade4.isSubscribed();
+        assert facade1.emitAndRetrieve(10) == 10;
 
-        emitter2.emit(100);
-        emitter3.emit(200);
-        emitter4.emit(300);
-        assert emitter1.retrieve() == 100;
-        assert emitter1.retrieve() == 200;
-        assert emitter1.retrieve() == 300;
+        facade2.emit(100);
+        facade3.emit(200);
+        facade4.emit(300);
+        assert facade1.retrieve() == 100;
+        assert facade1.retrieve() == 200;
+        assert facade1.retrieve() == 300;
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed() == true;
-        assert emitter2.isUnsubscribed() == true;
-        assert emitter3.isUnsubscribed() == true;
-        assert emitter4.isUnsubscribed() == true;
+        disposer.dispose();
+        assert facade1.isUnsubscribed() == true;
+        assert facade2.isUnsubscribed() == true;
+        assert facade3.isUnsubscribed() == true;
+        assert facade4.isUnsubscribed() == true;
     }
 
     @Test
     public void mergeNull() throws Exception {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        Disposable unsubscribe = emitter1.observe().merge((Events) null).to(emitter1);
+        EventFacade<Integer> facade1 = new EventFacade();
+        Disposable disposer = facade1.observe().merge((Events) null).to(facade1);
 
-        assert emitter1.isSubscribed();
-        assert emitter1.emitAndRetrieve(10) == 10;
+        assert facade1.isSubscribed();
+        assert facade1.emitAndRetrieve(10) == 10;
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed() == true;
+        disposer.dispose();
+        assert facade1.isUnsubscribed() == true;
     }
 
     @Test
@@ -754,118 +860,118 @@ public class EventsTest {
 
     @Test
     public void all() throws Exception {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        EventEmitter<Boolean> reciever = new EventEmitter();
+        EventFacade<Integer> facade1 = new EventFacade();
+        EventFacade<Integer> facade2 = new EventFacade();
+        EventFacade<Boolean> reciever = new EventFacade();
 
-        Disposable unsubscribe = Events.all(value -> {
+        Disposable disposer = Events.all(value -> {
             return 20 <= value;
-        } , emitter1.observe(), emitter2.observe()).to(reciever);
+        } , facade1.observe(), facade2.observe()).to(reciever);
 
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
+        assert facade1.isSubscribed();
+        assert facade2.isSubscribed();
         assert reciever.retrieve() == null;
 
-        emitter1.emit(30);
-        emitter2.emit(20);
+        facade1.emit(30);
+        facade2.emit(20);
         assert reciever.retrieveLast() == true;
 
-        emitter1.emit(10);
+        facade1.emit(10);
         assert reciever.retrieveLast() == false;
 
-        emitter1.emit(20);
+        facade1.emit(20);
         assert reciever.retrieveLast() == true;
 
-        emitter2.emit(10);
+        facade2.emit(10);
         assert reciever.retrieveLast() == false;
 
-        emitter2.emit(40);
+        facade2.emit(40);
         assert reciever.retrieveLast() == true;
 
-        emitter1.emit(10);
-        emitter2.emit(10);
+        facade1.emit(10);
+        facade2.emit(10);
         assert reciever.retrieveLast() == false;
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed() == true;
-        assert emitter2.isUnsubscribed() == true;
+        disposer.dispose();
+        assert facade1.isUnsubscribed() == true;
+        assert facade2.isUnsubscribed() == true;
     }
 
     @Test
     public void any() throws Exception {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        EventEmitter<Boolean> reciever = new EventEmitter();
+        EventFacade<Integer> facade1 = new EventFacade();
+        EventFacade<Integer> facade2 = new EventFacade();
+        EventFacade<Boolean> reciever = new EventFacade();
 
-        Disposable unsubscribe = Events.any(value -> {
+        Disposable disposer = Events.any(value -> {
             return 20 <= value;
-        } , emitter1.observe(), emitter2.observe()).to(reciever);
+        } , facade1.observe(), facade2.observe()).to(reciever);
 
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
+        assert facade1.isSubscribed();
+        assert facade2.isSubscribed();
         assert reciever.retrieve() == null;
 
-        emitter1.emit(30);
-        emitter2.emit(20);
+        facade1.emit(30);
+        facade2.emit(20);
         assert reciever.retrieveLast() == true;
 
-        emitter1.emit(10);
+        facade1.emit(10);
         assert reciever.retrieveLast() == true;
 
-        emitter2.emit(10);
+        facade2.emit(10);
         assert reciever.retrieveLast() == false;
 
-        emitter2.emit(20);
+        facade2.emit(20);
         assert reciever.retrieveLast() == true;
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed() == true;
-        assert emitter2.isUnsubscribed() == true;
+        disposer.dispose();
+        assert facade1.isUnsubscribed() == true;
+        assert facade2.isUnsubscribed() == true;
     }
 
     @Test
     public void none() throws Exception {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        EventEmitter<Boolean> reciever = new EventEmitter();
+        EventFacade<Integer> facade1 = new EventFacade();
+        EventFacade<Integer> facade2 = new EventFacade();
+        EventFacade<Boolean> reciever = new EventFacade();
 
-        Disposable unsubscribe = Events.none(value -> {
+        Disposable disposer = Events.none(value -> {
             return 20 <= value;
-        } , emitter1.observe(), emitter2.observe()).to(reciever);
+        } , facade1.observe(), facade2.observe()).to(reciever);
 
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
+        assert facade1.isSubscribed();
+        assert facade2.isSubscribed();
         assert reciever.retrieve() == null;
 
-        emitter1.emit(30);
-        emitter2.emit(20);
+        facade1.emit(30);
+        facade2.emit(20);
         assert reciever.retrieveLast() == false;
 
-        emitter1.emit(10);
+        facade1.emit(10);
         assert reciever.retrieveLast() == false;
 
-        emitter2.emit(10);
+        facade2.emit(10);
         assert reciever.retrieveLast() == true;
 
-        emitter2.emit(20);
+        facade2.emit(20);
         assert reciever.retrieveLast() == false;
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed() == true;
-        assert emitter2.isUnsubscribed() == true;
+        disposer.dispose();
+        assert facade1.isUnsubscribed() == true;
+        assert facade2.isUnsubscribed() == true;
     }
 
     @Test
     public void onNext() throws Exception {
         List<Integer> list = new ArrayList<>();
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().on((observer, value) -> {
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().on((observer, value) -> {
             list.add(value);
             observer.accept(value);
-        }).to(emitter);
+        }).to(facade);
 
-        assert emitter.emitAndRetrieve(10) == 10;
-        assert emitter.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
         assert list.get(0) == 10;
         assert list.get(1) == 20;
     }
@@ -879,64 +985,64 @@ public class EventsTest {
 
     @Test
     public void zip() {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        EventEmitter<Integer> reciever = new EventEmitter();
+        EventFacade<Integer> facade1 = new EventFacade();
+        EventFacade<Integer> facade2 = new EventFacade();
+        EventFacade<Integer> reciever = new EventFacade();
 
-        Disposable unsubscribe = Events.zip(emitter1.observe(), emitter2.observe()).map(values -> {
+        Disposable disposer = Events.zip(facade1.observe(), facade2.observe()).map(values -> {
             return values.get(0) + values.get(1);
         }).to(reciever);
 
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
+        assert facade1.isSubscribed();
+        assert facade2.isSubscribed();
 
-        emitter1.emit(10);
-        emitter1.emit(20);
-        emitter1.emit(30);
+        facade1.emit(10);
+        facade1.emit(20);
+        facade1.emit(30);
         assert reciever.retrieve() == null;
 
-        emitter2.emit(100);
+        facade2.emit(100);
         assert reciever.retrieve() == 110;
 
-        emitter2.emit(200);
+        facade2.emit(200);
         assert reciever.retrieve() == 220;
 
-        emitter2.emit(300);
+        facade2.emit(300);
         assert reciever.retrieve() == 330;
 
-        emitter2.emit(400);
+        facade2.emit(400);
         assert reciever.retrieve() == null;
 
-        emitter1.emit(40);
+        facade1.emit(40);
         assert reciever.retrieve() == 440;
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed();
-        assert emitter2.isUnsubscribed();
+        disposer.dispose();
+        assert facade1.isUnsubscribed();
+        assert facade2.isUnsubscribed();
     }
 
     @Test
     public void join() throws Exception {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        EventEmitter<List<Integer>> reciever = new EventEmitter();
+        EventFacade<Integer> facade1 = new EventFacade();
+        EventFacade<Integer> facade2 = new EventFacade();
+        EventFacade<List<Integer>> reciever = new EventFacade();
 
-        Disposable unsubscribe = Events.join(emitter1.observe(), emitter2.observe()).to(reciever);
+        Disposable disposer = Events.join(facade1.observe(), facade2.observe()).to(reciever);
 
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
+        assert facade1.isSubscribed();
+        assert facade2.isSubscribed();
         assert reciever.retrieve() == null;
 
-        emitter1.emit(30);
+        facade1.emit(30);
         assert reciever.retrieve() == null;
-        emitter2.emit(20);
+        facade2.emit(20);
         assertList(reciever.retrieve(), 30, 20);
-        emitter2.emit(10);
+        facade2.emit(10);
         assertList(reciever.retrieve(), 30, 10);
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed();
-        assert emitter2.isUnsubscribed();
+        disposer.dispose();
+        assert facade1.isUnsubscribed();
+        assert facade2.isUnsubscribed();
     }
 
     @Test
@@ -950,7 +1056,7 @@ public class EventsTest {
         Events<Integer> events2 = createEventsFrom(source2);
 
         // **declare event handling**
-        Disposable unsubscribe = Events.join(events1, events2).to(recorder);
+        Disposable disposer = Events.join(events1, events2).to(recorder);
 
         // verify
         // no source publish
@@ -981,31 +1087,31 @@ public class EventsTest {
 
     @Test
     public void joinCombine() {
-        EventEmitter<Integer> emitter1 = new EventEmitter();
-        EventEmitter<Integer> emitter2 = new EventEmitter();
-        EventEmitter<Integer> reciever = new EventEmitter();
+        EventFacade<Integer> facade1 = new EventFacade();
+        EventFacade<Integer> facade2 = new EventFacade();
+        EventFacade<Integer> reciever = new EventFacade();
 
-        Disposable unsubscribe = emitter1.observe().join(emitter2.observe(), (v1, v2) -> {
+        Disposable disposer = facade1.observe().join(facade2.observe(), (v1, v2) -> {
             return v1 + v2;
         }).to(reciever);
 
-        assert emitter1.isSubscribed();
-        assert emitter2.isSubscribed();
+        assert facade1.isSubscribed();
+        assert facade2.isSubscribed();
 
-        emitter1.emit(10);
+        facade1.emit(10);
         assert reciever.retrieve() == null;
 
-        emitter2.emit(20);
+        facade2.emit(20);
         assert reciever.retrieve() == 30;
 
-        unsubscribe.dispose();
-        assert emitter1.isUnsubscribed();
-        assert emitter2.isUnsubscribed();
+        disposer.dispose();
+        assert facade1.isUnsubscribed();
+        assert facade2.isUnsubscribed();
     }
 
     @Test
     public void just() throws Exception {
-        EventEmitter<Integer> reciever = new EventEmitter();
+        EventFacade<Integer> reciever = new EventFacade();
 
         Events.just(1, 2, 3).to(reciever);
 
@@ -1016,19 +1122,19 @@ public class EventsTest {
 
     @Test
     public void startWith() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().startWith(0).to(emitter);
-        assert emitter.retrieve() == 0;
-        assert emitter.emitAndRetrieve(10) == 10;
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().startWith(0).to(facade);
+        assert facade.retrieve() == 0;
+        assert facade.emitAndRetrieve(10) == 10;
     }
 
     @Test
     public void startWithTwice() throws Exception {
-        EventEmitter<Integer> emitter = new EventEmitter();
-        emitter.observe().startWith(0).startWith(1).to(emitter);
-        assert emitter.retrieve() == 1;
-        assert emitter.retrieve() == 0;
-        assert emitter.emitAndRetrieve(10) == 10;
+        EventFacade<Integer> facade = new EventFacade();
+        facade.observe().startWith(0).startWith(1).to(facade);
+        assert facade.retrieve() == 1;
+        assert facade.retrieve() == 0;
+        assert facade.emitAndRetrieve(10) == 10;
     }
 
     /**
@@ -1057,7 +1163,8 @@ public class EventsTest {
      */
     private static <T> EventRecorder<T> record(Events<T> stream) {
         EventRecorder<T> recorder = new EventRecorder();
-        recorder.unsubscriber = stream.to(recorder);
+        recorder.disposer = stream.to(recorder);
+        System.out.println("Create recorder " + recorder);
 
         return recorder;
     }
@@ -1102,8 +1209,8 @@ public class EventsTest {
      */
     private static class EventRecorder<T> implements Observer<T> {
 
-        /** The unsubscriber. */
-        private Disposable unsubscriber;
+        /** The disposer. */
+        private Disposable disposer;
 
         /** The event holder. */
         private final List<T> events = new ArrayList();
@@ -1116,6 +1223,7 @@ public class EventsTest {
          */
         @Override
         public void accept(T event) {
+            System.out.println("Accept " + event + " on " + this);
             events.add(event);
         }
 

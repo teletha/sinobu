@@ -24,7 +24,7 @@ public class ObservePropertyTest {
     @Test
     public void observableValueString() throws Exception {
         StringProperty property = new SimpleStringProperty();
-        EventEmitter<String> emitter = new EventEmitter();
+        EventFacade<String> emitter = new EventFacade();
 
         // observe
         Disposable disposer = I.observe(property).to(emitter);
@@ -45,7 +45,7 @@ public class ObservePropertyTest {
     @Test
     public void observableValueInt() throws Exception {
         IntegerProperty property = new SimpleIntegerProperty();
-        EventEmitter<Number> emitter = new EventEmitter();
+        EventFacade<Number> emitter = new EventFacade();
 
         // observe
         Disposable disposer = I.observe(property).to(emitter);
@@ -66,7 +66,7 @@ public class ObservePropertyTest {
     @Test
     public void observable() throws Exception {
         IntegerProperty property = new SimpleIntegerProperty();
-        EventEmitter<Number> emitter = new EventEmitter();
+        EventFacade<Number> emitter = new EventFacade();
 
         // observe
         Disposable disposer = I.observe(property).to(emitter);

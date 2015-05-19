@@ -616,11 +616,13 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> repeat() {
+
         return new Events<>(observer -> {
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
                 observer.complete();
+                System.out.println("Complete " + "\r\n");
                 to(agent);
             };
             return to(agent);
@@ -641,16 +643,17 @@ public class Events<V> {
             return this;
         }
 
-        counter = new AtomicInteger(count);
-
         return new Events<>(observer -> {
+            AtomicInteger counter = new AtomicInteger(count);
+
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
                 if (counter.decrementAndGet() == 0) {
-                    unsubscriber.dispose();
+                    observer.complete();
                 } else {
-                    unsubscriber = unsubscriber.and(to(agent));
+                    observer.complete();
+                    to(agent);
                 }
             };
             return to(agent);

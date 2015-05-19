@@ -11,12 +11,13 @@ package kiss;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @version 2015/05/13 10:07:56
  */
-public class EventEmitter<E> implements Observer<E> {
+public class EventFacade<E> implements Observer<E> {
 
     /** The listener holder. */
     private final List<Listener> listeners = new CopyOnWriteArrayList();
@@ -33,14 +34,17 @@ public class EventEmitter<E> implements Observer<E> {
      * </p>
      */
     public Events<E> observe() {
+
         return new Events<>(observer -> {
             Listener<E> listener = event -> {
                 observer.accept(event);
             };
-
+            System.out.println("Initialize " + observer);
             add(listener);
 
             return () -> {
+                System.out.println("Dispose " + observer);
+                disposed++;
                 remove(listener);
             };
         });
@@ -81,9 +85,15 @@ public class EventEmitter<E> implements Observer<E> {
      * Emit the specified event.
      * </p>
      */
-    public void emit(E event) {
+    public void emit(E... events) {
+        if (events == null || events.length == 0) {
+            return;
+        }
+
         for (Listener<E> listener : listeners) {
-            listener.listen(event);
+            for (int i = 0; i < events.length; i++) {
+                listener.listen(events[i]);
+            }
         }
     }
 
@@ -175,5 +185,34 @@ public class EventEmitter<E> implements Observer<E> {
      */
     public int countDisposed() {
         return disposed;
+    }
+
+    /**
+     * @param i
+     * @param j
+     * @return
+     */
+    public boolean retrieve(Object... expected) {
+        if (expected.length != 1) {
+            Object next = retrieve();
+
+            if (next instanceof List) {
+                List list = (List) next;
+
+                assert list.size() == expected.length;
+
+                for (int i = 0; i < expected.length; i++) {
+                    assert Objects.equals(list.get(i), expected[i]);
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return
+     */
+    public boolean retrieveNull() {
+        return Objects.isNull(retrieve());
     }
 }
