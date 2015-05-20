@@ -677,11 +677,12 @@ public class Events<V> {
      *         the accumulator function.
      */
     public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
-        return new Events<>((observer, that) -> {
-            that.observer.object = init;
+        return new Events<>(observer -> {
+            AtomicReference<R> ref = new AtomicReference(init);
 
             return to(value -> {
-                observer.accept(function.apply(that.observer.object, value));
+                ref.set(function.apply(ref.get(), value));
+                observer.accept(ref.get());
             });
         });
     }
