@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.util.List;
-
 /**
  * <p>
  * The {@link Disposable} interface is used when components need to deallocate and dispose resources
@@ -50,18 +48,6 @@ public interface Disposable {
         return () -> {
             dispose();
             next.dispose();
-        };
-    }
-
-    static Disposable of(List<? extends Disposable> disposables) {
-        if (disposables == null) {
-            return Φ;
-        }
-
-        return () -> {
-            for (Disposable disposable : disposables) {
-                disposable.dispose();
-            }
         };
     }
 

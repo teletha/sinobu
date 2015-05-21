@@ -1091,7 +1091,7 @@ public class EventsTest {
         EventFacade<Integer> facade2 = new EventFacade();
         EventFacade<Integer> reciever = new EventFacade();
 
-        Disposable disposer = facade1.observe().join(facade2.observe(), (v1, v2) -> {
+        Disposable disposer = facade1.observe().combineLatest(facade2.observe(), (v1, v2) -> {
             return v1 + v2;
         }).to(reciever);
 

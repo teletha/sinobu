@@ -234,6 +234,79 @@ public class Events<V> {
 
     /**
      * <p>
+     * Returns an {@link Events} that emits the results of a function of your choosing applied to
+     * combinations of two items emitted, in sequence, by this {@link Events} and the other
+     * specified {@link Events}.
+     * </p>
+     * 
+     * @param other An other {@link Events} to combine.
+     * @param function A function that, when applied to an item emitted by each of the source
+     *            {@link Events}, results in an item that will be emitted by the resulting
+     *            {@link Events}.
+     * @return A {@link Events} that emits items that are the result of combining the items emitted
+     *         by source {@link Events} by means of the given aggregation function.
+     */
+    public final <O, R> Events<R> combine(Events<O> other, BiFunction<V, O, R> function) {
+        return new Events<>(observer -> {
+            ArrayDeque<V> baseValue = new ArrayDeque();
+            ArrayDeque<O> otherValue = new ArrayDeque();
+
+            return to(value -> {
+                if (otherValue.isEmpty()) {
+                    baseValue.add(value);
+                } else {
+                    observer.accept(function.apply(value, otherValue.pollFirst()));
+                }
+            }).and(other.to(value -> {
+                if (baseValue.isEmpty()) {
+                    otherValue.add(value);
+                } else {
+                    observer.accept(function.apply(baseValue.pollFirst(), value));
+                }
+            }));
+        });
+    }
+
+    /**
+     * <p>
+     * Combines two source {@link Events} by emitting an item that aggregates the latest values of
+     * each of the source {@link Events} each time an item is received from either of the source
+     * {@link Events}, where this aggregation is defined by a specified function.
+     * </p>
+     * 
+     * @param other An other {@link Events} to combine.
+     * @param function An aggregation function used to combine the items emitted by the source
+     *            {@link Events}.
+     * @return An {@link Events} that emits items that are the result of combining the items emitted
+     *         by the source {@link Events} by means of the given aggregation function
+     */
+    public final <O, R> Events<R> combineLatest(Events<O> other, BiFunction<V, O, R> function) {
+        return new Events<>(observer -> {
+            Object undefined = new Object();
+            AtomicReference<V> baseValue = new AtomicReference(undefined);
+            AtomicReference<O> otherValue = new AtomicReference(undefined);
+
+            return to(value -> {
+                baseValue.set(value);
+                O joined = otherValue.get();
+
+                if (joined != undefined) {
+                    observer.accept(function.apply(value, joined));
+                }
+            }).and(other.to(value -> {
+                otherValue.set(value);
+
+                V joined = baseValue.get();
+
+                if (joined != undefined) {
+                    observer.accept(function.apply(joined, value));
+                }
+            }));
+        });
+    }
+
+    /**
+     * <p>
      * Drops values that are followed by newer values before a timeout. The timer resets on each
      * value emission.
      * </p>
@@ -385,7 +458,7 @@ public class Events<V> {
         return new Events<>(observer -> {
             AtomicBoolean flag = new AtomicBoolean();
 
-            return predicate.to(v -> flag.set(v)).and(to(v -> {
+            return predicate.to(flag::set).and(to(v -> {
                 if (flag.get()) {
                     observer.accept(v);
                 }
@@ -408,11 +481,11 @@ public class Events<V> {
      */
     public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
-            List<Disposable> disposer = new ArrayList();
+            Disposable disposer = Disposable.empty();
 
-            disposer.add(to(value -> disposer.add(function.apply(value).to(observer))));
+            disposer.and(to(value -> disposer.and(function.apply(value).to(observer))));
 
-            return Disposable.of(disposer);
+            return disposer;
         });
     }
 
@@ -432,44 +505,6 @@ public class Events<V> {
             return NEVER;
         }
         return map(converter::test);
-    }
-
-    /**
-     * <p>
-     * Combines two source {@link Events} by emitting an item that aggregates the latest values of
-     * each of the source {@link Events} each time an item is received from either of the source
-     * {@link Events}, where this aggregation is defined by a specified function.
-     * </p>
-     * 
-     * @param other An other {@link Events} to combine.
-     * @param function An aggregation function used to combine the items emitted by the source
-     *            {@link Events}.
-     * @return An {@link Events} that emits items that are the result of combining the items emitted
-     *         by the source {@link Events} by means of the given aggregation function
-     */
-    public final <O, R> Events<R> join(Events<O> other, BiFunction<V, O, R> function) {
-        return new Events<>(observer -> {
-            Object undefined = new Object();
-            AtomicReference<V> baseValue = new AtomicReference(undefined);
-            AtomicReference<O> otherValue = new AtomicReference(undefined);
-
-            return to(value -> {
-                baseValue.set(value);
-                O joined = otherValue.get();
-
-                if (joined != undefined) {
-                    observer.accept(function.apply(value, joined));
-                }
-            }).and(other.to(value -> {
-                otherValue.set(value);
-
-                V joined = baseValue.get();
-
-                if (joined != undefined) {
-                    observer.accept(function.apply(joined, value));
-                }
-            }));
-        });
     }
 
     /**
@@ -581,9 +616,8 @@ public class Events<V> {
         return new Events<>(observer -> {
             Agent<V> agent = new Agent();
             agent.observer = observer;
-            agent.next = value -> {
-                next.accept(observer, value);
-            };
+            agent.next = value -> next.accept(observer, value);
+
             return to(agent);
         });
     }
@@ -596,7 +630,6 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> repeat() {
-
         return new Events<>(observer -> {
             Agent agent = new Agent();
             agent.observer = observer;
@@ -669,6 +702,22 @@ public class Events<V> {
 
     /**
      * <p>
+     * Alias for filter(condition.negete()).
+     * </p>
+     * 
+     * @param condition
+     * @return
+     */
+    public final Events<V> skip(Predicate<V> condition) {
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+        return filter(condition.negate());
+    }
+
+    /**
+     * <p>
      * Bypasses a specified number of values in an {@link Events} sequence and then returns the
      * remaining values.
      * </p>
@@ -711,8 +760,6 @@ public class Events<V> {
             return this;
         }
 
-        // return timeElapsed().filter(v -> !v.e.minus(time, unit).isNegative()).map(v -> v.a);
-
         return new Events<>(observer -> {
             long timing = System.currentTimeMillis() + unit.toMillis(time);
 
@@ -741,15 +788,14 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            AtomicBoolean flag = new AtomicBoolean();
+            Agent agent = new Agent();
+            agent.and(predicate.to(value -> agent.dispose()));
 
             return to(value -> {
-                if (flag.get()) {
+                if (agent.disposables == null) {
                     observer.accept(value);
                 }
-            }).and(predicate.to(value -> {
-                flag.set(true);
-            }));
+            }).and(agent);
         });
     }
 
@@ -817,6 +863,18 @@ public class Events<V> {
             }
             return to(observer);
         });
+    }
+
+    /**
+     * <p>
+     * Alias for filter(condition).
+     * </p>
+     * 
+     * @param condition
+     * @return
+     */
+    public final Events<V> take(Predicate<V> condition) {
+        return filter(condition);
     }
 
     /**
@@ -978,41 +1036,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that emits the results of a function of your choosing applied to
-     * combinations of two items emitted, in sequence, by this {@link Events} and the other
-     * specified {@link Events}.
-     * </p>
-     * 
-     * @param other An other {@link Events} to combine.
-     * @param function A function that, when applied to an item emitted by each of the source
-     *            {@link Events}, results in an item that will be emitted by the resulting
-     *            {@link Events}.
-     * @return A {@link Events} that emits items that are the result of combining the items emitted
-     *         by source {@link Events} by means of the given aggregation function.
-     */
-    public final <O, R> Events<R> zip(Events<O> other, BiFunction<V, O, R> function) {
-        return new Events<>(observer -> {
-            ArrayDeque<V> baseValue = new ArrayDeque();
-            ArrayDeque<O> otherValue = new ArrayDeque();
-
-            return to(value -> {
-                if (otherValue.isEmpty()) {
-                    baseValue.add(value);
-                } else {
-                    observer.accept(function.apply(value, otherValue.pollFirst()));
-                }
-            }).and(other.to(value -> {
-                if (baseValue.isEmpty()) {
-                    otherValue.add(value);
-                } else {
-                    observer.accept(function.apply(baseValue.pollFirst(), value));
-                }
-            }));
-        });
-    }
-
-    /**
-     * <p>
      * Create an {@link Events} that emits true if all specified observables emit true as latest
      * event.
      * </p>
@@ -1040,7 +1063,7 @@ public class Events<V> {
         Events<Boolean> events = just(Boolean.TRUE);
 
         for (Events<V> observable : observables) {
-            events = events.join(observable, (base, other) -> base && predicate.test(other));
+            events = events.combineLatest(observable, (base, other) -> base && predicate.test(other));
         }
         return events;
     }
@@ -1074,7 +1097,7 @@ public class Events<V> {
         Events<Boolean> events = just(Boolean.FALSE);
 
         for (Events<V> observable : observables) {
-            events = events.join(observable, (base, other) -> base || predicate.test(other));
+            events = events.combineLatest(observable, (base, other) -> base || predicate.test(other));
         }
         return events;
     }
@@ -1108,7 +1131,7 @@ public class Events<V> {
         Events<Boolean> events = just(Boolean.TRUE);
 
         for (Events<V> observable : observables) {
-            events = events.join(observable, (base, other) -> base && !predicate.test(other));
+            events = events.combineLatest(observable, (base, other) -> base && !predicate.test(other));
         }
         return events;
     }
