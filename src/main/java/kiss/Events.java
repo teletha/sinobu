@@ -612,15 +612,13 @@ public class Events<V> {
     public final Events<V> repeat() {
 
         return new Events<>(observer -> {
-            EventsDisposer disposer = new EventsDisposer();
-
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
                 observer.complete();
-                disposer.add(to(agent));
+                agent.and(to(agent));
             };
-            return disposer.add(to(agent));
+            return agent.and(to(agent));
         });
     }
 
@@ -640,7 +638,7 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             AtomicInteger counter = new AtomicInteger(count);
-            EventsDisposer disposer = new EventsDisposer();
+
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
@@ -648,11 +646,11 @@ public class Events<V> {
                     observer.complete();
                 } else {
                     observer.complete();
-                    disposer.add(to(agent));
+                    agent.and(to(agent));
                 }
             };
 
-            return disposer.add(to(agent));
+            return agent.and(to(agent));
         });
     }
 
@@ -853,9 +851,9 @@ public class Events<V> {
         return new Events<>(observer -> {
             AtomicInteger counter = new AtomicInteger(count);
 
-            EventsDisposer disposer = new EventsDisposer();
+            Disposable disposer = Disposable.empty();
 
-            return disposer.add(to(value -> {
+            return disposer.and(to(value -> {
                 int current = counter.decrementAndGet();
 
                 if (0 <= current) {
@@ -887,9 +885,9 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            EventsDisposer disposer = new EventsDisposer();
+            Disposable disposer = Disposable.empty();
 
-            return disposer.add(to(observer).and(predicate.to(value -> {
+            return disposer.and(to(observer).and(predicate.to(value -> {
                 observer.complete();
                 disposer.dispose();
             })));
@@ -913,9 +911,9 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            EventsDisposer disposer = new EventsDisposer();
+            Disposable disposer = Disposable.empty();
 
-            return disposer.add(to(value -> {
+            return disposer.and(to(value -> {
                 if (predicate.test(value)) {
                     observer.accept(value);
                     observer.complete();

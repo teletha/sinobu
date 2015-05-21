@@ -49,8 +49,8 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable {
             for (Disposable disposable : disposables) {
                 disposable.dispose();
             }
+            disposables = null;
         }
-        disposables = null;
     }
 
     /**
@@ -58,12 +58,14 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable {
      */
     @Override
     public Disposable and(Disposable next) {
-        if (disposables == null) {
-            disposables = new ArrayList();
-        }
+        if (next != null) {
+            if (disposables == null) {
+                disposables = new ArrayList();
+            }
 
-        if (next != this) {
-            disposables.add(next);
+            if (next != this) {
+                disposables.add(next);
+            }
         }
         return this;
     }

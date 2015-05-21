@@ -65,6 +65,10 @@ public interface Disposable {
         };
     }
 
+    static Disposable empty() {
+        return new Agent();
+    }
+
     // /**
     // * <p>
     // * Apply parameter partially for the given function.
