@@ -983,107 +983,107 @@ public class EventsTest {
         });
     }
 
-    @Test
-    public void zip() {
-        EventFacade<Integer> facade1 = new EventFacade();
-        EventFacade<Integer> facade2 = new EventFacade();
-        EventFacade<Integer> reciever = new EventFacade();
+    // @Test
+    // public void zip() {
+    // EventFacade<Integer> facade1 = new EventFacade();
+    // EventFacade<Integer> facade2 = new EventFacade();
+    // EventFacade<Integer> reciever = new EventFacade();
+    //
+    // Disposable disposer = Events.zip(facade1.observe(), facade2.observe()).map(values -> {
+    // return values.get(0) + values.get(1);
+    // }).to(reciever);
+    //
+    // assert facade1.isSubscribed();
+    // assert facade2.isSubscribed();
+    //
+    // facade1.emit(10);
+    // facade1.emit(20);
+    // facade1.emit(30);
+    // assert reciever.retrieve() == null;
+    //
+    // facade2.emit(100);
+    // assert reciever.retrieve() == 110;
+    //
+    // facade2.emit(200);
+    // assert reciever.retrieve() == 220;
+    //
+    // facade2.emit(300);
+    // assert reciever.retrieve() == 330;
+    //
+    // facade2.emit(400);
+    // assert reciever.retrieve() == null;
+    //
+    // facade1.emit(40);
+    // assert reciever.retrieve() == 440;
+    //
+    // disposer.dispose();
+    // assert facade1.isUnsubscribed();
+    // assert facade2.isUnsubscribed();
+    // }
 
-        Disposable disposer = Events.zip(facade1.observe(), facade2.observe()).map(values -> {
-            return values.get(0) + values.get(1);
-        }).to(reciever);
-
-        assert facade1.isSubscribed();
-        assert facade2.isSubscribed();
-
-        facade1.emit(10);
-        facade1.emit(20);
-        facade1.emit(30);
-        assert reciever.retrieve() == null;
-
-        facade2.emit(100);
-        assert reciever.retrieve() == 110;
-
-        facade2.emit(200);
-        assert reciever.retrieve() == 220;
-
-        facade2.emit(300);
-        assert reciever.retrieve() == 330;
-
-        facade2.emit(400);
-        assert reciever.retrieve() == null;
-
-        facade1.emit(40);
-        assert reciever.retrieve() == 440;
-
-        disposer.dispose();
-        assert facade1.isUnsubscribed();
-        assert facade2.isUnsubscribed();
-    }
-
-    @Test
-    public void join() throws Exception {
-        EventFacade<Integer> facade1 = new EventFacade();
-        EventFacade<Integer> facade2 = new EventFacade();
-        EventFacade<List<Integer>> reciever = new EventFacade();
-
-        Disposable disposer = Events.join(facade1.observe(), facade2.observe()).to(reciever);
-
-        assert facade1.isSubscribed();
-        assert facade2.isSubscribed();
-        assert reciever.retrieve() == null;
-
-        facade1.emit(30);
-        assert reciever.retrieve() == null;
-        facade2.emit(20);
-        assertList(reciever.retrieve(), 30, 20);
-        facade2.emit(10);
-        assertList(reciever.retrieve(), 30, 10);
-
-        disposer.dispose();
-        assert facade1.isUnsubscribed();
-        assert facade2.isUnsubscribed();
-    }
-
-    @Test
-    public void joinComplete() {
-        EventSource<Integer> source1 = new EventSource();
-        EventSource<Integer> source2 = new EventSource();
-        EventRecorder<List<Integer>> recorder = new EventRecorder();
-
-        // create event stream
-        Events<Integer> events1 = createEventsFrom(source1);
-        Events<Integer> events2 = createEventsFrom(source2);
-
-        // **declare event handling**
-        Disposable disposer = Events.join(events1, events2).to(recorder);
-
-        // verify
-        // no source publish
-        assert recorder.retrieveValue() == null;
-
-        // one source only publish
-        source1.publish(1);
-        assert recorder.retrieveValue() == null;
-
-        // all sources publish
-        source2.publish(10);
-        List<Integer> values = recorder.retrieveValue();
-        assert values.size() == 2;
-        assert values.get(0) == 1;
-        assert values.get(1) == 10;
-
-        // finish one source only, then the next publish will fail because this source is dead
-        source1.complete().publish(2);
-        assert recorder.retrieveValue() == null;
-
-        // success to publish
-        source2.publish(20);
-        values = recorder.retrieveValue();
-        assert values.size() == 2;
-        assert values.get(0) == 1;
-        assert values.get(1) == 20;
-    }
+    // @Test
+    // public void join() throws Exception {
+    // EventFacade<Integer> facade1 = new EventFacade();
+    // EventFacade<Integer> facade2 = new EventFacade();
+    // EventFacade<List<Integer>> reciever = new EventFacade();
+    //
+    // Disposable disposer = Events.join(facade1.observe(), facade2.observe()).to(reciever);
+    //
+    // assert facade1.isSubscribed();
+    // assert facade2.isSubscribed();
+    // assert reciever.retrieve() == null;
+    //
+    // facade1.emit(30);
+    // assert reciever.retrieve() == null;
+    // facade2.emit(20);
+    // assertList(reciever.retrieve(), 30, 20);
+    // facade2.emit(10);
+    // assertList(reciever.retrieve(), 30, 10);
+    //
+    // disposer.dispose();
+    // assert facade1.isUnsubscribed();
+    // assert facade2.isUnsubscribed();
+    // }
+    //
+    // @Test
+    // public void joinComplete() {
+    // EventSource<Integer> source1 = new EventSource();
+    // EventSource<Integer> source2 = new EventSource();
+    // EventRecorder<List<Integer>> recorder = new EventRecorder();
+    //
+    // // create event stream
+    // Events<Integer> events1 = createEventsFrom(source1);
+    // Events<Integer> events2 = createEventsFrom(source2);
+    //
+    // // **declare event handling**
+    // Disposable disposer = Events.join(events1, events2).to(recorder);
+    //
+    // // verify
+    // // no source publish
+    // assert recorder.retrieveValue() == null;
+    //
+    // // one source only publish
+    // source1.publish(1);
+    // assert recorder.retrieveValue() == null;
+    //
+    // // all sources publish
+    // source2.publish(10);
+    // List<Integer> values = recorder.retrieveValue();
+    // assert values.size() == 2;
+    // assert values.get(0) == 1;
+    // assert values.get(1) == 10;
+    //
+    // // finish one source only, then the next publish will fail because this source is dead
+    // source1.complete().publish(2);
+    // assert recorder.retrieveValue() == null;
+    //
+    // // success to publish
+    // source2.publish(20);
+    // values = recorder.retrieveValue();
+    // assert values.size() == 2;
+    // assert values.get(0) == 1;
+    // assert values.get(1) == 20;
+    // }
 
     @Test
     public void joinCombine() {

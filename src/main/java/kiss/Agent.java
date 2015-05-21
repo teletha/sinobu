@@ -116,9 +116,9 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable {
     @Override
     public void accept(T value) {
         if (next != null) {
-            next.accept(object = value);
+            next.accept(value);
         } else if (observer != null) {
-            observer.accept(object = value);
+            observer.accept(value);
         }
     }
 

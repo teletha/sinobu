@@ -123,6 +123,24 @@ public class Events<V> {
 
     /**
      * <p>
+     * Receive values from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link Property} as value receiver.
+     */
+    public final AtomicReference<V> toValue() {
+        // value receiver
+        AtomicReference value = new AtomicReference();
+
+        // start receiving values
+        to(value::set);
+
+        // API definition
+        return value;
+    }
+
+    /**
+     * <p>
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
      * 
@@ -489,7 +507,29 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, R> Events<R> join(Events<O> other, BiFunction<V, O, R> function) {
-        return join(this, other).map(v -> function.apply(v.get(0), v.get(1)));
+        return new Events<>(observer -> {
+            Object undefined = new Object();
+            AtomicReference<V> baseValue = new AtomicReference(undefined);
+            AtomicReference<O> otherValue = new AtomicReference(undefined);
+
+            return to(value -> {
+                baseValue.set(value);
+                O joined = otherValue.get();
+
+                if (joined != undefined) {
+                    observer.accept(function.apply(value, joined));
+                }
+            }).and(other.to(value -> {
+                otherValue.set(value);
+
+                V joined = baseValue.get();
+
+                if (joined != undefined) {
+                    observer.accept(function.apply(joined, value));
+                }
+            }));
+        });
+        // return join(this, other).map(v -> function.apply(v.get(0), v.get(1)));
     }
 
     /**
@@ -1003,7 +1043,24 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, R> Events<R> zip(Events<O> other, BiFunction<V, O, R> function) {
-        return zip(this, other).map(v -> function.apply(v.get(0), v.get(1)));
+        return new Events<>(observer -> {
+            ArrayDeque<V> baseValue = new ArrayDeque();
+            ArrayDeque<O> otherValue = new ArrayDeque();
+
+            return to(value -> {
+                if (otherValue.isEmpty()) {
+                    baseValue.add(value);
+                } else {
+                    observer.accept(function.apply(value, otherValue.pollFirst()));
+                }
+            }).and(other.to(value -> {
+                if (baseValue.isEmpty()) {
+                    otherValue.add(value);
+                } else {
+                    observer.accept(function.apply(baseValue.pollFirst(), value));
+                }
+            }));
+        });
     }
 
     /**
@@ -1032,7 +1089,14 @@ public class Events<V> {
      */
     @SafeVarargs
     public static <V> Events<Boolean> all(Predicate<V> predicate, Events<V>... observables) {
-        return join(observables).map(values -> values.stream().allMatch(predicate));
+        Events<Boolean> events = just(Boolean.TRUE);
+
+        for (Events<V> observable : observables) {
+            events = events.join(observable, (base, other) -> base && predicate.test(other));
+        }
+        return events;
+
+        // return join(observables).map(values -> values.stream().allMatch(predicate));
     }
 
     /**
@@ -1061,7 +1125,13 @@ public class Events<V> {
      */
     @SafeVarargs
     public static <V> Events<Boolean> any(Predicate<V> predicate, Events<V>... observables) {
-        return join(observables).map(values -> values.stream().anyMatch(predicate));
+        Events<Boolean> events = just(Boolean.FALSE);
+
+        for (Events<V> observable : observables) {
+            events = events.join(observable, (base, other) -> base || predicate.test(other));
+        }
+        return events;
+        // return join(observables).map(values -> values.stream().noneMatch(predicate));
     }
 
     /**
@@ -1090,54 +1160,13 @@ public class Events<V> {
      */
     @SafeVarargs
     public static <V> Events<Boolean> none(Predicate<V> predicate, Events<V>... observables) {
-        return join(observables).map(values -> values.stream().noneMatch(predicate));
-    }
+        Events<Boolean> events = just(Boolean.TRUE);
 
-    /**
-     * <p>
-     * Rendezvous with all source {@link Events} by emitting an item that aggregates the latest
-     * values of each of the source {@link Events} each time an item is received from any of the
-     * source {@link Events}.
-     * </p>
-     * 
-     * @param observables A list of source {@link Events}.
-     * @return An {@link Events} that emits items that are the result of coordinating the items
-     *         emitted by the source {@link Events}.
-     */
-    public static <V> Events<List<V>> join(Events<? super V>... observables) {
-        return join(Arrays.asList(observables));
-    }
-
-    /**
-     * <p>
-     * Rendezvous with all source {@link Events} by emitting an item that aggregates the latest
-     * values of each of the source {@link Events} each time an item is received from any of the
-     * source {@link Events}.
-     * </p>
-     * 
-     * @param observables A list of source {@link Events}.
-     * @return An {@link Events} that emits items that are the result of coordinating the items
-     *         emitted by the source {@link Events}.
-     */
-    public static <V> Events<List<V>> join(Iterable<? extends Events<? super V>> list) {
-        return new Events<>(observer -> {
-            Disposable base = Disposable.Φ;
-
-            for (Events<? super V> event : list) {
-                base = base.and(event.to(value -> {
-                    List<V> values = new ArrayList();
-
-                    for (Events e : list) {
-                        if (e.observer.object == null) {
-                            return;
-                        }
-                        values.add((V) e.observer.object);
-                    }
-                    observer.accept(values);
-                }));
-            }
-            return base;
-        });
+        for (Events<V> observable : observables) {
+            events = events.join(observable, (base, other) -> base && !predicate.test(other));
+        }
+        return events;
+        // return join(observables).map(values -> values.stream().noneMatch(predicate));
     }
 
     /**
@@ -1151,58 +1180,58 @@ public class Events<V> {
     public static <V> Events<V> just(V... values) {
         return NEVER.startWith(values);
     }
-
-    /**
-     * <p>
-     * Rendezvous with all source {@link Events} by emitting an item that aggregates all values of
-     * each of the source {@link Events} each time an item is received from all of the source
-     * {@link Events}.
-     * </p>
-     * 
-     * @param observables A list of source {@link Events}.
-     * @return An {@link Events} that emits items that are the result of coordinating the items
-     *         emitted by the source {@link Events}.
-     */
-    public static <V> Events<List<V>> zip(Events<? super V>... list) {
-        return zip(Arrays.asList(list));
-    }
-
-    /**
-     * <p>
-     * Rendezvous with all source {@link Events} by emitting an item that aggregates all values of
-     * each of the source {@link Events} each time an item is received from all of the source
-     * {@link Events}.
-     * </p>
-     * 
-     * @param observables A list of source {@link Events}.
-     * @return An {@link Events} that emits items that are the result of coordinating the items
-     *         emitted by the source {@link Events}.
-     */
-    public static <V> Events<List<V>> zip(Iterable<? extends Events<? super V>> list) {
-        return new Events<>(observer -> {
-            Disposable base = Disposable.Φ;
-            List<Deque<V>> queues = new ArrayList();
-
-            for (Events event : list) {
-                Deque queue = new ArrayDeque();
-                queues.add(queue);
-
-                base = base.and(event.to(value -> {
-                    if (value != null) {
-                        List values = new ArrayList();
-
-                        for (Deque<V> q : queues) {
-                            if (q != queue && q.isEmpty()) {
-                                queue.add(value);
-                                return;
-                            }
-                            values.add(q == queue ? value : q.poll());
-                        }
-                        observer.accept(values);
-                    }
-                }));
-            }
-            return base;
-        });
-    }
+    //
+    // /**
+    // * <p>
+    // * Rendezvous with all source {@link Events} by emitting an item that aggregates all values of
+    // * each of the source {@link Events} each time an item is received from all of the source
+    // * {@link Events}.
+    // * </p>
+    // *
+    // * @param observables A list of source {@link Events}.
+    // * @return An {@link Events} that emits items that are the result of coordinating the items
+    // * emitted by the source {@link Events}.
+    // */
+    // public static <V> Events<List<V>> zip(Events<? super V>... list) {
+    // return zip(Arrays.asList(list));
+    // }
+    //
+    // /**
+    // * <p>
+    // * Rendezvous with all source {@link Events} by emitting an item that aggregates all values of
+    // * each of the source {@link Events} each time an item is received from all of the source
+    // * {@link Events}.
+    // * </p>
+    // *
+    // * @param observables A list of source {@link Events}.
+    // * @return An {@link Events} that emits items that are the result of coordinating the items
+    // * emitted by the source {@link Events}.
+    // */
+    // public static <V> Events<List<V>> zip(Iterable<? extends Events<? super V>> list) {
+    // return new Events<>(observer -> {
+    // Disposable base = Disposable.Φ;
+    // List<Deque<V>> queues = new ArrayList();
+    //
+    // for (Events event : list) {
+    // Deque queue = new ArrayDeque();
+    // queues.add(queue);
+    //
+    // base = base.and(event.to(value -> {
+    // if (value != null) {
+    // List values = new ArrayList();
+    //
+    // for (Deque<V> q : queues) {
+    // if (q != queue && q.isEmpty()) {
+    // queue.add(value);
+    // return;
+    // }
+    // values.add(q == queue ? value : q.poll());
+    // }
+    // observer.accept(values);
+    // }
+    // }));
+    // }
+    // return base;
+    // });
+    // }
 }
