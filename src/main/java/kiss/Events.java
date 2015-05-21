@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1000,39 +998,40 @@ public class Events<V> {
         });
     }
 
-    /**
-     * <p>
-     * Append the current time to each events.
-     * </p>
-     * 
-     * @return
-     */
-    public final Events<Binary<V, Instant>> timeStamp() {
-        return map(value -> I.pair(value, Instant.now()));
-    }
-
-    /**
-     * <p>
-     * Append {@link Duration} between the current value and the previous value.
-     * </p>
-     * 
-     * @return
-     */
-    public final Events<Binary<V, Duration>> timeInterval() {
-        return timeStamp().map(null, (prev, current) -> current
-                .e(prev == null ? Duration.ZERO : Duration.between(prev.e, current.e)));
-    }
-
-    /**
-     * <p>
-     * Append {@link Duration} between the current value and the first value.
-     * </p>
-     * 
-     * @return
-     */
-    public final Events<Binary<V, Duration>> timeElapsed() {
-        return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) -> now.e(sum.e.plus(now.e)));
-    }
+    // /**
+    // * <p>
+    // * Append the current time to each events.
+    // * </p>
+    // *
+    // * @return
+    // */
+    // public final Events<Binary<V, Instant>> timeStamp() {
+    // return map(value -> I.pair(value, Instant.now()));
+    // }
+    //
+    // /**
+    // * <p>
+    // * Append {@link Duration} between the current value and the previous value.
+    // * </p>
+    // *
+    // * @return
+    // */
+    // public final Events<Binary<V, Duration>> timeInterval() {
+    // return timeStamp().map(null, (prev, current) -> current
+    // .e(prev == null ? Duration.ZERO : Duration.between(prev.e, current.e)));
+    // }
+    //
+    // /**
+    // * <p>
+    // * Append {@link Duration} between the current value and the first value.
+    // * </p>
+    // *
+    // * @return
+    // */
+    // public final Events<Binary<V, Duration>> timeElapsed() {
+    // return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) ->
+    // now.e(sum.e.plus(now.e)));
+    // }
 
     /**
      * <p>
