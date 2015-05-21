@@ -18,7 +18,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,18 +49,6 @@ public class Events<V> {
 
     /** The subscriber. */
     private final Function<Observer<? super V>, Disposable> subscriber;
-
-    /** The common value holder. */
-    private AtomicReference<V> ref;
-
-    /** The common counter. */
-    private AtomicInteger counter;
-
-    /** The common flag. */
-    private AtomicBoolean flag;
-
-    /** The common set. */
-    private Set<V> set;
 
     /**
      * <p>
@@ -324,7 +311,7 @@ public class Events<V> {
      */
     public final Events<V> distinct() {
         return new Events<>(observer -> {
-            set = new HashSet();
+            HashSet set = new HashSet();
 
             return to(value -> {
                 if (set.add(value)) {
@@ -374,7 +361,7 @@ public class Events<V> {
         if (predicate == null) {
             return this;
         }
-        ref = new AtomicReference(init);
+        AtomicReference<V> ref = new AtomicReference(init);
 
         return filter(v -> predicate.test(ref.getAndSet(v), v));
     }
@@ -396,7 +383,7 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            flag = new AtomicBoolean();
+            AtomicBoolean flag = new AtomicBoolean();
 
             return predicate.to(v -> flag.set(v)).and(to(v -> {
                 if (flag.get()) {
@@ -483,7 +470,6 @@ public class Events<V> {
                 }
             }));
         });
-        // return join(this, other).map(v -> function.apply(v.get(0), v.get(1)));
     }
 
     /**
@@ -533,7 +519,7 @@ public class Events<V> {
         if (converter == null) {
             return (Events<R>) this;
         }
-        ref = new AtomicReference(init);
+        AtomicReference<V> ref = new AtomicReference(init);
 
         return map(v -> converter.apply(ref.getAndSet(v), v));
     }
@@ -755,7 +741,7 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            flag = new AtomicBoolean();
+            AtomicBoolean flag = new AtomicBoolean();
 
             return to(value -> {
                 if (flag.get()) {
@@ -784,7 +770,7 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            flag = new AtomicBoolean();
+            AtomicBoolean flag = new AtomicBoolean();
 
             return to(value -> {
                 if (flag.get()) {
@@ -1057,8 +1043,6 @@ public class Events<V> {
             events = events.join(observable, (base, other) -> base && predicate.test(other));
         }
         return events;
-
-        // return join(observables).map(values -> values.stream().allMatch(predicate));
     }
 
     /**
@@ -1093,7 +1077,6 @@ public class Events<V> {
             events = events.join(observable, (base, other) -> base || predicate.test(other));
         }
         return events;
-        // return join(observables).map(values -> values.stream().noneMatch(predicate));
     }
 
     /**
@@ -1128,7 +1111,6 @@ public class Events<V> {
             events = events.join(observable, (base, other) -> base && !predicate.test(other));
         }
         return events;
-        // return join(observables).map(values -> values.stream().noneMatch(predicate));
     }
 
     /**
@@ -1142,58 +1124,4 @@ public class Events<V> {
     public static <V> Events<V> just(V... values) {
         return NEVER.startWith(values);
     }
-    //
-    // /**
-    // * <p>
-    // * Rendezvous with all source {@link Events} by emitting an item that aggregates all values of
-    // * each of the source {@link Events} each time an item is received from all of the source
-    // * {@link Events}.
-    // * </p>
-    // *
-    // * @param observables A list of source {@link Events}.
-    // * @return An {@link Events} that emits items that are the result of coordinating the items
-    // * emitted by the source {@link Events}.
-    // */
-    // public static <V> Events<List<V>> zip(Events<? super V>... list) {
-    // return zip(Arrays.asList(list));
-    // }
-    //
-    // /**
-    // * <p>
-    // * Rendezvous with all source {@link Events} by emitting an item that aggregates all values of
-    // * each of the source {@link Events} each time an item is received from all of the source
-    // * {@link Events}.
-    // * </p>
-    // *
-    // * @param observables A list of source {@link Events}.
-    // * @return An {@link Events} that emits items that are the result of coordinating the items
-    // * emitted by the source {@link Events}.
-    // */
-    // public static <V> Events<List<V>> zip(Iterable<? extends Events<? super V>> list) {
-    // return new Events<>(observer -> {
-    // Disposable base = Disposable.Φ;
-    // List<Deque<V>> queues = new ArrayList();
-    //
-    // for (Events event : list) {
-    // Deque queue = new ArrayDeque();
-    // queues.add(queue);
-    //
-    // base = base.and(event.to(value -> {
-    // if (value != null) {
-    // List values = new ArrayList();
-    //
-    // for (Deque<V> q : queues) {
-    // if (q != queue && q.isEmpty()) {
-    // queue.add(value);
-    // return;
-    // }
-    // values.add(q == queue ? value : q.poll());
-    // }
-    // observer.accept(values);
-    // }
-    // }));
-    // }
-    // return base;
-    // });
-    // }
 }
