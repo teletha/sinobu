@@ -49,13 +49,7 @@ public class Events<V> {
     private static final Predicate<Boolean> IdenticalPredicate = value -> value;
 
     /** The subscriber. */
-    private BiFunction<Observer<? super V>, Events<V>, Disposable> subscriber;
-
-    /** The unsubscriber. */
-    private Disposable unsubscriber;
-
-    /** The observer. */
-    private Agent<V> observer;
+    private final Function<Observer<? super V>, Disposable> subscriber;
 
     /** The common value holder. */
     private AtomicReference<V> ref;
@@ -82,24 +76,6 @@ public class Events<V> {
      * @see #to(Consumer, Consumer, Runnable)
      */
     public Events(Function<Observer<? super V>, Disposable> subscriber) {
-        this.subscriber = (observer, that) -> {
-            return subscriber.apply(observer);
-        };
-    }
-
-    /**
-     * <p>
-     * Create {@link Events} with the specified subscriber {@link Function} which will be invoked
-     * whenever you calls {@link #to(Observer)} related methods.
-     * </p>
-     * 
-     * @param subscriber A subscriber {@link Function}.
-     * @see #to(Observer)
-     * @see #to(Consumer)
-     * @see #to(Consumer, Consumer)
-     * @see #to(Consumer, Consumer, Runnable)
-     */
-    private Events(BiFunction<Observer<? super V>, Events<V>, Disposable> subscriber) {
         this.subscriber = subscriber;
     }
 
@@ -119,24 +95,6 @@ public class Events<V> {
 
         // API definition
         return property;
-    }
-
-    /**
-     * <p>
-     * Receive values from this {@link Events}.
-     * </p>
-     * 
-     * @return A {@link Property} as value receiver.
-     */
-    public final AtomicReference<V> toValue() {
-        // value receiver
-        AtomicReference value = new AtomicReference();
-
-        // start receiving values
-        to(value::set);
-
-        // API definition
-        return value;
     }
 
     /**
@@ -180,13 +138,7 @@ public class Events<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        if (observer instanceof Agent) {
-            this.observer = (Agent) observer;
-        } else {
-            this.observer = new Agent();
-            this.observer.observer = observer;
-        }
-        return unsubscriber = this.observer.and(subscriber.apply(this.observer, this));
+        return subscriber.apply(observer);
     }
 
     /**
@@ -469,9 +421,11 @@ public class Events<V> {
      */
     public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
-            return to(value -> {
-                function.apply(value).to(observer);
-            });
+            List<Disposable> disposer = new ArrayList();
+
+            disposer.add(to(value -> disposer.add(function.apply(value).to(observer))));
+
+            return Disposable.of(disposer);
         });
     }
 
@@ -658,14 +612,15 @@ public class Events<V> {
     public final Events<V> repeat() {
 
         return new Events<>(observer -> {
+            EventsDisposer disposer = new EventsDisposer();
+
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
                 observer.complete();
-                System.out.println("Complete " + "\r\n");
-                to(agent);
+                disposer.add(to(agent));
             };
-            return to(agent);
+            return disposer.add(to(agent));
         });
     }
 
@@ -685,7 +640,7 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             AtomicInteger counter = new AtomicInteger(count);
-
+            EventsDisposer disposer = new EventsDisposer();
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
@@ -693,10 +648,11 @@ public class Events<V> {
                     observer.complete();
                 } else {
                     observer.complete();
-                    to(agent);
+                    disposer.add(to(agent));
                 }
             };
-            return to(agent);
+
+            return disposer.add(to(agent));
         });
     }
 
@@ -897,18 +853,20 @@ public class Events<V> {
         return new Events<>(observer -> {
             AtomicInteger counter = new AtomicInteger(count);
 
-            return to(value -> {
+            EventsDisposer disposer = new EventsDisposer();
+
+            return disposer.add(to(value -> {
                 int current = counter.decrementAndGet();
 
                 if (0 <= current) {
                     observer.accept(value);
 
                     if (0 == current) {
-                        unsubscriber.dispose();
                         observer.complete();
+                        disposer.dispose();
                     }
                 }
-            });
+            }));
         });
     }
 
@@ -929,10 +887,12 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            return unsubscriber = to(observer).and(predicate.to(value -> {
-                unsubscriber.dispose();
+            EventsDisposer disposer = new EventsDisposer();
+
+            return disposer.add(to(observer).and(predicate.to(value -> {
                 observer.complete();
-            }));
+                disposer.dispose();
+            })));
         });
     }
 
@@ -952,14 +912,18 @@ public class Events<V> {
             return this;
         }
 
-        return on((observer, value) -> {
-            if (predicate.test(value)) {
-                observer.accept(value);
-                unsubscriber.dispose();
-                observer.complete();
-            } else {
-                observer.accept(value);
-            }
+        return new Events<>(observer -> {
+            EventsDisposer disposer = new EventsDisposer();
+
+            return disposer.add(to(value -> {
+                if (predicate.test(value)) {
+                    observer.accept(value);
+                    observer.complete();
+                    disposer.dispose();
+                } else {
+                    observer.accept(value);
+                }
+            }));
         });
     }
 

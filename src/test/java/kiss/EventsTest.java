@@ -1164,7 +1164,6 @@ public class EventsTest {
     private static <T> EventRecorder<T> record(Events<T> stream) {
         EventRecorder<T> recorder = new EventRecorder();
         recorder.disposer = stream.to(recorder);
-        System.out.println("Create recorder " + recorder);
 
         return recorder;
     }
@@ -1223,7 +1222,6 @@ public class EventsTest {
          */
         @Override
         public void accept(T event) {
-            System.out.println("Accept " + event + " on " + this);
             events.add(event);
         }
 

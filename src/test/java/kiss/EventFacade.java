@@ -39,11 +39,9 @@ public class EventFacade<E> implements Observer<E> {
             Listener<E> listener = event -> {
                 observer.accept(event);
             };
-            System.out.println("Initialize " + observer);
             add(listener);
 
             return () -> {
-                System.out.println("Dispose " + observer);
                 disposed++;
                 remove(listener);
             };
