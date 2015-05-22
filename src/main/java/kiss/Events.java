@@ -56,7 +56,6 @@ public class Events<V> {
      * 
      * @param subscriber A subscriber {@link Function}.
      * @see #to(Observer)
-     * @see #to(Consumer)
      * @see #to(Consumer, Consumer)
      * @see #to(Consumer, Consumer, Runnable)
      */
@@ -136,8 +135,6 @@ public class Events<V> {
      * @throws NullPointerException If the type is <code>null</code>.
      */
     public final <R> Events<R> as(Class<R> type) {
-        Objects.nonNull(type);
-
         return (Events<R>) filter(type::isInstance);
     }
 
@@ -354,9 +351,7 @@ public class Events<V> {
         }
 
         return on((observer, value) -> {
-            I.schedule(time, unit, false, () -> {
-                observer.accept(value);
-            });
+            I.schedule(time, unit, false, () -> observer.accept(value));
         });
     }
 
@@ -432,9 +427,16 @@ public class Events<V> {
         if (predicate == null) {
             return this;
         }
-        AtomicReference<V> ref = new AtomicReference(init);
 
-        return filter(v -> predicate.test(ref.getAndSet(v), v));
+        return new Events<>(observer -> {
+            AtomicReference<V> ref = new AtomicReference(init);
+
+            return to(value -> {
+                if (predicate.test(ref.getAndSet(value), value)) {
+                    observer.accept(value);
+                }
+            });
+        });
     }
 
     /**
@@ -552,9 +554,14 @@ public class Events<V> {
         if (converter == null) {
             return (Events<R>) this;
         }
-        AtomicReference<V> ref = new AtomicReference(init);
 
-        return map(v -> converter.apply(ref.getAndSet(v), v));
+        return new Events<>(observer -> {
+            AtomicReference<V> ref = new AtomicReference(init);
+
+            return to(value -> {
+                observer.accept(converter.apply(ref.getAndSet(value), value));
+            });
+        });
     }
 
     /**

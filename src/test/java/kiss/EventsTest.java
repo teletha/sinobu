@@ -328,6 +328,77 @@ public class EventsTest {
     }
 
     @Test
+    public void filter() {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().filter(value -> value % 2 == 0).to(facade);
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(15) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(25) == null;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+    }
+
+    @Test
+    public void filterByPreviousValue() {
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().filter(0, (prev, value) -> value - prev > 5).to(facade);
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(11) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(22) == null;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+    }
+
+    @Test
+    public void filterByPreviousValueWithMultiSources() {
+        EventFacade<Integer> facade = new EventFacade();
+        Events<Integer> filtered = facade.observe().filter(0, (prev, value) -> value - prev > 5);
+        EventRecorder<Integer> recorder1 = record(filtered);
+        EventRecorder<Integer> recorder2 = record(filtered);
+
+        facade.emit(10);
+        assert recorder1.retrieveValue() == 10;
+        assert recorder2.retrieveValue() == 10;
+        facade.emit(11);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+        facade.emit(20);
+        assert recorder1.retrieveValue() == 20;
+        assert recorder2.retrieveValue() == 20;
+        facade.emit(21);
+        assert recorder1.retrieveValue() == null;
+        assert recorder2.retrieveValue() == null;
+    }
+
+    @Test
+    public void filterByEvent() {
+        EventFacade<Boolean> condition = new EventFacade();
+        EventFacade<Integer> facade = new EventFacade();
+        Disposable disposer = facade.observe().filter(condition.observe()).to(facade);
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+
+        condition.emit(true);
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+
+        condition.emit(false);
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+        assert condition.countDisposed() == 1;
+    }
+
+    @Test
     public void flatMap() {
         EventFacade<Integer> facade = new EventFacade();
         Disposable disposer = facade.observe().flatMap(value -> facade.stream(value, value + 1)).to(facade);
@@ -371,12 +442,36 @@ public class EventsTest {
     }
 
     @Test
-    public void mapWithPreviousValue() {
+    public void mapByPreviousValue() {
         EventFacade<Integer> facade = new EventFacade();
-        facade.observe().map(1, (prev, now) -> prev + now).to(facade);
+        Disposable disposer = facade.observe().map(1, (prev, now) -> prev + now).to(facade);
+
         assert facade.emitAndRetrieve(1) == 2;
         assert facade.emitAndRetrieve(2) == 3;
         assert facade.emitAndRetrieve(3) == 5;
+
+        disposer.dispose();
+        assert facade.countDisposed() == 1;
+    }
+
+    @Test
+    public void mapByPreviousValueWithMultiSources() {
+        EventFacade<Integer> facade = new EventFacade();
+        Events<Integer> mapped = facade.observe().map(1, (prev, now) -> prev + now);
+        EventRecorder<Integer> recorder1 = record(mapped);
+        EventRecorder<Integer> recorder2 = record(mapped);
+
+        facade.emit(1);
+        assert recorder1.retrieveValue() == 2;
+        assert recorder2.retrieveValue() == 2;
+
+        facade.emit(2);
+        assert recorder1.retrieveValue() == 3;
+        assert recorder2.retrieveValue() == 3;
+
+        facade.emit(3);
+        assert recorder1.retrieveValue() == 5;
+        assert recorder2.retrieveValue() == 5;
     }
 
     @Test
@@ -616,42 +711,6 @@ public class EventsTest {
         sub.emit(300);
         assert facade.retrieve() == null;
         assert sub.isUnsubscribed() == true;
-    }
-
-    @Test
-    public void filter() {
-        EventFacade<Integer> facade = new EventFacade();
-        Disposable disposer = facade.observe().filter(value -> value % 2 == 0).to(facade);
-
-        assert facade.emitAndRetrieve(10) == 10;
-        assert facade.emitAndRetrieve(15) == null;
-        assert facade.emitAndRetrieve(20) == 20;
-        assert facade.emitAndRetrieve(25) == null;
-
-        disposer.dispose();
-        assert facade.countDisposed() == 1;
-    }
-
-    @Test
-    public void filterByEvent() {
-        EventFacade<Boolean> condition = new EventFacade();
-        EventFacade<Integer> facade = new EventFacade();
-        Disposable disposer = facade.observe().filter(condition.observe()).to(facade);
-
-        assert facade.emitAndRetrieve(10) == null;
-        assert facade.emitAndRetrieve(20) == null;
-
-        condition.emit(true);
-        assert facade.emitAndRetrieve(10) == 10;
-        assert facade.emitAndRetrieve(20) == 20;
-
-        condition.emit(false);
-        assert facade.emitAndRetrieve(10) == null;
-        assert facade.emitAndRetrieve(20) == null;
-
-        disposer.dispose();
-        assert facade.countDisposed() == 1;
-        assert condition.countDisposed() == 1;
     }
 
     @Test
