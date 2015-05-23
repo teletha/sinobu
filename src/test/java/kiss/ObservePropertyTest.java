@@ -24,56 +24,47 @@ public class ObservePropertyTest {
     @Test
     public void observableValueString() throws Exception {
         StringProperty property = new SimpleStringProperty();
-        EventFacade<String> emitter = new EventFacade();
-
-        // observe
-        Disposable disposer = I.observe(property).to(emitter);
-        assert emitter.retrieve() == null;
+        EventFacade<String, String> facade = new EventFacade(property);
+        assert facade.retrieve() == null;
 
         // change property
         property.set("fire");
-        assert emitter.retrieve().equals("fire");
+        assert facade.retrieve().equals("fire");
 
         // dipose
-        disposer.dispose();
+        assert facade.dispose();
 
         // change property
         property.set("change");
-        assert emitter.isEmpty();
+        assert facade.retrieve() == null;
     }
 
     @Test
     public void observableValueInt() throws Exception {
         IntegerProperty property = new SimpleIntegerProperty();
-        EventFacade<Number> emitter = new EventFacade();
-
-        // observe
-        Disposable disposer = I.observe(property).to(emitter);
-        assert emitter.retrieve().intValue() == 0;
+        EventFacade<Number, Number> facade = new EventFacade(property);
+        assert facade.retrieve().intValue() == 0;
 
         // change property
         property.set(10);
-        assert emitter.retrieve().intValue() == 10;
+        assert facade.retrieve().intValue() == 10;
 
         // dipose
-        disposer.dispose();
+        assert facade.dispose();
 
         // change property
         property.set(20);
-        assert emitter.isEmpty();
+        assert facade.retrieve() == null;
     }
 
     @Test
     public void observable() throws Exception {
         IntegerProperty property = new SimpleIntegerProperty();
-        EventFacade<Number> emitter = new EventFacade();
-
-        // observe
-        Disposable disposer = I.observe(property).to(emitter);
-        assert emitter.retrieve().intValue() == 0;
+        EventFacade<Number, Number> facade = new EventFacade(property);
+        assert facade.retrieve().intValue() == 0;
 
         // change property
         property.set(10);
-        assert emitter.retrieve().intValue() == 10;
+        assert facade.retrieve().intValue() == 10;
     }
 }

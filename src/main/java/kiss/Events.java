@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Nameless Production Committee
+ * Copyright (C) 2015 Nameless Production Committee
  *
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,16 +34,12 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
- * @version 2014/03/11 14:52:00
+ * @version 2015/05/23 17:56:03
  */
-@SuppressWarnings("unchecked")
 public class Events<V> {
 
     /** For reuse. */
     public static final Events NEVER = new Events<>(observer -> Disposable.Φ);
-
-    /** For reuse. */
-    private static final Predicate<Boolean> IdenticalPredicate = value -> value;
 
     /** The subscriber. */
     private final Function<Observer<? super V>, Disposable> subscriber;
@@ -1039,108 +1035,6 @@ public class Events<V> {
     // return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) ->
     // now.e(sum.e.plus(now.e)));
     // }
-
-    /**
-     * <p>
-     * Create an {@link Events} that emits true if all specified observables emit true as latest
-     * event.
-     * </p>
-     * 
-     * @param observables A list of target {@link Events} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static Events<Boolean> all(Events<Boolean>... observables) {
-        return all(IdenticalPredicate, observables);
-    }
-
-    /**
-     * <p>
-     * Create an {@link Events} that emits true if all specified observables emit true as latest
-     * event.
-     * </p>
-     * 
-     * @param predicate A test function.
-     * @param observables A list of target {@link Events} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static <V> Events<Boolean> all(Predicate<V> predicate, Events<V>... observables) {
-        Events<Boolean> events = just(Boolean.TRUE);
-
-        for (Events<V> observable : observables) {
-            events = events.combineLatest(observable, (base, other) -> base && predicate.test(other));
-        }
-        return events;
-    }
-
-    /**
-     * <p>
-     * Create an {@link Events} that emits true if any specified observable emits true as latest
-     * event.
-     * </p>
-     * 
-     * @param observables A list of target {@link Events} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static Events<Boolean> any(Events<Boolean>... observables) {
-        return any(IdenticalPredicate, observables);
-    }
-
-    /**
-     * <p>
-     * Create an {@link Events} that emits true if any specified observable emits true as latest
-     * event.
-     * </p>
-     * 
-     * @param predicate A test function.
-     * @param observables A list of target {@link Events} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static <V> Events<Boolean> any(Predicate<V> predicate, Events<V>... observables) {
-        Events<Boolean> events = just(Boolean.FALSE);
-
-        for (Events<V> observable : observables) {
-            events = events.combineLatest(observable, (base, other) -> base || predicate.test(other));
-        }
-        return events;
-    }
-
-    /**
-     * <p>
-     * Create an {@link Events} that emits true if all specified observables emit false as latest
-     * event.
-     * </p>
-     * 
-     * @param observables A list of target {@link Events} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static Events<Boolean> none(Events<Boolean>... observables) {
-        return none(IdenticalPredicate, observables);
-    }
-
-    /**
-     * <p>
-     * Create an {@link Events} that emits true if all specified observables emit false as latest
-     * event.
-     * </p>
-     * 
-     * @param predicate A test function.
-     * @param observables A list of target {@link Events} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static <V> Events<Boolean> none(Predicate<V> predicate, Events<V>... observables) {
-        Events<Boolean> events = just(Boolean.TRUE);
-
-        for (Events<V> observable : observables) {
-            events = events.combineLatest(observable, (base, other) -> base && !predicate.test(other));
-        }
-        return events;
-    }
 
     /**
      * <p>

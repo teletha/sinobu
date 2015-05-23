@@ -13,106 +13,181 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import javafx.beans.property.Property;
 
 /**
- * @version 2015/05/13 10:07:56
+ * @version 2015/05/23 9:07:18
  */
-public class EventFacade<E> implements Observer<E> {
+public class EventFacade<V, R> {
 
-    /** The listener holder. */
-    private final List<Listener> listeners = new CopyOnWriteArrayList();
+    /** The multiplier. */
+    private static final int multiplier = 2;
 
-    /** The event holder. */
-    private final List<E> events = new ArrayList();
+    /** The observer container. */
+    private final List<Observer<? super V>> observers = new CopyOnWriteArrayList();
 
-    /** The dispose count. */
-    private int disposed;
+    /** The listener container. */
+    private final List<Listener<R>> listeners = new ArrayList();
+
+    /** The listener container. */
+    private final List<Disposable> disposables = new ArrayList();
+
+    /** The counter. */
+    private int disposed = 0;
+
+    /**
+     * 
+     */
+    public EventFacade() {
+        assert 1 < multiplier;
+    }
 
     /**
      * <p>
-     * Observe EventEmitter.
+     * Declare event stream definition to test.
      * </p>
+     * 
+     * @param declaration
      */
-    public Events<E> observe() {
+    public EventFacade(Function<Events<V>, Events<R>> declaration) {
+        this();
 
-        return new Events<>(observer -> {
-            Listener<E> listener = event -> {
-                observer.accept(event);
-            };
-            add(listener);
+        for (int i = 0; i < multiplier; i++) {
+            Listener<R> listener = new Listener<>();
+            listeners.add(listener);
+
+            disposables.add(declaration.apply(observe()).to(listener));
+        }
+    }
+
+    /**
+     * <p>
+     * Declare event stream definition to test.
+     * </p>
+     * 
+     * @param declaration
+     */
+    public EventFacade(BiFunction<Events<V>, EventFacade<V, R>, Events<R>> declaration) {
+        this();
+
+        for (int i = 0; i < multiplier; i++) {
+            Listener<R> listener = new Listener<>();
+            listeners.add(listener);
+
+            disposables.add(declaration.apply(observe(), this).to(listener));
+        }
+    }
+
+    /**
+     * @param property
+     */
+    public EventFacade(Property<R> property) {
+        this();
+
+        for (int i = 0; i < multiplier; i++) {
+            Listener<R> listener = new Listener<>();
+            listeners.add(listener);
+
+            disposables.add(I.observe(property).to(listener));
+        }
+    }
+
+    /**
+     * <p>
+     * Create event stream.
+     * </p>
+     * 
+     * @return
+     */
+    public Events<V> observe() {
+        return new Events<V>(observer -> {
+            if (observer != null) observers.add(observer);
 
             return () -> {
                 disposed++;
-                remove(listener);
+                if (observer != null) observers.remove(observer);
             };
         });
     }
 
     /**
-     * {@inheritDoc}
+     * <p>
+     * Create event stream with some values.
+     * </p>
+     * 
+     * @return
      */
-    @Override
-    public void accept(E event) {
-        events.add(event);
+    public Events<V> observeWith(V... values) {
+        return observe().startWith(values);
     }
 
     /**
      * <p>
-     * Add event listener.
+     * Helper method to emit the specified event.
      * </p>
      */
-    public void add(Listener<E> listner) {
-        if (listner != null) {
-            listeners.add(listner);
-        }
-    }
-
-    /**
-     * <p>
-     * Remove event listener.
-     * </p>
-     */
-    public void remove(Listener<E> listener) {
-        if (listener != null) {
-            listeners.remove(listener);
-        }
-    }
-
-    /**
-     * <p>
-     * Emit the specified event.
-     * </p>
-     */
-    public void emit(E... events) {
-        if (events == null || events.length == 0) {
+    public void emit(V... values) {
+        if (values == null || values.length == 0) {
             return;
         }
 
-        for (Listener<E> listener : listeners) {
-            for (int i = 0; i < events.length; i++) {
-                listener.listen(events[i]);
+        for (Observer<? super V> observer : observers) {
+            for (V value : values) {
+                observer.accept(value);
             }
         }
     }
 
     /**
      * <p>
-     * Retrieve the oldest event.
+     * Helper method to retrieve the oldest event.
      * </p>
+     * 
+     * @return
      */
-    public E retrieve() {
-        return events.isEmpty() ? null : events.remove(0);
-    }
-
     /**
      * <p>
      * Retrieve the oldest event.
      * </p>
      */
-    public E retrieveLast() {
-        E event = events.isEmpty() ? null : events.remove(events.size() - 1);
-        events.clear();
-        return event;
+    public R retrieve() {
+        List<R> results = new ArrayList();
+
+        for (Listener<R> listener : listeners) {
+            results.add(listener.values.isEmpty() ? null : listener.values.remove(0));
+        }
+
+        // all result values must be same
+        if (results.isEmpty()) {
+            return null;
+        } else {
+            R value = results.get(0);
+
+            for (R result : results) {
+                assert Objects.equals(value, result);
+            }
+            return value;
+        }
+    }
+
+    /**
+     * <p>
+     * Helper method to retrieve the oldest event as {@link List}.
+     * </p>
+     */
+    public boolean retrieveAsList(V... expecteds) {
+        R retrieved = retrieve();
+        assert retrieved instanceof List;
+        List list = (List) retrieved;
+        assert list.size() == expecteds.length;
+
+        for (int i = 0; i < expecteds.length; i++) {
+            assert list.get(i) == expecteds[i];
+        }
+        return true;
     }
 
     /**
@@ -120,97 +195,99 @@ public class EventFacade<E> implements Observer<E> {
      * Helper method to emit the specified event and retrieve the oldest event.
      * </p>
      */
-    public E emitAndRetrieve(E event) {
-        emit(event);
+    public R emitAndRetrieve(V value) {
+        emit(value);
 
         return retrieve();
     }
 
     /**
-     * @version 2014/01/05 10:11:55
-     */
-    public static interface Listener<E> {
-
-        /**
-         * <p>
-         * Event listener.
-         * </p>
-         * d
-         */
-        public void listen(E event);
-    }
-
-    /**
      * <p>
-     * Check state.
+     * Helper method to emit the specified event and retrieve the oldest event.
      * </p>
      */
-    public boolean isSubscribed() {
-        return !listeners.isEmpty();
-    }
+    public boolean emitAndRetrieve(V value, V expected) {
+        emit(value);
 
-    /**
-     * <p>
-     * Check state.
-     * </p>
-     */
-    public boolean isUnsubscribed() {
-        return listeners.isEmpty();
-    }
+        assert retrieve() == expected;
 
-    /**
-     * <p>
-     * Check event queue.
-     * </p>
-     * 
-     * @return A result.
-     */
-    public boolean isEmpty() {
-        return events.isEmpty();
-    }
-
-    /**
-     * @param value
-     * @param i
-     * @return
-     */
-    public Events<E> stream(E... values) {
-        return new Events<E>(observer -> () -> disposed++).startWith(values);
-    }
-
-    /**
-     * @return
-     */
-    public int countDisposed() {
-        return disposed;
-    }
-
-    /**
-     * @param i
-     * @param j
-     * @return
-     */
-    public boolean retrieve(Object... expected) {
-        if (expected.length != 1) {
-            Object next = retrieve();
-
-            if (next instanceof List) {
-                List list = (List) next;
-
-                assert list.size() == expected.length;
-
-                for (int i = 0; i < expected.length; i++) {
-                    assert Objects.equals(list.get(i), expected[i]);
-                }
-            }
-        }
         return true;
     }
 
     /**
-     * @return
+     * <p>
+     * Helper method to emit the specified event and retrieve the oldest event.
+     * </p>
      */
-    public boolean retrieveNull() {
-        return Objects.isNull(retrieve());
+    public boolean emitAndRetrieveAsList(V value, V... expecteds) {
+        emit(value);
+
+        return retrieveAsList(expecteds);
+    }
+
+    /**
+     * <p>
+     * Dispose all associated event streams.
+     * </p>
+     */
+    public boolean dispose() {
+        return disposeWithCountAlreadyDisposed(0);
+    }
+
+    /**
+     * <p>
+     * Dispose all associated event streams.
+     * </p>
+     */
+    public boolean disposeWithCountAlreadyDisposed(int alreadyDisposed) {
+        assert disposed / multiplier == alreadyDisposed;
+
+        for (Disposable disposable : disposables) {
+            disposable.dispose();
+        }
+        disposables.clear();
+
+        if (disposed != 0) assert disposed / multiplier >= alreadyDisposed + 1;
+        assert observers.isEmpty() == true;
+
+        return isCompleted();
+    }
+
+    /**
+     * <p>
+     * Helper method to check whether the related event observers are disposed completely or not.
+     * </p>
+     */
+    public boolean isCompleted() {
+        assert observers.isEmpty();
+        return true;
+    }
+
+    /**
+     * <p>
+     * Helper method to check whether the related event observers are disposed completely or not.
+     * </p>
+     */
+    public boolean isCompleted(int disposedCount) {
+        assert observers.isEmpty();
+        assert disposedCount / multiplier == disposed;
+        return true;
+    }
+
+    /**
+     * @version 2015/05/23 9:24:51
+     */
+    private static class Listener<V> implements Observer<V> {
+
+        /** The value holder. */
+        private final List<V> values = new ArrayList();
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void accept(V value) {
+            values.add(value);
+        }
     }
 }
