@@ -122,7 +122,7 @@ public class EventsTest {
     public void combine() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
         EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
-                .combine(sub.observe(), (base, other) -> base + other));
+                .combine((base, other) -> base + other, sub.observe()));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
@@ -149,7 +149,7 @@ public class EventsTest {
     public void combineLatest() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
         EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
-                .combineLatest(sub.observe(), (base, other) -> base + other));
+                .combineLatest((base, other) -> base + other, sub.observe()));
 
         assert facade.emitAndRetrieve(1) == null;
         assert facade.emitAndRetrieve(2) == null;
@@ -320,15 +320,6 @@ public class EventsTest {
         assert facade.retrieve() == 20;
         assert facade.retrieve() == 21;
         assert facade.dispose();
-    }
-
-    @Test
-    public void just() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.just(1, 2, 3));
-
-        assert facade.retrieve() == 1;
-        assert facade.retrieve() == 2;
-        assert facade.retrieve() == 3;
     }
 
     @Test
@@ -518,12 +509,66 @@ public class EventsTest {
     }
 
     @Test
-    public void skip() {
+    public void skipByCondition() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(value -> value % 3 == 0));
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(40) == 40;
+        assert facade.emitAndRetrieve(50) == 50;
+        assert facade.emitAndRetrieve(60) == null;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void skipByConditionEvent() {
+        EventFacade<Boolean, Boolean> condition = new EventFacade();
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(condition.observe()));
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+
+        condition.emit(true);
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+
+        condition.emit(false);
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.dispose();
+        assert condition.isCompleted();
+    }
+
+    @Test
+    public void skipByCount() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == 20;
         assert facade.emitAndRetrieve(30) == 30;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void skipByTime() throws Exception {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(10, MILLISECONDS));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        Thread.sleep(300);
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void skipByTimeWaitingAtFirst() throws Exception {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(10, MILLISECONDS));
+
+        Thread.sleep(300);
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
         assert facade.dispose();
     }
 
@@ -615,10 +660,54 @@ public class EventsTest {
     }
 
     @Test
-    public void take() {
+    public void takeByCondition() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.take(value -> value % 3 == 0));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(40) == null;
+        assert facade.emitAndRetrieve(50) == null;
+        assert facade.emitAndRetrieve(60) == 60;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void takeByConditionEvent() {
+        EventFacade<Boolean, Boolean> condition = new EventFacade();
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.take(condition.observe()));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+
+        condition.emit(true);
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+
+        condition.emit(false);
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.dispose();
+        assert condition.isCompleted();
+    }
+
+    @Test
+    public void takeByCount() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.take(1));
 
         assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.isCompleted();
+    }
+
+    @Test
+    public void takeByTime() throws Exception {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.take(30, MILLISECONDS));
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        Thread.sleep(30);
+        assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
         assert facade.isCompleted();
     }
@@ -680,5 +769,112 @@ public class EventsTest {
         assert facade.emitAndRetrieve(30) == 30;
         assert facade.emitAndRetrieve(20) == null;
         assert facade.emitAndRetrieve(10) == null;
+    }
+
+    @Test
+    public void all() {
+        EventFacade<Boolean, Boolean> facade1 = new EventFacade();
+        EventFacade<Boolean, Boolean> facade2 = new EventFacade();
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events
+                .all(facade1.observe(), facade2.observe()));
+        assert base.retrieve() == null;
+
+        facade1.emit(true);
+        facade2.emit(true);
+        assert base.retrieve() == true;
+
+        facade1.emit(false);
+        assert base.retrieve() == false;
+
+        facade2.emit(false);
+        assert base.retrieve() == false;
+
+        assert base.dispose();
+        assert facade1.isCompleted();
+        assert facade2.isCompleted();
+    }
+
+    @Test
+    public void allNoArg() {
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events.all());
+        assert base.retrieve() == null;
+        assert base.dispose();
+    }
+
+    @Test
+    public void any() {
+        EventFacade<Boolean, Boolean> facade1 = new EventFacade();
+        EventFacade<Boolean, Boolean> facade2 = new EventFacade();
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events
+                .any(facade1.observe(), facade2.observe()));
+        assert base.retrieve() == null;
+
+        facade1.emit(true);
+        facade2.emit(true);
+        assert base.retrieve() == true;
+
+        facade1.emit(false);
+        assert base.retrieve() == true;
+
+        facade2.emit(false);
+        assert base.retrieve() == false;
+
+        assert base.dispose();
+        assert facade1.isCompleted();
+        assert facade2.isCompleted();
+    }
+
+    @Test
+    public void anyNoArg() {
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events.any());
+        assert base.retrieve() == null;
+        assert base.dispose();
+    }
+
+    @Test
+    public void none() {
+        EventFacade<Boolean, Boolean> facade1 = new EventFacade();
+        EventFacade<Boolean, Boolean> facade2 = new EventFacade();
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events
+                .none(facade1.observe(), facade2.observe()));
+        assert base.retrieve() == null;
+
+        facade1.emit(true);
+        facade2.emit(true);
+        assert base.retrieve() == false;
+
+        facade1.emit(false);
+        assert base.retrieve() == false;
+
+        facade2.emit(false);
+        assert base.retrieve() == true;
+
+        assert base.dispose();
+        assert facade1.isCompleted();
+        assert facade2.isCompleted();
+    }
+
+    @Test
+    public void noneNoArg() {
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events.none());
+        assert base.retrieve() == null;
+        assert base.dispose();
+    }
+
+    @Test
+    public void just() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.just(1, 2, 3));
+
+        assert facade.retrieve() == 1;
+        assert facade.retrieve() == 2;
+        assert facade.retrieve() == 3;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void justNoArg() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.just());
+        assert facade.retrieve() == null;
+        assert facade.dispose();
     }
 }

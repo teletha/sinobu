@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -40,6 +41,9 @@ public class Events<V> {
 
     /** For reuse. */
     public static final Events NEVER = new Events<>(observer -> Disposable.Φ);
+
+    /** For reuse. */
+    private static final Predicate<Boolean> IdenticalPredicate = value -> value;
 
     /** The subscriber. */
     private final Function<Observer<? super V>, Disposable> subscriber;
@@ -230,14 +234,14 @@ public class Events<V> {
      * specified {@link Events}.
      * </p>
      * 
-     * @param other An other {@link Events} to combine.
      * @param function A function that, when applied to an item emitted by each of the source
      *            {@link Events}, results in an item that will be emitted by the resulting
      *            {@link Events}.
+     * @param other An other {@link Events} to combine.
      * @return A {@link Events} that emits items that are the result of combining the items emitted
      *         by source {@link Events} by means of the given aggregation function.
      */
-    public final <O, R> Events<R> combine(Events<O> other, BiFunction<V, O, R> function) {
+    public final <O, R> Events<R> combine(BiFunction<V, O, R> function, Events<O> other) {
         return new Events<>(observer -> {
             ArrayDeque<V> baseValue = new ArrayDeque();
             ArrayDeque<O> otherValue = new ArrayDeque();
@@ -260,18 +264,43 @@ public class Events<V> {
 
     /**
      * <p>
+     * Returns an {@link Events} that emits the results of a function of your choosing applied to
+     * combinations of several items emitted, in sequence, by this {@link Events} and the other
+     * specified {@link Events}.
+     * </p>
+     * 
+     * @param function A function that, when applied to an item emitted by each of the source
+     *            {@link Events}, results in an item that will be emitted by the resulting
+     *            {@link Events}.
+     * @param others Other {@link Events} to combine.
+     * @return A {@link Events} that emits items that are the result of combining the items emitted
+     *         by source {@link Events} by means of the given aggregation function.
+     */
+    public final Events<V> combine(BinaryOperator<V> operator, Events<V>... others) {
+        Events<V> base = this;
+
+        if (others != null) {
+            for (Events<V> other : others) {
+                base = base.combine(operator, other);
+            }
+        }
+        return base;
+    }
+
+    /**
+     * <p>
      * Combines two source {@link Events} by emitting an item that aggregates the latest values of
      * each of the source {@link Events} each time an item is received from either of the source
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
      * 
-     * @param other An other {@link Events} to combine.
      * @param function An aggregation function used to combine the items emitted by the source
      *            {@link Events}.
+     * @param other An other {@link Events} to combine.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
      *         by the source {@link Events} by means of the given aggregation function
      */
-    public final <O, R> Events<R> combineLatest(Events<O> other, BiFunction<V, O, R> function) {
+    public final <O, R> Events<R> combineLatest(BiFunction<V, O, R> function, Events<O> other) {
         return new Events<>(observer -> {
             Object undefined = new Object();
             AtomicReference<V> baseValue = new AtomicReference(undefined);
@@ -294,6 +323,30 @@ public class Events<V> {
                 }
             }));
         });
+    }
+
+    /**
+     * <p>
+     * Combines several source {@link Events} by emitting an item that aggregates the latest values
+     * of each of the source {@link Events} each time an item is received from either of the source
+     * {@link Events}, where this aggregation is defined by a specified function.
+     * </p>
+     * 
+     * @param function An aggregation function used to combine the items emitted by the source
+     *            {@link Events}.
+     * @param others Other {@link Events} to combine.
+     * @return An {@link Events} that emits items that are the result of combining the items emitted
+     *         by the source {@link Events} by means of the given aggregation function
+     */
+    public final Events<V> combineLatest(BinaryOperator<V> operator, Events<V>... others) {
+        Events<V> base = this;
+
+        if (others != null) {
+            for (Events<V> other : others) {
+                base = base.combineLatest(operator, other);
+            }
+        }
+        return base;
     }
 
     /**
@@ -719,6 +772,22 @@ public class Events<V> {
 
     /**
      * <p>
+     * Alias for filter(condition.map(value -> !value).
+     * </p>
+     * 
+     * @param condition
+     * @return
+     */
+    public final Events<V> skip(Events<Boolean> condition) {
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+        return filter(condition.startWith(false).map(value -> !value));
+    }
+
+    /**
+     * <p>
      * Bypasses a specified number of values in an {@link Events} sequence and then returns the
      * remaining values.
      * </p>
@@ -880,6 +949,18 @@ public class Events<V> {
 
     /**
      * <p>
+     * Alias for filter(condition).
+     * </p>
+     * 
+     * @param condition
+     * @return
+     */
+    public final Events<V> take(Events<Boolean> condition) {
+        return filter(condition);
+    }
+
+    /**
+     * <p>
      * Returns a specified number of contiguous values from the start of an {@link Events} sequence.
      * </p>
      * 
@@ -908,6 +989,38 @@ public class Events<V> {
                         observer.complete();
                         disposer.dispose();
                     }
+                }
+            }));
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} sequence while the specified duration.
+     * </p>
+     * 
+     * @param time Time to take values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Events<V> take(long time, TimeUnit unit) {
+        // ignore invalid parameter
+        // ignore invalid parameters
+        if (time <= 0 || unit == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> {
+            long timing = System.currentTimeMillis() + unit.toMillis(time);
+            Disposable disposer = Disposable.empty();
+
+            return disposer.and(to(value -> {
+                if (System.currentTimeMillis() < timing) {
+                    observer.accept(value);
+                } else {
+                    observer.complete();
+                    disposer.dispose();
                 }
             }));
         });
@@ -1035,6 +1148,57 @@ public class Events<V> {
     // return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) ->
     // now.e(sum.e.plus(now.e)));
     // }
+
+    /**
+     * <p>
+     * Create an {@link Events} that emits true if all specified observables emit true as latest
+     * event.
+     * </p>
+     * 
+     * @param observables A list of target {@link Events} to test.
+     * @return Chainable API.
+     */
+    @SafeVarargs
+    public static Events<Boolean> all(Events<Boolean>... observables) {
+        if (observables == null || observables.length == 0) {
+            return NEVER;
+        }
+        return just(Boolean.TRUE).combineLatest((base, other) -> base && other, observables);
+    }
+
+    /**
+     * <p>
+     * Create an {@link Events} that emits true if any specified observable emits true as latest
+     * event.
+     * </p>
+     * 
+     * @param observables A list of target {@link Events} to test.
+     * @return Chainable API.
+     */
+    @SafeVarargs
+    public static Events<Boolean> any(Events<Boolean>... observables) {
+        if (observables == null || observables.length == 0) {
+            return NEVER;
+        }
+        return just(Boolean.FALSE).combineLatest((base, other) -> base || other, observables);
+    }
+
+    /**
+     * <p>
+     * Create an {@link Events} that emits true if all specified observables emit false as latest
+     * event.
+     * </p>
+     * 
+     * @param observables A list of target {@link Events} to test.
+     * @return Chainable API.
+     */
+    @SafeVarargs
+    public static Events<Boolean> none(Events<Boolean>... observables) {
+        if (observables == null || observables.length == 0) {
+            return NEVER;
+        }
+        return just(Boolean.TRUE).combineLatest((base, other) -> !base && !other, observables);
+    }
 
     /**
      * <p>
