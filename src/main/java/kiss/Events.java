@@ -43,7 +43,7 @@ public class Events<V> {
     public static final Events NEVER = new Events<>(observer -> Disposable.Φ);
 
     /** For reuse. */
-    private static final Predicate<Boolean> IdenticalPredicate = value -> value;
+    private static final Object UNDEFINED = new Object();
 
     /** The subscriber. */
     private final Function<Observer<? super V>, Disposable> subscriber;
@@ -302,15 +302,14 @@ public class Events<V> {
      */
     public final <O, R> Events<R> combineLatest(BiFunction<V, O, R> function, Events<O> other) {
         return new Events<>(observer -> {
-            Object undefined = new Object();
-            AtomicReference<V> baseValue = new AtomicReference(undefined);
-            AtomicReference<O> otherValue = new AtomicReference(undefined);
+            AtomicReference<V> baseValue = new AtomicReference(UNDEFINED);
+            AtomicReference<O> otherValue = new AtomicReference(UNDEFINED);
 
             return to(value -> {
                 baseValue.set(value);
                 O joined = otherValue.get();
 
-                if (joined != undefined) {
+                if (joined != UNDEFINED) {
                     observer.accept(function.apply(value, joined));
                 }
             }).and(other.to(value -> {
@@ -318,7 +317,7 @@ public class Events<V> {
 
                 V joined = baseValue.get();
 
-                if (joined != undefined) {
+                if (joined != UNDEFINED) {
                     observer.accept(function.apply(joined, value));
                 }
             }));
@@ -724,6 +723,66 @@ public class Events<V> {
             };
 
             return agent.and(to(agent));
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits the most recently emitted item (if any) emitted by the
+     * source {@link Events} within periodic time intervals.
+     * </p>
+     * 
+     * @param time Time to sample value. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified sampling time. <code>null</code> will ignore
+     *            this instruction.
+     * @return Chainable API.
+     */
+    public final Events<V> sample(long time, TimeUnit unit) {
+        // ignore invalid parameters
+        if (time <= 0 || unit == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> {
+            AtomicReference<V> latest = new AtomicReference(UNDEFINED);
+
+            Future<?> schedule = I.schedule(0, time, unit, true, () -> {
+                V value = latest.getAndSet((V) UNDEFINED);
+
+                if (value != UNDEFINED) {
+                    observer.accept(value);
+                }
+            });
+            return to(latest::set).and(() -> schedule.cancel(true));
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that, when the specified sampler {@link Events} emits an item,
+     * emits the most recently emitted item (if any) emitted by the source {@link Events} since the
+     * previous emission from the sampler {@link Events}.
+     * </p>
+     * 
+     * @param sampler An {@link Events} to use for sampling the source {@link Events}.
+     * @return Chainable API.
+     */
+    public final Events<V> sample(Events sampler) {
+        // ignore invalid parameters
+        if (sampler == null) {
+            return NEVER;
+        }
+
+        return new Events<>(observer -> {
+            AtomicReference<V> latest = new AtomicReference(UNDEFINED);
+
+            return to(latest::set).and(sampler.to(sample -> {
+                V value = latest.getAndSet((V) UNDEFINED);
+
+                if (value != UNDEFINED) {
+                    observer.accept(value);
+                }
+            }));
         });
     }
 
@@ -1163,7 +1222,7 @@ public class Events<V> {
         if (observables == null || observables.length == 0) {
             return NEVER;
         }
-        return just(Boolean.TRUE).combineLatest((base, other) -> base && other, observables);
+        return from(Boolean.TRUE).combineLatest((base, other) -> base && other, observables);
     }
 
     /**
@@ -1180,7 +1239,7 @@ public class Events<V> {
         if (observables == null || observables.length == 0) {
             return NEVER;
         }
-        return just(Boolean.FALSE).combineLatest((base, other) -> base || other, observables);
+        return from(Boolean.FALSE).combineLatest((base, other) -> base || other, observables);
     }
 
     /**
@@ -1197,7 +1256,7 @@ public class Events<V> {
         if (observables == null || observables.length == 0) {
             return NEVER;
         }
-        return just(Boolean.TRUE).combineLatest((base, other) -> !base && !other, observables);
+        return from(Boolean.TRUE).combineLatest((base, other) -> !base && !other, observables);
     }
 
     /**
@@ -1208,7 +1267,19 @@ public class Events<V> {
      * @param value A list of values to emit.
      * @return An {@link Events} that emits values as a first sequence.
      */
-    public static <V> Events<V> just(V... values) {
+    public static <V> Events<V> from(V... values) {
+        return NEVER.startWith(values);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits the specified values.
+     * </p>
+     * 
+     * @param value A list of values to emit.
+     * @return An {@link Events} that emits values as a first sequence.
+     */
+    public static <V> Events<V> from(Iterable<V> values) {
         return NEVER.startWith(values);
     }
 }

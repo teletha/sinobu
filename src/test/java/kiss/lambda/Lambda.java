@@ -160,4 +160,19 @@ public class Lambda {
      */
     private interface Recursive<F> extends Function<Recursive<F>, F> {
     }
+
+    /**
+     * <p>
+     * Create recursive function.
+     * </p>
+     * 
+     * @param function A target function to convert.
+     * @return A converted recursive function.
+     */
+    public static Runnable recursiveR(Function<Runnable, Runnable> function) {
+        Recursive<Runnable> recursive = recursiveFunction -> function.apply(() -> {
+            recursiveFunction.apply(recursiveFunction).run();
+        });
+        return recursive.apply(recursive);
+    }
 }

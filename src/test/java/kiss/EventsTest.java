@@ -12,6 +12,7 @@ package kiss;
 import static java.util.concurrent.TimeUnit.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +23,7 @@ import org.junit.Test;
 import antibug.Chronus;
 
 /**
- * @version 2015/05/23 17:03:30
+ * @version 2015/05/24 11:36:04
  */
 public class EventsTest {
 
@@ -102,19 +103,17 @@ public class EventsTest {
     }
 
     @Test
-    public void bufferTime() throws Exception {
+    public void bufferTime() {
         EventFacade<Integer, List<Integer>> facade = new EventFacade<>(events -> events.buffer(30, MILLISECONDS));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
-        // chronus.freeze(30);
-        Thread.sleep(300);
+        chronus.freeze(100);
         assert facade.retrieveAsList(10, 20);
         assert facade.emitAndRetrieve(30) == null;
         assert facade.emitAndRetrieve(40) == null;
         assert facade.emitAndRetrieve(50) == null;
-        // chronus.freeze(30);
-        Thread.sleep(300);
+        chronus.freeze(100);
         assert facade.retrieveAsList(30, 40, 50);
     }
 
@@ -467,6 +466,28 @@ public class EventsTest {
     }
 
     @Test
+    public void repeatTakeUntil() {
+        EventFacade<String, String> condition = new EventFacade();
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1)
+                .take(1)
+                .repeat()
+                .takeUntil(condition.observe()));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(40) == 40;
+
+        condition.emit("END");
+        assert facade.emitAndRetrieve(50) == null;
+        assert facade.emitAndRetrieve(60) == null;
+
+        assert facade.isCompleted();
+        assert condition.isCompleted();
+    }
+
+    @Test
     public void repeatThen() {
         EventFacade<Integer, Integer> sub = new EventFacade();
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1)
@@ -495,6 +516,46 @@ public class EventsTest {
         // from sub facade
         sub.emit(300);
         assert facade.retrieve() == null;
+    }
+
+    @Test
+    public void sampleBySamplerEvents() {
+        EventFacade<String, String> sampler = new EventFacade();
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.sample(sampler.observe()));
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == null;
+
+        sampler.emit("NOW");
+        assert facade.retrieve() == 30;
+
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(10) == null;
+
+        sampler.emit("NOW");
+        assert facade.retrieve() == 10;
+        assert facade.dispose();
+        assert sampler.isCompleted();
+    }
+
+    @Test
+    public void sampleByTime() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.sample(10, MILLISECONDS));
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == null;
+
+        chronus.freeze(100);
+        assert facade.retrieve() == 30;
+
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(10) == null;
+
+        chronus.freeze(100);
+        assert facade.retrieve() == 10;
+        assert facade.dispose();
     }
 
     @Test
@@ -551,22 +612,22 @@ public class EventsTest {
     }
 
     @Test
-    public void skipByTime() throws Exception {
+    public void skipByTime() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(10, MILLISECONDS));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
-        Thread.sleep(300);
+        chronus.freeze(100);
         assert facade.emitAndRetrieve(10) == 10;
         assert facade.emitAndRetrieve(20) == 20;
         assert facade.dispose();
     }
 
     @Test
-    public void skipByTimeWaitingAtFirst() throws Exception {
+    public void skipByTimeWaitingAtFirst() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(10, MILLISECONDS));
 
-        Thread.sleep(300);
+        chronus.freeze(100);
         assert facade.emitAndRetrieve(10) == 10;
         assert facade.emitAndRetrieve(20) == 20;
         assert facade.dispose();
@@ -701,12 +762,12 @@ public class EventsTest {
     }
 
     @Test
-    public void takeByTime() throws Exception {
+    public void takeByTime() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.take(30, MILLISECONDS));
 
         assert facade.emitAndRetrieve(10) == 10;
         assert facade.emitAndRetrieve(20) == 20;
-        Thread.sleep(30);
+        chronus.freeze(30);
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
         assert facade.isCompleted();
@@ -757,14 +818,14 @@ public class EventsTest {
     }
 
     @Test
-    public void throttle() throws Exception {
+    public void throttle() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.throttle(20, MILLISECONDS));
 
         assert facade.emitAndRetrieve(10) == 10;
         assert facade.emitAndRetrieve(20) == null;
         assert facade.emitAndRetrieve(30) == null;
 
-        Thread.sleep(20);
+        chronus.freeze(20);
 
         assert facade.emitAndRetrieve(30) == 30;
         assert facade.emitAndRetrieve(20) == null;
@@ -862,8 +923,8 @@ public class EventsTest {
     }
 
     @Test
-    public void just() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.just(1, 2, 3));
+    public void from() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.from(1, 2, 3));
 
         assert facade.retrieve() == 1;
         assert facade.retrieve() == 2;
@@ -872,9 +933,19 @@ public class EventsTest {
     }
 
     @Test
-    public void justNoArg() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.just());
+    public void fromNoArg() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.from());
         assert facade.retrieve() == null;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void fromIterable() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.from(Arrays.asList(1, 2, 3)));
+
+        assert facade.retrieve() == 1;
+        assert facade.retrieve() == 2;
+        assert facade.retrieve() == 3;
         assert facade.dispose();
     }
 }

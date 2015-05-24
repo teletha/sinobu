@@ -57,9 +57,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -318,10 +318,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
     /** The parallel task manager. */
     // private static final ExecutorService parallel = Executors.newWorkStealingPool(4);
-    private static final ExecutorService parallel = Executors.newCachedThreadPool(new I());
+    private static final ScheduledExecutorService parallel = Executors.newScheduledThreadPool(4, new I());
 
     /** The serial task manager. */
-    private static final ExecutorService serial = Executors.newSingleThreadExecutor(new I());
+    private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(new I());
 
     // initialization
     static {
@@ -2179,7 +2179,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param task A task to execute.
      */
     public static Future<?> schedule(Runnable task) {
-        return schedule(0, null, true, task);
+        return parallel.submit(task);
     }
 
     /**
@@ -2187,26 +2187,31 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * Execute the specified task in background {@link Thread} with the specified delay.
      * </p>
      *
-     * @param time A delay time.
+     * @param delay A initial delay time.
      * @param unit A delay time unit.
      * @param parallelExecution The <code>true</code> will execute task in parallel,
      *            <code>false</code> will execute task in serial.
      * @param task A task to execute.
      */
-    public static Future<?> schedule(long time, TimeUnit unit, boolean parallelExecution, Runnable task) {
-        Runnable runnable = task;
+    public static Future<?> schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
+        return (parallelExecution ? parallel : serial).schedule(task, delay, unit);
+    }
 
-        if (time != 0 && unit != null) {
-            runnable = () -> {
-                try {
-                    Thread.sleep(unit.toMillis(time));
-                    task.run();
-                } catch (Throwable e) {
-                    throw quiet(e);
-                }
-            };
-        }
-        return (parallelExecution ? parallel : serial).submit(runnable);
+    /**
+     * <p>
+     * Execute the specified task infinitely in background {@link Thread} with the specified delay
+     * and period.
+     * </p>
+     *
+     * @param delay A initial delay time.
+     * @param period A period time.
+     * @param unit A delay time unit.
+     * @param parallelExecution The <code>true</code> will execute task in parallel,
+     *            <code>false</code> will execute task in serial.
+     * @param task A task to execute.
+     */
+    public static Future<?> schedule(long delay, long period, TimeUnit unit, boolean parallelExecution, Runnable task) {
+        return (parallelExecution ? parallel : serial).scheduleAtFixedRate(task, delay, period, unit);
     }
 
     /**
