@@ -710,7 +710,6 @@ public class Events<V> {
 
         return new Events<>(observer -> {
             AtomicInteger counter = new AtomicInteger(count);
-
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
@@ -753,6 +752,7 @@ public class Events<V> {
                     observer.accept(value);
                 }
             });
+
             return to(latest::set).and(() -> schedule.cancel(true));
         });
     }
