@@ -727,38 +727,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that emits the most recently emitted item (if any) emitted by the
-     * source {@link Events} within periodic time intervals.
-     * </p>
-     * 
-     * @param time Time to sample value. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified sampling time. <code>null</code> will ignore
-     *            this instruction.
-     * @return Chainable API.
-     */
-    public final Events<V> sample(long time, TimeUnit unit) {
-        // ignore invalid parameters
-        if (time <= 0 || unit == null) {
-            return this;
-        }
-
-        return new Events<>(observer -> {
-            AtomicReference<V> latest = new AtomicReference(UNDEFINED);
-
-            Future<?> schedule = I.schedule(0, time, unit, true, () -> {
-                V value = latest.getAndSet((V) UNDEFINED);
-
-                if (value != UNDEFINED) {
-                    observer.accept(value);
-                }
-            });
-
-            return to(latest::set).and(() -> schedule.cancel(true));
-        });
-    }
-
-    /**
-     * <p>
      * Returns an {@link Events} that, when the specified sampler {@link Events} emits an item,
      * emits the most recently emitted item (if any) emitted by the source {@link Events} since the
      * previous emission from the sampler {@link Events}.

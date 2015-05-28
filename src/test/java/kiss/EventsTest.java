@@ -540,25 +540,6 @@ public class EventsTest {
     }
 
     @Test
-    public void sampleByTime() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.sample(10, MILLISECONDS));
-        assert facade.emitAndRetrieve(10) == null;
-        assert facade.emitAndRetrieve(20) == null;
-        assert facade.emitAndRetrieve(30) == null;
-
-        chronus.freeze(100);
-        assert facade.retrieve() == 30;
-
-        assert facade.emitAndRetrieve(30) == null;
-        assert facade.emitAndRetrieve(20) == null;
-        assert facade.emitAndRetrieve(10) == null;
-
-        chronus.freeze(100);
-        assert facade.retrieve() == 10;
-        assert facade.dispose();
-    }
-
-    @Test
     public void scan() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events
                 .scan(10, (accumulated, value) -> accumulated + value));
