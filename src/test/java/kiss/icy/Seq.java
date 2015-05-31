@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.UnaryOperator;
 
 /**
@@ -33,11 +34,26 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
 
     public abstract Seq<E> add(E value);
 
+    public abstract Seq<E> remove(E value);
+
     public int size() {
         return list.size();
     }
 
     public abstract Seq<E> clear();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringJoiner joiner = new StringJoiner(", ", getClass() + "[", "]");
+
+        for (int i = 0; i < size(); i++) {
+            joiner.add(get(i).toString());
+        }
+        return joiner.toString();
+    }
 
     /**
      * @param person
@@ -114,8 +130,18 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
          * {@inheritDoc}
          */
         @Override
+        public Seq<E> remove(E value) {
+            List<E> created = new ArrayList(list);
+            created.remove(value);
+
+            return new Icy(created);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public Seq<E> clear() {
-            list.clear();
             return new Icy(Collections.EMPTY_LIST);
         }
 
@@ -184,6 +210,15 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
          * {@inheritDoc}
          */
         @Override
+        public Seq<E> remove(E value) {
+            list.remove(value);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public Seq<E> clear() {
             list.clear();
             return this;
@@ -222,6 +257,12 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
 
         public Lens<M, V> add() {
             sub.lens = lens.then(Lens.of(null, Seq::add));
+
+            return sub;
+        }
+
+        public Lens<M, V> remove() {
+            sub.lens = lens.then(Lens.of(null, Seq::remove));
 
             return sub;
         }

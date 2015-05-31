@@ -53,30 +53,40 @@ public class ModelTest {
     public void changeNestedProperty() {
         Club club1 = Club.Operator.leader().name().set(MINISTRATION, "Yukino");
         assert club1 != MINISTRATION;
-        assert club1.name().equals("Housibu");
+        assert club1.name() == MINISTRATION.name();
         assert club1.leader() != YUKINOSITA;
         assert club1.leader().name().equals("Yukino");
 
         Club club2 = Club.Operator.leader().set(MINISTRATION, HIKIGAYA);
         assert club2 != MINISTRATION;
-        assert club2.name().equals("Housibu");
+        assert club2.name() == MINISTRATION.name();
         assert club2.leader() == HIKIGAYA;
-
+        System.out.println(MINISTRATION.members());
         Club club3 = Club.Operator.memebers().at(0).name().set(MINISTRATION, "YUKINO");
         assert club3 != MINISTRATION;
-        assert club3.name().equals("Housibu");
+        assert club3.name() == MINISTRATION.name();
         assert club3.members().get(0) != YUKINOSITA;
         assert club3.members().get(0).name().equals("YUKINO");
+        assert MINISTRATION.members().get(0) == YUKINOSITA;
 
+        System.out.println(MINISTRATION.members());
         Club club4 = Club.Operator.memebers().add().set(MINISTRATION, HIKIGAYA);
         assert club4 != MINISTRATION;
-        assert club4.name().equals("Housibu");
-        assert club4.members().get(0) != YUKINOSITA;
-        assert club4.members().get(0).name().equals("YUKINO");
+        assert club4.name() == MINISTRATION.name();
         assert club4.members().size() == 3;
+        assert club4.members().get(0) == YUKINOSITA;
+        assert club4.members().get(1) == HIKIGAYA;
+        assert club4.members().get(2) == HIKIGAYA;
 
-        Club club5 = Club.Operator.memebers().clear().apply(MINISTRATION);
-        assert club5 != MINISTRATION;
-        assert club5.members().size() == 0;
+        // Club club5 = Club.Operator.memebers().remove().set(MINISTRATION, HIKIGAYA);
+        // assert club5 != MINISTRATION;
+        // assert club5.name() == MINISTRATION.name();
+        // System.out.println(club5.members().get(0));
+        // assert club5.members().get(0) == YUKINOSITA;
+        // assert club5.members().size() == 1;
+
+        Club club6 = Club.Operator.memebers().clear().apply(MINISTRATION);
+        assert club6 != MINISTRATION;
+        assert club6.members().size() == 0;
     }
 }
