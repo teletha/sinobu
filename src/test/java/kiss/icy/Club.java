@@ -173,10 +173,12 @@ public abstract class Club implements Operatable<Club> {
          * @param club
          */
         private Melty(Club base) {
-            if (base == null) {
-                model = new ClubDef();
-            } else {
-                model = base.model;
+            model = new ClubDef();
+
+            if (base != null) {
+                model.name = base.name();
+                model.leader = base.leader().melt();
+                model.members = base.members().melt();
             }
         }
 
@@ -263,7 +265,7 @@ public abstract class Club implements Operatable<Club> {
          * @return
          */
         public Lens<M, String> name() {
-            return lens.then(NAME);
+            return parent.then(NAME);
         }
 
         /**
@@ -274,7 +276,7 @@ public abstract class Club implements Operatable<Club> {
          * @return
          */
         public Person.Operator<M> leader() {
-            return new Person.Operator(lens.then(LEADER));
+            return new Person.Operator(parent.then(LEADER));
         }
 
         /**
@@ -285,7 +287,7 @@ public abstract class Club implements Operatable<Club> {
          * @return
          */
         public Seq.Operator<M, Person, Person.Operator<M>> memebers() {
-            return new Seq.Operator(lens.then(MEMBERS), new Person.Operator<M>(null));
+            return new Seq.Operator(parent.then(MEMBERS), new Person.Operator<M>(null));
         }
     }
 }

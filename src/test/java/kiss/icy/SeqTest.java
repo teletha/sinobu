@@ -17,7 +17,18 @@ import org.junit.Test;
 public class SeqTest {
 
     @Test
-    public void testname() throws Exception {
+    public void icySet() throws Exception {
+        Seq<String> icy = Seq.of("one", "two").ice();
+        Seq<String> modified1 = icy.set(0, "1");
 
+        assert icy.get(0) == "one";
+        assert modified1.get(0) == "1";
+    }
+
+    @Test
+    public void icySetOperator() throws Exception {
+        Seq<String> icy = Seq.of("one", "two").ice();
+
+        assert icy.get(0) == "one";
     }
 }

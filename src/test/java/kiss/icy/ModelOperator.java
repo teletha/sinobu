@@ -14,14 +14,14 @@ package kiss.icy;
  */
 public abstract class ModelOperator<M, V> implements Lens<M, V> {
 
-    /** The previous lens. */
-    protected Lens<M, V> lens;
+    /** The parent lens. */
+    protected Lens<M, V> parent;
 
     /**
-     * @param lens A previous lens.
+     * @param parent A previous lens.
      */
-    protected ModelOperator(Lens<M, V> lens) {
-        this.lens = lens == null ? Lens.Φ : lens;
+    protected ModelOperator(Lens<M, V> parent) {
+        this.parent = parent == null ? Lens.Φ : parent;
     }
 
     /**
@@ -29,7 +29,7 @@ public abstract class ModelOperator<M, V> implements Lens<M, V> {
      */
     @Override
     public final V get(M model) {
-        return lens.get(model);
+        return parent.get(model);
     }
 
     /**
@@ -37,6 +37,6 @@ public abstract class ModelOperator<M, V> implements Lens<M, V> {
      */
     @Override
     public final M set(M model, V property) {
-        return lens.set(model, property);
+        return parent.set(model, property);
     }
 }

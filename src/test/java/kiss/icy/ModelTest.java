@@ -33,11 +33,14 @@ public class ModelTest {
 
     @Test
     public void changeSingleProperty() {
-        Person hikigaya = HIKIGAYA.name("Hatiman");
-        assert hikigaya != HIKIGAYA;
-        assert hikigaya.name().equals("Hatiman");
-        assert hikigaya.age() == HIKIGAYA.age();
-        assert hikigaya.gender() == HIKIGAYA.gender();
+        Person hikitani = HIKIGAYA.name("Hikitani");
+        assert hikitani != HIKIGAYA;
+        assert hikitani.name().equals("Hikitani");
+        assert hikitani.age() == HIKIGAYA.age();
+        assert hikitani.gender() == HIKIGAYA.gender();
+        assert HIKIGAYA.name().equals("Hikigaya");
+        assert HIKIGAYA.age() == 17;
+        assert HIKIGAYA.gender() == Gender.Male;
     }
 
     @Test
@@ -56,12 +59,13 @@ public class ModelTest {
         assert club1.name() == MINISTRATION.name();
         assert club1.leader() != YUKINOSITA;
         assert club1.leader().name().equals("Yukino");
+        assert MINISTRATION.leader().name().equals("Yukinosita");
 
         Club club2 = Club.Operator.leader().set(MINISTRATION, HIKIGAYA);
         assert club2 != MINISTRATION;
         assert club2.name() == MINISTRATION.name();
         assert club2.leader() == HIKIGAYA;
-        System.out.println(MINISTRATION.members());
+
         Club club3 = Club.Operator.memebers().at(0).name().set(MINISTRATION, "YUKINO");
         assert club3 != MINISTRATION;
         assert club3.name() == MINISTRATION.name();
@@ -69,7 +73,6 @@ public class ModelTest {
         assert club3.members().get(0).name().equals("YUKINO");
         assert MINISTRATION.members().get(0) == YUKINOSITA;
 
-        System.out.println(MINISTRATION.members());
         Club club4 = Club.Operator.memebers().add().set(MINISTRATION, HIKIGAYA);
         assert club4 != MINISTRATION;
         assert club4.name() == MINISTRATION.name();
@@ -78,12 +81,11 @@ public class ModelTest {
         assert club4.members().get(1) == HIKIGAYA;
         assert club4.members().get(2) == HIKIGAYA;
 
-        // Club club5 = Club.Operator.memebers().remove().set(MINISTRATION, HIKIGAYA);
-        // assert club5 != MINISTRATION;
-        // assert club5.name() == MINISTRATION.name();
-        // System.out.println(club5.members().get(0));
-        // assert club5.members().get(0) == YUKINOSITA;
-        // assert club5.members().size() == 1;
+        Club club5 = Club.Operator.memebers().remove().set(MINISTRATION, HIKIGAYA);
+        assert club5 != MINISTRATION;
+        assert club5.name() == MINISTRATION.name();
+        assert club5.members().get(0) == YUKINOSITA;
+        assert club5.members().size() == 1;
 
         Club club6 = Club.Operator.memebers().clear().apply(MINISTRATION);
         assert club6 != MINISTRATION;

@@ -175,10 +175,12 @@ public abstract class Person implements Operatable<Person> {
          * @param base
          */
         private Melty(Person base) {
-            if (base == null) {
-                model = new PersonDef();
-            } else {
-                model = base.model;
+            model = new PersonDef();
+
+            if (base != null) {
+                model.name = base.name();
+                model.age = base.age();
+                model.gender = base.gender();
             }
         }
 
@@ -265,7 +267,7 @@ public abstract class Person implements Operatable<Person> {
          * @return
          */
         public Lens<M, String> name() {
-            return lens.then(NAME);
+            return parent.then(NAME);
         }
 
         /**
@@ -276,7 +278,7 @@ public abstract class Person implements Operatable<Person> {
          * @return
          */
         public Lens<M, Integer> age() {
-            return lens.then(AGE);
+            return parent.then(AGE);
         }
 
         /**
@@ -287,7 +289,7 @@ public abstract class Person implements Operatable<Person> {
          * @return
          */
         public Lens<M, Gender> gender() {
-            return lens.then(GENDER);
+            return parent.then(GENDER);
         }
     }
 }

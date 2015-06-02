@@ -250,25 +250,25 @@ public abstract class Seq<E> implements Operatable<Seq<E>> {
         }
 
         public O at(int index) {
-            sub.lens = lens.then(Lens.of(model -> model.get(index), (model, value) -> model.set(index, value)));
+            sub.parent = parent.then(Lens.of(model -> model.get(index), (model, value) -> model.set(index, value)));
 
             return sub;
         }
 
         public Lens<M, V> add() {
-            sub.lens = lens.then(Lens.of(null, Seq::add));
+            sub.parent = parent.then(Lens.of(null, Seq::add));
 
             return sub;
         }
 
         public Lens<M, V> remove() {
-            sub.lens = lens.then(Lens.of(null, Seq::remove));
+            sub.parent = parent.then(Lens.of(null, Seq::remove));
 
             return sub;
         }
 
         public UnaryOperator<M> clear() {
-            return lens.then(Seq::clear);
+            return parent.then(Seq::clear);
         }
 
         // public <S> Lens<M, S> all(Function<O, ModelOperator<M, S>> operator) {
