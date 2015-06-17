@@ -13,13 +13,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import kiss.sample.MarkerInterface1;
-
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
+import kiss.sample.MarkerInterface1;
 
 /**
  * @version 2011/03/22 16:36:07
@@ -27,15 +27,19 @@ import antibug.PrivateModule;
 public class ModulesTest {
 
     @Rule
+    @ClassRule
     public static final PrivateModule module1 = new PrivateModule("module/external");
 
     @Rule
+    @ClassRule
     public static final PrivateModule module2 = new PrivateModule("module/external", true, false);
 
     @Rule
+    @ClassRule
     public static final PrivateModule module3 = new PrivateModule("module/external", true, false);
 
     @Rule
+    @ClassRule
     public static final PrivateModule module4 = new PrivateModule("module/external", true, true);
 
     /** The clean and empty module repository for test. */
@@ -142,7 +146,7 @@ public class ModulesTest {
         I.copy(module1.path, relativeModule);
 
         try {
-            assert !relativeModule.isAbsolute();
+            assert!relativeModule.isAbsolute();
             assert 0 == modules.modules.size();
 
             // as relative

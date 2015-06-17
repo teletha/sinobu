@@ -15,8 +15,5 @@ public class Project extends bee.api.Project {
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
 
         require("npc", "antibug", "0.3").atTest();
-        require("junit", "junit", "4.10").atTest();
-
-        unrequire("org.hamcrest", "hamcrest-core");
     }
 }

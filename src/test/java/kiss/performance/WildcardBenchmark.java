@@ -15,13 +15,13 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
-import kiss.scratchpad.Wildcard;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.benchmark.Benchmark;
 import antibug.benchmark.Benchmark.Code;
+import kiss.scratchpad.Wildcard;
 
 /**
  * @version 2012/01/31 16:18:56
@@ -29,6 +29,7 @@ import antibug.benchmark.Benchmark.Code;
 public class WildcardBenchmark {
 
     @Rule
+    @ClassRule
     public static final Benchmark benchmark = new Benchmark();
 
     Path path = Paths.get(new File("").getAbsolutePath());

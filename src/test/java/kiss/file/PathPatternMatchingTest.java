@@ -16,13 +16,13 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.function.Consumer;
 
-import kiss.I;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
 import antibug.CleanRoom.FileSystemDSL;
+import kiss.I;
 
 /**
  * @version 2014/07/11 8:42:50
@@ -30,6 +30,7 @@ import antibug.CleanRoom.FileSystemDSL;
 public class PathPatternMatchingTest {
 
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom();
 
     private Counter counter = new Counter();

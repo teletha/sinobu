@@ -12,6 +12,11 @@ package kiss.lifestyle;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+
+import antibug.PrivateModule;
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.Manageable;
@@ -20,17 +25,13 @@ import kiss.Singleton;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Student;
 
-import org.junit.Rule;
-import org.junit.Test;
-
-import antibug.PrivateModule;
-
 /**
  * @version 2014/07/12 11:40:46
  */
 public class LifestyleTest {
 
     @Rule
+    @ClassRule
     public static final PrivateModule module = new PrivateModule();
 
     private static final String CONSTANT = "Set by " + LifestyleTest.class.getSimpleName();

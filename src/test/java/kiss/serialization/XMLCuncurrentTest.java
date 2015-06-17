@@ -18,15 +18,15 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import kiss.I;
-import kiss.sample.bean.StringListProperty;
-
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
+import kiss.I;
+import kiss.sample.bean.StringListProperty;
 
 /**
  * @version 2011/03/29 12:37:35
@@ -35,6 +35,7 @@ public class XMLCuncurrentTest {
 
     /** The temporaries. */
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */

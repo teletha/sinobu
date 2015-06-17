@@ -9,15 +9,15 @@
  */
 package kiss.module;
 
-import kiss.I;
-import kiss.model.Model;
-import kiss.module.external.ExtendedClass1;
-import kiss.module.external.SingletonClass;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
+import kiss.I;
+import kiss.model.Model;
+import kiss.module.external.ExtendedClass1;
+import kiss.module.external.SingletonClass;
 
 /**
  * @version 2014/01/30 16:33:15
@@ -25,6 +25,7 @@ import antibug.PrivateModule;
 public class ClassCacheProblemTest {
 
     @Rule
+    @ClassRule
     public static PrivateModule module = new PrivateModule("external", true, false);
 
     /**

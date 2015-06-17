@@ -16,13 +16,13 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
-import kiss.I;
-import kiss.sample.bean.Person;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
+import kiss.I;
+import kiss.sample.bean.Person;
 
 /**
  * @version 2011/03/31 17:29:31
@@ -30,6 +30,7 @@ import antibug.CleanRoom;
 public class IllegalInputTest {
 
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom();
 
     /** The normal bean. */

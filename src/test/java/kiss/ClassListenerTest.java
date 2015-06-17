@@ -9,15 +9,15 @@
  */
 package kiss;
 
-import kiss.sample.MarkerInterface1;
-import kiss.sample.MarkerInterface2;
-import kiss.sample.RuntimeAnnotation1;
-
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
+import kiss.sample.MarkerInterface1;
+import kiss.sample.MarkerInterface2;
+import kiss.sample.RuntimeAnnotation1;
 
 /**
  * @version 2011/04/09 7:09:57
@@ -25,6 +25,7 @@ import antibug.PrivateModule;
 public class ClassListenerTest {
 
     @Rule
+    @ClassRule
     public static final PrivateModule module = new PrivateModule("module/external");
 
     /** The clean and empty module repository for test. */

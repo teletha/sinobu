@@ -16,14 +16,14 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import kiss.I;
-import kiss.sample.bean.Person;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.benchmark.Benchmark;
 import antibug.benchmark.Benchmark.Code;
+import kiss.I;
+import kiss.sample.bean.Person;
 
 /**
  * @version 2012/01/31 16:13:18
@@ -31,6 +31,7 @@ import antibug.benchmark.Benchmark.Code;
 public class AccessibleBenchmark {
 
     @Rule
+    @ClassRule
     public static final Benchmark benchmark = new Benchmark();
 
     /**

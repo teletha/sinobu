@@ -9,21 +9,18 @@
  */
 package kiss.core;
 
-
 import java.util.Locale;
+
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 
 import kiss.Extensible;
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.Manageable;
 import kiss.Singleton;
-
-import org.junit.Rule;
-import org.junit.Test;
-
 import antibug.PrivateModule;
-
-
 
 /**
  * @version 2011/03/22 16:31:23
@@ -31,28 +28,29 @@ import antibug.PrivateModule;
 public class I18NTest {
 
     @Rule
+    @ClassRule
     public static final PrivateModule module = new PrivateModule();
 
     @Test
     public void i18n() throws Exception {
-        assert "メッセージ".equals(I.i18n(MessageBundle.class).message());
+        assert"メッセージ".equals(I.i18n(MessageBundle.class).message());
     }
 
     @Test
     public void useNotLoadedBundleClass() {
         module.unload();
 
-        assert "message".equals(I.i18n(MessageBundle.class).message());
+        assert"message".equals(I.i18n(MessageBundle.class).message());
     }
 
     @Test
     public void param() throws Exception {
-        assert "メッセージ10".equals(I.i18n(MessageBundle.class).messageWithParam(10));
+        assert"メッセージ10".equals(I.i18n(MessageBundle.class).messageWithParam(10));
     }
 
     @Test
     public void override() throws Exception {
-        assert "message".equals(I.i18n(MessageBundle.class).dontOverride());
+        assert"message".equals(I.i18n(MessageBundle.class).dontOverride());
     }
 
     @Test(expected = NullPointerException.class)
@@ -69,6 +67,7 @@ public class I18NTest {
         /**
          * @see kiss.Lifestyle#get()
          */
+        @Override
         public Locale get() {
             return Locale.JAPAN;
         }
@@ -99,10 +98,12 @@ public class I18NTest {
     @SuppressWarnings("unused")
     private static class MessageBundle_ja extends MessageBundle {
 
+        @Override
         public String message() {
             return "メッセージ";
         }
 
+        @Override
         public String messageWithParam(int number) {
             return "メッセージ" + number;
         }

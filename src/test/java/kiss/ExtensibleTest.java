@@ -11,14 +11,14 @@ package kiss;
 
 import java.util.List;
 
-import kiss.sample.bean.Person;
-import kiss.sample.bean.School;
-import kiss.sample.bean.Student;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
+import kiss.sample.bean.Person;
+import kiss.sample.bean.School;
+import kiss.sample.bean.Student;
 
 /**
  * @version 2014/01/13 22:27:16
@@ -26,6 +26,7 @@ import antibug.PrivateModule;
 public class ExtensibleTest {
 
     @Rule
+    @ClassRule
     public static PrivateModule module = new PrivateModule();
 
     @Test

@@ -12,13 +12,14 @@ package kiss.lifestyle;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+
 import kiss.I;
 import kiss.Manageable;
 import kiss.Preference;
 import kiss.SinobuSetting;
-
-import org.junit.Rule;
-import org.junit.Test;
 
 /**
  * @version 2012/10/20 16:46:23
@@ -26,6 +27,7 @@ import org.junit.Test;
 public class PreferenceTest {
 
     @Rule
+    @ClassRule
     public static final SinobuSetting env = new SinobuSetting(I.locateTemporary());
 
     @Test

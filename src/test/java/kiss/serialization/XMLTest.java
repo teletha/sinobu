@@ -20,6 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+
+import antibug.CleanRoom;
+import antibug.xml.XML;
 import kiss.I;
 import kiss.core.CoreMethodsTest;
 import kiss.sample.bean.BuiltinBean;
@@ -42,18 +48,13 @@ import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
 
-import org.junit.Rule;
-import org.junit.Test;
-
-import antibug.CleanRoom;
-import antibug.xml.XML;
-
 /**
  * @version 2014/07/22 15:33:45
  */
 public class XMLTest {
 
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */
@@ -582,7 +583,7 @@ public class XMLTest {
         // list must not have ez:key attribute
         XML xml = xml(config);
         assert xml.has("//String[1]");
-        assert !xml.has("//String[1]/@ss:key", "ss", "sinobu");
+        assert!xml.has("//String[1]/@ss:key", "ss", "sinobu");
     }
 
     @Test

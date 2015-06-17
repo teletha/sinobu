@@ -14,13 +14,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import kiss.I;
-import kiss.Interceptor;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
+import kiss.I;
+import kiss.Interceptor;
 
 /**
  * @version 2011/03/22 17:06:39
@@ -28,6 +28,7 @@ import antibug.PrivateModule;
 public class InterceptorTest {
 
     @Rule
+    @ClassRule
     public static final PrivateModule module = new PrivateModule();
 
     @Test
@@ -35,7 +36,7 @@ public class InterceptorTest {
         InterceptedBean bean = I.make(InterceptedBean.class);
         bean.setName("test");
 
-        assert "test" == bean.getName();
+        assert"test" == bean.getName();
     }
 
     @Test(expected = IllegalArgumentException.class)

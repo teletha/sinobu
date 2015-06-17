@@ -21,16 +21,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.SynchronousQueue;
 
-import kiss.I;
-import kiss.Observer;
-import kiss.Disposable;
-
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
+import kiss.Disposable;
+import kiss.I;
+import kiss.Observer;
 
 /**
  * @version 2011/04/09 7:09:37
@@ -38,6 +38,7 @@ import antibug.CleanRoom;
 public class PathObservationTest {
 
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom(I.locateTemporary());
 
     /** The event type. */
@@ -569,7 +570,8 @@ public class PathObservationTest {
                 if (retrieved == null) {
                     throw new AssertionError(event + " event doesn't rise in '" + path + "'.");
                 } else {
-                    assert Files.isSameFile(path, retrieved.path) : "Expected is " + path + "   but retrieved is " + retrieved.path;
+                    assert Files
+                            .isSameFile(path, retrieved.path) : "Expected is " + path + "   but retrieved is " + retrieved.path;
                 }
             } catch (InterruptedException e) {
                 throw I.quiet(e);
@@ -611,7 +613,7 @@ public class PathObservationTest {
      * @version 2011/04/03 14:14:01
      */
     @SuppressWarnings("serial")
-    private static class EventQueue extends SynchronousQueue<Event> implements Observer<WatchEvent<Path>> {
+    private static class EventQueue extends SynchronousQueue<Event>implements Observer<WatchEvent<Path>> {
 
         private EventQueue() {
             super(true);

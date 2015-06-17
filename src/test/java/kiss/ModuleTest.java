@@ -14,6 +14,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+
+import antibug.PrivateModule;
 import kiss.module.external.AnnotatedClass1;
 import kiss.module.external.AnnotatedClass2;
 import kiss.module.external.AnnotatedClass3;
@@ -31,20 +36,17 @@ import kiss.sample.RuntimeAnnotation1;
 import kiss.sample.RuntimeAnnotation2;
 import kiss.sample.SourceAnnotation;
 
-import org.junit.Rule;
-import org.junit.Test;
-
-import antibug.PrivateModule;
-
 /**
  * @version 2011/03/22 16:37:20
  */
 public class ModuleTest {
 
     @Rule
+    @ClassRule
     public static PrivateModule external = new PrivateModule("module/external", true, false);
 
     @Rule
+    @ClassRule
     public static PrivateModule jar = new PrivateModule("module/external", true, true);
 
     @Test

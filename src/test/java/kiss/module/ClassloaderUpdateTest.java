@@ -9,12 +9,12 @@
  */
 package kiss.module;
 
-import kiss.I;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
+import kiss.I;
 
 /**
  * @version 2011/03/22 17:07:32
@@ -22,6 +22,7 @@ import antibug.PrivateModule;
 public class ClassloaderUpdateTest {
 
     @Rule
+    @ClassRule
     public static PrivateModule module = new PrivateModule(true, false);
 
     @Test

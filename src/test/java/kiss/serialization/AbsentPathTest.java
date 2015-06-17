@@ -9,17 +9,15 @@
  */
 package kiss.serialization;
 
-
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-
-
 import kiss.I;
 import kiss.sample.bean.Person;
 
@@ -29,6 +27,7 @@ import kiss.sample.bean.Person;
 public class AbsentPathTest {
 
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom();
 
     private Person person = new Person();

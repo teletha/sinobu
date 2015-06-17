@@ -15,13 +15,13 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.util.List;
 
-import kiss.I;
-import kiss.sample.RuntimeAnnotation1;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.PrivateModule;
+import kiss.I;
+import kiss.sample.RuntimeAnnotation1;
 
 /**
  * @version 2011/03/22 17:08:02
@@ -29,6 +29,7 @@ import antibug.PrivateModule;
 public class ClassloaderUnloadTest {
 
     @Rule
+    @ClassRule
     public static PrivateModule module = new PrivateModule(true, false);
 
     /** The memory monitor. */

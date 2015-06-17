@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ import kiss.I;
 public class PatternMatchingFileTest {
 
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom("test01");
 
     private Counter counter = new Counter();

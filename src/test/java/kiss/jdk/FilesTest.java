@@ -11,16 +11,14 @@ package kiss.jdk;
 
 import static java.nio.file.StandardCopyOption.*;
 
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-
-
 
 /**
  * @version 2011/03/22 16:55:29
@@ -28,6 +26,7 @@ import antibug.CleanRoom;
 public class FilesTest {
 
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom();
 
     @Test(expected = NullPointerException.class)
@@ -68,7 +67,7 @@ public class FilesTest {
         Files.copy(input, output, REPLACE_EXISTING);
 
         assert Files.isDirectory(output);
-        assert !Files.isDirectory(output.resolve("test"));
-        assert !Files.isDirectory(output.resolve("child"));
+        assert!Files.isDirectory(output.resolve("test"));
+        assert!Files.isDirectory(output.resolve("child"));
     }
 }

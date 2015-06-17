@@ -9,14 +9,14 @@
  */
 package kiss.performance;
 
-import kiss.I;
-import kiss.sample.bean.Person;
-
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.benchmark.Benchmark;
 import antibug.benchmark.Benchmark.Code;
+import kiss.I;
+import kiss.sample.bean.Person;
 
 /**
  * DOCUMENT.
@@ -26,6 +26,7 @@ import antibug.benchmark.Benchmark.Code;
 public class InstantiationBenchmark {
 
     @Rule
+    @ClassRule
     public static final Benchmark benchmark = new Benchmark();
 
     @Test

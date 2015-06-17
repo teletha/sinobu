@@ -9,19 +9,17 @@
  */
 package kiss.file;
 
-
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
 import antibug.Synchrotron;
-
-
 import kiss.I;
 
 /**
@@ -30,12 +28,13 @@ import kiss.I;
 public class PathOperationTest {
 
     @Rule
+    @ClassRule
     public static final CleanRoom room = new CleanRoom("file");
 
     @Test
     public void locateRelative() throws Exception {
         Path path = I.locate("context");
-        assert !path.isAbsolute();
+        assert!path.isAbsolute();
     }
 
     @Test
@@ -47,7 +46,7 @@ public class PathOperationTest {
     @Test
     public void locateWhitespace() throws Exception {
         Path path = I.locate(new URL("file://white space"));
-        assert !path.isAbsolute();
+        assert!path.isAbsolute();
     }
 
     @Test
@@ -511,9 +510,9 @@ public class PathOperationTest {
     @Test
     public void createTemporary() throws Exception {
         Path path = I.locateTemporary();
-        assert !Files.exists(path);
-        assert !Files.isDirectory(path);
-        assert !Files.isRegularFile(path);
+        assert!Files.exists(path);
+        assert!Files.isDirectory(path);
+        assert!Files.isRegularFile(path);
     }
 
     @Test
@@ -521,9 +520,9 @@ public class PathOperationTest {
         Path path1 = I.locateTemporary();
         Path path2 = I.locateTemporary();
         Path path3 = I.locateTemporary();
-        assert !Files.exists(path1);
-        assert !Files.exists(path2);
-        assert !Files.exists(path3);
+        assert!Files.exists(path1);
+        assert!Files.exists(path2);
+        assert!Files.exists(path3);
         assert path1.getFileName() != path2.getFileName();
         assert path3.getFileName() != path2.getFileName();
         assert path3.getFileName() != path1.getFileName();

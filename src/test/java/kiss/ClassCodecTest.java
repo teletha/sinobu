@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -20,6 +21,7 @@ import antibug.PrivateModule;
 public class ClassCodecTest {
 
     @Rule
+    @ClassRule
     public static final PrivateModule module = new PrivateModule(true, false);
 
     @Test
