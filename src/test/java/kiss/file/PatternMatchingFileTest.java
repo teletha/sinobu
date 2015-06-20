@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -28,8 +27,7 @@ import kiss.I;
 public class PatternMatchingFileTest {
 
     @Rule
-    @ClassRule
-    public static final CleanRoom room = new CleanRoom("test01");
+    public final CleanRoom room = new CleanRoom("test01");
 
     private Counter counter = new Counter();
 
@@ -106,15 +104,14 @@ public class PatternMatchingFileTest {
     }
 
     /**
-     * @version 2011/03/10 17:59:06
+     * @version 2015/06/20 9:17:49
      */
-    private static class Counter extends SimpleFileVisitor<Path> {
+    private class Counter extends SimpleFileVisitor<Path> {
 
         private int count = 0;
 
         /**
-         * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
+         * {@inheritDoc}
          */
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -123,8 +120,7 @@ public class PatternMatchingFileTest {
         }
 
         /**
-         * @see java.nio.file.SimpleFileVisitor#preVisitDirectory(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
+         * {@inheritDoc}
          */
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -135,8 +131,7 @@ public class PatternMatchingFileTest {
         }
 
         /**
-         * @see java.nio.file.SimpleFileVisitor#postVisitDirectory(java.lang.Object,
-         *      java.io.IOException)
+         * {@inheritDoc}
          */
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
