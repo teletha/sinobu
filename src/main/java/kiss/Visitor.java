@@ -13,7 +13,9 @@ import static java.nio.file.FileVisitResult.*;
 import static java.nio.file.StandardCopyOption.*;
 import static java.nio.file.StandardWatchEventKinds.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
@@ -27,6 +29,8 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import com.sun.nio.zipfs.ZipPath;
 
@@ -64,6 +68,9 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     /** We must skip root directory? */
     private boolean root = false;
 
+    /** The zip archiver. */
+    private ZipOutputStream zip;
+
     /**
      * <p>
      * Utility for file tree traversal.
@@ -79,6 +86,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>4 - file and directory with {@link FileVisitor}</li>
      * <li>5 - directory scan</li>
      * <li>6 - observe</li>
+     * <li>-1 - zip</li>
      * </ol>
      */
     Visitor(Path from, Path to, int type, FileVisitor visitor, String... patterns) {
@@ -149,6 +157,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
             this.directories = directories.toArray(new PathMatcher[directories.size()]);
 
+            if (type == -1) this.zip = new ZipOutputStream(Files.newOutputStream(to), I.$encoding);
+
             // Walk file tree actually.
             if (type <= 5) Files.walkFileTree(from, Collections.EMPTY_SET, Integer.MAX_VALUE, this);
         } catch (IOException e) {
@@ -181,6 +191,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
         case 2: // delete
         case 3: // walk file
+        case -1: // zip
             return CONTINUE;
 
         case 5: // walk directory
@@ -214,6 +225,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
         case 3: // walk file
         case 5: // walk directory
+        case -1: // zip
             return CONTINUE;
 
         default: // walk file and directory with visitor
@@ -251,6 +263,19 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
                 case 2: // delete
                     Files.delete(path);
+                    break;
+
+                case -1: // zip
+                    ZipEntry entry = new ZipEntry(relative.toString().replace(File.separatorChar, '/'));
+                    entry.setSize(attrs.size());
+                    entry.setTime(attrs.lastModifiedTime().toMillis());
+                    zip.putNextEntry(entry);
+
+                    // copy data
+                    try (InputStream in = Files.newInputStream(path)) {
+                        I.copy(in, zip, false);
+                        zip.closeEntry();
+                    }
                     break;
 
                 case 3: // walk file
@@ -384,5 +409,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     @Override
     public void dispose() {
         I.quiet(service);
+        I.quiet(zip);
     }
 }
