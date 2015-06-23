@@ -28,11 +28,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.sun.nio.zipfs.ZipPath;
+
 /**
  * @version 2014/01/14 9:37:54
  */
 @SuppressWarnings({"serial", "unchecked"})
-class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Disposable {
+class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Disposable {
 
     // =======================================================
     // For Pattern Matching Facility
@@ -137,7 +139,8 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
                     }
                 } else {
                     // exclude directory
-                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
+                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3)
+                            .concat(from instanceof ZipPath ? "/" : ""))));
                 }
             }
 
@@ -160,7 +163,6 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
         // Retrieve relative path from base.
         Path relative = from.relativize(path);
-
         // Skip root directory.
         // Directory exclusion make fast traversing file tree.
         for (PathMatcher matcher : directories) {

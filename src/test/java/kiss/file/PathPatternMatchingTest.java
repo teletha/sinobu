@@ -25,7 +25,7 @@ import antibug.CleanRoom.FileSystemDSL;
 import kiss.I;
 
 /**
- * @version 2014/07/11 8:42:50
+ * @version 2015/06/23 21:12:30
  */
 public class PathPatternMatchingTest {
 
@@ -35,7 +35,7 @@ public class PathPatternMatchingTest {
 
     private Counter counter = new Counter();
 
-    private void pattern1(FileSystemDSL $) {
+    private void structure1(FileSystemDSL $) {
         $.dir("directory1", () -> {
             $.file("01.file");
             $.file("01.txt");
@@ -51,7 +51,7 @@ public class PathPatternMatchingTest {
         $.file("02.txt");
     }
 
-    private void pattern2(FileSystemDSL $) {
+    private void structure2(FileSystemDSL $) {
         $.dir("directory1", () -> {
             $.dir("child1", () -> {
                 $.dir("decendant1", () -> {
@@ -82,68 +82,74 @@ public class PathPatternMatchingTest {
         });
     }
 
+    private void archive1(FileSystemDSL $) {
+        $.zip("archive", () -> {
+            structure1($);
+        });
+    }
+
     @Test
-    public void all() throws Exception {
+    public void all() {
         assertCount(9);
     }
 
     @Test
-    public void includeWildcardLeft() throws Exception {
+    public void includeWildcardLeft() {
         assertCount(1, "*.file");
     }
 
     @Test
-    public void includeWildcardsLeft() throws Exception {
+    public void includeWildcardsLeft() {
         assertCount(3, "**.file");
     }
 
     @Test
-    public void includeWildcardRight() throws Exception {
+    public void includeWildcardRight() {
         assertCount(3, "0*");
     }
 
     @Test
-    public void includeWildcardsRight() throws Exception {
+    public void includeWildcardsRight() {
         assertCount(6, "d**");
     }
 
     @Test
-    public void includeWildcardBoth() throws Exception {
+    public void includeWildcardBoth() {
         assertCount(2, "*1*");
     }
 
     @Test
-    public void includeWildcardsBoth() throws Exception {
+    public void includeWildcardsBoth() {
         assertCount(7, "**1**");
     }
 
     @Test
-    public void excludeWildcardLeft() throws Exception {
+    public void excludeWildcardLeft() {
         assertCount(8, "!*.file");
     }
 
     @Test
-    public void excludeWildcardsLeft() throws Exception {
+    public void excludeWildcardsLeft() {
         assertCount(6, "!**.file");
     }
 
     @Test
-    public void excludeWildcardRight() throws Exception {
+    public void excludeWildcardRight() {
         assertCount(6, "!0*");
     }
 
     @Test
-    public void excludeWildcardsRight() throws Exception {
+    public void excludeWildcardsRight() {
         assertCount(3, "!d**");
     }
 
     @Test
-    public void excludeWildcardBoth() throws Exception {
+    public void excludeWildcardBoth() {
         assertCount(7, "!*1*");
     }
 
     @Test
-    public void excludeWildcardsBoth() throws Exception {
+    public void excludeWildcardsBoth() {
         assertCount(2, "!**1**");
     }
 
@@ -158,7 +164,7 @@ public class PathPatternMatchingTest {
     }
 
     @Test
-    public void wildcardOnly() throws Exception {
+    public void wildcardOnly() {
         assertCount(3, "*");
     }
 
@@ -168,65 +174,157 @@ public class PathPatternMatchingTest {
     }
 
     @Test
-    public void directory1() throws Exception {
-        assertDirectoryCount(3, this::pattern1);
+    public void directory1() {
+        assertDirectoryCount(3, this::structure1);
     }
 
     @Test
-    public void directory2() throws Exception {
-        assertDirectoryCount(10, this::pattern2);
+    public void directory2() {
+        assertDirectoryCount(10, this::structure2);
     }
 
     @Test
-    public void directoryPatternTopLevelPartialWildcard() throws Exception {
-        assertDirectoryCount(2, this::pattern2, "directory*");
+    public void directoryPatternTopLevelPartialWildcard() {
+        assertDirectoryCount(2, this::structure2, "directory*");
     }
 
     @Test
-    public void directoryPatternTopLevelWildcard() throws Exception {
-        assertDirectoryCount(2, this::pattern2, "*");
+    public void directoryPatternTopLevelWildcard() {
+        assertDirectoryCount(2, this::structure2, "*");
     }
 
     @Test
-    public void directoryPatternWildcard() throws Exception {
-        assertDirectoryCount(9, this::pattern2, "**");
+    public void directoryPatternWildcard() {
+        assertDirectoryCount(9, this::structure2, "**");
     }
 
     @Test
-    public void directoryPattern() throws Exception {
-        assertDirectoryCount(1, this::pattern2, "directory1");
+    public void directoryPattern() {
+        assertDirectoryCount(1, this::structure2, "directory1");
     }
 
     @Test
-    public void directoryPatternDeepWildcard() throws Exception {
-        assertDirectoryCount(2, this::pattern2, "**/child1");
+    public void directoryPatternDeepWildcard() {
+        assertDirectoryCount(2, this::structure2, "**/child1");
     }
 
     @Test
-    public void directoryPatternWildcardRight() throws Exception {
-        assertDirectoryCount(2, this::pattern2, "**/d*");
+    public void directoryPatternWildcardRight() {
+        assertDirectoryCount(2, this::structure2, "**/d*");
     }
 
     @Test
-    public void directoryPatternWildcardLeft() throws Exception {
-        assertDirectoryCount(3, this::pattern2, "**/*2");
+    public void directoryPatternWildcardLeft() {
+        assertDirectoryCount(3, this::structure2, "**/*2");
     }
 
     @Test
-    public void directoryPatternWildcardBoth() throws Exception {
-        assertDirectoryCount(3, this::pattern2, "**/*e*");
+    public void directoryPatternWildcardBoth() {
+        assertDirectoryCount(3, this::structure2, "**/*e*");
     }
 
     @Test
-    public void directoryPatternNegative() throws Exception {
-        assertDirectoryCount(4, this::pattern2, "!directory1");
+    public void directoryPatternNegative() {
+        assertDirectoryCount(4, this::structure2, "!directory1");
+    }
+
+    @Test
+    public void archive() {
+        assertArchiveCount(9);
+    }
+
+    @Test
+    public void archiveIncludeWildcardLeft() {
+        assertArchiveCount(1, "*.file");
+    }
+
+    @Test
+    public void archiveIncludeWildcardsLeft() {
+        assertArchiveCount(3, "**.file");
+    }
+
+    @Test
+    public void archiveIncludeWildcardRight() {
+        assertArchiveCount(3, "0*");
+    }
+
+    @Test
+    public void archiveIncludeWildcardsRight() {
+        assertArchiveCount(6, "d**");
+    }
+
+    @Test
+    public void archiveIncludeWildcardBoth() {
+        assertArchiveCount(2, "*1*");
+    }
+
+    @Test
+    public void archiveIncludeWildcardsBoth() {
+        assertArchiveCount(7, "**1**");
+    }
+
+    @Test
+    public void archiveExcludeWildcardLeft() {
+        assertArchiveCount(8, "!*.file");
+    }
+
+    @Test
+    public void archiveExcludeWildcardsLeft() {
+        assertArchiveCount(6, "!**.file");
+    }
+
+    @Test
+    public void archiveExcludeWildcardRight() {
+        assertArchiveCount(6, "!0*");
+    }
+
+    @Test
+    public void archiveExcludeWildcardsRight() {
+        assertArchiveCount(3, "!d**");
+    }
+
+    @Test
+    public void archiveExcludeWildcardBoth() {
+        assertArchiveCount(7, "!*1*");
+    }
+
+    @Test
+    public void archiveExcludeWildcardsBoth() {
+        assertArchiveCount(2, "!**1**");
+    }
+
+    @Test
+    public void aarchiveMultiple() {
+        assertArchiveCount(2, "**.txt", "!directory**");
+    }
+
+    @Test
+    public void archiveDeep() {
+        assertArchiveCount(3, "directory1/**");
+    }
+
+    @Test
+    public void archiveWildcardOnly() {
+        assertArchiveCount(3, "*");
+    }
+
+    @Test
+    public void archiveExcludeDirectory() {
+        assertArchiveCount(6, "!directory1/**");
     }
 
     /**
      * Helper method to test.
      */
     private void assertCount(int expected, String... patterns) {
-        room.with(this::pattern1);
+        assertCount(expected, this::structure1, patterns);
+    }
+
+    /**
+     * Helper method to test.
+     */
+    private void assertCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
+        room.with(pattern);
 
         try {
             // by user
@@ -250,15 +348,41 @@ public class PathPatternMatchingTest {
     }
 
     /**
-     * @version 2011/03/10 17:59:06
+     * Helper method to test.
+     */
+    private void assertArchiveCount(int expected, String... patterns) {
+        assertArchiveCount(expected, this::archive1, patterns);
+    }
+
+    /**
+     * Helper method to test.
+     */
+    private void assertArchiveCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
+        room.with(pattern);
+
+        try {
+            Path zip = room.locateArchive("archive.zip");
+
+            // by user
+            I.walk(zip, counter, patterns);
+            assert counter.count == expected;
+
+            // by walker
+            assert expected == I.walk(zip, patterns).size();
+        } finally {
+            counter.count = 0;
+        }
+    }
+
+    /**
+     * @version 2015/06/23 21:12:19
      */
     private static class Counter extends SimpleFileVisitor<Path> {
 
         private int count = 0;
 
         /**
-         * @see java.nio.file.SimpleFileVisitor#visitFile(java.lang.Object,
-         *      java.nio.file.attribute.BasicFileAttributes)
+         * {@inheritDoc}
          */
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
