@@ -35,9 +35,10 @@ public class CopyTest {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateFile("Out", "This text will be overwritten by input file.");
 
-        I.copy2(in, out);
+        I.copy(in, out);
 
         assert Files.exists(in);
+        System.out.println(Files.exists(out.resolveSibling("In")));
         assert read(out).equals("Success");
     }
 
@@ -46,7 +47,7 @@ public class CopyTest {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateAbsent("Out");
 
-        I.copy2(in, out);
+        I.copy(in, out);
 
         assert Files.exists(in);
         assert read(out).equals("Success");
@@ -57,7 +58,7 @@ public class CopyTest {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateDirectory("Out");
 
-        I.copy2(in, out);
+        I.copy(in, out);
 
         assert Files.exists(in);
         assert read(out.resolve("In")).equals("Success");
@@ -72,7 +73,7 @@ public class CopyTest {
         Path in = room.locateDirectory("In", children);
         Path out = room.locateDirectory("Out");
 
-        I.copy2(in, out);
+        I.copy(in, out);
 
         assert Files.exists(in);
         assert directory(out.resolve("In"));
@@ -86,7 +87,7 @@ public class CopyTest {
         });
         Path out = room.locateAbsent("Out");
 
-        I.copy2(in, out);
+        I.copy(in, out);
 
         assert directory(out.resolve("In"));
         assert file(out.resolve("In/1"), "One");

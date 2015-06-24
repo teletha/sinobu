@@ -60,7 +60,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private FileVisitor<Path> visitor;
 
     /** The include file patterns. */
-    private BiPredicate<Path, BasicFileAttributes>[] includes;
+    private BiPredicate<Path, BasicFileAttributes> includes;
 
     /** The exclude file patterns. */
     private PathMatcher[] excludes;
@@ -93,7 +93,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * </ol>
      */
     Visitor(Path from, Path to, int type, FileVisitor visitor, String... patterns) {
-        this(from, to, type, visitor, (BiPredicate[]) null);
+        this(from, to, type, visitor, (BiPredicate) null);
 
         if (patterns == null) {
             patterns = new String[0];
@@ -103,7 +103,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         //
         // Default file system doesn't support close method, so we can ignore to release resource.
         FileSystem system = from.getFileSystem();
-        ArrayList<BiPredicate<Path, BasicFileAttributes>> includes = new ArrayList();
         ArrayList<PathMatcher> excludes = new ArrayList();
         ArrayList<PathMatcher> directories = new ArrayList();
 
@@ -125,7 +124,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (pattern.charAt(0) != '!') {
                 // include
                 PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
-                includes.add((path, attrs) -> matcher.matches(path));
+                includes = includes.and((path, attrs) -> matcher.matches(path));
             } else if (!pattern.endsWith("/**")) {
                 // exclude files
                 if (type < 5) {
@@ -141,7 +140,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         }
 
         // Convert into Array
-        this.includes = includes.toArray(new BiPredicate[includes.size()]);
         this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
         this.directories = directories.toArray(new PathMatcher[directories.size()]);
     }
@@ -164,13 +162,13 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>-1 - zip</li>
      * </ol>
      */
-    Visitor(Path from, Path to, int type, FileVisitor visitor, BiPredicate<Path, BasicFileAttributes>... patterns) {
+    Visitor(Path from, Path to, int type, FileVisitor visitor, BiPredicate<Path, BasicFileAttributes> patterns) {
         this.original = from;
         this.type = type;
         this.visitor = visitor;
 
         if (patterns == null) {
-            patterns = new BiPredicate[0];
+            patterns = (path, attrs) -> true;
         }
 
         try {
@@ -363,12 +361,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         }
 
         // File inclusion
-        for (BiPredicate<Path, BasicFileAttributes> matcher : includes) {
-            if (matcher.test(path, attr)) {
-                return true;
-            }
-        }
-        return includes.length == 0;
+        return includes.test(path, attr);
     }
 
     // =======================================================
