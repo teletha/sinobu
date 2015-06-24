@@ -9,7 +9,6 @@
  */
 package kiss.file;
 
-import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import org.junit.Rule;
@@ -17,7 +16,6 @@ import org.junit.Test;
 
 import antibug.CleanRoom;
 import antibug.CleanRoom.FileSystemDSL;
-import kiss.I;
 
 /**
  * @version 2015/06/23 23:14:32
@@ -35,12 +33,12 @@ public class ZipTest {
 
     @Test
     public void zip() throws Exception {
-        room.with(structure);
-
-        Path output = I.locate("a.zip").toAbsolutePath();
-
-        I.zip(room.root, output, "**.file");
-
-        System.out.println(output);
+        // room.with(structure);
+        //
+        // Path output = I.locate("a.zip").toAbsolutePath();
+        //
+        // I.zip(room.root, output, "**.file");
+        //
+        // System.out.println(output);
     }
 }
