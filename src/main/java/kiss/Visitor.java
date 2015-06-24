@@ -29,6 +29,7 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.BiPredicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -57,7 +58,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private FileVisitor<Path> visitor;
 
     /** The include file patterns. */
-    private PathMatcher[] includes;
+    private BiPredicate<Path, BasicFileAttributes>[] includes;
 
     /** The exclude file patterns. */
     private PathMatcher[] excludes;
@@ -116,7 +117,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             // Default file system doesn't support close method, so we can ignore to release
             // resource.
             FileSystem system = from.getFileSystem();
-            ArrayList<PathMatcher> includes = new ArrayList();
+            ArrayList<BiPredicate<Path, BasicFileAttributes>> includes = new ArrayList();
             ArrayList<PathMatcher> excludes = new ArrayList();
             ArrayList<PathMatcher> directories = new ArrayList();
 
@@ -137,7 +138,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
                 if (pattern.charAt(0) != '!') {
                     // include
-                    includes.add(system.getPathMatcher("glob:".concat(pattern)));
+                    PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
+                    includes.add((path, attrs) -> matcher.matches(path));
                 } else if (!pattern.endsWith("/**")) {
                     // exclude files
                     if (type < 5) {
@@ -153,7 +155,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             }
 
             // Convert into Array
-            this.includes = includes.toArray(new PathMatcher[includes.size()]);
+            this.includes = includes.toArray(new BiPredicate[includes.size()]);
             this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
             this.directories = directories.toArray(new PathMatcher[directories.size()]);
 
@@ -195,7 +197,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             return CONTINUE;
 
         case 5: // walk directory
-            if ((!root || from != path) && accept(relative)) add(path);
+            if ((!root || from != path) && accept(relative, attrs)) add(path);
             // fall-through to reduce footprint
 
         case 6: // observe dirctory
@@ -243,7 +245,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             // Retrieve relative path from base.
             Path relative = from.relativize(path);
 
-            if (accept(relative)) {
+            if (accept(relative, attrs)) {
                 switch (type) {
                 case 0: // copy
                     Path dest = to.resolve(relative);
@@ -306,7 +308,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * @param path A target path.
      * @return A result.
      */
-    private boolean accept(Path path) {
+    private boolean accept(Path path, BasicFileAttributes attr) {
         // File exclusion
         for (PathMatcher matcher : excludes) {
             if (matcher.matches(path)) {
@@ -315,8 +317,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         }
 
         // File inclusion
-        for (PathMatcher matcher : includes) {
-            if (matcher.matches(path)) {
+        for (BiPredicate<Path, BasicFileAttributes> matcher : includes) {
+            if (matcher.test(path, attr)) {
                 return true;
             }
         }
@@ -374,9 +376,11 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
+                    BasicFileAttributes attrs = event.kind() == ENTRY_DELETE ? ZERO : Files
+                            .readAttributes(path, BasicFileAttributes.class);
 
                     // pattern matching
-                    if (accept(from.relativize(path))) {
+                    if (accept(from.relativize(path), attrs)) {
                         Agent e = new Agent();
                         e.watch = event;
                         e.object = path;
@@ -384,7 +388,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                         observer.accept(e);
 
                         if (event.kind() == ENTRY_CREATE) {
-                            if (Files.isDirectory(path) && preVisitDirectory(path, null) == CONTINUE) {
+                            if (Files.isDirectory(path) && preVisitDirectory(path, attrs) == CONTINUE) {
                                 for (Path dir : I.walkDirectory(path)) {
                                     dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                                 }
@@ -411,4 +415,11 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         I.quiet(service);
         I.quiet(zip);
     }
+
+    // =======================================================
+    // For Empty File Attributes
+    // =======================================================
+
+    /** The zero time. */
+    private static final BasicFileAttributes ZERO = new Agent();
 }
