@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import static java.nio.file.StandardCopyOption.*;
 import static jdk.internal.org.objectweb.asm.Opcodes.*;
 
 import java.io.File;
@@ -63,6 +64,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.BiPredicate;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -532,6 +534,43 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      */
     public static void copy(Path input, Path output, String... patterns) {
         new Visitor(input, output, 0, null, patterns);
+    }
+
+    public static void copy2(Path input, Path output, BiPredicate<Path, BasicFileAttributes>... conditions) {
+        try {
+            boolean inputIsDirectory = Files.isDirectory(input);
+
+            // The copy and move operations need the root path.
+            Path from = inputIsDirectory ? input.getParent() : input;
+
+            // The copy and move operations need destination. If the source is file, so destination
+            // must be file and its name is equal to source file.
+            Path to = !inputIsDirectory && Files.isDirectory(output) ? output.resolve(input.getFileName()) : output;
+
+            BiPredicate<Path, BasicFileAttributes> predicate = (a, b) -> true;
+
+            for (BiPredicate<Path, BasicFileAttributes> condition : conditions) {
+                predicate = predicate.and(condition);
+            }
+
+            Files.find(input, Integer.MAX_VALUE, predicate).forEach(path -> {
+                Path relative = from.relativize(path);
+                Path target = to.resolve(relative);
+                System.out.println(relative + "   " + target);
+                try {
+                    if (Files.isDirectory(path)) {
+                        Files.createDirectories(target);
+                        Files.setLastModifiedTime(target, Files.getLastModifiedTime(path));
+                    } else {
+                        Files.copy(path, target, COPY_ATTRIBUTES, REPLACE_EXISTING);
+                    }
+                } catch (Exception e) {
+                    throw I.quiet(e);
+                }
+            });
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
