@@ -533,7 +533,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void copy(Path input, Path output, String... patterns) {
-        new Visitor(input, output, 0, null, patterns);
+        new Visitor(input, output, 0, null, patterns).walk();
     }
 
     public static void copy2(Path input, Path output, BiPredicate<Path, BasicFileAttributes>... conditions) {
@@ -604,7 +604,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      */
     public static void delete(Path input, String... patterns) {
         if (input != null) {
-            new Visitor(input, null, 2, null, patterns);
+            new Visitor(input, null, 2, null, patterns).walk();
         }
     }
 
@@ -1403,7 +1403,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void move(Path input, Path output, String... patterns) {
-        new Visitor(input, output, 1, null, patterns);
+        new Visitor(input, output, 1, null, patterns).walk();
     }
 
     //
@@ -2316,7 +2316,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return All matched files. (<em>not</em> including directory)
      */
     public static List<Path> walk(Path start, String... patterns) {
-        return new Visitor(start, null, 3, null, patterns);
+        return new Visitor(start, null, 3, null, patterns).walk();
     }
 
     /**
@@ -2329,7 +2329,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return All matched directories. (<em>not</em> including file)
      */
     public static List<Path> walkDirectory(Path start, String... patterns) {
-        return new Visitor(start, null, 5, null, patterns);
+        return new Visitor(start, null, 5, null, patterns).walk();
     }
 
     /**
@@ -2379,7 +2379,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
      */
     public static void walk(Path start, FileVisitor visitor, String... patterns) {
-        new Visitor(start, null, 4, visitor, patterns);
+        new Visitor(start, null, 4, visitor, patterns).walk();
     }
 
     /**
@@ -2681,7 +2681,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     }
 
     public static void zip(Path input, Path output, String... patterns) {
-        new Visitor(input, output, -1, null, patterns).dispose();
+        new Visitor(input, output, -1, null, patterns).walk().dispose();
     }
 
     /**

@@ -45,6 +45,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     // For Pattern Matching Facility
     // =======================================================
 
+    private Path original;
+
     /** The source. */
     private Path from;
 
@@ -91,11 +93,84 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * </ol>
      */
     Visitor(Path from, Path to, int type, FileVisitor visitor, String... patterns) {
+        this(from, to, type, visitor, (BiPredicate[]) null);
+
+        if (patterns == null) {
+            patterns = new String[0];
+        }
+
+        // Parse and create path matchers.
+        //
+        // Default file system doesn't support close method, so we can ignore to release resource.
+        FileSystem system = from.getFileSystem();
+        ArrayList<BiPredicate<Path, BasicFileAttributes>> includes = new ArrayList();
+        ArrayList<PathMatcher> excludes = new ArrayList();
+        ArrayList<PathMatcher> directories = new ArrayList();
+
+        for (String pattern : patterns) {
+            // convert pattern to reduce unnecessary file system scanning
+            if (pattern.equals("*")) {
+                if (type < 5) {
+                    pattern = "!*/**";
+                } else {
+                    this.from = from;
+                    this.root = true;
+                }
+            } else if (pattern.equals("**")) {
+                this.from = from;
+                this.root = true;
+                continue;
+            }
+
+            if (pattern.charAt(0) != '!') {
+                // include
+                PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
+                includes.add((path, attrs) -> matcher.matches(path));
+            } else if (!pattern.endsWith("/**")) {
+                // exclude files
+                if (type < 5) {
+                    excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                } else {
+                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                }
+            } else {
+                // exclude directory
+                directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3)
+                        .concat(from instanceof ZipPath ? "/" : ""))));
+            }
+        }
+
+        // Convert into Array
+        this.includes = includes.toArray(new BiPredicate[includes.size()]);
+        this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
+        this.directories = directories.toArray(new PathMatcher[directories.size()]);
+    }
+
+    /**
+     * <p>
+     * Utility for file tree traversal.
+     * </p>
+     * <p>
+     * Type parameter represents the following:
+     * </p>
+     * <ol>
+     * <li>0 - copy</li>
+     * <li>1 - move</li>
+     * <li>2 - delete</li>
+     * <li>3 - file scan</li>
+     * <li>4 - file and directory with {@link FileVisitor}</li>
+     * <li>5 - directory scan</li>
+     * <li>6 - observe</li>
+     * <li>-1 - zip</li>
+     * </ol>
+     */
+    Visitor(Path from, Path to, int type, FileVisitor visitor, BiPredicate<Path, BasicFileAttributes>... patterns) {
+        this.original = from;
         this.type = type;
         this.visitor = visitor;
 
         if (patterns == null) {
-            patterns = new String[0];
+            patterns = new BiPredicate[0];
         }
 
         try {
@@ -112,60 +187,31 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 Files.createDirectories(to.getParent());
             }
 
-            // Parse and create path matchers.
-
-            // Default file system doesn't support close method, so we can ignore to release
-            // resource.
-            FileSystem system = from.getFileSystem();
-            ArrayList<BiPredicate<Path, BasicFileAttributes>> includes = new ArrayList();
-            ArrayList<PathMatcher> excludes = new ArrayList();
-            ArrayList<PathMatcher> directories = new ArrayList();
-
-            for (String pattern : patterns) {
-                // convert pattern to reduce unnecessary file system scanning
-                if (pattern.equals("*")) {
-                    if (type < 5) {
-                        pattern = "!*/**";
-                    } else {
-                        this.from = from;
-                        this.root = true;
-                    }
-                } else if (pattern.equals("**")) {
-                    this.from = from;
-                    this.root = true;
-                    continue;
-                }
-
-                if (pattern.charAt(0) != '!') {
-                    // include
-                    PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
-                    includes.add((path, attrs) -> matcher.matches(path));
-                } else if (!pattern.endsWith("/**")) {
-                    // exclude files
-                    if (type < 5) {
-                        excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
-                    } else {
-                        directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
-                    }
-                } else {
-                    // exclude directory
-                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3)
-                            .concat(from instanceof ZipPath ? "/" : ""))));
-                }
-            }
-
             // Convert into Array
-            this.includes = includes.toArray(new BiPredicate[includes.size()]);
-            this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
-            this.directories = directories.toArray(new PathMatcher[directories.size()]);
+            this.includes = patterns;
+            this.excludes = new PathMatcher[0];
+            this.directories = new PathMatcher[0];
 
             if (type == -1) this.zip = new ZipOutputStream(Files.newOutputStream(to), I.$encoding);
-
-            // Walk file tree actually.
-            if (type <= 5) Files.walkFileTree(from, Collections.EMPTY_SET, Integer.MAX_VALUE, this);
         } catch (IOException e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Walk file tree actually.
+     * </p>
+     * 
+     * @return
+     */
+    Visitor walk() {
+        try {
+            Files.walkFileTree(original, Collections.EMPTY_SET, Integer.MAX_VALUE, this);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+        return this;
     }
 
     /**
