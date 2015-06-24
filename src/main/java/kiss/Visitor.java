@@ -68,8 +68,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     /** The exclude directory pattern. */
     private PathMatcher[] directories;
 
-    /** We must skip root directory? */
-    private boolean root = false;
+    /** Can we accept root directory? */
+    private boolean root = true;
 
     /** The zip archiver. */
     private ZipOutputStream zip;
@@ -114,11 +114,11 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                     pattern = "!*/**";
                 } else {
                     this.from = from;
-                    this.root = true;
+                    this.root = false;
                 }
             } else if (pattern.equals("**")) {
                 this.from = from;
-                this.root = true;
+                this.root = false;
                 continue;
             }
 
@@ -243,7 +243,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             return CONTINUE;
 
         case 5: // walk directory
-            if ((!root || from != path) && accept(relative, attrs)) add(path);
+            if ((root || from != path) && accept(relative, attrs)) add(path);
             // fall-through to reduce footprint
 
         case 6: // observe dirctory
@@ -268,7 +268,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             // fall-through to reduce footprint
 
         case 2: // delete
-            if (!root || from != path) Files.delete(path);
+            if (root || from != path) Files.delete(path);
             // fall-through to reduce footprint
 
         case 3: // walk file
