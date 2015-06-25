@@ -2646,6 +2646,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         modules.unload(classPath);
     }
 
+    public static void unzip(Path input, Path output) {
+
+    }
+
     public static void zip(Path input, Path output, String... patterns) {
         new Visitor(input, output, -1, null, patterns).walk().dispose();
     }
