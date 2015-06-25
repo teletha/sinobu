@@ -53,6 +53,7 @@ public class PathOperationTest {
     public void copyFileToFile() throws Exception {
         Path input = room.locateFile("test01/01.txt", "Success");
         Path output = room.locateFile("out", "Failure");
+
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
 
