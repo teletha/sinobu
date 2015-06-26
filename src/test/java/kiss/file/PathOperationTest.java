@@ -54,6 +54,7 @@ public class PathOperationTest {
         Path input = room.locateFile("test01/01.txt", "Success");
         Path output = room.locateFile("out", "Failure");
 
+        SynchronizedTreeValidator validator = SynchronizedTreeValidator.of(input, output);
         Synchrotron synchrotron = new Synchrotron(input, output);
         synchrotron.areNotSameFile();
 
