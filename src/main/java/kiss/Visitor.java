@@ -293,7 +293,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 switch (type) {
                 case 0: // copy
                     Path dest = to.resolve(relative);
-
                     if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
                         Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
                     }

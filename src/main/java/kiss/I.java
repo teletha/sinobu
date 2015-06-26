@@ -491,9 +491,9 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * <pre>
      * if (input.isFile) {
      *   if (output.isFile) {
-     *     // Copy input file to output file.
+     *     // Copy input file to output file's directory.
      *   } else {
-     *     // Copy input file under output directory.
+     *     // Copy input file to output directory.
      *   }
      * } else {
      *   if (output.isFile) {

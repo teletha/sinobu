@@ -12,10 +12,8 @@ package kiss.file;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.zip.CRC32;
 
@@ -35,13 +33,32 @@ public class CopyTest {
     public CleanRoom room = new CleanRoom();
 
     @Test
-    public void fileToFile() {
+    public void fileToFile() throws Exception {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateFile("Out", "This text will be overwritten by input file.");
-
         I.copy(in, out);
 
-        assert same(in, out);
+        assert sameFile(in, out);
+    }
+
+    @Test
+    public void fileToFileWithSameTimeStamp() throws Exception {
+        Instant now = Instant.now();
+        Path in = room.locateFile("In", now, "Success");
+        Path out = room.locateFile("Out", now, "This text will be overwritten by input file.");
+        I.copy(in, out);
+
+        assert sameFile(in, out);
+    }
+
+    @Test
+    public void fileToFileWithDifferentTimeStamp() {
+        Instant now = Instant.now();
+        Path in = room.locateFile("In", now, "Success");
+        Path out = room.locateFile("Out", now.plusSeconds(10), "This text will be overwritten by input file.");
+        I.copy(in, out);
+
+        assert sameFile(in, out);
     }
 
     @Test
@@ -51,8 +68,7 @@ public class CopyTest {
 
         I.copy(in, out);
 
-        assert Files.exists(in);
-        assert read(out).equals("Success");
+        assert sameFile(in, out);
     }
 
     @Test
@@ -62,8 +78,7 @@ public class CopyTest {
 
         I.copy(in, out);
 
-        assert Files.exists(in);
-        assert read(out.resolve("In")).equals("Success");
+        assert sameFile(in, out.resolve("In"));
     }
 
     @Test
@@ -142,28 +157,25 @@ public class CopyTest {
 
     /**
      * <p>
-     * Helper method to check {@link Path} existence.
+     * Helper method to check {@link Path} equality as file.
      * </p>
      * 
      * @param paths
      * @return
      */
-    protected static boolean same(Path... paths) {
-        return validate(paths, (one, other) -> {
-            try {
-                // In case of file
-                if (Files.isRegularFile(one)) {
-                    if (!Files.isRegularFile(other)) {
-                        throw error(one, " is file.", other, " is not file.");
-                    }
+    protected static boolean sameFile(Path one, Path other) {
+        assert exist(one, other);
+        assert file(one, other);
+        assert sameLastModified(one, other);
+        try {
+            System.out.println(checksum(one) + "  " + Files.readAllLines(one) + " " + one);
+            System.out.println(checksum(other) + " " + Files.readAllLines(other) + " " + other);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+        assert checksum(one) == checksum(other);
 
-                    assert lastModified(one, other);
-                    assert content(one, other);
-                }
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-        });
+        return true;
     }
 
     /**
@@ -174,49 +186,32 @@ public class CopyTest {
      * @param paths A path set to check.
      * @return A test result.
      */
-    protected static boolean lastModified(Path... paths) {
-        return validate(paths, (one, other) -> {
-            try {
-                BasicFileAttributes oneAttributes = Files.readAttributes(one, BasicFileAttributes.class);
-                BasicFileAttributes otherAttributes = Files.readAttributes(other, BasicFileAttributes.class);
-
-                FileTime oneTime = oneAttributes.lastModifiedTime();
-                FileTime otherTime = otherAttributes.lastModifiedTime();
-
-                if (!oneTime.equals(otherTime)) {
-                    throw error(one, " is modified at " + oneTime + ".", other, " is modified at " + otherTime + ".");
-                }
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-        });
+    protected static boolean sameLastModified(Path one, Path other) {
+        try {
+            assert Files.getLastModifiedTime(one).equals(Files.getLastModifiedTime(other));
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+        return true;
     }
 
     /**
      * <p>
-     * Helper method to check {@link Path} contents by using {@link CRC32} hash.
+     * Helper method to compute {@link Path} checksume.
      * </p>
      * 
-     * @param paths A path set to check.
-     * @return A test result.
+     * @param paths
+     * @return
      */
-    protected static boolean content(Path... paths) {
-        return validate(paths, (one, other) -> {
-            try {
-                CRC32 oneHash = new CRC32();
-                CRC32 otherHash = new CRC32();
+    protected static long checksum(Path path) {
+        try {
+            CRC32 crc = new CRC32();
+            crc.update(Files.readAllBytes(path));
 
-                oneHash.update(Files.readAllBytes(one));
-                otherHash.update(Files.readAllBytes(other));
-
-                if (oneHash.getValue() != otherHash.getValue()) {
-                    throw error(one, " has " + oneHash.getValue() + " hash.", other, " has " + otherHash
-                            .getValue() + " hash.");
-                }
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-        });
+            return crc.getValue();
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -236,38 +231,31 @@ public class CopyTest {
 
     /**
      * <p>
-     * Helper method to validate paths each other.
+     * Helper method to check {@link Path} kind.
      * </p>
      * 
-     * @param paths A path set to validate.
-     * @param validation A validation rule.
+     * @param paths
      * @return
      */
-    private static boolean validate(Path[] paths, BiConsumer<Path, Path> validation) {
-        if (paths != null && 2 <= paths.length) {
-            for (int i = 1; i < paths.length; i++) {
-                validation.accept(paths[0], paths[i]);
-            }
+    protected static boolean file(Path... paths) {
+        for (Path path : paths) {
+            assert Files.isRegularFile(path);
         }
         return true;
     }
 
     /**
      * <p>
-     * Create {@link AssertionError}.
+     * Helper method to check {@link Path} kind.
      * </p>
      * 
-     * @param one
-     * @param oneMessage
-     * @param other
-     * @param otherMessage
+     * @param paths
      * @return
      */
-    private static AssertionError error(Path one, String oneMessage, Path other, String otherMessage) {
-        StringBuilder builder = new StringBuilder("\r\n");
-        builder.append("Path[").append(one).append("] ").append(oneMessage).append("\r\n");
-        builder.append("Path[").append(other).append("] ").append(otherMessage).append("\r\n");
-
-        return new AssertionError(builder.toString());
+    protected static boolean directory(Path... paths) {
+        for (Path path : paths) {
+            assert Files.isDirectory(path);
+        }
+        return true;
     }
 }
