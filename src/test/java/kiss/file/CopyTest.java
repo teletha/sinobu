@@ -167,12 +167,6 @@ public class CopyTest {
         assert exist(one, other);
         assert file(one, other);
         assert sameLastModified(one, other);
-        try {
-            System.out.println(checksum(one) + "  " + Files.readAllLines(one) + " " + one);
-            System.out.println(checksum(other) + " " + Files.readAllLines(other) + " " + other);
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
         assert checksum(one) == checksum(other);
 
         return true;

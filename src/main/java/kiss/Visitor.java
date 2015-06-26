@@ -292,19 +292,12 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (accept(relative, attrs)) {
                 switch (type) {
                 case 0: // copy
-                    Path dest = to.resolve(relative);
-                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
-                        Files.copy(path, dest, COPY_ATTRIBUTES, REPLACE_EXISTING);
-                    }
+                    Files.copy(path, to.resolve(relative), COPY_ATTRIBUTES, REPLACE_EXISTING);
                     break;
 
                 case 1: // move
-                    dest = to.resolve(relative);
-
-                    if (Files.notExists(dest) || !Files.getLastModifiedTime(dest).equals(attrs.lastModifiedTime())) {
-                        Files.move(path, dest, ATOMIC_MOVE, REPLACE_EXISTING);
-                        break;
-                    }
+                    Files.move(path, to.resolve(relative), ATOMIC_MOVE, REPLACE_EXISTING);
+                    break;
 
                 case 2: // delete
                     Files.delete(path);
@@ -414,8 +407,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path) ? Files
-                            .readAttributes(path, BasicFileAttributes.class) : ZERO;
+                    BasicFileAttributes attrs = Files.exists(path)
+                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
                     if (accept(from.relativize(path), attrs)) {
