@@ -407,8 +407,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path)
-                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
+                    BasicFileAttributes attrs = Files.exists(path) ? Files
+                            .readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
                     if (accept(from.relativize(path), attrs)) {

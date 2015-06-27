@@ -32,11 +32,24 @@ public class CopyTest {
     @Rule
     public CleanRoom room = new CleanRoom();
 
+    /**
+     * <p>
+     * Test operation.
+     * </p>
+     * 
+     * @param one
+     * @param other
+     */
+    private void operate(Path one, Path other) {
+        I.copy(one, other);
+    }
+
     @Test
     public void fileToFile() throws Exception {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateFile("Out", "This text will be overwritten by input file.");
-        I.copy(in, out);
+
+        operate(in, out);
 
         assert sameFile(in, out);
     }
@@ -46,7 +59,8 @@ public class CopyTest {
         Instant now = Instant.now();
         Path in = room.locateFile("In", now, "Success");
         Path out = room.locateFile("Out", now, "This text will be overwritten by input file.");
-        I.copy(in, out);
+
+        operate(in, out);
 
         assert sameFile(in, out);
     }
@@ -56,7 +70,8 @@ public class CopyTest {
         Instant now = Instant.now();
         Path in = room.locateFile("In", now, "Success");
         Path out = room.locateFile("Out", now.plusSeconds(10), "This text will be overwritten by input file.");
-        I.copy(in, out);
+
+        operate(in, out);
 
         assert sameFile(in, out);
     }
@@ -65,8 +80,7 @@ public class CopyTest {
     public void fileToAbsentFile() {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateAbsent("Out");
-
-        I.copy(in, out);
+        operate(in, out);
 
         assert sameFile(in, out);
     }
@@ -76,9 +90,19 @@ public class CopyTest {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateDirectory("Out");
 
-        I.copy(in, out);
+        operate(in, out);
 
         assert sameFile(in, out.resolve("In"));
+    }
+
+    @Test
+    public void fileToFileInArchive() throws Exception {
+        Path in = room.locateFile("In", "Success");
+        Path out = room.locateArchive("new.zip").resolve("Out");
+
+        operate(in, out);
+
+        assert sameFile(in, out);
     }
 
     @Test
@@ -90,7 +114,7 @@ public class CopyTest {
         Path in = room.locateDirectory("In", children);
         Path out = room.locateDirectory("Out");
 
-        I.copy(in, out);
+        operate(in, out);
 
         assert Files.exists(in);
         assert directory(out.resolve("In"));
@@ -104,7 +128,7 @@ public class CopyTest {
         });
         Path out = room.locateAbsent("Out");
 
-        I.copy(in, out);
+        operate(in, out);
 
         assert directory(out.resolve("In"));
         assert file(out.resolve("In/1"), "One");
