@@ -288,11 +288,16 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         if (type < 5) {
             // Retrieve relative path from base.
             Path relative = from.relativize(path);
+            String relativePath = relative.toString();
 
             if (accept(relative, attrs)) {
                 switch (type) {
                 case 0: // copy
-                    Files.copy(path, to.resolve(relative), COPY_ATTRIBUTES, REPLACE_EXISTING);
+                    Files.copy(path, relativePath.isEmpty() ? to
+                            : to.resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
+                    System.out.println(Files.getLastModifiedTime(path));
+                    Files.setLastModifiedTime(to, Files.getLastModifiedTime(path));
+                    System.out.println(Files.getLastModifiedTime(to));
                     break;
 
                 case 1: // move
@@ -407,8 +412,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path) ? Files
-                            .readAttributes(path, BasicFileAttributes.class) : ZERO;
+                    BasicFileAttributes attrs = Files.exists(path)
+                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
                     if (accept(from.relativize(path), attrs)) {
