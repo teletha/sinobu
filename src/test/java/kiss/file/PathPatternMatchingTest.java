@@ -82,12 +82,6 @@ public class PathPatternMatchingTest {
         });
     }
 
-    private void archive1(FileSystemDSL $) {
-        $.zip("archive", () -> {
-            structure1($);
-        });
-    }
-
     @Test
     public void all() {
         assertCount(9);
@@ -294,7 +288,7 @@ public class PathPatternMatchingTest {
     }
 
     @Test
-    public void aarchiveMultiple() {
+    public void archiveMultiple() {
         assertArchiveCount(2, "**.txt", "!directory**");
     }
 
@@ -351,17 +345,15 @@ public class PathPatternMatchingTest {
      * Helper method to test.
      */
     private void assertArchiveCount(int expected, String... patterns) {
-        assertArchiveCount(expected, this::archive1, patterns);
+        assertArchiveCount(expected, this::structure1, patterns);
     }
 
     /**
      * Helper method to test.
      */
     private void assertArchiveCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
-        room.with(pattern);
-
         try {
-            Path zip = room.locateArchive("archive.zip");
+            Path zip = room.locateArchive("archive", pattern);
 
             // by user
             I.walk(zip, counter, patterns);

@@ -188,11 +188,15 @@ public class CopyTest {
      * @return
      */
     protected static boolean sameFile(Path one, Path other) {
-        assert exist(one, other);
-        assert file(one, other);
-        assert sameLastModified(one, other);
-        assert checksum(one) == checksum(other);
-
+        try {
+            assert exist(one, other);
+            assert file(one, other);
+            assert sameLastModified(one, other);
+            assert Files.size(one) == Files.size(other);
+            assert checksum(one) == checksum(other);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
         return true;
     }
 
@@ -206,7 +210,9 @@ public class CopyTest {
      */
     protected static boolean sameLastModified(Path one, Path other) {
         try {
-            assert Files.getLastModifiedTime(one).equals(Files.getLastModifiedTime(other));
+            assert Files.getLastModifiedTime(one).toInstant().getEpochSecond() == Files.getLastModifiedTime(other)
+                    .toInstant()
+                    .getEpochSecond();
         } catch (Exception e) {
             throw I.quiet(e);
         }

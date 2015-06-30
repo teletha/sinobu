@@ -295,9 +295,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 case 0: // copy
                     Files.copy(path, relativePath.isEmpty() ? to
                             : to.resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
-                    System.out.println(Files.getLastModifiedTime(path));
-                    Files.setLastModifiedTime(to, Files.getLastModifiedTime(path));
-                    System.out.println(Files.getLastModifiedTime(to));
                     break;
 
                 case 1: // move
