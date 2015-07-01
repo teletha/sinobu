@@ -179,9 +179,9 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
             // The copy and move operations need destination. If the source is file, so destination
             // must be file and its name is equal to source file.
-            this.to = !directory && type < 2 && Files.isDirectory(to) ? to.resolve(from.getFileName()) : to;
+            this.to = !directory && type < 2 && Files.isDirectory(to) ? to.resolve(from.getFileName().toString()) : to;
 
-            if (type < 2) {
+            if (type < 2 && 1 < to.getNameCount()) {
                 Files.createDirectories(to.getParent());
             }
 
@@ -232,7 +232,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         switch (type) {
         case 0: // copy
         case 1: // move
-            Files.createDirectories(to.resolve(relative));
+            Files.createDirectories(to.resolve(relative.toString()));
             // fall-through to reduce footprint
 
         case 2: // delete
@@ -261,7 +261,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         switch (type) {
         case 0: // copy
         case 1: // move
-            Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
+            Files.setLastModifiedTime(to.resolve(from.relativize(path).toString()), Files.getLastModifiedTime(path));
             if (type == 0) return CONTINUE;
             // fall-through to reduce footprint
 
@@ -293,12 +293,12 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (accept(relative, attrs)) {
                 switch (type) {
                 case 0: // copy
-                    Files.copy(path, relativePath.isEmpty() ? to
-                            : to.resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
+                    Files.copy(path, relativePath.isEmpty() ? to : to
+                            .resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
                     break;
 
                 case 1: // move
-                    Files.move(path, to.resolve(relative), ATOMIC_MOVE, REPLACE_EXISTING);
+                    Files.move(path, relativePath.isEmpty() ? to : to.resolve(relativePath), REPLACE_EXISTING);
                     break;
 
                 case 2: // delete
@@ -409,8 +409,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path)
-                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
+                    BasicFileAttributes attrs = Files.exists(path) ? Files
+                            .readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
                     if (accept(from.relativize(path), attrs)) {

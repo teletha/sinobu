@@ -22,7 +22,7 @@ import kiss.I;
 /**
  * @version 2015/06/24 10:04:35
  */
-public class CopyTest extends PathOperationTestHelper {
+public class MoveTest extends PathOperationTestHelper {
 
     @Rule
     public CleanRoom room = new CleanRoom();
@@ -36,7 +36,7 @@ public class CopyTest extends PathOperationTestHelper {
      * @param other
      */
     private void operate(Path one, Path other, String... patterns) {
-        I.copy(one, other, patterns);
+        I.move(one, other, patterns);
     }
 
     @Test(expected = NullPointerException.class)
@@ -103,10 +103,12 @@ public class CopyTest extends PathOperationTestHelper {
     public void fileToFile() throws Exception {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateFile("Out", "This text will be overwritten by input file.");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameFile(in, out);
+        assert notExist(in);
+        assert sameFile(snapshot, out);
     }
 
     @Test
@@ -114,10 +116,12 @@ public class CopyTest extends PathOperationTestHelper {
         Instant now = Instant.now();
         Path in = room.locateFile("In", now, "Success");
         Path out = room.locateFile("Out", now, "This text will be overwritten by input file.");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameFile(in, out);
+        assert notExist(in);
+        assert sameFile(snapshot, out);
     }
 
     @Test
@@ -125,48 +129,60 @@ public class CopyTest extends PathOperationTestHelper {
         Instant now = Instant.now();
         Path in = room.locateFile("In", now, "Success");
         Path out = room.locateFile("Out", now.plusSeconds(10), "This text will be overwritten by input file.");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameFile(in, out);
+        assert notExist(in);
+        assert sameFile(snapshot, out);
     }
 
     @Test
     public void fileToAbsent() {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateAbsent("Out");
+        Path snapshot = snapshot(in);
+
         operate(in, out);
 
-        assert sameFile(in, out);
+        assert notExist(in);
+        assert sameFile(snapshot, out);
     }
 
     @Test
     public void fileToDeepAbsent() {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateAbsent("1/2/3");
+        Path snapshot = snapshot(in);
+
         operate(in, out);
 
-        assert sameFile(in, out);
+        assert notExist(in);
+        assert sameFile(snapshot, out);
     }
 
     @Test
     public void fileToDirectory() {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateDirectory("Out");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameFile(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameFile(snapshot, out.resolve("In"));
     }
 
     @Test
     public void fileToArchive() {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateArchive("archive");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameFile(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameFile(snapshot, out.resolve("In"));
     }
 
     @Test
@@ -175,20 +191,24 @@ public class CopyTest extends PathOperationTestHelper {
         Path out = room.locateArchive("archive", $ -> {
             $.file("Out");
         }).resolve("Out");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameFile(in, out);
+        assert notExist(in);
+        assert sameFile(snapshot, out);
     }
 
     @Test
     public void fileToAbsentFileInArchive() {
         Path in = room.locateFile("In", "Success");
         Path out = room.locateArchive("archive").resolve("Out");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameFile(in, out);
+        assert notExist(in);
+        assert sameFile(snapshot, out);
     }
 
     @Test
@@ -197,10 +217,12 @@ public class CopyTest extends PathOperationTestHelper {
         Path out = room.locateArchive("archive", $ -> {
             $.dir("dir");
         }).resolve("dir");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameFile(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameFile(snapshot, out.resolve("In"));
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -221,10 +243,12 @@ public class CopyTest extends PathOperationTestHelper {
         Path out = room.locateDirectory("Out", $ -> {
             $.file("1", "This text will be overwritten by input file.");
         });
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameDirectory(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameDirectory(snapshot, out.resolve("In"));
     }
 
     @Test
@@ -233,10 +257,12 @@ public class CopyTest extends PathOperationTestHelper {
             $.file("1", "One");
         });
         Path out = room.locateAbsent("Out");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameDirectory(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameDirectory(snapshot, out.resolve("In"));
     }
 
     @Test
@@ -245,10 +271,12 @@ public class CopyTest extends PathOperationTestHelper {
             $.file("1", "One");
         });
         Path out = room.locateAbsent("1/2/3");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameDirectory(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameDirectory(snapshot, out.resolve("In"));
     }
 
     @Test
@@ -257,10 +285,12 @@ public class CopyTest extends PathOperationTestHelper {
             $.file("1", "One");
         });
         Path out = room.locateArchive("Out");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameDirectory(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameDirectory(snapshot, out.resolve("In"));
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -281,10 +311,12 @@ public class CopyTest extends PathOperationTestHelper {
             $.file("1", "One");
         });
         Path out = room.locateArchive("Out").resolve("absent");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameDirectory(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameDirectory(snapshot, out.resolve("In"));
     }
 
     @Test
@@ -295,10 +327,12 @@ public class CopyTest extends PathOperationTestHelper {
         Path out = room.locateArchive("Out", $ -> {
             $.dir("dir");
         }).resolve("dir");
+        Path snapshot = snapshot(in);
 
         operate(in, out);
 
-        assert sameDirectory(in, out.resolve("In"));
+        assert notExist(in);
+        assert sameDirectory(snapshot, out.resolve("In"));
     }
 
     @Test
@@ -311,9 +345,12 @@ public class CopyTest extends PathOperationTestHelper {
             });
         });
         Path out = room.locateDirectory("Out");
+        Path snapshot = snapshot(in);
 
         operate(in, out, "**");
 
-        assert sameDirectory(in, out);
+        assert exist(in);
+        assert children(in).size() == 0;
+        assert sameDirectory(snapshot, out);
     }
 }
