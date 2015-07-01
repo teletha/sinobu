@@ -9,17 +9,22 @@
  */
 package kiss.file;
 
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiPredicate;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 
 /**
@@ -356,7 +361,6 @@ public class MoveTest extends PathOperationTestHelper {
     }
 
     @Test
-    @PowerAssertOff
     public void directoryToDirectoryInArchive() {
         Path in = room.locateDirectory("In", $ -> {
             $.file("file");

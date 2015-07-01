@@ -10,9 +10,12 @@
 package kiss.file;
 
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -60,8 +63,8 @@ class PathOperationTestHelper {
             assert directory(one, other);
             assert sameLastModified(one, other);
 
-            Iterator<Path> oneChildren = Files.newDirectoryStream(one).iterator();
-            Iterator<Path> otherChildren = Files.newDirectoryStream(other).iterator();
+            Iterator<Path> oneChildren = Files.list(one).iterator();
+            Iterator<Path> otherChildren = Files.list(other).iterator();
 
             while (oneChildren.hasNext()) {
                 assert otherChildren.hasNext();
@@ -109,7 +112,7 @@ class PathOperationTestHelper {
      * @param path
      * @return
      */
-    protected Path normalize(Path path) {
+    protected static Path normalize(Path path) {
         if (path instanceof com.sun.nio.zipfs.ZipPath && path.toString().equals("/")) {
             return Paths.get(path.getFileSystem().toString());
         } else {
@@ -161,7 +164,7 @@ class PathOperationTestHelper {
      */
     protected static boolean notExist(Path... paths) {
         for (Path path : paths) {
-            assert Files.notExists(path);
+            assert Files.exists(path) == false;
         }
         return true;
     }
@@ -213,7 +216,6 @@ class PathOperationTestHelper {
             Path temp = I.locateTemporary();
             Files.createDirectories(temp);
             I.copy(path, temp);
-
             return temp.resolve(path.getFileName());
         } catch (IOException e) {
             throw I.quiet(e);
@@ -231,7 +233,44 @@ class PathOperationTestHelper {
     protected static List<Path> children(Path path) {
         try {
             List<Path> list = new ArrayList();
-            Files.newDirectoryStream(path).forEach(p -> list.add(p));
+
+            Files.walkFileTree(path, new FileVisitor<Path>() {
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    if (dir != path) list.add(dir);
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    list.add(file);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+
             return list;
         } catch (IOException e) {
             throw I.quiet(e);

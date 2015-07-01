@@ -23,13 +23,13 @@ import javax.swing.JPanel;
 
 import javafx.beans.value.ObservableValue;
 
+import org.junit.Test;
+
 import kiss.I;
 import kiss.sample.bean.GenericBoundedBean;
 import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.Student;
-
-import org.junit.Test;
 
 /**
  * @version 2011/03/22 17:04:38
@@ -618,7 +618,7 @@ public class ClassUtilTest {
      * 
      * @version 2008/06/20 15:15:56
      */
-    private static class ParameterFromMultipleSource extends ParameterClass<Class> implements ParameterInterface<Type> {
+    private static class ParameterFromMultipleSource extends ParameterClass<Class>implements ParameterInterface<Type> {
     }
 
     /**

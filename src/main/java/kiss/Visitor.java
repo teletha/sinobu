@@ -29,7 +29,6 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.function.BiPredicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -263,15 +262,13 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         case 0: // copy
         case 1: // move
             Files.setLastModifiedTime(to.resolve(from.relativize(path).toString()), Files.getLastModifiedTime(path));
-            Iterator<Path> iterator = Files.list(path).iterator();
-            if (iterator.hasNext()) {
-                System.out.println(path + "   " + iterator.next() + "   " + e);
-            }
             if (type == 0 || Files.list(path).iterator().hasNext()) return CONTINUE;
             // fall-through to reduce footprint
 
         case 2: // delete
-            if (root || from != path) Files.delete(path);
+            if (root || from != path) {
+                Files.delete(path);
+            }
             // fall-through to reduce footprint
 
         case 3: // walk file
@@ -298,12 +295,11 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (accept(relative, attrs)) {
                 switch (type) {
                 case 0: // copy
-                    Files.copy(path, relativePath.isEmpty() ? to : to
-                            .resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
+                    Files.copy(path, relativePath.isEmpty() ? to
+                            : to.resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
                     break;
 
                 case 1: // move
-                    System.out.println("Move " + path);
                     Files.move(path, relativePath.isEmpty() ? to : to.resolve(relativePath), REPLACE_EXISTING);
                     break;
 
@@ -415,8 +411,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path) ? Files
-                            .readAttributes(path, BasicFileAttributes.class) : ZERO;
+                    BasicFileAttributes attrs = Files.exists(path)
+                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
                     if (accept(from.relativize(path), attrs)) {
