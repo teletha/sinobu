@@ -491,7 +491,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * <pre>
      * if (input.isFile) {
      *   if (output.isFile) {
-     *     // Copy input file to output file's directory.
+     *     // Copy input file to output file.
      *   } else {
      *     // Copy input file to output directory.
      *   }
@@ -535,8 +535,56 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         new Visitor(input, output, 0, null, patterns).walk();
     }
 
-    public static void copy(Path input, Path output, BiPredicate<Path, BasicFileAttributes> condition) {
-        new Visitor(input, output, 0, null, condition).walk();
+    /**
+     * <p>
+     * Copy a input {@link Path} to the output {@link Path} with its attributes. Simplified strategy
+     * is the following:
+     * </p>
+     * <p>
+     * <pre>
+     * if (input.isFile) {
+     *   if (output.isFile) {
+     *     // Copy input file to output file.
+     *   } else {
+     *     // Copy input file to output directory.
+     *   }
+     * } else {
+     *   if (output.isFile) {
+     *     // NoSuchFileException will be thrown.
+     *   } else {
+     *     // Copy input directory under output directory deeply.
+     *   }
+     * }
+     * </pre>
+     * <p>
+     * If the output file already exists, it will be replaced by input file unconditionaly. The
+     * exact file attributes that are copied is platform and file system dependent and therefore
+     * unspecified. Minimally, the last-modified-time is copied to the output file if supported by
+     * both the input and output file store. Copying of file timestamps may result in precision
+     * loss.
+     * </p>
+     * <p>
+     * Copying a file is not an atomic operation. If an {@link IOException} is thrown then it
+     * possible that the output file is incomplete or some of its file attributes have not been
+     * copied from the input file.
+     * </p>
+     *
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An output {@link Path} object which can be file or directory.
+     * @param filter A file filter to copy.
+     * @throws IOException If an I/O error occurs.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws NoSuchFileException If the input file is directory and the output file is
+     *             <em>not</em> directory.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
+     */
+    public static void copy(Path input, Path output, BiPredicate<Path, BasicFileAttributes> filter) {
+        new Visitor(input, output, 0, null, filter).walk();
     }
 
     /**
@@ -1370,6 +1418,57 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      */
     public static void move(Path input, Path output, String... patterns) {
         new Visitor(input, output, 1, null, patterns).walk();
+    }
+
+    /**
+     * <p>
+     * Move a input {@link Path} to an output {@link Path} with its attributes. Simplified strategy
+     * is the following:
+     * </p>
+     * <p>
+     * <pre>
+     * if (input.isFile) {
+     *   if (output.isFile) {
+     *     // Move input file to output file.
+     *   } else {
+     *     // Move input file under output directory.
+     *   }
+     * } else {
+     *   if (output.isFile) {
+     *     // NoSuchFileException will be thrown.
+     *   } else {
+     *     // Move input directory under output directory deeply.
+     *     // You can also specify <a href="#Patterns">include/exclude patterns</a>.
+     *   }
+     * }
+     * </pre>
+     * <p>
+     * If the output file already exists, it will be replaced by input file unconditionaly. The
+     * exact file attributes that are copied is platform and file system dependent and therefore
+     * unspecified. Minimally, the last-modified-time is copied to the output file if supported by
+     * both the input and output file store. Copying of file timestamps may result in precision
+     * loss.
+     * </p>
+     * <p>
+     * Moving a file is an atomic operation.
+     * </p>
+     *
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param output An output {@link Path} object which can be file or directory.
+     * @param filter A file filter to move.
+     * @throws IOException If an I/O error occurs.
+     * @throws NullPointerException If the specified input or output file is <code>null</code>.
+     * @throws NoSuchFileException If the input file is directory and the output file is
+     *             <em>not</em> directory.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
+     */
+    public static void move(Path input, Path output, BiPredicate<Path, BasicFileAttributes> filter) {
+        new Visitor(input, output, 1, null, filter).walk();
     }
 
     //

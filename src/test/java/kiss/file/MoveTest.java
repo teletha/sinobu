@@ -11,12 +11,15 @@ package kiss.file;
 
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
+import java.util.function.BiPredicate;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
+import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 
 /**
@@ -37,6 +40,18 @@ public class MoveTest extends PathOperationTestHelper {
      */
     private void operate(Path one, Path other, String... patterns) {
         I.move(one, other, patterns);
+    }
+
+    /**
+     * <p>
+     * Test operation.
+     * </p>
+     * 
+     * @param one
+     * @param other
+     */
+    private void operate(Path one, Path other, BiPredicate<Path, BasicFileAttributes> filter) {
+        I.move(one, other, filter);
     }
 
     @Test(expected = NullPointerException.class)
@@ -252,6 +267,27 @@ public class MoveTest extends PathOperationTestHelper {
     }
 
     @Test
+    public void directoryToDirectoryWithFilter() {
+        Path in = room.locateDirectory("In", $ -> {
+            $.file("file");
+            $.file("text");
+            $.dir("dir", () -> {
+                $.file("file");
+                $.file("text");
+            });
+        });
+        Path out = room.locateDirectory("Out");
+        Path snapshot = snapshot(in);
+
+        operate(in, out, (file, attr) -> file.getFileName().startsWith("file"));
+
+        assert sameFile(snapshot.resolve("file"), out.resolve("In/file"));
+        assert sameFile(snapshot.resolve("dir/file"), out.resolve("In/dir/file"));
+        assert notExist(in.resolve("file"), in.resolve("dir/file"));
+        assert notExist(out.resolve("In/text"), out.resolve("In/dir/text"));
+    }
+
+    @Test
     public void directoryToAbsent() {
         Path in = room.locateDirectory("In", $ -> {
             $.file("1", "One");
@@ -320,9 +356,10 @@ public class MoveTest extends PathOperationTestHelper {
     }
 
     @Test
+    @PowerAssertOff
     public void directoryToDirectoryInArchive() {
         Path in = room.locateDirectory("In", $ -> {
-            $.file("1", "One");
+            $.file("file");
         });
         Path out = room.locateArchive("Out", $ -> {
             $.dir("dir");

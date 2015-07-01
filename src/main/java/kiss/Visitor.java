@@ -29,6 +29,7 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.function.BiPredicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -162,14 +163,10 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>-1 - zip</li>
      * </ol>
      */
-    Visitor(Path from, Path to, int type, FileVisitor visitor, BiPredicate<Path, BasicFileAttributes> patterns) {
+    Visitor(Path from, Path to, int type, FileVisitor visitor, BiPredicate<Path, BasicFileAttributes> filter) {
         this.original = from;
         this.type = type;
         this.visitor = visitor;
-
-        if (patterns == null) {
-            patterns = (path, attrs) -> true;
-        }
 
         try {
             boolean directory = Files.isDirectory(from);
@@ -185,8 +182,12 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 Files.createDirectories(to.getParent());
             }
 
+            if (filter == null) {
+                filter = (path, attrs) -> true;
+            }
+
             // Convert into Array
-            this.includes = patterns;
+            this.includes = filter;
             this.excludes = new PathMatcher[0];
             this.directories = new PathMatcher[0];
 
@@ -262,7 +263,11 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         case 0: // copy
         case 1: // move
             Files.setLastModifiedTime(to.resolve(from.relativize(path).toString()), Files.getLastModifiedTime(path));
-            if (type == 0) return CONTINUE;
+            Iterator<Path> iterator = Files.list(path).iterator();
+            if (iterator.hasNext()) {
+                System.out.println(path + "   " + iterator.next() + "   " + e);
+            }
+            if (type == 0 || Files.list(path).iterator().hasNext()) return CONTINUE;
             // fall-through to reduce footprint
 
         case 2: // delete
@@ -298,6 +303,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                     break;
 
                 case 1: // move
+                    System.out.println("Move " + path);
                     Files.move(path, relativePath.isEmpty() ? to : to.resolve(relativePath), REPLACE_EXISTING);
                     break;
 

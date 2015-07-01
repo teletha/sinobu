@@ -11,7 +11,9 @@ package kiss.file;
 
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
+import java.util.function.BiPredicate;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +39,18 @@ public class CopyTest extends PathOperationTestHelper {
      */
     private void operate(Path one, Path other, String... patterns) {
         I.copy(one, other, patterns);
+    }
+
+    /**
+     * <p>
+     * Test operation.
+     * </p>
+     * 
+     * @param one
+     * @param other
+     */
+    private void operate(Path one, Path other, BiPredicate<Path, BasicFileAttributes> filter) {
+        I.copy(one, other, filter);
     }
 
     @Test(expected = NullPointerException.class)
@@ -225,6 +239,25 @@ public class CopyTest extends PathOperationTestHelper {
         operate(in, out);
 
         assert sameDirectory(in, out.resolve("In"));
+    }
+
+    @Test
+    public void directoryToDirectoryWithFilter() {
+        Path in = room.locateDirectory("In", $ -> {
+            $.file("file");
+            $.file("text");
+            $.dir("dir", () -> {
+                $.file("file");
+                $.file("text");
+            });
+        });
+        Path out = room.locateDirectory("Out");
+    
+        operate(in, out, (file, attr) -> file.getFileName().startsWith("file"));
+    
+        assert sameFile(in.resolve("file"), out.resolve("In/file"));
+        assert sameFile(in.resolve("dir/file"), out.resolve("In/dir/file"));
+        assert notExist(out.resolve("In/text"), out.resolve("In/dir/text"));
     }
 
     @Test
