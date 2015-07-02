@@ -17,18 +17,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.ClosedWatchServiceException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.function.BiPredicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -70,6 +74,9 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
     /** Can we accept root directory? */
     private boolean root = true;
+
+    /** Flags whether the current directory can be deleted or not. */
+    private Deque<Boolean> deletable;
 
     /** The zip archiver. */
     private ZipOutputStream zip;
@@ -183,6 +190,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
             if (filter == null) {
                 filter = (path, attrs) -> true;
+            } else {
+                root = false;
             }
 
             // Convert into Array
@@ -191,6 +200,10 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             this.directories = new PathMatcher[0];
 
             if (type == -1) this.zip = new ZipOutputStream(Files.newOutputStream(to), I.$encoding);
+
+            if (type == 2 || type == 3) {
+                deletable = new ArrayDeque();
+            }
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -267,7 +280,11 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
         case 2: // delete
             if (root || from != path) {
-                Files.delete(path);
+                try {
+                    Files.delete(normalize(path));
+                } catch (DirectoryNotEmptyException ignore) {
+                    // skip
+                }
             }
             // fall-through to reduce footprint
 
@@ -295,8 +312,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (accept(relative, attrs)) {
                 switch (type) {
                 case 0: // copy
-                    Files.copy(path, relativePath.isEmpty() ? to
-                            : to.resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
+                    Files.copy(path, relativePath.isEmpty() ? to : to
+                            .resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
                     break;
 
                 case 1: // move
@@ -411,8 +428,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path)
-                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
+                    BasicFileAttributes attrs = Files.exists(path) ? Files
+                            .readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
                     if (accept(from.relativize(path), attrs)) {
@@ -457,4 +474,22 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
     /** The zero time. */
     private static final BasicFileAttributes ZERO = new Agent();
+
+    /**
+     * <p>
+     * Normalize the specified path.
+     * </p>
+     * <ul>
+     * <li>Root path of archive to the original archive file.</li>
+     * </ul>
+     * 
+     * @param path
+     * @return
+     */
+    private static Path normalize(Path path) {
+        if (path instanceof ZipPath && path.getNameCount() == 0) {
+            path = Paths.get(path.getFileSystem().toString());
+        }
+        return path;
+    }
 }

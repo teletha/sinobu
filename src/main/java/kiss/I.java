@@ -624,6 +624,41 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
     /**
      * <p>
+     * Delete a input {@link Path}. Simplified strategy is the following:
+     * </p>
+     * <p>
+     * <pre>
+     * if (input.isFile) {
+     *   // Delete input file unconditionaly.
+     * } else {
+     *   // Delete input directory deeply.
+     *   // You can also specify <a href="#Patterns">include/exclude patterns</a>.
+     * }
+     * </pre>
+     * <p>
+     * On some operating systems it may not be possible to remove a file when it is open and in use
+     * by this Java virtual machine or other programs.
+     * </p>
+     *
+     * @param input A input {@link Path} object which can be file or directory.
+     * @param filter A file filter.
+     * @throws IOException If an I/O error occurs.
+     * @throws NullPointerException If the specified input file is <code>null</code>.
+     * @throws SecurityException In the case of the default provider, and a security manager is
+     *             installed, the {@link SecurityManager#checkRead(String)} method is invoked to
+     *             check read access to the source file, the
+     *             {@link SecurityManager#checkWrite(String)} is invoked to check write access to
+     *             the target file. If a symbolic link is copied the security manager is invoked to
+     *             check {@link LinkPermission}("symbolic").
+     */
+    public static void delete(Path input, BiPredicate<Path, BasicFileAttributes> filter) {
+        if (input != null) {
+            new Visitor(input, null, 2, null, filter).walk();
+        }
+    }
+
+    /**
+     * <p>
      * Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
      * <a href="Extensible#ExtensionPoint">Extension Point</a>.
      * </p>

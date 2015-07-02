@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.CRC32;
 
+import com.sun.nio.zipfs.ZipPath;
+
 import kiss.I;
 
 /**
@@ -106,22 +108,6 @@ class PathOperationTestHelper {
 
     /**
      * <p>
-     * Normalize the specified archive path.
-     * </p>
-     * 
-     * @param path
-     * @return
-     */
-    protected static Path normalize(Path path) {
-        if (path instanceof com.sun.nio.zipfs.ZipPath && path.toString().equals("/")) {
-            return Paths.get(path.getFileSystem().toString());
-        } else {
-            return path;
-        }
-    }
-
-    /**
-     * <p>
      * Helper method to compute {@link Path} checksume.
      * </p>
      * 
@@ -149,7 +135,7 @@ class PathOperationTestHelper {
      */
     protected static boolean exist(Path... paths) {
         for (Path path : paths) {
-            assert Files.exists(path);
+            assert Files.exists(normalize(path));
         }
         return true;
     }
@@ -164,7 +150,7 @@ class PathOperationTestHelper {
      */
     protected static boolean notExist(Path... paths) {
         for (Path path : paths) {
-            assert Files.exists(path) == false;
+            assert Files.exists(normalize(path)) == false;
         }
         return true;
     }
@@ -275,5 +261,23 @@ class PathOperationTestHelper {
         } catch (IOException e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Normalize the specified path.
+     * </p>
+     * <ul>
+     * <li>Root path of archive to the original archive file.</li>
+     * </ul>
+     * 
+     * @param path
+     * @return
+     */
+    private static Path normalize(Path path) {
+        if (path instanceof ZipPath && path.getNameCount() == 0) {
+            path = Paths.get(path.getFileSystem().toString());
+        }
+        return path;
     }
 }
