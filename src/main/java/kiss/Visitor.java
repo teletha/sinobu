@@ -17,14 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.ClosedWatchServiceException;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -182,7 +180,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
             // The copy and move operations need destination. If the source is file, so destination
             // must be file and its name is equal to source file.
-            this.to = !directory && type < 2 && Files.isDirectory(to) ? to.resolve(from.getFileName().toString()) : to;
+            this.to = !directory && type < 2 && Files.isDirectory(to) ? to.resolve(from.getFileName()) : to;
 
             if (type < 2 && 1 < to.getNameCount()) {
                 Files.createDirectories(to.getParent());
@@ -245,7 +243,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         switch (type) {
         case 0: // copy
         case 1: // move
-            Files.createDirectories(to.resolve(relative.toString()));
+            Files.createDirectories(to.resolve(relative));
             // fall-through to reduce footprint
 
         case 2: // delete
@@ -274,17 +272,13 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         switch (type) {
         case 0: // copy
         case 1: // move
-            Files.setLastModifiedTime(to.resolve(from.relativize(path).toString()), Files.getLastModifiedTime(path));
+            Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
             if (type == 0 || Files.list(path).iterator().hasNext()) return CONTINUE;
             // fall-through to reduce footprint
 
         case 2: // delete
             if (root || from != path) {
-                try {
-                    Files.delete(normalize(path));
-                } catch (DirectoryNotEmptyException ignore) {
-                    // skip
-                }
+                Files.delete(path);
             }
             // fall-through to reduce footprint
 
@@ -307,17 +301,15 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         if (type < 5) {
             // Retrieve relative path from base.
             Path relative = from.relativize(path);
-            String relativePath = relative.toString();
 
             if (accept(relative, attrs)) {
                 switch (type) {
                 case 0: // copy
-                    Files.copy(path, relativePath.isEmpty() ? to : to
-                            .resolve(relativePath), COPY_ATTRIBUTES, REPLACE_EXISTING);
+                    Files.copy(path, to.resolve(relative), COPY_ATTRIBUTES, REPLACE_EXISTING);
                     break;
 
                 case 1: // move
-                    Files.move(path, relativePath.isEmpty() ? to : to.resolve(relativePath), REPLACE_EXISTING);
+                    Files.move(path, to.resolve(relative), REPLACE_EXISTING);
                     break;
 
                 case 2: // delete
@@ -474,22 +466,4 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
     /** The zero time. */
     private static final BasicFileAttributes ZERO = new Agent();
-
-    /**
-     * <p>
-     * Normalize the specified path.
-     * </p>
-     * <ul>
-     * <li>Root path of archive to the original archive file.</li>
-     * </ul>
-     * 
-     * @param path
-     * @return
-     */
-    private static Path normalize(Path path) {
-        if (path instanceof ZipPath && path.getNameCount() == 0) {
-            path = Paths.get(path.getFileSystem().toString());
-        }
-        return path;
-    }
 }
