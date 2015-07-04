@@ -90,6 +90,23 @@ public class DeleteTest extends PathOperationTestHelper {
     }
 
     @Test
+    public void directoryFilter() {
+        Path in = room.locateDirectory("In", $ -> {
+            $.file("file");
+            $.file("text");
+            $.dir("dir", () -> {
+                $.file("file");
+                $.file("text");
+            });
+        });
+
+        operate(in, (file, attr) -> file.getFileName().startsWith("file"));
+
+        assert exist(in, in.resolve("text"), in.resolve("dir/text"));
+        assert notExist(in.resolve("file"), in.resolve("dir/file"));
+    }
+
+    @Test
     public void absent() {
         Path input = room.locateAbsent("absent");
         assert notExist(input);

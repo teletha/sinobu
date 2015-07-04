@@ -27,10 +27,9 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
+import java.util.LinkedList;
 import java.util.function.BiPredicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -38,7 +37,7 @@ import java.util.zip.ZipOutputStream;
 import com.sun.nio.zipfs.ZipPath;
 
 /**
- * @version 2014/01/14 9:37:54
+ * @version 2015/07/04 16:56:44
  */
 @SuppressWarnings({"serial", "unchecked"})
 class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Disposable {
@@ -74,7 +73,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private boolean root = true;
 
     /** Flags whether the current directory can be deleted or not. */
-    private Deque<Boolean> deletable;
+    private LinkedList deletable;
 
     /** The zip archiver. */
     private ZipOutputStream zip;
@@ -116,14 +115,13 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (pattern.equals("*")) {
                 if (type < 5) {
                     pattern = "!*/**";
-                } else {
-                    this.from = from;
-                    this.root = false;
                 }
+                this.from = from;
+                this.root = false;
             } else if (pattern.equals("**")) {
                 this.from = from;
                 this.root = false;
-                continue;
+                break;
             }
 
             if (pattern.charAt(0) != '!') {
@@ -199,8 +197,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
             if (type == -1) this.zip = new ZipOutputStream(Files.newOutputStream(to), I.$encoding);
 
-            if (type == 2 || type == 3) {
-                deletable = new ArrayDeque();
+            if (type < 3) {
+                deletable = new LinkedList();
             }
         } catch (IOException e) {
             throw I.quiet(e);
@@ -247,6 +245,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             // fall-through to reduce footprint
 
         case 2: // delete
+            deletable.add(0, null);
+
         case 3: // walk file
         case -1: // zip
             return CONTINUE;
@@ -273,13 +273,13 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         case 0: // copy
         case 1: // move
             Files.setLastModifiedTime(to.resolve(from.relativize(path)), Files.getLastModifiedTime(path));
-            if (type == 0 || Files.list(path).iterator().hasNext()) return CONTINUE;
             // fall-through to reduce footprint
 
         case 2: // delete
-            if (root || from != path) {
+            if (type != 0 && (root || from != path) && deletable.peek() == null) {
                 Files.delete(path);
             }
+            deletable.poll();
             // fall-through to reduce footprint
 
         case 3: // walk file
@@ -336,6 +336,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 default: // walk file and directory with visitor
                     return visitor.visitFile(path, attrs);
                 }
+            } else if (type < 3) {
+                deletable.set(0, this);
             }
         }
         return CONTINUE;
@@ -364,7 +366,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 return false;
             }
         }
-
         // File inclusion
         return includes.test(path, attr);
     }

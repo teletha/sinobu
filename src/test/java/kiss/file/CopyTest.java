@@ -230,7 +230,25 @@ public class CopyTest extends PathOperationTestHelper {
     }
 
     @Test
-    public void directoryChildrenToDirectory() {
+    public void children() {
+        Path in = room.locateDirectory("In", $ -> {
+            $.file("file");
+            $.file("text");
+            $.dir("dir", () -> {
+                $.file("file");
+                $.file("text");
+            });
+        });
+        Path out = room.locateDirectory("Out");
+
+        operate(in, out, "*");
+
+        assert exist(out.resolve("file"), out.resolve("text"));
+        assert notExist(out.resolve("dir"), out.resolve("dir/file"), out.resolve("dir/text"));
+    }
+
+    @Test
+    public void descendant() {
         Path in = room.locateDirectory("In", $ -> {
             $.file("1", "One");
             $.file("2", "Two");
