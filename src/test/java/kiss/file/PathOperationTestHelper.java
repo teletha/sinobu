@@ -14,14 +14,11 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.CRC32;
-
-import com.sun.nio.zipfs.ZipPath;
 
 import kiss.I;
 
@@ -135,7 +132,7 @@ class PathOperationTestHelper {
      */
     protected static boolean exist(Path... paths) {
         for (Path path : paths) {
-            assert Files.exists(normalize(path));
+            assert Files.exists(path);
         }
         return true;
     }
@@ -150,7 +147,7 @@ class PathOperationTestHelper {
      */
     protected static boolean notExist(Path... paths) {
         for (Path path : paths) {
-            assert Files.exists(normalize(path)) == false;
+            assert Files.exists(path) == false;
         }
         return true;
     }
@@ -261,23 +258,5 @@ class PathOperationTestHelper {
         } catch (IOException e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * <p>
-     * Normalize the specified path.
-     * </p>
-     * <ul>
-     * <li>Root path of archive to the original archive file.</li>
-     * </ul>
-     * 
-     * @param path
-     * @return
-     */
-    private static Path normalize(Path path) {
-        if (path instanceof ZipPath && path.getNameCount() == 0) {
-            path = Paths.get(path.getFileSystem().toString());
-        }
-        return path;
     }
 }

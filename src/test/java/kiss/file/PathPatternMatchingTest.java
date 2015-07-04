@@ -222,91 +222,6 @@ public class PathPatternMatchingTest {
         assertDirectoryCount(4, this::structure2, "!directory1");
     }
 
-    @Test
-    public void archive() {
-        assertArchiveCount(9);
-    }
-
-    @Test
-    public void archiveIncludeWildcardLeft() {
-        assertArchiveCount(1, "*.file");
-    }
-
-    @Test
-    public void archiveIncludeWildcardsLeft() {
-        assertArchiveCount(3, "**.file");
-    }
-
-    @Test
-    public void archiveIncludeWildcardRight() {
-        assertArchiveCount(3, "0*");
-    }
-
-    @Test
-    public void archiveIncludeWildcardsRight() {
-        assertArchiveCount(6, "d**");
-    }
-
-    @Test
-    public void archiveIncludeWildcardBoth() {
-        assertArchiveCount(2, "*1*");
-    }
-
-    @Test
-    public void archiveIncludeWildcardsBoth() {
-        assertArchiveCount(7, "**1**");
-    }
-
-    @Test
-    public void archiveExcludeWildcardLeft() {
-        assertArchiveCount(8, "!*.file");
-    }
-
-    @Test
-    public void archiveExcludeWildcardsLeft() {
-        assertArchiveCount(6, "!**.file");
-    }
-
-    @Test
-    public void archiveExcludeWildcardRight() {
-        assertArchiveCount(6, "!0*");
-    }
-
-    @Test
-    public void archiveExcludeWildcardsRight() {
-        assertArchiveCount(3, "!d**");
-    }
-
-    @Test
-    public void archiveExcludeWildcardBoth() {
-        assertArchiveCount(7, "!*1*");
-    }
-
-    @Test
-    public void archiveExcludeWildcardsBoth() {
-        assertArchiveCount(2, "!**1**");
-    }
-
-    @Test
-    public void archiveMultiple() {
-        assertArchiveCount(2, "**.txt", "!directory**");
-    }
-
-    @Test
-    public void archiveDeep() {
-        assertArchiveCount(3, "directory1/**");
-    }
-
-    @Test
-    public void archiveWildcardOnly() {
-        assertArchiveCount(3, "*");
-    }
-
-    @Test
-    public void archiveExcludeDirectory() {
-        assertArchiveCount(6, "!directory1/**");
-    }
-
     /**
      * Helper method to test.
      */
@@ -339,31 +254,6 @@ public class PathPatternMatchingTest {
         room.with(pattern);
 
         assert I.walkDirectory(room.root, patterns).size() == expected;
-    }
-
-    /**
-     * Helper method to test.
-     */
-    private void assertArchiveCount(int expected, String... patterns) {
-        assertArchiveCount(expected, this::structure1, patterns);
-    }
-
-    /**
-     * Helper method to test.
-     */
-    private void assertArchiveCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
-        try {
-            Path zip = room.locateArchive("archive", pattern);
-
-            // by user
-            I.walk(zip, counter, patterns);
-            assert counter.count == expected;
-
-            // by walker
-            assert expected == I.walk(zip, patterns).size();
-        } finally {
-            counter.count = 0;
-        }
     }
 
     /**

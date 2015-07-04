@@ -100,52 +100,6 @@ public class DeleteTest extends PathOperationTestHelper {
     }
 
     @Test
-    public void archive() {
-        Path input = room.locateArchive("archive", $ -> {
-            $.file("text");
-            $.dir("dir", () -> {
-                $.file("nest");
-            });
-        });
-
-        operate(input);
-
-        assert notExist(input, input.resolve("text"), input.resolve("dir"), input.resolve("dir/nest"));
-    }
-
-    @Test
-    public void archiveChildren() {
-        Path input = room.locateArchive("archive", $ -> {
-            $.file("text");
-            $.dir("dir", () -> {
-                $.file("nest");
-            });
-        });
-
-        operate(input, "**");
-
-        assert exist(input);
-        assert notExist(input.resolve("text"), input.resolve("dir"), input.resolve("dir/nest"));
-    }
-
-    @Test
-    public void archiveFilter() {
-        Path input = room.locateArchive("archive", $ -> {
-            $.file("text");
-            $.file("will be deleted");
-            $.dir("dir", () -> {
-                $.file("text");
-                $.file("will be deleted");
-            });
-        });
-
-        operate(input, (path, attrs) -> path.getFileName().startsWith("will be deleted"));
-
-        assert exist(input, input.resolve("text"), input.resolve("dir/text"));
-        assert notExist(input.resolve("will be deleted"), input.resolve("dir/will be deleted"));
-    }
-
-    @Test
     public void inputNull() {
         I.delete(null);
     }

@@ -9,16 +9,10 @@
  */
 package kiss.file;
 
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiPredicate;
 
 import org.junit.Rule;
@@ -90,17 +84,6 @@ public class MoveTest extends PathOperationTestHelper {
     public void absentToDirectory() throws Exception {
         Path in = room.locateAbsent("absent");
         Path out = room.locateDirectory("out");
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert exist(out);
-    }
-
-    @Test
-    public void absentToArchive() throws Exception {
-        Path in = room.locateAbsent("absent");
-        Path out = room.locateArchive("out");
 
         operate(in, out);
 
@@ -193,58 +176,6 @@ public class MoveTest extends PathOperationTestHelper {
         assert sameFile(snapshot, out.resolve("In"));
     }
 
-    @Test
-    public void fileToArchive() {
-        Path in = room.locateFile("In", "Success");
-        Path out = room.locateArchive("archive");
-        Path snapshot = snapshot(in);
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert sameFile(snapshot, out.resolve("In"));
-    }
-
-    @Test
-    public void fileToFileInArchive() {
-        Path in = room.locateFile("In", "Success");
-        Path out = room.locateArchive("archive", $ -> {
-            $.file("Out");
-        }).resolve("Out");
-        Path snapshot = snapshot(in);
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert sameFile(snapshot, out);
-    }
-
-    @Test
-    public void fileToAbsentFileInArchive() {
-        Path in = room.locateFile("In", "Success");
-        Path out = room.locateArchive("archive").resolve("Out");
-        Path snapshot = snapshot(in);
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert sameFile(snapshot, out);
-    }
-
-    @Test
-    public void fileToDirectoryInArchive() {
-        Path in = room.locateFile("In", "Success");
-        Path out = room.locateArchive("archive", $ -> {
-            $.dir("dir");
-        }).resolve("dir");
-        Path snapshot = snapshot(in);
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert sameFile(snapshot, out.resolve("In"));
-    }
-
     @Test(expected = NoSuchFileException.class)
     public void directoryToFile() {
         Path in = room.locateDirectory("In", $ -> {
@@ -312,62 +243,6 @@ public class MoveTest extends PathOperationTestHelper {
             $.file("1", "One");
         });
         Path out = room.locateAbsent("1/2/3");
-        Path snapshot = snapshot(in);
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert sameDirectory(snapshot, out.resolve("In"));
-    }
-
-    @Test
-    public void directoryToArchive() {
-        Path in = room.locateDirectory("In", $ -> {
-            $.file("1", "One");
-        });
-        Path out = room.locateArchive("Out");
-        Path snapshot = snapshot(in);
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert sameDirectory(snapshot, out.resolve("In"));
-    }
-
-    @Test(expected = NoSuchFileException.class)
-    public void directoryToFileInArchive() {
-        Path in = room.locateDirectory("In", $ -> {
-            $.file("1", "One");
-        });
-        Path out = room.locateArchive("Out", $ -> {
-            $.file("file");
-        }).resolve("file");
-
-        operate(in, out);
-    }
-
-    @Test
-    public void directoryToAbsentFileInArchive() {
-        Path in = room.locateDirectory("In", $ -> {
-            $.file("1", "One");
-        });
-        Path out = room.locateArchive("Out").resolve("absent");
-        Path snapshot = snapshot(in);
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert sameDirectory(snapshot, out.resolve("In"));
-    }
-
-    @Test
-    public void directoryToDirectoryInArchive() {
-        Path in = room.locateDirectory("In", $ -> {
-            $.file("file");
-        });
-        Path out = room.locateArchive("Out", $ -> {
-            $.dir("dir");
-        }).resolve("dir");
         Path snapshot = snapshot(in);
 
         operate(in, out);

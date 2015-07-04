@@ -92,17 +92,6 @@ public class CopyTest extends PathOperationTestHelper {
     }
 
     @Test
-    public void absentToArchive() throws Exception {
-        Path in = room.locateAbsent("absent");
-        Path out = room.locateArchive("out");
-
-        operate(in, out);
-
-        assert notExist(in);
-        assert exist(out);
-    }
-
-    @Test
     public void absentToAbsent() throws Exception {
         Path in = room.locateAbsent("absent");
         Path out = room.locateAbsent("out");
@@ -173,50 +162,6 @@ public class CopyTest extends PathOperationTestHelper {
         assert sameFile(in, out.resolve("In"));
     }
 
-    @Test
-    public void fileToArchive() {
-        Path in = room.locateFile("In", "Success");
-        Path out = room.locateArchive("archive");
-
-        operate(in, out);
-
-        assert sameFile(in, out.resolve("In"));
-    }
-
-    @Test
-    public void fileToFileInArchive() {
-        Path in = room.locateFile("In", "Success");
-        Path out = room.locateArchive("archive", $ -> {
-            $.file("Out");
-        }).resolve("Out");
-
-        operate(in, out);
-
-        assert sameFile(in, out);
-    }
-
-    @Test
-    public void fileToAbsentFileInArchive() {
-        Path in = room.locateFile("In", "Success");
-        Path out = room.locateArchive("archive").resolve("Out");
-
-        operate(in, out);
-
-        assert sameFile(in, out);
-    }
-
-    @Test
-    public void fileToDirectoryInArchive() {
-        Path in = room.locateFile("In", "Success");
-        Path out = room.locateArchive("archive", $ -> {
-            $.dir("dir");
-        }).resolve("dir");
-
-        operate(in, out);
-
-        assert sameFile(in, out.resolve("In"));
-    }
-
     @Test(expected = NoSuchFileException.class)
     public void directoryToFile() {
         Path in = room.locateDirectory("In", $ -> {
@@ -252,9 +197,9 @@ public class CopyTest extends PathOperationTestHelper {
             });
         });
         Path out = room.locateDirectory("Out");
-    
+
         operate(in, out, (file, attr) -> file.getFileName().startsWith("file"));
-    
+
         assert sameFile(in.resolve("file"), out.resolve("In/file"));
         assert sameFile(in.resolve("dir/file"), out.resolve("In/dir/file"));
         assert notExist(out.resolve("In/text"), out.resolve("In/dir/text"));
@@ -278,56 +223,6 @@ public class CopyTest extends PathOperationTestHelper {
             $.file("1", "One");
         });
         Path out = room.locateAbsent("1/2/3");
-
-        operate(in, out);
-
-        assert sameDirectory(in, out.resolve("In"));
-    }
-
-    @Test
-    public void directoryToArchive() {
-        Path in = room.locateDirectory("In", $ -> {
-            $.file("1", "One");
-        });
-        Path out = room.locateArchive("Out");
-
-        operate(in, out);
-
-        assert sameDirectory(in, out.resolve("In"));
-    }
-
-    @Test(expected = NoSuchFileException.class)
-    public void directoryToFileInArchive() {
-        Path in = room.locateDirectory("In", $ -> {
-            $.file("1", "One");
-        });
-        Path out = room.locateArchive("Out", $ -> {
-            $.file("file");
-        }).resolve("file");
-
-        operate(in, out);
-    }
-
-    @Test
-    public void directoryToAbsentFileInArchive() {
-        Path in = room.locateDirectory("In", $ -> {
-            $.file("1", "One");
-        });
-        Path out = room.locateArchive("Out").resolve("absent");
-
-        operate(in, out);
-
-        assert sameDirectory(in, out.resolve("In"));
-    }
-
-    @Test
-    public void directoryToDirectoryInArchive() {
-        Path in = room.locateDirectory("In", $ -> {
-            $.file("1", "One");
-        });
-        Path out = room.locateArchive("Out", $ -> {
-            $.dir("dir");
-        }).resolve("dir");
 
         operate(in, out);
 
