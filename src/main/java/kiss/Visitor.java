@@ -61,7 +61,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private FileVisitor<Path> visitor;
 
     /** The include file patterns. */
-    private BiPredicate<Path, BasicFileAttributes> includes;
+    private BiPredicate<Path, BasicFileAttributes>[] includes;
 
     /** The exclude file patterns. */
     private PathMatcher[] excludes;
@@ -107,15 +107,14 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         //
         // Default file system doesn't support close method, so we can ignore to release resource.
         FileSystem system = from.getFileSystem();
+        ArrayList<BiPredicate<Path, BasicFileAttributes>> includes = new ArrayList();
         ArrayList<PathMatcher> excludes = new ArrayList();
         ArrayList<PathMatcher> directories = new ArrayList();
 
         for (String pattern : patterns) {
             // convert pattern to reduce unnecessary file system scanning
-            if (pattern.equals("*")) {
-                if (type < 5) {
-                    pattern = "!*/**";
-                }
+            if (pattern.equals("*") && patterns.length == 1) {
+                // pattern = "!*/**";
                 this.from = from;
                 this.root = false;
             } else if (pattern.equals("**")) {
@@ -127,7 +126,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (pattern.charAt(0) != '!') {
                 // include
                 PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
-                includes = includes.and((path, attrs) -> matcher.matches(path));
+                includes.add((path, attr) -> matcher.matches(path));
             } else if (!pattern.endsWith("/**")) {
                 // exclude files
                 if (type < 5) {
@@ -143,6 +142,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         }
 
         // Convert into Array
+        this.includes = includes.toArray(new BiPredicate[includes.size()]);
         this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
         this.directories = directories.toArray(new PathMatcher[directories.size()]);
     }
@@ -185,13 +185,13 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             }
 
             if (filter == null) {
-                filter = (path, attrs) -> true;
+                // filter = (path, attrs) -> true;
             } else {
                 root = false;
             }
 
             // Convert into Array
-            this.includes = filter;
+            this.includes = filter == null ? new BiPredicate[0] : new BiPredicate[] {filter};
             this.excludes = new PathMatcher[0];
             this.directories = new PathMatcher[0];
 
@@ -252,7 +252,9 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             return CONTINUE;
 
         case 5: // walk directory
-            if ((root || from != path) && accept(relative, attrs)) add(path);
+            if ((root || from != path) && accept(relative, attrs)) {
+                add(path);
+            }
             // fall-through to reduce footprint
 
         case 6: // observe dirctory
@@ -367,7 +369,12 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             }
         }
         // File inclusion
-        return includes.test(path, attr);
+        for (BiPredicate<Path, BasicFileAttributes> matcher : includes) {
+            if (matcher.test(path, attr)) {
+                return true;
+            }
+        }
+        return includes.length == 0;
     }
 
     // =======================================================
@@ -421,8 +428,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path) ? Files
-                            .readAttributes(path, BasicFileAttributes.class) : ZERO;
+                    BasicFileAttributes attrs = Files.exists(path)
+                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
                     if (accept(from.relativize(path), attrs)) {
