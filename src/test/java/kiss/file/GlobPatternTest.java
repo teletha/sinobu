@@ -36,9 +36,9 @@ public class GlobPatternTest {
             });
         });
 
-        // assert I.walk(path, "*").size() == 2;
-        // assert I.walk(path, "*/text").size() == 1;
-        // assert I.walk(path, "*", "*/text").size() == 3;
+        assert I.walk(path, "*").size() == 2;
+        assert I.walk(path, "*/text").size() == 1;
+        assert I.walk(path, "*", "*/text").size() == 3;
         assert I.walk(path, (p, attr) -> attr.isDirectory()).size() == 1;
     }
 }
