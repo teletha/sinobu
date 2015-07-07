@@ -179,47 +179,47 @@ public class PathPatternMatchingTest {
 
     @Test
     public void directoryPatternTopLevelPartialWildcard() {
-        assertDirectoryCount(2, this::structure2, "directory*");
+        assertDirectoryCount(2, this::structure2, "directory*/");
     }
 
     @Test
     public void directoryPatternTopLevelWildcard() {
-        assertDirectoryCount(2, this::structure2, "*");
+        assertDirectoryCount(2, this::structure2, "*/");
     }
 
     @Test
     public void directoryPatternWildcard() {
-        assertDirectoryCount(9, this::structure2, "**");
+        assertDirectoryCount(9, this::structure2, "**/");
     }
 
     @Test
     public void directoryPattern() {
-        assertDirectoryCount(1, this::structure2, "directory1");
+        assertDirectoryCount(1, this::structure2, "directory1/");
     }
 
     @Test
     public void directoryPatternDeepWildcard() {
-        assertDirectoryCount(2, this::structure2, "**/child1");
+        assertDirectoryCount(2, this::structure2, "**/child1/");
     }
 
     @Test
     public void directoryPatternWildcardRight() {
-        assertDirectoryCount(2, this::structure2, "**/d*");
+        assertDirectoryCount(2, this::structure2, "**/d*/");
     }
 
     @Test
     public void directoryPatternWildcardLeft() {
-        assertDirectoryCount(3, this::structure2, "**/*2");
+        assertDirectoryCount(3, this::structure2, "**/*2/");
     }
 
     @Test
     public void directoryPatternWildcardBoth() {
-        assertDirectoryCount(3, this::structure2, "**/*e*");
+        assertDirectoryCount(3, this::structure2, "**/*e*/");
     }
 
     @Test
     public void directoryPatternNegative() {
-        assertDirectoryCount(4, this::structure2, "!directory1");
+        assertDirectoryCount(4, this::structure2, "!directory1/");
     }
 
     /**
