@@ -67,9 +67,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private PathMatcher[] excludes;
 
     /** The exclude directory pattern. */
-    private BiPredicate<Path, BasicFileAttributes>[] includeDirectories;
-
-    /** The exclude directory pattern. */
     private PathMatcher[] excludeDirectories;
 
     /** Can we accept root directory? */
@@ -111,7 +108,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         // Default file system doesn't support close method, so we can ignore to release resource.
         FileSystem system = from.getFileSystem();
         ArrayList<BiPredicate<Path, BasicFileAttributes>> includes = new ArrayList();
-        ArrayList<BiPredicate<Path, BasicFileAttributes>> includeDirectories = new ArrayList();
         ArrayList<PathMatcher> excludes = new ArrayList();
         ArrayList<PathMatcher> directories = new ArrayList();
 
@@ -129,16 +125,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
             if (pattern.charAt(0) != '!') {
                 // include
-                if (!pattern.endsWith("/")) {
-                    System.out.println(pattern);
-                    PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
-                    includes.add((path, attr) -> matcher.matches(path));
-                } else {
-                    System.out.println(pattern.substring(0, pattern.length() - 1));
-                    PathMatcher matcher = system
-                            .getPathMatcher("glob:".concat(pattern.substring(0, pattern.length() - 1)));
-                    includeDirectories.add((path, attr) -> matcher.matches(path));
-                }
+                PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
+                includes.add((path, attr) -> matcher.matches(path));
             } else if (!pattern.endsWith("/**")) {
                 // exclude files
                 if (type < 5) {
@@ -155,7 +143,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
         // Convert into Array
         this.includes = includes.toArray(new BiPredicate[includes.size()]);
-        this.includeDirectories = includeDirectories.toArray(new BiPredicate[includeDirectories.size()]);
         this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
         this.excludeDirectories = directories.toArray(new PathMatcher[directories.size()]);
     }
@@ -265,7 +252,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             return CONTINUE;
 
         case 5: // walk directory
-            if ((root || from != path) && accept(relative, attrs, excludeDirectories, includeDirectories)) {
+            if ((root || from != path) && accept(relative, attrs)) {
                 add(path);
             }
             // fall-through to reduce footprint
@@ -375,30 +362,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * @return A result.
      */
     private boolean accept(Path path, BasicFileAttributes attr) {
-        // File exclusion
-        for (PathMatcher matcher : excludes) {
-            if (matcher.matches(path)) {
-                return false;
-            }
-        }
-        // File inclusion
-        for (BiPredicate<Path, BasicFileAttributes> matcher : includes) {
-            if (matcher.test(path, attr)) {
-                return true;
-            }
-        }
-        return includes.length == 0;
-    }
-
-    /**
-     * <p>
-     * Helper method to test whether the path is acceptable or not.
-     * </p>
-     *
-     * @param path A target path.
-     * @return A result.
-     */
-    private boolean accept(Path path, BasicFileAttributes attr, PathMatcher[] excludes, BiPredicate<Path, BasicFileAttributes>[] includes) {
         // File exclusion
         for (PathMatcher matcher : excludes) {
             if (matcher.matches(path)) {
