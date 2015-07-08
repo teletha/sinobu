@@ -260,16 +260,17 @@ public class MoveTest extends PathOperationTestHelper {
                 $.file("file");
                 $.file("text");
             });
+            $.dir("empty");
         });
         Path out = room.locateDirectory("Out");
 
         operate(in, out, "*");
 
-        assert notExist(in.resolve("file"), in.resolve("text"));
+        assert notExist(in.resolve("file"), in.resolve("text"), in.resolve("empty"));
         assert exist(in.resolve("dir"), in.resolve("dir/file"), in.resolve("dir/text"));
 
-        assert exist(out.resolve("file"), out.resolve("text"));
-        assert notExist(out.resolve("dir"), out.resolve("dir/file"), out.resolve("dir/text"));
+        assert exist(out.resolve("file"), out.resolve("text"), out.resolve("empty"), out.resolve("dir"));
+        assert notExist(out.resolve("dir/file"), out.resolve("dir/text"));
     }
 
     @Test

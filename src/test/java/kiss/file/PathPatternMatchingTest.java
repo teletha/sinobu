@@ -88,6 +88,11 @@ public class PathPatternMatchingTest {
     }
 
     @Test
+    public void descendant() {
+        assertCount(9, "**");
+    }
+
+    @Test
     public void includeWildcardLeft() {
         assertCount(1, "*.file");
     }
@@ -160,6 +165,11 @@ public class PathPatternMatchingTest {
     @Test
     public void wildcardOnly() {
         assertCount(3, "*");
+    }
+
+    @Test
+    public void wildcardSecondLevel() {
+        assertCount(6, "*/*");
     }
 
     @Test

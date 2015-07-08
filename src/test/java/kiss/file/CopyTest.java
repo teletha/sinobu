@@ -238,13 +238,14 @@ public class CopyTest extends PathOperationTestHelper {
                 $.file("file");
                 $.file("text");
             });
+            $.dir("empty");
         });
         Path out = room.locateDirectory("Out");
 
         operate(in, out, "*");
 
-        assert exist(out.resolve("file"), out.resolve("text"));
-        assert notExist(out.resolve("dir"), out.resolve("dir/file"), out.resolve("dir/text"));
+        assert exist(out.resolve("file"), out.resolve("text"), out.resolve("empty"), out.resolve("dir"));
+        assert notExist(out.resolve("dir/file"), out.resolve("dir/text"));
     }
 
     @Test

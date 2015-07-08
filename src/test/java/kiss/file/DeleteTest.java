@@ -120,4 +120,22 @@ public class DeleteTest extends PathOperationTestHelper {
     public void inputNull() {
         I.delete(null);
     }
+
+    @Test
+    public void children() {
+        Path in = room.locateDirectory("In", $ -> {
+            $.file("file");
+            $.file("text");
+            $.dir("dir", () -> {
+                $.file("file");
+                $.file("text");
+            });
+            $.dir("empty");
+        });
+
+        operate(in, "*");
+
+        assert exist(in, in.resolve("dir"), in.resolve("dir/file"), in.resolve("dir/text"));
+        assert notExist(in.resolve("file"), in.resolve("text"), in.resolve("empty"));
+    }
 }

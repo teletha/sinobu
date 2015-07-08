@@ -34,8 +34,6 @@ import java.util.function.BiPredicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import com.sun.nio.zipfs.ZipPath;
-
 /**
  * @version 2015/07/04 16:56:44
  */
@@ -67,7 +65,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private PathMatcher[] excludes;
 
     /** The exclude directory pattern. */
-    private PathMatcher[] excludeDirectories;
+    private PathMatcher[] directories;
 
     /** Can we accept root directory? */
     private boolean root = true;
@@ -114,7 +112,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         for (String pattern : patterns) {
             // convert pattern to reduce unnecessary file system scanning
             if (pattern.equals("*") && patterns.length == 1) {
-                // pattern = "!*/**";
                 this.from = from;
                 this.root = false;
             } else if (pattern.equals("**")) {
@@ -129,22 +126,17 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 includes.add((path, attr) -> matcher.matches(path));
             } else if (!pattern.endsWith("/**")) {
                 // exclude files
-                if (type < 5) {
-                    excludes.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
-                } else {
-                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
-                }
+                (type < 5 ? excludes : directories).add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
             } else {
                 // exclude directory
-                directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3)
-                        .concat(from instanceof ZipPath ? "/" : ""))));
+                directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
             }
         }
 
         // Convert into Array
         this.includes = includes.toArray(new BiPredicate[includes.size()]);
         this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
-        this.excludeDirectories = directories.toArray(new PathMatcher[directories.size()]);
+        this.directories = directories.toArray(new PathMatcher[directories.size()]);
     }
 
     /**
@@ -193,7 +185,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             // Convert into Array
             this.includes = filter == null ? new BiPredicate[0] : new BiPredicate[] {filter};
             this.excludes = new PathMatcher[0];
-            this.excludeDirectories = new PathMatcher[0];
+            this.directories = new PathMatcher[0];
 
             if (type == -1) this.zip = new ZipOutputStream(Files.newOutputStream(to), I.$encoding);
 
@@ -230,7 +222,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         Path relative = from.relativize(path);
         // Skip root directory.
         // Directory exclusion make fast traversing file tree.
-        for (PathMatcher matcher : excludeDirectories) {
+        for (PathMatcher matcher : directories) {
             // Normally, we can't use identical equal against path object. But only root path object
             // is passed as parameter value, so we can use identical equal here.
             if (from != path && matcher.matches(relative)) {
