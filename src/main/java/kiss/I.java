@@ -55,7 +55,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -313,8 +312,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
     /** The accessible internal method for class loading. */
     private static final Method define;
-
-    private static final WeakHashMap<Object, Map> weak = new WeakHashMap();
 
     /** The parallel task manager. */
     // private static final ExecutorService parallel = Executors.newWorkStealingPool(4);
