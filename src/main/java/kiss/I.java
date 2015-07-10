@@ -56,7 +56,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -404,23 +403,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      */
     private I() {
-    }
-
-    public static <T> T associate(Object host, Class<T> type) {
-        Map map = weak.get(host);
-
-        if (map == null) {
-            map = new ConcurrentHashMap();
-            weak.put(host, map);
-        }
-
-        Object value = map.get(type);
-
-        if (value == null) {
-            value = I.make(type);
-            map.put(type, value);
-        }
-        return (T) value;
     }
 
     // /**
