@@ -32,8 +32,6 @@ import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.LinkPermission;
 import java.nio.file.NoSuchFileException;
@@ -511,7 +509,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void copy(Path input, Path output, String... patterns) {
-        new Visitor(input, output, 0, null, patterns).walk();
+        new Visitor(input, output, 0, patterns).walk();
     }
 
     /**
@@ -563,7 +561,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void copy(Path input, Path output, BiPredicate<Path, BasicFileAttributes> filter) {
-        new Visitor(input, output, 0, null, filter).walk();
+        new Visitor(input, output, 0, filter).walk();
     }
 
     /**
@@ -597,7 +595,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      */
     public static void delete(Path input, String... patterns) {
         if (input != null) {
-            new Visitor(input, null, 2, null, patterns).walk();
+            new Visitor(input, null, 2, patterns).walk();
         }
     }
 
@@ -632,7 +630,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      */
     public static void delete(Path input, BiPredicate<Path, BasicFileAttributes> filter) {
         if (input != null) {
-            new Visitor(input, null, 2, null, filter).walk();
+            new Visitor(input, null, 2, filter).walk();
         }
     }
 
@@ -1431,7 +1429,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void move(Path input, Path output, String... patterns) {
-        new Visitor(input, output, 1, null, patterns).walk();
+        new Visitor(input, output, 1, patterns).walk();
     }
 
     /**
@@ -1482,7 +1480,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *             check {@link LinkPermission}("symbolic").
      */
     public static void move(Path input, Path output, BiPredicate<Path, BasicFileAttributes> filter) {
-        new Visitor(input, output, 1, null, filter).walk();
+        new Visitor(input, output, 1, filter).walk();
     }
 
     //
@@ -2395,7 +2393,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return All matched files. (<em>not</em> including directory)
      */
     public static List<Path> walk(Path start, String... patterns) {
-        return new Visitor(start, null, 3, null, patterns).walk();
+        return new Visitor(start, null, 3, patterns).walk();
     }
 
     /**
@@ -2408,7 +2406,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return All matched files. (<em>not</em> including directory)
      */
     public static List<Path> walk(Path start, BiPredicate<Path, BasicFileAttributes> filter) {
-        return new Visitor(start, null, 3, null, filter).walk();
+        return new Visitor(start, null, 3, filter).walk();
     }
 
     /**
@@ -2421,7 +2419,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return All matched directories. (<em>not</em> including file)
      */
     public static List<Path> walkDirectory(Path start, String... patterns) {
-        return new Visitor(start, null, 5, null, patterns).walk();
+        return new Visitor(start, null, 5, patterns).walk();
     }
 
     /**
@@ -2434,107 +2432,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return All matched directories. (<em>not</em> including file)
      */
     public static List<Path> walkDirectory(Path start, BiPredicate<Path, BasicFileAttributes> filter) {
-        return new Visitor(start, null, 5, null, filter).walk();
-    }
-
-    /**
-     * <p>
-     * Walk a file tree. The starting path is not notified to {@link FileVisitor} .
-     * </p>
-     * <p>
-     * This method walks a file tree rooted at a given starting file. The file tree traversal is
-     * depth-first with the given {@link FileVisitor} invoked for each file encountered. File tree
-     * traversal completes when all accessible files in the tree have been visited, or a visit
-     * method returns a result of {@link FileVisitResult#TERMINATE}. Where a visit method terminates
-     * due an {@link IOException}, an uncaught error, or runtime exception, then the traversal is
-     * terminated and the error or exception is propagated to the caller of this method.
-     * </p>
-     * <p>
-     * For each file encountered this method attempts to read its {@link BasicFileAttributes}. If
-     * the file is not a directory then the
-     * {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked with the file
-     * attributes. If the file attributes cannot be read, due to an I/O exception, then the
-     * {@link FileVisitor#visitFileFailed(Object, IOException)} method is invoked with the I/O
-     * exception.
-     * </p>
-     * <p>
-     * Where the file is a directory, and the directory could not be opened, then the
-     * {@link FileVisitor#visitFileFailed(Object, IOException)} method is invoked with the I/O
-     * exception, after which, the file tree walk continues, by default, at the next sibling of the
-     * directory.
-     * </p>
-     * <p>
-     * Where the directory is opened successfully, then the entries in the directory, and their
-     * descendants are visited. When all entries have been visited, or an I/O error occurs during
-     * iteration of the directory, then the directory is closed and the visitor's
-     * {@link FileVisitor#postVisitDirectory(Object, IOException)} method is invoked. The file tree
-     * walk then continues, by default, at the next sibling of the directory.
-     * </p>
-     * <p>
-     * If a visitor returns a result of <code>null</code> then {@link NullPointerException} is
-     * thrown.
-     * </p>
-     * <p>
-     * When a security manager is installed and it denies access to a file (or directory), then it
-     * is ignored and the visitor is not invoked for that file (or directory).
-     * </p>
-     *
-     * @param start A depature point. This starting path is not notified to your visitor.
-     * @param visitor A file tree visitor to invoke for each file and directory.
-     * @param patterns <a href="#Patterns">include/exclude patterns</a> you want to visit.
-     */
-    public static void walk(Path start, FileVisitor visitor, String... patterns) {
-        new Visitor(start, null, 4, visitor, patterns).walk();
-    }
-
-    /**
-     * <p>
-     * Walk a file tree. The starting path is not notified to {@link FileVisitor} .
-     * </p>
-     * <p>
-     * This method walks a file tree rooted at a given starting file. The file tree traversal is
-     * depth-first with the given {@link FileVisitor} invoked for each file encountered. File tree
-     * traversal completes when all accessible files in the tree have been visited, or a visit
-     * method returns a result of {@link FileVisitResult#TERMINATE}. Where a visit method terminates
-     * due an {@link IOException}, an uncaught error, or runtime exception, then the traversal is
-     * terminated and the error or exception is propagated to the caller of this method.
-     * </p>
-     * <p>
-     * For each file encountered this method attempts to read its {@link BasicFileAttributes}. If
-     * the file is not a directory then the
-     * {@link FileVisitor#visitFile(Object, BasicFileAttributes)} method is invoked with the file
-     * attributes. If the file attributes cannot be read, due to an I/O exception, then the
-     * {@link FileVisitor#visitFileFailed(Object, IOException)} method is invoked with the I/O
-     * exception.
-     * </p>
-     * <p>
-     * Where the file is a directory, and the directory could not be opened, then the
-     * {@link FileVisitor#visitFileFailed(Object, IOException)} method is invoked with the I/O
-     * exception, after which, the file tree walk continues, by default, at the next sibling of the
-     * directory.
-     * </p>
-     * <p>
-     * Where the directory is opened successfully, then the entries in the directory, and their
-     * descendants are visited. When all entries have been visited, or an I/O error occurs during
-     * iteration of the directory, then the directory is closed and the visitor's
-     * {@link FileVisitor#postVisitDirectory(Object, IOException)} method is invoked. The file tree
-     * walk then continues, by default, at the next sibling of the directory.
-     * </p>
-     * <p>
-     * If a visitor returns a result of <code>null</code> then {@link NullPointerException} is
-     * thrown.
-     * </p>
-     * <p>
-     * When a security manager is installed and it denies access to a file (or directory), then it
-     * is ignored and the visitor is not invoked for that file (or directory).
-     * </p>
-     *
-     * @param start A depature point. This starting path is not notified to your visitor.
-     * @param visitor A file tree visitor to invoke for each file and directory.
-     * @param A path filter to visit.
-     */
-    public static void walk(Path start, FileVisitor visitor, BiPredicate<Path, BasicFileAttributes> filter) {
-        new Visitor(start, null, 4, visitor, filter).walk();
+        return new Visitor(start, null, 5, filter).walk();
     }
 
     /**

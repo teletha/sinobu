@@ -9,11 +9,6 @@
  */
 package kiss.file;
 
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.function.Consumer;
 
 import org.junit.ClassRule;
@@ -25,15 +20,13 @@ import antibug.CleanRoom.FileSystemDSL;
 import kiss.I;
 
 /**
- * @version 2015/06/23 21:12:30
+ * @version 2015/07/11 21:39:57
  */
 public class PathPatternMatchingTest {
 
     @Rule
     @ClassRule
     public static final CleanRoom room = new CleanRoom();
-
-    private Counter counter = new Counter();
 
     private void structure1(FileSystemDSL $) {
         $.dir("directory1", () -> {
@@ -245,16 +238,7 @@ public class PathPatternMatchingTest {
     private void assertCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
         room.with(pattern);
 
-        try {
-            // by user
-            I.walk(room.root, counter, patterns);
-            assert counter.count == expected;
-
-            // by walker
-            assert expected == I.walk(room.root, patterns).size();
-        } finally {
-            counter.count = 0;
-        }
+        assert expected == I.walk(room.root, patterns).size();
     }
 
     /**
@@ -264,22 +248,5 @@ public class PathPatternMatchingTest {
         room.with(pattern);
 
         assert I.walkDirectory(room.root, patterns).size() == expected;
-    }
-
-    /**
-     * @version 2015/06/23 21:12:19
-     */
-    private static class Counter extends SimpleFileVisitor<Path> {
-
-        private int count = 0;
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            count++;
-            return super.visitFile(file, attrs);
-        }
     }
 }

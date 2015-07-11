@@ -51,9 +51,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     /** The operation type. */
     private int type;
 
-    /** The actual {@link FileVisitor} to delegate. */
-    private FileVisitor<Path> visitor;
-
     /** The include file patterns. */
     private BiPredicate<Path, BasicFileAttributes>[] includes;
 
@@ -87,8 +84,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>-1 - zip</li>
      * </ol>
      */
-    Visitor(Path from, Path to, int type, FileVisitor visitor, String... patterns) {
-        this(from, to, type, visitor, (BiPredicate) null);
+    Visitor(Path from, Path to, int type, String... patterns) {
+        this(from, to, type, (BiPredicate) null);
 
         if (patterns == null) {
             patterns = new String[0];
@@ -150,10 +147,9 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>-1 - zip</li>
      * </ol>
      */
-    Visitor(Path from, Path to, int type, FileVisitor visitor, BiPredicate<Path, BasicFileAttributes> filter) {
+    Visitor(Path from, Path to, int type, BiPredicate<Path, BasicFileAttributes> filter) {
         this.original = from;
         this.type = type;
-        this.visitor = visitor;
 
         try {
             boolean directory = Files.isDirectory(from);
@@ -239,12 +235,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             }
             // fall-through to reduce footprint
 
-        case 6: // observe dirctory
+        default: // observe dirctory
             return CONTINUE;
-
-        default: // walk file and directory with visitor
-            // Skip root directory
-            return from == path ? CONTINUE : visitor.preVisitDirectory(path, attrs);
         }
     }
 
@@ -266,13 +258,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             deletable.poll();
             // fall-through to reduce footprint
 
-        case 3: // walk file
-        case 5: // walk directory
+        default: // walk directory and walk file
             return CONTINUE;
-
-        default: // walk file and directory with visitor
-            // Skip root directory.
-            return from == path ? CONTINUE : visitor.postVisitDirectory(path, e);
         }
     }
 
@@ -302,9 +289,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 case 3: // walk file
                     add(path);
                     break;
-
-                default: // walk file and directory with visitor
-                    return visitor.visitFile(path, attrs);
                 }
             } else if (type < 3) {
                 deletable.set(0, this);
@@ -365,7 +349,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * @param patterns Name matching patterns.
      */
     Visitor(Path path, Observer observer, String... patterns) {
-        this(path, null, 6, null, patterns);
+        this(path, null, 6, patterns);
 
         try {
             this.observer = observer;
@@ -396,8 +380,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path) ? Files
-                            .readAttributes(path, BasicFileAttributes.class) : ZERO;
+                    BasicFileAttributes attrs = Files.exists(path)
+                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
                     if (accept(from.relativize(path), attrs)) {
