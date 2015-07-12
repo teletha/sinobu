@@ -91,7 +91,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         // Parse and create path matchers.
         for (String pattern : patterns) {
             // convert pattern to reduce unnecessary file system scanning
-            if (pattern.equals("*") && patterns.length == 1) {
+            if (pattern.equals("*")) {
                 this.from = from;
                 this.root = false;
             } else if (pattern.equals("**")) {
@@ -103,16 +103,15 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (pattern.charAt(0) != '!') {
                 // include
                 include = glob(include, pattern);
-            } else if (!pattern.endsWith("/**")) {
-                // exclude files
-                if (type < 4) {
-                    exclude = glob(exclude, pattern.substring(1));
-                } else {
-                    directory = glob(directory, pattern.substring(1));
-                }
-            } else {
+            } else if (pattern.endsWith("/**")) {
                 // exclude directory
                 directory = glob(directory, pattern.substring(1, pattern.length() - 3));
+            } else if (type < 4) {
+                // exclude files
+                exclude = glob(exclude, pattern.substring(1));
+            } else {
+                // exclude directory
+                directory = glob(directory, pattern.substring(1));
             }
         }
     }
