@@ -15,7 +15,6 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
-import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -58,7 +57,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private BiPredicate<Path, BasicFileAttributes> excludes;
 
     /** The exclude directory pattern. */
-    private PathMatcher[] directories;
+    private BiPredicate<Path, BasicFileAttributes> directories;
 
     /** Can we accept root directory? */
     private boolean root = true;
@@ -90,11 +89,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         }
 
         // Parse and create path matchers.
-        //
-        // Default file system doesn't support close method, so we can ignore to release resource.
-        FileSystem system = from.getFileSystem();
-        ArrayList<PathMatcher> directories = new ArrayList();
-
         for (String pattern : patterns) {
             // convert pattern to reduce unnecessary file system scanning
             if (pattern.equals("*") && patterns.length == 1) {
@@ -108,36 +102,40 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
             if (pattern.charAt(0) != '!') {
                 // include
-                PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
-                BiPredicate<Path, BasicFileAttributes> filter = (path, attrs) -> matcher.matches(path);
-
-                if (this.includes == null) {
-                    this.includes = filter;
-                } else {
-                    this.includes = this.includes.or(filter);
-                }
+                includes = glob(includes, pattern);
             } else if (!pattern.endsWith("/**")) {
                 // exclude files
-                PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern.substring(1)));
-                BiPredicate<Path, BasicFileAttributes> filter = (path, attrs) -> matcher.matches(path);
-
                 if (type < 4) {
-                    if (this.excludes == null) {
-                        this.excludes = filter;
-                    } else {
-                        this.excludes = this.excludes.or(filter);
-                    }
+                    excludes = glob(excludes, pattern.substring(1));
                 } else {
-                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                    directories = glob(directories, pattern.substring(1));
                 }
             } else {
                 // exclude directory
-                directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
+                directories = glob(directories, pattern.substring(1, pattern.length() - 3));
             }
         }
+    }
 
-        // Convert into Array
-        this.directories = directories.toArray(new PathMatcher[directories.size()]);
+    /**
+     * <p>
+     * Create {@link BiPredicate} filter by using the specified glob pattern.
+     * </p>
+     * 
+     * @param base
+     * @param pattern
+     * @return
+     */
+    private BiPredicate<Path, BasicFileAttributes> glob(BiPredicate<Path, BasicFileAttributes> base, String pattern) {
+        // Default file system doesn't support close method, so we can ignore to release resource.
+        PathMatcher matcher = from.getFileSystem().getPathMatcher("glob:".concat(pattern));
+        BiPredicate<Path, BasicFileAttributes> filter = (path, attrs) -> matcher.matches(path);
+
+        if (base == null) {
+            return filter;
+        } else {
+            return base.or(filter);
+        }
     }
 
     /**
@@ -182,7 +180,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
             // Convert into Array
             this.includes = filter;
-            this.directories = new PathMatcher[0];
 
             if (type < 3) {
                 deletable = new LinkedList();
@@ -217,12 +214,11 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         Path relative = from.relativize(path);
         // Skip root directory.
         // Directory exclusion make fast traversing file tree.
-        for (PathMatcher matcher : directories) {
-            // Normally, we can't use identical equal against path object. But only root path object
-            // is passed as parameter value, so we can use identical equal here.
-            if (from != path && matcher.matches(relative)) {
-                return SKIP_SUBTREE;
-            }
+
+        // Normally, we can't use identical equal against path object. But only root path object
+        // is passed as parameter value, so we can use identical equal here.
+        if (from != path && directories != null && directories.test(relative, attrs)) {
+            return SKIP_SUBTREE;
         }
 
         switch (type) {
