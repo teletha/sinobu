@@ -350,7 +350,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             // Clean up any old temporary directories by listing all of the files, using a prefix
             // filter and that don't have a lock file.
-            for (Path path : walkDirectory(temporaries, "temporary*/")) {
+            for (Path path : walkDirectory(temporaries, "temporary*")) {
                 // create a file to represent the lock
                 RandomAccessFile file = new RandomAccessFile(path.resolve("lock").toFile(), "rw");
 

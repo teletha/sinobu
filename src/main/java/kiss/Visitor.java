@@ -52,10 +52,10 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private int type;
 
     /** The include file patterns. */
-    private BiPredicate<Path, BasicFileAttributes>[] includes;
+    private BiPredicate<Path, BasicFileAttributes> includes;
 
     /** The exclude file patterns. */
-    private PathMatcher[] excludes;
+    private BiPredicate<Path, BasicFileAttributes> excludes;
 
     /** The exclude directory pattern. */
     private PathMatcher[] directories;
@@ -93,8 +93,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         //
         // Default file system doesn't support close method, so we can ignore to release resource.
         FileSystem system = from.getFileSystem();
-        ArrayList<BiPredicate<Path, BasicFileAttributes>> includes = new ArrayList();
-        ArrayList<PathMatcher> excludes = new ArrayList();
         ArrayList<PathMatcher> directories = new ArrayList();
 
         for (String pattern : patterns) {
@@ -111,10 +109,27 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (pattern.charAt(0) != '!') {
                 // include
                 PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern));
-                includes.add((path, attr) -> matcher.matches(path));
+                BiPredicate<Path, BasicFileAttributes> filter = (path, attrs) -> matcher.matches(path);
+
+                if (this.includes == null) {
+                    this.includes = filter;
+                } else {
+                    this.includes = this.includes.or(filter);
+                }
             } else if (!pattern.endsWith("/**")) {
                 // exclude files
-                (type < 4 ? excludes : directories).add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                PathMatcher matcher = system.getPathMatcher("glob:".concat(pattern.substring(1)));
+                BiPredicate<Path, BasicFileAttributes> filter = (path, attrs) -> matcher.matches(path);
+
+                if (type < 4) {
+                    if (this.excludes == null) {
+                        this.excludes = filter;
+                    } else {
+                        this.excludes = this.excludes.or(filter);
+                    }
+                } else {
+                    directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                }
             } else {
                 // exclude directory
                 directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
@@ -122,8 +137,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         }
 
         // Convert into Array
-        this.includes = includes.toArray(new BiPredicate[includes.size()]);
-        this.excludes = excludes.toArray(new PathMatcher[excludes.size()]);
         this.directories = directories.toArray(new PathMatcher[directories.size()]);
     }
 
@@ -168,8 +181,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             }
 
             // Convert into Array
-            this.includes = filter == null ? new BiPredicate[0] : new BiPredicate[] {filter};
-            this.excludes = new PathMatcher[0];
+            this.includes = filter;
             this.directories = new PathMatcher[0];
 
             if (type < 3) {
@@ -311,18 +323,12 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      */
     private boolean accept(Path path, BasicFileAttributes attr) {
         // File exclusion
-        for (PathMatcher matcher : excludes) {
-            if (matcher.matches(path)) {
-                return false;
-            }
+        if (excludes != null && excludes.test(path, attr)) {
+            return false;
         }
+
         // File inclusion
-        for (BiPredicate<Path, BasicFileAttributes> matcher : includes) {
-            if (matcher.test(path, attr)) {
-                return true;
-            }
-        }
-        return includes.length == 0;
+        return includes == null || includes.test(path, attr);
     }
 
     // =======================================================
