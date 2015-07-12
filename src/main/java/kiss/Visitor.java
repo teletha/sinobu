@@ -80,7 +80,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>3 - file scan</li>
      * <li>4 - directory scan</li>
      * <li>5 - observe</li>
-     * <li>-1 - zip</li>
      * </ol>
      */
     Visitor(Path from, Path to, int type, String... patterns) {
@@ -142,7 +141,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>3 - file scan</li>
      * <li>4 - directory scan</li>
      * <li>5 - observe</li>
-     * <li>-1 - zip</li>
      * </ol>
      */
     Visitor(Path from, Path to, int type, BiPredicate<Path, BasicFileAttributes> filter) {
@@ -277,7 +275,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                     break;
 
                 case 1: // move
-                    Files.move(path, to.resolve(relative), REPLACE_EXISTING);
+                    Files.move(path, to.resolve(relative), ATOMIC_MOVE, REPLACE_EXISTING);
                     break;
 
                 case 2: // delete
