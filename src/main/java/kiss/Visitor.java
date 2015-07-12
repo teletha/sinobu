@@ -60,7 +60,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private BiPredicate<Path, BasicFileAttributes> directory;
 
     /** Can we accept root directory? */
-    private boolean root = true;
+    private boolean root;
 
     /** Flags whether the current directory can be deleted or not. */
     private LinkedList deletable;
@@ -131,11 +131,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         PathMatcher matcher = from.getFileSystem().getPathMatcher("glob:".concat(pattern));
         BiPredicate<Path, BasicFileAttributes> filter = (path, attrs) -> matcher.matches(path);
 
-        if (base == null) {
-            return filter;
-        } else {
-            return base.or(filter);
-        }
+        return base == null ? filter : base.or(filter);
     }
 
     /**
@@ -166,8 +162,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             // The copy and move operations need the root path.
             this.from = directory && type < 2 ? from.getParent() : from;
 
-            // The copy and move operations need destination. If the source is file, so destination
-            // must be file and its name is equal to source file.
+            // The copy and move operations need destination. If the source is file,
+            // so destination must be file and its name is equal to source file.
             this.to = !directory && type < 2 && Files.isDirectory(to) ? to.resolve(from.getFileName()) : to;
 
             if (type < 2 && 1 < to.getNameCount()) {
