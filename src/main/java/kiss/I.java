@@ -2419,7 +2419,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return All matched directories. (<em>not</em> including file)
      */
     public static List<Path> walkDirectory(Path start, String... patterns) {
-        return new Visitor(start, null, 5, patterns).walk();
+        return new Visitor(start, null, 4, patterns).walk();
     }
 
     /**
@@ -2432,7 +2432,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return All matched directories. (<em>not</em> including file)
      */
     public static List<Path> walkDirectory(Path start, BiPredicate<Path, BasicFileAttributes> filter) {
-        return new Visitor(start, null, 5, filter).walk();
+        return new Visitor(start, null, 4, filter).walk();
     }
 
     /**

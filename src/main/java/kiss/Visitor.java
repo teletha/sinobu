@@ -78,9 +78,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>1 - move</li>
      * <li>2 - delete</li>
      * <li>3 - file scan</li>
-     * <li>4 - file and directory with {@link FileVisitor}</li>
-     * <li>5 - directory scan</li>
-     * <li>6 - observe</li>
+     * <li>4 - directory scan</li>
+     * <li>5 - observe</li>
      * <li>-1 - zip</li>
      * </ol>
      */
@@ -116,7 +115,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 includes.add((path, attr) -> matcher.matches(path));
             } else if (!pattern.endsWith("/**")) {
                 // exclude files
-                (type < 5 ? excludes : directories).add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
+                (type < 4 ? excludes : directories).add(system.getPathMatcher("glob:".concat(pattern.substring(1))));
             } else {
                 // exclude directory
                 directories.add(system.getPathMatcher("glob:".concat(pattern.substring(1, pattern.length() - 3))));
@@ -141,9 +140,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * <li>1 - move</li>
      * <li>2 - delete</li>
      * <li>3 - file scan</li>
-     * <li>4 - file and directory with {@link FileVisitor}</li>
-     * <li>5 - directory scan</li>
-     * <li>6 - observe</li>
+     * <li>4 - directory scan</li>
+     * <li>5 - observe</li>
      * <li>-1 - zip</li>
      * </ol>
      */
@@ -229,7 +227,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         case 3: // walk file
             return CONTINUE;
 
-        case 5: // walk directory
+        case 4: // walk directory
             if ((root || from != path) && accept(relative, attrs)) {
                 add(path);
             }
@@ -268,7 +266,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      */
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-        if (type < 5) {
+        if (type < 4) {
             // Retrieve relative path from base.
             Path relative = from.relativize(path);
 
@@ -349,7 +347,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      * @param patterns Name matching patterns.
      */
     Visitor(Path path, Observer observer, String... patterns) {
-        this(path, null, 6, patterns);
+        this(path, null, 5, patterns);
 
         try {
             this.observer = observer;
