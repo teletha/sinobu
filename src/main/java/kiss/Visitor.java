@@ -51,13 +51,13 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     private int type;
 
     /** The include file patterns. */
-    private BiPredicate<Path, BasicFileAttributes> includes;
+    private BiPredicate<Path, BasicFileAttributes> include;
 
     /** The exclude file patterns. */
-    private BiPredicate<Path, BasicFileAttributes> excludes;
+    private BiPredicate<Path, BasicFileAttributes> exclude;
 
     /** The exclude directory pattern. */
-    private BiPredicate<Path, BasicFileAttributes> directories;
+    private BiPredicate<Path, BasicFileAttributes> directory;
 
     /** Can we accept root directory? */
     private boolean root = true;
@@ -102,17 +102,17 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
             if (pattern.charAt(0) != '!') {
                 // include
-                includes = glob(includes, pattern);
+                include = glob(include, pattern);
             } else if (!pattern.endsWith("/**")) {
                 // exclude files
                 if (type < 4) {
-                    excludes = glob(excludes, pattern.substring(1));
+                    exclude = glob(exclude, pattern.substring(1));
                 } else {
-                    directories = glob(directories, pattern.substring(1));
+                    directory = glob(directory, pattern.substring(1));
                 }
             } else {
                 // exclude directory
-                directories = glob(directories, pattern.substring(1, pattern.length() - 3));
+                directory = glob(directory, pattern.substring(1, pattern.length() - 3));
             }
         }
     }
@@ -157,6 +157,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     Visitor(Path from, Path to, int type, BiPredicate<Path, BasicFileAttributes> filter) {
         this.original = from;
         this.type = type;
+        this.include = filter;
+        this.root = filter == null;
 
         try {
             boolean directory = Files.isDirectory(from);
@@ -171,15 +173,6 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             if (type < 2 && 1 < to.getNameCount()) {
                 Files.createDirectories(to.getParent());
             }
-
-            if (filter == null) {
-                // filter = (path, attrs) -> true;
-            } else {
-                root = false;
-            }
-
-            // Convert into Array
-            this.includes = filter;
 
             if (type < 3) {
                 deletable = new LinkedList();
@@ -217,7 +210,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
 
         // Normally, we can't use identical equal against path object. But only root path object
         // is passed as parameter value, so we can use identical equal here.
-        if (from != path && directories != null && directories.test(relative, attrs)) {
+        if (from != path && directory != null && directory.test(relative, attrs)) {
             return SKIP_SUBTREE;
         }
 
@@ -319,12 +312,12 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
      */
     private boolean accept(Path path, BasicFileAttributes attr) {
         // File exclusion
-        if (excludes != null && excludes.test(path, attr)) {
+        if (exclude != null && exclude.test(path, attr)) {
             return false;
         }
 
         // File inclusion
-        return includes == null || includes.test(path, attr);
+        return include == null || include.test(path, attr);
     }
 
     // =======================================================
