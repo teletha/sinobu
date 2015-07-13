@@ -366,11 +366,9 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 for (WatchEvent event : key.pollEvents()) {
                     // make current modified path
                     Path path = ((Path) key.watchable()).resolve((Path) event.context());
-                    BasicFileAttributes attrs = Files.exists(path)
-                            ? Files.readAttributes(path, BasicFileAttributes.class) : ZERO;
 
                     // pattern matching
-                    if (accept(from.relativize(path), attrs)) {
+                    if (accept(from.relativize(path), null)) {
                         Agent e = new Agent();
                         e.watch = event;
                         e.object = path;
@@ -378,7 +376,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                         observer.accept(e);
 
                         if (event.kind() == ENTRY_CREATE) {
-                            if (Files.isDirectory(path) && preVisitDirectory(path, attrs) == CONTINUE) {
+                            if (Files.isDirectory(path) && preVisitDirectory(path, null) == CONTINUE) {
                                 for (Path dir : I.walkDirectory(path)) {
                                     dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                                 }
@@ -404,11 +402,4 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
     public void dispose() {
         I.quiet(service);
     }
-
-    // =======================================================
-    // For Empty File Attributes
-    // =======================================================
-
-    /** The zero time. */
-    private static final BasicFileAttributes ZERO = new Agent();
 }

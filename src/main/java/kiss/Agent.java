@@ -10,8 +10,6 @@
 package kiss;
 
 import java.nio.file.WatchEvent;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +26,7 @@ import kiss.model.Property;
  * 
  * @version 2015/06/24 13:07:48
  */
-class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable, BasicFileAttributes {
+class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable {
 
     /** For reuse. */
     T object;
@@ -201,84 +199,5 @@ class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable, Basi
     public String encode(Date value) {
         return format.format(value);
         // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
-    }
-
-    // =======================================================
-    // For Empty File Attributes
-    // =======================================================
-
-    /** The zero time. */
-    private static final FileTime zero = FileTime.fromMillis(0);
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FileTime lastModifiedTime() {
-        return zero;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FileTime lastAccessTime() {
-        return zero;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FileTime creationTime() {
-        return zero;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isRegularFile() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isDirectory() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isSymbolicLink() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isOther() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object fileKey() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long size() {
-        return 0;
     }
 }
