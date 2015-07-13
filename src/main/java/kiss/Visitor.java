@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.function.BiPredicate;
 
+import com.sun.nio.zipfs.ZipPath;
+
 /**
  * @version 2015/07/04 16:56:44
  */
@@ -91,7 +93,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         // Parse and create path matchers.
         for (String pattern : patterns) {
             // convert pattern to reduce unnecessary file system scanning
-            if (pattern.equals("*")) {
+            if (pattern.equals("*") && patterns.length == 1) {
                 this.from = from;
                 this.root = false;
             } else if (pattern.equals("**")) {
@@ -105,7 +107,8 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 include = glob(include, pattern);
             } else if (pattern.endsWith("/**")) {
                 // exclude directory
-                directory = glob(directory, pattern.substring(1, pattern.length() - 3));
+                directory = glob(directory, pattern.substring(1, pattern.length() - 3)
+                        .concat(from instanceof ZipPath ? "/" : ""));
             } else if (type < 4) {
                 // exclude files
                 exclude = glob(exclude, pattern.substring(1));
@@ -153,7 +156,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
         this.original = from;
         this.type = type;
         this.include = filter;
-        this.root = filter == null;
+        this.root = filter == null && !(from instanceof ZipPath);
 
         try {
             boolean directory = Files.isDirectory(from);
