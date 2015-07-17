@@ -61,6 +61,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiPredicate;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -2089,9 +2093,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             if (c == '{') {
                 // Parse as JSON
-                reader.unread(new char[] {'a', '='});
-
-                return read(model, output, script.eval(reader));
+                return read(model, output, Json.createReader(reader).readObject());
             } else {
                 // Parse as XML
                 return read(model, output, reader);
@@ -2232,6 +2234,73 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             }
         }
         return root;
+    }
+
+    /**
+     * <p>
+     * Helper method to traverse json structure using Java Object {@link Model}.
+     * </p>
+     *
+     * @param <M> A current model type.
+     * @param model A java object model.
+     * @param java A java value.
+     * @param js A javascript value.
+     * @return A restored java object.
+     */
+    private static <M> M read(Model model, M java, JsonValue js) {
+        switch (js.getValueType()) {
+        case ARRAY:
+            JsonArray array = (JsonArray) js;
+
+            for (int i = 0; i < array.size(); i++) {
+                // compute property
+                Property property = model.getProperty(String.valueOf(i));
+
+                if (property != null) {
+                    // calculate value
+                    Object value;
+                    Class type = property.model.type;
+
+                    // convert value
+                    if (property.isAttribute()) {
+                        value = transform(array.getString(i), type);
+                    } else {
+                        value = read(property.model, make(type), array.get(i));
+                    }
+
+                    // assign value
+                    model.set(java, property, value);
+                }
+            }
+            break;
+        case OBJECT:
+            JsonObject object = (JsonObject) js;
+
+            for (String id : object.keySet()) {
+                // compute property
+                Property property = model.getProperty(id);
+
+                if (property != null) {
+                    // calculate value
+                    Object value;
+                    Class type = property.model.type;
+
+                    // convert value
+                    if (property.isAttribute()) {
+                        value = transform(object.getString(id), type);
+                    } else {
+                        value = read(property.model, make(type), object.get(id));
+                    }
+
+                    // assign value
+                    model.set(java, property, value);
+                }
+            }
+            break;
+        }
+
+        // API definition
+        return java;
     }
 
     /**

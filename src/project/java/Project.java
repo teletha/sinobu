@@ -14,6 +14,8 @@ public class Project extends bee.api.Project {
         producer("Nameless Production Committee");
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
 
+        // require("javax.json", "javax.json-api", "1.0");
+        require("org.glassfish", "javax.json", "1.0.4");
         require("npc", "antibug", "0.3").atTest();
     }
 }
