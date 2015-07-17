@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Test;
+
 import kiss.I;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.ChainBean;
@@ -26,8 +28,6 @@ import kiss.sample.bean.School;
 import kiss.sample.bean.StringListProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
-
-import org.junit.Test;
 
 /**
  * @version 2011/03/31 16:59:01
@@ -101,7 +101,8 @@ public class JSONTest {
 
         // write
         String json = json(student);
-        assert json.equals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\",\"school\":{\"name\":\"Sakura High School\",\"students\":[]}}");
+        assert json
+                .equals("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\",\"school\":{\"name\":\"Sakura High School\",\"students\":[]}}");
 
         // read
         student = I.read(json, I.make(Student.class));
@@ -122,11 +123,12 @@ public class JSONTest {
 
         // write
         String json = json(primitive);
-        assert json.equals("{\"boolean\":\"false\",\"byte\":\"0\",\"char\":\"c\",\"double\":\"0.0\",\"float\":\"0.1\",\"int\":\"-5\",\"long\":\"0\",\"short\":\"0\"}");
+        assert json
+                .equals("{\"boolean\":\"false\",\"byte\":\"0\",\"char\":\"c\",\"double\":\"0.0\",\"float\":\"0.1\",\"int\":\"-5\",\"long\":\"0\",\"short\":\"0\"}");
 
         // read
         primitive = I.read(json, I.make(Primitive.class));
-        assert !primitive.isBoolean();
+        assert!primitive.isBoolean();
         assert primitive.getChar() == 'c';
         assert primitive.getInt() == -5;
         assert primitive.getFloat() == 0.1f;
@@ -185,7 +187,8 @@ public class JSONTest {
 
         // write
         String json = json(bean);
-        assert json.equals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T09:00:00\",\"someClass\":\"java.lang.String\"}");
+        assert json
+                .equals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T09:00:00\",\"someClass\":\"java.lang.String\"}");
 
         // read
         bean = I.read(json, I.make(BuiltinBean.class));
@@ -272,7 +275,8 @@ public class JSONTest {
 
     @Test
     public void fromReader() throws Exception {
-        Person person = I.read(new StringReader("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}"), I.make(Person.class));
+        Person person = I.read(new StringReader("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}"), I
+                .make(Person.class));
         assert person.getAge() == 15;
         assert person.getFirstName().equals("Mio");
         assert person.getLastName().equals("Akiyama");
