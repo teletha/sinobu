@@ -184,20 +184,7 @@ class Modules extends Variable<Lifestyle>implements ClassListener, Codec<Class>,
      */
     @Override
     public Class decode(String value) {
-        for (Class clazz : ClassUtil.PRIMITIVES) {
-            if (clazz.getName().equals(value)) {
-                return clazz;
-            }
-        }
-
-        for (Module module : I.modules.modules) {
-            try {
-                return Class.forName(value, false, module.loader);
-            } catch (ClassNotFoundException e) {
-                // continue
-            }
-        }
-        throw new IllegalArgumentException(value);
+        return I.type(value);
     }
 
     /**

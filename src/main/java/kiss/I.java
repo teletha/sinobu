@@ -2373,6 +2373,31 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
     /**
      * <p>
+     * Helper method to find the class by the specified fully qualified class name.
+     * </p>
+     * 
+     * @param fqcn A fully qualified class name to want.
+     * @return The specified class.
+     */
+    public static Class type(String fqcn) {
+        for (Class clazz : ClassUtil.PRIMITIVES) {
+            if (clazz.getName().equals(fqcn)) {
+                return clazz;
+            }
+        }
+    
+        for (Module module : modules.modules) {
+            try {
+                return Class.forName(fqcn, false, module.loader);
+            } catch (ClassNotFoundException e) {
+                // continue
+            }
+        }
+        throw new IllegalArgumentException(fqcn);
+    }
+
+    /**
+     * <p>
      * Walk a file tree and collect files you want to filter by pattern matching.
      * </p>
      *
