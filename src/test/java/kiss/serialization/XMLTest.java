@@ -29,6 +29,8 @@ import antibug.xml.XML;
 import kiss.I;
 import kiss.core.CoreMethodsTest;
 import kiss.sample.bean.BuiltinBean;
+import kiss.sample.bean.ClassList;
+import kiss.sample.bean.ClassListProperty;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
 import kiss.sample.bean.FxPropertyAtField;
@@ -265,6 +267,57 @@ public class XMLTest {
         assert list.get(0).equals("ﾃｽﾄ");
         assert list.get(1).equals("です");
         assert list.get(2).equals("(´･ω･`)");
+    }
+
+    @Test
+    public void listClassProperty() {
+        List<Class> list = new ArrayList();
+        list.add(String.class);
+        list.add(int.class);
+
+        ClassListProperty model = I.make(ClassListProperty.class);
+        model.setList(list);
+
+        // write
+        I.write(model, config, false);
+
+        // read
+        model = I.read(config, I.make(ClassListProperty.class));
+        assert model != null;
+
+        list = model.getList();
+        assert list.get(0) == String.class;
+        assert list.get(1) == int.class;
+    }
+
+    @Test
+    public void listClass() {
+        ClassList list = new ClassList();
+        list.add(int.class);
+        list.add(long.class);
+        list.add(float.class);
+        list.add(double.class);
+        list.add(boolean.class);
+        list.add(byte.class);
+        list.add(short.class);
+        list.add(char.class);
+        list.add(void.class);
+
+        // write
+        I.write(list, config, false);
+
+        // read
+        list = I.read(config, I.make(ClassList.class));
+        assert list != null;
+        assert list.get(0) == int.class;
+        assert list.get(1) == long.class;
+        assert list.get(2) == float.class;
+        assert list.get(3) == double.class;
+        assert list.get(4) == boolean.class;
+        assert list.get(5) == byte.class;
+        assert list.get(6) == short.class;
+        assert list.get(7) == char.class;
+        assert list.get(8) == void.class;
     }
 
     @Test

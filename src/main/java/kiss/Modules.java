@@ -23,7 +23,7 @@ import kiss.model.Model;
  */
 @SuppressWarnings("unchecked")
 @Manageable(lifestyle = Singleton.class)
-class Modules extends Variable<Lifestyle> implements ClassListener, Codec<Class>, Lifestyle<Locale> {
+class Modules extends Variable<Lifestyle>implements ClassListener, Codec<Class>, Lifestyle<Locale> {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -184,6 +184,12 @@ class Modules extends Variable<Lifestyle> implements ClassListener, Codec<Class>
      */
     @Override
     public Class decode(String value) {
+        for (Class clazz : ClassUtil.PRIMITIVES) {
+            if (clazz.getName().equals(value)) {
+                return clazz;
+            }
+        }
+
         for (Module module : I.modules.modules) {
             try {
                 return Class.forName(value, false, module.loader);

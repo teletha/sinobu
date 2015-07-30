@@ -41,11 +41,11 @@ public final class ClassUtil {
 
     /** The list of primitive classes. (except for void type) */
     public static final Class[] PRIMITIVES = {boolean.class, int.class, long.class, float.class, double.class,
-            byte.class, short.class, char.class};
+            byte.class, short.class, char.class, void.class};
 
     /** The list of wrapper classes. (except for void type) */
     public static final Class[] WRAPPERS = {Boolean.class, Integer.class, Long.class, Float.class, Double.class,
-            Byte.class, Short.class, Character.class};
+            Byte.class, Short.class, Character.class, Void.class};
 
     /**
      * Avoid construction.
@@ -118,8 +118,9 @@ public final class ClassUtil {
             for (Method method : type.getDeclaredMethods()) {
                 // exclude the method which is created by compiler
                 // exclude the private method which is not declared in the specified class
-                if (!method.isBridge() && !method.isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method
-                        .getDeclaringClass() == clazz)) {
+                if (!method.isBridge() && !method
+                        .isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method
+                                .getDeclaringClass() == clazz)) {
                     Annotation[] annotations = method.getAnnotations();
 
                     if (annotations.length != 0) {
@@ -151,8 +152,8 @@ public final class ClassUtil {
 
                         // check method overriding
                         for (Method candidate : table.keySet()) {
-                            if (candidate.getName().equals(method.getName()) && Arrays.deepEquals(candidate
-                                    .getParameterTypes(), method.getParameterTypes())) {
+                            if (candidate.getName().equals(method.getName()) && Arrays
+                                    .deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
                                 method = candidate; // detect overriding
                                 break;
                             }
