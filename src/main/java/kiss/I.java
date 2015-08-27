@@ -88,6 +88,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import sun.reflect.ConstantPool;
+
 import jdk.internal.org.objectweb.asm.AnnotationVisitor;
 import jdk.internal.org.objectweb.asm.ClassVisitor;
 import jdk.internal.org.objectweb.asm.ClassWriter;
@@ -318,6 +320,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     /** The serial task manager. */
     private static final ExecutorService serial = Executors.newSingleThreadExecutor(new I());
 
+    /** The holder for lambda parameter names. */
+    private static final Variable<String> methods = new Variable();
+
+    /** The accessible internal method for lambda info. */
+    private static final Method findConstants;
+
     // initialization
     static {
         // built-in lifestyles
@@ -380,6 +388,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             define = ClassLoader.class
                     .getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
             define.setAccessible(true);
+
+            // reflect lambda info related methods
+            findConstants = Class.class.getDeclaredMethod("getConstantPool");
+            findConstants.setAccessible(true);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -1210,8 +1222,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             Method method = entry.getKey();
 
             // exclude the method which modifier is final, static, private or native
-            if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method
-                    .getModifiers()) != 0) {
+            if (((Modifier.STATIC | Modifier.PRIVATE | Modifier.NATIVE | Modifier.FINAL) & method.getModifiers()) != 0) {
                 continue;
             }
 
@@ -1231,8 +1242,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method
-                    .getName(), methodType.getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
+                    .getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -1317,8 +1328,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     for (int i = 0; i < Array.getLength(value); i++) {
                         if (clazz.isAnnotation()) {
                             // Annotation Array
-                            annotate((Annotation) Array.get(value, i), array
-                                    .visitAnnotation(null, Type.getDescriptor(clazz)));
+                            annotate((Annotation) Array.get(value, i), array.visitAnnotation(null, Type.getDescriptor(clazz)));
                         } else if (clazz == Class.class) {
                             // Class Array
                             array.visit(null, Type.getType((Class) Array.get(value, i)));
@@ -1356,8 +1366,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             if (clazz != Void.TYPE) {
                 Type wrapper = Type.getType(ClassUtil.wrap(clazz));
                 mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
-                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper
-                        .getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
             }
         } else {
             mv.visitTypeInsn(CHECKCAST, type.getInternalName());
@@ -1376,9 +1385,47 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     private static void wrap(Class clazz, MethodVisitor mv) {
         if (clazz.isPrimitive() && clazz != Void.TYPE) {
             Type wrapper = Type.getType(ClassUtil.wrap(clazz));
-            mv.visitMethodInsn(INVOKESTATIC, wrapper.getInternalName(), "valueOf", "(" + Type.getType(clazz)
-                    .getDescriptor() + ")" + wrapper.getDescriptor(), false);
+            mv.visitMethodInsn(INVOKESTATIC, wrapper
+                    .getInternalName(), "valueOf", "(" + Type.getType(clazz).getDescriptor() + ")" + wrapper.getDescriptor(), false);
         }
+    }
+
+    /**
+     * <p>
+     * Findthe first parameter name of lambda method.
+     * </p>
+     * 
+     * @param object A lambda instance.
+     * @return A parameter name.
+     */
+    static String method(Object object) {
+        Class clazz = object.getClass();
+        String name = methods.get(clazz);
+
+        if (name == null) {
+            try {
+                ConstantPool constantPool = (ConstantPool) findConstants.invoke(clazz);
+
+                // MethodInfo
+                // [0] : Declared Class Name (internal qualified name)
+                // [1] : Method Name
+                // [2] : Method Descriptor (internal qualified signature)
+                String[] info = constantPool.getMemberRefInfoAt(constantPool.getSize() - 3);
+                Class lambda = Class.forName(info[0].replaceAll("/", "."));
+                Type[] types = Type.getArgumentTypes(info[2]);
+                Class[] params = new Class[types.length];
+
+                for (int i = 0; i < params.length; i++) {
+                    params[i] = Class.forName(types[i].getClassName());
+                }
+                name = lambda.getDeclaredMethod(info[1], params).getParameters()[0].getName();
+
+                methods.set(clazz, name);
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }
+        return name;
     }
 
     /**
@@ -2385,7 +2432,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 return clazz;
             }
         }
-    
+
         for (Module module : modules.modules) {
             try {
                 return Class.forName(fqcn, false, module.loader);
