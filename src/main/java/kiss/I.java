@@ -53,6 +53,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -326,6 +327,9 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     /** The accessible internal method for lambda info. */
     private static final Method findConstants;
 
+    /** The associatable object holder. */
+    private static final WeakHashMap<Object, WeakHashMap> associatables = new WeakHashMap();
+
     // initialization
     static {
         // built-in lifestyles
@@ -410,6 +414,30 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * </p>
      */
     private I() {
+    }
+
+    /**
+     * <p>
+     * Retrieve the associated value with the specified object by the specified type.
+     * </p>
+     * 
+     * @param host A host object.
+     * @param type An association type.
+     * @return An associated value.
+     */
+    public static <V> V associate(Object host, Class<V> type) {
+        WeakHashMap association = associatables.get(host);
+
+        if (association == null) {
+            associatables.put(host, association = new WeakHashMap());
+        }
+
+        Object value = association.get(type);
+
+        if (value == null) {
+            association.put(type, value = I.make(type));
+        }
+        return (V) value;
     }
 
     // /**
