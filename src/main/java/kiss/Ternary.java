@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -121,5 +122,26 @@ public class Ternary<Param1, Param2, Param3> {
      */
     public Binary<Param1, Param2> ó() {
         return I.pair(a, e);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(a, e, o);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Ternary) {
+            Ternary other = (Ternary) obj;
+
+            return Objects.equals(a, other.a) && Objects.equals(e, other.e) && Objects.equals(o, other.o);
+        }
+        return false;
     }
 }

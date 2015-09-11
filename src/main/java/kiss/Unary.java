@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -44,5 +45,26 @@ public class Unary<Param> {
      */
     public <CalculationResult> Unary<CalculationResult> a(Function<Param, CalculationResult> calculation) {
         return I.pair(calculation.apply(a));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(a);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Unary) {
+            Unary other = (Unary) obj;
+
+            return Objects.equals(a, other.a);
+        }
+        return false;
     }
 }

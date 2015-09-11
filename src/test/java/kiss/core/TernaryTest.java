@@ -9,11 +9,11 @@
  */
 package kiss.core;
 
+import org.junit.Test;
+
 import kiss.Binary;
 import kiss.I;
 import kiss.Ternary;
-
-import org.junit.Test;
 
 /**
  * @version 2015/04/10 1:36:39
@@ -102,5 +102,15 @@ public class TernaryTest {
         assert value.a.equals("String");
         assert value.e == 10;
         assert value.o == 900L;
+    }
+
+    @Test
+    public void equality() {
+        Ternary<String, Integer, Long> value1 = I.pair("String", 10, 30L);
+        Ternary<String, Integer, Long> value2 = I.pair("String", 10, 30L);
+
+        assert value1 != value2;
+        assert value1.equals(value2);
+        assert value1.hashCode() == value2.hashCode();
     }
 }

@@ -9,8 +9,10 @@
  */
 package kiss;
 
+import java.util.Objects;
+
 /**
- * @version 2015/04/10 1:02:17
+ * @version 2015/09/11 16:39:19
  */
 public class Binary<Param1, Param2> {
 
@@ -77,5 +79,26 @@ public class Binary<Param1, Param2> {
      */
     public <AdditionalParam> Ternary<Param1, Param2, AdditionalParam> ò(AdditionalParam param) {
         return I.pair(a, e, param);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(a, e);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Binary) {
+            Binary other = (Binary) obj;
+
+            return Objects.equals(a, other.a) && Objects.equals(e, other.e);
+        }
+        return false;
     }
 }
