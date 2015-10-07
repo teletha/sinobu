@@ -787,6 +787,34 @@ public class Events<V> {
         });
     }
 
+    public final Events<Set<V>> collectLatest(Events<Events<V>> others) {
+        return new Events<Set<V>>(observer -> {
+
+            Map<Events<V>, V> map = new HashMap();
+            Agent disposer = new Agent();
+            disposer.and(to(value -> {
+                if (value == null) {
+                    map.remove(this);
+                } else {
+                    map.put(this, value);
+                }
+                observer.accept(new HashSet(map.values()));
+            }));
+
+            others.to(event -> {
+                disposer.and(event.to(value -> {
+                    if (value == null) {
+                        map.remove(event);
+                    } else {
+                        map.put(event, value);
+                    }
+                    observer.accept(new HashSet(map.values()));
+                }));
+            });
+            return disposer;
+        });
+    }
+
     /**
      * <p>
      * Returns an {@link Events} that applies a function of your choosing to the first item emitted
