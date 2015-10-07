@@ -13,9 +13,12 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -756,6 +759,36 @@ public class Events<V> {
 
     /**
      * <p>
+     * Combines two source {@link Events} by emitting an item that aggregates the latest values of
+     * each of the source {@link Events} each time an item is received from either of the source
+     * {@link Events}, where this aggregation is defined by a specified function.
+     * </p>
+     * 
+     * @param others
+     * @return
+     */
+    public final Events<Set<V>> set(Events<V>... others) {
+        return new Events<Set<V>>(observer -> {
+            Events<V>[] events = with(this, others);
+            Map<Events<V>, V> map = new HashMap();
+            Disposable disposable = Disposable.Φ;
+
+            for (Events<V> event : events) {
+                disposable = disposable.and(event.to(value -> {
+                    if (value == null) {
+                        map.remove(event);
+                    } else {
+                        map.put(event, value);
+                    }
+                    observer.accept(new HashSet(map.values()));
+                }));
+            }
+            return disposable;
+        });
+    }
+
+    /**
+     * <p>
      * Returns an {@link Events} that applies a function of your choosing to the first item emitted
      * by a source {@link Events} and a seed value, then feeds the result of that function along
      * with the second item emitted by the source {@link Events} into the same function, and so on
@@ -1175,6 +1208,25 @@ public class Events<V> {
     // return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) ->
     // now.e(sum.e.plus(now.e)));
     // }
+
+    /**
+     * <p>
+     * Helper method to integrate events.
+     * </p>
+     * 
+     * @param one
+     * @param others
+     * @return
+     */
+    private Events<V>[] with(Events<V> one, Events<V>... others) {
+        Events<V>[] events = new Events[others.length + 1];
+        events[0] = one;
+
+        for (int i = 0; i < others.length; i++) {
+            events[i + 1] = others[i];
+        }
+        return events;
+    }
 
     /**
      * <p>

@@ -186,10 +186,7 @@ public class EventsTest {
 
     @Test
     public void debounceRepeat() throws Exception {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.debounce(10, MILLISECONDS)
-                .skip(1)
-                .take(1)
-                .repeat());
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.debounce(10, MILLISECONDS).skip(1).take(1).repeat());
 
         assert facade.emitAndRetrieve(11) == null;
         assert facade.emitAndRetrieve(22) == null;
@@ -323,8 +320,7 @@ public class EventsTest {
 
     @Test
     public void map() throws Exception {
-        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
-                .map(value -> value * 2));
+        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events.map(value -> value * 2));
 
         assert facade.emitAndRetrieve(10) == 20;
         assert facade.emitAndRetrieve(20) == 40;
@@ -468,10 +464,7 @@ public class EventsTest {
     @Test
     public void repeatTakeUntil() {
         EventFacade<String, String> condition = new EventFacade();
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1)
-                .take(1)
-                .repeat()
-                .takeUntil(condition.observe()));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1).take(1).repeat().takeUntil(condition.observe()));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == 20;
@@ -490,10 +483,7 @@ public class EventsTest {
     @Test
     public void repeatThen() {
         EventFacade<Integer, Integer> sub = new EventFacade();
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1)
-                .take(2)
-                .repeat()
-                .merge(sub.observe()));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1).take(2).repeat().merge(sub.observe()));
 
         // from main facade
         assert facade.emitAndRetrieve(10) == null;
@@ -540,9 +530,36 @@ public class EventsTest {
     }
 
     @Test
+    public void set() throws Exception {
+        EventFacade<Integer, Integer> facade1 = new EventFacade<>();
+        EventFacade<Integer, Integer> facade2 = new EventFacade<>();
+        EventFacade<Integer, Integer> facade3 = new EventFacade<>();
+        EventFacade<Set<Integer>, Set<Integer>> values = new EventFacade(events -> facade1.observe()
+                .set(facade2.observe(), facade3.observe()));
+
+        facade1.emit(10);
+        assert values.retrieve().size() == 1;
+        facade1.emit(11);
+        assert values.retrieve().size() == 1;
+
+        facade2.emit(20);
+        assert values.retrieve().size() == 2;
+
+        facade3.emit(30);
+        assert values.retrieve().size() == 3;
+
+        // ignore same value
+        facade1.emit(30);
+        assert values.retrieve().size() == 2;
+
+        // null will remove reference
+        facade2.emit((Integer) null);
+        assert values.retrieve().size() == 1;
+    }
+
+    @Test
     public void scan() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events
-                .scan(10, (accumulated, value) -> accumulated + value));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.scan(10, (accumulated, value) -> accumulated + value));
 
         assert facade.emitAndRetrieve(1) == 11; // 10 + 1
         assert facade.emitAndRetrieve(2) == 13; // 11 + 2
@@ -632,9 +649,7 @@ public class EventsTest {
     @Test
     public void skipUntilWithRepeat() throws Exception {
         EventFacade<String, String> condition = new EventFacade();
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipUntil(condition.observe())
-                .take(1)
-                .repeat());
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipUntil(condition.observe()).take(1).repeat());
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
@@ -667,9 +682,7 @@ public class EventsTest {
 
     @Test
     public void skipUntilConditionWithRepeat() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipUntil(value -> value % 3 == 0)
-                .take(2)
-                .repeat());
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipUntil(value -> value % 3 == 0).take(2).repeat());
 
         assert facade.emitAndRetrieve(20) == null;
         assert facade.emitAndRetrieve(30) == 30;
@@ -780,9 +793,7 @@ public class EventsTest {
 
     @Test
     public void takeUntilConditionRepeat() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1)
-                .takeUntil(value -> value % 3 == 0)
-                .repeat());
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1).takeUntil(value -> value % 3 == 0).repeat());
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == 20;
@@ -817,8 +828,7 @@ public class EventsTest {
     public void all() {
         EventFacade<Boolean, Boolean> facade1 = new EventFacade();
         EventFacade<Boolean, Boolean> facade2 = new EventFacade();
-        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events
-                .all(facade1.observe(), facade2.observe()));
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events.all(facade1.observe(), facade2.observe()));
         assert base.retrieve() == null;
 
         facade1.emit(true);
@@ -847,8 +857,7 @@ public class EventsTest {
     public void any() {
         EventFacade<Boolean, Boolean> facade1 = new EventFacade();
         EventFacade<Boolean, Boolean> facade2 = new EventFacade();
-        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events
-                .any(facade1.observe(), facade2.observe()));
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events.any(facade1.observe(), facade2.observe()));
         assert base.retrieve() == null;
 
         facade1.emit(true);
@@ -877,8 +886,7 @@ public class EventsTest {
     public void none() {
         EventFacade<Boolean, Boolean> facade1 = new EventFacade();
         EventFacade<Boolean, Boolean> facade2 = new EventFacade();
-        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events
-                .none(facade1.observe(), facade2.observe()));
+        EventFacade<Boolean, Boolean> base = new EventFacade(events -> Events.none(facade1.observe(), facade2.observe()));
         assert base.retrieve() == null;
 
         facade1.emit(true);
