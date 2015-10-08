@@ -38,7 +38,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
- * @version 2015/05/23 17:56:03
+ * @version 2015/10/08 13:26:33
  */
 public class Events<V> {
 
@@ -1168,6 +1168,51 @@ public class Events<V> {
                     observer.accept(value);
                 }
             }));
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies the boolean values alternatly to each item emitted by
+     * an {@link Events} and emits the result. Initial value is true.
+     * </p>
+     * 
+     * @return Chainable API.
+     */
+    public final Events<Boolean> toggle() {
+        return toggle(true);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies the boolean values alternatly to each item emitted by
+     * an {@link Events} and emits the result.
+     * </p>
+     * 
+     * @param initial A initial boolean value to apply to each value emitted by this {@link Events}.
+     * @return Chainable API.
+     */
+    public final Events<Boolean> toggle(boolean initial) {
+        return toggle(Boolean.valueOf(initial), Boolean.valueOf(!initial));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies the given two constants alternatly to each item
+     * emitted by an {@link Events} and emits the result.
+     * </p>
+     * 
+     * @param initial A first constant to apply to each value emitted by this {@link Events}.
+     * @param other A second constant to apply to each value emitted by this {@link Events}.
+     * @return Chainable API.
+     */
+    public final <E> Events<E> toggle(E initial, E other) {
+        return new Events<>(observer -> {
+            AtomicBoolean count = new AtomicBoolean(true);
+
+            return to(value -> {
+                observer.accept(count.getAndSet(!count.get()) ? initial : other);
+            });
         });
     }
 

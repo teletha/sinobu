@@ -23,7 +23,7 @@ import org.junit.Test;
 import antibug.Chronus;
 
 /**
- * @version 2015/05/24 11:36:04
+ * @version 2015/10/08 13:26:25
  */
 public class EventsTest {
 
@@ -120,8 +120,8 @@ public class EventsTest {
     @Test
     public void combine() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
-        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
-                .combine((base, other) -> base + other, sub.observe()));
+        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(
+                events -> events.combine((base, other) -> base + other, sub.observe()));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
@@ -147,8 +147,8 @@ public class EventsTest {
     @Test
     public void combineLatest() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
-        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
-                .combineLatest((base, other) -> base + other, sub.observe()));
+        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(
+                events -> events.combineLatest((base, other) -> base + other, sub.observe()));
 
         assert facade.emitAndRetrieve(1) == null;
         assert facade.emitAndRetrieve(2) == null;
@@ -306,8 +306,8 @@ public class EventsTest {
 
     @Test
     public void flatMap() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>((events, that) -> events
-                .flatMap(value -> that.observeWith(value, value + 1)));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(
+                (events, that) -> events.flatMap(value -> that.observeWith(value, value + 1)));
 
         facade.emit(10);
         assert facade.retrieve() == 10;
@@ -534,8 +534,8 @@ public class EventsTest {
         EventFacade<Integer, Integer> facade1 = new EventFacade<>();
         EventFacade<Integer, Integer> facade2 = new EventFacade<>();
         EventFacade<Integer, Integer> facade3 = new EventFacade<>();
-        EventFacade<Set<Integer>, Set<Integer>> values = new EventFacade(events -> facade1.observe()
-                .set(facade2.observe(), facade3.observe()));
+        EventFacade<Set<Integer>, Set<Integer>> values = new EventFacade(
+                events -> facade1.observe().set(facade2.observe(), facade3.observe()));
 
         facade1.emit(10);
         assert values.retrieve().size() == 1;
@@ -807,6 +807,42 @@ public class EventsTest {
         assert facade.emitAndRetrieve(100) == 100;
 
         assert facade.disposeWithCountAlreadyDisposed(2);
+    }
+
+    @Test
+    public void toggle() {
+        EventFacade<String, Boolean> facade = new EventFacade<>(events -> events.toggle());
+        assert facade.emitAndRetrieve("1") == true;
+        assert facade.emitAndRetrieve("2") == false;
+        assert facade.emitAndRetrieve("3") == true;
+        assert facade.emitAndRetrieve("4") == false;
+    }
+
+    @Test
+    public void toggleWithInitialValue() {
+        EventFacade<String, Boolean> facade = new EventFacade<>(events -> events.toggle(false));
+        assert facade.emitAndRetrieve("1") == false;
+        assert facade.emitAndRetrieve("2") == true;
+        assert facade.emitAndRetrieve("3") == false;
+        assert facade.emitAndRetrieve("4") == true;
+    }
+
+    @Test
+    public void toggleWithValues() {
+        EventFacade<Integer, String> facade = new EventFacade<>(events -> events.toggle("one", "other"));
+        assert facade.emitAndRetrieve(1).equals("one");
+        assert facade.emitAndRetrieve(2).equals("other");
+        assert facade.emitAndRetrieve(3).equals("one");
+        assert facade.emitAndRetrieve(4).equals("other");
+    }
+
+    @Test
+    public void toggleWithNull() {
+        EventFacade<Integer, String> facade = new EventFacade<>(events -> events.toggle("one", null));
+        assert facade.emitAndRetrieve(1).equals("one");
+        assert facade.emitAndRetrieve(2) == null;
+        assert facade.emitAndRetrieve(3).equals("one");
+        assert facade.emitAndRetrieve(4) == null;
     }
 
     @Test
