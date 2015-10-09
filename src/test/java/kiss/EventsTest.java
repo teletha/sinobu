@@ -107,7 +107,7 @@ public class EventsTest {
     @Test
     public void toSwitchedSet() {
         EventFacade<Integer, Integer> facade = new EventFacade<>();
-        SetProperty<Integer> set = facade.observe().toSwitchedSet();
+        SetProperty<Integer> set = facade.observe().toAlternate();
 
         facade.emit(10);
         assert set.size() == 1;

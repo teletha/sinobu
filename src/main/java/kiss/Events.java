@@ -133,30 +133,33 @@ public class Events<V> {
 
     /**
      * <p>
+     * Receive values as {@link SetProperty} from this {@link Events}. Each value alternates between
+     * In and Out.
+     * </p>
+     * 
+     * @return A {@link SetProperty} as value receiver.
+     */
+    public final SetProperty<V> toAlternate() {
+        return toSet((set, value) -> {
+            if (!set.add(value)) {
+                set.remove(value);
+            }
+        });
+    }
+
+    /**
+     * <p>
      * Receive values as {@link SetProperty} from this {@link Events}.
      * </p>
      * 
      * @return A {@link SetProperty} as value receiver.
      */
     public final ListProperty<V> toList() {
-        return toList(ListProperty::add);
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link ListProperty} from this {@link Events}.
-     * </p>
-     * 
-     * @return A {@link ListProperty} as value receiver.
-     */
-    public final ListProperty<V> toList(BiConsumer<ListProperty<V>, V> collector) {
         // value receiver
         ListProperty<V> property = I.make(ListProperty.class);
 
         // start receiving values
-        to(v -> {
-            collector.accept(property, v);
-        });
+        to(property::add);
 
         // API definition
         return property;
@@ -211,7 +214,7 @@ public class Events<V> {
      * 
      * @return A {@link SetProperty} as value receiver.
      */
-    public final SetProperty<V> toSet(BiConsumer<SetProperty<V>, V> collector) {
+    private final SetProperty<V> toSet(BiConsumer<SetProperty<V>, V> collector) {
         // value receiver
         SetProperty<V> property = I.make(SetProperty.class);
 
@@ -222,40 +225,6 @@ public class Events<V> {
 
         // API definition
         return property;
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link ListProperty} from this {@link Events}. Each value alternates
-     * between In and Out.
-     * </p>
-     * 
-     * @return A {@link ListProperty} as value receiver.
-     */
-    public final ListProperty<V> toSwitchedList() {
-        return toList((list, value) -> {
-            if (list.contains(value)) {
-                list.remove(value);
-            } else {
-                list.add(value);
-            }
-        });
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link SetProperty} from this {@link Events}. Each value alternates between
-     * In and Out.
-     * </p>
-     * 
-     * @return A {@link SetProperty} as value receiver.
-     */
-    public final SetProperty<V> toSwitchedSet() {
-        return toSet((set, value) -> {
-            if (!set.add(value)) {
-                set.remove(value);
-            }
-        });
     }
 
     /**
