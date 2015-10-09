@@ -47,24 +47,24 @@ public class EventsTest {
     public void toAlternate() {
         EventFacade<Integer, Integer> facade = new EventFacade<>();
         SetProperty<Integer> set = facade.observe().toAlternate();
-    
+
         facade.emit(10);
         assert set.size() == 1;
-    
+
         facade.emit(20);
         assert set.size() == 2;
-    
+
         // duplicate
         facade.emit(10);
         assert set.size() == 1;
-    
+
         facade.emit(20);
         assert set.size() == 0;
-    
+
         // again
         facade.emit(10);
         assert set.size() == 1;
-    
+
         facade.emit(20);
         assert set.size() == 2;
     }
@@ -618,34 +618,6 @@ public class EventsTest {
         assert facade.retrieve() == 10;
         assert facade.dispose();
         assert sampler.isCompleted();
-    }
-
-    @Test
-    public void set() throws Exception {
-        EventFacade<Integer, Integer> facade1 = new EventFacade<>();
-        EventFacade<Integer, Integer> facade2 = new EventFacade<>();
-        EventFacade<Integer, Integer> facade3 = new EventFacade<>();
-        EventFacade<Set<Integer>, Set<Integer>> values = new EventFacade(
-                events -> facade1.observe().set(facade2.observe(), facade3.observe()));
-
-        facade1.emit(10);
-        assert values.retrieve().size() == 1;
-        facade1.emit(11);
-        assert values.retrieve().size() == 1;
-
-        facade2.emit(20);
-        assert values.retrieve().size() == 2;
-
-        facade3.emit(30);
-        assert values.retrieve().size() == 3;
-
-        // ignore same value
-        facade1.emit(30);
-        assert values.retrieve().size() == 2;
-
-        // null will remove reference
-        facade2.emit((Integer) null);
-        assert values.retrieve().size() == 1;
     }
 
     @Test

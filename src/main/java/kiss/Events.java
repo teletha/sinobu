@@ -13,12 +13,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -853,64 +850,6 @@ public class Events<V> {
                     observer.accept(value);
                 }
             }));
-        });
-    }
-
-    /**
-     * <p>
-     * Combines two source {@link Events} by emitting an item that aggregates the latest values of
-     * each of the source {@link Events} each time an item is received from either of the source
-     * {@link Events}, where this aggregation is defined by a specified function.
-     * </p>
-     * 
-     * @param others
-     * @return
-     */
-    public final Events<Set<V>> set(Events<V>... others) {
-        return new Events<Set<V>>(observer -> {
-            Events<V>[] events = with(this, others);
-            Map<Events<V>, V> map = new HashMap();
-            Disposable disposable = Disposable.Φ;
-
-            for (Events<V> event : events) {
-                disposable = disposable.and(event.to(value -> {
-                    if (value == null) {
-                        map.remove(event);
-                    } else {
-                        map.put(event, value);
-                    }
-                    observer.accept(new HashSet(map.values()));
-                }));
-            }
-            return disposable;
-        });
-    }
-
-    public final Events<Set<V>> collectLatest(Events<Events<V>> others) {
-        return new Events<Set<V>>(observer -> {
-
-            Map<Events<V>, V> map = new HashMap();
-            Agent disposer = new Agent();
-            disposer.and(to(value -> {
-                if (value == null) {
-                    map.remove(this);
-                } else {
-                    map.put(this, value);
-                }
-                observer.accept(new HashSet(map.values()));
-            }));
-
-            others.to(event -> {
-                disposer.and(event.to(value -> {
-                    if (value == null) {
-                        map.remove(event);
-                    } else {
-                        map.put(event, value);
-                    }
-                    observer.accept(new HashSet(map.values()));
-                }));
-            });
-            return disposer;
         });
     }
 
