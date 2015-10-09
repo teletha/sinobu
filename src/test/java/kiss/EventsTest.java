@@ -17,6 +17,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SetProperty;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -37,6 +41,93 @@ public class EventsTest {
         assert facade.emitAndRetrieve(10) == 10;
         assert facade.emitAndRetrieve(20) == 20;
         assert facade.dispose();
+    }
+
+    @Test
+    public void toList() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>();
+        ListProperty<Integer> list = facade.observe().toList();
+
+        facade.emit(10);
+        assert list.size() == 1;
+        assert list.get(0) == 10;
+
+        facade.emit(20);
+        assert list.size() == 2;
+        assert list.get(1) == 20;
+
+        facade.emit(30);
+        assert list.size() == 3;
+        assert list.get(2) == 30;
+
+        // duplicate
+        facade.emit(10);
+        assert list.size() == 4;
+        assert list.get(3) == 10;
+    }
+
+    @Test
+    public void toMap() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>();
+        MapProperty<String, Integer> map = facade.observe().toMap(v -> String.valueOf(v));
+
+        facade.emit(10);
+        assert map.size() == 1;
+        assert map.get("10") == 10;
+
+        facade.emit(20);
+        assert map.size() == 2;
+        assert map.get("20") == 20;
+
+        // duplicate
+        facade.emit(10);
+        assert map.size() == 2;
+        assert map.get("10") == 10;
+    }
+
+    @Test
+    public void toSet() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>();
+        SetProperty<Integer> set = facade.observe().toSet();
+
+        facade.emit(10);
+        assert set.size() == 1;
+
+        facade.emit(20);
+        assert set.size() == 2;
+
+        facade.emit(30);
+        assert set.size() == 3;
+
+        // duplicate
+        facade.emit(10);
+        assert set.size() == 3;
+    }
+
+    @Test
+    public void toSwitchedSet() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>();
+        SetProperty<Integer> set = facade.observe().toSwitchedSet();
+
+        facade.emit(10);
+        assert set.size() == 1;
+
+        facade.emit(20);
+        assert set.size() == 2;
+
+        // duplicate
+        facade.emit(10);
+        assert set.size() == 1;
+
+        facade.emit(20);
+        assert set.size() == 0;
+
+        // again
+        facade.emit(10);
+        assert set.size() == 1;
+
+        facade.emit(20);
+        assert set.size() == 2;
     }
 
     @Test

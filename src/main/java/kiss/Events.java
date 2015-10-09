@@ -33,8 +33,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.MapProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -68,7 +71,7 @@ public class Events<V> {
 
     /**
      * <p>
-     * Receive values from this {@link Events}.
+     * Receive values as {@link Property} from this {@link Events}.
      * </p>
      * 
      * @return A {@link Property} as value receiver.
@@ -126,6 +129,133 @@ public class Events<V> {
      */
     public final Disposable to(Observer<? super V> observer) {
         return subscriber.apply(observer);
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link SetProperty} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link SetProperty} as value receiver.
+     */
+    public final ListProperty<V> toList() {
+        return toList(ListProperty::add);
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link ListProperty} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link ListProperty} as value receiver.
+     */
+    public final ListProperty<V> toList(BiConsumer<ListProperty<V>, V> collector) {
+        // value receiver
+        ListProperty<V> property = I.make(ListProperty.class);
+
+        // start receiving values
+        to(v -> {
+            collector.accept(property, v);
+        });
+
+        // API definition
+        return property;
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link MapProperty} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link MapProperty} as value receiver.
+     */
+    public final <Key> MapProperty<Key, V> toMap(Function<V, Key> keyGenerator) {
+        return toMap(keyGenerator, v -> v);
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link MapProperty} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link MapProperty} as value receiver.
+     */
+    public final <Key, Value> MapProperty<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
+        // value receiver
+        MapProperty<Key, Value> property = I.make(MapProperty.class);
+
+        // start receiving values
+        to(v -> {
+            property.put(keyGenerator.apply(v), valueGenerator.apply(v));
+        });
+
+        // API definition
+        return property;
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link SetProperty} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link SetProperty} as value receiver.
+     */
+    public final SetProperty<V> toSet() {
+        return toSet(SetProperty::add);
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link SetProperty} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link SetProperty} as value receiver.
+     */
+    public final SetProperty<V> toSet(BiConsumer<SetProperty<V>, V> collector) {
+        // value receiver
+        SetProperty<V> property = I.make(SetProperty.class);
+
+        // start receiving values
+        to(v -> {
+            collector.accept(property, v);
+        });
+
+        // API definition
+        return property;
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link ListProperty} from this {@link Events}. Each value alternates
+     * between In and Out.
+     * </p>
+     * 
+     * @return A {@link ListProperty} as value receiver.
+     */
+    public final ListProperty<V> toSwitchedList() {
+        return toList((list, value) -> {
+            if (list.contains(value)) {
+                list.remove(value);
+            } else {
+                list.add(value);
+            }
+        });
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link SetProperty} from this {@link Events}. Each value alternates between
+     * In and Out.
+     * </p>
+     * 
+     * @return A {@link SetProperty} as value receiver.
+     */
+    public final SetProperty<V> toSwitchedSet() {
+        return toSet((set, value) -> {
+            if (!set.add(value)) {
+                set.remove(value);
+            }
+        });
     }
 
     /**
