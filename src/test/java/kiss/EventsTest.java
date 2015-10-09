@@ -44,6 +44,32 @@ public class EventsTest {
     }
 
     @Test
+    public void toAlternate() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>();
+        SetProperty<Integer> set = facade.observe().toAlternate();
+    
+        facade.emit(10);
+        assert set.size() == 1;
+    
+        facade.emit(20);
+        assert set.size() == 2;
+    
+        // duplicate
+        facade.emit(10);
+        assert set.size() == 1;
+    
+        facade.emit(20);
+        assert set.size() == 0;
+    
+        // again
+        facade.emit(10);
+        assert set.size() == 1;
+    
+        facade.emit(20);
+        assert set.size() == 2;
+    }
+
+    @Test
     public void toList() {
         EventFacade<Integer, Integer> facade = new EventFacade<>();
         ListProperty<Integer> list = facade.observe().toList();
@@ -102,32 +128,6 @@ public class EventsTest {
         // duplicate
         facade.emit(10);
         assert set.size() == 3;
-    }
-
-    @Test
-    public void toSwitchedSet() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>();
-        SetProperty<Integer> set = facade.observe().toAlternate();
-
-        facade.emit(10);
-        assert set.size() == 1;
-
-        facade.emit(20);
-        assert set.size() == 2;
-
-        // duplicate
-        facade.emit(10);
-        assert set.size() == 1;
-
-        facade.emit(20);
-        assert set.size() == 0;
-
-        // again
-        facade.emit(10);
-        assert set.size() == 1;
-
-        facade.emit(20);
-        assert set.size() == 2;
     }
 
     @Test
