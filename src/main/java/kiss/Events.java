@@ -30,11 +30,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -142,6 +144,27 @@ public class Events<V> {
                 set.remove(value);
             }
         });
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link BooleanProperty} from this {@link Events}. Each value alternates
+     * between true and false.
+     * </p>
+     * 
+     * @return A {@link BooleanProperty} as value receiver.
+     */
+    public final BooleanProperty toBinary() {
+        // value receiver
+        BooleanProperty property = new SimpleBooleanProperty();
+
+        // start receiving values
+        to(v -> {
+            property.set(!property.get());
+        });
+
+        // API definition
+        return property;
     }
 
     /**

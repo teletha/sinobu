@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SetProperty;
@@ -67,6 +68,24 @@ public class EventsTest {
 
         facade.emit(20);
         assert set.size() == 2;
+    }
+
+    @Test
+    public void toBinary() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>();
+        BooleanProperty binary = facade.observe().toBinary();
+
+        facade.emit(10);
+        assert binary.get() == true;
+
+        facade.emit(20);
+        assert binary.get() == false;
+
+        facade.emit(30);
+        assert binary.get() == true;
+
+        facade.emit(10);
+        assert binary.get() == false;
     }
 
     @Test
