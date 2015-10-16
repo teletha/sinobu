@@ -40,7 +40,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
- * @version 2015/10/08 13:26:33
+ * @version 2015/10/16 11:17:58
  */
 public class Events<V> {
 
@@ -356,14 +356,29 @@ public class Events<V> {
      * specified {@link Events}.
      * </p>
      * 
-     * @param function A function that, when applied to an item emitted by each of the source
-     *            {@link Events}, results in an item that will be emitted by the resulting
-     *            {@link Events}.
      * @param other An other {@link Events} to combine.
      * @return A {@link Events} that emits items that are the result of combining the items emitted
      *         by source {@link Events} by means of the given aggregation function.
      */
-    public final <O, R> Events<R> combine(BiFunction<V, O, R> function, Events<O> other) {
+    public final <O> Events<Binary<V, O>> combine(Events<O> other) {
+        return combine(other, I::pair);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits the results of a function of your choosing applied to
+     * combinations of two items emitted, in sequence, by this {@link Events} and the other
+     * specified {@link Events}.
+     * </p>
+     * 
+     * @param other An other {@link Events} to combine.
+     * @param function A function that, when applied to an item emitted by each of the source
+     *            {@link Events}, results in an item that will be emitted by the resulting
+     *            {@link Events}.
+     * @return A {@link Events} that emits items that are the result of combining the items emitted
+     *         by source {@link Events} by means of the given aggregation function.
+     */
+    public final <O, R> Events<R> combine(Events<O> other, BiFunction<V, O, R> function) {
         return new Events<>(observer -> {
             ArrayDeque<V> baseValue = new ArrayDeque();
             ArrayDeque<O> otherValue = new ArrayDeque();
@@ -391,19 +406,19 @@ public class Events<V> {
      * specified {@link Events}.
      * </p>
      * 
+     * @param others Other {@link Events} to combine.
      * @param function A function that, when applied to an item emitted by each of the source
      *            {@link Events}, results in an item that will be emitted by the resulting
      *            {@link Events}.
-     * @param others Other {@link Events} to combine.
      * @return A {@link Events} that emits items that are the result of combining the items emitted
      *         by source {@link Events} by means of the given aggregation function.
      */
-    public final Events<V> combine(BinaryOperator<V> operator, Events<V>... others) {
+    public final Events<V> combine(Events<V>[] others, BinaryOperator<V> operator) {
         Events<V> base = this;
 
         if (others != null) {
             for (Events<V> other : others) {
-                base = base.combine(operator, other);
+                base = base.combine(other, operator);
             }
         }
         return base;
@@ -416,13 +431,28 @@ public class Events<V> {
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
      * 
-     * @param function An aggregation function used to combine the items emitted by the source
-     *            {@link Events}.
      * @param other An other {@link Events} to combine.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
      *         by the source {@link Events} by means of the given aggregation function
      */
-    public final <O, R> Events<R> combineLatest(BiFunction<V, O, R> function, Events<O> other) {
+    public final <O> Events<Binary<V, O>> combineLatest(Events<O> other) {
+        return combineLatest(other, I::pair);
+    }
+
+    /**
+     * <p>
+     * Combines two source {@link Events} by emitting an item that aggregates the latest values of
+     * each of the source {@link Events} each time an item is received from either of the source
+     * {@link Events}, where this aggregation is defined by a specified function.
+     * </p>
+     * 
+     * @param other An other {@link Events} to combine.
+     * @param function An aggregation function used to combine the items emitted by the source
+     *            {@link Events}.
+     * @return An {@link Events} that emits items that are the result of combining the items emitted
+     *         by the source {@link Events} by means of the given aggregation function
+     */
+    public final <O, R> Events<R> combineLatest(Events<O> other, BiFunction<V, O, R> function) {
         return new Events<>(observer -> {
             AtomicReference<V> baseValue = new AtomicReference(UNDEFINED);
             AtomicReference<O> otherValue = new AtomicReference(UNDEFINED);
@@ -453,18 +483,18 @@ public class Events<V> {
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
      * 
+     * @param others Other {@link Events} to combine.
      * @param function An aggregation function used to combine the items emitted by the source
      *            {@link Events}.
-     * @param others Other {@link Events} to combine.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
      *         by the source {@link Events} by means of the given aggregation function
      */
-    public final Events<V> combineLatest(BinaryOperator<V> operator, Events<V>... others) {
+    public final Events<V> combineLatest(Events<V>[] others, BinaryOperator<V> operator) {
         Events<V> base = this;
 
         if (others != null) {
             for (Events<V> other : others) {
-                base = base.combineLatest(operator, other);
+                base = base.combineLatest(other, operator);
             }
         }
         return base;
@@ -1376,7 +1406,7 @@ public class Events<V> {
         if (observables == null || observables.length == 0) {
             return NEVER;
         }
-        return from(Boolean.TRUE).combineLatest((base, other) -> base && other, observables);
+        return from(Boolean.TRUE).combineLatest(observables, (base, other) -> base && other);
     }
 
     /**
@@ -1393,7 +1423,7 @@ public class Events<V> {
         if (observables == null || observables.length == 0) {
             return NEVER;
         }
-        return from(Boolean.FALSE).combineLatest((base, other) -> base || other, observables);
+        return from(Boolean.FALSE).combineLatest(observables, (base, other) -> base || other);
     }
 
     /**
@@ -1410,7 +1440,7 @@ public class Events<V> {
         if (observables == null || observables.length == 0) {
             return NEVER;
         }
-        return from(Boolean.TRUE).combineLatest((base, other) -> !base && !other, observables);
+        return from(Boolean.TRUE).combineLatest(observables, (base, other) -> !base && !other);
     }
 
     /**
