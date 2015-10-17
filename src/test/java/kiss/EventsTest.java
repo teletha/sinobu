@@ -650,6 +650,17 @@ public class EventsTest {
     }
 
     @Test
+    public void sideEffect() {
+        Set<Integer> list = new HashSet();
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.sideEffect(list::add));
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert list.contains(10);
+        assert facade.emitAndRetrieve(20) == 20;
+        assert list.contains(20);
+    }
+
+    @Test
     public void skipByCondition() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(value -> value % 3 == 0));
 

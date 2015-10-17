@@ -12,6 +12,7 @@ package kiss;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +53,27 @@ public class Events<V> {
 
     /** The subscriber. */
     private final Function<Observer<? super V>, Disposable> subscriber;
+
+    /**
+     * <p>
+     * Create {@link Events} with the specified subscriber {@link Collection} which will be invoked
+     * whenever you calls {@link #to(Observer)} related methods.
+     * </p>
+     * 
+     * @param subscriber A subscriber {@link Function}.
+     * @see #to(Observer)
+     * @see #to(Consumer, Consumer)
+     * @see #to(Consumer, Consumer, Runnable)
+     */
+    public Events(Collection<Observer<? super V>> observers) {
+        this(observer -> {
+            observers.add(observer);
+
+            return () -> {
+                observers.remove(observer);
+            };
+        });
+    }
 
     /**
      * <p>
@@ -362,6 +384,22 @@ public class Events<V> {
      */
     public final <O> Events<Binary<V, O>> combine(Events<O> other) {
         return combine(other, I::pair);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits the results of a function of your choosing applied to
+     * combinations of two items emitted, in sequence, by this {@link Events} and the other
+     * specified {@link Events}.
+     * </p>
+     * 
+     * @param other An other {@link Events} to combine.
+     * @return A {@link Events} that emits items that are the result of combining the items emitted
+     *         by source {@link Events} by means of the given aggregation function.
+     */
+    public final <O, A> Events<Ternary<V, O, A>> combine(Events<O> other, Events<A> another) {
+        BiFunction<Binary<V, O>, A, Ternary<V, O, A>> f = Binary::ò;
+        return combine(other, Binary::new).combine(another, f);
     }
 
     /**
@@ -929,6 +967,15 @@ public class Events<V> {
             return to(value -> {
                 ref.set(function.apply(ref.get(), value));
                 observer.accept(ref.get());
+            });
+        });
+    }
+
+    public final Events<V> sideEffect(Consumer<V> effect) {
+        return new Events<>(observer -> {
+            return to(value -> {
+                effect.accept(value);
+                observer.accept(value);
             });
         });
     }
