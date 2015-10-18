@@ -722,58 +722,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that emits items based on applying a function that you supply to
-     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
-     * , and then merging those resulting {@link Events} and emitting the results of this merger.
-     * </p>
-     * 
-     * @param function A function that, when applied to an item emitted by the source {@link Events}
-     *            , returns an {@link Events}.
-     * @return An {@link Events} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Events} and merging the results of the
-     *         {@link Events} obtained from this transformation.
-     */
-    public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
-        return new Events<>(observer -> {
-            Disposable disposer = Disposable.empty();
-
-            disposer.and(to(value -> disposer.and(function.apply(value).to(observer))));
-
-            return disposer;
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Events} that emits items based on applying a function that you supply to
-     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
-     * , and then merging the latest resulting {@link Events} and emitting the results of this
-     * merger.
-     * </p>
-     * 
-     * @param function A function that, when applied to an item emitted by the source {@link Events}
-     *            , returns an {@link Events}.
-     * @return An {@link Events} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Events} and merging the results of the
-     *         {@link Events} obtained from this transformation.
-     */
-    public final <R> Events<R> flatMapLatest(Function<V, Events<R>> function) {
-        return new Events<>(observer -> {
-            Disposable[] disposables = {null, Disposable.Φ};
-
-            disposables[0] = to(value -> {
-                disposables[1].dispose();
-                disposables[1] = function.apply(value).to(observer);
-            });
-            return () -> {
-                disposables[0].dispose();
-                disposables[1].dispose();
-            };
-        });
-    }
-
-    /**
-     * <p>
      * Returns an {@link Events} that applies the given {@link Predicate} function to each value
      * emitted by an {@link Events} and emits the result.
      * </p>
@@ -884,6 +832,58 @@ public class Events<V> {
                 }
             }
             return disposable;
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
+     * , and then merging those resulting {@link Events} and emitting the results of this merger.
+     * </p>
+     * 
+     * @param function A function that, when applied to an item emitted by the source {@link Events}
+     *            , returns an {@link Events}.
+     * @return An {@link Events} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Events} and merging the results of the
+     *         {@link Events} obtained from this transformation.
+     */
+    public final <R> Events<R> merge(Function<V, Events<R>> function) {
+        return new Events<>(observer -> {
+            Disposable disposer = Disposable.empty();
+    
+            disposer.and(to(value -> disposer.and(function.apply(value).to(observer))));
+    
+            return disposer;
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
+     * , and then merging the latest resulting {@link Events} and emitting the results of this
+     * merger.
+     * </p>
+     * 
+     * @param function A function that, when applied to an item emitted by the source {@link Events}
+     *            , returns an {@link Events}.
+     * @return An {@link Events} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Events} and merging the results of the
+     *         {@link Events} obtained from this transformation.
+     */
+    public final <R> Events<R> mergeLatest(Function<V, Events<R>> function) {
+        return new Events<>(observer -> {
+            Disposable[] disposables = {null, Disposable.Φ};
+    
+            disposables[0] = to(value -> {
+                disposables[1].dispose();
+                disposables[1] = function.apply(value).to(observer);
+            });
+            return () -> {
+                disposables[0].dispose();
+                disposables[1].dispose();
+            };
         });
     }
 
