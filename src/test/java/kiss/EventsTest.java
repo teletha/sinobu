@@ -28,7 +28,7 @@ import org.junit.Test;
 import antibug.Chronus;
 
 /**
- * @version 2015/10/08 13:26:25
+ * @version 2015/10/18 16:43:51
  */
 public class EventsTest {
 
@@ -510,16 +510,64 @@ public class EventsTest {
 
     @Test
     public void flatMap() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(
-                (events, that) -> events.flatMap(value -> that.observeWith(value, value + 1)));
+        EventFacade<String, String> emitA = new EventFacade();
+        EventFacade<String, String> emitB = new EventFacade();
+        EventFacade<Integer, String> facade = new EventFacade<>(events -> events.flatMap(x -> x == 1 ? emitA.observe() : emitB.observe()));
 
-        facade.emit(10);
-        assert facade.retrieve() == 10;
-        assert facade.retrieve() == 11;
-        facade.emit(20);
-        assert facade.retrieve() == 20;
-        assert facade.retrieve() == 21;
-        assert facade.dispose();
+        facade.emit(1); // connect to emitA
+        assert facade.retrieve() == null; // emitA doesn't emit value yet
+        emitA.emit("1A");
+        assert facade.retrieve() == "1A";
+        emitB.emit("1B"); // emitB has no relation yet
+        assert facade.retrieve() == null;
+
+        facade.emit(2); // connect to emitB
+        assert facade.retrieve() == null; // emitB doesn't emit value yet
+        emitB.emit("2B");
+        assert facade.retrieve() == "2B";
+        emitA.emit("2A");
+        assert facade.retrieve() == "2A";
+
+        // test disposing
+        facade.dispose();
+        emitA.emit("Disposed");
+        assert facade.retrieve() == null;
+        emitB.emit("Disposed");
+        assert facade.retrieve() == null;
+    }
+
+    @Test
+    public void flatMapLatest() {
+        EventFacade<String, String> emitA = new EventFacade();
+        EventFacade<String, String> emitB = new EventFacade();
+        EventFacade<Integer, String> facade = new EventFacade<>(
+                events -> events.flatMapLatest(x -> x == 1 ? emitA.observe() : emitB.observe()));
+
+        facade.emit(1); // connect to emitA
+        assert facade.retrieve() == null; // emitA doesn't emit value yet
+        emitA.emit("1A");
+        assert facade.retrieve() == "1A";
+        emitB.emit("1B"); // emitB has no relation yet
+        assert facade.retrieve() == null;
+
+        facade.emit(2); // connect to emitB and disconnect from emitA
+        assert facade.retrieve() == null; // emitB doesn't emit value yet
+        emitB.emit("2B");
+        assert facade.retrieve() == "2B";
+        emitA.emit("2A");
+        assert facade.retrieve() == null;
+
+        facade.emit(1); // reconnect to emitA and disconnect from emitB
+        assert facade.retrieve() == null; // emitA doesn't emit value yet
+        emitA.emit("3A");
+        assert facade.retrieve() == "3A";
+        emitB.emit("3B");
+        assert facade.retrieve() == null;
+
+        // test disposing
+        facade.dispose();
+        emitA.emit("Disposed");
+        assert facade.retrieve() == null;
     }
 
     @Test

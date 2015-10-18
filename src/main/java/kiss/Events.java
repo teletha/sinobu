@@ -41,7 +41,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
- * @version 2015/10/16 11:17:58
+ * @version 2015/10/18 16:43:58
  */
 public class Events<V> {
 
@@ -739,6 +739,24 @@ public class Events<V> {
 
             disposer.and(to(value -> disposer.and(function.apply(value).to(observer))));
 
+            return disposer;
+        });
+    }
+
+    public final <R> Events<R> flatMapLatest(Function<V, Events<R>> function) {
+        return new Events<>(observer -> {
+            AtomicReference<Disposable> latest = new AtomicReference();
+            Disposable disposer = Disposable.empty();
+
+            disposer.and(to(value -> {
+                Disposable disposable = function.apply(value).to(observer);
+                Disposable old = latest.getAndSet(disposable);
+
+                if (old != null) {
+                    old.dispose();
+                }
+                disposer.and(disposable);
+            }));
             return disposer;
         });
     }
