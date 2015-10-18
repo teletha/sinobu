@@ -255,6 +255,53 @@ public class EventsTest {
     }
 
     @Test
+    public void combineBinary() throws Exception {
+        EventFacade<Integer, Integer> other = new EventFacade<>();
+        EventFacade<String, Binary<String, Integer>> main = new EventFacade<>(events -> events.combine(other.observe()));
+
+        main.emit("1");
+        assert main.retrieve() == null;
+        other.emit(10);
+        assert main.retrieve().equals(I.pair("1", 10));
+
+        main.emit("2");
+        assert main.retrieve() == null;
+        other.emit(20);
+        assert main.retrieve().equals(I.pair("2", 20));
+
+        other.emit(30);
+        assert main.retrieve() == null;
+        other.emit(40);
+        assert main.retrieve() == null;
+        main.emit("3");
+        assert main.retrieve().equals(I.pair("3", 30));
+        main.emit("4");
+        assert main.retrieve().equals(I.pair("4", 40));
+    }
+
+    @Test
+    public void combineTernary() throws Exception {
+        EventFacade<Integer, Integer> other = new EventFacade<>();
+        EventFacade<Double, Double> another = new EventFacade<>();
+        EventFacade<String, Ternary<String, Integer, Double>> main = new EventFacade<>(
+                events -> events.combine(other.observe(), another.observe()));
+
+        main.emit("1");
+        assert main.retrieve() == null;
+        other.emit(10);
+        assert main.retrieve() == null;
+        another.emit(0.1);
+        assert main.retrieve().equals(I.pair("1", 10, 0.1));
+
+        main.emit("2");
+        assert main.retrieve() == null;
+        other.emit(20);
+        assert main.retrieve() == null;
+        another.emit(0.2);
+        assert main.retrieve().equals(I.pair("2", 20, 0.2));
+    }
+
+    @Test
     public void combineLatest() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
         EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(
@@ -273,6 +320,53 @@ public class EventsTest {
 
         assert facade.dispose();
         assert sub.isCompleted();
+    }
+
+    @Test
+    public void combineLatestBinary() throws Exception {
+        EventFacade<Integer, Integer> other = new EventFacade<>();
+        EventFacade<String, Binary<String, Integer>> main = new EventFacade<>(events -> events.combineLatest(other.observe()));
+
+        main.emit("1");
+        assert main.retrieve() == null;
+        other.emit(10);
+        assert main.retrieve().equals(I.pair("1", 10));
+
+        main.emit("2");
+        assert main.retrieve().equals(I.pair("2", 10));
+        other.emit(20);
+        assert main.retrieve().equals(I.pair("2", 20));
+
+        other.emit(30);
+        assert main.retrieve().equals(I.pair("2", 30));
+        other.emit(40);
+        assert main.retrieve().equals(I.pair("2", 40));
+        main.emit("3");
+        assert main.retrieve().equals(I.pair("3", 40));
+        main.emit("4");
+        assert main.retrieve().equals(I.pair("4", 40));
+    }
+
+    @Test
+    public void combineLatestTernary() throws Exception {
+        EventFacade<Integer, Integer> other = new EventFacade<>();
+        EventFacade<Double, Double> another = new EventFacade<>();
+        EventFacade<String, Ternary<String, Integer, Double>> main = new EventFacade<>(
+                events -> events.combineLatest(other.observe(), another.observe()));
+
+        main.emit("1");
+        assert main.retrieve() == null;
+        other.emit(10);
+        assert main.retrieve() == null;
+        another.emit(0.1);
+        assert main.retrieve().equals(I.pair("1", 10, 0.1));
+
+        main.emit("2");
+        assert main.retrieve().equals(I.pair("2", 10, 0.1));
+        other.emit(20);
+        assert main.retrieve().equals(I.pair("2", 20, 0.1));
+        another.emit(0.2);
+        assert main.retrieve().equals(I.pair("2", 20, 0.2));
     }
 
     @Test

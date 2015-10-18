@@ -394,12 +394,12 @@ public class Events<V> {
      * </p>
      * 
      * @param other An other {@link Events} to combine.
+     * @param another An another {@link Events} to combine.
      * @return A {@link Events} that emits items that are the result of combining the items emitted
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ternary<V, O, A>> combine(Events<O> other, Events<A> another) {
-        BiFunction<Binary<V, O>, A, Ternary<V, O, A>> f = Binary::ò;
-        return combine(other, Binary::new).combine(another, f);
+        return combine(other, Binary<V, O>::new).combine(another, Binary<V, O>::<A> ò);
     }
 
     /**
@@ -475,6 +475,22 @@ public class Events<V> {
      */
     public final <O> Events<Binary<V, O>> combineLatest(Events<O> other) {
         return combineLatest(other, I::pair);
+    }
+
+    /**
+     * <p>
+     * Combines two source {@link Events} by emitting an item that aggregates the latest values of
+     * each of the source {@link Events} each time an item is received from either of the source
+     * {@link Events}, where this aggregation is defined by a specified function.
+     * </p>
+     * 
+     * @param other An other {@link Events} to combine.
+     * @param another An another {@link Events} to combine.
+     * @return An {@link Events} that emits items that are the result of combining the items emitted
+     *         by the source {@link Events} by means of the given aggregation function
+     */
+    public final <O, A> Events<Ternary<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
+        return combineLatest(other, Binary<V, O>::new).combineLatest(another, Binary<V, O>::<A> ò);
     }
 
     /**
