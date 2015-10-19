@@ -21,6 +21,7 @@ import org.junit.Test;
 import kiss.I;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.ChainBean;
+import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.Group;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
@@ -30,7 +31,7 @@ import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
 
 /**
- * @version 2011/03/31 16:59:01
+ * @version 2015/10/20 2:29:33
  */
 public class JSONTest {
 
@@ -187,8 +188,7 @@ public class JSONTest {
 
         // write
         String json = json(bean);
-        assert json
-                .equals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T09:00:00\",\"someClass\":\"java.lang.String\"}");
+        assert json.equals("{\"bigInteger\":\"1234567890987654321\",\"date\":\"1970-01-01T09:00:00\",\"someClass\":\"java.lang.String\"}");
 
         // read
         bean = I.read(json, I.make(BuiltinBean.class));
@@ -275,11 +275,35 @@ public class JSONTest {
 
     @Test
     public void fromReader() throws Exception {
-        Person person = I.read(new StringReader("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}"), I
-                .make(Person.class));
+        Person person = I.read(new StringReader("{\"age\":\"15\",\"firstName\":\"Mio\",\"lastName\":\"Akiyama\"}"), I.make(Person.class));
         assert person.getAge() == 15;
         assert person.getFirstName().equals("Mio");
         assert person.getLastName().equals("Akiyama");
+    }
+
+    @Test
+    public void fxPropertyAtField() {
+        FxPropertyAtField bean = I.make(FxPropertyAtField.class);
+        bean.string.set("value");
+        bean.integer.set(10);
+        bean.list.add("first");
+        bean.list.add("second");
+        bean.map.put("one", 11L);
+        bean.map.put("two", 222L);
+
+        // write
+        String json = json(bean);
+        assert json
+                .equals("{\"integer\":\"10\",\"string\":\"value\",\"list\":{\"0\":\"first\",\"1\":\"second\"},\"map\":{\"one\":\"11\",\"two\":\"222\"}}");
+
+        // read
+        bean = I.read(json, I.make(FxPropertyAtField.class));
+        assert bean.string.get().equals("value");
+        assert bean.integer.get() == 10;
+        assert bean.list.get(0).equals("first");
+        assert bean.list.get(1).equals("second");
+        assert bean.map.get("one") == 11;
+        assert bean.map.get("two") == 222;
     }
 
     /**
