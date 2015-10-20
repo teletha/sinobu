@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PushbackReader;
 import java.io.RandomAccessFile;
@@ -2126,7 +2127,20 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     public static <M> M read(CharSequence input, M output) {
         Objects.nonNull(input);
 
-        return read(new StringReader(input.toString()), output);
+        String value = input.toString();
+
+        if (value.startsWith("http://") || value.startsWith("https://")) {
+            // ========================
+            // from URL
+            // ========================
+            try {
+                return read(new InputStreamReader(new URL(value).openStream(), $encoding), output);
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        } else {
+            return read(new StringReader(value), output);
+        }
     }
 
     /**
