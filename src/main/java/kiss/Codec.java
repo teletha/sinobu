@@ -19,7 +19,7 @@ package kiss;
  * </p>
  *
  * @param <M> A model class to decode and encode.
- * @version 2014/07/15 23:56:12
+ * @version 2015/10/20 17:56:12
  */
 public interface Codec<M> extends Extensible {
 
@@ -33,7 +33,7 @@ public interface Codec<M> extends Extensible {
      * @throws IllegalArgumentException If the given value is illegal format.
      */
     public default String encode(M value) {
-        return String.valueOf(value);
+        return value instanceof Enum ? ((Enum) value).name() : String.valueOf(value);
     }
 
     /**

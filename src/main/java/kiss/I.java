@@ -1270,8 +1270,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
-                    .getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL,
+                    className.substring(0, className.length() - 1),
+                    method.getName(),
+                    methodType.getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -2286,7 +2288,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                             Codec codec = property.model.getCodec();
 
                             if (codec != null) {
-                                state.model.set(state.object, property, codec.decode(node.getAttributeValue(i)));
+                                try {
+                                    state.model.set(state.object, property, codec.decode(node.getAttributeValue(i)));
+                                } catch (Exception e) {
+                                    // ignore
+                                }
                             }
                         }
                     }
