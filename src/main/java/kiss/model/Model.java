@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -114,7 +115,6 @@ public class Model {
                 case 1195259493: // java.lang.String
                 case -1555282570: // java.lang.StringBuilder
                 case 1196660485: // java.lang.StringBuffer
-                case -1165211622: // java.util.Locale
                 case 2130072984: // java.io.File
                 case 2050244018: // java.net.URL
                 case 2050244015: // java.net.URI
@@ -159,6 +159,10 @@ public class Model {
                             throw I.quiet(e);
                         }
                     };
+                    break;
+
+                case -1165211622: // java.util.Locale
+                    codec = Locale::forLanguageTag;
                     break;
 
                 case 1464606545: // java.nio.file.Path
@@ -227,8 +231,7 @@ public class Model {
             for (Entry<String, Method[]> entry : candidates.entrySet()) {
                 Method[] methods = entry.getValue();
 
-                if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1]
-                        .getModifiers()) & FINAL) == 0) {
+                if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
                     // create model for the property
                     try {
                         Model model = load(methods[0].getGenericReturnType(), type);
@@ -239,8 +242,7 @@ public class Model {
 
                             // this property is valid
                             Property property = new Property(model, entry.getKey(), methods);
-                            property.accessors = new MethodHandle[] {look.unreflect(methods[0]),
-                                    look.unreflect(methods[1])};
+                            property.accessors = new MethodHandle[] {look.unreflect(methods[0]), look.unreflect(methods[1])};
 
                             // register it
                             properties.add(property);
@@ -261,8 +263,9 @@ public class Model {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(load(fieldModel.type.getMethod("getValue")
-                                .getGenericReturnType(), field.getGenericType()), field.getName());
+                        Property property = new Property(
+                                load(fieldModel.type.getMethod("getValue").getGenericReturnType(), field.getGenericType()),
+                                field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;
 
@@ -273,8 +276,7 @@ public class Model {
                         field.setAccessible(true);
 
                         Property property = new Property(fieldModel, field.getName(), field);
-                        property.accessors = new MethodHandle[] {look.unreflectGetter(field),
-                                look.unreflectSetter(field)};
+                        property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
                         property.type = 1;
 
                         // register it
