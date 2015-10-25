@@ -772,6 +772,48 @@ public class Events<V> {
         });
     }
 
+    private Deque<Binary<V, Observer>> pair;
+
+    private AtomicBoolean initialized;
+
+    public final Events<V> interval(long time, TimeUnit unit) {
+        return interval(time, unit, this);
+    }
+
+    public final Events<V> interval(long time, TimeUnit unit, Events reconciler) {
+        // ignore invalid parameters
+        if (time <= 0 || unit == null) {
+            return NEVER;
+        }
+
+        if (reconciler.pair == null) {
+            reconciler.pair = new ArrayDeque();
+            reconciler.initialized = new AtomicBoolean();
+        }
+
+        return new Events<>(observer -> {
+            return to(value -> {
+                reconciler.pair.addLast(I.pair(value, observer));
+
+                if (reconciler.initialized.compareAndSet(false, true)) {
+                    I.schedule(() -> interval(unit.toMillis(time), 0, reconciler));
+                }
+            });
+        });
+    }
+
+    private void interval(long interval, long latest, Events<V> reconciler) {
+        Binary<V, Observer> context = reconciler.pair.pollFirst();
+        context.e.accept(context.a);
+
+        if (!reconciler.pair.isEmpty()) {
+            long now = System.currentTimeMillis();
+            I.schedule(Math.min(interval, now - latest), TimeUnit.MILLISECONDS, true, () -> interval(interval, now, reconciler));
+        } else {
+            reconciler.initialized.set(false);
+        }
+    }
+
     /**
      * <p>
      * Returns an {@link Events} that applies the given {@link Predicate} function to each value
