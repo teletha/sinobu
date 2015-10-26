@@ -772,45 +772,69 @@ public class Events<V> {
         });
     }
 
-    private Deque<Binary<V, Observer>> pair;
-
-    private AtomicBoolean initialized;
-
+    /**
+     * <p>
+     * Ensure the minimus interval time of each {@link Events} items.
+     * </p>
+     * 
+     * @param time The absolute time used to interval the {@link Events} sequence. Zero or negative
+     *            number will ignore this instruction.
+     * @param unit A unit of time for the specified time. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
     public final Events<V> interval(long time, TimeUnit unit) {
         return interval(time, unit, this);
     }
 
-    public final Events<V> interval(long time, TimeUnit unit, Events reconciler) {
+    /**
+     * <p>
+     * Ensure the minimus interval time of each {@link Events} items. The specified queue is shared
+     * by multiple {@link Events}.
+     * </p>
+     * 
+     * @param time The absolute time used to interval the {@link Events} sequence. Zero or negative
+     *            number will ignore this instruction.
+     * @param unit A unit of time for the specified time. <code>null</code> will ignore this
+     *            instruction.
+     * @param queue A shared item buffer.
+     * @return Chainable API.
+     */
+    public final Events<V> interval(long time, TimeUnit unit, Events<V> queue) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return NEVER;
         }
 
-        if (reconciler.pair == null) {
-            reconciler.pair = new ArrayDeque();
-            reconciler.initialized = new AtomicBoolean();
-        }
+        Deque<Binary<V, Observer>> buffer = I.associate(queue, ArrayDeque.class);
 
         return new Events<>(observer -> {
             return to(value -> {
-                reconciler.pair.addLast(I.pair(value, observer));
-
-                if (reconciler.initialized.compareAndSet(false, true)) {
-                    I.schedule(() -> interval(unit.toMillis(time), 0, reconciler));
+                if (buffer.isEmpty()) {
+                    I.schedule(() -> interval(unit.toMillis(time), 0, buffer));
                 }
+                buffer.addLast(I.pair(value, observer));
             });
         });
     }
 
-    private void interval(long interval, long latest, Events<V> reconciler) {
-        Binary<V, Observer> context = reconciler.pair.pollFirst();
+    /**
+     * <p>
+     * Ensure the minimus interval time of each {@link Events} items. The specified queue is shared
+     * by multiple {@link Events}.
+     * </p>
+     * 
+     * @param interval A specified interval time.
+     * @param latest A latest execution date.
+     * @param buffer The remaining values.
+     */
+    private void interval(long interval, long latest, Deque<Binary<V, Observer>> buffer) {
+        Binary<V, Observer> context = buffer.pollFirst();
         context.e.accept(context.a);
 
-        if (!reconciler.pair.isEmpty()) {
+        if (!buffer.isEmpty()) {
             long now = System.currentTimeMillis();
-            I.schedule(Math.min(interval, now - latest), TimeUnit.MILLISECONDS, true, () -> interval(interval, now, reconciler));
-        } else {
-            reconciler.initialized.set(false);
+            I.schedule(Math.min(interval, now - latest), TimeUnit.MILLISECONDS, true, () -> interval(interval, now, buffer));
         }
     }
 

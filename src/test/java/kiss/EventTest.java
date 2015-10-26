@@ -22,11 +22,11 @@ public class EventTest {
     public void testname() throws Exception {
         Events timing = Events.from();
 
-        Events.from(1, 2, 3, 4, 5).interval(1, TimeUnit.SECONDS).to(v -> {
+        Events.from(1, 2, 3, 4, 5).interval(1, TimeUnit.SECONDS, timing).to(v -> {
             System.err.println(v);
         });
 
-        Events.from(11, 12, 13, 14, 15).interval(1, TimeUnit.SECONDS).to(v -> {
+        Events.from(11, 12, 13, 14, 15).interval(1, TimeUnit.SECONDS, timing).to(v -> {
             System.err.println(v);
         });
 
