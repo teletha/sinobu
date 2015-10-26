@@ -797,16 +797,16 @@ public class Events<V> {
      *            number will ignore this instruction.
      * @param unit A unit of time for the specified time. <code>null</code> will ignore this
      *            instruction.
-     * @param queue A shared item buffer.
+     * @param group A shared item group.
      * @return Chainable API.
      */
-    public final Events<V> interval(long time, TimeUnit unit, Events<V> queue) {
+    public final Events<V> interval(long time, TimeUnit unit, Object group) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return NEVER;
         }
 
-        Deque<Binary<V, Observer>> buffer = I.associate(queue, ArrayDeque.class);
+        Deque<Binary<V, Observer>> buffer = I.associate(group, ArrayDeque.class);
 
         return new Events<>(observer -> {
             return to(value -> {
