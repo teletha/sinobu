@@ -1451,16 +1451,19 @@ public class Events<V> {
      * emitted by an {@link Events} and emits the result.
      * </p>
      * 
-     * @param initial A first constant to apply to each value emitted by this {@link Events}.
-     * @param other A second constant to apply to each value emitted by this {@link Events}.
+     * @param values A list of constants to apply to each value emitted by this {@link Events}.
      * @return Chainable API.
      */
-    public final <E> Events<E> toggle(E initial, E other) {
+    public final <E> Events<E> toggle(E... values) {
+        if (values.length == 0) {
+            return NEVER;
+        }
+
         return new Events<>(observer -> {
-            AtomicBoolean count = new AtomicBoolean(true);
+            AtomicInteger count = new AtomicInteger();
 
             return to(value -> {
-                observer.accept(count.getAndSet(!count.get()) ? initial : other);
+                observer.accept(values[count.getAndIncrement() % values.length]);
             });
         });
     }

@@ -1072,6 +1072,17 @@ public class EventsTest {
     }
 
     @Test
+    public void toggleWithValuesMore() {
+        EventFacade<Integer, String> facade = new EventFacade<>(events -> events.toggle("one", "two", "three"));
+        assert facade.emitAndRetrieve(1).equals("one");
+        assert facade.emitAndRetrieve(2).equals("two");
+        assert facade.emitAndRetrieve(3).equals("three");
+        assert facade.emitAndRetrieve(4).equals("one");
+        assert facade.emitAndRetrieve(5).equals("two");
+        assert facade.emitAndRetrieve(6).equals("three");
+    }
+
+    @Test
     public void toggleWithNull() {
         EventFacade<Integer, String> facade = new EventFacade<>(events -> events.toggle("one", null));
         assert facade.emitAndRetrieve(1).equals("one");
