@@ -34,7 +34,6 @@ import java.util.function.Predicate;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -98,13 +97,20 @@ public class Events<V> {
      * @return A {@link Property} as value receiver.
      */
     public final Property<V> to() {
-        // value receiver
-        ObjectProperty property = new SimpleObjectProperty();
+        return to(new SimpleObjectProperty());
+    }
 
+    /**
+     * <p>
+     * Receive values as {@link Property} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link Property} as value receiver.
+     */
+    public final Property<V> to(Property<V> property) {
         // start receiving values
-        to(property::set);
+        to(property::setValue);
 
-        // API definition
         return property;
     }
 
