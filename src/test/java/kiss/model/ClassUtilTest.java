@@ -12,6 +12,8 @@ package kiss.model;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +34,7 @@ import kiss.sample.bean.StringMap;
 import kiss.sample.bean.Student;
 
 /**
- * @version 2011/03/22 17:04:38
+ * @version 2016/01/19 18:12:51
  */
 public class ClassUtilTest {
 
@@ -41,9 +43,20 @@ public class ClassUtilTest {
         assert I.$loader instanceof ClassLoader;
     }
 
-    /**
-     * Test method for {@link kiss.model.ClassUtil#getTypes(java.lang.Class)}.
-     */
+    @Test
+    public void getArchive() throws Exception {
+        Path archive = ClassUtil.getArchive(ClassUtilTest.class);
+        assert archive != null;
+        assert Files.exists(archive);
+        assert Files.isDirectory(archive);
+    }
+
+    @Test
+    public void getArchiveByJDKClass() throws Exception {
+        Path archive = ClassUtil.getArchive(Map.class);
+        assert archive == null;
+    }
+
     @Test
     public void testGetAllTypes01() {
         Set<Class<?>> classes = ClassUtil.getTypes(ExtendClass.class);
@@ -51,9 +64,6 @@ public class ClassUtilTest {
         assert classes.contains(ExtendClass.class);
     }
 
-    /**
-     * Test method for {@link kiss.model.ClassUtil#getTypes(java.lang.Class)}.
-     */
     @Test
     public void testGetAllTypes02() {
         Set<Class<?>> classes = ClassUtil.getTypes(null);
@@ -344,8 +354,7 @@ public class ClassUtilTest {
 
     @Test
     public void parameterVariableFromInterface() {
-        Type[] types = ClassUtil
-                .getParameter(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
+        Type[] types = ClassUtil.getParameter(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -754,15 +763,13 @@ public class ClassUtilTest {
     /**
      * @version 2010/02/15 15:11:38
      */
-    private static class SelectableUI<W extends JComponent, M extends SingleSelectableMode<R>, R extends Model>
-            extends UI<W, M> {
+    private static class SelectableUI<W extends JComponent, M extends SingleSelectableMode<R>, R extends Model> extends UI<W, M> {
     }
 
     /**
      * @version 2010/02/15 15:11:36
      */
-    private static class StackContainer<M extends SingleSelectableMode<R>, R extends Model>
-            extends SelectableUI<JPanel, M, R> {
+    private static class StackContainer<M extends SingleSelectableMode<R>, R extends Model> extends SelectableUI<JPanel, M, R> {
     }
 
     /**
