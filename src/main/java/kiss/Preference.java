@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Nameless Production Committee
+ * Copyright (C) 2016 Nameless Production Committee
  *
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.nio.file.Path;
  * @see ThreadSpecific
  * @version 2012/10/20 16:46:09
  */
-public class Preference<M> extends Singleton<M> implements Runnable {
+public class Preference<M> extends Singleton<M>implements Runnable {
 
     /** The automatic saving location. */
     protected final Path path;
@@ -60,6 +60,6 @@ public class Preference<M> extends Singleton<M> implements Runnable {
      */
     @Override
     public void run() {
-        I.write(instance);
+        I.write(instance, path, true);
     }
 }
