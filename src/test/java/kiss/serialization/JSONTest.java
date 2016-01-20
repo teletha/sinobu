@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Nameless Production Committee
+ * Copyright (C) 2016 Nameless Production Committee
  *
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@ import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -27,11 +29,12 @@ import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
 import kiss.sample.bean.School;
 import kiss.sample.bean.StringListProperty;
+import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
 
 /**
- * @version 2015/10/20 2:29:33
+ * @version 2016/01/20 10:03:31
  */
 public class JSONTest {
 
@@ -158,26 +161,26 @@ public class JSONTest {
         assert list.get(2).equals("three");
     }
 
-    // @Test
-    // public void map() {
-    // Map<String, String> map = new HashMap();
-    // map.put("one", "1");
-    // map.put("two", "2");
-    // map.put("three", "3");
-    //
-    // StringMapProperty strings = I.make(StringMapProperty.class);
-    // strings.setMap(map);
-    //
-    // // write
-    // String json = json(strings);
-    // assert json.equals("{\"map\":{\"two\":\"2\",\"one\":\"1\",\"three\":\"3\"}}");
-    //
-    // // read
-    // strings = I.read(json, I.make(StringMapProperty.class));
-    // map = strings.getMap();
-    // assert map != null;
-    // assert map.get("one").equals("1");
-    // }
+    @Test
+    public void map() {
+        Map<String, String> map = new LinkedHashMap();
+        map.put("one", "1");
+        map.put("two", "2");
+        map.put("three", "3");
+
+        StringMapProperty strings = I.make(StringMapProperty.class);
+        strings.setMap(map);
+
+        // write
+        String json = json(strings);
+        assert json.equals("{\"map\":{\"one\":\"1\",\"two\":\"2\",\"three\":\"3\"}}");
+
+        // read
+        strings = I.read(json, I.make(StringMapProperty.class));
+        map = strings.getMap();
+        assert map != null;
+        assert map.get("one").equals("1");
+    }
 
     @Test
     public void testAttribute() {
