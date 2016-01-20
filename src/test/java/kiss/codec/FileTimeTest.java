@@ -9,7 +9,7 @@
  */
 package kiss.codec;
 
-import java.util.Locale;
+import java.nio.file.attribute.FileTime;
 
 import org.junit.Test;
 
@@ -18,15 +18,15 @@ import kiss.Encoder;
 import kiss.model.Model;
 
 /**
- * @version 2015/10/20 11:18:24
+ * @version 2016/01/20 11:04:29
  */
-public class LocaleTest {
+public class FileTimeTest {
 
     @Test
     public void codec() throws Exception {
-        Decoder<Locale> decoder = Model.load(Locale.class).getDecoder();
-        Encoder<Locale> encoder = Model.load(Locale.class).getEncoder();
-        assert decoder.decode("en") == Locale.ENGLISH;
-        assert encoder.encode(Locale.ENGLISH).equals("en");
+        Decoder<FileTime> decoder = Model.load(FileTime.class).getDecoder();
+        Encoder<FileTime> encoder = Model.load(FileTime.class).getEncoder();
+        assert decoder.decode("0").equals(FileTime.fromMillis(0));
+        assert encoder.encode(FileTime.fromMillis(0)).equals("0");
     }
 }

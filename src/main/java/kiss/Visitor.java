@@ -99,7 +99,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
             } else if (pattern.equals("**")) {
                 this.from = from;
                 this.root = false;
-                break;
+                continue;
             }
 
             if (pattern.charAt(0) != '!') {
@@ -107,8 +107,7 @@ class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Dis
                 include = glob(include, pattern);
             } else if (pattern.endsWith("/**")) {
                 // exclude directory
-                directory = glob(directory, pattern.substring(1, pattern.length() - 3)
-                        .concat(from instanceof ZipPath ? "/" : ""));
+                directory = glob(directory, pattern.substring(1, pattern.length() - 3).concat(from instanceof ZipPath ? "/" : ""));
             } else if (type < 4) {
                 // exclude files
                 exclude = glob(exclude, pattern.substring(1));

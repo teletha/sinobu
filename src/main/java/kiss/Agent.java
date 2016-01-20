@@ -26,7 +26,7 @@ import kiss.model.Property;
  * 
  * @version 2015/06/24 13:07:48
  */
-class Agent<T> implements Observer<T>, WatchEvent, Codec<Date>, Disposable {
+class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>, Disposable {
 
     /** For reuse. */
     T object;

@@ -16,6 +16,8 @@ import java.util.Map;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
+import org.junit.Test;
+
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
@@ -41,8 +43,6 @@ import kiss.sample.bean.invalid.OnlySetter;
 import kiss.sample.bean.invalid.OverrideFinalAccessor;
 import kiss.sample.bean.invalid.ProtectedAccessor;
 import kiss.sample.bean.invalid.StaticAccessor;
-
-import org.junit.Test;
 
 /**
  * @version 2014/07/22 15:38:17
@@ -141,7 +141,7 @@ public class ModelTest {
         assert Map.class == model.type;
         assert 0 == model.properties.size();
         assert true == model.isCollection();
-        assert model.getCodec() == null;
+        assert model.getDecoder() == null;
 
         property = model.getProperty("test");
         assert property != null;
@@ -193,7 +193,7 @@ public class ModelTest {
 
         model.set(bean, integer, 10);
         assert bean.integer.get() == 10;
-        assert (Integer) model.get(bean, integer) == 10;
+        assert(Integer) model.get(bean, integer) == 10;
 
         model.set(bean, string, "value");
         assert bean.string.get().equals("value");
@@ -234,7 +234,7 @@ public class ModelTest {
         assert Map.class == model.type;
         assert 0 == model.properties.size();
         assert true == model.isCollection();
-        assert model.getCodec() == null;
+        assert model.getDecoder() == null;
 
         property = model.getProperty("1");
         assert property != null;
@@ -259,8 +259,8 @@ public class ModelTest {
         assert model != null;
         assert Map.class == model.type;
         assert 0 == model.properties.size();
-        assert !model.isCollection();
-        assert model.getCodec() == null;
+        assert!model.isCollection();
+        assert model.getDecoder() == null;
     }
 
     /**
@@ -597,7 +597,7 @@ public class ModelTest {
         bean.setGeneric("value");
 
         Model model = Model.load(GenericStringBean.class);
-        assert "value" == model.get(bean, model.getProperty("generic"));
+        assert"value" == model.get(bean, model.getProperty("generic"));
     }
 
     @Test
@@ -615,7 +615,7 @@ public class ModelTest {
         Model model = Model.load(GenericStringBean.class);
         model.set(bean, model.getProperty("generic"), "value");
 
-        assert "value" == bean.getGeneric();
+        assert"value" == bean.getGeneric();
     }
 
 }

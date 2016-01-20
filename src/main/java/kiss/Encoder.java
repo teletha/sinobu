@@ -19,9 +19,10 @@ package kiss;
  * </p>
  *
  * @param <M> A model class to decode and encode.
- * @version 2015/10/20 17:56:12
+ * @see Decoder
+ * @version 2016/01/20 10:39:37
  */
-public interface Codec<M> extends Extensible {
+public interface Encoder<M> extends Extensible {
 
     /**
      * <p>
@@ -32,18 +33,5 @@ public interface Codec<M> extends Extensible {
      * @return A encoded {@link String} representation.
      * @throws IllegalArgumentException If the given value is illegal format.
      */
-    public default String encode(M value) {
-        return value instanceof Enum ? ((Enum) value).name() : String.valueOf(value);
-    }
-
-    /**
-     * <p>
-     * Decode the model object from {@link String}.
-     * </p>
-     * 
-     * @param value A {@link String} representation to decode.
-     * @return A decoded object.
-     * @throws IllegalArgumentException If the given value is illegal format.
-     */
-    public M decode(String value);
+    public String encode(M value);
 }

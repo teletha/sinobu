@@ -23,6 +23,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +34,8 @@ import java.util.Map.Entry;
 
 import javafx.beans.value.WritableValue;
 
-import kiss.Codec;
+import kiss.Decoder;
+import kiss.Encoder;
 import kiss.I;
 import kiss.Variable;
 
@@ -73,7 +75,10 @@ public class Model {
     public final List<Property> properties;
 
     /** The built-in codec. */
-    private Codec codec;
+    private Decoder decoder;
+
+    /** The built-in codec. */
+    private Encoder encoder = String::valueOf;;
 
     /**
      * Create Model instance.
@@ -95,7 +100,8 @@ public class Model {
         try {
             // search from built-in codecs
             if (type.isEnum()) {
-                codec = value -> Enum.valueOf(type, value);
+                decoder = value -> Enum.valueOf(type, value);
+                encoder = value -> ((Enum) value).name();
             } else {
                 switch (type.getName().hashCode()) {
                 case 64711720: // boolean
@@ -123,7 +129,7 @@ public class Model {
                     // constructer pattern
                     Constructor<?> constructor = ClassUtil.wrap(type).getConstructor(String.class);
 
-                    codec = value -> {
+                    decoder = value -> {
                         try {
                             return constructor.newInstance(value);
                         } catch (Exception e) {
@@ -134,7 +140,7 @@ public class Model {
 
                 case 3052374: // char
                 case 155276373: // java.lang.Character
-                    codec = value -> value.charAt(0);
+                    decoder = value -> value.charAt(0);
                     break;
 
                 case -1246033885: // java.time.LocalTime
@@ -152,7 +158,7 @@ public class Model {
                     // parse method pattern
                     Method method = type.getMethod("parse", CharSequence.class);
 
-                    codec = value -> {
+                    decoder = value -> {
                         try {
                             return method.invoke(null, value);
                         } catch (Exception e) {
@@ -162,15 +168,21 @@ public class Model {
                     break;
 
                 case -1165211622: // java.util.Locale
-                    codec = Locale::forLanguageTag;
+                    decoder = Locale::forLanguageTag;
                     break;
 
                 case 1464606545: // java.nio.file.Path
-                    codec = I::locate;
+                    decoder = I::locate;
+                    break;
+
+                case -89228377: // java.nio.file.attribute.FileTime
+                    decoder = value -> FileTime.fromMillis(Long.valueOf(value));
+                    encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
                     break;
 
                 default:
-                    codec = I.find(Codec.class, type);
+                    decoder = I.find(Decoder.class, type);
+                    encoder = I.find(Encoder.class, type);
                     break;
                 }
             }
@@ -305,7 +317,7 @@ public class Model {
      */
     public Property getProperty(String propertyName) {
         // check whether this model is attribute or not.
-        if (getCodec() == null) {
+        if (getDecoder() == null) {
             for (Property property : properties) {
                 if (property.name.equals(propertyName)) {
                     return property;
@@ -328,13 +340,24 @@ public class Model {
 
     /**
      * <p>
-     * Retrieve codec for this model.
+     * Retrieve {@link Decoder} for this model.
      * </p>
      * 
-     * @return An associated codec.
+     * @return An associated {@link Decoder}.
      */
-    public Codec getCodec() {
-        return codec != null ? codec : I.find(Codec.class, type);
+    public Decoder getDecoder() {
+        return decoder != null ? decoder : I.find(Decoder.class, type);
+    }
+
+    /**
+     * <p>
+     * Retrieve {@link Encoder} for this model.
+     * </p>
+     * 
+     * @return An associated {@link Encoder}.
+     */
+    public Encoder getEncoder() {
+        return encoder != null ? encoder : I.find(Encoder.class, type);
     }
 
     /**
@@ -392,7 +415,7 @@ public class Model {
      */
     public void walk(Object object, PropertyWalker walker) {
         // check whether this model is attribute or not.
-        if (walker != null && getCodec() == null) {
+        if (walker != null && getDecoder() == null) {
             for (Property property : properties) {
                 Object value = get(object, property);
 

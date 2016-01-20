@@ -2250,15 +2250,15 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     Object object;
 
                     // check attribute model
-                    Codec codec = property.model.getCodec();
+                    Decoder decoder = property.model.getDecoder();
 
-                    if (codec != null) {
+                    if (decoder != null) {
                         String value = node.getAttributeValue("", "value");
 
                         if (value == null) {
                             object = null;
                         } else {
-                            object = codec.decode(value);
+                            object = decoder.decode(value);
                         }
                     } else {
                         // collection model and normal model
@@ -2299,11 +2299,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                         // ignore deprecated property
                         if (property != null) {
                             // restore a property value form an attribute value
-                            Codec codec = property.model.getCodec();
+                            Decoder decoder = property.model.getDecoder();
 
-                            if (codec != null) {
+                            if (decoder != null) {
                                 try {
-                                    state.model.set(state.object, property, codec.decode(node.getAttributeValue(i)));
+                                    state.model.set(state.object, property, decoder.decode(node.getAttributeValue(i)));
                                 } catch (Exception e) {
                                     // ignore
                                 }
@@ -2433,11 +2433,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return (M) input;
         }
 
-        Codec inputCodec = inputModel.getCodec();
-        Codec<M> outputCodec = outputModel.getCodec();
+        Encoder encoder = inputModel.getEncoder();
+        Decoder<M> decoder = outputModel.getDecoder();
 
         // check whether each model are attribute model or not
-        if (inputCodec == null && outputCodec == null) {
+        if (encoder == null && decoder == null) {
             // we should copy property values
 
             // create destination object
@@ -2456,11 +2456,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         } else {
             // type conversion
             if (output == String.class) {
-                return (M) ((inputCodec != null) ? inputCodec.encode(input) : input.toString());
+                return (M) ((encoder != null) ? encoder.encode(input) : input.toString());
             }
 
-            if (inputModel.type == String.class && outputCodec != null) {
-                return outputCodec.decode((String) input);
+            if (inputModel.type == String.class && decoder != null) {
+                return decoder.decode((String) input);
             }
             return (M) input;
         }

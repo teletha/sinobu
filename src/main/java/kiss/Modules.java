@@ -23,7 +23,7 @@ import kiss.model.Model;
  */
 @SuppressWarnings("unchecked")
 @Manageable(lifestyle = Singleton.class)
-class Modules extends Variable<Lifestyle>implements ClassListener, Codec<Class>, Lifestyle<Locale> {
+class Modules extends Variable<Lifestyle>implements ClassListener, Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();

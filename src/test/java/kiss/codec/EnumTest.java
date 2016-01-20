@@ -11,7 +11,8 @@ package kiss.codec;
 
 import org.junit.Test;
 
-import kiss.Codec;
+import kiss.Decoder;
+import kiss.Encoder;
 import kiss.model.Model;
 
 /**
@@ -21,9 +22,10 @@ public class EnumTest {
 
     @Test
     public void codec() throws Exception {
-        Codec<OverrideToString> codec = Model.load(OverrideToString.class).getCodec();
-        assert codec.decode("A") == OverrideToString.A;
-        assert codec.encode(OverrideToString.A).equals("A");
+        Decoder<OverrideToString> decoder = Model.load(OverrideToString.class).getDecoder();
+        Encoder<OverrideToString> encoder = Model.load(OverrideToString.class).getEncoder();
+        assert decoder.decode("A") == OverrideToString.A;
+        assert encoder.encode(OverrideToString.A).equals("A");
     }
 
     /**
