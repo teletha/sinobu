@@ -13,6 +13,8 @@ import java.io.IOError;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.ChainBean;
 import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.Group;
+import kiss.sample.bean.NestingList;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
 import kiss.sample.bean.School;
@@ -34,7 +37,7 @@ import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
 
 /**
- * @version 2016/01/20 10:03:31
+ * @version 2016/03/15 18:06:36
  */
 public class JSONTest {
 
@@ -159,6 +162,20 @@ public class JSONTest {
         assert list.get(0).equals("one");
         assert list.get(1).equals("two");
         assert list.get(2).equals("three");
+    }
+
+    @Test
+    public void netedList() {
+        NestingList list = I.make(NestingList.class);
+        list.setNesting(Arrays.asList(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+
+        // write
+        String json = json(list);
+        assert json.equals("{\"nesting\":[[],[]]}");
+
+        // read
+        list = I.read(json, I.make(NestingList.class));
+        assert list != null;
     }
 
     @Test

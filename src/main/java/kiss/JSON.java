@@ -23,7 +23,7 @@ import kiss.model.PropertyWalker;
  * but same object in sibling nodes will be acceptable.
  * </p>
  * 
- * @version 2010/01/12 20:32:11
+ * @version 2016/03/15 18:10:13
  */
 class JSON implements PropertyWalker {
 
@@ -80,15 +80,17 @@ class JSON implements PropertyWalker {
                     } else {
                         // write suitable brace
                         out.append(property.model.type == List.class ? '[' : '{');
-
-                        // reset next context
-                        first = true;
                     }
 
                     // ========================================
                     // Traverse Child Node
                     // ========================================
+                    boolean store = first; // store the first property state
+                    first = true;
+
                     property.model.walk(node, this);
+
+                    first = store; // restore the first property state
 
                     // ========================================
                     // Leave Node
