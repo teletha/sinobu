@@ -36,13 +36,20 @@ class JSON implements PropertyWalker {
     /** The flag whether the current property is the first item in context or not. */
     private boolean first = true;
 
+    /** The format flag. */
+    boolean format;
+
+    /** The format depth. */
+    int depth;
+
     /**
      * JSON serializer.
      * 
      * @param out An output target.
      */
-    JSON(Appendable out) {
+    JSON(Appendable out, boolean format) {
         this.out = out;
+        this.format = format;
     }
 
     /**
@@ -62,12 +69,17 @@ class JSON implements PropertyWalker {
                 } else {
                     // write property seperator
                     out.append(',');
+                    format(0);
                 }
 
                 // write property key (root node and List node doesn't need key)
                 if (reference.size() != 0 && model.type != List.class) {
                     write(property.name);
                     out.append(':');
+
+                    if (format) {
+                        out.append(' ');
+                    }
                 }
 
                 // write property value
@@ -80,6 +92,7 @@ class JSON implements PropertyWalker {
                     } else {
                         // write suitable brace
                         out.append(property.model.type == List.class ? '[' : '{');
+                        format(1);
                     }
 
                     // ========================================
@@ -99,6 +112,7 @@ class JSON implements PropertyWalker {
                     reference.remove(node);
 
                     // write suitable brace
+                    format(-1);
                     out.append(property.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
@@ -156,5 +170,17 @@ class JSON implements PropertyWalker {
         }
 
         out.append('"');
+    }
+
+    private void format(int diff) throws IOException {
+        if (format) {
+            out.append("\r\n");
+
+            depth += diff;
+
+            for (int i = 0; i < depth; i++) {
+                out.append('\t');
+            }
+        }
     }
 }

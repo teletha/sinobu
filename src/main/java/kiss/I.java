@@ -2609,11 +2609,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *            throw {@link java.lang.NullPointerException}.
      * @param output A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
-     * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
+     * @param format <code>true</code> will produce JSON expression, <code>false</code> will produce
      *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
-    public static void write(Object input, Appendable output, boolean json) {
+    public static void write(Object input, Appendable output, boolean format) {
         Objects.nonNull(output);
 
         try {
@@ -2623,16 +2623,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             Model model = Model.load(input.getClass());
             Property property = new Property(model, model.name);
 
-            if (json) {
-                // traverse configuration as json
-                new JSON(output).walk(model, property, input);
-            } else {
-                // traverse configuration as xml
-                XMLUtil writer = new XMLUtil(output);
-                writer.xml = xml(null);
-                writer.walk(model, property, input);
-                writer.xml.attr("xmlns:ss", URI).to(output);
-            }
+            // traverse configuration as json
+            new JSON(output, format).walk(model, property, input);
         } finally {
             // relese lock
             lock.writeLock().unlock();
