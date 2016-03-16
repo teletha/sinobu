@@ -2559,7 +2559,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         Lifestyle lifestyle = modules.get(Model.load(input.getClass()).type);
 
         if (lifestyle instanceof Preference) {
-            write(input, ((Preference) lifestyle).path, false);
+            write(input, ((Preference) lifestyle).path);
         }
     }
 
@@ -2584,13 +2584,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      * @throws AccessDeniedException If the output is not regular file but directory.
      */
-    public static void write(Object input, Path output, boolean json) {
+    public static void write(Object input, Path output) {
         try {
             if (Files.notExists(output)) {
                 Files.createDirectories(output.getParent());
             }
 
-            I.write(input, Files.newBufferedWriter(output, $encoding), json);
+            I.write(input, Files.newBufferedWriter(output, $encoding));
         } catch (Exception e) {
             throw quiet(e);
         }
@@ -2613,7 +2613,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
-    public static void write(Object input, Appendable output, boolean format) {
+    public static void write(Object input, Appendable output) {
         Objects.nonNull(output);
 
         try {
@@ -2624,7 +2624,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             Property property = new Property(model, model.name);
 
             // traverse configuration as json
-            new JSON(output, format).walk(model, property, input);
+            new JSON(output).walk(model, property, input);
         } finally {
             // relese lock
             lock.writeLock().unlock();

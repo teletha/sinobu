@@ -75,7 +75,7 @@ public class XMLTest {
         list.add("A\r\nA");
 
         // write
-        I.write(list, config, false);
+        I.write(list, config);
 
         // read
         list = I.read(config, I.make(StringList.class));
@@ -91,7 +91,7 @@ public class XMLTest {
         school.addStudent(student);
 
         // write
-        I.write(school, config, false);
+        I.write(school, config);
 
         // read
         school = I.read(config, I.make(School.class));
@@ -105,7 +105,7 @@ public class XMLTest {
         list.add("20");
 
         // write
-        I.write(list, config, false);
+        I.write(list, config);
 
         // read
         list = I.read(config, I.make(StringList.class));
@@ -126,7 +126,7 @@ public class XMLTest {
         school.setTeachers(teachers);
 
         // write
-        I.write(school, config, false);
+        I.write(school, config);
 
         // read
         school = I.read(config, I.make(School.class));
@@ -140,7 +140,7 @@ public class XMLTest {
         map.put("two", "2");
 
         // write
-        I.write(map, config, false);
+        I.write(map, config);
 
         // read
         map = I.read(config, I.make(StringMap.class));
@@ -169,7 +169,7 @@ public class XMLTest {
         nestingList.setNesting(root);
 
         // write
-        I.write(nestingList, config, false);
+        I.write(nestingList, config);
 
         // read
         nestingList = I.read(config, I.make(NestingList.class));
@@ -206,7 +206,7 @@ public class XMLTest {
         primitive.setShort((short) 21);
 
         // write
-        I.write(primitive, config, false);
+        I.write(primitive, config);
 
         // read
         primitive = I.read(config, I.make(Primitive.class));
@@ -233,7 +233,7 @@ public class XMLTest {
         stringList.setList(list);
 
         // write
-        I.write(stringList, config, false);
+        I.write(stringList, config);
 
         // read
         stringList = I.read(config, I.make(StringListProperty.class));
@@ -257,7 +257,7 @@ public class XMLTest {
         stringList.setList(list);
 
         // write
-        I.write(stringList, config, false);
+        I.write(stringList, config);
 
         // read
         stringList = I.read(config, I.make(StringListProperty.class));
@@ -279,7 +279,7 @@ public class XMLTest {
         model.setList(list);
 
         // write
-        I.write(model, config, false);
+        I.write(model, config);
 
         // read
         model = I.read(config, I.make(ClassListProperty.class));
@@ -304,7 +304,7 @@ public class XMLTest {
         list.add(void.class);
 
         // write
-        I.write(list, config, false);
+        I.write(list, config);
 
         // read
         list = I.read(config, I.make(ClassList.class));
@@ -331,7 +331,7 @@ public class XMLTest {
         stringMap.setMap(map);
 
         // write
-        I.write(stringMap, config, false);
+        I.write(stringMap, config);
 
         // read
         stringMap = I.read(config, I.make(StringMapProperty.class));
@@ -356,7 +356,7 @@ public class XMLTest {
         stringMap.setMap(map);
 
         // write
-        I.write(stringMap, config, false);
+        I.write(stringMap, config);
 
         // read
         stringMap = I.read(config, I.make(StringMapProperty.class));
@@ -381,7 +381,7 @@ public class XMLTest {
         bean.setIntegerKey(map);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(CompatibleKeyMap.class));
@@ -406,7 +406,7 @@ public class XMLTest {
         bean.setIncompatible(map);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(IncompatibleKeyMap.class));
@@ -426,7 +426,7 @@ public class XMLTest {
         bean.setSchoolEnum(SchoolEnum.Miator);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(BuiltinBean.class));
@@ -443,7 +443,7 @@ public class XMLTest {
         bean.setDate(new Date(0L));
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(BuiltinBean.class));
@@ -464,7 +464,7 @@ public class XMLTest {
         bean.setSomeClass(CoreMethodsTest.class);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(BuiltinBean.class));
@@ -485,7 +485,7 @@ public class XMLTest {
         bean.setFile(config.toFile());
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(BuiltinBean.class));
@@ -502,7 +502,7 @@ public class XMLTest {
         bean.setPath(config);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(BuiltinBean.class));
@@ -517,7 +517,7 @@ public class XMLTest {
         bean.setBoth(20);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(TransientBean.class));
@@ -532,7 +532,7 @@ public class XMLTest {
         bean.publicField = "me";
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(FieldProperty.class));
@@ -549,7 +549,7 @@ public class XMLTest {
         bean.genericField = list;
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(GenericFieldProperty.class));
@@ -568,7 +568,7 @@ public class XMLTest {
         bean.map.put("two", 222L);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(FxPropertyAtField.class));
@@ -592,7 +592,7 @@ public class XMLTest {
         bean.setNest(map);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(NestedCollection.class));
@@ -620,7 +620,7 @@ public class XMLTest {
         stringList.setList(list);
 
         // write
-        I.write(stringList, config, false);
+        I.write(stringList, config);
 
         // read
         stringList = I.read(config, I.make(StringListProperty.class));
@@ -652,7 +652,7 @@ public class XMLTest {
         bean.setList(list);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(StringListProperty.class));
@@ -682,7 +682,7 @@ public class XMLTest {
         stringMap.setMap(map);
 
         // write
-        I.write(stringMap, config, false);
+        I.write(stringMap, config);
 
         // read
         stringMap = I.read(config, I.make(StringMapProperty.class));
@@ -710,7 +710,7 @@ public class XMLTest {
         bean.setMap(map);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(StringMapProperty.class));
@@ -743,7 +743,7 @@ public class XMLTest {
         bean.setGenericList(list);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(GenericPersonBean.class));
@@ -789,7 +789,7 @@ public class XMLTest {
         bean.setGenericList(list);
 
         // write
-        I.write(bean, config, false);
+        I.write(bean, config);
 
         // read
         bean = I.read(config, I.make(GenericPersonBean.class));
@@ -822,7 +822,7 @@ public class XMLTest {
         stringList.setList(list);
 
         // write
-        I.write(stringList, config, false);
+        I.write(stringList, config);
 
         // read
         stringList = I.read(config, I.make(StringListProperty.class));
@@ -849,7 +849,7 @@ public class XMLTest {
         checker.setList(list);
 
         // write
-        I.write(checker, config, false);
+        I.write(checker, config);
 
         // read
         checker = I.read(config, I.make(Checker.class));
@@ -902,7 +902,7 @@ public class XMLTest {
         school.setStudents(students);
 
         // write
-        I.write(student, config, false);
+        I.write(student, config);
 
         // read
         student = I.read(config, I.make(Student.class));

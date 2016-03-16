@@ -25,7 +25,7 @@ import kiss.I;
 import kiss.sample.bean.Person;
 
 /**
- * @version 2011/03/31 17:29:31
+ * @version 2016/03/16 21:08:57
  */
 public class IllegalInputTest {
 
@@ -83,74 +83,38 @@ public class IllegalInputTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void writeNullAppendableJSON() {
-        I.write(bean, (Appendable) null, true);
+    public void writeNullAppendable() {
+        I.write(bean, (Appendable) null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void writeNullAppendableXML() {
-        I.write(bean, (Appendable) null, false);
+    public void writeNullJavaObject() {
+        I.write(null, new StringBuilder());
     }
 
     @Test(expected = NullPointerException.class)
-    public void writeNullJavaObjectJSON() {
-        I.write(null, new StringBuilder(), true);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void writeNullJavaObjectXML() {
-        I.write(null, new StringBuilder(), false);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void writeNullPathJSON() {
-        I.write(bean, (Path) null, true);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void writeNullPathXML() {
-        I.write(bean, (Path) null, false);
+    public void writeNullPath() {
+        I.write(bean, (Path) null);
     }
 
     @Test
-    public void writeAbsentPathJSON() {
+    public void writeAbsentPath() {
         Path file = room.locateAbsent("absent");
-        I.write(bean, file, true);
+        I.write(bean, file);
 
         assert Files.exists(file);
     }
 
     @Test
-    public void writeAbsentPathXML() {
-        Path file = room.locateAbsent("absent");
-        I.write(bean, file, false);
-
-        assert Files.exists(file);
-    }
-
-    @Test
-    public void writeFileJSON() {
+    public void writeFile() {
         Path file = room.locateFile("file");
-        I.write(bean, file, true);
-
-        assert Files.exists(file);
-    }
-
-    @Test
-    public void writeFileXML() {
-        Path file = room.locateFile("file");
-        I.write(bean, file, false);
+        I.write(bean, file);
 
         assert Files.exists(file);
     }
 
     @Test(expected = AccessDeniedException.class)
-    public void writeDirectoryJSON() {
-        I.write(bean, room.locateDirectory("directory"), true);
-    }
-
-    @Test(expected = AccessDeniedException.class)
-    public void writeDirectoryXML() {
-        I.write(bean, room.locateDirectory("directory"), false);
+    public void writeDirectory() {
+        I.write(bean, room.locateDirectory("directory"));
     }
 }

@@ -22,7 +22,7 @@ import kiss.I;
 import kiss.sample.bean.Person;
 
 /**
- * @version 2011/06/13 12:27:57
+ * @version 2016/03/16 21:09:02
  */
 public class AbsentPathTest {
 
@@ -35,7 +35,7 @@ public class AbsentPathTest {
     @Test
     public void write() throws Exception {
         Path path = room.locateAbsent("file");
-        I.write(person, path, false);
+        I.write(person, path);
 
         assert Files.exists(path);
     }
@@ -43,7 +43,7 @@ public class AbsentPathTest {
     @Test
     public void writeNest() throws Exception {
         Path path = room.locateAbsent("dir/file");
-        I.write(person, path, false);
+        I.write(person, path);
 
         assert Files.exists(path);
     }

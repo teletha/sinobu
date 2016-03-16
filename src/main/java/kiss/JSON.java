@@ -36,9 +36,6 @@ class JSON implements PropertyWalker {
     /** The flag whether the current property is the first item in context or not. */
     private boolean first = true;
 
-    /** The format flag. */
-    boolean format;
-
     /** The format depth. */
     int depth;
 
@@ -47,16 +44,15 @@ class JSON implements PropertyWalker {
      * 
      * @param out An output target.
      */
-    JSON(Appendable out, boolean format) {
+    JSON(Appendable out) {
         this.out = out;
-        this.format = format;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void walk(Model model, Property property, Object node) {
+    public void walk(Model model, Property property, Object object) {
         if (!property.isTransient) {
             try {
                 // ========================================
@@ -66,6 +62,7 @@ class JSON implements PropertyWalker {
                 if (first) {
                     // mark as not first
                     first = false;
+                    if (reference.size() != 0) format(1);
                 } else {
                     // write property seperator
                     out.append(',');
@@ -75,33 +72,35 @@ class JSON implements PropertyWalker {
                 // write property key (root node and List node doesn't need key)
                 if (reference.size() != 0 && model.type != List.class) {
                     write(property.name);
-                    out.append(':');
-
-                    if (format) {
-                        out.append(' ');
-                    }
+                    out.append(": ");
                 }
 
                 // write property value
                 if (property.isAttribute()) {
-                    write(I.transform(node, String.class));
+                    Class type = property.model.type;
+
+                    if (type.isPrimitive() && type != char.class) {
+                        out.append(I.transform(object, String.class));
+                    } else {
+                        write(I.transform(object, String.class));
+                    }
                 } else {
                     // check cyclic node (non-attribute node only apply this check)
-                    if (reference.putIfAbsent(node, 0) != null) {
+                    if (reference.putIfAbsent(object, 0) != null) {
                         throw new ClassCircularityError(reference.toString());
                     } else {
                         // write suitable brace
                         out.append(property.model.type == List.class ? '[' : '{');
-                        format(1);
                     }
 
                     // ========================================
                     // Traverse Child Node
                     // ========================================
                     boolean store = first; // store the first property state
+                    int prev = depth;
                     first = true;
 
-                    property.model.walk(node, this);
+                    property.model.walk(object, this);
 
                     first = store; // restore the first property state
 
@@ -109,10 +108,10 @@ class JSON implements PropertyWalker {
                     // Leave Node
                     // ========================================
                     // unregister non-attribute node
-                    reference.remove(node);
+                    reference.remove(object);
 
                     // write suitable brace
-                    format(-1);
+                    if (depth != prev) format(-1);
                     out.append(property.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
@@ -168,19 +167,16 @@ class JSON implements PropertyWalker {
                 out.append(c);
             }
         }
-
         out.append('"');
     }
 
     private void format(int diff) throws IOException {
-        if (format) {
-            out.append("\r\n");
+        out.append("\r\n");
 
-            depth += diff;
+        depth += diff;
 
-            for (int i = 0; i < depth; i++) {
-                out.append('\t');
-            }
+        for (int i = 0; i < depth; i++) {
+            out.append('\t');
         }
     }
 }

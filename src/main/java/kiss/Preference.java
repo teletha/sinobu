@@ -60,6 +60,6 @@ public class Preference<M> extends Singleton<M>implements Runnable {
      */
     @Override
     public void run() {
-        I.write(instance, path, true);
+        I.write(instance, path);
     }
 }
