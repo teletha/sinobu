@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.serialization;
+package kiss.json;
 
 import java.io.IOError;
 import java.io.Reader;
@@ -25,7 +25,7 @@ import kiss.I;
 import kiss.sample.bean.Person;
 
 /**
- * @version 2016/03/16 21:08:57
+ * @version 2016/03/17 9:42:46
  */
 public class IllegalInputTest {
 
@@ -34,11 +34,17 @@ public class IllegalInputTest {
     public static final CleanRoom room = new CleanRoom();
 
     /** The normal bean. */
-    private static Person bean = I.make(Person.class);
+    private Person bean = I.make(Person.class);
 
     @Test(expected = NoSuchFileException.class)
     public void readAbsentPath() throws Exception {
         I.read(room.locateAbsent("absent"), bean);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void readNest() throws Exception {
+        Path path = room.locateAbsent("dir/file");
+        I.read(path, bean);
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -61,7 +67,7 @@ public class IllegalInputTest {
         I.read((Reader) null, bean);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IOError.class)
     public void readNullOutput() throws Exception {
         I.read("{\"age\":\"15\"}", (Object) null);
     }
@@ -73,12 +79,12 @@ public class IllegalInputTest {
     }
 
     @Test(expected = IOError.class)
-    public void readEmptyJSON() {
+    public void readEmpty() {
         assert I.read("", bean) != null;
     }
 
     @Test(expected = IOError.class)
-    public void readInvalidJSON() {
+    public void readInvalid() {
         assert I.read("@", bean) != null;
     }
 
@@ -113,8 +119,17 @@ public class IllegalInputTest {
         assert Files.exists(file);
     }
 
+    @Test
+    public void writeNest() throws Exception {
+        Path path = room.locateAbsent("dir/file");
+        I.write(bean, path);
+
+        assert Files.exists(path);
+    }
+
     @Test(expected = AccessDeniedException.class)
     public void writeDirectory() {
         I.write(bean, room.locateDirectory("directory"));
     }
+
 }

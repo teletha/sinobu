@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -53,6 +54,7 @@ import kiss.sample.bean.TransientBean;
 /**
  * @version 2014/07/22 15:33:45
  */
+@Ignore
 public class XMLTest {
 
     @Rule

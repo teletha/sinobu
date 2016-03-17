@@ -9,7 +9,6 @@
  */
 package kiss.json;
 
-import java.io.IOError;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -230,9 +229,12 @@ public class SerializeTest {
         /**/"}");
     }
 
-    @Test(expected = IOError.class)
     public void readIncompatible() {
-        I.read("15", I.make(Person.class));
+        Person instance = I.read("15", I.make(Person.class));
+        assert instance != null;
+        assert instance.getAge() == 0;
+        assert instance.getFirstName() == null;
+        assert instance.getLastName() == null;
     }
 
     @Test(expected = ClassCircularityError.class)

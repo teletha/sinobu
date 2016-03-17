@@ -11,7 +11,6 @@ package kiss;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -27,25 +26,23 @@ import kiss.model.PropertyWalker;
  */
 class JSON implements PropertyWalker {
 
-    /** The record for traversed objects. */
-    private final ConcurrentHashMap reference = new ConcurrentHashMap();
-
     /** The charcter sequence for output as JSON. */
     private final Appendable out;
 
+    /** The format depth. */
+    private final int depth;
+
     /** The flag whether the current property is the first item in context or not. */
     private boolean first = true;
-
-    /** The format depth. */
-    int depth;
 
     /**
      * JSON serializer.
      * 
      * @param out An output target.
      */
-    JSON(Appendable out) {
+    JSON(Appendable out, int depth) {
         this.out = out;
+        this.depth = depth;
     }
 
     /**
@@ -62,23 +59,22 @@ class JSON implements PropertyWalker {
                 if (first) {
                     // mark as not first
                     first = false;
-                    if (reference.size() != 0) format(1);
                 } else {
                     // write property seperator
                     out.append(',');
-                    format(0);
                 }
+                indent();
 
-                // write property key (root node and List node doesn't need key)
-                if (reference.size() != 0 && model.type != List.class) {
+                // write property key (List node doesn't need key)
+                if (model.type != List.class) {
                     write(property.name);
                     out.append(": ");
                 }
 
                 // write property value
-                if (property.isAttribute()) {
-                    Class type = property.model.type;
+                Class type = property.model.type;
 
+                if (property.isAttribute()) {
                     if (type.isPrimitive() && type != char.class) {
                         out.append(I.transform(object, String.class));
                     } else {
@@ -86,33 +82,16 @@ class JSON implements PropertyWalker {
                     }
                 } else {
                     // check cyclic node (non-attribute node only apply this check)
-                    if (reference.putIfAbsent(object, 0) != null) {
-                        throw new ClassCircularityError(reference.toString());
-                    } else {
-                        // write suitable brace
-                        out.append(property.model.type == List.class ? '[' : '{');
+                    if (100 < depth) {
+                        throw new ClassCircularityError();
                     }
 
-                    // ========================================
-                    // Traverse Child Node
-                    // ========================================
-                    boolean store = first; // store the first property state
-                    int prev = depth;
-                    first = true;
+                    JSON walker = new JSON(out, depth + 1);
 
-                    property.model.walk(object, this);
-
-                    first = store; // restore the first property state
-
-                    // ========================================
-                    // Leave Node
-                    // ========================================
-                    // unregister non-attribute node
-                    reference.remove(object);
-
-                    // write suitable brace
-                    if (depth != prev) format(-1);
-                    out.append(property.model.type == List.class ? ']' : '}');
+                    out.append(type == List.class ? '[' : '{');
+                    property.model.walk(object, walker);
+                    if (!walker.first) indent();
+                    out.append(type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
                 throw I.quiet(e);
@@ -170,10 +149,8 @@ class JSON implements PropertyWalker {
         out.append('"');
     }
 
-    private void format(int diff) throws IOException {
+    private void indent() throws IOException {
         out.append("\r\n");
-
-        depth += diff;
 
         for (int i = 0; i < depth; i++) {
             out.append('\t');

@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.scratchpad;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Flushable;
@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import kiss.I;
 import kiss.model.Model;
 import kiss.model.Property;
 import kiss.model.PropertyWalker;
@@ -159,8 +160,8 @@ class XMLUtil extends Writer implements PropertyWalker {
     // HTML Parser for building XML
     // =======================================================================
     /** The defiened empty elements. */
-    private static final String[] empties = {"area", "base", "br", "col", "command", "device", "embed", "frame", "hr",
-            "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"};
+    private static final String[] empties = {"area", "base", "br", "col", "command", "device", "embed", "frame", "hr", "img", "input",
+            "keygen", "link", "meta", "param", "source", "track", "wbr"};
 
     /** The defiened data elements. */
     private static final String[] datas = {"noframes", "script", "style", "textarea", "title"};
@@ -196,7 +197,7 @@ class XMLUtil extends Writer implements PropertyWalker {
         // ====================
         // Initialization
         // ====================
-        xml = I.xml(null);
+        xml = XML.xml(null);
         html = new String(row, 0, row.length, encoding);
         pos = 0;
 
@@ -350,7 +351,7 @@ class XMLUtil extends Writer implements PropertyWalker {
             findSpace();
         }
 
-        return I.xml(xml.doc); // return root
+        return XML.xml(xml.doc); // return root
     }
 
     /**

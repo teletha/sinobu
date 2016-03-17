@@ -44,7 +44,6 @@ import java.security.ProtectionDomain;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,10 +65,6 @@ import java.util.function.BiPredicate;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -85,10 +80,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 
 import sun.reflect.ConstantPool;
 
@@ -291,12 +282,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    /** The stax parser factory for reuse. */
-    private static final XMLInputFactory stax = XMLInputFactory.newFactory();
-
-    /** The document builder. */
-    private static final DocumentBuilder dom;
-
     /** The javascript engine for reuse. */
     private static final ScriptEngine script;
 
@@ -351,13 +336,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         modules.set(ObservableSet.class, FXCollections::observableSet);
 
         try {
-            // configure dom builder
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-            dom = factory.newDocumentBuilder();
-
             // Create the root temporary directory for Sinobu.
             temporaries = Files.createDirectories(Paths.get(System.getProperty("java.io.tmpdir"), "Sinobu"));
 
@@ -2164,29 +2142,18 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @throws IOError If the input data is empty or invalid format.
      */
     public static <M> M read(Reader input, M output) {
-        PushbackReader reader = new PushbackReader(input, 4);
+        Objects.nonNull(output);
 
-        Model model = Model.load(output.getClass());
+        PushbackReader reader = new PushbackReader(input, 2);
 
         try {
             // aquire lock
             lock.readLock().lock();
 
-            // read first character
-            int c = reader.read();
+            // Parse as JSON
+            reader.unread(new char[] {'a', '='});
 
-            // revert stream
-            reader.unread(c);
-
-            if (c == '{') {
-                // Parse as JSON
-                reader.unread(new char[] {'a', '='});
-
-                return read(model, output, script.eval(reader));
-            } else {
-                // Parse as XML
-                return read(model, output, reader);
-            }
+            return read(Model.load(output.getClass()), output, script.eval(reader));
         } catch (Exception e) {
             throw new IOError(e);
         } finally {
@@ -2196,137 +2163,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // close carefuly
             quiet(reader);
         }
-    }
-
-    /**
-     * <p>
-     * XML reader for Object Graph deserialization.
-     * </p>
-     *
-     * @param <M> A current model type.
-     * @param model A java object model.
-     * @param root A root java value.
-     * @param input A data input.
-     * @return A restored java object.
-     */
-    private static <M> M read(Model model, M root, Reader input) throws Exception {
-        HashMap objects = new HashMap();
-        ArrayDeque<Agent> states = new ArrayDeque();
-
-        XMLStreamReader node = stax.createXMLStreamReader(input);
-
-        while (node.hasNext()) {
-            switch (node.next()) {
-            case XMLStreamReader.START_ELEMENT:
-                Agent state;
-                String name = node.getLocalName();
-
-                // create next state
-                if (states.size() == 0) {
-                    // this is root object
-                    state = new Agent();
-                    state.model = model;
-                    state.object = root;
-                } else {
-                    Agent parent = states.peekLast();
-
-                    // Compute property.
-                    //
-                    // A name of the current element indicates the hint of the property name.
-                    // So you can get a valid property from the parent state.
-                    if (parent.model.isCollection()) {
-                        name = node.getAttributeValue(URI, "key");
-
-                        if (name == null) {
-                            name = String.valueOf(parent.index++);
-                        }
-                    }
-
-                    Property property = parent.model.getProperty(name);
-
-                    // Compute object
-                    //
-                    // Property indicates a object, so you should create a suitable object.
-                    Object object;
-
-                    // check attribute model
-                    Decoder decoder = property.model.getDecoder();
-
-                    if (decoder != null) {
-                        String value = node.getAttributeValue("", "value");
-
-                        if (value == null) {
-                            object = null;
-                        } else {
-                            object = decoder.decode(value);
-                        }
-                    } else {
-                        // collection model and normal model
-                        object = make(property.model.type);
-                    }
-
-                    // create next state
-                    state = new Agent();
-                    state.model = property.model;
-                    state.object = object;
-                    state.property = property;
-                }
-
-                // assign properties which are represented by attributes
-                for (int i = 0; i < node.getAttributeCount(); i++) {
-                    // check namespace
-                    if (URI.equals(node.getAttributeNamespace(i))) {
-                        if (node.getAttributeLocalName(i).equals("id")) {
-                            // retrieve identifier for the current object
-                            name = node.getAttributeValue(i);
-
-                            // retrieve object for the identifier
-                            Object object = objects.get(name);
-
-                            if (object == null) {
-                                // Object is not registered for the identifier, so this is first
-                                // encounter of thie object.
-                                objects.put(name, state.object);
-                            } else {
-                                // Object is registered for the identifier, so this is
-                                // referenced object.
-                                state.object = object;
-                            }
-                        }
-                    } else {
-                        Property property = state.model.getProperty(node.getAttributeLocalName(i));
-
-                        // ignore deprecated property
-                        if (property != null) {
-                            // restore a property value form an attribute value
-                            Decoder decoder = property.model.getDecoder();
-
-                            if (decoder != null) {
-                                try {
-                                    state.model.set(state.object, property, decoder.decode(node.getAttributeValue(i)));
-                                } catch (Exception e) {
-                                    // ignore
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // stack current state for reference
-                states.offer(state);
-                break;
-
-            case XMLStreamReader.END_ELEMENT:
-                Agent current = states.pollLast();
-                Agent parent = states.peekLast();
-
-                if (parent != null) {
-                    parent.model.set(parent.object, current.property, current.object);
-                }
-                break;
-            }
-        }
-        return root;
     }
 
     /**
@@ -2607,14 +2443,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
-     * @param output A serialized data output. <code>null</code> will throw
+     * @param out A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
      * @param format <code>true</code> will produce JSON expression, <code>false</code> will produce
      *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
-    public static void write(Object input, Appendable output) {
-        Objects.nonNull(output);
+    public static void write(Object input, Appendable out) {
+        Objects.nonNull(out);
 
         try {
             // aquire lock
@@ -2624,115 +2460,18 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             Property property = new Property(model, model.name);
 
             // traverse configuration as json
-            new JSON(output).walk(model, property, input);
+            out.append('{');
+            model.walk(input, new JSON(out, 1));
+            out.append("\r\n}");
+        } catch (Exception e) {
+            throw quiet(e);
         } finally {
             // relese lock
             lock.writeLock().unlock();
 
             // close carefuly
-            quiet(output);
+            quiet(out);
         }
-    }
-
-    /**
-     * <p>
-     * Parse as xml fragment.
-     * </p>
-     * <ul>
-     * <li>{@link XML}</li>
-     * <li>{@link Path}</li>
-     * <li>{@link InputSource}</li>
-     * <li>{@link URL}</li>
-     * <li>{@link Node}</li>
-     * <li>{@link String}</li>
-     * </ul>
-     * <ul>
-     * <li>URL Expression (http and https)</li>
-     * <li>XML Literal</li>
-     * <li>Element Name</li>
-     * </ul>
-     *
-     * @param xml A xml expression.
-     * @return A constructed {@link XML}.
-     */
-    public static XML xml(Object xml) {
-        return xml(xml, false);
-    }
-
-    /**
-     * <p>
-     * Parse as xml fragment.
-     * </p>
-     * <ul>
-     * <li>{@link XML}</li>
-     * <li>{@link Path}</li>
-     * <li>{@link InputSource}</li>
-     * <li>{@link URL}</li>
-     * <li>{@link Node}</li>
-     * <li>{@link String}</li>
-     * </ul>
-     * <ul>
-     * <li>URL Expression (http and https)</li>
-     * <li>XML Literal</li>
-     * <li>Element Name</li>
-     * </ul>
-     *
-     * @param xml A xml expression.
-     * @param text Allow text contents.
-     * @return A constructed {@link XML}.
-     */
-    static XML xml(Object xml, boolean text) {
-        Document doc;
-
-        try {
-            if (xml == null) {
-                doc = dom.newDocument();
-
-                return new XML(doc, new ArrayList(Collections.singleton(doc)));
-            } else if (xml instanceof XML) {
-                return (XML) xml;
-            } else if (xml instanceof Path) {
-                doc = dom.parse(((Path) xml).toFile());
-            } else if (xml instanceof InputSource) {
-                doc = dom.parse((InputSource) xml);
-            } else if (xml instanceof URL) {
-                return new XMLUtil(((URL) xml).openStream()).parse($encoding);
-            } else if (xml instanceof Document) {
-                doc = (Document) xml;
-            } else if (xml instanceof Node) {
-                return new XML(((Node) xml).getOwnerDocument(), new ArrayList(Collections.singleton(xml)));
-            } else {
-                // ================================
-                // Parse as String
-                // ================================
-                String value = xml.toString();
-
-                if (value.charAt(0) == '<' && 3 < value.length()) {
-                    // ========================
-                    // XML Literal
-                    // ========================
-                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
-
-                    return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
-                }
-
-                if (value.startsWith("http://") || value.startsWith("https://")) {
-                    // ========================
-                    // HTML from URL
-                    // ========================
-                    return new XMLUtil(new URL(value).openStream()).parse($encoding);
-                }
-
-                // ========================
-                // Element Name or Text
-                // ========================
-                doc = dom.newDocument();
-                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text);
-            }
-        } catch (Exception e) {
-            throw quiet(e);
-        }
-        return new XML(doc, XML.convert(doc.getChildNodes()));
     }
 
     /**

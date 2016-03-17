@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.serialization;
+package kiss.json;
 
 import java.io.IOException;
 import java.nio.file.Files;
