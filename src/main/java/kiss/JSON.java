@@ -32,8 +32,8 @@ class JSON implements PropertyWalker {
     /** The format depth. */
     private final int depth;
 
-    /** The flag whether the current property is the first item in context or not. */
-    private boolean first = true;
+    /** The location number. */
+    private int index;
 
     /**
      * JSON serializer.
@@ -41,6 +41,9 @@ class JSON implements PropertyWalker {
      * @param out An output target.
      */
     JSON(Appendable out, int depth) {
+        if (256 < depth) {
+            throw new ClassCircularityError();
+        }
         this.out = out;
         this.depth = depth;
     }
@@ -52,15 +55,8 @@ class JSON implements PropertyWalker {
     public void walk(Model model, Property property, Object object) {
         if (!property.isTransient) {
             try {
-                // ========================================
-                // Enter Node
-                // ========================================
                 // check whether this is first property in current context or not.
-                if (first) {
-                    // mark as not first
-                    first = false;
-                } else {
-                    // write property seperator
+                if (index++ != 0) {
                     out.append(',');
                 }
                 indent();
@@ -75,22 +71,12 @@ class JSON implements PropertyWalker {
                 Class type = property.model.type;
 
                 if (property.isAttribute()) {
-                    if (type.isPrimitive() && type != char.class) {
-                        out.append(I.transform(object, String.class));
-                    } else {
-                        write(I.transform(object, String.class));
-                    }
+                    write(I.transform(object, String.class));
                 } else {
-                    // check cyclic node (non-attribute node only apply this check)
-                    if (100 < depth) {
-                        throw new ClassCircularityError();
-                    }
-
                     JSON walker = new JSON(out, depth + 1);
-
                     out.append(type == List.class ? '[' : '{');
                     property.model.walk(object, walker);
-                    if (!walker.first) indent();
+                    if (walker.index != 0) indent();
                     out.append(type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {

@@ -47,7 +47,7 @@ public class SerializeTest {
 
         validate(person,
         /**/"{",
-        /**/"  'age': 20",
+        /**/"  'age': '20'",
         /**/"}");
     }
 
@@ -60,7 +60,7 @@ public class SerializeTest {
 
         validate(person,
         /**/"{",
-        /**/"  'age': 20,",
+        /**/"  'age': '20',",
         /**/"  'firstName': 'Umi',",
         /**/"  'lastName': 'Sonoda'",
         /**/"}");
@@ -74,7 +74,7 @@ public class SerializeTest {
 
         validate(bean,
         /**/"{",
-        /**/"  'none': 15",
+        /**/"  'none': '15'",
         /**/"}");
     }
 
@@ -165,14 +165,14 @@ public class SerializeTest {
 
         validate(primitive,
         /**/"{",
-        /**/"  'boolean': true,",
-        /**/"  'byte': 0,",
+        /**/"  'boolean': 'true',",
+        /**/"  'byte': '0',",
         /**/"  'char': 'c',",
-        /**/"  'double': 0.0,",
-        /**/"  'float': 0.1,",
-        /**/"  'int': -5,",
-        /**/"  'long': 0,",
-        /**/"  'short': 0",
+        /**/"  'double': '0.0',",
+        /**/"  'float': '0.1',",
+        /**/"  'int': '-5',",
+        /**/"  'long': '0',",
+        /**/"  'short': '0'",
         /**/"}");
     }
 
@@ -185,7 +185,7 @@ public class SerializeTest {
 
         validate(person,
         /**/"{",
-        /**/"  'age': 20,",
+        /**/"  'age': '20',",
         /**/"  'firstName': 'A\\r\\nA\\t',",
         /**/"  'lastName': 'B\\n\\\"\\\\B'",
         /**/"}");
@@ -219,7 +219,7 @@ public class SerializeTest {
 
         validate(student,
         /**/"{",
-        /**/"  'age': 15,",
+        /**/"  'age': '15',",
         /**/"  'firstName': 'Mio',",
         /**/"  'lastName': 'Akiyama',",
         /**/"  'school': {",

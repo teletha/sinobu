@@ -2457,11 +2457,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             lock.writeLock().lock();
 
             Model model = Model.load(input.getClass());
-            Property property = new Property(model, model.name);
+            Agent agent = new Agent();
+            agent.out = out;
+            agent.depth = 1;
 
             // traverse configuration as json
             out.append('{');
-            model.walk(input, new JSON(out, 1));
+            model.walk(input, agent);
             out.append("\r\n}");
         } catch (Exception e) {
             throw quiet(e);
