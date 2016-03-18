@@ -33,7 +33,7 @@ class JSON implements PropertyWalker {
     private final int depth;
 
     /** The location number. */
-    private int index;
+    int index;
 
     /**
      * JSON serializer.
@@ -41,7 +41,7 @@ class JSON implements PropertyWalker {
      * @param out An output target.
      */
     JSON(Appendable out, int depth) {
-        if (256 < depth) {
+        if (64 < depth) {
             throw new ClassCircularityError();
         }
         this.out = out;
@@ -55,10 +55,10 @@ class JSON implements PropertyWalker {
     public void walk(Model model, Property property, Object object) {
         if (!property.isTransient) {
             try {
-                // check whether this is first property in current context or not.
-                if (index++ != 0) {
-                    out.append(',');
-                }
+                // non-first properties requires seperator
+                if (index++ != 0) out.append(',');
+
+                // all properties need the properly indents
                 indent();
 
                 // write property key (List node doesn't need key)
@@ -70,7 +70,9 @@ class JSON implements PropertyWalker {
                 // write property value
                 Class type = property.model.type;
 
-                if (property.isAttribute()) {
+                if (object == null) {
+                    out.append("null");
+                } else if (property.isAttribute()) {
                     write(I.transform(object, String.class));
                 } else {
                     JSON walker = new JSON(out, depth + 1);
@@ -94,6 +96,10 @@ class JSON implements PropertyWalker {
      * @throws IOException
      */
     private void write(String value) throws IOException {
+        if (value == null) {
+            value = "null";
+        }
+
         out.append('"');
 
         for (int i = 0; i < value.length(); i++) {
@@ -135,7 +141,7 @@ class JSON implements PropertyWalker {
         out.append('"');
     }
 
-    private void indent() throws IOException {
+    void indent() throws IOException {
         out.append("\r\n");
 
         for (int i = 0; i < depth; i++) {

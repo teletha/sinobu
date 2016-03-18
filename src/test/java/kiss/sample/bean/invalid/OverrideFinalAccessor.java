@@ -36,14 +36,6 @@ public class OverrideFinalAccessor extends Person {
      * {@inheritDoc}
      */
     @Override
-    public final String getName() {
-        return super.getName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public final void setAge(int age) {
         super.setAge(age);
     }

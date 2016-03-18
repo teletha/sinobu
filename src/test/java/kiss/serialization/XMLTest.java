@@ -87,7 +87,7 @@ public class XMLTest {
     @Test
     public void list() {
         Student student = I.make(Student.class);
-        student.setName("test");
+        student.setFirstName("test");
 
         School school = I.make(School.class);
         school.addStudent(student);
@@ -97,7 +97,7 @@ public class XMLTest {
 
         // read
         school = I.read(config, I.make(School.class));
-        assert school.getStudents().get(0).getName().equals("test");
+        assert school.getStudents().get(0).getFirstName().equals("test");
     }
 
     @Test

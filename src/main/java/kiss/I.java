@@ -2180,25 +2180,39 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         if (js instanceof Map) {
             Map<String, Object> map = (Map) js;
 
-            for (String id : map.keySet()) {
-                // compute property
-                Property property = model.getProperty(id);
+            // list up all properties
+            List<Property> properties = new ArrayList();
 
-                if (property != null) {
-                    // calculate value
-                    Object value = map.get(id);
-                    Class type = property.model.type;
+            if (model.isCollection()) {
+                for (String id : map.keySet()) {
+                    Property property = model.getProperty(id);
 
-                    // convert value
-                    if (property.isAttribute()) {
-                        value = transform(transform(value, String.class), type);
-                    } else {
-                        value = read(property.model, make(type), value);
+                    if (property != null) {
+                        properties.add(property);
                     }
-
-                    // assign value
-                    model.set(java, property, value);
                 }
+            } else {
+                for (Property property : model.properties) {
+                    if (!property.isTransient) {
+                        properties.add(property);
+                    }
+                }
+            }
+
+            for (Property property : properties) {
+                // calculate value
+                Object value = map.get(property.name);
+                Class type = property.model.type;
+
+                // convert value
+                if (property.isAttribute()) {
+                    value = transform(transform(value, String.class), type);
+                } else {
+                    value = read(property.model, make(type), value);
+                }
+
+                // assign value
+                model.set(java, property, value);
             }
         }
 
@@ -2457,14 +2471,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             lock.writeLock().lock();
 
             Model model = Model.load(input.getClass());
-            Agent agent = new Agent();
-            agent.out = out;
-            agent.depth = 1;
 
             // traverse configuration as json
+            JSON json = new JSON(out, 1);
             out.append('{');
-            model.walk(input, agent);
-            out.append("\r\n}");
+            model.walk(input, json);
+            if (json.index != 0) out.append("\r\n");
+            out.append("}");
         } catch (Exception e) {
             throw quiet(e);
         } finally {

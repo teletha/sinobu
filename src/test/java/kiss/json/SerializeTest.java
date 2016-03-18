@@ -23,8 +23,10 @@ import org.junit.Test;
 
 import kiss.I;
 import kiss.model.Model;
+import kiss.model.Property;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.ChainBean;
+import kiss.sample.bean.DefaultValue;
 import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.NestingList;
 import kiss.sample.bean.Person;
@@ -39,6 +41,15 @@ import kiss.sample.bean.TransientBean;
  * @version 2016/03/17 1:52:38
  */
 public class SerializeTest {
+
+    @Test
+    public void empty() {
+        BuiltinBean instance = new BuiltinBean();
+
+        validate(instance,
+        /**/"{}"
+        /**/);
+    }
 
     @Test
     public void singleProperty() {
@@ -104,6 +115,22 @@ public class SerializeTest {
     }
 
     @Test
+    public void defaultValue() {
+        DefaultValue instant = new DefaultValue();
+
+        validate(instant,
+        /**/"{",
+        /**/"  'value': 'default'",
+        /**/"}");
+
+        // clear value
+        instant.value = null;
+        validate(instant,
+        /**/"{}"
+        /**/);
+    }
+
+    @Test
     public void list() {
         List<String> list = new ArrayList();
         list.add("one");
@@ -118,6 +145,25 @@ public class SerializeTest {
         /**/"    'one',",
         /**/"    'two',",
         /**/"    'three'",
+        /**/"  ]",
+        /**/"}");
+    }
+
+    @Test
+    public void listNull() {
+        List<String> list = new ArrayList();
+        list.add(null);
+        list.add("null");
+        list.add(null);
+        StringListProperty strings = I.make(StringListProperty.class);
+        strings.setList(list);
+
+        validate(strings,
+        /**/"{",
+        /**/"  'list': [",
+        /**/"    null,",
+        /**/"    'null',",
+        /**/"    null",
         /**/"  ]",
         /**/"}");
     }
@@ -151,6 +197,23 @@ public class SerializeTest {
         /**/"    'one': '1',",
         /**/"    'two': '2',",
         /**/"    'three': '3'",
+        /**/"  }",
+        /**/"}");
+    }
+
+    @Test
+    public void mapNull() {
+        Map<String, String> map = new LinkedHashMap();
+        map.put(null, null);
+        map.put("null", "NULL");
+        StringMapProperty strings = I.make(StringMapProperty.class);
+        strings.setMap(map);
+
+        validate(strings,
+        /**/"{",
+        /**/"  'map': {",
+        /**/"    'null': null,",
+        /**/"    'null': 'NULL'",
         /**/"  }",
         /**/"}");
     }
@@ -271,8 +334,34 @@ public class SerializeTest {
         Model model = Model.load(object.getClass());
 
         // write and read
-        output = new StringBuilder();
-        I.write(I.read(serialized, I.make((Class<M>) model.type)), output);
-        assert output.toString().equals(serialized);
+        validate(model, object, I.read(serialized, I.make((Class<M>) model.type)));
+    }
+
+    /**
+     * <p>
+     * Validate object by model.
+     * </p>
+     * 
+     * @param model
+     * @param one
+     * @param other
+     */
+    private static void validate(Model model, Object one, Object other) {
+        for (Property property : model.properties) {
+            Object oneValue = model.get(one, property);
+            Object otherValue = model.get(other, property);
+
+            if (property.isTransient) {
+                // ignore
+            } else if (property.isAttribute()) {
+                if (oneValue == null) {
+                    assert otherValue == null;
+                } else {
+                    assert oneValue.equals(otherValue);
+                }
+            } else {
+                validate(property.model, oneValue, otherValue);
+            }
+        }
     }
 }

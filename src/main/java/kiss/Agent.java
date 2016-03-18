@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.io.IOException;
 import java.nio.file.WatchEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.function.Consumer;
 
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.model.PropertyWalker;
 
 /**
  * <p>
@@ -28,7 +26,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2015/06/24 13:07:48
  */
-class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>, Disposable, PropertyWalker {
+class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>, Disposable {
 
     /** For reuse. */
     T object;
@@ -170,116 +168,8 @@ class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>,
     int index;
 
     // ============================================================
-    // For JSON Serialization
-    // ============================================================
-
-    // ============================================================
     // For XML Desirialization and Bean Conversion
     // ============================================================
-    /** The charcter sequence for output as JSON. */
-    Appendable out;
-
-    /** The format depth. */
-    int depth;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void walk(Model model, Property property, Object object) {
-        if (!property.isTransient) {
-            try {
-                // check whether this is first property in current context or not.
-                if (index++ != 0) {
-                    out.append(',');
-                }
-                indent();
-
-                // write property key (List node doesn't need key)
-                if (model.type != List.class) {
-                    write(property.name);
-                    out.append(": ");
-                }
-
-                // write property value
-                Class type = property.model.type;
-
-                if (property.isAttribute()) {
-                    write(I.transform(object, String.class));
-                } else {
-                    Agent walker = new Agent();
-                    walker.out = out;
-                    walker.depth = depth + 1;
-
-                    out.append(type == List.class ? '[' : '{');
-                    property.model.walk(object, walker);
-                    if (walker.index != 0) indent();
-                    out.append(type == List.class ? ']' : '}');
-                }
-            } catch (IOException e) {
-                throw I.quiet(e);
-            }
-        }
-    }
-
-    /**
-     * <p>
-     * Write JSON literal with quote.
-     * </p>
-     * 
-     * @param value A character sequence.
-     * @throws IOException
-     */
-    private void write(String value) throws IOException {
-        out.append('"');
-
-        for (int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
-
-            switch (c) {
-            case '"':
-                out.append("\\\"");
-                break;
-
-            case '\\':
-                out.append("\\\\");
-                break;
-
-            case '\b':
-                out.append("\\b");
-                break;
-
-            case '\f':
-                out.append("\\f");
-                break;
-
-            case '\n':
-                out.append("\\n");
-                break;
-
-            case '\r':
-                out.append("\\r");
-                break;
-
-            case '\t':
-                out.append("\\t");
-                break;
-
-            default:
-                out.append(c);
-            }
-        }
-        out.append('"');
-    }
-
-    private void indent() throws IOException {
-        out.append("\r\n");
-
-        for (int i = 0; i < depth; i++) {
-            out.append('\t');
-        }
-    }
-
     /**
      * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
      * separate format instances for each thread. If multiple threads access a format concurrently,
