@@ -81,8 +81,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 
-import sun.reflect.ConstantPool;
-
 import jdk.internal.org.objectweb.asm.AnnotationVisitor;
 import jdk.internal.org.objectweb.asm.ClassVisitor;
 import jdk.internal.org.objectweb.asm.ClassWriter;
@@ -307,12 +305,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     /** The serial task manager. */
     private static final ExecutorService serial = Executors.newSingleThreadExecutor(new I());
 
-    /** The holder for lambda parameter names. */
-    private static final Variable<String> methods = new Variable();
-
-    /** The accessible internal method for lambda info. */
-    private static final Method findConstants;
-
     /** The associatable object holder. */
     private static final WeakHashMap<Object, WeakHashMap> associatables = new WeakHashMap();
 
@@ -371,10 +363,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             define = ClassLoader.class
                     .getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
             define.setAccessible(true);
-
-            // reflect lambda info related methods
-            findConstants = Class.class.getDeclaredMethod("getConstantPool");
-            findConstants.setAccessible(true);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -1397,44 +1385,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitMethodInsn(INVOKESTATIC, wrapper
                     .getInternalName(), "valueOf", "(" + Type.getType(clazz).getDescriptor() + ")" + wrapper.getDescriptor(), false);
         }
-    }
-
-    /**
-     * <p>
-     * Findthe first parameter name of lambda method.
-     * </p>
-     * 
-     * @param object A lambda instance.
-     * @return A parameter name.
-     */
-    static String method(Object object) {
-        Class clazz = object.getClass();
-        String name = methods.get(clazz);
-
-        if (name == null) {
-            try {
-                ConstantPool constantPool = (ConstantPool) findConstants.invoke(clazz);
-
-                // MethodInfo
-                // [0] : Declared Class Name (internal qualified name)
-                // [1] : Method Name
-                // [2] : Method Descriptor (internal qualified signature)
-                String[] info = constantPool.getMemberRefInfoAt(constantPool.getSize() - 3);
-                Class lambda = Class.forName(info[0].replaceAll("/", "."));
-                Type[] types = Type.getArgumentTypes(info[2]);
-                Class[] params = new Class[types.length];
-
-                for (int i = 0; i < params.length; i++) {
-                    params[i] = Class.forName(types[i].getClassName());
-                }
-                name = lambda.getDeclaredMethod(info[1], params).getParameters()[0].getName();
-
-                methods.set(clazz, name);
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-        }
-        return name;
     }
 
     /**
@@ -2470,9 +2420,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // aquire lock
             lock.writeLock().lock();
 
-            Model model = Model.of(input);
-
             // traverse object as json
+            Model model = Model.of(input);
             new JSON(out, 0).walk(model, new Property(model, ""), input);
         } finally {
             // relese lock

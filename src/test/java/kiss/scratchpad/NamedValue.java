@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.scratchpad;
 
 import java.util.function.Function;
 
@@ -24,7 +24,7 @@ public interface NamedValue<V> extends Function<String, V> {
      * @return A key string.
      */
     default String name() {
-        return I.method(this);
+        return SinobuScratchpad.method(this);
     }
 
     /**
