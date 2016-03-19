@@ -31,7 +31,7 @@ import kiss.sample.bean.StringListProperty;
 /**
  * @version 2016/03/16 21:08:47
  */
-public class SerializeCuncurrentTest {
+public class CuncurrentTest {
 
     /** The temporaries. */
     @Rule
