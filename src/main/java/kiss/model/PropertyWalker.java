@@ -19,7 +19,7 @@ package kiss.model;
  * </p>
  * 
  * @see Model#walk(Object, PropertyWalker)
- * @version 2011/12/26 13:05:59
+ * @version 2016/03/19 17:18:33
  */
 public interface PropertyWalker {
 
@@ -31,7 +31,7 @@ public interface PropertyWalker {
      * @param model A object model of the base node that started from. This value must not be
      *            <code>null</code>.
      * @param property An arc in object graph. This value must not be <code>null</code>.
-     * @param node A current node that arrives at. This value must not be <code>null</code>.
+     * @param object A current node that arrives at. This value must not be <code>null</code>.
      */
-    void walk(Model model, Property property, Object node);
+    void walk(Model model, Property property, Object object);
 }
