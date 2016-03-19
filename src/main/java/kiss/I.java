@@ -2472,14 +2472,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             Model model = Model.of(input);
 
-            // traverse configuration as json
-            JSON json = new JSON(out, 1);
-            out.append('{');
-            model.walk(input, json);
-            if (json.index != 0) out.append("\r\n");
-            out.append("}");
-        } catch (Exception e) {
-            throw quiet(e);
+            // traverse object as json
+            new JSON(out, 0).walk(model, new Property(model, ""), input);
         } finally {
             // relese lock
             lock.writeLock().unlock();

@@ -60,12 +60,14 @@ class JSON implements PropertyWalker {
                 if (index++ != 0) out.append(',');
 
                 // all properties need the properly indents
-                indent();
+                if (0 < indent) {
+                    indent();
 
-                // property key (List node doesn't need key)
-                if (model.type != List.class) {
-                    write(property.name);
-                    out.append(": ");
+                    // property key (List node doesn't need key)
+                    if (model.type != List.class) {
+                        write(property.name);
+                        out.append(": ");
+                    }
                 }
 
                 // property value
