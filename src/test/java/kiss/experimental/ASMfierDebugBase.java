@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.scratchpad;
+package kiss.experimental;
 
 /**
  * @version 2009/12/27 17:20:01

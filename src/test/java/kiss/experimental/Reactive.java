@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.scratchpad;
+package kiss.experimental;
 
 import java.beans.Introspector;
 import java.lang.annotation.Documented;

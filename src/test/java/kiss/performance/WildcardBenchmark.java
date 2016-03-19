@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import antibug.benchmark.Benchmark;
 import antibug.benchmark.Benchmark.Code;
-import kiss.scratchpad.Wildcard;
+import kiss.experimental.Wildcard;
 
 /**
  * @version 2012/01/31 16:18:56

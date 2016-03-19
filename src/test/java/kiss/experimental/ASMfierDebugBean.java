@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.scratchpad;
+package kiss.experimental;
 
 /**
  * @version 2011/11/19 18:40:08
@@ -15,7 +15,7 @@ package kiss.scratchpad;
 public class ASMfierDebugBean extends ASMfierDebugBase {
 
     /**
-     * @see kiss.scratchpad.ASMfierDebugBase#getAge()
+     * @see kiss.experimental.ASMfierDebugBase#getAge()
      */
     @Override
     public int getAge() {
@@ -23,7 +23,7 @@ public class ASMfierDebugBean extends ASMfierDebugBase {
     }
 
     /**
-     * @see kiss.scratchpad.ASMfierDebugBase#getName()
+     * @see kiss.experimental.ASMfierDebugBase#getName()
      */
     @Override
     public String getName() {
@@ -31,7 +31,7 @@ public class ASMfierDebugBean extends ASMfierDebugBase {
     }
 
     /**
-     * @see kiss.scratchpad.ASMfierDebugBase#setAge(int)
+     * @see kiss.experimental.ASMfierDebugBase#setAge(int)
      */
     @Override
     public void setAge(int age) {
@@ -39,7 +39,7 @@ public class ASMfierDebugBean extends ASMfierDebugBase {
     }
 
     /**
-     * @see kiss.scratchpad.ASMfierDebugBase#setName(java.lang.String)
+     * @see kiss.experimental.ASMfierDebugBase#setName(java.lang.String)
      */
     @Override
     public void setName(String name) {

@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.scratchpad;
+package kiss.experimental;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class ParameterPassingStyleTest {
     @Test
     @Ignore
     public void param() {
-        StringParam create = SinobuScratchpad.make(StringParam::new, "test");
+        StringParam create = SinobuExperimental.make(StringParam::new, "test");
     }
 
     /**

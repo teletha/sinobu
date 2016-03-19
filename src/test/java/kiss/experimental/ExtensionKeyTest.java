@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.scratchpad;
+package kiss.experimental;
 
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ public class ExtensionKeyTest {
     private static class AExtensionPointKeyProvider implements ExtensionKeyProvider<String> {
 
         /**
-         * @see kiss.scratchpad.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
+         * @see kiss.experimental.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
          *      java.lang.Class)
          */
         @Override
@@ -75,7 +75,7 @@ public class ExtensionKeyTest {
     private static class BExtensionPointKeyProvider implements ExtensionKeyProvider<Class> {
 
         /**
-         * @see kiss.scratchpad.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
+         * @see kiss.experimental.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
          *      java.lang.Class)
          */
         @Override
@@ -90,7 +90,7 @@ public class ExtensionKeyTest {
     private static class CExtensionPointKeyProvider implements ExtensionKeyProvider<Class> {
 
         /**
-         * @see kiss.scratchpad.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
+         * @see kiss.experimental.ExtensionKeyTest.ExtensionKeyProvider#key(java.lang.Class,
          *      java.lang.Class)
          */
         @Override

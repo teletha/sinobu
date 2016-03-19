@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.scratchpad;
+package kiss.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Flushable;

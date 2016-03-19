@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.scratchpad;
+package kiss.experimental;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -30,7 +30,7 @@ import kiss.Variable;
  * @version 2008/06/18 8:42:37
  */
 @Manageable(lifestyle = Singleton.class)
-public class SinobuScratchpad {
+public class SinobuExperimental {
 
     /** The holder for lambda parameter names. */
     private static final Variable<String> methods = new Variable();
