@@ -31,7 +31,7 @@ class ListModel extends Model {
     ListModel(Class clazz, Type type, Type base) {
         super(clazz);
 
-        itemModel = Model.load(type, base);
+        itemModel = Model.of(type, base);
     }
 
     /**

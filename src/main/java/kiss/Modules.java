@@ -94,7 +94,7 @@ class Modules extends Variable<Lifestyle>implements ClassListener, Decoder<Class
     @Override
     public void unload(Class clazz) {
         for (Object[] types : this.types) {
-            if (Model.load(types[0].getClass()).type == clazz) {
+            if (Model.of(types[0]).type == clazz) {
                 this.types.remove(types);
                 return;
             }

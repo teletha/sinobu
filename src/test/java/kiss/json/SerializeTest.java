@@ -212,7 +212,6 @@ public class SerializeTest {
         validate(strings,
         /**/"{",
         /**/"  'map': {",
-        /**/"    'null': null,",
         /**/"    'null': 'NULL'",
         /**/"  }",
         /**/"}");
@@ -301,7 +300,7 @@ public class SerializeTest {
     }
 
     @Test(expected = ClassCircularityError.class)
-    public void testCyclicRootNode() {
+    public void cyclic() {
         ChainBean chain = I.make(ChainBean.class);
         chain.setNext(chain);
 
@@ -331,7 +330,7 @@ public class SerializeTest {
         assert joiner.toString().equals(serialized);
 
         // validate model and properties
-        Model model = Model.load(object.getClass());
+        Model model = Model.of(object.getClass());
 
         // write and read
         validate(model, object, I.read(serialized, I.make((Class<M>) model.type)));

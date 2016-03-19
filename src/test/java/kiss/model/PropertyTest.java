@@ -22,7 +22,7 @@ public class PropertyTest {
 
     @Test
     public void annotation() throws Exception {
-        Model model = Model.load(Annotated.class);
+        Model model = Model.of(Annotated.class);
         Property property = model.getProperty("name");
         assert property.getAnnotation(KarenBee.class) != null;
         assert property.getAnnotation(Transient.class) == null;

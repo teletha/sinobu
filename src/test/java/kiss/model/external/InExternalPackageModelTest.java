@@ -23,7 +23,7 @@ public class InExternalPackageModelTest {
 
     @Test
     public void fieldPropertyInPrivateClass() throws Exception {
-        Model model = Model.load(PrivateClass.class);
+        Model model = Model.of(PrivateClass.class);
         assert model != null;
 
         List<Property> list = model.properties;

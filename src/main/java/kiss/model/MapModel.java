@@ -41,8 +41,8 @@ class MapModel extends Model {
             types = new Type[] {Object.class, Object.class};
         }
 
-        this.key = Model.load(types[0], base);
-        this.value = Model.load(types[1], base);
+        this.key = Model.of(types[0], base);
+        this.value = Model.of(types[1], base);
     }
 
     /**

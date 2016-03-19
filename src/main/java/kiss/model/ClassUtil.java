@@ -239,7 +239,7 @@ public final class ClassUtil {
         }
 
         // compute actual class
-        Class raw = clazz instanceof Class ? (Class) clazz : Model.load(clazz, base).type;
+        Class raw = clazz instanceof Class ? (Class) clazz : Model.of(clazz, base).type;
 
         // collect all types
         Set<Type> types = new HashSet();
@@ -260,7 +260,7 @@ public final class ClassUtil {
 
                     for (int i = 0; i < args.length; i++) {
                         // resolve various type (TypeVariable, ParameterizedType and WildcardType)
-                        classes[i] = Model.load(args[i], base).type;
+                        classes[i] = Model.of(args[i], base).type;
                     }
                     return classes;
                 }

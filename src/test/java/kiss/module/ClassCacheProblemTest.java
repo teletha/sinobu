@@ -33,7 +33,7 @@ public class ClassCacheProblemTest {
      */
     @Test
     public void testClassCacheForPrototype() throws Exception {
-        Model model1 = Model.load(module.convert(ExtendedClass1.class));
+        Model model1 = Model.of(module.convert(ExtendedClass1.class));
         assert model1 != null;
 
         Class class1 = model1.type;
@@ -49,7 +49,7 @@ public class ClassCacheProblemTest {
         module.unload();
         module.load();
 
-        Model model2 = Model.load(module.convert(ExtendedClass1.class));
+        Model model2 = Model.of(module.convert(ExtendedClass1.class));
         assert model2 != null;
 
         Class class2 = model2.type;
@@ -73,7 +73,7 @@ public class ClassCacheProblemTest {
      */
     @Test
     public void testClassCacheForSingleton() {
-        Model model1 = Model.load(module.convert(SingletonClass.class));
+        Model model1 = Model.of(module.convert(SingletonClass.class));
         assert model1 != null;
 
         Class class1 = model1.type;
@@ -92,7 +92,7 @@ public class ClassCacheProblemTest {
         module.unload();
         module.load();
 
-        Model model2 = Model.load(module.convert(SingletonClass.class));
+        Model model2 = Model.of(module.convert(SingletonClass.class));
         assert model2 != null;
 
         Class class2 = model2.type;

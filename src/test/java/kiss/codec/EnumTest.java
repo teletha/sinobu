@@ -22,8 +22,8 @@ public class EnumTest {
 
     @Test
     public void codec() throws Exception {
-        Decoder<OverrideToString> decoder = Model.load(OverrideToString.class).getDecoder();
-        Encoder<OverrideToString> encoder = Model.load(OverrideToString.class).getEncoder();
+        Decoder<OverrideToString> decoder = Model.of(OverrideToString.class).getDecoder();
+        Encoder<OverrideToString> encoder = Model.of(OverrideToString.class).getEncoder();
         assert decoder.decode("A") == OverrideToString.A;
         assert encoder.encode(OverrideToString.A).equals("A");
     }

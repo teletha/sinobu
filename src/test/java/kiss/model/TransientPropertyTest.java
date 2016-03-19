@@ -27,35 +27,35 @@ public class TransientPropertyTest {
 
     @Test
     public void transientGetter() throws Exception {
-        Model model = Model.load(TransientBean.class);
+        Model model = Model.of(TransientBean.class);
         Property property = model.getProperty("onlyGetter");
         assert property.isTransient;
     }
 
     @Test
     public void transientSetter() throws Exception {
-        Model model = Model.load(TransientBean.class);
+        Model model = Model.of(TransientBean.class);
         Property property = model.getProperty("onlySetter");
         assert property.isTransient;
     }
 
     @Test
     public void transientBoth() throws Exception {
-        Model model = Model.load(TransientBean.class);
+        Model model = Model.of(TransientBean.class);
         Property property = model.getProperty("both");
         assert property.isTransient;
     }
 
     @Test
     public void transientInverse() throws Exception {
-        Model model = Model.load(TransientBean.class);
+        Model model = Model.of(TransientBean.class);
         Property property = model.getProperty("inverse");
         assert property.isTransient;
     }
 
     @Test
     public void transientNone() throws Exception {
-        Model model = Model.load(TransientBean.class);
+        Model model = Model.of(TransientBean.class);
         Property property = model.getProperty("none");
         assert !property.isTransient;
     }

@@ -72,13 +72,13 @@ public class ModelTest {
     @Test
     public void identicalCehck() throws Exception {
         // from class
-        Model model = Model.load(Person.class);
+        Model model = Model.of(Person.class);
         assert model != null;
         assert Person.class == model.type;
 
         // from instance
         Person person = I.make(Person.class);
-        Model model2 = Model.load(person.getClass());
+        Model model2 = Model.of(person.getClass());
         assert model != null;
         assert Person.class == model.type;
 
@@ -88,14 +88,14 @@ public class ModelTest {
 
     @Test
     public void load() {
-        Model model = Model.load(Model.class);
+        Model model = Model.of(Model.class);
         assert model != null;
         assert Model.class == model.type;
     }
 
     @Test
     public void wildcardProperty() {
-        Model model = Model.load(WildcardBean.class);
+        Model model = Model.of(WildcardBean.class);
         assert model != null;
 
         Property property = model.getProperty("wildcardList");
@@ -115,7 +115,7 @@ public class ModelTest {
 
     @Test
     public void inheritProperty() {
-        Model model = Model.load(InheritanceBean.class);
+        Model model = Model.of(InheritanceBean.class);
         assert model != null;
         assert InheritanceBean.class == model.type;
 
@@ -130,7 +130,7 @@ public class ModelTest {
 
     @Test
     public void stringMap() {
-        Model model = Model.load(StringMapProperty.class);
+        Model model = Model.of(StringMapProperty.class);
         assert model != null;
 
         Property property = model.getProperty("map");
@@ -153,7 +153,7 @@ public class ModelTest {
 
     @Test
     public void fieldProperty() {
-        Model model = Model.load(FieldProperty.class);
+        Model model = Model.of(FieldProperty.class);
         assert 2 == model.properties.size();
 
         Property string = model.properties.get(0);
@@ -164,7 +164,7 @@ public class ModelTest {
 
     @Test
     public void fieldGenericProperty() {
-        Model model = Model.load(GenericFieldProperty.class);
+        Model model = Model.of(GenericFieldProperty.class);
         assert 2 == model.properties.size();
 
         Property string = model.properties.get(0);
@@ -175,7 +175,7 @@ public class ModelTest {
 
     @Test
     public void fxPropertyAtFieldProperty() {
-        Model model = Model.load(FxPropertyAtField.class);
+        Model model = Model.of(FxPropertyAtField.class);
         assert model.properties.size() == 4;
 
         Property integer = model.properties.get(0);
@@ -202,7 +202,7 @@ public class ModelTest {
 
     @Test
     public void protectedAccessor() {
-        Model model = Model.load(ProtectedAccessor.class);
+        Model model = Model.of(ProtectedAccessor.class);
         assert model != null;
 
         List<Property> list = model.properties;
@@ -223,7 +223,7 @@ public class ModelTest {
      */
     @Test
     public void compatibleKeyMap() {
-        Model model = Model.load(CompatibleKeyMap.class);
+        Model model = Model.of(CompatibleKeyMap.class);
         assert model != null;
 
         Property property = model.getProperty("integerKey");
@@ -249,7 +249,7 @@ public class ModelTest {
      */
     @Test
     public void incompatibleKeyMap() {
-        Model model = Model.load(IncompatibleKeyMap.class);
+        Model model = Model.of(IncompatibleKeyMap.class);
         assert model != null;
 
         Property property = model.getProperty("incompatible");
@@ -268,7 +268,7 @@ public class ModelTest {
      */
     @Test
     public void testModel06() {
-        Model model = Model.load(GenericStringBean.class);
+        Model model = Model.of(GenericStringBean.class);
         assert model != null;
 
         Property property = model.getProperty("generic");
@@ -297,7 +297,7 @@ public class ModelTest {
      */
     @Test
     public void testGenericObjectModel() {
-        Model model = Model.load(ModelBean.class);
+        Model model = Model.of(ModelBean.class);
         assert model != null;
 
         Property property = model.getProperty("generic");
@@ -332,7 +332,7 @@ public class ModelTest {
      */
     @Test
     public void testGenericListModel() {
-        Model model = Model.load(ListBean.class);
+        Model model = Model.of(ListBean.class);
         assert model != null;
 
         Property property = model.getProperty("generic");
@@ -379,7 +379,7 @@ public class ModelTest {
      */
     @Test
     public void testGenericMapModel() {
-        Model model = Model.load(MapBean.class);
+        Model model = Model.of(MapBean.class);
         assert model != null;
 
         Property property = model.getProperty("generic");
@@ -423,19 +423,19 @@ public class ModelTest {
 
     @Test
     public void list() throws Exception {
-        Model model = Model.load(StringList.class);
+        Model model = Model.of(StringList.class);
         assert model instanceof ListModel;
     }
 
     @Test
     public void map() throws Exception {
-        Model model = Model.load(StringMap.class);
+        Model model = Model.of(StringMap.class);
         assert model instanceof MapModel;
     }
 
     @Test
     public void testGenericGetterBean() {
-        Model model = Model.load(GenericGetterBean.class);
+        Model model = Model.of(GenericGetterBean.class);
 
         assertProperty(model, "generic", String.class);
         assertProperty(model, "genericList", List.class);
@@ -444,7 +444,7 @@ public class ModelTest {
 
     @Test
     public void testGenericSetterBean() {
-        Model model = Model.load(GenericSetterBean.class);
+        Model model = Model.of(GenericSetterBean.class);
 
         assertProperty(model, "generic", String.class);
         assertProperty(model, "genericList", List.class);
@@ -453,7 +453,7 @@ public class ModelTest {
 
     @Test
     public void testGenericBoundedTypedBean() {
-        Model model = Model.load(GenericBoundedTypedBean.class);
+        Model model = Model.of(GenericBoundedTypedBean.class);
 
         assertProperty(model, "generic", Student.class);
         assertProperty(model, "genericList", List.class);
@@ -462,7 +462,7 @@ public class ModelTest {
 
     @Test
     public void testWildcardTypeSetterBean() throws Exception {
-        Model model = Model.load(WildcardTypeSetter.class);
+        Model model = Model.of(WildcardTypeSetter.class);
 
         assertProperty(model, "list", List.class);
     }
@@ -472,7 +472,7 @@ public class ModelTest {
      */
     @Test
     public void testInvalidBean02() {
-        Model model = Model.load(OnlyGetter.class);
+        Model model = Model.of(OnlyGetter.class);
         assert model != null;
 
         List<Property> list = model.properties;
@@ -484,7 +484,7 @@ public class ModelTest {
      */
     @Test
     public void testInvalidBean03() {
-        Model model = Model.load(OnlySetter.class);
+        Model model = Model.of(OnlySetter.class);
         assert model != null;
 
         List<Property> list = model.properties;
@@ -496,7 +496,7 @@ public class ModelTest {
      */
     @Test
     public void testInvalidBean04() {
-        Model model = Model.load(FinalAccessor.class);
+        Model model = Model.of(FinalAccessor.class);
         assert model != null;
 
         List<Property> list = model.properties;
@@ -508,7 +508,7 @@ public class ModelTest {
      */
     @Test
     public void testInvalidBean07() {
-        Model model = Model.load(OverrideFinalAccessor.class);
+        Model model = Model.of(OverrideFinalAccessor.class);
         assert model != null;
 
         List<Property> list = model.properties;
@@ -520,7 +520,7 @@ public class ModelTest {
      */
     @Test
     public void testInvalidBean06() {
-        Model model = Model.load(StaticAccessor.class);
+        Model model = Model.of(StaticAccessor.class);
         assert model != null;
 
         List<Property> list = model.properties;
@@ -532,7 +532,7 @@ public class ModelTest {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable01() {
-        Model model = Model.load(Person.class);
+        Model model = Model.of(Person.class);
         List<Property> properties = model.properties;
 
         properties.clear();
@@ -543,7 +543,7 @@ public class ModelTest {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable02() {
-        Model model = Model.load(Person.class);
+        Model model = Model.of(Person.class);
         List<Property> properties = model.properties;
 
         properties.remove(0);
@@ -554,7 +554,7 @@ public class ModelTest {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable03() {
-        Model model = Model.load(Person.class);
+        Model model = Model.of(Person.class);
         List<Property> properties = model.properties;
 
         properties.add(new Property(model, "test"));
@@ -565,7 +565,7 @@ public class ModelTest {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable04() {
-        Model model = Model.load(Person.class);
+        Model model = Model.of(Person.class);
         List<Property> properties = model.properties;
 
         properties.iterator().remove();
@@ -576,7 +576,7 @@ public class ModelTest {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable05() {
-        Model model = Model.load(Person.class);
+        Model model = Model.of(Person.class);
         List<Property> properties = model.properties;
 
         Collections.sort(properties);
@@ -587,7 +587,7 @@ public class ModelTest {
         Person person = new Person();
         person.setAge(1);
 
-        Model model = Model.load(Person.class);
+        Model model = Model.of(Person.class);
         assert model.get(person, model.getProperty("age")).equals(1);
     }
 
@@ -596,14 +596,14 @@ public class ModelTest {
         GenericStringBean bean = new GenericStringBean();
         bean.setGeneric("value");
 
-        Model model = Model.load(GenericStringBean.class);
+        Model model = Model.of(GenericStringBean.class);
         assert"value" == model.get(bean, model.getProperty("generic"));
     }
 
     @Test
     public void testSetAtNonAccessibleInstance() {
         Person person = new Person();
-        Model model = Model.load(Person.class);
+        Model model = Model.of(Person.class);
         model.set(person, model.getProperty("age"), 1);
 
         assert 1 == person.getAge();
@@ -612,7 +612,7 @@ public class ModelTest {
     @Test
     public void testSetAtNonAccessibleGenericInstance() {
         GenericStringBean bean = new GenericStringBean();
-        Model model = Model.load(GenericStringBean.class);
+        Model model = Model.of(GenericStringBean.class);
         model.set(bean, model.getProperty("generic"), "value");
 
         assert"value" == bean.getGeneric();

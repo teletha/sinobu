@@ -29,8 +29,8 @@ class JSON implements PropertyWalker {
     /** The charcter sequence for output as JSON. */
     private final Appendable out;
 
-    /** The format depth. */
-    private final int depth;
+    /** The size of indent. */
+    private final int indent;
 
     /** The location number. */
     int index;
@@ -39,13 +39,14 @@ class JSON implements PropertyWalker {
      * JSON serializer.
      * 
      * @param out An output target.
+     * @param indent A size of indent.
      */
-    JSON(Appendable out, int depth) {
-        if (64 < depth) {
+    JSON(Appendable out, int indent) {
+        if (64 < indent) {
             throw new ClassCircularityError();
         }
         this.out = out;
-        this.depth = depth;
+        this.indent = indent;
     }
 
     /**
@@ -53,33 +54,29 @@ class JSON implements PropertyWalker {
      */
     @Override
     public void walk(Model model, Property property, Object object) {
-        if (!property.isTransient) {
+        if (!property.isTransient && property.name != null) {
             try {
-                // non-first properties requires seperator
+                // non-first properties requires separator
                 if (index++ != 0) out.append(',');
 
                 // all properties need the properly indents
                 indent();
 
-                // write property key (List node doesn't need key)
+                // property key (List node doesn't need key)
                 if (model.type != List.class) {
                     write(property.name);
                     out.append(": ");
                 }
 
-                // write property value
-                Class type = property.model.type;
-
-                if (object == null) {
-                    out.append("null");
-                } else if (property.isAttribute()) {
+                // property value
+                if (property.isAttribute()) {
                     write(I.transform(object, String.class));
                 } else {
-                    JSON walker = new JSON(out, depth + 1);
-                    out.append(type == List.class ? '[' : '{');
+                    JSON walker = new JSON(out, indent + 1);
+                    out.append(property.model.type == List.class ? '[' : '{');
                     property.model.walk(object, walker);
                     if (walker.index != 0) indent();
-                    out.append(type == List.class ? ']' : '}');
+                    out.append(property.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
                 throw I.quiet(e);
@@ -97,54 +94,61 @@ class JSON implements PropertyWalker {
      */
     private void write(String value) throws IOException {
         if (value == null) {
-            value = "null";
-        }
+            out.append("null");
+        } else {
+            out.append('"');
 
-        out.append('"');
+            for (int i = 0; i < value.length(); i++) {
+                char c = value.charAt(i);
 
-        for (int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
+                switch (c) {
+                case '"':
+                    out.append("\\\"");
+                    break;
 
-            switch (c) {
-            case '"':
-                out.append("\\\"");
-                break;
+                case '\\':
+                    out.append("\\\\");
+                    break;
 
-            case '\\':
-                out.append("\\\\");
-                break;
+                case '\b':
+                    out.append("\\b");
+                    break;
 
-            case '\b':
-                out.append("\\b");
-                break;
+                case '\f':
+                    out.append("\\f");
+                    break;
 
-            case '\f':
-                out.append("\\f");
-                break;
+                case '\n':
+                    out.append("\\n");
+                    break;
 
-            case '\n':
-                out.append("\\n");
-                break;
+                case '\r':
+                    out.append("\\r");
+                    break;
 
-            case '\r':
-                out.append("\\r");
-                break;
+                case '\t':
+                    out.append("\\t");
+                    break;
 
-            case '\t':
-                out.append("\\t");
-                break;
-
-            default:
-                out.append(c);
+                default:
+                    out.append(c);
+                }
             }
+            out.append('"');
         }
-        out.append('"');
     }
 
-    void indent() throws IOException {
+    /**
+     * <p>
+     * Helper method to write line and indent.
+     * </p>
+     * 
+     * @throws IOException
+     */
+    private void indent() throws IOException {
         out.append("\r\n");
 
-        for (int i = 0; i < depth; i++) {
+        for (int i = 0; i < indent; i++) {
             out.append('\t');
         }
     }

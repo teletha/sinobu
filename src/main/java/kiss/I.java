@@ -1072,7 +1072,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return A generated {@link Class} object.
      */
     private static synchronized Class define(Class model, Table interceptables) {
-        model = Model.load(model).type;
+        model = Model.of(model).type;
 
         // Compute fully qualified class name for the generated class.
         // The coder class name is prefix to distinguish enhancer type by a name and make core
@@ -2153,7 +2153,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // Parse as JSON
             reader.unread(new char[] {'a', '='});
 
-            return read(Model.load(output.getClass()), output, script.eval(reader));
+            return read(Model.of(output), output, script.eval(reader));
         } catch (Exception e) {
             throw new IOError(e);
         } finally {
@@ -2193,7 +2193,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 }
             } else {
                 for (Property property : model.properties) {
-                    if (!property.isTransient) {
+                    if (property.isTransient == false) {
                         properties.add(property);
                     }
                 }
@@ -2275,8 +2275,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return null;
         }
 
-        Model inputModel = Model.load(input.getClass());
-        Model outputModel = Model.load(output);
+        Model inputModel = Model.of(input);
+        Model outputModel = Model.of(output);
 
         // no conversion
         if (inputModel == outputModel) {
@@ -2406,7 +2406,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @throws NullPointerException If the input Java object is <code>null</code> .
      */
     public static void write(Object input) {
-        Lifestyle lifestyle = modules.get(Model.load(input.getClass()).type);
+        Lifestyle lifestyle = modules.get(Model.of(input).type);
 
         if (lifestyle instanceof Preference) {
             write(input, ((Preference) lifestyle).path);
@@ -2470,7 +2470,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // aquire lock
             lock.writeLock().lock();
 
-            Model model = Model.load(input.getClass());
+            Model model = Model.of(input);
 
             // traverse configuration as json
             JSON json = new JSON(out, 1);

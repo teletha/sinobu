@@ -87,7 +87,7 @@ public class Reactive {
                 for (Method method : declaration.getDeclaredMethods()) {
                     if (method.isSynthetic()) {
                         if (method.getName().equals(methodName)) {
-                            Model model = Model.load(method.getParameterTypes()[0]);
+                            Model model = Model.of(method.getParameterTypes()[0]);
                             PropertySearch search = new PropertySearch(model);
 
                             new ClassReader(declaration.getName()).accept(new MethodSearch(methodName, search), ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
