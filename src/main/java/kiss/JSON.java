@@ -24,7 +24,7 @@ import kiss.model.Property;
  * 
  * @version 2016/03/15 18:10:13
  */
-class JSON implements Consumer<Ternary<Model, Property, Object>> {
+class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
 
     /** The charcter sequence for output as JSON. */
     private final Appendable out;
@@ -53,7 +53,7 @@ class JSON implements Consumer<Ternary<Model, Property, Object>> {
      * {@inheritDoc}
      */
     @Override
-    public void accept(Ternary<Model, Property, Object> context) {
+    public void accept(Ⅲ<Model, Property, Object> context) {
         if (!context.e.isTransient && context.e.name != null) {
             try {
                 // non-first properties requires separator

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import kiss.I;
-import kiss.Ternary;
+import kiss.Ⅲ;
 
 /**
  * @version 2009/07/22 23:37:56
@@ -87,7 +87,7 @@ class ListModel extends Model {
      * @see kiss.model.Model#walk(java.lang.Object, kiss.model.PropertyWalker)
      */
     @Override
-    public void walk(Object object, Consumer<Ternary<Model, Property, Object>> walker) {
+    public void walk(Object object, Consumer<Ⅲ<Model, Property, Object>> walker) {
         if (object != null && walker != null) {
             // We must use extended for loop because the sequential access is not efficient for some
             // List implementation.

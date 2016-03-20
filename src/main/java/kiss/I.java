@@ -1886,8 +1886,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param param1 A first parameter.
      * @return
      */
-    public static <Param1> Unary<Param1> pair(Param1 param1) {
-        return new Unary(param1);
+    public static <Param1> Ⅰ<Param1> pair(Param1 param1) {
+        return new Ⅰ(param1);
     }
 
     /**
@@ -1899,8 +1899,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param param2 A second parameter.
      * @return
      */
-    public static <Param1, Param2> Binary<Param1, Param2> pair(Param1 param1, Param2 param2) {
-        return new Binary(param1, param2);
+    public static <Param1, Param2> Ⅱ<Param1, Param2> pair(Param1 param1, Param2 param2) {
+        return new Ⅱ(param1, param2);
     }
 
     /**
@@ -1913,8 +1913,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param param3 A third parameter.
      * @return
      */
-    public static <Param1, Param2, Param3> Ternary<Param1, Param2, Param3> pair(Param1 param1, Param2 param2, Param3 param3) {
-        return new Ternary(param1, param2, param3);
+    public static <Param1, Param2, Param3> Ⅲ<Param1, Param2, Param3> pair(Param1 param1, Param2 param2, Param3 param3) {
+        return new Ⅲ(param1, param2, param3);
     }
 
     /**

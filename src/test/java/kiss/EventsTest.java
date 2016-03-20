@@ -257,7 +257,7 @@ public class EventsTest {
     @Test
     public void combineBinary() throws Exception {
         EventFacade<Integer, Integer> other = new EventFacade<>();
-        EventFacade<String, Binary<String, Integer>> main = new EventFacade<>(events -> events.combine(other.observe()));
+        EventFacade<String, Ⅱ<String, Integer>> main = new EventFacade<>(events -> events.combine(other.observe()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -283,7 +283,7 @@ public class EventsTest {
     public void combineTernary() throws Exception {
         EventFacade<Integer, Integer> other = new EventFacade<>();
         EventFacade<Double, Double> another = new EventFacade<>();
-        EventFacade<String, Ternary<String, Integer, Double>> main = new EventFacade<>(
+        EventFacade<String, Ⅲ<String, Integer, Double>> main = new EventFacade<>(
                 events -> events.combine(other.observe(), another.observe()));
 
         main.emit("1");
@@ -325,7 +325,7 @@ public class EventsTest {
     @Test
     public void combineLatestBinary() throws Exception {
         EventFacade<Integer, Integer> other = new EventFacade<>();
-        EventFacade<String, Binary<String, Integer>> main = new EventFacade<>(events -> events.combineLatest(other.observe()));
+        EventFacade<String, Ⅱ<String, Integer>> main = new EventFacade<>(events -> events.combineLatest(other.observe()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -351,7 +351,7 @@ public class EventsTest {
     public void combineLatestTernary() throws Exception {
         EventFacade<Integer, Integer> other = new EventFacade<>();
         EventFacade<Double, Double> another = new EventFacade<>();
-        EventFacade<String, Ternary<String, Integer, Double>> main = new EventFacade<>(
+        EventFacade<String, Ⅲ<String, Integer, Double>> main = new EventFacade<>(
                 events -> events.combineLatest(other.observe(), another.observe()));
 
         main.emit("1");

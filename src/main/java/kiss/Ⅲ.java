@@ -15,7 +15,7 @@ import java.util.function.Function;
 /**
  * @version 2015/04/10 1:17:24
  */
-public class Ternary<Param1, Param2, Param3> {
+public class Ⅲ<Param1, Param2, Param3> {
 
     /** The first parameter. */
     public final Param1 a;
@@ -31,7 +31,7 @@ public class Ternary<Param1, Param2, Param3> {
      * @param param2
      * @param param3
      */
-    Ternary(Param1 param1, Param2 param2, Param3 param3) {
+    Ⅲ(Param1 param1, Param2 param2, Param3 param3) {
         this.a = param1;
         this.e = param2;
         this.o = param3;
@@ -43,7 +43,7 @@ public class Ternary<Param1, Param2, Param3> {
      * @param param New first parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Ternary<NewParam, Param2, Param3> a(NewParam param) {
+    public <NewParam> Ⅲ<NewParam, Param2, Param3> a(NewParam param) {
         return I.pair(param, e, o);
     }
 
@@ -53,7 +53,7 @@ public class Ternary<Param1, Param2, Param3> {
      * @param calculation A calculation expression.
      * @return A created new tuple.
      */
-    public <CalculationResult> Ternary<CalculationResult, Param2, Param3> a(Function<Param1, CalculationResult> calculation) {
+    public <CalculationResult> Ⅲ<CalculationResult, Param2, Param3> a(Function<Param1, CalculationResult> calculation) {
         return I.pair(calculation.apply(a), e, o);
     }
 
@@ -63,7 +63,7 @@ public class Ternary<Param1, Param2, Param3> {
      * @param param New second parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Ternary<Param1, NewParam, Param3> e(NewParam param) {
+    public <NewParam> Ⅲ<Param1, NewParam, Param3> e(NewParam param) {
         return I.pair(a, param, o);
     }
 
@@ -73,7 +73,7 @@ public class Ternary<Param1, Param2, Param3> {
      * @param calculation A calculation expression.
      * @return A created new tuple.
      */
-    public <CalculationResult> Ternary<Param1, CalculationResult, Param3> e(Function<Param2, CalculationResult> calculation) {
+    public <CalculationResult> Ⅲ<Param1, CalculationResult, Param3> e(Function<Param2, CalculationResult> calculation) {
         return I.pair(a, calculation.apply(e), o);
     }
 
@@ -83,7 +83,7 @@ public class Ternary<Param1, Param2, Param3> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Ternary<Param1, Param2, NewParam> o(NewParam param) {
+    public <NewParam> Ⅲ<Param1, Param2, NewParam> o(NewParam param) {
         return I.pair(a, e, param);
     }
 
@@ -93,7 +93,7 @@ public class Ternary<Param1, Param2, Param3> {
      * @param calculation A calculation expression.
      * @return A created new tuple.
      */
-    public <CalculationResult> Ternary<Param1, Param2, CalculationResult> o(Function<Param3, CalculationResult> calculation) {
+    public <CalculationResult> Ⅲ<Param1, Param2, CalculationResult> o(Function<Param3, CalculationResult> calculation) {
         return I.pair(a, e, calculation.apply(o));
     }
 
@@ -102,7 +102,7 @@ public class Ternary<Param1, Param2, Param3> {
      * 
      * @return A created new tuple.
      */
-    public Binary<Param2, Param3> á() {
+    public Ⅱ<Param2, Param3> á() {
         return I.pair(e, o);
     }
 
@@ -111,7 +111,7 @@ public class Ternary<Param1, Param2, Param3> {
      * 
      * @return A created new tuple.
      */
-    public Binary<Param1, Param3> é() {
+    public Ⅱ<Param1, Param3> é() {
         return I.pair(a, o);
     }
 
@@ -120,7 +120,7 @@ public class Ternary<Param1, Param2, Param3> {
      * 
      * @return A created new tuple.
      */
-    public Binary<Param1, Param2> ó() {
+    public Ⅱ<Param1, Param2> ó() {
         return I.pair(a, e);
     }
 
@@ -137,8 +137,8 @@ public class Ternary<Param1, Param2, Param3> {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Ternary) {
-            Ternary other = (Ternary) obj;
+        if (obj instanceof Ⅲ) {
+            Ⅲ other = (Ⅲ) obj;
 
             return Objects.equals(a, other.a) && Objects.equals(e, other.e) && Objects.equals(o, other.o);
         }

@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import kiss.I;
-import kiss.Ternary;
+import kiss.Ⅲ;
 import kiss.model.Model;
 import kiss.model.Property;
 
@@ -43,7 +43,7 @@ import kiss.model.Property;
  * 
  * @version 2012/11/07 21:01:06
  */
-class XMLUtil extends Writer implements Consumer<Ternary<Model, Property, Object>> {
+class XMLUtil extends Writer implements Consumer<Ⅲ<Model, Property, Object>> {
 
     // =======================================================================
     // General Fields
@@ -105,7 +105,7 @@ class XMLUtil extends Writer implements Consumer<Ternary<Model, Property, Object
      * {@inheritDoc}
      */
     @Override
-    public void accept(Ternary<Model, Property, Object> info) {
+    public void accept(Ⅲ<Model, Property, Object> info) {
         if (!info.e.isTransient) {
             // ========================================
             // Enter Node

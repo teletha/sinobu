@@ -388,7 +388,7 @@ public class Events<V> {
      * @return A {@link Events} that emits items that are the result of combining the items emitted
      *         by source {@link Events} by means of the given aggregation function.
      */
-    public final <O> Events<Binary<V, O>> combine(Events<O> other) {
+    public final <O> Events<Ⅱ<V, O>> combine(Events<O> other) {
         return combine(other, I::pair);
     }
 
@@ -404,8 +404,8 @@ public class Events<V> {
      * @return A {@link Events} that emits items that are the result of combining the items emitted
      *         by source {@link Events} by means of the given aggregation function.
      */
-    public final <O, A> Events<Ternary<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, Binary<V, O>::new).combine(another, Binary<V, O>::<A> ò);
+    public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
+        return combine(other, Ⅱ<V, O>::new).combine(another, Ⅱ<V, O>::<A> ò);
     }
 
     /**
@@ -479,7 +479,7 @@ public class Events<V> {
      * @return An {@link Events} that emits items that are the result of combining the items emitted
      *         by the source {@link Events} by means of the given aggregation function
      */
-    public final <O> Events<Binary<V, O>> combineLatest(Events<O> other) {
+    public final <O> Events<Ⅱ<V, O>> combineLatest(Events<O> other) {
         return combineLatest(other, I::pair);
     }
 
@@ -495,8 +495,8 @@ public class Events<V> {
      * @return An {@link Events} that emits items that are the result of combining the items emitted
      *         by the source {@link Events} by means of the given aggregation function
      */
-    public final <O, A> Events<Ternary<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, Binary<V, O>::new).combineLatest(another, Binary<V, O>::<A> ò);
+    public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
+        return combineLatest(other, Ⅱ<V, O>::new).combineLatest(another, Ⅱ<V, O>::<A> ò);
     }
 
     /**
@@ -812,7 +812,7 @@ public class Events<V> {
             return NEVER;
         }
 
-        Deque<Binary<V, Observer>> buffer = I.associate(group, ArrayDeque.class);
+        Deque<Ⅱ<V, Observer>> buffer = I.associate(group, ArrayDeque.class);
 
         return new Events<>(observer -> {
             return to(value -> {
@@ -834,8 +834,8 @@ public class Events<V> {
      * @param latest A latest execution date.
      * @param buffer The remaining values.
      */
-    private void interval(long interval, long latest, Deque<Binary<V, Observer>> buffer) {
-        Binary<V, Observer> context = buffer.pollFirst();
+    private void interval(long interval, long latest, Deque<Ⅱ<V, Observer>> buffer) {
+        Ⅱ<V, Observer> context = buffer.pollFirst();
         context.e.accept(context.a);
 
         if (!buffer.isEmpty()) {

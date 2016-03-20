@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @version 2015/09/11 16:39:19
  */
-public class Binary<Param1, Param2> {
+public class Ⅱ<Param1, Param2> {
 
     /** The first parameter. */
     public final Param1 a;
@@ -26,7 +26,7 @@ public class Binary<Param1, Param2> {
      * @param param1
      * @param param2
      */
-    public Binary(Param1 param1, Param2 param2) {
+    public Ⅱ(Param1 param1, Param2 param2) {
         this.a = param1;
         this.e = param2;
     }
@@ -37,7 +37,7 @@ public class Binary<Param1, Param2> {
      * @param param New first parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Binary<NewParam, Param2> a(NewParam param) {
+    public <NewParam> Ⅱ<NewParam, Param2> a(NewParam param) {
         return I.pair(param, e);
     }
 
@@ -47,7 +47,7 @@ public class Binary<Param1, Param2> {
      * @param param New second parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Binary<Param1, NewParam> e(NewParam param) {
+    public <NewParam> Ⅱ<Param1, NewParam> e(NewParam param) {
         return I.pair(a, param);
     }
 
@@ -57,7 +57,7 @@ public class Binary<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ternary<AdditionalParam, Param1, Param2> à(AdditionalParam param) {
+    public <AdditionalParam> Ⅲ<AdditionalParam, Param1, Param2> à(AdditionalParam param) {
         return I.pair(param, a, e);
     }
 
@@ -67,7 +67,7 @@ public class Binary<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ternary<Param1, AdditionalParam, Param2> è(AdditionalParam param) {
+    public <AdditionalParam> Ⅲ<Param1, AdditionalParam, Param2> è(AdditionalParam param) {
         return I.pair(a, param, e);
     }
 
@@ -77,7 +77,7 @@ public class Binary<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ternary<Param1, Param2, AdditionalParam> ò(AdditionalParam param) {
+    public <AdditionalParam> Ⅲ<Param1, Param2, AdditionalParam> ò(AdditionalParam param) {
         return I.pair(a, e, param);
     }
 
@@ -94,8 +94,8 @@ public class Binary<Param1, Param2> {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Binary) {
-            Binary other = (Binary) obj;
+        if (obj instanceof Ⅱ) {
+            Ⅱ other = (Ⅱ) obj;
 
             return Objects.equals(a, other.a) && Objects.equals(e, other.e);
         }

@@ -15,7 +15,7 @@ import java.util.function.Function;
 /**
  * @version 2015/04/11 9:03:02
  */
-public class Unary<Param> {
+public class Ⅰ<Param> {
 
     /** The first parameter. */
     public final Param a;
@@ -23,7 +23,7 @@ public class Unary<Param> {
     /**
      * @param param
      */
-    Unary(Param param) {
+    Ⅰ(Param param) {
         this.a = param;
     }
 
@@ -33,7 +33,7 @@ public class Unary<Param> {
      * @param param New first parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Unary<NewParam> a(NewParam param) {
+    public <NewParam> Ⅰ<NewParam> a(NewParam param) {
         return I.pair(param);
     }
 
@@ -43,7 +43,7 @@ public class Unary<Param> {
      * @param calculation A calculation expression.
      * @return A created new tuple.
      */
-    public <CalculationResult> Unary<CalculationResult> a(Function<Param, CalculationResult> calculation) {
+    public <CalculationResult> Ⅰ<CalculationResult> a(Function<Param, CalculationResult> calculation) {
         return I.pair(calculation.apply(a));
     }
 
@@ -60,8 +60,8 @@ public class Unary<Param> {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Unary) {
-            Unary other = (Unary) obj;
+        if (obj instanceof Ⅰ) {
+            Ⅰ other = (Ⅰ) obj;
 
             return Objects.equals(a, other.a);
         }

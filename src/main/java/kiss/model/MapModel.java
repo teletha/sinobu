@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import kiss.I;
-import kiss.Ternary;
+import kiss.Ⅲ;
 
 /**
  * @version 2010/01/10 17:10:23
@@ -91,7 +91,7 @@ class MapModel extends Model {
      * @see kiss.model.Model#walk(java.lang.Object, kiss.model.PropertyWalker)
      */
     @Override
-    public void walk(Object object, Consumer<Ternary<Model, Property, Object>> walker) {
+    public void walk(Object object, Consumer<Ⅲ<Model, Property, Object>> walker) {
         if (key.decoder() == null) {
             super.walk(object, walker);
         } else {

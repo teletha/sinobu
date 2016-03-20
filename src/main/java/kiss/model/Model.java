@@ -38,8 +38,8 @@ import javafx.beans.value.WritableValue;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
-import kiss.Ternary;
 import kiss.Variable;
+import kiss.Ⅲ;
 
 /**
  * <p>
@@ -414,7 +414,7 @@ public class Model {
      * @param walker A property iterator. This value accepts <code>null</code>.
      * @see PropertyWalker#walk(Model, Property, Object)
      */
-    public void walk(Object object, Consumer<Ternary<Model, Property, Object>> walker) {
+    public void walk(Object object, Consumer<Ⅲ<Model, Property, Object>> walker) {
         // check whether this model is attribute or not.
         if (walker != null && decoder() == null) {
             for (Property property : properties) {
