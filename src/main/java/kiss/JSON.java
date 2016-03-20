@@ -11,10 +11,10 @@ package kiss;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.model.PropertyWalker;
 
 /**
  * <p>
@@ -24,7 +24,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2016/03/15 18:10:13
  */
-class JSON implements PropertyWalker {
+class JSON implements Consumer<Ternary<Model, Property, Object>> {
 
     /** The charcter sequence for output as JSON. */
     private final Appendable out;
@@ -53,8 +53,8 @@ class JSON implements PropertyWalker {
      * {@inheritDoc}
      */
     @Override
-    public void walk(Model model, Property property, Object object) {
-        if (!property.isTransient && property.name != null) {
+    public void accept(Ternary<Model, Property, Object> context) {
+        if (!context.e.isTransient && context.e.name != null) {
             try {
                 // non-first properties requires separator
                 if (index++ != 0) out.append(',');
@@ -64,21 +64,21 @@ class JSON implements PropertyWalker {
                     indent();
 
                     // property key (List node doesn't need key)
-                    if (model.type != List.class) {
-                        write(property.name);
+                    if (context.a.type != List.class) {
+                        write(context.e.name);
                         out.append(": ");
                     }
                 }
 
                 // property value
-                if (property.isAttribute()) {
-                    write(I.transform(object, String.class));
+                if (context.e.isAttribute()) {
+                    write(I.transform(context.o, String.class));
                 } else {
                     JSON walker = new JSON(out, indent + 1);
-                    out.append(property.model.type == List.class ? '[' : '{');
-                    property.model.walk(object, walker);
+                    out.append(context.e.model.type == List.class ? '[' : '{');
+                    context.e.model.walk(context.o, walker);
                     if (walker.index != 0) indent();
-                    out.append(property.model.type == List.class ? ']' : '}');
+                    out.append(context.e.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
                 throw I.quiet(e);

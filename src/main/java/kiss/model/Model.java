@@ -31,12 +31,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import javafx.beans.value.WritableValue;
 
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
+import kiss.Ternary;
 import kiss.Variable;
 
 /**
@@ -332,7 +334,7 @@ public class Model {
                 }
             }
         }
-    
+
         // API definition
         return null;
     }
@@ -412,13 +414,13 @@ public class Model {
      * @param walker A property iterator. This value accepts <code>null</code>.
      * @see PropertyWalker#walk(Model, Property, Object)
      */
-    public void walk(Object object, PropertyWalker walker) {
+    public void walk(Object object, Consumer<Ternary<Model, Property, Object>> walker) {
         // check whether this model is attribute or not.
         if (walker != null && decoder() == null) {
             for (Property property : properties) {
                 Object value = get(object, property);
 
-                if (value != null) walker.walk(this, property, value);
+                if (value != null) walker.accept(I.pair(this, property, value));
             }
         }
     }

@@ -18,11 +18,12 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import kiss.I;
+import kiss.Ternary;
 import kiss.model.Model;
 import kiss.model.Property;
-import kiss.model.PropertyWalker;
 
 /**
  * <p>
@@ -42,7 +43,7 @@ import kiss.model.PropertyWalker;
  * 
  * @version 2012/11/07 21:01:06
  */
-class XMLUtil extends Writer implements PropertyWalker {
+class XMLUtil extends Writer implements Consumer<Ternary<Model, Property, Object>> {
 
     // =======================================================================
     // General Fields
@@ -104,34 +105,34 @@ class XMLUtil extends Writer implements PropertyWalker {
      * {@inheritDoc}
      */
     @Override
-    public void walk(Model model, Property property, Object node) {
-        if (!property.isTransient) {
+    public void accept(Ternary<Model, Property, Object> info) {
+        if (!info.e.isTransient) {
             // ========================================
             // Enter Node
             // ========================================
-            if (model.isCollection()) {
+            if (info.a.isCollection()) {
                 // collection item property
-                xml = xml.child(property.model.name);
+                xml = xml.child(info.e.model.name);
 
                 // collection needs key attribute
-                if (Map.class.isAssignableFrom(model.type)) {
-                    xml.attr("ss:key", property.name);
+                if (Map.class.isAssignableFrom(info.a.type)) {
+                    xml.attr("ss:key", info.e.name);
                 }
-            } else if (!property.isAttribute()) {
-                xml = xml.child(property.name);
+            } else if (!info.e.isAttribute()) {
+                xml = xml.child(info.e.name);
             }
 
             // If the collection item is attribute node, that is represented as xml value attribute
             // and attribute node that collection node doesn't host is written as xml attribute too.
-            if (node != null) {
-                if (property.isAttribute()) {
-                    xml.attr(model.isCollection() ? "value" : property.name, I.transform(node, String.class));
+            if (info.o != null) {
+                if (info.e.isAttribute()) {
+                    xml.attr(info.a.isCollection() ? "value" : info.e.name, I.transform(info.o, String.class));
                 } else {
-                    XML ref = reference.get(node);
+                    XML ref = reference.get(info.o);
 
                     if (ref == null) {
                         // associate node object with element
-                        reference.put(node, xml);
+                        reference.put(info.o, xml);
 
                         // assign new id
                         xml.attr("ss:id", pos++);
@@ -139,7 +140,7 @@ class XMLUtil extends Writer implements PropertyWalker {
                         // ========================================
                         // Traverse Child Node
                         // ========================================
-                        property.model.walk(node, this);
+                        info.e.model.walk(info.o, this);
                     } else {
                         // share id
                         xml.attr("ss:id", ref.attr("ss:id"));
@@ -150,7 +151,7 @@ class XMLUtil extends Writer implements PropertyWalker {
             // ========================================
             // Leave Node
             // ========================================
-            if (model.isCollection() || !property.isAttribute()) {
+            if (info.a.isCollection() || !info.e.isAttribute()) {
                 xml = xml.parent();
             }
         }

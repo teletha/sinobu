@@ -2244,11 +2244,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             M m = make(output);
 
             // copy actually
-            inputModel.walk(input, (model, property, value) -> {
-                Property dest = outputModel.property(property.name);
+            inputModel.walk(input, info -> {
+                Property dest = outputModel.property(info.e.name);
 
                 // never check null because PropertyWalker traverses existing properties
-                outputModel.set(m, dest, I.transform(value, dest.model.type));
+                outputModel.set(m, dest, I.transform(info.o, dest.model.type));
             });
 
             // API definition
@@ -2422,7 +2422,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             // traverse object as json
             Model model = Model.of(input);
-            new JSON(out, 0).walk(model, new Property(model, ""), input);
+            new JSON(out, 0).accept(pair(model, new Property(model, ""), input));
         } finally {
             // relese lock
             lock.writeLock().unlock();
