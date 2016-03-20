@@ -113,7 +113,7 @@ public class Property implements Comparable<Property> {
      * @return A result.
      */
     public boolean isAttribute() {
-        return model.getDecoder() != null || model.type.isArray();
+        return model.decoder() != null || model.type.isArray();
     }
 
     /**

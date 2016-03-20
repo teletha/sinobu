@@ -308,27 +308,6 @@ public class Model {
     }
 
     /**
-     * Find the property which has the specified name in this object model. If the suitable property
-     * is not found, <code>null</code> is returned.
-     * 
-     * @param propertyName A name of property.
-     * @return A suitable property or <code>null</code>.
-     */
-    public Property getProperty(String propertyName) {
-        // check whether this model is attribute or not.
-        if (getDecoder() == null) {
-            for (Property property : properties) {
-                if (property.name.equals(propertyName)) {
-                    return property;
-                }
-            }
-        }
-
-        // API definition
-        return null;
-    }
-
-    /**
      * Check whether this object model is Collection Model or not.
      * 
      * @return A result.
@@ -338,13 +317,34 @@ public class Model {
     }
 
     /**
+     * Find the property which has the specified name in this object model. If the suitable property
+     * is not found, <code>null</code> is returned.
+     * 
+     * @param propertyName A name of property.
+     * @return A suitable property or <code>null</code>.
+     */
+    public Property property(String propertyName) {
+        // check whether this model is attribute or not.
+        if (decoder() == null) {
+            for (Property property : properties) {
+                if (property.name.equals(propertyName)) {
+                    return property;
+                }
+            }
+        }
+    
+        // API definition
+        return null;
+    }
+
+    /**
      * <p>
      * Retrieve {@link Decoder} for this model.
      * </p>
      * 
      * @return An associated {@link Decoder}.
      */
-    public Decoder getDecoder() {
+    public Decoder decoder() {
         return decoder != null ? decoder : I.find(Decoder.class, type);
     }
 
@@ -355,7 +355,7 @@ public class Model {
      * 
      * @return An associated {@link Encoder}.
      */
-    public Encoder getEncoder() {
+    public Encoder encoder() {
         return encoder != null ? encoder : I.find(Encoder.class, type);
     }
 
@@ -414,7 +414,7 @@ public class Model {
      */
     public void walk(Object object, PropertyWalker walker) {
         // check whether this model is attribute or not.
-        if (walker != null && getDecoder() == null) {
+        if (walker != null && decoder() == null) {
             for (Property property : properties) {
                 Object value = get(object, property);
 

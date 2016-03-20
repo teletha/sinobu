@@ -46,11 +46,11 @@ class MapModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#getProperty(java.lang.String)
+     * @see kiss.model.Model#property(java.lang.String)
      */
     @Override
-    public Property getProperty(String propertyIName) {
-        return (key.getDecoder() == null) ? null : new Property(value, propertyIName);
+    public Property property(String propertyIName) {
+        return (key.decoder() == null) ? null : new Property(value, propertyIName);
     }
 
     /**
@@ -58,7 +58,7 @@ class MapModel extends Model {
      */
     @Override
     public boolean isCollection() {
-        return key.getDecoder() != null;
+        return key.decoder() != null;
     }
 
     /**
@@ -66,7 +66,7 @@ class MapModel extends Model {
      */
     @Override
     public Object get(Object object, Property property) {
-        if (key.getDecoder() == null) {
+        if (key.decoder() == null) {
             return super.get(object, property);
         } else {
             return ((Map) object).get(I.transform(property.name, key.type));
@@ -78,7 +78,7 @@ class MapModel extends Model {
      */
     @Override
     public void set(Object object, Property property, Object propertyValue) {
-        if (key.getDecoder() == null) {
+        if (key.decoder() == null) {
             super.set(object, property, propertyValue);
         } else {
             ((Map) object).put(I.transform(property.name, key.type), propertyValue);
@@ -90,7 +90,7 @@ class MapModel extends Model {
      */
     @Override
     public void walk(Object object, PropertyWalker walker) {
-        if (key.getDecoder() == null) {
+        if (key.decoder() == null) {
             super.walk(object, walker);
         } else {
             for (Entry entry : ((Map<?, ?>) object).entrySet()) {

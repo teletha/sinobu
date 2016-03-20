@@ -175,7 +175,7 @@ public class Reactive {
                 }
 
                 if (name.startsWith(prefix)) {
-                    Property property = model.getProperty(Introspector.decapitalize(name.substring(prefix.length())));
+                    Property property = model.property(Introspector.decapitalize(name.substring(prefix.length())));
 
                     if (property != null) {
                         properties.add(property);

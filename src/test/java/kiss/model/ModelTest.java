@@ -62,7 +62,7 @@ public class ModelTest {
         assert propertyName != null;
         assert propertyType != null;
 
-        Property property = model.getProperty(propertyName);
+        Property property = model.property(propertyName);
         assert property != null;
         assert propertyType == property.model.type;
         assert property.accessors[0] != null;
@@ -98,17 +98,17 @@ public class ModelTest {
         Model model = Model.of(WildcardBean.class);
         assert model != null;
 
-        Property property = model.getProperty("wildcardList");
+        Property property = model.property("wildcardList");
         assert property != null;
         assert List.class == property.model.type;
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Object.class == property.model.type;
 
-        property = model.getProperty("wildcardMap");
+        property = model.property("wildcardMap");
         assert property != null;
         assert Map.class == property.model.type;
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Object.class == property.model.type;
     }
@@ -119,10 +119,10 @@ public class ModelTest {
         assert model != null;
         assert InheritanceBean.class == model.type;
 
-        Property property = model.getProperty("int");
+        Property property = model.property("int");
         assert property != null;
 
-        property = model.getProperty("string");
+        property = model.property("string");
         assert property != null;
 
         assert 2 == model.properties.size();
@@ -133,7 +133,7 @@ public class ModelTest {
         Model model = Model.of(StringMapProperty.class);
         assert model != null;
 
-        Property property = model.getProperty("map");
+        Property property = model.property("map");
         assert property != null;
 
         model = property.model;
@@ -141,9 +141,9 @@ public class ModelTest {
         assert Map.class == model.type;
         assert 0 == model.properties.size();
         assert true == model.isCollection();
-        assert model.getDecoder() == null;
+        assert model.decoder() == null;
 
-        property = model.getProperty("test");
+        property = model.property("test");
         assert property != null;
 
         model = property.model;
@@ -209,11 +209,11 @@ public class ModelTest {
         assert 3 == list.size();
 
         ProtectedAccessor accessor = I.make(ProtectedAccessor.class);
-        Property property = model.getProperty("getter");
+        Property property = model.property("getter");
         accessor.setGetter("test");
         assert model.get(accessor, property).equals("test");
 
-        property = model.getProperty("setter");
+        property = model.property("setter");
         model.set(accessor, property, "aaa");
         assert accessor.getSetter().equals("aaa");
     }
@@ -226,7 +226,7 @@ public class ModelTest {
         Model model = Model.of(CompatibleKeyMap.class);
         assert model != null;
 
-        Property property = model.getProperty("integerKey");
+        Property property = model.property("integerKey");
         assert property != null;
 
         model = property.model;
@@ -234,9 +234,9 @@ public class ModelTest {
         assert Map.class == model.type;
         assert 0 == model.properties.size();
         assert true == model.isCollection();
-        assert model.getDecoder() == null;
+        assert model.decoder() == null;
 
-        property = model.getProperty("1");
+        property = model.property("1");
         assert property != null;
 
         model = property.model;
@@ -252,7 +252,7 @@ public class ModelTest {
         Model model = Model.of(IncompatibleKeyMap.class);
         assert model != null;
 
-        Property property = model.getProperty("incompatible");
+        Property property = model.property("incompatible");
         assert property != null;
 
         model = property.model;
@@ -260,7 +260,7 @@ public class ModelTest {
         assert Map.class == model.type;
         assert 0 == model.properties.size();
         assert!model.isCollection();
-        assert model.getDecoder() == null;
+        assert model.decoder() == null;
     }
 
     /**
@@ -271,23 +271,23 @@ public class ModelTest {
         Model model = Model.of(GenericStringBean.class);
         assert model != null;
 
-        Property property = model.getProperty("generic");
+        Property property = model.property("generic");
         assert property != null;
         assert String.class == property.model.type;
 
-        property = model.getProperty("genericList");
+        property = model.property("genericList");
         assert property != null;
         assert List.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert String.class == property.model.type;
 
-        property = model.getProperty("genericMap");
+        property = model.property("genericMap");
         assert property != null;
         assert Map.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert String.class == property.model.type;
     }
@@ -300,23 +300,23 @@ public class ModelTest {
         Model model = Model.of(ModelBean.class);
         assert model != null;
 
-        Property property = model.getProperty("generic");
+        Property property = model.property("generic");
         assert property != null;
         assert Person.class == property.model.type;
 
-        property = model.getProperty("genericList");
+        property = model.property("genericList");
         assert property != null;
         assert List.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Person.class == property.model.type;
 
-        property = model.getProperty("genericMap");
+        property = model.property("genericMap");
         assert property != null;
         assert Map.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Person.class == property.model.type;
     }
@@ -335,35 +335,35 @@ public class ModelTest {
         Model model = Model.of(ListBean.class);
         assert model != null;
 
-        Property property = model.getProperty("generic");
+        Property property = model.property("generic");
         assert property != null;
         assert List.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert String.class == property.model.type;
 
-        property = model.getProperty("genericList");
+        property = model.property("genericList");
         assert property != null;
         assert List.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert List.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert String.class == property.model.type;
 
-        property = model.getProperty("genericMap");
+        property = model.property("genericMap");
         assert property != null;
         assert Map.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert List.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert String.class == property.model.type;
     }
@@ -382,35 +382,35 @@ public class ModelTest {
         Model model = Model.of(MapBean.class);
         assert model != null;
 
-        Property property = model.getProperty("generic");
+        Property property = model.property("generic");
         assert property != null;
         assert Map.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Integer.class == property.model.type;
 
-        property = model.getProperty("genericList");
+        property = model.property("genericList");
         assert property != null;
         assert List.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Map.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Integer.class == property.model.type;
 
-        property = model.getProperty("genericMap");
+        property = model.property("genericMap");
         assert property != null;
         assert Map.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Map.class == property.model.type;
 
-        property = property.model.getProperty("0");
+        property = property.model.property("0");
         assert property != null;
         assert Integer.class == property.model.type;
     }
@@ -588,7 +588,7 @@ public class ModelTest {
         person.setAge(1);
 
         Model model = Model.of(Person.class);
-        assert model.get(person, model.getProperty("age")).equals(1);
+        assert model.get(person, model.property("age")).equals(1);
     }
 
     @Test
@@ -597,14 +597,14 @@ public class ModelTest {
         bean.setGeneric("value");
 
         Model model = Model.of(GenericStringBean.class);
-        assert"value" == model.get(bean, model.getProperty("generic"));
+        assert"value" == model.get(bean, model.property("generic"));
     }
 
     @Test
     public void testSetAtNonAccessibleInstance() {
         Person person = new Person();
         Model model = Model.of(Person.class);
-        model.set(person, model.getProperty("age"), 1);
+        model.set(person, model.property("age"), 1);
 
         assert 1 == person.getAge();
     }
@@ -613,7 +613,7 @@ public class ModelTest {
     public void testSetAtNonAccessibleGenericInstance() {
         GenericStringBean bean = new GenericStringBean();
         Model model = Model.of(GenericStringBean.class);
-        model.set(bean, model.getProperty("generic"), "value");
+        model.set(bean, model.property("generic"), "value");
 
         assert"value" == bean.getGeneric();
     }

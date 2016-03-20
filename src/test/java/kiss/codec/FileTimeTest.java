@@ -24,8 +24,8 @@ public class FileTimeTest {
 
     @Test
     public void codec() throws Exception {
-        Decoder<FileTime> decoder = Model.of(FileTime.class).getDecoder();
-        Encoder<FileTime> encoder = Model.of(FileTime.class).getEncoder();
+        Decoder<FileTime> decoder = Model.of(FileTime.class).decoder();
+        Encoder<FileTime> encoder = Model.of(FileTime.class).encoder();
         assert decoder.decode("0").equals(FileTime.fromMillis(0));
         assert encoder.encode(FileTime.fromMillis(0)).equals("0");
     }

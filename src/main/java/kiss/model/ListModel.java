@@ -35,10 +35,10 @@ class ListModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#getProperty(java.lang.String)
+     * @see kiss.model.Model#property(java.lang.String)
      */
     @Override
-    public Property getProperty(String propertyIName) {
+    public Property property(String propertyIName) {
         try {
             return new Property(itemModel, propertyIName);
         } catch (NumberFormatException e) {

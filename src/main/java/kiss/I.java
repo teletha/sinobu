@@ -2135,7 +2135,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             if (model.isCollection()) {
                 for (String id : map.keySet()) {
-                    Property property = model.getProperty(id);
+                    Property property = model.property(id);
 
                     if (property != null) {
                         properties.add(property);
@@ -2233,8 +2233,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return (M) input;
         }
 
-        Encoder encoder = inputModel.getEncoder();
-        Decoder<M> decoder = outputModel.getDecoder();
+        Encoder encoder = inputModel.encoder();
+        Decoder<M> decoder = outputModel.decoder();
 
         // check whether each model are attribute model or not
         if (encoder == null && decoder == null) {
@@ -2245,7 +2245,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             // copy actually
             inputModel.walk(input, (model, property, value) -> {
-                Property dest = outputModel.getProperty(property.name);
+                Property dest = outputModel.property(property.name);
 
                 // never check null because PropertyWalker traverses existing properties
                 outputModel.set(m, dest, I.transform(value, dest.model.type));

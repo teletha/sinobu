@@ -24,8 +24,8 @@ public class LocaleTest {
 
     @Test
     public void codec() throws Exception {
-        Decoder<Locale> decoder = Model.of(Locale.class).getDecoder();
-        Encoder<Locale> encoder = Model.of(Locale.class).getEncoder();
+        Decoder<Locale> decoder = Model.of(Locale.class).decoder();
+        Encoder<Locale> encoder = Model.of(Locale.class).encoder();
         assert decoder.decode("en") == Locale.ENGLISH;
         assert encoder.encode(Locale.ENGLISH).equals("en");
     }
