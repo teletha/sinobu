@@ -10,25 +10,54 @@
 package kiss;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
- * @version 2015/09/11 16:39:19
+ * @version 2016/03/26 21:15:44
  */
 public class Ⅱ<Param1, Param2> {
 
     /** The first parameter. */
-    public final Param1 a;
+    public final Param1 ⅰ;
 
     /** The second parameter. */
-    public final Param2 e;
+    public final Param2 ⅱ;
 
     /**
      * @param param1
      * @param param2
      */
     public Ⅱ(Param1 param1, Param2 param2) {
-        this.a = param1;
-        this.e = param2;
+        this.ⅰ = param1;
+        this.ⅱ = param2;
+    }
+
+    /**
+     * <p>
+     * The with statement extends the scope chain for a statement.
+     * </p>
+     * 
+     * @param environment
+     */
+    public void with(BiConsumer<Param1, Param2> environment) {
+        if (environment != null) {
+            environment.accept(ⅰ, ⅱ);
+        }
+    }
+
+    /**
+     * <p>
+     * The with statement extends the scope chain for a statement.
+     * </p>
+     * 
+     * @param environment
+     */
+    public void with(Function<Param1, Consumer<Param2>> environment) {
+        if (environment != null) {
+            environment.apply(ⅰ).accept(ⅱ);
+        }
     }
 
     /**
@@ -37,8 +66,8 @@ public class Ⅱ<Param1, Param2> {
      * @param param New first parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Ⅱ<NewParam, Param2> a(NewParam param) {
-        return I.pair(param, e);
+    public <NewParam> Ⅱ<NewParam, Param2> ⅰ(NewParam param) {
+        return I.pair(param, ⅱ);
     }
 
     /**
@@ -47,8 +76,8 @@ public class Ⅱ<Param1, Param2> {
      * @param param New second parameter.
      * @return A created new tuple.
      */
-    public <NewParam> Ⅱ<Param1, NewParam> e(NewParam param) {
-        return I.pair(a, param);
+    public <NewParam> Ⅱ<Param1, NewParam> ⅱ(NewParam param) {
+        return I.pair(ⅰ, param);
     }
 
     /**
@@ -57,8 +86,8 @@ public class Ⅱ<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ⅲ<AdditionalParam, Param1, Param2> à(AdditionalParam param) {
-        return I.pair(param, a, e);
+    public <AdditionalParam> Ⅲ<AdditionalParam, Param1, Param2> add1(AdditionalParam param) {
+        return I.pair(param, ⅰ, ⅱ);
     }
 
     /**
@@ -67,8 +96,8 @@ public class Ⅱ<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ⅲ<Param1, AdditionalParam, Param2> è(AdditionalParam param) {
-        return I.pair(a, param, e);
+    public <AdditionalParam> Ⅲ<Param1, AdditionalParam, Param2> add2(AdditionalParam param) {
+        return I.pair(ⅰ, param, ⅱ);
     }
 
     /**
@@ -77,8 +106,8 @@ public class Ⅱ<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ⅲ<Param1, Param2, AdditionalParam> ò(AdditionalParam param) {
-        return I.pair(a, e, param);
+    public <AdditionalParam> Ⅲ<Param1, Param2, AdditionalParam> add3(AdditionalParam param) {
+        return I.pair(ⅰ, ⅱ, param);
     }
 
     /**
@@ -86,7 +115,7 @@ public class Ⅱ<Param1, Param2> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(a, e);
+        return Objects.hash(ⅰ, ⅱ);
     }
 
     /**
@@ -97,7 +126,7 @@ public class Ⅱ<Param1, Param2> {
         if (obj instanceof Ⅱ) {
             Ⅱ other = (Ⅱ) obj;
 
-            return Objects.equals(a, other.a) && Objects.equals(e, other.e);
+            return Objects.equals(ⅰ, other.ⅰ) && Objects.equals(ⅱ, other.ⅱ);
         }
         return false;
     }

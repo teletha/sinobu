@@ -54,7 +54,7 @@ class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
      */
     @Override
     public void accept(Ⅲ<Model, Property, Object> context) {
-        if (!context.e.isTransient && context.e.name != null) {
+        if (!context.ⅱ.isTransient && context.ⅱ.name != null) {
             try {
                 // non-first properties requires separator
                 if (index++ != 0) out.append(',');
@@ -64,21 +64,21 @@ class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
                     indent();
 
                     // property key (List node doesn't need key)
-                    if (context.a.type != List.class) {
-                        write(context.e.name);
+                    if (context.ⅰ.type != List.class) {
+                        write(context.ⅱ.name);
                         out.append(": ");
                     }
                 }
 
                 // property value
-                if (context.e.isAttribute()) {
-                    write(I.transform(context.o, String.class));
+                if (context.ⅱ.isAttribute()) {
+                    write(I.transform(context.ⅲ, String.class));
                 } else {
                     JSON walker = new JSON(out, indent + 1);
-                    out.append(context.e.model.type == List.class ? '[' : '{');
-                    context.e.model.walk(context.o, walker);
+                    out.append(context.ⅱ.model.type == List.class ? '[' : '{');
+                    context.ⅱ.model.walk(context.ⅲ, walker);
                     if (walker.index != 0) indent();
-                    out.append(context.e.model.type == List.class ? ']' : '}');
+                    out.append(context.ⅱ.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
                 throw I.quiet(e);

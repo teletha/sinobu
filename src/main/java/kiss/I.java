@@ -2245,10 +2245,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
             // copy actually
             inputModel.walk(input, info -> {
-                Property dest = outputModel.property(info.e.name);
+                Property dest = outputModel.property(info.ⅱ.name);
 
                 // never check null because PropertyWalker traverses existing properties
-                outputModel.set(m, dest, I.transform(info.o, dest.model.type));
+                outputModel.set(m, dest, I.transform(info.ⅲ, dest.model.type));
             });
 
             // API definition

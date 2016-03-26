@@ -40,7 +40,7 @@ import kiss.sample.bean.TransientBean;
 /**
  * @version 2016/03/17 1:52:38
  */
-public class JSON {
+public class JSONTest {
 
     @Test
     public void empty() {

@@ -405,7 +405,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, Ⅱ<V, O>::new).combine(another, Ⅱ<V, O>::<A> ò);
+        return combine(other, Ⅱ<V, O>::new).combine(another, Ⅱ<V, O>::<A> add3);
     }
 
     /**
@@ -496,7 +496,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, Ⅱ<V, O>::new).combineLatest(another, Ⅱ<V, O>::<A> ò);
+        return combineLatest(other, Ⅱ<V, O>::new).combineLatest(another, Ⅱ<V, O>::<A> add3);
     }
 
     /**
@@ -836,7 +836,7 @@ public class Events<V> {
      */
     private void interval(long interval, long latest, Deque<Ⅱ<V, Observer>> buffer) {
         Ⅱ<V, Observer> context = buffer.pollFirst();
-        context.e.accept(context.a);
+        context.ⅱ.accept(context.ⅰ);
 
         if (!buffer.isEmpty()) {
             long now = System.currentTimeMillis();

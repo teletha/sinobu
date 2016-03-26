@@ -25,9 +25,9 @@ public class ⅢTest {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
 
         value = value.a("Replace");
-        assert value.a.equals("Replace");
-        assert value.e == 10;
-        assert value.o == 30L;
+        assert value.ⅰ.equals("Replace");
+        assert value.ⅱ == 10;
+        assert value.ⅲ == 30L;
     }
 
     @Test
@@ -35,9 +35,9 @@ public class ⅢTest {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
 
         value = value.e(20);
-        assert value.a.equals("String");
-        assert value.e == 20;
-        assert value.o == 30L;
+        assert value.ⅰ.equals("String");
+        assert value.ⅱ == 20;
+        assert value.ⅲ == 30L;
     }
 
     @Test
@@ -45,33 +45,33 @@ public class ⅢTest {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
 
         value = value.o(100L);
-        assert value.a.equals("String");
-        assert value.e == 10;
-        assert value.o == 100L;
+        assert value.ⅰ.equals("String");
+        assert value.ⅱ == 10;
+        assert value.ⅲ == 100L;
     }
 
     @Test
     public void removeFirstValue() throws Exception {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
         Ⅱ<Integer, Long> removed = value.á();
-        assert removed.a == 10;
-        assert removed.e == 30L;
+        assert removed.ⅰ == 10;
+        assert removed.ⅱ == 30L;
     }
 
     @Test
     public void removeSecondValue() throws Exception {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
         Ⅱ<String, Long> removed = value.é();
-        assert removed.a.equals("String");
-        assert removed.e == 30L;
+        assert removed.ⅰ.equals("String");
+        assert removed.ⅱ == 30L;
     }
 
     @Test
     public void removeThirdValue() throws Exception {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
         Ⅱ<String, Integer> removed = value.ó();
-        assert removed.a.equals("String");
-        assert removed.e == 10;
+        assert removed.ⅰ.equals("String");
+        assert removed.ⅱ == 10;
     }
 
     @Test
@@ -79,9 +79,9 @@ public class ⅢTest {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
         value = value.a(v -> v + " Type");
 
-        assert value.a.equals("String Type");
-        assert value.e == 10;
-        assert value.o == 30L;
+        assert value.ⅰ.equals("String Type");
+        assert value.ⅱ == 10;
+        assert value.ⅲ == 30L;
     }
 
     @Test
@@ -89,9 +89,9 @@ public class ⅢTest {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
         value = value.e(v -> v + 10);
 
-        assert value.a.equals("String");
-        assert value.e == 20;
-        assert value.o == 30L;
+        assert value.ⅰ.equals("String");
+        assert value.ⅱ == 20;
+        assert value.ⅲ == 30L;
     }
 
     @Test
@@ -99,9 +99,9 @@ public class ⅢTest {
         Ⅲ<String, Integer, Long> value = I.pair("String", 10, 30L);
         value = value.o(v -> v * 30);
 
-        assert value.a.equals("String");
-        assert value.e == 10;
-        assert value.o == 900L;
+        assert value.ⅰ.equals("String");
+        assert value.ⅱ == 10;
+        assert value.ⅲ == 900L;
     }
 
     @Test

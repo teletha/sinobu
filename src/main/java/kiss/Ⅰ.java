@@ -18,13 +18,13 @@ import java.util.function.Function;
 public class Ⅰ<Param> {
 
     /** The first parameter. */
-    public final Param a;
+    public final Param ⅰ;
 
     /**
      * @param param
      */
     Ⅰ(Param param) {
-        this.a = param;
+        this.ⅰ = param;
     }
 
     /**
@@ -44,7 +44,7 @@ public class Ⅰ<Param> {
      * @return A created new tuple.
      */
     public <CalculationResult> Ⅰ<CalculationResult> a(Function<Param, CalculationResult> calculation) {
-        return I.pair(calculation.apply(a));
+        return I.pair(calculation.apply(ⅰ));
     }
 
     /**
@@ -52,7 +52,7 @@ public class Ⅰ<Param> {
      */
     @Override
     public int hashCode() {
-        return Objects.hashCode(a);
+        return Objects.hashCode(ⅰ);
     }
 
     /**
@@ -63,7 +63,7 @@ public class Ⅰ<Param> {
         if (obj instanceof Ⅰ) {
             Ⅰ other = (Ⅰ) obj;
 
-            return Objects.equals(a, other.a);
+            return Objects.equals(ⅰ, other.ⅰ);
         }
         return false;
     }

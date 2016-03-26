@@ -106,33 +106,33 @@ class XMLUtil extends Writer implements Consumer<Ⅲ<Model, Property, Object>> {
      */
     @Override
     public void accept(Ⅲ<Model, Property, Object> info) {
-        if (!info.e.isTransient) {
+        if (!info.ⅱ.isTransient) {
             // ========================================
             // Enter Node
             // ========================================
-            if (info.a.isCollection()) {
+            if (info.ⅰ.isCollection()) {
                 // collection item property
-                xml = xml.child(info.e.model.name);
+                xml = xml.child(info.ⅱ.model.name);
 
                 // collection needs key attribute
-                if (Map.class.isAssignableFrom(info.a.type)) {
-                    xml.attr("ss:key", info.e.name);
+                if (Map.class.isAssignableFrom(info.ⅰ.type)) {
+                    xml.attr("ss:key", info.ⅱ.name);
                 }
-            } else if (!info.e.isAttribute()) {
-                xml = xml.child(info.e.name);
+            } else if (!info.ⅱ.isAttribute()) {
+                xml = xml.child(info.ⅱ.name);
             }
 
             // If the collection item is attribute node, that is represented as xml value attribute
             // and attribute node that collection node doesn't host is written as xml attribute too.
-            if (info.o != null) {
-                if (info.e.isAttribute()) {
-                    xml.attr(info.a.isCollection() ? "value" : info.e.name, I.transform(info.o, String.class));
+            if (info.ⅲ != null) {
+                if (info.ⅱ.isAttribute()) {
+                    xml.attr(info.ⅰ.isCollection() ? "value" : info.ⅱ.name, I.transform(info.ⅲ, String.class));
                 } else {
-                    XML ref = reference.get(info.o);
+                    XML ref = reference.get(info.ⅲ);
 
                     if (ref == null) {
                         // associate node object with element
-                        reference.put(info.o, xml);
+                        reference.put(info.ⅲ, xml);
 
                         // assign new id
                         xml.attr("ss:id", pos++);
@@ -140,7 +140,7 @@ class XMLUtil extends Writer implements Consumer<Ⅲ<Model, Property, Object>> {
                         // ========================================
                         // Traverse Child Node
                         // ========================================
-                        info.e.model.walk(info.o, this);
+                        info.ⅱ.model.walk(info.ⅲ, this);
                     } else {
                         // share id
                         xml.attr("ss:id", ref.attr("ss:id"));
@@ -151,7 +151,7 @@ class XMLUtil extends Writer implements Consumer<Ⅲ<Model, Property, Object>> {
             // ========================================
             // Leave Node
             // ========================================
-            if (info.a.isCollection() || !info.e.isAttribute()) {
+            if (info.ⅰ.isCollection() || !info.ⅱ.isAttribute()) {
                 xml = xml.parent();
             }
         }

@@ -10,21 +10,22 @@
 package kiss;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * @version 2015/04/10 1:17:24
+ * @version 2016/03/26 21:14:51
  */
 public class Ⅲ<Param1, Param2, Param3> {
 
     /** The first parameter. */
-    public final Param1 a;
+    public final Param1 ⅰ;
 
     /** The second parameter. */
-    public final Param2 e;
+    public final Param2 ⅱ;
 
     /** The third parameter. */
-    public final Param3 o;
+    public final Param3 ⅲ;
 
     /**
      * @param param1
@@ -32,9 +33,22 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @param param3
      */
     Ⅲ(Param1 param1, Param2 param2, Param3 param3) {
-        this.a = param1;
-        this.e = param2;
-        this.o = param3;
+        this.ⅰ = param1;
+        this.ⅱ = param2;
+        this.ⅲ = param3;
+    }
+
+    /**
+     * <p>
+     * The with statement extends the scope chain for a statement.
+     * </p>
+     * 
+     * @param environment
+     */
+    public void with(Function<Param1, Function<Param2, Consumer<Param3>>> environment) {
+        if (environment != null) {
+            environment.apply(ⅰ).apply(ⅱ).accept(ⅲ);
+        }
     }
 
     /**
@@ -44,7 +58,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public <NewParam> Ⅲ<NewParam, Param2, Param3> a(NewParam param) {
-        return I.pair(param, e, o);
+        return I.pair(param, ⅱ, ⅲ);
     }
 
     /**
@@ -54,7 +68,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public <CalculationResult> Ⅲ<CalculationResult, Param2, Param3> a(Function<Param1, CalculationResult> calculation) {
-        return I.pair(calculation.apply(a), e, o);
+        return I.pair(calculation.apply(ⅰ), ⅱ, ⅲ);
     }
 
     /**
@@ -64,7 +78,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public <NewParam> Ⅲ<Param1, NewParam, Param3> e(NewParam param) {
-        return I.pair(a, param, o);
+        return I.pair(ⅰ, param, ⅲ);
     }
 
     /**
@@ -74,7 +88,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public <CalculationResult> Ⅲ<Param1, CalculationResult, Param3> e(Function<Param2, CalculationResult> calculation) {
-        return I.pair(a, calculation.apply(e), o);
+        return I.pair(ⅰ, calculation.apply(ⅱ), ⅲ);
     }
 
     /**
@@ -84,7 +98,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public <NewParam> Ⅲ<Param1, Param2, NewParam> o(NewParam param) {
-        return I.pair(a, e, param);
+        return I.pair(ⅰ, ⅱ, param);
     }
 
     /**
@@ -94,7 +108,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public <CalculationResult> Ⅲ<Param1, Param2, CalculationResult> o(Function<Param3, CalculationResult> calculation) {
-        return I.pair(a, e, calculation.apply(o));
+        return I.pair(ⅰ, ⅱ, calculation.apply(ⅲ));
     }
 
     /**
@@ -103,7 +117,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public Ⅱ<Param2, Param3> á() {
-        return I.pair(e, o);
+        return I.pair(ⅱ, ⅲ);
     }
 
     /**
@@ -112,7 +126,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public Ⅱ<Param1, Param3> é() {
-        return I.pair(a, o);
+        return I.pair(ⅰ, ⅲ);
     }
 
     /**
@@ -121,7 +135,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @return A created new tuple.
      */
     public Ⅱ<Param1, Param2> ó() {
-        return I.pair(a, e);
+        return I.pair(ⅰ, ⅱ);
     }
 
     /**
@@ -129,7 +143,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(a, e, o);
+        return Objects.hash(ⅰ, ⅱ, ⅲ);
     }
 
     /**
@@ -140,7 +154,7 @@ public class Ⅲ<Param1, Param2, Param3> {
         if (obj instanceof Ⅲ) {
             Ⅲ other = (Ⅲ) obj;
 
-            return Objects.equals(a, other.a) && Objects.equals(e, other.e) && Objects.equals(o, other.o);
+            return Objects.equals(ⅰ, other.ⅰ) && Objects.equals(ⅱ, other.ⅱ) && Objects.equals(ⅲ, other.ⅲ);
         }
         return false;
     }
