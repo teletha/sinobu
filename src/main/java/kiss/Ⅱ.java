@@ -10,12 +10,11 @@
 package kiss;
 
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * @version 2016/03/26 21:15:44
+ * @version 2016/03/27 12:13:49
  */
 public class Ⅱ<Param1, Param2> {
 
@@ -29,85 +28,69 @@ public class Ⅱ<Param1, Param2> {
      * @param param1
      * @param param2
      */
-    public Ⅱ(Param1 param1, Param2 param2) {
+    Ⅱ(Param1 param1, Param2 param2) {
         this.ⅰ = param1;
         this.ⅱ = param2;
     }
 
     /**
-     * <p>
-     * The with statement extends the scope chain for a statement.
-     * </p>
-     * 
-     * @param environment
-     */
-    public void with(BiConsumer<Param1, Param2> environment) {
-        if (environment != null) {
-            environment.accept(ⅰ, ⅱ);
-        }
-    }
-
-    /**
-     * <p>
-     * The with statement extends the scope chain for a statement.
-     * </p>
-     * 
-     * @param environment
-     */
-    public void with(Function<Param1, Consumer<Param2>> environment) {
-        if (environment != null) {
-            environment.apply(ⅰ).accept(ⅱ);
-        }
-    }
-
-    /**
-     * Create new tuple which replace the first parameter.
-     * 
-     * @param param New first parameter.
-     * @return A created new tuple.
-     */
-    public <NewParam> Ⅱ<NewParam, Param2> ⅰ(NewParam param) {
-        return I.pair(param, ⅱ);
-    }
-
-    /**
-     * Create new tuple which replace the second parameter.
-     * 
-     * @param param New second parameter.
-     * @return A created new tuple.
-     */
-    public <NewParam> Ⅱ<Param1, NewParam> ⅱ(NewParam param) {
-        return I.pair(ⅰ, param);
-    }
-
-    /**
      * Create new tuple which add the third parameter.
      * 
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ⅲ<AdditionalParam, Param1, Param2> add1(AdditionalParam param) {
-        return I.pair(param, ⅰ, ⅱ);
-    }
-
-    /**
-     * Create new tuple which add the third parameter.
-     * 
-     * @param param New third parameter.
-     * @return A created new tuple.
-     */
-    public <AdditionalParam> Ⅲ<Param1, AdditionalParam, Param2> add2(AdditionalParam param) {
-        return I.pair(ⅰ, param, ⅱ);
-    }
-
-    /**
-     * Create new tuple which add the third parameter.
-     * 
-     * @param param New third parameter.
-     * @return A created new tuple.
-     */
-    public <AdditionalParam> Ⅲ<Param1, Param2, AdditionalParam> add3(AdditionalParam param) {
+    public <AdditionalParam> Ⅲ<Param1, Param2, AdditionalParam> add(AdditionalParam param) {
         return I.pair(ⅰ, ⅱ, param);
+    }
+
+    /**
+     * <p>
+     * Create new scope with the human-readable named parameters.
+     * </p>
+     * <p>
+     * Parameter name (ⅰ and ⅱ) are confusing. This method names parameters to the context-aware
+     * names.
+     * </p>
+     * <pre>
+     *  // Original parameter names (ⅰ and ⅱ) are confusing.
+     * context.with(name -> age  -> {
+     *      // Named parameter (name and age) are comprehensible.
+     * });
+     * </pre>
+     * 
+     * @param params A list of named parameters.
+     */
+    public void with(Function<Param1, Consumer<Param2>> params) {
+        if (params != null) {
+            Consumer<Param2> consumer = params.apply(ⅰ);
+
+            if (consumer != null) {
+                consumer.accept(ⅱ);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Create new scope with the human-readable named parameters and return a calculated value.
+     * </p>
+     * <p>
+     * Parameter name (ⅰ and ⅱ) are confusing. This method names parameters to the context-aware
+     * names.
+     * </p>
+     * <pre>
+     *  // Original parameter names (ⅰ and ⅱ) are confusing.
+     * context.with(name -> age  -> {
+     *      // Named parameter (name and age) are comprehensible.
+     *      return name + "(" + age + ")";
+     * });
+     * </pre>
+     * 
+     * @param params A list of named parameters.
+     * @return A calculated value.
+     */
+    public <Result> Result map(Function<Param1, Function<Param2, Result>> params) {
+        return params.apply(ⅰ).apply(ⅱ);
     }
 
     /**

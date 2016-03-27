@@ -405,7 +405,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, Ⅱ<V, O>::new).combine(another, Ⅱ<V, O>::<A> add3);
+        return combine(other, I::pair).combine(another, Ⅱ<V, O>::<A> add);
     }
 
     /**
@@ -496,7 +496,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, Ⅱ<V, O>::new).combineLatest(another, Ⅱ<V, O>::<A> add3);
+        return combineLatest(other, I::pair).combineLatest(another, Ⅱ<V, O>::<A> add);
     }
 
     /**

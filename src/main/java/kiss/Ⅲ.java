@@ -40,102 +40,56 @@ public class Ⅲ<Param1, Param2, Param3> {
 
     /**
      * <p>
-     * The with statement extends the scope chain for a statement.
+     * Create new scope with the human-readable named parameters.
      * </p>
+     * <p>
+     * Parameter name (ⅰ, ⅱ and ⅲ) are confusing. This method names parameters to the context-aware
+     * names.
+     * </p>
+     * <pre>
+     *  // Original parameter names (ⅰ, ⅱ and ⅲ) are confusing.
+     * context.with(name -> age  -> gender -> {
+     *      // Named parameter (name, age and gender) are comprehensible.
+     * });
+     * </pre>
      * 
-     * @param environment
+     * @param params A list of named parameters.
      */
-    public void with(Function<Param1, Function<Param2, Consumer<Param3>>> environment) {
-        if (environment != null) {
-            environment.apply(ⅰ).apply(ⅱ).accept(ⅲ);
+    public void with(Function<Param1, Function<Param2, Consumer<Param3>>> params) {
+        if (params != null) {
+            Function<Param2, Consumer<Param3>> second = params.apply(ⅰ);
+
+            if (second != null) {
+                Consumer<Param3> consumer = second.apply(ⅱ);
+
+                if (consumer != null) {
+                    consumer.accept(ⅲ);
+                }
+            }
         }
     }
 
     /**
-     * Create new tuple which replace the first parameter.
+     * <p>
+     * Create new scope with the human-readable named parameters and return a calculated value.
+     * </p>
+     * <p>
+     * Parameter name (ⅰ, ⅱ and ⅲ) are confusing. This method names parameters to the context-aware
+     * names.
+     * </p>
+     * <pre>
+     *  // Original parameter names (ⅰ, ⅱ and ⅲ) are confusing.
+     * context.with(name -> age -> gender -> {
+     *      // Named parameter (name, age and gender) are comprehensible.
+     *      return name + "(" + age + " : " + gender + ")";
+     * });
+     * </pre>
      * 
-     * @param param New first parameter.
-     * @return A created new tuple.
+     * @param params A list of named parameters.
+     * @return A calculated value.
      */
-    public <NewParam> Ⅲ<NewParam, Param2, Param3> a(NewParam param) {
-        return I.pair(param, ⅱ, ⅲ);
-    }
-
-    /**
-     * Create new tuple which calculate the first parameter.
-     * 
-     * @param calculation A calculation expression.
-     * @return A created new tuple.
-     */
-    public <CalculationResult> Ⅲ<CalculationResult, Param2, Param3> a(Function<Param1, CalculationResult> calculation) {
-        return I.pair(calculation.apply(ⅰ), ⅱ, ⅲ);
-    }
-
-    /**
-     * Create new tuple which replace the second parameter.
-     * 
-     * @param param New second parameter.
-     * @return A created new tuple.
-     */
-    public <NewParam> Ⅲ<Param1, NewParam, Param3> e(NewParam param) {
-        return I.pair(ⅰ, param, ⅲ);
-    }
-
-    /**
-     * Create new tuple which calculate the second parameter.
-     * 
-     * @param calculation A calculation expression.
-     * @return A created new tuple.
-     */
-    public <CalculationResult> Ⅲ<Param1, CalculationResult, Param3> e(Function<Param2, CalculationResult> calculation) {
-        return I.pair(ⅰ, calculation.apply(ⅱ), ⅲ);
-    }
-
-    /**
-     * Create new tuple which replace the third parameter.
-     * 
-     * @param param New third parameter.
-     * @return A created new tuple.
-     */
-    public <NewParam> Ⅲ<Param1, Param2, NewParam> o(NewParam param) {
-        return I.pair(ⅰ, ⅱ, param);
-    }
-
-    /**
-     * Create new tuple which calculate the third parameter.
-     * 
-     * @param calculation A calculation expression.
-     * @return A created new tuple.
-     */
-    public <CalculationResult> Ⅲ<Param1, Param2, CalculationResult> o(Function<Param3, CalculationResult> calculation) {
-        return I.pair(ⅰ, ⅱ, calculation.apply(ⅲ));
-    }
-
-    /**
-     * Create new tuple which remove the first parameter.
-     * 
-     * @return A created new tuple.
-     */
-    public Ⅱ<Param2, Param3> á() {
-        return I.pair(ⅱ, ⅲ);
-    }
-
-    /**
-     * Create new tuple which remove the second parameter.
-     * 
-     * @return A created new tuple.
-     */
-    public Ⅱ<Param1, Param3> é() {
-        return I.pair(ⅰ, ⅲ);
-    }
-
-    /**
-     * Create new tuple which remove the third parameter.
-     * 
-     * @return A created new tuple.
-     */
-    public Ⅱ<Param1, Param2> ó() {
-        return I.pair(ⅰ, ⅱ);
+    public <Result> Result map(Function<Param1, Function<Param2, Function<Param3, Result>>> params) {
+        return params.apply(ⅰ).apply(ⅱ).apply(ⅲ);
     }
 
     /**
