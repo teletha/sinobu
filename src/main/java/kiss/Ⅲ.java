@@ -40,6 +40,29 @@ public class Ⅲ<Param1, Param2, Param3> {
 
     /**
      * <p>
+     * Create new scope with the human-readable named parameters and return a calculated value.
+     * </p>
+     * <p>
+     * Parameter name (ⅰ, ⅱ and ⅲ) are confusing. This method names parameters to the context-aware
+     * names.
+     * </p>
+     * <pre>
+     *  // Original parameter names (ⅰ, ⅱ and ⅲ) are confusing.
+     * context.with(name -> age -> gender -> {
+     *      // Named parameter (name, age and gender) are comprehensible.
+     *      return name + "(" + age + " : " + gender + ")";
+     * });
+     * </pre>
+     * 
+     * @param params A list of named parameters.
+     * @return A calculated value.
+     */
+    public <Result> Result map(Function<Param1, Function<Param2, Function<Param3, Result>>> params) {
+        return params.apply(ⅰ).apply(ⅱ).apply(ⅲ);
+    }
+
+    /**
+     * <p>
      * Create new scope with the human-readable named parameters.
      * </p>
      * <p>
@@ -67,29 +90,6 @@ public class Ⅲ<Param1, Param2, Param3> {
                 }
             }
         }
-    }
-
-    /**
-     * <p>
-     * Create new scope with the human-readable named parameters and return a calculated value.
-     * </p>
-     * <p>
-     * Parameter name (ⅰ, ⅱ and ⅲ) are confusing. This method names parameters to the context-aware
-     * names.
-     * </p>
-     * <pre>
-     *  // Original parameter names (ⅰ, ⅱ and ⅲ) are confusing.
-     * context.with(name -> age -> gender -> {
-     *      // Named parameter (name, age and gender) are comprehensible.
-     *      return name + "(" + age + " : " + gender + ")";
-     * });
-     * </pre>
-     * 
-     * @param params A list of named parameters.
-     * @return A calculated value.
-     */
-    public <Result> Result map(Function<Param1, Function<Param2, Function<Param3, Result>>> params) {
-        return params.apply(ⅰ).apply(ⅱ).apply(ⅲ);
     }
 
     /**

@@ -11,130 +11,32 @@ package kiss.lambda;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import kiss.Disposable;
+import kiss.I;
+import kiss.Ⅱ;
+import kiss.Ⅲ;
 
 /**
- * @version 2014/07/18 14:29:28
+ * @version 2016/03/28 9:12:49
  */
 public class Lambda {
 
-    /** The task to do nothing. */
-    public static final Consumer φ = value -> {
-        // do nothing
-    };
-
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
-     * @return The parameter binded function.
-     */
-    public static Disposable run(Supplier function) {
-        if (function == null) {
-            return Disposable.Φ;
-        }
-        return () -> function.get();
+    public static <Param1, Param2, Result> Function<Param1, Function<Param2, Result>> curry(BiFunction<Param1, Param2, Result> function) {
+        return param1 -> param2 -> function.apply(param1, param2);
     }
 
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
-     * @param param A input paramter to bind.
-     * @return The parameter binded function.
-     */
-    public static <Param> Disposable run(Consumer<Param> function, Param param) {
-        if (function == null) {
-            return Disposable.Φ;
-        }
-        return () -> function.accept(param);
+    public static <Param1, Param2, Result> Function<Param1, Function<Param2, Result>> curry(Function<Ⅱ<Param1, Param2>, Result> function) {
+        return param1 -> param2 -> function.apply(I.pair(param1, param2));
     }
 
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #Φ}) will be returned.
-     * @param param1 First input paramter to bind.
-     * @param param2 Second input paramter to bind.
-     * @return The parameter binded function.
-     */
-    public static <Param1, Param2> Disposable run(BiConsumer<Param1, Param2> function, Param1 param1, Param2 param2) {
-        return run(consume(function, param1), param2);
+    public static <Param1, Param2, Param3, Result> Function<Param1, Function<Param2, Function<Param3, Result>>> curry3(Function<Ⅲ<Param1, Param2, Param3>, Result> function) {
+        return param1 -> param2 -> param3 -> function.apply(I.pair(param1, param2, param3));
     }
 
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, empty fuction ({@link #φ}) will be returned.
-     * @param param First input paramter to bind.
-     * @return The parameter binded function.
-     */
-    public static <Param1, Param2> Consumer<Param2> consume(BiConsumer<Param1, Param2> function, Param1 param) {
-        if (function == null) {
-            return φ;
-        }
-        return param2 -> function.accept(param, param2);
-    }
-
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, {@link NullPointerException} will be thrown.
-     * @param param First input paramter to bind.
-     * @return The parameter binded function.
-     */
-    public static <Param, Return> Supplier<Return> supply(Function<Param, Return> function, Param param) {
-        return () -> function.apply(param);
-    }
-
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, {@link NullPointerException} will be thrown.
-     * @param param1 First input paramter to bind.
-     * @param param2 Second input paramter to bind.
-     * @return The parameter binded function.
-     */
-    public static <Param1, Param2, Return> Supplier<Return> supply(BiFunction<Param1, Param2, Return> function, Param1 param1, Param2 param2) {
-        return supply(function(function, param1), param2);
-    }
-
-    /**
-     * <p>
-     * Apply parameter partially for the given function.
-     * </p>
-     * 
-     * @param function An actual function to apply parameter partially. If this function is
-     *            <code>null</code>, {@link NullPointerException} will be thrown.
-     * @param param1 First input paramter to bind.
-     * @return The parameter binded function.
-     */
-    public static <Param1, Param2, Return> Function<Param2, Return> function(BiFunction<Param1, Param2, Return> function, Param1 param1) {
-        return param2 -> function.apply(param1, param2);
+    public static <Param1, Param2, Result> BiFunction<Param1, Param2, Result> uncurry(Function<Param1, Function<Param2, Result>> function) {
+        return (param1, param2) -> function.apply(param1).apply(param2);
     }
 
     /**

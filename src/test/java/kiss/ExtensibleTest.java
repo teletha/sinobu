@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.ClassRule;
@@ -21,7 +22,7 @@ import kiss.sample.bean.School;
 import kiss.sample.bean.Student;
 
 /**
- * @version 2014/01/13 22:27:16
+ * @version 2016/03/29 17:12:21
  */
 public class ExtensibleTest {
 
@@ -69,7 +70,16 @@ public class ExtensibleTest {
 
     @Test
     public void keyBySubclass() throws Exception {
-        assert I.find(KEPClass.class, Student.class) == null;
+        KEPClass extension = I.find(KEPClass.class, Student.class);
+        assert extension != null;
+        assert KEPClassExtension1.class == extension.getClass();
+    }
+
+    @Test
+    public void keyBySubinterface() throws Exception {
+        KEPClass extension = I.find(KEPClass.class, ArrayList.class);
+        assert extension != null;
+        assert KEPClassExtension3.class == extension.getClass();
     }
 
     @Test
@@ -222,6 +232,12 @@ public class ExtensibleTest {
      * @version 2009/12/30 15:40:55
      */
     private static class KEPClassExtension2 extends KEPClass<String> {
+    }
+
+    /**
+     * @version 2016/03/29 17:12:03
+     */
+    private static class KEPClassExtension3 extends KEPClass<List> {
     }
 
     /**

@@ -40,12 +40,12 @@ import kiss.Table;
 public final class ClassUtil {
 
     /** The list of primitive classes. (except for void type) */
-    public static final Class[] PRIMITIVES = {boolean.class, int.class, long.class, float.class, double.class,
-            byte.class, short.class, char.class, void.class};
+    public static final Class[] PRIMITIVES = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
+            char.class, void.class};
 
     /** The list of wrapper classes. (except for void type) */
-    public static final Class[] WRAPPERS = {Boolean.class, Integer.class, Long.class, Float.class, Double.class,
-            Byte.class, Short.class, Character.class, Void.class};
+    public static final Class[] WRAPPERS = {Boolean.class, Integer.class, Long.class, Float.class, Double.class, Byte.class, Short.class,
+            Character.class, Void.class};
 
     /**
      * Avoid construction.
@@ -119,8 +119,7 @@ public final class ClassUtil {
                 // exclude the method which is created by compiler
                 // exclude the private method which is not declared in the specified class
                 if (!method.isBridge() && !method
-                        .isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method
-                                .getDeclaringClass() == clazz)) {
+                        .isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
                     Annotation[] annotations = method.getAnnotations();
 
                     if (annotations.length != 0) {
@@ -234,7 +233,7 @@ public final class ClassUtil {
      */
     private static Class[] getParameter(Type clazz, Class target, Type base) {
         // check null
-        if (clazz == null) {
+        if (clazz == null || clazz == target) {
             return new Class[0];
         }
 

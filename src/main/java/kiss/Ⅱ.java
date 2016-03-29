@@ -45,6 +45,29 @@ public class Ⅱ<Param1, Param2> {
 
     /**
      * <p>
+     * Create new scope with the human-readable named parameters and return a calculated value.
+     * </p>
+     * <p>
+     * Parameter name (ⅰ and ⅱ) are confusing. This method names parameters to the context-aware
+     * names.
+     * </p>
+     * <pre>
+     *  // Original parameter names (ⅰ and ⅱ) are confusing.
+     * context.with(name -> age  -> {
+     *      // Named parameter (name and age) are comprehensible.
+     *      return name + "(" + age + ")";
+     * });
+     * </pre>
+     * 
+     * @param params A list of named parameters.
+     * @return A calculated value.
+     */
+    public <Result> Result map(Function<Param1, Function<Param2, Result>> params) {
+        return params.apply(ⅰ).apply(ⅱ);
+    }
+
+    /**
+     * <p>
      * Create new scope with the human-readable named parameters.
      * </p>
      * <p>
@@ -68,29 +91,6 @@ public class Ⅱ<Param1, Param2> {
                 consumer.accept(ⅱ);
             }
         }
-    }
-
-    /**
-     * <p>
-     * Create new scope with the human-readable named parameters and return a calculated value.
-     * </p>
-     * <p>
-     * Parameter name (ⅰ and ⅱ) are confusing. This method names parameters to the context-aware
-     * names.
-     * </p>
-     * <pre>
-     *  // Original parameter names (ⅰ and ⅱ) are confusing.
-     * context.with(name -> age  -> {
-     *      // Named parameter (name and age) are comprehensible.
-     *      return name + "(" + age + ")";
-     * });
-     * </pre>
-     * 
-     * @param params A list of named parameters.
-     * @return A calculated value.
-     */
-    public <Result> Result map(Function<Param1, Function<Param2, Result>> params) {
-        return params.apply(ⅰ).apply(ⅱ);
     }
 
     /**

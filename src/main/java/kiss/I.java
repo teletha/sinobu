@@ -61,7 +61,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -408,29 +407,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         return (V) value;
     }
 
-    // /**
-    // * <p>
-    // * Retrieve file name and extension from the specified path.
-    // * </p>
-    // *
-    // * @param path A target path.
-    // * @return A file name array like the following [name, extension].
-    // * @throws NullPointerException A path is <code>null</code>.
-    // */
-    // public static String[] call(Path path) {
-    // String[] names = {"", ""};
-    // String name = path.getFileName().toString();
-    // int index = name.lastIndexOf('.');
-    //
-    // if (index == -1) {
-    // names[0] = name;
-    // } else {
-    // names[0] = name.substring(0, index);
-    // names[1] = name.substring(index + 1);
-    // }
-    // return names;
-    // }
-
     /**
      * <p>
      * Note : This method closes both input and output stream carefully.
@@ -692,9 +668,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return null;
         }
 
-        Class<E> supplier = keys.find(extensionPoint.getName().concat(key.getName()));
+        for (Class clazz : ClassUtil.getTypes(key)) {
+            Class<E> supplier = keys.find(extensionPoint.getName().concat(clazz.getName()));
 
-        return supplier == null ? null : make(supplier);
+            if (supplier != null) {
+                return make(supplier);
+            }
+        }
+        return null;
     }
 
     /**
@@ -1757,10 +1738,6 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // API definition
             return watcher;
         });
-    }
-
-    public static <Param1, Param2, Result> Result or(Ⅰ<Param1> param1, Ⅰ<Param2> param2, Function<Param1, Function<Param2, Result>> mapper) {
-        return null;
     }
 
     /**
