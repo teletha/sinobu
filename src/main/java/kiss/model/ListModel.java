@@ -17,7 +17,7 @@ import kiss.I;
 import kiss.Ⅲ;
 
 /**
- * @version 2009/07/22 23:37:56
+ * @version 2016/03/30 1:11:45
  */
 @SuppressWarnings("unchecked")
 class ListModel extends Model {
@@ -32,10 +32,10 @@ class ListModel extends Model {
      * @param type A parameter class.
      * @throws IllegalArgumentException If the list model has no parameter or invalid parameter.
      */
-    ListModel(Class clazz, Type type, Type base) {
+    ListModel(Class clazz, Type[] types, Type base) {
         super(clazz);
 
-        itemModel = Model.of(type, base);
+        itemModel = Model.of(types.length == 0 ? List.class : types[0], base);
     }
 
     /**

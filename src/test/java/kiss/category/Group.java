@@ -10,24 +10,27 @@
 package kiss.category;
 
 import java.util.function.BinaryOperator;
+import java.util.function.UnaryOperator;
 
 import kiss.Extensible;
 
 /**
- * A <code>Semigroup<code/> with an identity element: append(x,identity) == append(identity,x) == x
+ * A <code>Monoid</code> where every element has an inverse. x == inverse(inverse(x))
+ * inverse(identity) == identity
  * 
- * @version 2016/03/29 14:25:53
+ * @version 2016/03/30 3:03:36
  */
-public interface Monoid<A> extends Semigroup<A>, Extensible {
+public interface Group<A> extends Monoid<A>, Extensible {
 
-    A empty();
+    public A inverse(A a);
 
-    public static <A> Monoid<A> dual(Monoid<A> monoid) {
-        return create(monoid.empty(), (x, y) -> monoid.append(y, x));
-    }
+    public static <A> Group<A> create(A identity, BinaryOperator<A> fn, UnaryOperator<A> inv) {
+        return new Group<A>() {
 
-    public static <A> Monoid<A> create(A identity, BinaryOperator<A> fn) {
-        return new Monoid<A>() {
+            @Override
+            public A inverse(A a) {
+                return inv.apply(a);
+            }
 
             @Override
             public A empty() {

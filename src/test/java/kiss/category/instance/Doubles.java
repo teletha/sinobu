@@ -7,26 +7,28 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.category;
+package kiss.category.instance;
+
+import kiss.category.Monoid;
 
 /**
  * @version 2016/03/29 14:27:09
  */
-class IntMonoid implements Monoid<Integer> {
+class Doubles implements Monoid<Double> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Integer empty() {
-        return 0;
+    public Double empty() {
+        return 0d;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Integer append(Integer one, Integer other) {
+    public Double append(Double one, Double other) {
         return one + other;
     }
 }

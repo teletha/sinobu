@@ -26,13 +26,14 @@ public class MonoidTest {
 
     @Test
     public void use() throws Exception {
-        assert doubleValue(2) == 4;
-        assert doubleValue(3) == 6;
-        assert doubleValue("1").equals("11");
-        assert doubleValue(Arrays.asList("A", "B")).equals(Arrays.asList("A", "B", "A", "B"));
+        assert twice(2) == 4;
+        assert twice(3) == 6;
+        assert twice(1.2) == 2.4;
+        assert twice("1").equals("11");
+        assert twice(Arrays.asList("A", "B")).equals(Arrays.asList("A", "B", "A", "B"));
     }
 
-    public <A> A doubleValue(A value) {
+    public <A> A twice(A value) {
         Monoid<A> monoid = I.find(Monoid.class, value.getClass());
 
         return monoid.append(value, value);

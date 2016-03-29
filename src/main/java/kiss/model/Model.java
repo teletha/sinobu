@@ -479,7 +479,7 @@ public class Model {
         if (model == null) {
             // create new model
             if (List.class.isAssignableFrom(modelClass)) {
-                model = new ListModel(modelClass, ClassUtil.getParameter(modelClass, List.class)[0], List.class);
+                model = new ListModel(modelClass, ClassUtil.getParameter(modelClass, List.class), List.class);
             } else if (Map.class.isAssignableFrom(modelClass)) {
                 model = new MapModel(modelClass, ClassUtil.getParameter(modelClass, Map.class), Map.class);
             } else {
@@ -516,7 +516,7 @@ public class Model {
 
             // ListModel
             if (List.class.isAssignableFrom(clazz)) {
-                return new ListModel(clazz, parameterized.getActualTypeArguments()[0], base);
+                return new ListModel(clazz, parameterized.getActualTypeArguments(), base);
             }
 
             // MapModel

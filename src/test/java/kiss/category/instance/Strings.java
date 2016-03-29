@@ -7,34 +7,28 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.category;
+package kiss.category.instance;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import kiss.category.Monoid;
 
 /**
- * @version 2016/03/29 14:33:12
+ * @version 2016/03/29 14:31:27
  */
-class ListMonoid implements Monoid<List> {
+class Strings implements Monoid<String> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List empty() {
-        return Collections.emptyList();
+    public String empty() {
+        return "";
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List append(List one, List other) {
-        List list = new ArrayList();
-        list.addAll(one);
-        list.addAll(other);
-
-        return list;
+    public String append(String one, String other) {
+        return one + other;
     }
 }
