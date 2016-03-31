@@ -131,7 +131,7 @@ class Modules extends Variable<Lifestyle>implements ClassListener, Decoder<Class
                 // fire event
                 for (Object[] types : this.types) {
                     for (Class provider : module.find((Class<?>) types[1], false)) {
-                        ((ClassListener) types[0]).load(provider);
+                        if (!provider.isAnonymousClass()) ((ClassListener) types[0]).load(provider);
                     }
                 }
                 return module.loader;
@@ -161,7 +161,7 @@ class Modules extends Variable<Lifestyle>implements ClassListener, Decoder<Class
                         // fire event
                         for (Object[] types : this.types) {
                             for (Class provider : module.find((Class<?>) types[1], false)) {
-                                ((ClassListener) types[0]).unload(provider);
+                                if (!provider.isAnonymousClass()) ((ClassListener) types[0]).unload(provider);
                             }
                         }
 
