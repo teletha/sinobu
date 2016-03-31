@@ -564,7 +564,6 @@ public class Model {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
-                        System.out.println(variable + "  " + variable.getGenericDeclaration());
                         return of(ClassUtil.getParameter(base, (Class) variable.getGenericDeclaration())[i], base);
                     }
                 }
