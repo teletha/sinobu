@@ -11,6 +11,7 @@ package kiss;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -38,6 +39,7 @@ public class ExtensibleTest {
     @Test
     public void listByInterface() {
         assert 4 == I.find(EPInterface.class).size();
+        assert 0 == I.find(KEPInterface.class).size();
     }
 
     @Test
@@ -245,5 +247,23 @@ public class ExtensibleTest {
      */
     @SuppressWarnings("unused")
     private static class SameKEP1 extends KEPClass<Integer> {
+    }
+
+    /**
+     * @return
+     */
+    @SuppressWarnings("unused")
+    private static KEPInterface<Map> anonymousKEPConcreatClass() {
+        return new KEPInterface<Map>() {
+        };
+    }
+
+    /**
+     * @return
+     */
+    @SuppressWarnings("unused")
+    private static <A> KEPInterface<A> anonymousKEPGenericClass() {
+        return new KEPInterface<A>() {
+        };
     }
 }

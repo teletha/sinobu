@@ -311,6 +311,8 @@ class Module extends ClassVisitor {
         // all needed information was scanned, stop parsing
         throw STOP;
     }
+    
+    
 
     /**
      * Helper method to check whether the given class is non system class or not.
