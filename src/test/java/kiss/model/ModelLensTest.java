@@ -1,0 +1,108 @@
+/*
+ * Copyright (C) 2016 Nameless Production Committee
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *          http://opensource.org/licenses/mit-license.php
+ */
+package kiss.model;
+
+import org.junit.Test;
+
+import kiss.sample.bean.GenericStringBean;
+import kiss.sample.bean.Person;
+
+/**
+ * @version 2016/04/04 14:04:19
+ */
+public class ModelLensTest {
+
+    @Test
+    public void getAtNonAccessibleInstance() {
+        Person person = new Person();
+        person.setAge(1);
+
+        Model model = Model.of(Person.class);
+        assert model.get(person, model.property("age")).equals(1);
+    }
+
+    @Test
+    public void getAtNonAccessibleGenericInstance() {
+        GenericStringBean bean = new GenericStringBean();
+        bean.setGeneric("value");
+
+        Model model = Model.of(GenericStringBean.class);
+        assert "value" == model.get(bean, model.property("generic"));
+    }
+
+    @Test
+    public void getNullObject() throws Exception {
+        Model model = Model.of(Person.class);
+        assert model.get(null, model.property("firstName")) == null;
+    }
+
+    @Test
+    public void getNullProperty() throws Exception {
+        Model model = Model.of(Person.class);
+        assert model.get(new Person(), null) == null;
+    }
+
+    @Test
+    public void setAtNonAccessibleInstance() {
+        Person person = new Person();
+        Model model = Model.of(Person.class);
+        model.set(person, model.property("age"), 1);
+
+        assert 1 == person.getAge();
+    }
+
+    @Test
+    public void setAtNonAccessibleGenericInstance() {
+        GenericStringBean bean = new GenericStringBean();
+        Model model = Model.of(GenericStringBean.class);
+        model.set(bean, model.property("generic"), "value");
+
+        assert "value" == bean.getGeneric();
+    }
+
+    @Test
+    public void setNullObject() {
+        Person person = new Person();
+        Model model = Model.of(Person.class);
+        model.set(null, model.property("firstName"), "ERROR");
+
+        assert person.getFirstName() == null;
+    }
+
+    @Test
+    public void setNullProperty() {
+        Person person = new Person();
+        Model model = Model.of(Person.class);
+        model.set(person, null, "ERROR");
+
+        assert person.getFirstName() == null;
+    }
+
+    @Test
+    public void setNullValue() {
+        Person person = new Person();
+        person.setFirstName("OK");
+        Model model = Model.of(Person.class);
+        model.set(person, model.property("firstName"), null);
+
+        assert person.getFirstName() == null;
+    }
+
+    @Test
+    public void setNullValueOnPrimitive() {
+        Person person = new Person();
+        person.setAge(10);
+
+        Model model = Model.of(Person.class);
+        model.set(person, model.property("age"), null);
+
+        assert person.getAge() == 10;
+    }
+}

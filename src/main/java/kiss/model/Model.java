@@ -370,6 +370,10 @@ public class Model {
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public Object get(Object object, Property property) {
+        if (object == null || property == null) {
+            return null;
+        }
+
         try {
             if (property.type == 2) {
                 // property access
@@ -393,16 +397,20 @@ public class Model {
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public void set(Object object, Property property, Object propertyValue) {
-        try {
-            if (property.type == 2) {
-                // property access
-                ((WritableValue) property.accessors[0].invoke(object)).setValue(propertyValue);
-            } else {
-                // field or method access
-                property.accessors[1].invoke(object, propertyValue);
+        if (object != null && property != null) {
+            try {
+                if (property.type == 2) {
+                    // property access
+                    ((WritableValue) property.accessors[0].invoke(object)).setValue(propertyValue);
+                } else {
+                    // field or method access
+                    if (!property.model.type.isPrimitive() || propertyValue != null) {
+                        property.accessors[1].invoke(object, propertyValue);
+                    }
+                }
+            } catch (Throwable e) {
+                throw I.quiet(e);
             }
-        } catch (Throwable e) {
-            throw I.quiet(e);
         }
     }
 

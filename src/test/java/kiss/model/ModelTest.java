@@ -45,7 +45,7 @@ import kiss.sample.bean.invalid.ProtectedAccessor;
 import kiss.sample.bean.invalid.StaticAccessor;
 
 /**
- * @version 2014/07/22 15:38:17
+ * @version 2016/04/04 13:50:16
  */
 public class ModelTest {
 
@@ -193,7 +193,7 @@ public class ModelTest {
 
         model.set(bean, integer, 10);
         assert bean.integer.get() == 10;
-        assert(Integer) model.get(bean, integer) == 10;
+        assert (Integer) model.get(bean, integer) == 10;
 
         model.set(bean, string, "value");
         assert bean.string.get().equals("value");
@@ -259,7 +259,7 @@ public class ModelTest {
         assert model != null;
         assert Map.class == model.type;
         assert 0 == model.properties.size();
-        assert!model.isCollection();
+        assert !model.isCollection();
         assert model.decoder() == null;
     }
 
@@ -581,41 +581,4 @@ public class ModelTest {
 
         Collections.sort(properties);
     }
-
-    @Test
-    public void testGetAtNonAccessibleInstance() {
-        Person person = new Person();
-        person.setAge(1);
-
-        Model model = Model.of(Person.class);
-        assert model.get(person, model.property("age")).equals(1);
-    }
-
-    @Test
-    public void testGetAtNonAccessibleGenericInstance() {
-        GenericStringBean bean = new GenericStringBean();
-        bean.setGeneric("value");
-
-        Model model = Model.of(GenericStringBean.class);
-        assert"value" == model.get(bean, model.property("generic"));
-    }
-
-    @Test
-    public void testSetAtNonAccessibleInstance() {
-        Person person = new Person();
-        Model model = Model.of(Person.class);
-        model.set(person, model.property("age"), 1);
-
-        assert 1 == person.getAge();
-    }
-
-    @Test
-    public void testSetAtNonAccessibleGenericInstance() {
-        GenericStringBean bean = new GenericStringBean();
-        Model model = Model.of(GenericStringBean.class);
-        model.set(bean, model.property("generic"), "value");
-
-        assert"value" == bean.getGeneric();
-    }
-
 }
