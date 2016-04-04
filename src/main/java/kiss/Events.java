@@ -123,6 +123,19 @@ public class Events<V> {
      * @param error A delegator method of {@link Observer#error(Throwable)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
+    public final Disposable to(Consumer<? super V> next) {
+        return to(next, null, null);
+    }
+
+    /**
+     * <p>
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
+     * 
+     * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @param error A delegator method of {@link Observer#error(Throwable)}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error) {
         return to(next, error, null);
     }
