@@ -12,14 +12,34 @@ package kiss.lambda;
 import static kiss.lambda.Lambda.*;
 
 import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.junit.Test;
 
+import kiss.I;
+import kiss.Ⅱ;
+
 /**
- * @version 2014/07/20 3:33:24
+ * @version 2016/04/04 19:28:05
  */
 public class LambdaTest {
+
+    @Test
+    public void pairFunction() throws Exception {
+        Function<Ⅱ<Integer, Integer>, Integer> function = I.pair((a, b) -> a * 10 + b);
+        assert function.apply(I.pair(1, 2)) == 12;
+    }
+
+    @Test
+    public void pairConsumer() throws Exception {
+        AtomicInteger value = new AtomicInteger();
+        Consumer<Ⅱ<Integer, Integer>> consumer = I.pair((a, b) -> value.addAndGet(a * 10 + b));
+        consumer.accept(I.pair(1, 2));
+
+        assert value.get() == 12;
+    }
 
     @Test
     public void testname() throws Exception {

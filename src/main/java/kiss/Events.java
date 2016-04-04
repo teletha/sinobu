@@ -475,6 +475,21 @@ public class Events<V> {
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
      * 
+     * @param other An other constant {@link Events} to combine.
+     * @return An {@link Events} that emits items that are the result of combining the items emitted
+     *         by the source {@link Events} by means of the given aggregation function
+     */
+    public final <O> Events<Ⅱ<V, O>> combineLatest(O other) {
+        return combineLatest(from(other));
+    }
+
+    /**
+     * <p>
+     * Combines two source {@link Events} by emitting an item that aggregates the latest values of
+     * each of the source {@link Events} each time an item is received from either of the source
+     * {@link Events}, where this aggregation is defined by a specified function.
+     * </p>
+     * 
      * @param other An other {@link Events} to combine.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
      *         by the source {@link Events} by means of the given aggregation function

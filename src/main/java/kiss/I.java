@@ -60,7 +60,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -202,8 +206,8 @@ import kiss.model.Property;
  * <dd>All descendant paths which are under the user specified path and have ".html" suffix are
  * matched. (root path will not match)</dd>
  * </dl>
- *
- * @version 2014/01/24 16:01:56
+ * 
+ * @version 2016/04/04 19:26:39
  */
 @SuppressWarnings({"resource", "unchecked"})
 public class I implements ThreadFactory, ClassListener<Extensible> {
@@ -1777,6 +1781,30 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      */
     public static <Param1, Param2, Param3> Ⅲ<Param1, Param2, Param3> pair(Param1 param1, Param2 param2, Param3 param3) {
         return new Ⅲ(param1, param2, param3);
+    }
+
+    /**
+     * <p>
+     * Create paired value {@link Consumer}.
+     * </p>
+     * 
+     * @param consumer A {@link BiConsumer} to make parameters paired.
+     * @return A paired value {@link Consumer}.
+     */
+    public static <Param1, Param2> Consumer<Ⅱ<Param1, Param2>> pair(BiConsumer<Param1, Param2> consumer) {
+        return params -> consumer.accept(params.ⅰ, params.ⅱ);
+    }
+
+    /**
+     * <p>
+     * Create paired value {@link Function}.
+     * </p>
+     * 
+     * @param funtion A {@link BiFunction} to make parameters paired.
+     * @return A paired value {@link Function}.
+     */
+    public static <Param1, Param2, Return> Function<Ⅱ<Param1, Param2>, Return> pair(BiFunction<Param1, Param2, Return> funtion) {
+        return params -> funtion.apply(params.ⅰ, params.ⅱ);
     }
 
     /**
