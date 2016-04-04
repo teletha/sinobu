@@ -11,6 +11,8 @@ package kiss.model;
 
 import org.junit.Test;
 
+import kiss.sample.bean.EnumProperty;
+import kiss.sample.bean.EnumProperty.Value;
 import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.Person;
 
@@ -104,5 +106,17 @@ public class ModelLensTest {
         model.set(person, model.property("age"), null);
 
         assert person.getAge() == 10;
+    }
+
+    @Test
+    public void setNullValueOnEnum() {
+        EnumProperty instance = new EnumProperty();
+
+        Model model = Model.of(instance);
+        model.set(instance, model.property("field"), null);
+        model.set(instance, model.property("fieldWithDefault"), null);
+
+        assert instance.field == null;
+        assert instance.fieldWithDefault == Value.One;
     }
 }

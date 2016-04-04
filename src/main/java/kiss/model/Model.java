@@ -404,7 +404,9 @@ public class Model {
                     ((WritableValue) property.accessors[0].invoke(object)).setValue(propertyValue);
                 } else {
                     // field or method access
-                    if (!property.model.type.isPrimitive() || propertyValue != null) {
+                    Class type = property.model.type;
+
+                    if ((!type.isPrimitive() && !type.isEnum()) || propertyValue != null) {
                         property.accessors[1].invoke(object, propertyValue);
                     }
                 }
