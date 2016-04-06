@@ -44,6 +44,7 @@ import java.security.ProtectionDomain;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -69,6 +70,10 @@ import java.util.function.Function;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -84,6 +89,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 import jdk.internal.org.objectweb.asm.AnnotationVisitor;
 import jdk.internal.org.objectweb.asm.ClassVisitor;
@@ -312,6 +321,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     /** The associatable object holder. */
     private static final WeakHashMap<Object, WeakHashMap> associatables = new WeakHashMap();
 
+    /** The document builder. */
+    private static final DocumentBuilder dom;
+
+    /** The xpath evaluator. */
+    static final XPath xpath;
+
     // initialization
     static {
         // built-in lifestyles
@@ -367,6 +382,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             define = ClassLoader.class
                     .getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
             define.setAccessible(true);
+
+            // configure dom builder
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            dom = factory.newDocumentBuilder();
+            xpath = XPathFactory.newInstance().newXPath();
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -2320,6 +2343,107 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             // close carefuly
             quiet(out);
         }
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     * <ul>
+     * <li>{@link XML}</li>
+     * <li>{@link Path}</li>
+     * <li>{@link InputSource}</li>
+     * <li>{@link URL}</li>
+     * <li>{@link Node}</li>
+     * <li>{@link String}</li>
+     * </ul>
+     * <ul>
+     * <li>URL Expression (http and https)</li>
+     * <li>XML Literal</li>
+     * <li>Element Name</li>
+     * </ul>
+     *
+     * @param xml A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(Object xml) {
+        return xml(xml, false);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     * <ul>
+     * <li>{@link XML}</li>
+     * <li>{@link Path}</li>
+     * <li>{@link InputSource}</li>
+     * <li>{@link URL}</li>
+     * <li>{@link Node}</li>
+     * <li>{@link String}</li>
+     * </ul>
+     * <ul>
+     * <li>URL Expression (http and https)</li>
+     * <li>XML Literal</li>
+     * <li>Element Name</li>
+     * </ul>
+     *
+     * @param xml A xml expression.
+     * @param text Allow text contents.
+     * @return A constructed {@link XML}.
+     */
+    static XML xml(Object xml, boolean text) {
+        Document doc;
+
+        try {
+            if (xml == null) {
+                doc = dom.newDocument();
+
+                return new XML(doc, new ArrayList(Collections.singleton(doc)));
+            } else if (xml instanceof XML) {
+                return (XML) xml;
+            } else if (xml instanceof Path) {
+                doc = dom.parse(((Path) xml).toFile());
+            } else if (xml instanceof InputSource) {
+                doc = dom.parse((InputSource) xml);
+            } else if (xml instanceof URL) {
+                return new XMLUtil(((URL) xml).openStream()).parse(I.$encoding);
+            } else if (xml instanceof Document) {
+                doc = (Document) xml;
+            } else if (xml instanceof Node) {
+                return new XML(((Node) xml).getOwnerDocument(), new ArrayList(Collections.singleton(xml)));
+            } else {
+                // ================================
+                // Parse as String
+                // ================================
+                String value = xml.toString();
+
+                if (value.charAt(0) == '<' && 3 < value.length()) {
+                    // ========================
+                    // XML Literal
+                    // ========================
+                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
+
+                    return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+                }
+
+                if (value.startsWith("http://") || value.startsWith("https://")) {
+                    // ========================
+                    // HTML from URL
+                    // ========================
+                    return new XMLUtil(new URL(value).openStream()).parse(I.$encoding);
+                }
+
+                // ========================
+                // Element Name or Text
+                // ========================
+                doc = dom.newDocument();
+                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text);
+            }
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+        return new XML(doc, XML.convert(doc.getChildNodes()));
     }
 
     /**

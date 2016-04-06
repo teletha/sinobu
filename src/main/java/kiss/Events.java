@@ -1646,6 +1646,7 @@ public class Events<V> {
      * @param value A list of values to emit.
      * @return An {@link Events} that emits values as a first sequence.
      */
+    @SafeVarargs
     public static <V> Events<V> from(V... values) {
         return NEVER.startWith(values);
     }

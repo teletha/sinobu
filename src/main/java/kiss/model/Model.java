@@ -23,7 +23,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -177,10 +176,10 @@ public class Model {
                     decoder = I::locate;
                     break;
 
-                case -89228377: // java.nio.file.attribute.FileTime
-                    decoder = value -> FileTime.fromMillis(Long.valueOf(value));
-                    encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
-                    break;
+                // case -89228377: // java.nio.file.attribute.FileTime
+                // decoder = value -> FileTime.fromMillis(Long.valueOf(value));
+                // encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
+                // break;
 
                 default:
                     decoder = I.find(Decoder.class, type);

@@ -11,6 +11,7 @@ package kiss.codec;
 
 import java.nio.file.attribute.FileTime;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import kiss.Decoder;
@@ -23,6 +24,7 @@ import kiss.model.Model;
 public class FileTimeTest {
 
     @Test
+    @Ignore
     public void codec() throws Exception {
         Decoder<FileTime> decoder = Model.of(FileTime.class).decoder();
         Encoder<FileTime> encoder = Model.of(FileTime.class).encoder();

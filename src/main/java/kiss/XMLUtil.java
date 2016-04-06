@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.xml;
+package kiss;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Flushable;
@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-import kiss.I;
-import kiss.Ⅲ;
 import kiss.model.Model;
 import kiss.model.Property;
 
@@ -198,7 +196,7 @@ class XMLUtil extends Writer implements Consumer<Ⅲ<Model, Property, Object>> {
         // ====================
         // Initialization
         // ====================
-        xml = XML.xml(null);
+        xml = I.xml(null);
         html = new String(row, 0, row.length, encoding);
         pos = 0;
 
@@ -351,8 +349,7 @@ class XMLUtil extends Writer implements Consumer<Ⅲ<Model, Property, Object>> {
             }
             findSpace();
         }
-
-        return XML.xml(xml.doc); // return root
+        return I.xml(xml.doc); // return root
     }
 
     /**

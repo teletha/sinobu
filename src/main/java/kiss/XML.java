@@ -7,14 +7,11 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.xml;
+package kiss;
 
 import static javax.xml.XMLConstants.*;
 
-import java.io.StringReader;
 import java.io.Writer;
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -25,13 +22,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -39,14 +32,11 @@ import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
 
 import com.sun.org.apache.xerces.internal.util.DOMUtil;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
 import com.sun.org.apache.xml.internal.utils.TreeWalker;
-
-import kiss.I;
 
 /**
  * @version 2014/07/31 23:06:05
@@ -66,28 +56,6 @@ public class XML implements Iterable<XML> {
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
-
-    /** The document builder. */
-    private static final DocumentBuilder dom;
-
-    /** The xpath evaluator. */
-    private static final XPath xpath;
-
-    // initialization
-    static {
-        try {
-            // configure dom builder
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-            dom = factory.newDocumentBuilder();
-            xpath = XPathFactory.newInstance().newXPath();
-
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
 
     /** The current document. */
     Document doc;
@@ -117,7 +85,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML append(Object xml) {
-        Node n = convert(XML.xml(xml, true));
+        Node n = convert(I.xml(xml, true));
 
         for (Node node : nodes) {
             node.appendChild(n.cloneNode(true));
@@ -137,7 +105,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML prepend(Object xml) {
-        Node n = convert(XML.xml(xml, true));
+        Node n = convert(I.xml(xml, true));
 
         for (Node node : nodes) {
             node.insertBefore(n.cloneNode(true), node.getFirstChild());
@@ -157,7 +125,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML before(Object xml) {
-        Node n = convert(XML.xml(xml, true));
+        Node n = convert(I.xml(xml, true));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node);
@@ -177,7 +145,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML after(Object xml) {
-        Node n = convert(XML.xml(xml, true));
+        Node n = convert(I.xml(xml, true));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
@@ -235,7 +203,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML wrap(Object xml) {
-        XML element = XML.xml(xml);
+        XML element = I.xml(xml);
 
         for (XML e : this) {
             e.wrapAll(element);
@@ -565,7 +533,7 @@ public class XML implements Iterable<XML> {
      */
     public XML child(Object xml) {
         ArrayList list = new ArrayList();
-        Node child = convert(XML.xml(xml, false));
+        Node child = convert(I.xml(xml, false));
 
         for (Node node : nodes) {
             Node copy = child.cloneNode(true);
@@ -753,107 +721,6 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
-     * Parse as xml fragment.
-     * </p>
-     * <ul>
-     * <li>{@link XML}</li>
-     * <li>{@link Path}</li>
-     * <li>{@link InputSource}</li>
-     * <li>{@link URL}</li>
-     * <li>{@link Node}</li>
-     * <li>{@link String}</li>
-     * </ul>
-     * <ul>
-     * <li>URL Expression (http and https)</li>
-     * <li>XML Literal</li>
-     * <li>Element Name</li>
-     * </ul>
-     *
-     * @param xml A xml expression.
-     * @return A constructed {@link XML}.
-     */
-    public static XML xml(Object xml) {
-        return xml(xml, false);
-    }
-
-    /**
-     * <p>
-     * Parse as xml fragment.
-     * </p>
-     * <ul>
-     * <li>{@link XML}</li>
-     * <li>{@link Path}</li>
-     * <li>{@link InputSource}</li>
-     * <li>{@link URL}</li>
-     * <li>{@link Node}</li>
-     * <li>{@link String}</li>
-     * </ul>
-     * <ul>
-     * <li>URL Expression (http and https)</li>
-     * <li>XML Literal</li>
-     * <li>Element Name</li>
-     * </ul>
-     *
-     * @param xml A xml expression.
-     * @param text Allow text contents.
-     * @return A constructed {@link XML}.
-     */
-    static XML xml(Object xml, boolean text) {
-        Document doc;
-
-        try {
-            if (xml == null) {
-                doc = dom.newDocument();
-
-                return new XML(doc, new ArrayList(Collections.singleton(doc)));
-            } else if (xml instanceof XML) {
-                return (XML) xml;
-            } else if (xml instanceof Path) {
-                doc = dom.parse(((Path) xml).toFile());
-            } else if (xml instanceof InputSource) {
-                doc = dom.parse((InputSource) xml);
-            } else if (xml instanceof URL) {
-                return new XMLUtil(((URL) xml).openStream()).parse(I.$encoding);
-            } else if (xml instanceof Document) {
-                doc = (Document) xml;
-            } else if (xml instanceof Node) {
-                return new XML(((Node) xml).getOwnerDocument(), new ArrayList(Collections.singleton(xml)));
-            } else {
-                // ================================
-                // Parse as String
-                // ================================
-                String value = xml.toString();
-
-                if (value.charAt(0) == '<' && 3 < value.length()) {
-                    // ========================
-                    // XML Literal
-                    // ========================
-                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
-
-                    return new XML(doc, convert(doc.getFirstChild().getChildNodes()));
-                }
-
-                if (value.startsWith("http://") || value.startsWith("https://")) {
-                    // ========================
-                    // HTML from URL
-                    // ========================
-                    return new XMLUtil(new URL(value).openStream()).parse(I.$encoding);
-                }
-
-                // ========================
-                // Element Name or Text
-                // ========================
-                doc = dom.newDocument();
-                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text);
-            }
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-        return new XML(doc, convert(doc.getChildNodes()));
-    }
-
-    /**
-     * <p>
      * Helper method to convert {@link NodeList} to single {@link List}.
      * </p>
      *
@@ -888,7 +755,7 @@ public class XML implements Iterable<XML> {
         if (compiled == null) {
             try {
                 // compile actually
-                compiled = xpath.compile(convert(selector));
+                compiled = I.xpath.compile(convert(selector));
 
                 // cache it
                 selectors.put(selector, compiled);

@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.xml;
+package kiss;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,6 +19,8 @@ import org.junit.Test;
 
 import antibug.AntiBug;
 import kiss.I;
+import kiss.XML;
+import kiss.XMLUtil;
 
 /**
  * @version 2012/11/18 2:56:12
