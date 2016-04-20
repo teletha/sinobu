@@ -1070,7 +1070,7 @@ public class Events<V> {
 
     /**
      * <p>
-     * Alias for filter(condition.negete()).
+     * Alias for take(condition.negete()).
      * </p>
      * 
      * @param condition
@@ -1086,7 +1086,23 @@ public class Events<V> {
 
     /**
      * <p>
-     * Alias for filter(condition.map(value -> !value).
+     * Alias for take(init, condition.negete()).
+     * </p>
+     * 
+     * @param condition
+     * @return
+     */
+    public final Events<V> skip(V init, BiPredicate<V, V> condition) {
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+        return take(init, condition.negate());
+    }
+
+    /**
+     * <p>
+     * Alias for take(condition.map(value -> !value).
      * </p>
      * 
      * @param condition

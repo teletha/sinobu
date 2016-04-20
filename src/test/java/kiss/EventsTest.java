@@ -759,6 +759,17 @@ public class EventsTest {
     }
 
     @Test
+    public void skipByConditionWithPreviousValue() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(e -> e.skip(0, (prev, value) -> value - prev > 5));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(11) == 11;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(22) == 22;
+        assert facade.dispose();
+    }
+
+    @Test
     public void skipByConditionEvent() {
         EventFacade<Boolean, Boolean> condition = new EventFacade();
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(condition.observe()));
