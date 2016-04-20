@@ -467,48 +467,6 @@ public class EventsTest {
     }
 
     @Test
-    public void filter() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.filter(value -> value % 2 == 0));
-
-        assert facade.emitAndRetrieve(10) == 10;
-        assert facade.emitAndRetrieve(15) == null;
-        assert facade.emitAndRetrieve(20) == 20;
-        assert facade.emitAndRetrieve(25) == null;
-        assert facade.dispose();
-    }
-
-    @Test
-    public void filterWithPreviousValue() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(e -> e.filter(0, (prev, value) -> value - prev > 5));
-
-        assert facade.emitAndRetrieve(10) == 10;
-        assert facade.emitAndRetrieve(11) == null;
-        assert facade.emitAndRetrieve(20) == 20;
-        assert facade.emitAndRetrieve(22) == null;
-        assert facade.dispose();
-    }
-
-    @Test
-    public void filterByEvent() {
-        EventFacade<Boolean, Boolean> condition = new EventFacade();
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.filter(condition.observe()));
-
-        assert facade.emitAndRetrieve(10) == null;
-        assert facade.emitAndRetrieve(20) == null;
-
-        condition.emit(true);
-        assert facade.emitAndRetrieve(10) == 10;
-        assert facade.emitAndRetrieve(20) == 20;
-
-        condition.emit(false);
-        assert facade.emitAndRetrieve(10) == null;
-        assert facade.emitAndRetrieve(20) == null;
-
-        assert facade.dispose();
-        assert condition.isCompleted();
-    }
-
-    @Test
     public void flatMap() {
         EventFacade<String, String> emitA = new EventFacade();
         EventFacade<String, String> emitB = new EventFacade();
@@ -664,21 +622,6 @@ public class EventsTest {
         assert facade.emitAndRetrieve(0) == null;
         assert facade.emitAndRetrieve(1) == null;
         assert facade.emitAndRetrieve(2) == null;
-    }
-
-    @Test
-    public void on() {
-        Set<Integer> sideEffects = new HashSet();
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.on((observer, value) -> {
-            sideEffects.add(value);
-            observer.accept(value);
-        }));
-
-        assert facade.emitAndRetrieve(10) == 10;
-        assert facade.emitAndRetrieve(20) == 20;
-        assert sideEffects.contains(10);
-        assert sideEffects.contains(20);
-        assert facade.dispose();
     }
 
     @Test
@@ -959,6 +902,17 @@ public class EventsTest {
         assert facade.emitAndRetrieve(40) == null;
         assert facade.emitAndRetrieve(50) == null;
         assert facade.emitAndRetrieve(60) == 60;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void takeByConditionWithPreviousValue() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(e -> e.take(0, (prev, value) -> value - prev > 5));
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(11) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(22) == null;
         assert facade.dispose();
     }
 

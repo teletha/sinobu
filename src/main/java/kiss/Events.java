@@ -298,7 +298,7 @@ public class Events<V> {
      * @throws NullPointerException If the type is <code>null</code>.
      */
     public final <R> Events<R> as(Class<R> type) {
-        return (Events<R>) filter(type::isInstance);
+        return (Events<R>) take(type::isInstance);
     }
 
     /**
@@ -652,7 +652,7 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> diff() {
-        return filter((V) null, (prev, now) -> !Objects.equals(prev, now));
+        return take((V) null, (prev, now) -> !Objects.equals(prev, now));
     }
 
     /**
@@ -677,81 +677,19 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
-     * given predicate.
+     * Returns an {@link Events} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
+     * , and then merging those resulting {@link Events} and emitting the results of this merger.
      * </p>
      * 
-     * @param predicate A function that evaluates the values emitted by the source {@link Events},
-     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
+     * @param function A function that, when applied to an item emitted by the source {@link Events}
+     *            , returns an {@link Events}.
+     * @return An {@link Events} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Events} and merging the results of the
+     *         {@link Events} obtained from this transformation.
      */
-    public final Events<V> filter(Predicate<V> predicate) {
-        // ignore invalid parameters
-        if (predicate == null) {
-            return this;
-        }
-
-        return on((observer, value) -> {
-            if (predicate.test(value)) {
-                observer.accept(value);
-            }
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
-     * given predicate.
-     * </p>
-     * 
-     * @param predicate A function that evaluates the values emitted by the source {@link Events},
-     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Events<V> filter(V init, BiPredicate<V, V> predicate) {
-        // ignore invalid parameters
-        if (predicate == null) {
-            return this;
-        }
-
-        return new Events<>(observer -> {
-            AtomicReference<V> ref = new AtomicReference(init);
-
-            return to(value -> {
-                if (predicate.test(ref.getAndSet(value), value)) {
-                    observer.accept(value);
-                }
-            });
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
-     * given predicate.
-     * </p>
-     * 
-     * @param predicate An external boolean {@link Events}. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Events<V> filter(Events<Boolean> predicate) {
-        // ignore invalid parameter
-        if (predicate == null) {
-            return this;
-        }
-
-        return new Events<>(observer -> {
-            AtomicBoolean flag = new AtomicBoolean();
-
-            return predicate.to(flag::set).and(to(v -> {
-                if (flag.get()) {
-                    observer.accept(v);
-                }
-            }));
-        });
+    public final <R> Events<R> flatIterable(Function<V, Iterable<R>> function) {
+        return flatMap(value -> from(function.apply(value)));
     }
 
     /**
@@ -995,7 +933,7 @@ public class Events<V> {
      * @param next An action to invoke for each value in the {@link Events} sequence.
      * @return Chainable API.
      */
-    public final Events<V> on(BiConsumer<Observer<? super V>, V> next) {
+    private Events<V> on(BiConsumer<Observer<? super V>, V> next) {
         // ignore invalid parameters
         if (next == null) {
             return this;
@@ -1116,12 +1054,17 @@ public class Events<V> {
         });
     }
 
+    /**
+     * <p>
+     * Invokes an action for each value in the {@link Events} sequence.
+     * </p>
+     * 
+     * @param next An action to invoke for each value in the {@link Events} sequence.
+     * @return Chainable API.
+     */
     public final Events<V> sideEffect(Consumer<V> effect) {
         return new Events<>(observer -> {
-            return to(value -> {
-                effect.accept(value);
-                observer.accept(value);
-            });
+            return to(effect.andThen(observer));
         });
     }
 
@@ -1138,7 +1081,7 @@ public class Events<V> {
         if (condition == null) {
             return this;
         }
-        return filter(condition.negate());
+        return take(condition.negate());
     }
 
     /**
@@ -1154,7 +1097,7 @@ public class Events<V> {
         if (condition == null) {
             return this;
         }
-        return filter(condition.startWith(false).map(value -> !value));
+        return take(condition.startWith(false).map(value -> !value));
     }
 
     /**
@@ -1308,26 +1251,81 @@ public class Events<V> {
 
     /**
      * <p>
-     * Alias for filter(condition).
+     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
+     * given predicate.
      * </p>
      * 
-     * @param condition
-     * @return
+     * @param condition A function that evaluates the values emitted by the source {@link Events},
+     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
      */
     public final Events<V> take(Predicate<V> condition) {
-        return filter(condition);
+        // ignore invalid parameters
+        if (condition == null) {
+            return this;
+        }
+
+        return on((observer, value) -> {
+            if (condition.test(value)) {
+                observer.accept(value);
+            }
+        });
     }
 
     /**
      * <p>
-     * Alias for filter(condition).
+     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
+     * given predicate.
      * </p>
      * 
-     * @param condition
-     * @return
+     * @param condition A function that evaluates the values emitted by the source {@link Events},
+     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Events<V> take(V init, BiPredicate<V, V> condition) {
+        // ignore invalid parameters
+        if (condition == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> {
+            AtomicReference<V> ref = new AtomicReference(init);
+
+            return to(value -> {
+                if (condition.test(ref.getAndSet(value), value)) {
+                    observer.accept(value);
+                }
+            });
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
+     * given predicate.
+     * </p>
+     * 
+     * @param condition An external boolean {@link Events}. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
      */
     public final Events<V> take(Events<Boolean> condition) {
-        return filter(condition);
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> {
+            AtomicBoolean flag = new AtomicBoolean();
+
+            return condition.to(flag::set).and(to(v -> {
+                if (flag.get()) {
+                    observer.accept(v);
+                }
+            }));
+        });
     }
 
     /**
@@ -1527,7 +1525,7 @@ public class Events<V> {
         AtomicLong latest = new AtomicLong();
         long delay = unit.toMillis(time);
 
-        return filter(value -> {
+        return take(value -> {
             long now = System.currentTimeMillis();
             return latest.getAndSet(now) + delay <= now;
         });
@@ -1567,25 +1565,6 @@ public class Events<V> {
     // return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) ->
     // now.e(sum.e.plus(now.e)));
     // }
-
-    /**
-     * <p>
-     * Helper method to integrate events.
-     * </p>
-     * 
-     * @param one
-     * @param others
-     * @return
-     */
-    private Events<V>[] with(Events<V> one, Events<V>... others) {
-        Events<V>[] events = new Events[others.length + 1];
-        events[0] = one;
-
-        for (int i = 0; i < others.length; i++) {
-            events[i + 1] = others[i];
-        }
-        return events;
-    }
 
     /**
      * <p>
