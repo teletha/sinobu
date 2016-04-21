@@ -59,8 +59,7 @@ public class Variable<T> extends ClassValue {
     public synchronized T let(Class type, T value) {
         Agent<T> holder = (Agent<T>) super.get(type);
 
-        if (value != null && holder.index == 0) {
-            holder.index = 1;
+        if (value != null && holder.index++ == 0) {
             holder.object = value;
         }
         return holder.object;
