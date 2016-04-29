@@ -35,6 +35,7 @@ class ListModel extends Model {
     ListModel(Class clazz, Type[] types, Type base) {
         super(clazz);
 
+        models.set(type, this);
         itemModel = Model.of(types.length == 0 ? List.class : types[0], base);
     }
 

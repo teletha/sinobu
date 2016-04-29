@@ -2556,11 +2556,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.push(extensionPoint, extension);
 
                 // register extension key
-                Class[] params = ClassUtil.getParameter(extension, extensionPoint);
+                java.lang.reflect.Type[] params = ClassUtil.getParameter(extension, extensionPoint);
 
                 if (params.length != 0 && params[0] != Object.class) {
+                    Class clazz = (Class) params[0];
                     // register extension by key
-                    keys.push(extensionPoint.getName().concat(params[0].getName()), extension);
+                    keys.push(extensionPoint.getName().concat(clazz.getName()), extension);
 
                     // Task : unregister extension by key
 
@@ -2573,7 +2574,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
-                        modules.remove(params[0]);
+                        modules.remove(clazz);
                     }
                 }
             }
@@ -2592,11 +2593,12 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.pull(extensionPoint, extension);
 
                 // register extension key
-                Class[] params = ClassUtil.getParameter(extension, extensionPoint);
+                java.lang.reflect.Type[] params = ClassUtil.getParameter(extension, extensionPoint);
 
                 if (params.length != 0 && params[0] != Object.class) {
+                    Class clazz = (Class) params[0];
                     // register extension by key
-                    keys.pull(extensionPoint.getName().concat(params[0].getName()), extension);
+                    keys.pull(extensionPoint.getName().concat(clazz.getName()), extension);
 
                     // Task : unregister extension by key
 
@@ -2609,7 +2611,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                     // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
-                        modules.remove(params[0]);
+                        modules.remove(clazz);
                     }
                 }
             }

@@ -14,16 +14,9 @@ import java.util.function.Function;
 /**
  * @version 2016/04/21 16:42:15
  */
-class ClassMap<V> extends ClassValue<V> {
+class ClassStore<V> extends ClassValue<V> {
 
-    private final Function<Class, V> supplier;
-
-    /**
-     * @param supplier
-     */
-    ClassMap(Function<Class, V> supplier) {
-        this.supplier = supplier;
-    }
+    private Function<Class, V> supplier;
 
     /**
      * {@inheritDoc}
@@ -31,5 +24,22 @@ class ClassMap<V> extends ClassValue<V> {
     @Override
     protected V computeValue(Class<?> type) {
         return supplier.apply(type);
+    }
+
+    public V get(Class<?> type, Function<Class, V> supplier) {
+        this.supplier = supplier;
+
+        return get(type);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public V get(Class<?> type) {
+        if (supplier == null) {
+            throw new IllegalStateException("No supplier");
+        }
+        return super.get(type);
     }
 }

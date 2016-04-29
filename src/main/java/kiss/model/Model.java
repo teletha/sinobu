@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +65,7 @@ import kiss.Ⅲ;
 public class Model {
 
     /** The model repository. */
-    private static final Variable<Model> models = new Variable();
+    static final Variable<Model> models = new Variable();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class type;
@@ -73,7 +74,7 @@ public class Model {
     public final String name;
 
     /** The unmodifiable properties list of this object model. */
-    public final List<Property> properties;
+    public List<Property> properties = Collections.EMPTY_LIST;
 
     /** The built-in codec. */
     private Decoder decoder;
@@ -87,7 +88,7 @@ public class Model {
      * @param type A target class to analyze as model.
      * @throws NullPointerException If the specified model class is <code>null</code>.
      */
-    protected Model(Class type) {
+    Model(Class type) {
         // Skip null check because this method can throw NullPointerException.
         // if (model == null) throw new NullPointerException("Model class shouldn't be null.");
 
@@ -96,8 +97,10 @@ public class Model {
 
         // To avoid StackOverFlowException caused by circular reference of Model, you must define
         // this model in here.
-        models.set(type, this);
 
+    }
+
+    void init() {
         try {
             // search from built-in codecs
             if (type.isEnum()) {
@@ -490,9 +493,12 @@ public class Model {
             if (List.class.isAssignableFrom(modelClass)) {
                 model = new ListModel(modelClass, ClassUtil.getParameter(modelClass, List.class), List.class);
             } else if (Map.class.isAssignableFrom(modelClass)) {
+                System.out.println(modelClass);
                 model = new MapModel(modelClass, ClassUtil.getParameter(modelClass, Map.class), Map.class);
             } else {
                 model = new Model(modelClass);
+                models.set(model.type, model);
+                model.init();
             }
         }
 
@@ -573,6 +579,8 @@ public class Model {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
+                        System.out.println(base + "  " + variable + "  " + variable.getGenericDeclaration());
+                        System.out.println(Arrays.toString(ClassUtil.getParameter(base, (Class) variable.getGenericDeclaration())));
                         return of(ClassUtil.getParameter(base, (Class) variable.getGenericDeclaration())[i], base);
                     }
                 }

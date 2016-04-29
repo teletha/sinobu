@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -23,7 +24,7 @@ import kiss.model.Model;
  */
 @SuppressWarnings("unchecked")
 @Manageable(lifestyle = Singleton.class)
-class Modules extends Variable<Lifestyle>implements ClassListener, Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
+class Modules extends Variable<Lifestyle> implements ClassListener, Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
@@ -69,7 +70,7 @@ class Modules extends Variable<Lifestyle>implements ClassListener, Decoder<Class
     public void load(Class clazz) {
         if (clazz != Modules.class) {
             Object[] types = {I.make(clazz), Object.class};
-            Class[] params = ClassUtil.getParameter(clazz, ClassListener.class);
+            Type[] params = ClassUtil.getParameter(clazz, ClassListener.class);
 
             if (params.length != 0) {
                 types[1] = params[0];

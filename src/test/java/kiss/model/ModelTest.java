@@ -9,6 +9,9 @@
  */
 package kiss.model;
 
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -413,6 +416,15 @@ public class ModelTest {
         property = property.model.property("0");
         assert property != null;
         assert Integer.class == property.model.type;
+    }
+
+    @Test
+    public void test() {
+        Type[] parameters = ClassUtil.getParameter(MapBean.class, GenericBean.class);
+        assert parameters.length == 1;
+        Type parameter = parameters[0];
+        assert parameter instanceof TypeVariable;
+        System.out.println(Arrays.toString(parameters));
     }
 
     /**

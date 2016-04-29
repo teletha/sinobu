@@ -215,7 +215,7 @@ public final class ClassUtil {
      *            zero-length array.
      * @return A list of actual types.
      */
-    public static Class[] getParameter(Type type, Class target) {
+    public static Type[] getParameter(Type type, Class target) {
         return getParameter(type, target, type);
     }
 

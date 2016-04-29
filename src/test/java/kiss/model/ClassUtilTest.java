@@ -111,14 +111,14 @@ public class ClassUtilTest {
 
     @Test
     public void parameterIsVariable() {
-        Class[] parameters = ClassUtil.getParameter(ArrayList.class, List.class);
+        Type[] parameters = ClassUtil.getParameter(ArrayList.class, List.class);
         assert parameters.length == 1;
         assert parameters[0] == Object.class;
     }
 
     @Test
     public void parameterIsVariableOnInterface() {
-        Class[] parameters = ClassUtil.getParameter(javafx.beans.property.Property.class, ObservableValue.class);
+        Type[] parameters = ClassUtil.getParameter(javafx.beans.property.Property.class, ObservableValue.class);
         assert parameters.length == 1;
         assert parameters[0] == Object.class;
     }
@@ -627,7 +627,7 @@ public class ClassUtilTest {
      * 
      * @version 2008/06/20 15:15:56
      */
-    private static class ParameterFromMultipleSource extends ParameterClass<Class>implements ParameterInterface<Type> {
+    private static class ParameterFromMultipleSource extends ParameterClass<Class> implements ParameterInterface<Type> {
     }
 
     /**
