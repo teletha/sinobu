@@ -12,10 +12,12 @@ package kiss.model;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.nio.file.Path;
 import java.security.CodeSource;
 import java.util.ArrayList;
@@ -215,7 +217,7 @@ public final class ClassUtil {
      *            zero-length array.
      * @return A list of actual types.
      */
-    public static Type[] getParameter(Type type, Class target) {
+    public static Type[] getParameter(Type type, GenericDeclaration target) {
         return getParameter(type, target, type);
     }
 
@@ -231,7 +233,7 @@ public final class ClassUtil {
      * @param base A base class type.
      * @return A list of actual types.
      */
-    private static Class[] getParameter(Type clazz, Class target, Type base) {
+    private static Type[] getParameter(Type clazz, GenericDeclaration target, Type base) {
         // check null
         if (clazz == null || clazz == target) {
             return new Class[0];
@@ -255,19 +257,19 @@ public final class ClassUtil {
                 // check raw type
                 if (target == param.getRawType()) {
                     Type[] args = param.getActualTypeArguments();
-                    Class[] classes = new Class[args.length];
 
                     for (int i = 0; i < args.length; i++) {
-                        // resolve various type (TypeVariable, ParameterizedType and WildcardType)
-                        classes[i] = Model.of(args[i], base).type;
+                        if (args[i] instanceof TypeVariable) {
+                            args[i] = Model.of(args[i], base).type;
+                        }
                     }
-                    return classes;
+                    return args;
                 }
             }
         }
 
         // search from superclass
-        Class[] parameters = getParameter(raw.getGenericSuperclass(), target, base);
+        Type[] parameters = getParameter(raw.getGenericSuperclass(), target, base);
 
         if (parameters.length != 0) {
             return parameters;

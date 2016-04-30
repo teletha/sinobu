@@ -24,7 +24,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -90,17 +89,16 @@ public class Model {
      */
     Model(Class type) {
         // Skip null check because this method can throw NullPointerException.
-        // if (model == null) throw new NullPointerException("Model class shouldn't be null.");
-
+        // if (type == null) throw new NullPointerException("Model class shouldn't be null.");
         this.type = type;
         this.name = type.getSimpleName();
-
-        // To avoid StackOverFlowException caused by circular reference of Model, you must define
-        // this model in here.
-
     }
 
     void init() {
+        // To avoid StackOverFlowException caused by circular reference of Model, you must define
+        // this model in here.
+        models.set(type, this);
+
         try {
             // search from built-in codecs
             if (type.isEnum()) {
@@ -493,11 +491,9 @@ public class Model {
             if (List.class.isAssignableFrom(modelClass)) {
                 model = new ListModel(modelClass, ClassUtil.getParameter(modelClass, List.class), List.class);
             } else if (Map.class.isAssignableFrom(modelClass)) {
-                System.out.println(modelClass);
                 model = new MapModel(modelClass, ClassUtil.getParameter(modelClass, Map.class), Map.class);
             } else {
                 model = new Model(modelClass);
-                models.set(model.type, model);
                 model.init();
             }
         }
@@ -579,9 +575,7 @@ public class Model {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
-                        System.out.println(base + "  " + variable + "  " + variable.getGenericDeclaration());
-                        System.out.println(Arrays.toString(ClassUtil.getParameter(base, (Class) variable.getGenericDeclaration())));
-                        return of(ClassUtil.getParameter(base, (Class) variable.getGenericDeclaration())[i], base);
+                        return of(ClassUtil.getParameter(base, variable.getGenericDeclaration())[i], base);
                     }
                 }
             }

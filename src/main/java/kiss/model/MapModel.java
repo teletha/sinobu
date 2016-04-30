@@ -40,13 +40,10 @@ class MapModel extends Model {
         super(clazz);
 
         if (types.length == 0) {
-            System.out.println("@ " + clazz + "  " + base);
-            new Error().printStackTrace();
             types = new Type[] {Object.class, Object.class};
         }
         this.key = Model.of(types[0], base);
         this.value = Model.of(types[1], base);
-        // models.set(type, this);
     }
 
     /**

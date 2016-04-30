@@ -40,25 +40,6 @@ public class Variable<T> extends ClassValue {
     public synchronized T set(Class type, T value) {
         Agent<T> holder = (Agent<T>) super.get(type);
 
-        if (value != null && holder.index == 0) {
-            holder.object = value;
-        }
-        return holder.object;
-    }
-
-    /**
-     * <p>
-     * Set the value for the given {@link Class}. If some value has been associated already and this
-     * variable is variance, the given value will override the current value.
-     * </p>
-     * 
-     * @param type A class type as key.
-     * @param value An associated value.
-     * @return The current value.
-     */
-    public synchronized T let(Class type, T value) {
-        Agent<T> holder = (Agent<T>) super.get(type);
-
         if (value != null && holder.index++ == 0) {
             holder.object = value;
         }
