@@ -81,7 +81,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
         if (key.decoder() == null) {
             super.set(object, property, propertyValue);
         } else {
-            object.put(I.transform(property.name, key.type), propertyValue);
+            object.put(I.transform(property.name, key.type), (V) propertyValue);
         }
     }
 

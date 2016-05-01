@@ -369,7 +369,7 @@ public class Model<M> {
      * @return A resolved property value. This value may be <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public Object get(M object, Property property) {
+    public <V> V get(M object, Property<V> property) {
         if (object == null || property == null) {
             return null;
         }
@@ -377,10 +377,10 @@ public class Model<M> {
         try {
             if (property.type == 2) {
                 // property access
-                return ((WritableValue) property.accessors[0].invoke(object)).getValue();
+                return (V) ((WritableValue) property.accessors[0].invoke(object)).getValue();
             } else {
                 // field or method access
-                return property.accessors[0].invoke(object);
+                return (V) property.accessors[0].invoke(object);
             }
         } catch (Throwable e) {
             throw I.quiet(e);
@@ -396,7 +396,7 @@ public class Model<M> {
      *            <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public void set(M object, Property property, Object propertyValue) {
+    public <V> void set(M object, Property<V> property, V propertyValue) {
         if (object != null && property != null) {
             try {
                 if (property.type == 2) {
