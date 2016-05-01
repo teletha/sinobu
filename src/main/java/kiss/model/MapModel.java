@@ -18,16 +18,15 @@ import kiss.I;
 import kiss.Ⅲ;
 
 /**
- * @version 2010/01/10 17:10:23
+ * @version 2016/05/01 9:50:17
  */
-@SuppressWarnings("unchecked")
-class MapModel extends Model {
+class MapModel<K, V> extends Model<Map<K, V>> {
 
     /** The prameterized key of this model. */
-    private final Model key;
+    private final Model<K> key;
 
     /** The prameterized value of this model. */
-    private final Model value;
+    private final Model<V> value;
 
     /**
      * Create MapModel instance.
@@ -47,7 +46,7 @@ class MapModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#property(java.lang.String)
+     * {@inheritDoc}
      */
     @Override
     public Property property(String propertyIName) {
@@ -55,7 +54,7 @@ class MapModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#isCollection()
+     * {@inheritDoc}
      */
     @Override
     public boolean isCollection() {
@@ -63,38 +62,38 @@ class MapModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#get(java.lang.Object, kiss.model.Property)
+     * {@inheritDoc}
      */
     @Override
-    public Object get(Object object, Property property) {
+    public Object get(Map object, Property property) {
         if (key.decoder() == null) {
             return super.get(object, property);
         } else {
-            return ((Map) object).get(I.transform(property.name, key.type));
+            return object.get(I.transform(property.name, key.type));
         }
     }
 
     /**
-     * @see kiss.model.Model#set(java.lang.Object, kiss.model.Property, java.lang.Object)
+     * {@inheritDoc}
      */
     @Override
-    public void set(Object object, Property property, Object propertyValue) {
+    public void set(Map object, Property property, Object propertyValue) {
         if (key.decoder() == null) {
             super.set(object, property, propertyValue);
         } else {
-            ((Map) object).put(I.transform(property.name, key.type), propertyValue);
+            object.put(I.transform(property.name, key.type), propertyValue);
         }
     }
 
     /**
-     * @see kiss.model.Model#walk(java.lang.Object, kiss.model.PropertyWalker)
+     * {@inheritDoc}
      */
     @Override
-    public void walk(Object object, Consumer<Ⅲ<Model, Property, Object>> walker) {
+    public void walk(Map<K, V> object, Consumer<Ⅲ<Model<Map<K, V>>, Property, Object>> walker) {
         if (key.decoder() == null) {
             super.walk(object, walker);
         } else {
-            for (Entry entry : ((Map<?, ?>) object).entrySet()) {
+            for (Entry<K, V> entry : object.entrySet()) {
                 walker.accept(I.pair(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue()));
             }
         }

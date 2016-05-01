@@ -61,13 +61,13 @@ import kiss.Ⅲ;
  * @version 2014/03/11 13:52:21
  */
 @SuppressWarnings("unchecked")
-public class Model {
+public class Model<M> {
 
     /** The model repository. */
     static final Variable<Model> models = new Variable();
 
     /** The {@link Class} which is represented by this {@link Model}. */
-    public final Class type;
+    public final Class<M> type;
 
     /** The human readable identifier of this object model. */
     public final String name;
@@ -102,7 +102,7 @@ public class Model {
         try {
             // search from built-in codecs
             if (type.isEnum()) {
-                decoder = value -> Enum.valueOf(type, value);
+                decoder = value -> Enum.valueOf((Class<Enum>) type, value);
                 encoder = value -> ((Enum) value).name();
             } else {
                 switch (type.getName().hashCode()) {
@@ -369,7 +369,7 @@ public class Model {
      * @return A resolved property value. This value may be <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public Object get(Object object, Property property) {
+    public Object get(M object, Property property) {
         if (object == null || property == null) {
             return null;
         }
@@ -396,7 +396,7 @@ public class Model {
      *            <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public void set(Object object, Property property, Object propertyValue) {
+    public void set(M object, Property property, Object propertyValue) {
         if (object != null && property != null) {
             try {
                 if (property.type == 2) {
@@ -424,7 +424,7 @@ public class Model {
      * @param walker A property iterator. This value accepts <code>null</code>.
      * @see PropertyWalker#walk(Model, Property, Object)
      */
-    public void walk(Object object, Consumer<Ⅲ<Model, Property, Object>> walker) {
+    public void walk(M object, Consumer<Ⅲ<Model<M>, Property, Object>> walker) {
         // check whether this model is attribute or not.
         if (walker != null && decoder() == null) {
             for (Property property : properties) {
@@ -454,7 +454,7 @@ public class Model {
      * @throws NullPointerException If the given model class is null.
      * @throws IllegalArgumentException If the given model class is not found.
      */
-    public static Model of(Object modelType) {
+    public static <M> Model<M> of(M modelType) {
         return of(modelType.getClass());
     }
 
@@ -477,7 +477,7 @@ public class Model {
      * @throws NullPointerException If the given model class is null.
      * @throws IllegalArgumentException If the given model class is not found.
      */
-    public static Model of(Class modelClass) {
+    public static <M> Model<M> of(Class modelClass) {
         // check whether the specified model class is enhanced or not
         if (modelClass.isSynthetic()) {
             modelClass = modelClass.getSuperclass();

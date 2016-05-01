@@ -17,10 +17,9 @@ import kiss.I;
 import kiss.Ⅲ;
 
 /**
- * @version 2016/03/30 1:11:45
+ * @version 2016/05/01 9:50:22
  */
-@SuppressWarnings("unchecked")
-class ListModel extends Model {
+class ListModel<V> extends Model<List<V>> {
 
     /** The prameterized item of this model. */
     private final Model itemModel;
@@ -39,7 +38,7 @@ class ListModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#property(java.lang.String)
+     * {@inheritDoc}
      */
     @Override
     public Property property(String propertyIName) {
@@ -51,7 +50,7 @@ class ListModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#isCollection()
+     * {@inheritDoc}
      */
     @Override
     public boolean isCollection() {
@@ -59,19 +58,19 @@ class ListModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#get(java.lang.Object, kiss.model.Property)
+     * {@inheritDoc}
      */
     @Override
-    public Object get(Object object, Property property) {
-        return ((List) object).get(Integer.valueOf(property.name));
+    public Object get(List object, Property property) {
+        return object.get(Integer.valueOf(property.name));
     }
 
     /**
-     * @see kiss.model.Model#set(java.lang.Object, kiss.model.Property, java.lang.Object)
+     * {@inheritDoc}
      */
     @Override
-    public void set(Object object, Property property, Object propertyValue) {
-        List list = (List) object;
+    public void set(List object, Property property, Object propertyValue) {
+        List list = object;
         int id = Integer.valueOf(property.name);
 
         if (list.size() <= id) {
@@ -84,16 +83,16 @@ class ListModel extends Model {
     }
 
     /**
-     * @see kiss.model.Model#walk(java.lang.Object, kiss.model.PropertyWalker)
+     * {@inheritDoc}
      */
     @Override
-    public void walk(Object object, Consumer<Ⅲ<Model, Property, Object>> walker) {
+    public void walk(List<V> object, Consumer<Ⅲ<Model<List<V>>, Property, Object>> walker) {
         if (object != null && walker != null) {
             // We must use extended for loop because the sequential access is not efficient for some
             // List implementation.
             int counter = 0;
 
-            for (Object value : (List) object) {
+            for (V value : object) {
                 walker.accept(I.pair(this, new Property(itemModel, String.valueOf(counter++)), value));
             }
         }

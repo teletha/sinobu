@@ -153,7 +153,7 @@ public class ModelTest {
 
     @Test
     public void fieldProperty() {
-        Model model = Model.of(FieldProperty.class);
+        Model<FieldProperty> model = Model.of(FieldProperty.class);
         assert 2 == model.properties.size();
 
         Property string = model.properties.get(0);
@@ -164,7 +164,7 @@ public class ModelTest {
 
     @Test
     public void fieldGenericProperty() {
-        Model model = Model.of(GenericFieldProperty.class);
+        Model<GenericFieldProperty> model = Model.of(GenericFieldProperty.class);
         assert 2 == model.properties.size();
 
         Property string = model.properties.get(0);
@@ -175,7 +175,7 @@ public class ModelTest {
 
     @Test
     public void fxPropertyAtFieldProperty() {
-        Model model = Model.of(FxPropertyAtField.class);
+        Model<FxPropertyAtField> model = Model.of(FxPropertyAtField.class);
         assert model.properties.size() == 4;
 
         Property integer = model.properties.get(0);

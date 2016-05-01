@@ -2039,7 +2039,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param js A javascript value.
      * @return A restored java object.
      */
-    private static <M> M read(Model model, M java, Object js) {
+    private static <M> M read(Model<M> model, M java, Object js) {
         if (js instanceof Map) {
             Map<String, Object> map = (Map) js;
 
@@ -2132,14 +2132,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return A transformed object.
      * @throws NullPointerException If the output type is <code>null</code>.
      */
-    public static <M> M transform(Object input, Class<M> output) {
+    public static <IN, M> M transform(IN input, Class<M> output) {
         // check null
         if (input == null) {
             return null;
         }
 
-        Model inputModel = Model.of(input);
-        Model outputModel = Model.of(output);
+        Model<IN> inputModel = Model.of(input);
+        Model<M> outputModel = Model.of(output);
 
         // no conversion
         if (inputModel == outputModel) {
