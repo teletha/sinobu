@@ -369,22 +369,11 @@ public class Model<M> {
      * @return A resolved property value. This value may be <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public <V> V get(M object, Property<V> property) {
-        if (object == null || property == null) {
+    public <V> V get(M object, Property<M, V> property) {
+        if (property == null) {
             return null;
         }
-
-        try {
-            if (property.type == 2) {
-                // property access
-                return ((WritableValue<V>) property.accessors[0].invoke(object)).getValue();
-            } else {
-                // field or method access
-                return (V) property.accessors[0].invoke(object);
-            }
-        } catch (Throwable e) {
-            throw I.quiet(e);
-        }
+        return property.get(object);
     }
 
     /**
@@ -396,23 +385,9 @@ public class Model<M> {
      *            <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public <V> void set(M object, Property<V> property, V propertyValue) {
-        if (object != null && property != null) {
-            try {
-                if (property.type == 2) {
-                    // property access
-                    ((WritableValue<V>) property.accessors[0].invoke(object)).setValue(propertyValue);
-                } else {
-                    // field or method access
-                    Class type = property.model.type;
-
-                    if ((!type.isPrimitive() && !type.isEnum()) || propertyValue != null) {
-                        property.accessors[1].invoke(object, propertyValue);
-                    }
-                }
-            } catch (Throwable e) {
-                throw I.quiet(e);
-            }
+    public <V> void set(M object, Property<M, V> property, V propertyValue) {
+        if (property != null) {
+            property.set(object, propertyValue);
         }
     }
 

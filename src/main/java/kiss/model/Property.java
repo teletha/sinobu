@@ -14,13 +14,17 @@ import static java.lang.reflect.Modifier.*;
 import java.beans.Transient;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import javafx.beans.value.WritableValue;
+
+import kiss.Accessor;
+import kiss.I;
 
 /**
  * <p>
@@ -36,7 +40,7 @@ import java.util.Map;
  * @version 2009/07/17 15:03:16
  */
 @SuppressWarnings("unchecked")
-public class Property<V> implements Comparable<Property> {
+public class Property<M, V> implements Comparable<Property>, Accessor<M, V> {
 
     /** The assosiated object model with this {@link Property}. */
     public final Model<V> model;
@@ -96,15 +100,50 @@ public class Property<V> implements Comparable<Property> {
     }
 
     /**
-     * <p>
-     * Retrieve a property accessor.
-     * </p>
-     * 
-     * @param getter An accessor type.
-     * @return A property accessor.
+     * {@inheritDoc}
      */
-    public Method accessor(boolean getter) {
-        return type != 0 ? null : MethodHandles.reflectAs(Method.class, accessors[getter ? 0 : 1]);
+    @Override
+    public V get(M model) {
+        if (model == null) {
+            return null;
+        }
+
+        try {
+            if (type == 2) {
+                // property access
+                return ((WritableValue<V>) accessors[0].invoke(model)).getValue();
+            } else {
+                // field or method access
+                return (V) accessors[0].invoke(model);
+            }
+        } catch (Throwable e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public M set(M model, V property) {
+        if (model != null) {
+            try {
+                if (type == 2) {
+                    // property access
+                    ((WritableValue<V>) accessors[0].invoke(model)).setValue(property);
+                } else {
+                    // field or method access
+                    Class type = this.model.type;
+
+                    if ((!type.isPrimitive() && !type.isEnum()) || property != null) {
+                        accessors[1].invoke(model, property);
+                    }
+                }
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        }
+        return model;
     }
 
     /**
