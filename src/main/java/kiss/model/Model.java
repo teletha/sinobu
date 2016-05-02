@@ -346,7 +346,7 @@ public class Model<M> {
      * 
      * @return An associated {@link Decoder}.
      */
-    public Decoder decoder() {
+    public Decoder<M> decoder() {
         return decoder != null ? decoder : I.find(Decoder.class, type);
     }
 
@@ -357,7 +357,7 @@ public class Model<M> {
      * 
      * @return An associated {@link Encoder}.
      */
-    public Encoder encoder() {
+    public Encoder<M> encoder() {
         return encoder != null ? encoder : I.find(Encoder.class, type);
     }
 
@@ -377,7 +377,7 @@ public class Model<M> {
         try {
             if (property.type == 2) {
                 // property access
-                return (V) ((WritableValue) property.accessors[0].invoke(object)).getValue();
+                return ((WritableValue<V>) property.accessors[0].invoke(object)).getValue();
             } else {
                 // field or method access
                 return (V) property.accessors[0].invoke(object);
@@ -401,7 +401,7 @@ public class Model<M> {
             try {
                 if (property.type == 2) {
                     // property access
-                    ((WritableValue) property.accessors[0].invoke(object)).setValue(propertyValue);
+                    ((WritableValue<V>) property.accessors[0].invoke(object)).setValue(propertyValue);
                 } else {
                     // field or method access
                     Class type = property.model.type;
@@ -455,7 +455,7 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given model class is not found.
      */
     public static <M> Model<M> of(M modelType) {
-        return of(modelType.getClass());
+        return of((Class<M>) modelType.getClass());
     }
 
     /**
@@ -477,7 +477,7 @@ public class Model<M> {
      * @throws NullPointerException If the given model class is null.
      * @throws IllegalArgumentException If the given model class is not found.
      */
-    public static <M> Model<M> of(Class modelClass) {
+    public static <M> Model<M> of(Class<? super M> modelClass) {
         // check whether the specified model class is enhanced or not
         if (modelClass.isSynthetic()) {
             modelClass = modelClass.getSuperclass();
