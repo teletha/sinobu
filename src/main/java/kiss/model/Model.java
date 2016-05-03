@@ -34,10 +34,10 @@ import java.util.function.Consumer;
 
 import javafx.beans.value.WritableValue;
 
+import kiss.ClassVariable;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
-import kiss.ClassVariable;
 import kiss.Ⅲ;
 
 /**
@@ -45,7 +45,7 @@ import kiss.Ⅲ;
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
  * </p>
  * 
- * @version 2016/05/03 16:53:09
+ * @version 2016/05/04 1:25:12
  */
 @SuppressWarnings("unchecked")
 public class Model<M> {
@@ -161,6 +161,7 @@ public class Model<M> {
                     break;
 
                 case 1464606545: // java.nio.file.Path
+                case -2015077501: // sun.nio.fs.WindowsPath
                     decoder = I::locate;
                     break;
 
@@ -264,8 +265,8 @@ public class Model<M> {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(
-                                of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field.getGenericType()), field.getName());
+                        Property property = new Property(of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field
+                                .getGenericType()), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;
 

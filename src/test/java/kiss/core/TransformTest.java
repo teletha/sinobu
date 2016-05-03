@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -36,7 +38,7 @@ import org.junit.Test;
 import kiss.I;
 
 /**
- * @version 2014/03/11 2:15:34
+ * @version 2016/05/04 1:17:02
  */
 public class TransformTest {
 
@@ -262,5 +264,14 @@ public class TransformTest {
 
         assert I.transform(value, String.class).equals(text);
         assert I.transform(text, StringBuffer.class).toString().equals(value.toString());
+    }
+
+    @Test
+    public void path() {
+        Path path = Paths.get("test");
+        String text = "test";
+
+        assert I.transform(path, String.class).equals(text);
+        assert I.transform(text, Path.class).toString().equals(path.toString());
     }
 }

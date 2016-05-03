@@ -2147,7 +2147,15 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         if (input == null) {
             return null;
         }
-        return Model.of(output).decoder().decode(Model.of(input).encoder().encode(input));
+
+        Decoder<Out> decoder = Model.of(output).decoder();
+        Encoder<In> encoder = Model.of(input).encoder();
+
+        if (decoder == null || encoder == null) {
+            System.out.println(decoder + "  " + encoder);
+            return null;
+        }
+        return decoder.decode(encoder.encode(input));
     }
 
     /**

@@ -18,8 +18,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.nio.file.Path;
-import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import kiss.I;
 import kiss.Table;
 
 /**
@@ -53,25 +50,6 @@ public final class ClassUtil {
      * Avoid construction.
      */
     private ClassUtil() {
-    }
-
-    /**
-     * <p>
-     * Helper method to find the class archive (e.g. jar file, classes directory) by the specified
-     * sample class. If the sample class belongs to system classloader (e.g. {@link String}),
-     * <code>null</code> will be returned.
-     * </p>
-     * 
-     * @param clazz A sample class.
-     * @return A class archive (e.g. jar file, classes directory) or <code>null</code>.
-     */
-    @Deprecated
-    public static Path getArchive(Class clazz) {
-        // retrieve code source of this sample class
-        CodeSource source = clazz.getProtectionDomain().getCodeSource();
-
-        // API definition
-        return (source == null) ? null : I.locate(source.getLocation());
     }
 
     /**
