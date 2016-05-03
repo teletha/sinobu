@@ -2069,7 +2069,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
                 // convert value
                 if (property.isAttribute()) {
-                    value = transform(transform(value, String.class), type);
+                    value = transform(value, type);
                 } else {
                     value = read(property.model, make(type), value);
                 }
@@ -2123,60 +2123,21 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
     /**
      * <p>
-     * Transform any type object into the specified type possible.
+     * Transform any type object into the specified type if possible.
      * </p>
-     *
-     * @param <M> A output type you want to transform into.
+     * 
+     * @param <In> A input type you want to transform from.
+     * @param <Out> An output type you want to transform into.
      * @param input A target object.
      * @param output A target type.
      * @return A transformed object.
      * @throws NullPointerException If the output type is <code>null</code>.
      */
-    public static <IN, M> M transform(IN input, Class<M> output) {
-        // check null
+    public static <In, Out> Out transform(In input, Class<Out> output) {
         if (input == null) {
             return null;
         }
-
-        Model<IN> inputModel = Model.of(input);
-        Model<M> outputModel = Model.of(output);
-
-        // no conversion
-        if (inputModel == outputModel) {
-            return (M) input;
-        }
-
-        Encoder encoder = inputModel.encoder();
-        Decoder<M> decoder = outputModel.decoder();
-
-        // check whether each model are attribute model or not
-        if (encoder == null && decoder == null) {
-            // we should copy property values
-
-            // create destination object
-            M m = make(output);
-
-            // copy actually
-            inputModel.walk(input, info -> {
-                Property dest = outputModel.property(info.ⅱ.name);
-
-                // never check null because PropertyWalker traverses existing properties
-                outputModel.set(m, dest, I.transform(info.ⅲ, dest.model.type));
-            });
-
-            // API definition
-            return m;
-        } else {
-            // type conversion
-            if (output == String.class) {
-                return (M) ((encoder != null) ? encoder.encode(input) : input.toString());
-            }
-
-            if (inputModel.type == String.class && decoder != null) {
-                return decoder.decode((String) input);
-            }
-            return (M) input;
-        }
+        return Model.of(output).decoder().decode(Model.of(input).encoder().encode(input));
     }
 
     /**

@@ -31,9 +31,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
 
-import kiss.I;
-
 import org.junit.Test;
+
+import kiss.I;
 
 /**
  * @version 2014/03/11 2:15:34
@@ -85,22 +85,6 @@ public class TransformTest {
     public void primitiveBoolean() {
         assert I.transform("true", boolean.class);
         assert I.transform(true, String.class).equals("true");
-    }
-
-    @Test
-    public void transformBean() {
-        BeanA a = I.make(BeanA.class);
-        a.setValue(10);
-
-        // initial value
-        assert 10 == a.getValue();
-
-        // transform
-        BeanB b = I.transform(a, BeanB.class);
-
-        // initial value
-        assert 10 == a.getValue();
-        assert b.getValue().equals("10");
     }
 
     @Test
@@ -278,59 +262,5 @@ public class TransformTest {
 
         assert I.transform(value, String.class).equals(text);
         assert I.transform(text, StringBuffer.class).toString().equals(value.toString());
-    }
-
-    /**
-     * @version 2011/03/15 15:09:16
-     */
-    protected static class BeanA {
-
-        /** The property. */
-        private int value;
-
-        /**
-         * Get the value property of this {@link TransformTest.BeanA}.
-         * 
-         * @return The value property.
-         */
-        public int getValue() {
-            return value;
-        }
-
-        /**
-         * Set the value property of this {@link TransformTest.BeanA}.
-         * 
-         * @param value The value value to set.
-         */
-        public void setValue(int value) {
-            this.value = value;
-        }
-    }
-
-    /**
-     * @version 2011/03/15 15:09:20
-     */
-    protected static class BeanB {
-
-        /** The property. */
-        private String value;
-
-        /**
-         * Get the value property of this {@link TransformTest.BeanB}.
-         * 
-         * @return The value property.
-         */
-        public String getValue() {
-            return value;
-        }
-
-        /**
-         * Set the value property of this {@link TransformTest.BeanB}.
-         * 
-         * @param value The value value to set.
-         */
-        public void setValue(String value) {
-            this.value = value;
-        }
     }
 }
