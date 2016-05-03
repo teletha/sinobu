@@ -15,25 +15,10 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Test;
 
-import kiss.I;
-import kiss.sample.bean.Person;
-
 /**
  * @version 2016/05/02 9:36:48
  */
 public class PropertyTest {
-
-    @Test
-    public void accessor() {
-        Model<Person> model = Model.of(Person.class);
-        Property<Person, Integer> property = model.property("age");
-
-        Person person = I.make(Person.class);
-        person.setAge(20);
-        assert property.get(person) == 20;
-        property.set(person, 10);
-        assert person.getAge() == 10;
-    }
 
     @Test
     public void annotation() throws Exception {

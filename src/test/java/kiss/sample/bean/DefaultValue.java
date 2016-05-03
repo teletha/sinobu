@@ -9,10 +9,16 @@
  */
 package kiss.sample.bean;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
- * @version 2016/03/18 15:16:14
+ * @version 2016/05/02 16:37:04
  */
 public class DefaultValue {
 
     public String value = "default";
+
+    public List<String> items = new ArrayList(Collections.singleton("default"));
 }

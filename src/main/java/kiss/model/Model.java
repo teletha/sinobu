@@ -369,11 +369,22 @@ public class Model<M> {
      * @return A resolved property value. This value may be <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public <V> V get(M object, Property<M, V> property) {
-        if (property == null) {
+    public Object get(M object, Property property) {
+        if (object == null || property == null) {
             return null;
         }
-        return property.get(object);
+
+        try {
+            if (property.type == 2) {
+                // property access
+                return ((WritableValue) property.accessors[0].invoke(object)).getValue();
+            } else {
+                // field or method access
+                return property.accessors[0].invoke(object);
+            }
+        } catch (Throwable e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -381,13 +392,27 @@ public class Model<M> {
      * 
      * @param object A object as source. This value must not be <code>null</code>,
      * @param property A property. This value must not be <code>null</code>,
-     * @param propertyValue A new property value that you want to set. This value accepts
+     * @param value A new property value that you want to set. This value accepts
      *            <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public <V> void set(M object, Property<M, V> property, V propertyValue) {
-        if (property != null) {
-            property.set(object, propertyValue);
+    public void set(M object, Property property, Object value) {
+        if (object != null && property != null) {
+            try {
+                if (property.type == 2) {
+                    // property access
+                    ((WritableValue) property.accessors[0].invoke(object)).setValue(value);
+                } else {
+                    // field or method access
+                    Class type = property.model.type;
+
+                    if ((!type.isPrimitive() && !type.isEnum()) || value != null) {
+                        property.accessors[1].invoke(object, value);
+                    }
+                }
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
         }
     }
 

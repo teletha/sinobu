@@ -94,10 +94,11 @@ public class JSONTest {
     public void defaultValue() {
         DefaultValue instant = new DefaultValue();
 
-        validate(instant, /**/"{", /**/"  'value': 'default'", /**/"}");
+        validate(instant, /**/"{", /**/"  'value': 'default',", /**/"  'items': [", /**/"    'default'", /**/"  ]", /**/"}");
 
         // clear value
         instant.value = null;
+        instant.items = null;
         validate(instant, /**/"{}"
         /**/);
     }

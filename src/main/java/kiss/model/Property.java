@@ -21,11 +21,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.beans.value.WritableValue;
-
-import kiss.Accessor;
-import kiss.I;
-
 /**
  * <p>
  * This class represents a property of object model.
@@ -40,10 +35,10 @@ import kiss.I;
  * @version 2009/07/17 15:03:16
  */
 @SuppressWarnings("unchecked")
-public class Property<M, V> implements Comparable<Property>, Accessor<M, V> {
+public class Property implements Comparable<Property> {
 
     /** The assosiated object model with this {@link Property}. */
-    public final Model<V> model;
+    public final Model model;
 
     /** The human readable identifier of this {@link Property}. */
     public final String name;
@@ -97,53 +92,6 @@ public class Property<M, V> implements Comparable<Property>, Accessor<M, V> {
 
         // compare name
         return name.compareTo(o.name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public V get(M model) {
-        if (model == null) {
-            return null;
-        }
-
-        try {
-            if (type == 2) {
-                // property access
-                return ((WritableValue<V>) accessors[0].invoke(model)).getValue();
-            } else {
-                // field or method access
-                return (V) accessors[0].invoke(model);
-            }
-        } catch (Throwable e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public M set(M model, V property) {
-        if (model != null) {
-            try {
-                if (type == 2) {
-                    // property access
-                    ((WritableValue<V>) accessors[0].invoke(model)).setValue(property);
-                } else {
-                    // field or method access
-                    Class type = this.model.type;
-
-                    if ((!type.isPrimitive() && !type.isEnum()) || property != null) {
-                        accessors[1].invoke(model, property);
-                    }
-                }
-            } catch (Throwable e) {
-                throw I.quiet(e);
-            }
-        }
-        return model;
     }
 
     /**
