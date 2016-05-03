@@ -46,8 +46,11 @@ public class JSONTest {
     public void empty() {
         BuiltinBean instance = new BuiltinBean();
 
-        validate(instance, /**/"{}"
-        /**/);
+        // @formatter:off
+        validate(instance,
+        "{}"
+        );
+        // @formatter:on
     }
 
     @Test
@@ -55,7 +58,12 @@ public class JSONTest {
         Person person = new Person();
         person.setAge(20);
 
-        validate(person, /**/"{", /**/"  'age': '20'", /**/"}");
+        // @formatter:off
+        validate(person,
+        "{",
+        "  'age': '20'",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -65,7 +73,14 @@ public class JSONTest {
         person.setFirstName("Umi");
         person.setLastName("Sonoda");
 
-        validate(person, /**/"{", /**/"  'age': '20',", /**/"  'firstName': 'Umi',", /**/"  'lastName': 'Sonoda'", /**/"}");
+        // @formatter:off
+        validate(person,
+        "{",
+        "  'age': '20',",
+        "  'firstName': 'Umi',",
+        "  'lastName': 'Sonoda'",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -74,7 +89,12 @@ public class JSONTest {
         bean.setBoth(8);
         bean.setNone(15);
 
-        validate(bean, /**/"{", /**/"  'none': '15'", /**/"}");
+        // @formatter:off
+        validate(bean,
+        "{",
+        "  'none': '15'",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -87,20 +107,46 @@ public class JSONTest {
         bean.map.put("one", 11L);
         bean.map.put("two", 222L);
 
-        validate(bean, /**/"{", /**/"  'integer': '10',", /**/"  'string': 'value',", /**/"  'list': {", /**/"    '0': 'first',", /**/"    '1': 'second'", /**/"  },", /**/"  'map': {", /**/"    'one': '11',", /**/"    'two': '222'", /**/"  }", /**/"}");
+        // @formatter:off
+        validate(bean,
+        "{",
+        "  'integer': '10',",
+        "  'string': 'value',",
+        "  'list': {",
+        "    '0': 'first',",
+        "    '1': 'second'",
+        "  },",
+        "  'map': {",
+        "    'one': '11',",
+        "    'two': '222'",
+        "  }",
+        "}");
+        // @formatter:on
     }
 
     @Test
     public void defaultValue() {
         DefaultValue instant = new DefaultValue();
 
-        validate(instant, /**/"{", /**/"  'value': 'default',", /**/"  'items': [", /**/"    'default'", /**/"  ]", /**/"}");
+        // @formatter:off
+        validate(instant,
+        "{",
+        "  'value': 'default',",
+        "  'items': [",
+        "    'default'",
+        "  ]",
+        "}");
+         // @formatter:on
 
         // clear value
         instant.value = null;
         instant.items = null;
-        validate(instant, /**/"{}"
-        /**/);
+
+        // @formatter:off
+        validate(instant,
+        "{}"
+        );
+        // @formatter:on
     }
 
     @Test
@@ -112,7 +158,16 @@ public class JSONTest {
         StringListProperty strings = I.make(StringListProperty.class);
         strings.setList(list);
 
-        validate(strings, /**/"{", /**/"  'list': [", /**/"    'one',", /**/"    'two',", /**/"    'three'", /**/"  ]", /**/"}");
+        // @formatter:off
+        validate(strings,
+        "{",
+        "  'list': [",
+        "    'one',",
+        "    'two',",
+        "    'three'",
+        "  ]",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -124,7 +179,16 @@ public class JSONTest {
         StringListProperty strings = I.make(StringListProperty.class);
         strings.setList(list);
 
-        validate(strings, /**/"{", /**/"  'list': [", /**/"    null,", /**/"    'null',", /**/"    null", /**/"  ]", /**/"}");
+        // @formatter:off
+        validate(strings,
+        "{",
+        "  'list': [",
+        "    null,",
+        "    'null',",
+        "    null",
+        "  ]",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -132,7 +196,15 @@ public class JSONTest {
         NestingList list = I.make(NestingList.class);
         list.setNesting(Arrays.asList(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
 
-        validate(list, /**/"{", /**/"  'nesting': [", /**/"    [],", /**/"    []", /**/"  ]", /**/"}");
+        // @formatter:off
+        validate(list,
+        "{",
+        "  'nesting': [",
+        "    [],",
+        "    []",
+        "  ]",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -144,7 +216,16 @@ public class JSONTest {
         StringMapProperty strings = I.make(StringMapProperty.class);
         strings.setMap(map);
 
-        validate(strings, /**/"{", /**/"  'map': {", /**/"    'one': '1',", /**/"    'two': '2',", /**/"    'three': '3'", /**/"  }", /**/"}");
+        // @formatter:off
+        validate(strings,
+        "{",
+        "  'map': {",
+        "    'one': '1',",
+        "    'two': '2',",
+        "    'three': '3'",
+        "  }",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -155,7 +236,14 @@ public class JSONTest {
         StringMapProperty strings = I.make(StringMapProperty.class);
         strings.setMap(map);
 
-        validate(strings, /**/"{", /**/"  'map': {", /**/"    'null': 'NULL'", /**/"  }", /**/"}");
+        // @formatter:off
+        validate(strings,
+        "{",
+        "  'map': {",
+        "    'null': 'NULL'",
+        "  }",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -166,7 +254,19 @@ public class JSONTest {
         primitive.setInt(-5);
         primitive.setFloat(0.1f);
 
-        validate(primitive, /**/"{", /**/"  'boolean': 'true',", /**/"  'byte': '0',", /**/"  'char': 'c',", /**/"  'double': '0.0',", /**/"  'float': '0.1',", /**/"  'int': '-5',", /**/"  'long': '0',", /**/"  'short': '0'", /**/"}");
+        // @formatter:off
+        validate(primitive,
+        "{",
+        "  'boolean': 'true',",
+        "  'byte': '0',",
+        "  'char': 'c',",
+        "  'double': '0.0',",
+        "  'float': '0.1',",
+        "  'int': '-5',",
+        "  'long': '0',",
+        "  'short': '0'",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -176,7 +276,14 @@ public class JSONTest {
         person.setFirstName("A\r\nA\t");
         person.setLastName("B\n\"\\B");
 
-        validate(person, /**/"{", /**/"  'age': '20',", /**/"  'firstName': 'A\\r\\nA\\t',", /**/"  'lastName': 'B\\n\\\"\\\\B'", /**/"}");
+        // @formatter:off
+        validate(person,
+        "{",
+        "  'age': '20',",
+        "  'firstName': 'A\\r\\nA\\t',",
+        "  'lastName': 'B\\n\\\"\\\\B'",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -186,7 +293,14 @@ public class JSONTest {
         bean.setDate(new Date(0));
         bean.setBigInteger(new BigInteger("1234567890987654321"));
 
-        validate(bean, /**/"{", /**/"  'bigInteger': '1234567890987654321',", /**/"  'date': '1970-01-01T09:00:00',", /**/"  'someClass': 'java.lang.String'", /**/"}");
+        // @formatter:off
+        validate(bean,
+        "{",
+        "  'bigInteger': '1234567890987654321',",
+        "  'date': '1970-01-01T09:00:00',",
+        "  'someClass': 'java.lang.String'",
+        "}");
+        // @formatter:on
     }
 
     @Test
@@ -200,7 +314,18 @@ public class JSONTest {
         student.setLastName("Akiyama");
         student.setSchool(school);
 
-        validate(student, /**/"{", /**/"  'age': '15',", /**/"  'firstName': 'Mio',", /**/"  'lastName': 'Akiyama',", /**/"  'school': {", /**/"    'name': 'Sakura High School',", /**/"    'students': []", /**/"  }", /**/"}");
+        // @formatter:off
+        validate(student,
+        "{",
+        "  'age': '15',",
+        "  'firstName': 'Mio',",
+        "  'lastName': 'Akiyama',",
+        "  'school': {",
+        "    'name': 'Sakura High School',",
+        "    'students': []",
+        "  }",
+        "}");
+        // @formatter:on
     }
 
     public void readIncompatible() {
@@ -257,7 +382,7 @@ public class JSONTest {
      * @param one
      * @param other
      */
-    private static <T> void validate(Model<T> model, T one, T other) {
+    private static void validate(Model<Object> model, Object one, Object other) {
         for (Property property : model.properties()) {
             Object oneValue = model.get(one, property);
             Object otherValue = model.get(other, property);
