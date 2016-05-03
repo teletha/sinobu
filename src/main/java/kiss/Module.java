@@ -35,7 +35,6 @@ import jdk.internal.org.objectweb.asm.ClassReader;
 import jdk.internal.org.objectweb.asm.ClassVisitor;
 import jdk.internal.org.objectweb.asm.FieldVisitor;
 import jdk.internal.org.objectweb.asm.MethodVisitor;
-import kiss.model.ClassUtil;
 
 /**
  * <h2>Module System</h2>
@@ -203,7 +202,7 @@ class Module extends ClassVisitor {
 
         // lazy evaluation
         Class clazz = loader.loadClass((String) info[0]);
-        Set<Class<?>> set = ClassUtil.getTypes(clazz);
+        Set<Class<?>> set = I.collectTypesOf(clazz);
         Annotation[] annotations = clazz.getAnnotations();
 
         // compute hash

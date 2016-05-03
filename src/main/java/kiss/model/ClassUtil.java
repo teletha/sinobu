@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import kiss.I;
 import kiss.Table;
 
 /**
@@ -46,38 +46,6 @@ public final class ClassUtil {
 
     /**
      * <p>
-     * Helper method to collect all classes which are extended or implemented by the target class.
-     * </p>
-     * 
-     * @param clazz A target class. <code>null</code> will be return the empty set.
-     * @return A set of classes, with predictable bottom-up iteration order.
-     */
-    public static Set<Class<?>> getTypes(Class clazz) {
-        // check null
-        if (clazz == null) {
-            return Collections.EMPTY_SET;
-        }
-
-        // container
-        Set<Class<?>> set = new LinkedHashSet(); // order is important
-
-        // add current class
-        set.add(clazz);
-
-        // add super class
-        set.addAll(getTypes(clazz.getSuperclass()));
-
-        // add interface classes
-        for (Class c : clazz.getInterfaces()) {
-            set.addAll(getTypes(c));
-        }
-
-        // API definition
-        return set;
-    }
-
-    /**
-     * <p>
      * Helper method to collect all annotated methods and thire annotations.
      * </p>
      * 
@@ -87,7 +55,7 @@ public final class ClassUtil {
     public static Table<Method, Annotation> getAnnotations(Class clazz) {
         Table<Method, Annotation> table = new Table();
 
-        for (Class type : ClassUtil.getTypes(clazz)) {
+        for (Class type : I.collectTypesOf(clazz)) {
             for (Method method : type.getDeclaredMethods()) {
                 // exclude the method which is created by compiler
                 // exclude the private method which is not declared in the specified class

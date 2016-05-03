@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -39,19 +38,6 @@ public class ClassUtilTest {
     static {
         // dirty code to load I class at first
         assert I.$loader instanceof ClassLoader;
-    }
-
-    @Test
-    public void testGetAllTypes01() {
-        Set<Class<?>> classes = ClassUtil.getTypes(ExtendClass.class);
-        assert 11 == classes.size();
-        assert classes.contains(ExtendClass.class);
-    }
-
-    @Test
-    public void testGetAllTypes02() {
-        Set<Class<?>> classes = ClassUtil.getTypes(null);
-        assert 0 == classes.size();
     }
 
     /**
@@ -377,16 +363,6 @@ public class ClassUtilTest {
         Type[] types = ClassUtil.getParameter(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
         assert 1 == types.length;
         assert Student.class == types[0];
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 15:51:49
-     */
-    private static class ExtendClass extends ArrayList {
-
-        private static final long serialVersionUID = -5962628342667538716L;
     }
 
     /**

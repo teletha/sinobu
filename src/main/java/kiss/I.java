@@ -55,6 +55,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -445,6 +446,38 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
     /**
      * <p>
+     * Collect all classes which are extended or implemented by the target class.
+     * </p>
+     * 
+     * @param clazz A target class. <code>null</code> will be return the empty set.
+     * @return A set of classes, with predictable bottom-up iteration order.
+     */
+    public static Set<Class<?>> collectTypesOf(Class clazz) {
+        // check null
+        if (clazz == null) {
+            return Collections.EMPTY_SET;
+        }
+
+        // container
+        Set<Class<?>> set = new LinkedHashSet(); // order is important
+
+        // add current class
+        set.add(clazz);
+
+        // add super class
+        set.addAll(collectTypesOf(clazz.getSuperclass()));
+
+        // add interface classes
+        for (Class c : clazz.getInterfaces()) {
+            set.addAll(collectTypesOf(c));
+        }
+
+        // API definition
+        return set;
+    }
+
+    /**
+     * <p>
      * Note : This method closes both input and output stream carefully.
      * </p>
      * <p>
@@ -704,7 +737,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return null;
         }
 
-        for (Class clazz : ClassUtil.getTypes(key)) {
+        for (Class clazz : collectTypesOf(key)) {
             Class<E> supplier = keys.find(extensionPoint.getName().concat(clazz.getName()));
 
             if (supplier != null) {
@@ -2556,7 +2589,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     @Override
     public void load(Class<Extensible> extension) {
         // search and collect information for all extension points
-        for (Class extensionPoint : ClassUtil.getTypes(extension)) {
+        for (Class extensionPoint : collectTypesOf(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register new extension
                 extensions.push(extensionPoint, extension);
@@ -2593,7 +2626,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     @Override
     public void unload(Class<Extensible> extension) {
         // search and collect information for all extension points
-        for (Class extensionPoint : ClassUtil.getTypes(extension)) {
+        for (Class extensionPoint : collectTypesOf(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register new extension
                 extensions.pull(extensionPoint, extension);

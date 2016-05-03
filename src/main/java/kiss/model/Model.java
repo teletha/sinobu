@@ -180,7 +180,7 @@ public class Model<M> {
             // examine all methods without private, final, static or native
             Map<String, Method[]> candidates = new HashMap();
 
-            for (Class clazz : ClassUtil.getTypes(type)) {
+            for (Class clazz : I.collectTypesOf(type)) {
                 for (Method method : clazz.getDeclaredMethods()) {
                     // exclude the method which modifier is final, static, private or native
                     if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
