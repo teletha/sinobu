@@ -57,14 +57,6 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      * {@inheritDoc}
      */
     @Override
-    public boolean isCollection() {
-        return key.decoder() != null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Object get(Map object, Property property) {
         if (key.decoder() == null) {
             return super.get(object, property);

@@ -16,12 +16,6 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-
-import kiss.model.Model;
-import kiss.model.Property;
 
 /**
  * <p>
@@ -39,9 +33,9 @@ import kiss.model.Property;
  * This is also {@link Appendable} {@link Writer}.
  * </p>
  * 
- * @version 2012/11/07 21:01:06
+ * @version 2016/05/03 16:44:19
  */
-class XMLUtil extends Writer implements Consumer<Ⅲ<Model, Property, Object>> {
+class XMLUtil extends Writer {
 
     // =======================================================================
     // General Fields
@@ -91,68 +85,6 @@ class XMLUtil extends Writer implements Consumer<Ⅲ<Model, Property, Object>> {
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
         output.append(new String(cbuf, off, len));
-    }
-
-    // =======================================================================
-    // PropertyWalker for XML Serialization
-    // =======================================================================
-    /** The record for traversed objects. */
-    private final ConcurrentHashMap<Object, XML> reference = new ConcurrentHashMap();
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void accept(Ⅲ<Model, Property, Object> info) {
-        if (!info.ⅱ.isTransient) {
-            // ========================================
-            // Enter Node
-            // ========================================
-            if (info.ⅰ.isCollection()) {
-                // collection item property
-                xml = xml.child(info.ⅱ.model.name);
-
-                // collection needs key attribute
-                if (Map.class.isAssignableFrom(info.ⅰ.type)) {
-                    xml.attr("ss:key", info.ⅱ.name);
-                }
-            } else if (!info.ⅱ.isAttribute()) {
-                xml = xml.child(info.ⅱ.name);
-            }
-
-            // If the collection item is attribute node, that is represented as xml value attribute
-            // and attribute node that collection node doesn't host is written as xml attribute too.
-            if (info.ⅲ != null) {
-                if (info.ⅱ.isAttribute()) {
-                    xml.attr(info.ⅰ.isCollection() ? "value" : info.ⅱ.name, I.transform(info.ⅲ, String.class));
-                } else {
-                    XML ref = reference.get(info.ⅲ);
-
-                    if (ref == null) {
-                        // associate node object with element
-                        reference.put(info.ⅲ, xml);
-
-                        // assign new id
-                        xml.attr("ss:id", pos++);
-
-                        // ========================================
-                        // Traverse Child Node
-                        // ========================================
-                        info.ⅱ.model.walk(info.ⅲ, this);
-                    } else {
-                        // share id
-                        xml.attr("ss:id", ref.attr("ss:id"));
-                    }
-                }
-            }
-
-            // ========================================
-            // Leave Node
-            // ========================================
-            if (info.ⅰ.isCollection() || !info.ⅱ.isAttribute()) {
-                xml = xml.parent();
-            }
-        }
     }
 
     // =======================================================================

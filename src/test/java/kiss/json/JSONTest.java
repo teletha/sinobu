@@ -258,7 +258,7 @@ public class JSONTest {
      * @param other
      */
     private static <T> void validate(Model<T> model, T one, T other) {
-        for (Property property : model.properties) {
+        for (Property property : model.properties()) {
             Object oneValue = model.get(one, property);
             Object otherValue = model.get(other, property);
 

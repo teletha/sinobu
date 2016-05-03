@@ -9,21 +9,14 @@
  */
 package kiss.model;
 
-import kiss.I;
-import kiss.sample.bean.TransientBean;
-
 import org.junit.Test;
+
+import kiss.sample.bean.TransientBean;
 
 /**
  * @version 2014/07/21 17:07:32
  */
 public class TransientPropertyTest {
-
-    static {
-        // When we activates only this test, it throws initialization error, so we have to load I
-        // class at first.
-        I.locate("");
-    }
 
     @Test
     public void transientGetter() throws Exception {

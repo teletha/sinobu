@@ -72,7 +72,7 @@ public class SinobuExperimental {
             // [0] : Declared Class Name (internal qualified name)
             // [1] : Method Name
             // [2] : Method Descriptor (internal qualified signature)
-            String[] methodInfo = constantPool.getMemberRefInfoAt(19);
+            String[] methodInfo = constantPool.getMemberRefInfoAt(constantPool.getSize() - 3);
             System.out.println(Arrays.toString(methodInfo));
             return null;
         } catch (Exception e) {

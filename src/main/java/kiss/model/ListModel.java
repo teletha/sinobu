@@ -53,14 +53,6 @@ class ListModel<V> extends Model<List<V>> {
      * {@inheritDoc}
      */
     @Override
-    public boolean isCollection() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Object get(List object, Property property) {
         return object.get(Integer.valueOf(property.name));
     }
@@ -82,7 +74,6 @@ class ListModel<V> extends Model<List<V>> {
         list.set(id, propertyValue);
     }
 
-    
     /**
      * {@inheritDoc}
      */

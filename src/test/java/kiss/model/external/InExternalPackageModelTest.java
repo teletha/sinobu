@@ -11,10 +11,10 @@ package kiss.model.external;
 
 import java.util.List;
 
+import org.junit.Test;
+
 import kiss.model.Model;
 import kiss.model.Property;
-
-import org.junit.Test;
 
 /**
  * @version 2012/04/08 2:02:36
@@ -26,7 +26,7 @@ public class InExternalPackageModelTest {
         Model model = Model.of(PrivateClass.class);
         assert model != null;
 
-        List<Property> list = model.properties;
+        List<Property> list = model.properties();
         assert 1 == list.size();
     }
 

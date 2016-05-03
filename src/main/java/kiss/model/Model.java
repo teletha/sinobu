@@ -73,7 +73,7 @@ public class Model<M> {
     public final String name;
 
     /** The unmodifiable properties list of this object model. */
-    public List<Property> properties = Collections.EMPTY_LIST;
+    private List<Property> properties = Collections.EMPTY_LIST;
 
     /** The built-in codec. */
     private Decoder decoder;
@@ -310,15 +310,6 @@ public class Model<M> {
     }
 
     /**
-     * Check whether this object model is Collection Model or not.
-     * 
-     * @return A result.
-     */
-    public boolean isCollection() {
-        return false;
-    }
-
-    /**
      * Find the property which has the specified name in this object model. If the suitable property
      * is not found, <code>null</code> is returned.
      * 
@@ -337,6 +328,17 @@ public class Model<M> {
 
         // API definition
         return null;
+    }
+
+    /**
+     * <p>
+     * List up all properties.
+     * </p>
+     * 
+     * @return
+     */
+    public List<Property> properties() {
+        return this.properties;
     }
 
     /**
@@ -392,8 +394,7 @@ public class Model<M> {
      * 
      * @param object A object as source. This value must not be <code>null</code>,
      * @param property A property. This value must not be <code>null</code>,
-     * @param value A new property value that you want to set. This value accepts
-     *            <code>null</code>.
+     * @param value A new property value that you want to set. This value accepts <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public void set(M object, Property property, Object value) {

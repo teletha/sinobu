@@ -125,7 +125,7 @@ public class ModelTest {
         property = model.property("string");
         assert property != null;
 
-        assert 2 == model.properties.size();
+        assert 2 == model.properties().size();
     }
 
     @Test
@@ -139,8 +139,7 @@ public class ModelTest {
         model = property.model;
         assert model != null;
         assert Map.class == model.type;
-        assert 0 == model.properties.size();
-        assert true == model.isCollection();
+        assert 0 == model.properties().size();
         assert model.decoder() == null;
 
         property = model.property("test");
@@ -154,10 +153,10 @@ public class ModelTest {
     @Test
     public void fieldProperty() {
         Model<FieldProperty> model = Model.of(FieldProperty.class);
-        assert 2 == model.properties.size();
+        assert 2 == model.properties().size();
 
-        Property string = model.properties.get(0);
-        Property generic = model.properties.get(1);
+        Property string = model.properties().get(0);
+        Property generic = model.properties().get(1);
         assert string.model.type == String.class;
         assert generic.model.type == Object.class;
     }
@@ -165,10 +164,10 @@ public class ModelTest {
     @Test
     public void fieldGenericProperty() {
         Model<GenericFieldProperty> model = Model.of(GenericFieldProperty.class);
-        assert 2 == model.properties.size();
+        assert 2 == model.properties().size();
 
-        Property string = model.properties.get(0);
-        Property generic = model.properties.get(1);
+        Property string = model.properties().get(0);
+        Property generic = model.properties().get(1);
         assert string.model.type == String.class;
         assert generic.model.type == List.class;
     }
@@ -176,12 +175,12 @@ public class ModelTest {
     @Test
     public void fxPropertyAtFieldProperty() {
         Model<FxPropertyAtField> model = Model.of(FxPropertyAtField.class);
-        assert model.properties.size() == 4;
+        assert model.properties().size() == 4;
 
-        Property integer = model.properties.get(0);
-        Property string = model.properties.get(1);
-        Property list = model.properties.get(2);
-        Property map = model.properties.get(3);
+        Property integer = model.properties().get(0);
+        Property string = model.properties().get(1);
+        Property list = model.properties().get(2);
+        Property map = model.properties().get(3);
         assert integer.model.type == Integer.class;
         assert string.model.type == String.class;
         assert list.model.type == ObservableList.class;
@@ -205,7 +204,7 @@ public class ModelTest {
         Model model = Model.of(ProtectedAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties;
+        List<Property> list = model.properties();
         assert 3 == list.size();
 
         ProtectedAccessor accessor = I.make(ProtectedAccessor.class);
@@ -232,8 +231,7 @@ public class ModelTest {
         model = property.model;
         assert model != null;
         assert Map.class == model.type;
-        assert 0 == model.properties.size();
-        assert true == model.isCollection();
+        assert 0 == model.properties().size();
         assert model.decoder() == null;
 
         property = model.property("1");
@@ -258,8 +256,7 @@ public class ModelTest {
         model = property.model;
         assert model != null;
         assert Map.class == model.type;
-        assert 0 == model.properties.size();
-        assert !model.isCollection();
+        assert 0 == model.properties().size();
         assert model.decoder() == null;
     }
 
@@ -475,7 +472,7 @@ public class ModelTest {
         Model model = Model.of(OnlyGetter.class);
         assert model != null;
 
-        List<Property> list = model.properties;
+        List<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -487,7 +484,7 @@ public class ModelTest {
         Model model = Model.of(OnlySetter.class);
         assert model != null;
 
-        List<Property> list = model.properties;
+        List<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -499,7 +496,7 @@ public class ModelTest {
         Model model = Model.of(FinalAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties;
+        List<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -511,7 +508,7 @@ public class ModelTest {
         Model model = Model.of(OverrideFinalAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties;
+        List<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -523,7 +520,7 @@ public class ModelTest {
         Model model = Model.of(StaticAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties;
+        List<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -533,7 +530,7 @@ public class ModelTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable01() {
         Model model = Model.of(Person.class);
-        List<Property> properties = model.properties;
+        List<Property> properties = model.properties();
 
         properties.clear();
     }
@@ -544,7 +541,7 @@ public class ModelTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable02() {
         Model model = Model.of(Person.class);
-        List<Property> properties = model.properties;
+        List<Property> properties = model.properties();
 
         properties.remove(0);
     }
@@ -555,7 +552,7 @@ public class ModelTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable03() {
         Model model = Model.of(Person.class);
-        List<Property> properties = model.properties;
+        List<Property> properties = model.properties();
 
         properties.add(new Property(model, "test"));
     }
@@ -566,7 +563,7 @@ public class ModelTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable04() {
         Model model = Model.of(Person.class);
-        List<Property> properties = model.properties;
+        List<Property> properties = model.properties();
 
         properties.iterator().remove();
     }
@@ -577,7 +574,7 @@ public class ModelTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testUnmodifiable05() {
         Model model = Model.of(Person.class);
-        List<Property> properties = model.properties;
+        List<Property> properties = model.properties();
 
         Collections.sort(properties);
     }

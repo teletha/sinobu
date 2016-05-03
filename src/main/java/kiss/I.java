@@ -2043,20 +2043,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         if (js instanceof Map) {
             Map<String, Object> map = (Map) js;
 
-            // list up all properties
-            List<Property> properties = new ArrayList();
+            List<Property> properties = new ArrayList(model.properties());
 
-            if (model.isCollection()) {
+            if (properties.isEmpty()) {
                 for (String id : map.keySet()) {
                     Property property = model.property(id);
 
                     if (property != null) {
-                        properties.add(property);
-                    }
-                }
-            } else {
-                for (Property property : model.properties) {
-                    if (property.isTransient == false) {
                         properties.add(property);
                     }
                 }
