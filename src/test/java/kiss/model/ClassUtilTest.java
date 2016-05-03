@@ -380,23 +380,6 @@ public class ClassUtilTest {
     }
 
     /**
-     * Wrap class.
-     */
-    @Test
-    public void testWrap() {
-        assert Integer.class == ClassUtil.wrap(int.class);
-        assert Long.class == ClassUtil.wrap(long.class);
-        assert Float.class == ClassUtil.wrap(float.class);
-        assert Double.class == ClassUtil.wrap(double.class);
-        assert Boolean.class == ClassUtil.wrap(boolean.class);
-        assert Byte.class == ClassUtil.wrap(byte.class);
-        assert Short.class == ClassUtil.wrap(short.class);
-        assert Character.class == ClassUtil.wrap(char.class);
-        assert String.class == ClassUtil.wrap(String.class);
-        assert null == ClassUtil.wrap(null);
-    }
-
-    /**
      * DOCUMENT.
      * 
      * @version 2008/06/20 15:51:49

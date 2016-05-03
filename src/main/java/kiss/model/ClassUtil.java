@@ -38,14 +38,6 @@ import kiss.Table;
 @SuppressWarnings("unchecked")
 public final class ClassUtil {
 
-    /** The list of primitive classes. (except for void type) */
-    public static final Class[] PRIMITIVES = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
-            char.class, void.class};
-
-    /** The list of wrapper classes. (except for void type) */
-    public static final Class[] WRAPPERS = {Boolean.class, Integer.class, Long.class, Float.class, Double.class, Byte.class, Short.class,
-            Character.class, Void.class};
-
     /**
      * Avoid construction.
      */
@@ -263,26 +255,5 @@ public final class ClassUtil {
             }
         }
         return parameters;
-    }
-
-    /**
-     * <p>
-     * Return a non-primitive {@link java.lang.Class} of the specified class object.
-     * <code>null</code> will be return <code>null</code>.
-     * </p>
-     * 
-     * @param clazz A class object to convert to non-primitive class.
-     * @return A non-primitive class object.
-     */
-    public static Class wrap(Class clazz) {
-        // check primitive classes
-        for (int i = 0; i < PRIMITIVES.length; i++) {
-            if (PRIMITIVES[i] == clazz) {
-                return WRAPPERS[i];
-            }
-        }
-
-        // the specified class is not primitive
-        return clazz;
     }
 }

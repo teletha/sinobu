@@ -328,6 +328,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     /** The xpath evaluator. */
     static final XPath xpath;
 
+    /** The list of primitive classes. (except for void type) */
+    private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
+            char.class, void.class};
+
+    /** The list of wrapper classes. (except for void type) */
+    private static final Class[] wrappers = {Boolean.class, Integer.class, Long.class, Float.class, Double.class, Byte.class, Short.class,
+            Character.class, Void.class};
+
     // initialization
     static {
         // built-in lifestyles
@@ -1387,7 +1395,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
         if (clazz.isPrimitive()) {
             if (clazz != Void.TYPE) {
-                Type wrapper = Type.getType(ClassUtil.wrap(clazz));
+                Type wrapper = Type.getType(wrap(clazz));
                 mv.visitTypeInsn(CHECKCAST, wrapper.getInternalName());
                 mv.visitMethodInsn(INVOKEVIRTUAL, wrapper.getInternalName(), clazz.getName() + "Value", "()" + type.getDescriptor(), false);
             }
@@ -1407,7 +1415,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      */
     private static void wrap(Class clazz, MethodVisitor mv) {
         if (clazz.isPrimitive() && clazz != Void.TYPE) {
-            Type wrapper = Type.getType(ClassUtil.wrap(clazz));
+            Type wrapper = Type.getType(wrap(clazz));
             mv.visitMethodInsn(INVOKESTATIC, wrapper
                     .getInternalName(), "valueOf", "(" + Type.getType(clazz).getDescriptor() + ")" + wrapper.getDescriptor(), false);
         }
@@ -2158,14 +2166,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
     /**
      * <p>
-     * Helper method to find the class by the specified fully qualified class name.
+     * Find the class by the specified fully qualified class name.
      * </p>
      * 
      * @param fqcn A fully qualified class name to want.
      * @return The specified class.
      */
     public static Class type(String fqcn) {
-        for (Class clazz : ClassUtil.PRIMITIVES) {
+        for (Class clazz : primitives) {
             if (clazz.getName().equals(fqcn)) {
                 return clazz;
             }
@@ -2231,6 +2239,27 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      */
     public static List<Path> walkDirectory(Path start, BiPredicate<Path, BasicFileAttributes> filter) {
         return new Visitor(start, null, 4, filter).walk();
+    }
+
+    /**
+     * <p>
+     * Return a non-primitive {@link Class} of the specified {@link Class} object. <code>null</code>
+     * will be return <code>null</code>.
+     * </p>
+     * 
+     * @param type A {@link Class} object to convert to non-primitive class.
+     * @return A non-primitive {@link Class} object.
+     */
+    public static Class wrap(Class type) {
+        // check primitive classes
+        for (int i = 0; i < primitives.length; i++) {
+            if (primitives[i] == type) {
+                return wrappers[i];
+            }
+        }
+
+        // the specified class is not primitive
+        return type;
     }
 
     /**
