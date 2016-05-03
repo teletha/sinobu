@@ -22,6 +22,7 @@ import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -442,6 +443,81 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             association.put(type, value = I.make(type));
         }
         return (V) value;
+    }
+
+    /**
+     * <p>
+     * Collect all annotated methods and thire annotations.
+     * </p>
+     * 
+     * @param clazz A target class.
+     * @return A table of method and annnotations.
+     */
+    public static Table<Method, Annotation> collectAnnotationsOf(Class clazz) {
+        Table<Method, Annotation> table = new Table();
+
+        for (Class type : collectTypesOf(clazz)) {
+            for (Method method : type.getDeclaredMethods()) {
+                // exclude the method which is created by compiler
+                // exclude the private method which is not declared in the specified class
+                if (!method.isBridge() && !method
+                        .isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
+                    Annotation[] annotations = method.getAnnotations();
+
+                    if (annotations.length != 0) {
+                        List<Annotation> list = new ArrayList();
+
+                        // disclose container annotation
+                        for (Annotation annotation : annotations) {
+                            try {
+                                Class annotationType = annotation.annotationType();
+                                Method value = annotationType.getMethod("value");
+                                Class returnType = value.getReturnType();
+
+                                if (returnType.isArray()) {
+                                    Class<?> componentType = returnType.getComponentType();
+                                    Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
+
+                                    if (repeatable != null && repeatable.value() == annotationType) {
+                                        value.setAccessible(true);
+
+                                        Collections.addAll(list, (Annotation[]) value.invoke(annotation));
+                                        continue;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                // do nothing
+                            }
+                            list.add(annotation);
+                        }
+
+                        // check method overriding
+                        for (Method candidate : table.keySet()) {
+                            if (candidate.getName().equals(method.getName()) && Arrays
+                                    .deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
+                                method = candidate; // detect overriding
+                                break;
+                            }
+                        }
+
+                        add: for (Annotation annotation : list) {
+                            Class annotationType = annotation.annotationType();
+
+                            if (!annotationType.isAnnotationPresent(Repeatable.class)) {
+                                for (Annotation item : table.get(method)) {
+                                    if (item.annotationType() == annotationType) {
+                                        continue add;
+                                    }
+                                }
+                            }
+
+                            table.push(method, annotation);
+                        }
+                    }
+                }
+            }
+        }
+        return table;
     }
 
     /**
@@ -1069,7 +1145,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         // If this model is non-private or final class, we can extend it for interceptor
         // mechanism.
         if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
-            Table<Method, Annotation> interceptables = ClassUtil.getAnnotations(actualClass);
+            Table<Method, Annotation> interceptables = I.collectAnnotationsOf(actualClass);
 
             // Enhance the actual model class if needed.
             if (!interceptables.isEmpty()) {
