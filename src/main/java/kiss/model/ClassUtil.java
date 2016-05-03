@@ -65,6 +65,7 @@ public final class ClassUtil {
      * @param clazz A sample class.
      * @return A class archive (e.g. jar file, classes directory) or <code>null</code>.
      */
+    @Deprecated
     public static Path getArchive(Class clazz) {
         // retrieve code source of this sample class
         CodeSource source = clazz.getProtectionDomain().getCodeSource();

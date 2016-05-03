@@ -37,7 +37,7 @@ import javafx.beans.value.WritableValue;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
-import kiss.Variable;
+import kiss.ClassVariable;
 import kiss.Ⅲ;
 
 /**
@@ -51,7 +51,7 @@ import kiss.Ⅲ;
 public class Model<M> {
 
     /** The model repository. */
-    static final Variable<Model> models = new Variable();
+    static final ClassVariable<Model> models = new ClassVariable();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class<M> type;

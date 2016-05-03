@@ -24,7 +24,7 @@ import jdk.internal.org.objectweb.asm.Type;
 import kiss.I;
 import kiss.Manageable;
 import kiss.Singleton;
-import kiss.Variable;
+import kiss.ClassVariable;
 
 /**
  * @version 2008/06/18 8:42:37
@@ -33,7 +33,7 @@ import kiss.Variable;
 public class SinobuExperimental {
 
     /** The holder for lambda parameter names. */
-    private static final Variable<String> methods = new Variable();
+    private static final ClassVariable<String> methods = new ClassVariable();
 
     /** The accessible internal method for lambda info. */
     private static final Method findConstants;

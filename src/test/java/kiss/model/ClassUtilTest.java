@@ -12,8 +12,6 @@ package kiss.model;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,20 +39,6 @@ public class ClassUtilTest {
     static {
         // dirty code to load I class at first
         assert I.$loader instanceof ClassLoader;
-    }
-
-    @Test
-    public void getArchive() throws Exception {
-        Path archive = ClassUtil.getArchive(ClassUtilTest.class);
-        assert archive != null;
-        assert Files.exists(archive);
-        assert Files.isDirectory(archive);
-    }
-
-    @Test
-    public void getArchiveByJDKClass() throws Exception {
-        Path archive = ClassUtil.getArchive(Map.class);
-        assert archive == null;
     }
 
     @Test

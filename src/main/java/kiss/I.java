@@ -40,6 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -906,6 +907,24 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
     /**
      * <p>
+     * Locate the class archive (e.g. jar file, classes directory) by the specified sample class. If
+     * the sample class belongs to system classloader (e.g. {@link String}), <code>null</code> will
+     * be returned.
+     * </p>
+     * 
+     * @param clazz A sample class.
+     * @return A class archive (e.g. jar file, classes directory) or <code>null</code>.
+     */
+    public static Path locate(Class clazz) {
+        // retrieve code source of this sample class
+        CodeSource source = clazz.getProtectionDomain().getCodeSource();
+
+        // API definition
+        return (source == null) ? null : locate(source.getLocation());
+    }
+
+    /**
+     * <p>
      * Creates a new abstract file somewhere beneath the system's temporary directory (as defined by
      * the <code>java.io.tmpdir</code> system property).
      * </p>
@@ -1246,10 +1265,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL,
-                    className.substring(0, className.length() - 1),
-                    method.getName(),
-                    methodType.getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
+                    .getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -2430,7 +2447,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static ClassLoader load(Class classPath, boolean filter) {
-        Path path = ClassUtil.getArchive(classPath);
+        Path path = locate(classPath);
 
         return filter ? modules.load(path, classPath.getPackage().getName().replace('.', '/')) : load(path);
     }

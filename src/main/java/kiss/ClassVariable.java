@@ -11,13 +11,13 @@ package kiss;
 
 /**
  * <p>
- * {@link Variable} provides the GC-aware variable which is associated with the specific
+ * {@link ClassVariable} provides the GC-aware variable which is associated with the specific
  * {@link Class}.
  * </p>
  * 
  * @version 2014/07/24 9:11:42
  */
-public class Variable<T> extends ClassValue {
+public class ClassVariable<T> extends ClassValue {
 
     /**
      * {@inheritDoc}
