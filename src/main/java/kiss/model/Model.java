@@ -42,23 +42,10 @@ import kiss.Ⅲ;
 
 /**
  * <p>
- * <code>Model</code> is the representation of {@link Class} in Sinobu. This class specializes in
- * property. All Models can be classified into three types.
+ * {@link Model} is the advanced representation of {@link Class} in Sinobu.
  * </p>
- * <dl>
- * <dt>Attribute Model</dt>
- * <dd>This is a model which has no property at all. You can check whether a model is attribute or
- * not by using that {@link #getCodec()} method returns <code>null</code> or not. Normaly,
- * {@link Model} class represents this model type.</dd>
- * <dt>Collection Model</dt>
- * <dd>This is a model whose all.properties indicate same type of Model (e.g. List, Map, Attribute).
- * You can check whether a model is collection or not by using {@link #isCollection()} method.</dd>
- * <dt>Basic Model</dt>
- * <dd>This is a model which has some propertis and indicates various type of Model. All models
- * which is neither Immutable nor Collection are Basic.</dd>
- * </dl>
  * 
- * @version 2014/03/11 13:52:21
+ * @version 2016/05/03 16:53:09
  */
 @SuppressWarnings("unchecked")
 public class Model<M> {
