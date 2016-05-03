@@ -528,14 +528,14 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param clazz A target class. <code>null</code> will be return the empty set.
      * @return A set of classes, with predictable bottom-up iteration order.
      */
-    public static Set<Class<?>> collectTypesOf(Class clazz) {
+    public static Set<Class> collectTypesOf(Class clazz) {
         // check null
         if (clazz == null) {
             return Collections.EMPTY_SET;
         }
 
         // container
-        Set<Class<?>> set = new LinkedHashSet(); // order is important
+        Set<Class> set = new LinkedHashSet(); // order is important
 
         // add current class
         set.add(clazz);
