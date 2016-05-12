@@ -130,6 +130,7 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
     public boolean push(K key, V value) {
         // The cost of creating new CopyOnWriteArrayList instance is pretty low, so we may
         // create it each time.
+        ((CopyOnWriteArrayList<V>) computeIfAbsent(key, k -> new CopyOnWriteArrayList())).addIfAbsent(value);
         List list = putIfAbsent(key, new CopyOnWriteArrayList());
 
         // register value if absent

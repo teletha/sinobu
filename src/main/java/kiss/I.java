@@ -46,6 +46,7 @@ import java.security.ProtectionDomain;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -453,7 +454,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param clazz A target class.
      * @return A table of method and annnotations.
      */
-    public static Table<Method, Annotation> collectAnnotationsOf(Class clazz) {
+    public static Map<Method, List<Annotation>> collectAnnotationsOf(Class clazz) {
         Table<Method, Annotation> table = new Table();
 
         for (Class type : collectTypesOf(clazz)) {
@@ -1145,7 +1146,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         // If this model is non-private or final class, we can extend it for interceptor
         // mechanism.
         if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
-            Table<Method, Annotation> interceptables = I.collectAnnotationsOf(actualClass);
+            Map<Method, List<Annotation>> interceptables = collectAnnotationsOf(actualClass);
 
             // Enhance the actual model class if needed.
             if (!interceptables.isEmpty()) {
@@ -1204,7 +1205,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param interceptables Information of interceptable methods.
      * @return A generated {@link Class} object.
      */
-    private static synchronized Class define(Class model, Table interceptables) {
+    private static synchronized Class define(Class model, Map<Method, List<Annotation>> interceptables) {
         model = Model.of(model).type;
 
         // Compute fully qualified class name for the generated class.
@@ -1255,7 +1256,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * model.
      * </p>
      */
-    private static void write(ClassVisitor cv, Class model, String className, Table<Method, Annotation> interceptables) {
+    private static void write(ClassVisitor cv, Class model, String className, Map<Method, List<Annotation>> interceptables) {
         Type type = Type.getType(model);
 
         // ================================================
@@ -1382,8 +1383,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
-                    .getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL,
+                    className.substring(0, className.length() - 1),
+                    method.getName(),
+                    methodType.getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
