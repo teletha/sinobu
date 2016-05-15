@@ -41,7 +41,7 @@ public class Prototype<M> implements Lifestyle<M> {
      */
     protected Prototype(Class<M> modelClass) {
         // find default constructor as instantiator
-        instantiator = ClassUtil.getMiniConstructor(modelClass);
+        instantiator = I.collectConstructorsOf(modelClass)[0];
         params = instantiator.getParameterTypes();
 
         // We can safely call the method 'newInstance()' because the generated class has

@@ -9,7 +9,6 @@
  */
 package kiss.model;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -32,32 +31,6 @@ public final class ClassUtil {
      * Avoid construction.
      */
     private ClassUtil() {
-    }
-
-    /**
-     * <p>
-     * Helper method to find the constructor which has minimum parameters. If the given class is
-     * interface, primitive types, array class or <code>void</code>, <code>null</code> will be
-     * return.
-     * </p>
-     * 
-     * @param <T> A class type.
-     * @param clazz A target class.
-     * @return A minimum constructor or <code>null</code>.
-     */
-    public static <T> Constructor<T> getMiniConstructor(Class<T> clazz) {
-        // the candidate of minimum constructor
-        Constructor mini = null;
-
-        for (Constructor constructor : clazz.getDeclaredConstructors()) {
-            // test parameter size
-            if (mini == null || constructor.getParameterTypes().length < mini.getParameterTypes().length) {
-                mini = constructor;
-            }
-        }
-
-        // API definition
-        return mini;
     }
 
     /**

@@ -46,10 +46,11 @@ import java.security.ProtectionDomain;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -344,6 +345,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         // built-in lifestyles
         modules.set(List.class, new Prototype(ArrayList.class));
         modules.set(Map.class, new Prototype(HashMap.class));
+        modules.set(Set.class, new Prototype(HashSet.class));
         modules.set(Prototype.class, new Prototype(Prototype.class));
         modules.set(ListProperty.class, () -> {
             return new SimpleListProperty(FXCollections.observableArrayList());
@@ -454,7 +456,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param clazz A target class.
      * @return A table of method and annnotations.
      */
-    public static Map<Method, List<Annotation>> collectAnnotationsOf(Class clazz) {
+    public static Table<Method, Annotation> collectAnnotationsOf(Class clazz) {
         Table<Method, Annotation> table = new Table();
 
         for (Class type : collectTypesOf(clazz)) {
@@ -519,6 +521,23 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             }
         }
         return table;
+    }
+
+    /**
+     * <p>
+     * > Collect all constructors which are defined in the specified {@link Class}. If the given
+     * class is interface, primitive types, array class or <code>void</code>,
+     * <code>empty array</code> will be return.
+     * </p>
+     * 
+     * @param <T> A class type.
+     * @param clazz A target class.
+     * @return A collected constructors.
+     */
+    public static <T> Constructor<T>[] collectConstructorsOf(Class<T> clazz) {
+        Constructor[] constructors = clazz.getDeclaredConstructors();
+        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(Constructor::getParameterCount));
+        return constructors;
     }
 
     /**
@@ -1292,7 +1311,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         // Define Constructor
         // -----------------------------------------------------------------------------------
         // decide constructor
-        Constructor constructor = ClassUtil.getMiniConstructor(model);
+        Constructor constructor = collectConstructorsOf(model)[0];
         String descriptor = Type.getConstructorDescriptor(constructor);
 
         // public GeneratedClass( param1, param2 ) { super(param1, param2); ... }
@@ -1383,10 +1402,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL,
-                    className.substring(0, className.length() - 1),
-                    method.getName(),
-                    methodType.getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
+                    .getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance

@@ -40,45 +40,6 @@ public class ClassUtilTest {
         assert I.$loader instanceof ClassLoader;
     }
 
-    /**
-     * Test none constructor class.
-     */
-    @Test
-    public void testGetMiniConstructor01() {
-        Constructor constructor = ClassUtil.getMiniConstructor(NoneConstructor.class);
-        assert constructor != null;
-    }
-
-    /**
-     * Test one constructor class.
-     */
-    @Test
-    public void testGetMiniConstructor02() {
-        Constructor constructor = ClassUtil.getMiniConstructor(OneConstructor.class);
-        assert constructor != null;
-        assert 1 == constructor.getParameterTypes().length;
-    }
-
-    /**
-     * Test two constructor class.
-     */
-    @Test
-    public void testGetMiniConstructor03() {
-        Constructor constructor = ClassUtil.getMiniConstructor(TwoConstructor.class);
-        assert constructor != null;
-        assert 1 == constructor.getParameterTypes().length;
-    }
-
-    /**
-     * Test two constructor class.
-     */
-    @Test
-    public void testGetMiniConstructor04() {
-        Constructor constructor = ClassUtil.getMiniConstructor(HashMap.class);
-        assert constructor != null;
-        assert 0 == constructor.getParameterTypes().length;
-    }
-
     @Test
     public void parameterIsVariable() {
         Type[] parameters = ClassUtil.getParameter(ArrayList.class, List.class);
@@ -275,7 +236,7 @@ public class ClassUtilTest {
 
     @Test
     public void constructorHasParameterClass() {
-        Constructor constructor = ClassUtil.getMiniConstructor(ParameterClassConstructor.class);
+        Constructor constructor = I.collectConstructorsOf(ParameterClassConstructor.class)[0];
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
@@ -283,7 +244,7 @@ public class ClassUtilTest {
 
     @Test
     public void constructorHasExtendableByClass() {
-        Constructor constructor = ClassUtil.getMiniConstructor(ExtensibleByClassConstructor.class);
+        Constructor constructor = I.collectConstructorsOf(ExtensibleByClassConstructor.class)[0];
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
         assert 1 == types.length;
         assert Integer.class == types[0];
@@ -291,7 +252,7 @@ public class ClassUtilTest {
 
     @Test
     public void constructorHasArrayParameter() {
-        Constructor constructor = ClassUtil.getMiniConstructor(ArrayParameterConstructor.class);
+        Constructor constructor = I.collectConstructorsOf(ArrayParameterConstructor.class)[0];
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String[].class == types[0];
@@ -299,7 +260,7 @@ public class ClassUtilTest {
 
     @Test
     public void constructorHasMultipleParameter() {
-        Constructor constructor = ClassUtil.getMiniConstructor(MultipleParameterConstructor.class);
+        Constructor constructor = I.collectConstructorsOf(MultipleParameterConstructor.class)[0];
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
         assert 2 == types.length;
         assert Readable.class == types[0];
@@ -308,7 +269,7 @@ public class ClassUtilTest {
 
     @Test
     public void constructorHasOverlapParameter() {
-        Constructor constructor = ClassUtil.getMiniConstructor(ImplicitParameterConstructor.class);
+        Constructor constructor = I.collectConstructorsOf(ImplicitParameterConstructor.class)[0];
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
         assert 1 == types.length;
         assert Map.class == types[0];
@@ -316,7 +277,7 @@ public class ClassUtilTest {
 
     @Test
     public void constructorHasOverlappedParameter() {
-        Constructor constructor = ClassUtil.getMiniConstructor(ImplicitParameterConstructor.class);
+        Constructor constructor = I.collectConstructorsOf(ImplicitParameterConstructor.class)[0];
         Type[] types = ClassUtil.getParameter(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
@@ -363,48 +324,6 @@ public class ClassUtilTest {
         Type[] types = ClassUtil.getParameter(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
         assert 1 == types.length;
         assert Student.class == types[0];
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 15:22:45
-     */
-    private static class NoneConstructor {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 15:23:02
-     */
-    private static class OneConstructor {
-
-        /**
-         * Create OneConstructor instance.
-         */
-        private OneConstructor(int i) {
-        }
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 15:24:29
-     */
-    private static class TwoConstructor {
-
-        /**
-         * Create TwoConstructor instance.
-         */
-        private TwoConstructor(int i, String name) {
-        }
-
-        /**
-         * Create TwoConstructor instance.
-         */
-        private TwoConstructor(int i) {
-        }
     }
 
     /**
