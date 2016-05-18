@@ -265,8 +265,8 @@ public class Model<M> {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field
-                                .getGenericType()), field.getName());
+                        Property property = new Property(
+                                of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field.getGenericType()), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;
 
@@ -478,9 +478,9 @@ public class Model<M> {
         if (model == null) {
             // create new model
             if (List.class.isAssignableFrom(modelClass)) {
-                model = new ListModel(modelClass, ClassUtil.getParameter(modelClass, List.class), List.class);
+                model = new ListModel(modelClass, I.collectParametersOf(modelClass, List.class), List.class);
             } else if (Map.class.isAssignableFrom(modelClass)) {
-                model = new MapModel(modelClass, ClassUtil.getParameter(modelClass, Map.class), Map.class);
+                model = new MapModel(modelClass, I.collectParametersOf(modelClass, Map.class), Map.class);
             } else {
                 model = new Model(modelClass);
                 model.init();
@@ -503,7 +503,7 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given model type is null.
      * @see TypeVariable
      */
-    static Model of(Type type, Type base) {
+    public static Model of(Type type, Type base) {
         // class
         if (type instanceof Class) {
             return of((Class) type);
@@ -564,7 +564,7 @@ public class Model<M> {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
-                        return of(ClassUtil.getParameter(base, variable.getGenericDeclaration())[i], base);
+                        return of(I.collectParametersOf(base, variable.getGenericDeclaration())[i], base);
                     }
                 }
             }

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import kiss.model.ClassUtil;
 import kiss.model.Model;
 
 /**
@@ -70,7 +69,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Decoder
     public void load(Class clazz) {
         if (clazz != Modules.class) {
             Object[] types = {I.make(clazz), Object.class};
-            Type[] params = ClassUtil.getParameter(clazz, ClassListener.class);
+            Type[] params = I.collectParametersOf(clazz, ClassListener.class);
 
             if (params.length != 0) {
                 types[1] = params[0];

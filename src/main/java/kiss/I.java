@@ -25,9 +25,12 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.FileLock;
@@ -106,7 +109,6 @@ import jdk.internal.org.objectweb.asm.Handle;
 import jdk.internal.org.objectweb.asm.Label;
 import jdk.internal.org.objectweb.asm.MethodVisitor;
 import jdk.internal.org.objectweb.asm.Type;
-import kiss.model.ClassUtil;
 import kiss.model.Model;
 import kiss.model.Property;
 
@@ -570,6 +572,86 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
         // API definition
         return set;
+    }
+
+    /**
+     * <p>
+     * List up all target types which are implemented or extended by the specified class.
+     * </p>
+     * 
+     * @param type A class type which implements(extends) the specified target interface(class).
+     *            <code>null</code> will be return the zero-length array.
+     * @param target A target type to list up types. <code>null</code> will be return the
+     *            zero-length array.
+     * @return A list of actual types.
+     */
+    public static java.lang.reflect.Type[] collectParametersOf(java.lang.reflect.Type type, GenericDeclaration target) {
+        return collectParametersOf(type, target, type);
+    }
+
+    /**
+     * <p>
+     * List up all target types which are implemented or extended by the specified class.
+     * </p>
+     * 
+     * @param clazz A class type which implements(extends) the specified target interface(class).
+     *            <code>null</code> will be return the zero-length array.
+     * @param target A target type to list up types. <code>null</code> will be return the
+     *            zero-length array.
+     * @param base A base class type.
+     * @return A list of actual types.
+     */
+    private static java.lang.reflect.Type[] collectParametersOf(java.lang.reflect.Type clazz, GenericDeclaration target, java.lang.reflect.Type base) {
+        // check null
+        if (clazz == null || clazz == target) {
+            return new Class[0];
+        }
+
+        // compute actual class
+        Class raw = clazz instanceof Class ? (Class) clazz : Model.of(clazz, base).type;
+
+        // collect all types
+        Set<java.lang.reflect.Type> types = new HashSet();
+        types.add(clazz);
+        types.add(raw.getGenericSuperclass());
+        Collections.addAll(types, raw.getGenericInterfaces());
+
+        // check them all
+        for (java.lang.reflect.Type type : types) {
+            // check ParameterizedType
+            if (type instanceof ParameterizedType) {
+                ParameterizedType param = (ParameterizedType) type;
+
+                // check raw type
+                if (target == param.getRawType()) {
+                    java.lang.reflect.Type[] args = param.getActualTypeArguments();
+
+                    for (int i = 0; i < args.length; i++) {
+                        if (args[i] instanceof TypeVariable) {
+                            args[i] = Model.of(args[i], base).type;
+                        }
+                    }
+                    return args;
+                }
+            }
+        }
+
+        // search from superclass
+        java.lang.reflect.Type[] parameters = collectParametersOf(raw.getGenericSuperclass(), target, base);
+
+        if (parameters.length != 0) {
+            return parameters;
+        }
+
+        // search from interfaces
+        for (java.lang.reflect.Type type : raw.getInterfaces()) {
+            parameters = collectParametersOf(type, target, base);
+
+            if (parameters.length != 0) {
+                return parameters;
+            }
+        }
+        return parameters;
     }
 
     /**
@@ -1402,8 +1484,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
-                    .getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL,
+                    className.substring(0, className.length() - 1),
+                    method.getName(),
+                    methodType.getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -2691,7 +2775,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.push(extensionPoint, extension);
 
                 // register extension key
-                java.lang.reflect.Type[] params = ClassUtil.getParameter(extension, extensionPoint);
+                java.lang.reflect.Type[] params = collectParametersOf(extension, extensionPoint);
 
                 if (params.length != 0 && params[0] != Object.class) {
                     Class clazz = (Class) params[0];
@@ -2728,7 +2812,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 extensions.pull(extensionPoint, extension);
 
                 // register extension key
-                java.lang.reflect.Type[] params = ClassUtil.getParameter(extension, extensionPoint);
+                java.lang.reflect.Type[] params = collectParametersOf(extension, extensionPoint);
 
                 if (params.length != 0 && params[0] != Object.class) {
                     Class clazz = (Class) params[0];

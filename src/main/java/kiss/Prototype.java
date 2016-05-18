@@ -11,8 +11,6 @@ package kiss;
 
 import java.lang.reflect.Constructor;
 
-import kiss.model.ClassUtil;
-
 /**
  * <p>
  * This lifestyle creates a new instance every time demanded. This is default lifestyle in Sinobu.
@@ -74,8 +72,7 @@ public class Prototype<M> implements Lifestyle<M> {
 
             for (int i = 0; i < params.length; i++) {
                 if (this.params[i] == Lifestyle.class) {
-                    params[i] = I
-                            .makeLifestyle((Class) ClassUtil.getParameter(instantiator.getGenericParameterTypes()[i], Lifestyle.class)[0]);
+                    params[i] = I.makeLifestyle((Class) I.collectParametersOf(instantiator.getGenericParameterTypes()[i], Lifestyle.class)[0]);
                 } else if (this.params[i] == Class.class) {
                     params[i] = I.dependencies.get().peekLast();
                 } else {
