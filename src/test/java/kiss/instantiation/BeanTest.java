@@ -12,19 +12,18 @@ package kiss.instantiation;
 import java.io.File;
 import java.util.Date;
 
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
+
+import org.junit.Test;
 
 import kiss.I;
 import kiss.sample.bean.ArrayBean;
 import kiss.sample.bean.BuiltinBean;
+import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
-import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.SchoolEnum;
-
-import org.junit.Test;
 
 /**
  * @version 2014/07/22 12:15:41

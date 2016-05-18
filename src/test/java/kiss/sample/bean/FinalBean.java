@@ -9,8 +9,6 @@
  */
 package kiss.sample.bean;
 
-import kiss.sample.modifier.Final;
-
 /**
  * @version 2011/12/09 20:53:25
  */

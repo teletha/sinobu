@@ -58,8 +58,8 @@ public interface Accessor<M, V> {
      * Compose {@link Accessor}.
      * </p>
      * 
-     * @param lens
-     * @return
+     * @param lens A next {@link Accessor}.
+     * @return A composed {@link Accessor}.
      */
     public default <P> Accessor<M, P> then(Accessor<V, P> lens) {
         return new Accessor<M, P>() {
@@ -91,9 +91,9 @@ public interface Accessor<M, V> {
      * Helper function to create lens easily.
      * </p>
      * 
-     * @param getter
-     * @param setter
-     * @return
+     * @param getter A value retriever.
+     * @param setter A value associator.
+     * @return A created {@link Accessor}.
      */
     public static <M, V> Accessor<M, V> of(Function<M, V> getter, BiFunction<M, V, M> setter) {
         return new Accessor<M, V>() {
