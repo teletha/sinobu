@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -73,7 +74,10 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
      */
     @Override
     public List<V> get(Object key) {
-        return computeIfAbsent((K) key, k -> new CopyOnWriteArrayList());
+        List<V> list = super.get(key);
+
+        // API definition
+        return list == null ? Collections.EMPTY_LIST : list;
     }
 
     /**
@@ -124,6 +128,10 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
      * @throws NullPointerException If the specified key is <code>null</code>.
      */
     public Table<K, V> push(K key, V value) {
+        // The cost of creating new CopyOnWriteArrayList instance is pretty low, so we may
+        // create it each time.
+        putIfAbsent(key, new CopyOnWriteArrayList());
+
         ((CopyOnWriteArrayList) get(key)).addIfAbsent(value);
 
         return this;
