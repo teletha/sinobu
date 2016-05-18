@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -74,10 +73,7 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
      */
     @Override
     public List<V> get(Object key) {
-        List<V> list = super.get(key);
-
-        // API definition
-        return list == null ? Collections.EMPTY_LIST : list;
+        return computeIfAbsent((K) key, k -> new CopyOnWriteArrayList());
     }
 
     /**
@@ -127,38 +123,11 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
      * @param value A value to store in the multimap.
      * @throws NullPointerException If the specified key is <code>null</code>.
      */
-    public boolean push(K key, V value) {
-        // The cost of creating new CopyOnWriteArrayList instance is pretty low, so we may
-        // create it each time.
-        ((CopyOnWriteArrayList<V>) computeIfAbsent(key, k -> new CopyOnWriteArrayList())).addIfAbsent(value);
-        List list = putIfAbsent(key, new CopyOnWriteArrayList());
-
-        // register value if absent
+    public Table<K, V> push(K key, V value) {
         ((CopyOnWriteArrayList) get(key)).addIfAbsent(value);
 
-        return list == null;
+        return this;
     }
-
-    // /**
-    // * <p>
-    // * Stores a collection of values with the same key.
-    // * </p>
-    // *
-    // * @param key A key to store in the multimap.
-    // * @param values Values to store in the multimap.
-    // */
-    // public void putAll(K key, Collection<? extends V> values) {
-    // // The cost of creating new CopyOnWriteArrayList instance is pretty low, so we may
-    // // create it each time.
-    // CopyOnWriteArrayList<V> list = putIfAbsent(key, new CopyOnWriteArrayList());
-    //
-    // if (list == null) {
-    // list = get(key);
-    // }
-    //
-    // // register value if absent
-    // list.addAllAbsent(values);
-    // }
 
     /**
      * <p>
@@ -168,7 +137,7 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
      * @param key A key of entry to remove from the multimap.
      * @param value A value of entry to remove the multimap
      */
-    public boolean pull(K key, V value) {
+    public Table<K, V> pull(K key, V value) {
         List list = get(key);
 
         // unregister
@@ -177,30 +146,7 @@ public class Table<K, V> extends ConcurrentHashMap<K, List<V>> {
         // remove if the specified property's pool is empty
         if (list.size() == 0) {
             remove(key, list);
-            return true;
-        } else {
-            return false;
         }
+        return this;
     }
-
-    // /**
-    // * <p>
-    // * Removes a key-value pair from the multimap.
-    // * </p>
-    // *
-    // * @param key A key of entry to remove from the multimap.
-    // * @param value A value of entry to remove the multimap
-    // */
-    // public void removeAll(K key, Class clazz) {
-    // CopyOnWriteArrayList<V> list = get(key);
-    //
-    // // unregister
-    // if (list != null) {
-    // for (V value : list) {
-    // if (value.getClass() == clazz) {
-    // list.remove(value);
-    // }
-    // }
-    // }
-    // }
 }
