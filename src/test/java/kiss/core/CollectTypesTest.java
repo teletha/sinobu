@@ -23,14 +23,14 @@ public class CollectTypesTest {
 
     @Test
     public void collect() {
-        Set<Class> classes = I.collectTypesOf(ExtendClass.class);
+        Set<Class> classes = I.collectTypes(ExtendClass.class);
         assert 11 == classes.size();
         assert classes.contains(ExtendClass.class);
     }
 
     @Test
     public void nullParameter() {
-        Set<Class> classes = I.collectTypesOf(null);
+        Set<Class> classes = I.collectTypes(null);
         assert 0 == classes.size();
     }
 

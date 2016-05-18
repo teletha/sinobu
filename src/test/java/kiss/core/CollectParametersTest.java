@@ -42,14 +42,14 @@ public class CollectParametersTest {
 
     @Test
     public void parameterIsVariable() {
-        Type[] parameters = I.collectParametersOf(ArrayList.class, List.class);
+        Type[] parameters = I.collectParameters(ArrayList.class, List.class);
         assert parameters.length == 1;
         assert parameters[0] == Object.class;
     }
 
     @Test
     public void parameterIsVariableOnInterface() {
-        Type[] parameters = I.collectParametersOf(javafx.beans.property.Property.class, ObservableValue.class);
+        Type[] parameters = I.collectParameters(javafx.beans.property.Property.class, ObservableValue.class);
         assert parameters.length == 1;
         assert parameters[0] == Object.class;
     }
@@ -59,7 +59,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes01() {
-        Type[] types = I.collectParametersOf(ParameterizedStringByInterface.class, ParameterInterface.class);
+        Type[] types = I.collectParameters(ParameterizedStringByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -69,7 +69,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes02() {
-        Type[] types = I.collectParametersOf(ParameterizedObjectByInterface.class, ParameterInterface.class);
+        Type[] types = I.collectParameters(ParameterizedObjectByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Object.class == types[0];
     }
@@ -79,7 +79,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes14() {
-        Type[] types = I.collectParametersOf(ParameterizedWildcardByInterface.class, ParameterInterface.class);
+        Type[] types = I.collectParameters(ParameterizedWildcardByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Map.class == types[0];
     }
@@ -89,7 +89,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes03() {
-        Type[] types = I.collectParametersOf(ParameterizedNoneByInterface.class, ParameterInterface.class);
+        Type[] types = I.collectParameters(ParameterizedNoneByInterface.class, ParameterInterface.class);
         assert 0 == types.length;
     }
 
@@ -98,21 +98,21 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes04() {
-        Type[] types = I.collectParametersOf(ExtendedFromInterface.class, ParameterInterface.class);
+        Type[] types = I.collectParameters(ExtendedFromInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void parameterFromOverriddenInterface() {
-        Type[] types = I.collectParametersOf(TypedExtendedFromInterface.class, ParameterInterface.class);
+        Type[] types = I.collectParameters(TypedExtendedFromInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void parameterFromOverrideInterface() {
-        Type[] types = I.collectParametersOf(TypedExtendedFromInterface.class, ExtensibleByInterface.class);
+        Type[] types = I.collectParameters(TypedExtendedFromInterface.class, ExtensibleByInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -122,7 +122,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes06() {
-        Type[] types = I.collectParametersOf(ParameterizedStringByClass.class, ParameterClass.class);
+        Type[] types = I.collectParameters(ParameterizedStringByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -132,7 +132,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes07() {
-        Type[] types = I.collectParametersOf(ParameterizedObjectByClass.class, ParameterClass.class);
+        Type[] types = I.collectParameters(ParameterizedObjectByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert Object.class == types[0];
     }
@@ -142,7 +142,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes15() {
-        Type[] types = I.collectParametersOf(ParameterizedWildcardByClass.class, ParameterClass.class);
+        Type[] types = I.collectParameters(ParameterizedWildcardByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert Map.class == types[0];
     }
@@ -152,7 +152,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes08() {
-        Type[] types = I.collectParametersOf(ParameterizedNoneByClass.class, ParameterClass.class);
+        Type[] types = I.collectParameters(ParameterizedNoneByClass.class, ParameterClass.class);
         assert 0 == types.length;
     }
 
@@ -161,7 +161,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes09() {
-        Type[] types = I.collectParametersOf(ExtendedFromClass.class, ParameterClass.class);
+        Type[] types = I.collectParameters(ExtendedFromClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -171,7 +171,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes10() {
-        Type[] types = I.collectParametersOf(TypedExtendedFromClass.class, ParameterClass.class);
+        Type[] types = I.collectParameters(TypedExtendedFromClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -181,11 +181,11 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes11() {
-        Type[] types = I.collectParametersOf(ParameterFromMultipleSource.class, ParameterInterface.class);
+        Type[] types = I.collectParameters(ParameterFromMultipleSource.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Type.class == types[0];
 
-        types = I.collectParametersOf(ParameterFromMultipleSource.class, ParameterClass.class);
+        types = I.collectParameters(ParameterFromMultipleSource.class, ParameterClass.class);
         assert 1 == types.length;
         assert Class.class == types[0];
     }
@@ -195,7 +195,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes12() {
-        Type[] types = I.collectParametersOf(MultipleParameterClass.class, MultipleParameter.class);
+        Type[] types = I.collectParameters(MultipleParameterClass.class, MultipleParameter.class);
         assert 2 == types.length;
         assert Integer.class == types[0];
         assert Long.class == types[1];
@@ -203,65 +203,65 @@ public class CollectParametersTest {
 
     @Test
     public void parameterIsArrayFromInterface() {
-        Type[] types = I.collectParametersOf(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
+        Type[] types = I.collectParameters(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String[].class == types[0];
     }
 
     @Test
     public void parameterIsArrayFromClass() {
-        Type[] types = I.collectParametersOf(ParameterizedStringArrayByClass.class, ParameterClass.class);
+        Type[] types = I.collectParameters(ParameterizedStringArrayByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String[].class == types[0];
     }
 
     @Test
     public void methodGetPrameterAcceptsNullType() {
-        Type[] types = I.collectParametersOf(null, ParameterClass.class);
+        Type[] types = I.collectParameters(null, ParameterClass.class);
         assert 0 == types.length;
     }
 
     @Test
     public void methodGetPrameterAcceptsNullTarget() {
-        Type[] types = I.collectParametersOf(ParameterizedStringByClass.class, null);
+        Type[] types = I.collectParameters(ParameterizedStringByClass.class, null);
         assert 0 == types.length;
     }
 
     @Test
     public void subclassHasAnotherParameter() {
-        Type[] types = I.collectParametersOf(TypedSubClass.class, ParameterClass.class);
+        Type[] types = I.collectParameters(TypedSubClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void constructorHasParameterClass() {
-        Constructor constructor = I.collectConstructorsOf(ParameterClassConstructor.class)[0];
-        Type[] types = I.collectParametersOf(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        Constructor constructor = I.collectConstructors(ParameterClassConstructor.class)[0];
+        Type[] types = I.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void constructorHasExtendableByClass() {
-        Constructor constructor = I.collectConstructorsOf(ExtensibleByClassConstructor.class)[0];
-        Type[] types = I.collectParametersOf(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
+        Constructor constructor = I.collectConstructors(ExtensibleByClassConstructor.class)[0];
+        Type[] types = I.collectParameters(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
         assert 1 == types.length;
         assert Integer.class == types[0];
     }
 
     @Test
     public void constructorHasArrayParameter() {
-        Constructor constructor = I.collectConstructorsOf(ArrayParameterConstructor.class)[0];
-        Type[] types = I.collectParametersOf(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        Constructor constructor = I.collectConstructors(ArrayParameterConstructor.class)[0];
+        Type[] types = I.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String[].class == types[0];
     }
 
     @Test
     public void constructorHasMultipleParameter() {
-        Constructor constructor = I.collectConstructorsOf(MultipleParameterConstructor.class)[0];
-        Type[] types = I.collectParametersOf(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
+        Constructor constructor = I.collectConstructors(MultipleParameterConstructor.class)[0];
+        Type[] types = I.collectParameters(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
         assert 2 == types.length;
         assert Readable.class == types[0];
         assert Appendable.class == types[1];
@@ -269,59 +269,59 @@ public class CollectParametersTest {
 
     @Test
     public void constructorHasOverlapParameter() {
-        Constructor constructor = I.collectConstructorsOf(ImplicitParameterConstructor.class)[0];
-        Type[] types = I.collectParametersOf(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
+        Constructor constructor = I.collectConstructors(ImplicitParameterConstructor.class)[0];
+        Type[] types = I.collectParameters(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
         assert 1 == types.length;
         assert Map.class == types[0];
     }
 
     @Test
     public void constructorHasOverlappedParameter() {
-        Constructor constructor = I.collectConstructorsOf(ImplicitParameterConstructor.class)[0];
-        Type[] types = I.collectParametersOf(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        Constructor constructor = I.collectConstructors(ImplicitParameterConstructor.class)[0];
+        Type[] types = I.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void parameterVariableFromInterface() {
-        Type[] types = I.collectParametersOf(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
+        Type[] types = I.collectParameters(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void parameterVariableFromClass() {
-        Type[] types = I.collectParametersOf(ParameterVariableStringByClass.class, ParameterVariableClass.class);
+        Type[] types = I.collectParameters(ParameterVariableStringByClass.class, ParameterVariableClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void list() throws Exception {
-        Type[] types = I.collectParametersOf(StringList.class, List.class);
+        Type[] types = I.collectParameters(StringList.class, List.class);
         assert 1 == types.length;
         assert String.class == types[0];
 
-        types = I.collectParametersOf(StringList.class, ArrayList.class);
+        types = I.collectParameters(StringList.class, ArrayList.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void map() throws Exception {
-        Type[] types = I.collectParametersOf(StringMap.class, Map.class);
+        Type[] types = I.collectParameters(StringMap.class, Map.class);
         assert 2 == types.length;
         assert String.class == types[0];
 
-        types = I.collectParametersOf(StringMap.class, HashMap.class);
+        types = I.collectParameters(StringMap.class, HashMap.class);
         assert 2 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void bundedBean() {
-        Type[] types = I.collectParametersOf(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
+        Type[] types = I.collectParameters(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
         assert 1 == types.length;
         assert Student.class == types[0];
     }
@@ -568,7 +568,7 @@ public class CollectParametersTest {
 
     @Test
     public void complexTypeHierarchy1() {
-        Type[] types = I.collectParametersOf(ConsolesUI.class, StackContainer.class);
+        Type[] types = I.collectParameters(ConsolesUI.class, StackContainer.class);
         assert 2 == types.length;
         assert Shell.class == types[0];
         assert Console.class == types[1];
@@ -577,7 +577,7 @@ public class CollectParametersTest {
 
     @Test
     public void complexTypeHierarchy2() {
-        Type[] types = I.collectParametersOf(ConsolesUI.class, SelectableUI.class);
+        Type[] types = I.collectParameters(ConsolesUI.class, SelectableUI.class);
         assert 3 == types.length;
         assert JPanel.class == types[0];
         assert Shell.class == types[1];
@@ -586,7 +586,7 @@ public class CollectParametersTest {
 
     @Test
     public void complexTypeHierarchy3() {
-        Type[] types = I.collectParametersOf(ConsolesUI.class, UI.class);
+        Type[] types = I.collectParameters(ConsolesUI.class, UI.class);
         assert 2 == types.length;
         assert JPanel.class == types[0];
         assert Shell.class == types[1];

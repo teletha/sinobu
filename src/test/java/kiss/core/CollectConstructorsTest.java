@@ -23,7 +23,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void none() {
-        Constructor[] constructors = I.collectConstructorsOf(NoneConstructor.class);
+        Constructor[] constructors = I.collectConstructors(NoneConstructor.class);
         assert constructors != null;
         assert constructors.length == 1;
     }
@@ -36,7 +36,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void single() {
-        Constructor[] constructors = I.collectConstructorsOf(OneConstructor.class);
+        Constructor[] constructors = I.collectConstructors(OneConstructor.class);
         assert constructors != null;
         assert constructors.length == 1;
     }
@@ -52,7 +52,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void two() {
-        Constructor[] constructors = I.collectConstructorsOf(TwoConstructor.class);
+        Constructor[] constructors = I.collectConstructors(TwoConstructor.class);
         assert constructors != null;
         assert constructors.length == 2;
         assert constructors[0].getParameterCount() == 1;
@@ -73,7 +73,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void multi() {
-        Constructor[] constructors = I.collectConstructorsOf(ThreeConstructor.class);
+        Constructor[] constructors = I.collectConstructors(ThreeConstructor.class);
         assert constructors != null;
         assert constructors.length == 3;
         assert constructors[0].getParameterCount() == 1;
@@ -98,7 +98,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void existing() {
-        Constructor[] constructors = I.collectConstructorsOf(HashMap.class);
+        Constructor[] constructors = I.collectConstructors(HashMap.class);
         assert constructors != null;
         assert constructors.length == 4;
         assert constructors[0].getParameterCount() == 0;

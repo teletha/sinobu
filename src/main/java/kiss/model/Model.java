@@ -180,7 +180,7 @@ public class Model<M> {
             // examine all methods without private, final, static or native
             Map<String, Method[]> candidates = new HashMap();
 
-            for (Class clazz : I.collectTypesOf(type)) {
+            for (Class clazz : I.collectTypes(type)) {
                 for (Method method : clazz.getDeclaredMethods()) {
                     // exclude the method which modifier is final, static, private or native
                     if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
@@ -478,9 +478,9 @@ public class Model<M> {
         if (model == null) {
             // create new model
             if (List.class.isAssignableFrom(modelClass)) {
-                model = new ListModel(modelClass, I.collectParametersOf(modelClass, List.class), List.class);
+                model = new ListModel(modelClass, I.collectParameters(modelClass, List.class), List.class);
             } else if (Map.class.isAssignableFrom(modelClass)) {
-                model = new MapModel(modelClass, I.collectParametersOf(modelClass, Map.class), Map.class);
+                model = new MapModel(modelClass, I.collectParameters(modelClass, Map.class), Map.class);
             } else {
                 model = new Model(modelClass);
                 model.init();
@@ -564,7 +564,7 @@ public class Model<M> {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
-                        return of(I.collectParametersOf(base, variable.getGenericDeclaration())[i], base);
+                        return of(I.collectParameters(base, variable.getGenericDeclaration())[i], base);
                     }
                 }
             }

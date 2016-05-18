@@ -202,7 +202,7 @@ class Module extends ClassVisitor {
 
         // lazy evaluation
         Class clazz = loader.loadClass((String) info[0]);
-        Set<Class> set = I.collectTypesOf(clazz);
+        Set<Class> set = I.collectTypes(clazz);
         Annotation[] annotations = clazz.getAnnotations();
 
         // compute hash

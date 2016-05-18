@@ -36,7 +36,10 @@ import java.net.URL;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
+import java.nio.file.LinkPermission;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
@@ -74,6 +77,7 @@ import java.util.function.Function;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -454,10 +458,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param clazz A target class.
      * @return A table of method and annnotations.
      */
-    public static Table<Method, Annotation> collectAnnotationsOf(Class clazz) {
+    public static Table<Method, Annotation> collectAnnotatedMethods(Class clazz) {
         Table<Method, Annotation> table = new Table();
 
-        for (Class type : collectTypesOf(clazz)) {
+        for (Class type : collectTypes(clazz)) {
             for (Method method : type.getDeclaredMethods()) {
                 // exclude the method which is created by compiler
                 // exclude the private method which is not declared in the specified class
@@ -532,7 +536,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param clazz A target class.
      * @return A collected constructors.
      */
-    public static <T> Constructor<T>[] collectConstructorsOf(Class<T> clazz) {
+    public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] constructors = clazz.getDeclaredConstructors();
         Arrays.sort(constructors, Comparator.<Constructor> comparingInt(Constructor::getParameterCount));
         return constructors;
@@ -546,7 +550,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param clazz A target class. <code>null</code> will be return the empty set.
      * @return A set of classes, with predictable bottom-up iteration order.
      */
-    public static Set<Class> collectTypesOf(Class clazz) {
+    public static Set<Class> collectTypes(Class clazz) {
         // check null
         if (clazz == null) {
             return Collections.EMPTY_SET;
@@ -559,11 +563,11 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         set.add(clazz);
 
         // add super class
-        set.addAll(collectTypesOf(clazz.getSuperclass()));
+        set.addAll(collectTypes(clazz.getSuperclass()));
 
         // add interface classes
         for (Class c : clazz.getInterfaces()) {
-            set.addAll(collectTypesOf(c));
+            set.addAll(collectTypes(c));
         }
 
         // API definition
@@ -581,8 +585,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      *            zero-length array.
      * @return A list of actual types.
      */
-    public static java.lang.reflect.Type[] collectParametersOf(java.lang.reflect.Type type, GenericDeclaration target) {
-        return collectParametersOf(type, target, type);
+    public static java.lang.reflect.Type[] collectParameters(java.lang.reflect.Type type, GenericDeclaration target) {
+        return collectParameters(type, target, type);
     }
 
     /**
@@ -597,7 +601,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @param base A base class type.
      * @return A list of actual types.
      */
-    private static java.lang.reflect.Type[] collectParametersOf(java.lang.reflect.Type clazz, GenericDeclaration target, java.lang.reflect.Type base) {
+    private static java.lang.reflect.Type[] collectParameters(java.lang.reflect.Type clazz, GenericDeclaration target, java.lang.reflect.Type base) {
         // check null
         if (clazz == null || clazz == target) {
             return new Class[0];
@@ -633,7 +637,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         }
 
         // search from superclass
-        java.lang.reflect.Type[] parameters = collectParametersOf(raw.getGenericSuperclass(), target, base);
+        java.lang.reflect.Type[] parameters = collectParameters(raw.getGenericSuperclass(), target, base);
 
         if (parameters.length != 0) {
             return parameters;
@@ -641,7 +645,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
 
         // search from interfaces
         for (java.lang.reflect.Type type : raw.getInterfaces()) {
-            parameters = collectParametersOf(type, target, base);
+            parameters = collectParameters(type, target, base);
 
             if (parameters.length != 0) {
                 return parameters;
@@ -911,7 +915,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return null;
         }
 
-        for (Class clazz : collectTypesOf(key)) {
+        for (Class clazz : collectTypes(key)) {
             Class<E> supplier = keys.find(extensionPoint.getName().concat(clazz.getName()));
 
             if (supplier != null) {
@@ -1243,7 +1247,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         // If this model is non-private or final class, we can extend it for interceptor
         // mechanism.
         if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
-            Map<Method, List<Annotation>> interceptables = collectAnnotationsOf(actualClass);
+            Map<Method, List<Annotation>> interceptables = collectAnnotatedMethods(actualClass);
 
             // Enhance the actual model class if needed.
             if (!interceptables.isEmpty()) {
@@ -1389,7 +1393,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
         // Define Constructor
         // -----------------------------------------------------------------------------------
         // decide constructor
-        Constructor constructor = collectConstructorsOf(model)[0];
+        Constructor constructor = collectConstructors(model)[0];
         String descriptor = Type.getConstructorDescriptor(constructor);
 
         // public GeneratedClass( param1, param2 ) { super(param1, param2); ... }
@@ -2765,13 +2769,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     @Override
     public void load(Class<Extensible> extension) {
         // search and collect information for all extension points
-        for (Class extensionPoint : collectTypesOf(extension)) {
+        for (Class extensionPoint : collectTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register new extension
                 extensions.push(extensionPoint, extension);
 
                 // register extension key
-                java.lang.reflect.Type[] params = collectParametersOf(extension, extensionPoint);
+                java.lang.reflect.Type[] params = collectParameters(extension, extensionPoint);
 
                 if (params.length != 0 && params[0] != Object.class) {
                     Class clazz = (Class) params[0];
@@ -2802,13 +2806,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     @Override
     public void unload(Class<Extensible> extension) {
         // search and collect information for all extension points
-        for (Class extensionPoint : collectTypesOf(extension)) {
+        for (Class extensionPoint : collectTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register new extension
                 extensions.pull(extensionPoint, extension);
 
                 // register extension key
-                java.lang.reflect.Type[] params = collectParametersOf(extension, extensionPoint);
+                java.lang.reflect.Type[] params = collectParameters(extension, extensionPoint);
 
                 if (params.length != 0 && params[0] != Object.class) {
                     Class clazz = (Class) params[0];

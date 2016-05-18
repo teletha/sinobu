@@ -39,7 +39,7 @@ public class Prototype<M> implements Lifestyle<M> {
      */
     protected Prototype(Class<M> modelClass) {
         // find default constructor as instantiator
-        instantiator = I.collectConstructorsOf(modelClass)[0];
+        instantiator = I.collectConstructors(modelClass)[0];
         params = instantiator.getParameterTypes();
 
         // We can safely call the method 'newInstance()' because the generated class has
@@ -72,7 +72,7 @@ public class Prototype<M> implements Lifestyle<M> {
 
             for (int i = 0; i < params.length; i++) {
                 if (this.params[i] == Lifestyle.class) {
-                    params[i] = I.makeLifestyle((Class) I.collectParametersOf(instantiator.getGenericParameterTypes()[i], Lifestyle.class)[0]);
+                    params[i] = I.makeLifestyle((Class) I.collectParameters(instantiator.getGenericParameterTypes()[i], Lifestyle.class)[0]);
                 } else if (this.params[i] == Class.class) {
                     params[i] = I.dependencies.get().peekLast();
                 } else {

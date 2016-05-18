@@ -69,7 +69,7 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Decoder
     public void load(Class clazz) {
         if (clazz != Modules.class) {
             Object[] types = {I.make(clazz), Object.class};
-            Type[] params = I.collectParametersOf(clazz, ClassListener.class);
+            Type[] params = I.collectParameters(clazz, ClassListener.class);
 
             if (params.length != 0) {
                 types[1] = params[0];
