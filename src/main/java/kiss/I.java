@@ -436,18 +436,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
      * @return An associated value.
      */
     public static <V> V associate(Object host, Class<V> type) {
-        WeakHashMap association = associatables.get(host);
-
-        if (association == null) {
-            associatables.put(host, association = new WeakHashMap());
-        }
-
-        Object value = association.get(type);
-
-        if (value == null) {
-            association.put(type, value = I.make(type));
-        }
-        return (V) value;
+        WeakHashMap<Class<V>, V> association = associatables.computeIfAbsent(host, key -> new WeakHashMap());
+        return association.computeIfAbsent(type, I::make);
     }
 
     /**
