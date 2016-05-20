@@ -12,24 +12,33 @@ package kiss.model;
 import static java.lang.reflect.Modifier.*;
 
 import java.beans.Introspector;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javafx.beans.value.WritableValue;
@@ -38,6 +47,7 @@ import kiss.ClassVariable;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
+import kiss.Table;
 import kiss.Ⅲ;
 
 /**
@@ -180,7 +190,7 @@ public class Model<M> {
             // examine all methods without private, final, static or native
             Map<String, Method[]> candidates = new HashMap();
 
-            for (Class clazz : I.collectTypes(type)) {
+            for (Class clazz : Model.collectTypes(type)) {
                 for (Method method : clazz.getDeclaredMethods()) {
                     // exclude the method which modifier is final, static, private or native
                     if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
@@ -478,9 +488,9 @@ public class Model<M> {
         if (model == null) {
             // create new model
             if (List.class.isAssignableFrom(modelClass)) {
-                model = new ListModel(modelClass, I.collectParameters(modelClass, List.class), List.class);
+                model = new ListModel(modelClass, Model.collectParameters(modelClass, List.class), List.class);
             } else if (Map.class.isAssignableFrom(modelClass)) {
-                model = new MapModel(modelClass, I.collectParameters(modelClass, Map.class), Map.class);
+                model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
             } else {
                 model = new Model(modelClass);
                 model.init();
@@ -503,7 +513,7 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given model type is null.
      * @see TypeVariable
      */
-    public static Model of(Type type, Type base) {
+    static Model of(Type type, Type base) {
         // class
         if (type instanceof Class) {
             return of((Class) type);
@@ -564,7 +574,7 @@ public class Model<M> {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
-                        return of(I.collectParameters(base, variable.getGenericDeclaration())[i], base);
+                        return of(Model.collectParameters(base, variable.getGenericDeclaration())[i], base);
                     }
                 }
             }
@@ -577,5 +587,209 @@ public class Model<M> {
 
         // If this error will be thrown, it is bug of this program. Please send a bug report to us.
         throw new Error();
+    }
+
+    /**
+     * <p>
+     * Collect all annotated methods and thire annotations.
+     * </p>
+     * 
+     * @param clazz A target class.
+     * @return A table of method and annnotations.
+     */
+    public static Table<Method, Annotation> collectAnnotatedMethods(Class clazz) {
+        Table<Method, Annotation> table = new Table();
+
+        for (Class type : collectTypes(clazz)) {
+            for (Method method : type.getDeclaredMethods()) {
+                // exclude the method which is created by compiler
+                // exclude the private method which is not declared in the specified class
+                if (!method.isBridge() && !method
+                        .isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
+                    Annotation[] annotations = method.getAnnotations();
+
+                    if (annotations.length != 0) {
+                        List<Annotation> list = new ArrayList();
+
+                        // disclose container annotation
+                        for (Annotation annotation : annotations) {
+                            try {
+                                Class annotationType = annotation.annotationType();
+                                Method value = annotationType.getMethod("value");
+                                Class returnType = value.getReturnType();
+
+                                if (returnType.isArray()) {
+                                    Class<?> componentType = returnType.getComponentType();
+                                    Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
+
+                                    if (repeatable != null && repeatable.value() == annotationType) {
+                                        value.setAccessible(true);
+
+                                        Collections.addAll(list, (Annotation[]) value.invoke(annotation));
+                                        continue;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                // do nothing
+                            }
+                            list.add(annotation);
+                        }
+
+                        // check method overriding
+                        for (Method candidate : table.keySet()) {
+                            if (candidate.getName().equals(method.getName()) && Arrays
+                                    .deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
+                                method = candidate; // detect overriding
+                                break;
+                            }
+                        }
+
+                        add: for (Annotation annotation : list) {
+                            Class annotationType = annotation.annotationType();
+
+                            if (!annotationType.isAnnotationPresent(Repeatable.class)) {
+                                for (Annotation item : table.get(method)) {
+                                    if (item.annotationType() == annotationType) {
+                                        continue add;
+                                    }
+                                }
+                            }
+
+                            table.push(method, annotation);
+                        }
+                    }
+                }
+            }
+        }
+        return table;
+    }
+
+    /**
+     * <p>
+     * > Collect all constructors which are defined in the specified {@link Class}. If the given
+     * class is interface, primitive types, array class or <code>void</code>,
+     * <code>empty array</code> will be return.
+     * </p>
+     * 
+     * @param <T> A class type.
+     * @param clazz A target class.
+     * @return A collected constructors.
+     */
+    public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
+        Constructor[] constructors = clazz.getDeclaredConstructors();
+        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(Constructor::getParameterCount));
+        return constructors;
+    }
+
+    /**
+     * <p>
+     * Collect all classes which are extended or implemented by the target class.
+     * </p>
+     * 
+     * @param clazz A target class. <code>null</code> will be return the empty set.
+     * @return A set of classes, with predictable bottom-up iteration order.
+     */
+    public static Set<Class> collectTypes(Class clazz) {
+        // check null
+        if (clazz == null) {
+            return Collections.EMPTY_SET;
+        }
+
+        // container
+        Set<Class> set = new LinkedHashSet(); // order is important
+
+        // add current class
+        set.add(clazz);
+
+        // add super class
+        set.addAll(collectTypes(clazz.getSuperclass()));
+
+        // add interface classes
+        for (Class c : clazz.getInterfaces()) {
+            set.addAll(collectTypes(c));
+        }
+
+        // API definition
+        return set;
+    }
+
+    /**
+     * <p>
+     * List up all target types which are implemented or extended by the specified class.
+     * </p>
+     * 
+     * @param type A class type which implements(extends) the specified target interface(class).
+     *            <code>null</code> will be return the zero-length array.
+     * @param target A target type to list up types. <code>null</code> will be return the
+     *            zero-length array.
+     * @return A list of actual types.
+     */
+    public static Type[] collectParameters(Type type, GenericDeclaration target) {
+        return collectParameters(type, target, type);
+    }
+
+    /**
+     * <p>
+     * List up all target types which are implemented or extended by the specified class.
+     * </p>
+     * 
+     * @param clazz A class type which implements(extends) the specified target interface(class).
+     *            <code>null</code> will be return the zero-length array.
+     * @param target A target type to list up types. <code>null</code> will be return the
+     *            zero-length array.
+     * @param base A base class type.
+     * @return A list of actual types.
+     */
+    private static Type[] collectParameters(Type clazz, GenericDeclaration target, Type base) {
+        // check null
+        if (clazz == null || clazz == target) {
+            return new Class[0];
+        }
+
+        // compute actual class
+        Class raw = clazz instanceof Class ? (Class) clazz : Model.of(clazz, base).type;
+
+        // collect all types
+        Set<Type> types = new HashSet();
+        types.add(clazz);
+        types.add(raw.getGenericSuperclass());
+        Collections.addAll(types, raw.getGenericInterfaces());
+
+        // check them all
+        for (Type type : types) {
+            // check ParameterizedType
+            if (type instanceof ParameterizedType) {
+                ParameterizedType param = (ParameterizedType) type;
+
+                // check raw type
+                if (target == param.getRawType()) {
+                    Type[] args = param.getActualTypeArguments();
+
+                    for (int i = 0; i < args.length; i++) {
+                        if (args[i] instanceof TypeVariable) {
+                            args[i] = Model.of(args[i], base).type;
+                        }
+                    }
+                    return args;
+                }
+            }
+        }
+
+        // search from superclass
+        Type[] parameters = collectParameters(raw.getGenericSuperclass(), target, base);
+
+        if (parameters.length != 0) {
+            return parameters;
+        }
+
+        // search from interfaces
+        for (Type type : raw.getInterfaces()) {
+            parameters = collectParameters(type, target, base);
+
+            if (parameters.length != 0) {
+                return parameters;
+            }
+        }
+        return parameters;
     }
 }

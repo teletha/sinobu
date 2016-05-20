@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 import org.junit.Test;
 
-import kiss.I;
+import kiss.model.Model;
 
 /**
  * @version 2016/05/15 9:53:41
@@ -23,7 +23,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void none() {
-        Constructor[] constructors = I.collectConstructors(NoneConstructor.class);
+        Constructor[] constructors = Model.collectConstructors(NoneConstructor.class);
         assert constructors != null;
         assert constructors.length == 1;
     }
@@ -36,7 +36,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void single() {
-        Constructor[] constructors = I.collectConstructors(OneConstructor.class);
+        Constructor[] constructors = Model.collectConstructors(OneConstructor.class);
         assert constructors != null;
         assert constructors.length == 1;
     }
@@ -52,7 +52,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void two() {
-        Constructor[] constructors = I.collectConstructors(TwoConstructor.class);
+        Constructor[] constructors = Model.collectConstructors(TwoConstructor.class);
         assert constructors != null;
         assert constructors.length == 2;
         assert constructors[0].getParameterCount() == 1;
@@ -73,7 +73,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void multi() {
-        Constructor[] constructors = I.collectConstructors(ThreeConstructor.class);
+        Constructor[] constructors = Model.collectConstructors(ThreeConstructor.class);
         assert constructors != null;
         assert constructors.length == 3;
         assert constructors[0].getParameterCount() == 1;
@@ -98,7 +98,7 @@ public class CollectConstructorsTest {
 
     @Test
     public void existing() {
-        Constructor[] constructors = I.collectConstructors(HashMap.class);
+        Constructor[] constructors = Model.collectConstructors(HashMap.class);
         assert constructors != null;
         assert constructors.length == 4;
         assert constructors[0].getParameterCount() == 0;

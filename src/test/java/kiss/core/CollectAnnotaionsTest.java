@@ -20,8 +20,8 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
-import kiss.I;
 import kiss.Table;
+import kiss.model.Model;
 import kiss.sample.annotation.RepeatableAnnotation;
 
 /**
@@ -31,7 +31,7 @@ public class CollectAnnotaionsTest {
 
     @Test
     public void collect() throws Exception {
-        Table<Method, Annotation> table = I.collectAnnotatedMethods(Root.class);
+        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Root.class);
 
         List<Annotation> annotations = filter("marked", table);
         assert annotations.size() == 1;
@@ -43,7 +43,7 @@ public class CollectAnnotaionsTest {
 
     @Test
     public void privateMethodShouldntInheritFromSameSignatureMethod() throws Exception {
-        Table<Method, Annotation> table = I.collectAnnotatedMethods(Child.class);
+        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Child.class);
 
         List<Annotation> annotations = filter("collectable", table);
         assert annotations.size() == 1;
@@ -55,7 +55,7 @@ public class CollectAnnotaionsTest {
 
     @Test
     public void overrideMethodHasSameAnnotation() throws Exception {
-        Table<Method, Annotation> table = I.collectAnnotatedMethods(Child.class);
+        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Child.class);
 
         List<Annotation> annotations = filter("marked", table);
         assert annotations.size() == 1;
@@ -67,7 +67,7 @@ public class CollectAnnotaionsTest {
 
     @Test
     public void overrideMethodHasSameRepetableAnnotation() throws Exception {
-        Table<Method, Annotation> table = I.collectAnnotatedMethods(Child.class);
+        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Child.class);
 
         List<Annotation> annotations = filter("rootMultipleMarked", table);
         assert annotations.size() == 3;
@@ -87,7 +87,7 @@ public class CollectAnnotaionsTest {
 
     @Test
     public void overrideMethodHasSameAnnotationWhichIsRepetableInChild() throws Exception {
-        Table<Method, Annotation> table = I.collectAnnotatedMethods(Child.class);
+        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Child.class);
 
         List<Annotation> annotations = filter("childMultipleMarked", table);
         assert annotations.size() == 3;
