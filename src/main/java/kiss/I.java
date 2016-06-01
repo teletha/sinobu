@@ -2150,7 +2150,7 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return null;
         }
 
-        String encoded = Model.of(input).encoder().encode(input);
+        String encoded = input instanceof String ? (String) input : Model.of(input).encoder().encode(input);
 
         if (output == String.class) {
             return (Out) encoded;

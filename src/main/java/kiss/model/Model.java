@@ -362,7 +362,7 @@ public class Model<M> {
     public Encoder<M> encoder() {
         Encoder<M> encoder = I.find(Encoder.class, type);
 
-        return encoder == null ? this.encoder : encoder;
+        return encoder == null ? this.encoder == null ? String::valueOf : this.encoder : encoder;
     }
 
     /**
