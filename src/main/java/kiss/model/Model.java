@@ -347,7 +347,9 @@ public class Model<M> {
      * @return An associated {@link Decoder}.
      */
     public Decoder<M> decoder() {
-        return decoder != null ? decoder : I.find(Decoder.class, type);
+        Decoder<M> decoder = I.find(Decoder.class, type);
+
+        return decoder == null ? this.decoder : decoder;
     }
 
     /**
@@ -358,7 +360,9 @@ public class Model<M> {
      * @return An associated {@link Encoder}.
      */
     public Encoder<M> encoder() {
-        return encoder != null ? encoder : I.find(Encoder.class, type);
+        Encoder<M> encoder = I.find(Encoder.class, type);
+
+        return encoder == null ? this.encoder : encoder;
     }
 
     /**
