@@ -1176,7 +1176,7 @@ public class Events<V> {
      * This method is equivalent to the following code.
      * </p>
      * <pre>
-     * skipUntil(v -> value.equals(v));
+     * skipUntil(v -> Objects.equals(v, value));
      * </pre>
      * 
      * @param value A value to test each item emitted from the source {@link Events}.
@@ -1185,35 +1185,6 @@ public class Events<V> {
      */
     public final Events<V> skipUntil(V value) {
         return skipUntil(v -> Objects.equals(v, value));
-    }
-
-    /**
-     * <p>
-     * Returns the values from the source {@link Events} sequence only after the other
-     * {@link Events} sequence produces a value.
-     * </p>
-     * 
-     * @param timing The second {@link Events} that has to emit an item before the source
-     *            {@link Events} elements begin to be mirrored by the resulting {@link Events}.
-     * @return An {@link Events} that skips items from the source {@link Events} until the second
-     *         {@link Events} emits an item, then emits the remaining items.
-     */
-    public final Events<V> skipUntil(Events timing) {
-        // ignore invalid parameter
-        if (timing == null) {
-            return this;
-        }
-
-        return new Events<>(observer -> {
-            Agent agent = new Agent();
-            agent.and(timing.to(value -> agent.dispose()));
-
-            return to(value -> {
-                if (agent.disposables == null) {
-                    observer.accept(value);
-                }
-            }).and(agent);
-        });
     }
 
     /**
@@ -1244,6 +1215,35 @@ public class Events<V> {
                     observer.accept(value);
                 }
             });
+        });
+    }
+
+    /**
+     * <p>
+     * Returns the values from the source {@link Events} sequence only after the other
+     * {@link Events} sequence produces a value.
+     * </p>
+     * 
+     * @param timing The second {@link Events} that has to emit an item before the source
+     *            {@link Events} elements begin to be mirrored by the resulting {@link Events}.
+     * @return An {@link Events} that skips items from the source {@link Events} until the second
+     *         {@link Events} emits an item, then emits the remaining items.
+     */
+    public final Events<V> skipUntil(Events timing) {
+        // ignore invalid parameter
+        if (timing == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> {
+            Agent agent = new Agent();
+            agent.and(timing.to(value -> agent.dispose()));
+
+            return to(value -> {
+                if (agent.disposables == null) {
+                    observer.accept(value);
+                }
+            }).and(agent);
         });
     }
 
@@ -1434,7 +1434,7 @@ public class Events<V> {
      * This method is equivalent to the following code.
      * </p>
      * <pre>
-     * takeUntil(v -> value.equals(v));
+     * takeUntil(v -> Objects.equals(v, value));
      * </pre>
      * 
      * @param value A value to test each item emitted from the source {@link Events}.
@@ -1444,32 +1444,6 @@ public class Events<V> {
      */
     public final Events<V> takeUntil(V value) {
         return takeUntil(v -> Objects.equals(v, value));
-    }
-
-    /**
-     * <p>
-     * Returns the values from the source {@link Events} sequence until the other {@link Events}
-     * sequence produces a value.
-     * </p>
-     * 
-     * @param predicate An {@link Events} sequence that terminates propagation of values of the
-     *            source sequence. <code>null</code> will ignore this instruction.
-     * @return Chainable API.
-     */
-    public final Events<V> takeUntil(Events predicate) {
-        // ignore invalid parameter
-        if (predicate == null) {
-            return this;
-        }
-
-        return new Events<>(observer -> {
-            Disposable disposer = Disposable.empty();
-
-            return disposer.and(to(observer).and(predicate.to(value -> {
-                observer.complete();
-                disposer.dispose();
-            })));
-        });
     }
 
     /**
@@ -1502,6 +1476,32 @@ public class Events<V> {
                     observer.accept(value);
                 }
             }));
+        });
+    }
+
+    /**
+     * <p>
+     * Returns the values from the source {@link Events} sequence until the other {@link Events}
+     * sequence produces a value.
+     * </p>
+     * 
+     * @param predicate An {@link Events} sequence that terminates propagation of values of the
+     *            source sequence. <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final Events<V> takeUntil(Events predicate) {
+        // ignore invalid parameter
+        if (predicate == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> {
+            Disposable disposer = Disposable.empty();
+
+            return disposer.and(to(observer).and(predicate.to(value -> {
+                observer.complete();
+                disposer.dispose();
+            })));
         });
     }
 
