@@ -858,6 +858,44 @@ public class EventsTest {
     }
 
     @Test
+    public void skipUntilValue() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipUntil(30));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void skipUntilNullValue() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipUntil((Integer) null));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(null) == null;
+        assert facade.emitAndRetrieve(40) == 40;
+    }
+
+    @Test
+    public void skipUntilValueWithRepeat() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipUntil(30).take(2).repeat());
+
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(40) == 40;
+        assert facade.emitAndRetrieve(50) == null;
+        assert facade.emitAndRetrieve(20) == null;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(40) == 40;
+        assert facade.emitAndRetrieve(50) == null;
+        assert facade.disposeWithCountAlreadyDisposed(2);
+    }
+
+    @Test
     public void skipUntilCondition() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipUntil(value -> value % 3 == 0));
 
@@ -978,6 +1016,43 @@ public class EventsTest {
         condition.emit("start");
         assert facade.isCompleted();
         assert condition.isCompleted();
+    }
+
+    @Test
+    public void takeUntilValue() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.takeUntil(30));
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == 30;
+        assert facade.emitAndRetrieve(40) == null;
+        assert facade.isCompleted();
+    }
+
+    @Test
+    public void takeUntilNullValue() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.takeUntil((Integer) null));
+
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(null) == null;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.isCompleted();
+    }
+
+    @Test
+    public void takeUntilValueRepeat() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1).takeUntil(30).repeat());
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == 30;
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == 30;
+
+        assert facade.disposeWithCountAlreadyDisposed(2);
     }
 
     @Test

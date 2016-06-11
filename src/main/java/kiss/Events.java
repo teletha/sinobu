@@ -1173,23 +1173,40 @@ public class Events<V> {
 
     /**
      * <p>
+     * This method is equivalent to the following code.
+     * </p>
+     * <pre>
+     * skipUntil(v -> value.equals(v));
+     * </pre>
+     * 
+     * @param value A value to test each item emitted from the source {@link Events}.
+     * @return An {@link Events} that begins emitting items emitted by the source {@link Events}
+     *         when the specified value is coming.
+     */
+    public final Events<V> skipUntil(V value) {
+        return skipUntil(v -> Objects.equals(v, value));
+    }
+
+    /**
+     * <p>
      * Returns the values from the source {@link Events} sequence only after the other
      * {@link Events} sequence produces a value.
      * </p>
      * 
-     * @param predicate An {@link Events} sequence that triggers propagation of values of the source
-     *            sequence. <code>null</code> will ignore this instruction.
-     * @return Chainable API.
+     * @param timing The second {@link Events} that has to emit an item before the source
+     *            {@link Events} elements begin to be mirrored by the resulting {@link Events}.
+     * @return An {@link Events} that skips items from the source {@link Events} until the second
+     *         {@link Events} emits an item, then emits the remaining items.
      */
-    public final Events<V> skipUntil(Events predicate) {
+    public final Events<V> skipUntil(Events timing) {
         // ignore invalid parameter
-        if (predicate == null) {
+        if (timing == null) {
             return this;
         }
 
         return new Events<>(observer -> {
             Agent agent = new Agent();
-            agent.and(predicate.to(value -> agent.dispose()));
+            agent.and(timing.to(value -> agent.dispose()));
 
             return to(value -> {
                 if (agent.disposables == null) {
@@ -1201,13 +1218,14 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Events} sequence only after the other
-     * {@link Events} sequence produces a value.
+     * Returns an {@link Events} that skips all items emitted by the source {@link Events} as long
+     * as a specified condition holds true, but emits all further source items as soon as the
+     * condition becomes false.
      * </p>
      * 
-     * @param predicate An {@link Events} sequence that triggers propagation of values of the source
-     *            sequence. <code>null</code> will ignore this instruction.
-     * @return Chainable API.
+     * @param predicate A function to test each item emitted from the source {@link Events}.
+     * @return An {@link Events} that begins emitting items emitted by the source {@link Events}
+     *         when the specified predicate becomes false.
      */
     public final <T> Events<V> skipUntil(Predicate<V> predicate) {
         // ignore invalid parameter
@@ -1413,6 +1431,23 @@ public class Events<V> {
 
     /**
      * <p>
+     * This method is equivalent to the following code.
+     * </p>
+     * <pre>
+     * takeUntil(v -> value.equals(v));
+     * </pre>
+     * 
+     * @param value A value to test each item emitted from the source {@link Events}.
+     * @return An {@link Events} that first emits items emitted by the source {@link Events}, checks
+     *         the specified condition after each item, and then completes if the condition is
+     *         satisfied.
+     */
+    public final Events<V> takeUntil(V value) {
+        return takeUntil(v -> Objects.equals(v, value));
+    }
+
+    /**
+     * <p>
      * Returns the values from the source {@link Events} sequence until the other {@link Events}
      * sequence produces a value.
      * </p>
@@ -1439,13 +1474,15 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Events} sequence until the other {@link Events}
-     * sequence produces a value.
+     * Returns an {@link Events} that emits items emitted by the source {@link Events}, checks the
+     * specified predicate for each item, and then completes if the condition is satisfied.
      * </p>
      * 
-     * @param predicate An {@link Events} sequence that terminates propagation of values of the
-     *            source sequence. <code>null</code> will ignore this instruction.
-     * @return Chainable API.
+     * @param predicate A function that evaluates an item emitted by the source {@link Events} and
+     *            returns a Boolean.
+     * @return An {@link Events} that first emits items emitted by the source {@link Events}, checks
+     *         the specified condition after each item, and then completes if the condition is
+     *         satisfied.
      */
     public final Events<V> takeUntil(Predicate<V> predicate) {
         // ignore invalid parameter
