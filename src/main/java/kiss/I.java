@@ -2075,19 +2075,21 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             }
 
             for (Property property : properties) {
-                // calculate value
-                Object value = map.get(property.name);
-                Class type = property.model.type;
+                if (!property.isTransient) {
+                    // calculate value
+                    Object value = map.get(property.name);
+                    Class type = property.model.type;
 
-                // convert value
-                if (property.isAttribute()) {
-                    value = transform(value, type);
-                } else {
-                    value = read(property.model, make(type), value);
+                    // convert value
+                    if (property.isAttribute()) {
+                        value = transform(value, type);
+                    } else {
+                        value = read(property.model, make(type), value);
+                    }
+
+                    // assign value
+                    model.set(java, property, value);
                 }
-
-                // assign value
-                model.set(java, property, value);
             }
         }
 
