@@ -316,11 +316,9 @@ public class Model<M> {
      */
     public Property property(String propertyName) {
         // check whether this model is attribute or not.
-        if (decoder() == null) {
-            for (Property property : properties) {
-                if (property.name.equals(propertyName)) {
-                    return property;
-                }
+        for (Property property : properties) {
+            if (property.name.equals(propertyName)) {
+                return property;
             }
         }
 
@@ -429,7 +427,7 @@ public class Model<M> {
      */
     public void walk(M object, Consumer<Ⅲ<Model<M>, Property, Object>> walker) {
         // check whether this model is attribute or not.
-        if (walker != null && decoder() == null) {
+        if (walker != null) {
             for (Property property : properties) {
                 Object value = get(object, property);
 
