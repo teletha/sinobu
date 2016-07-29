@@ -21,10 +21,10 @@ import java.util.function.Function;
 import sun.reflect.ConstantPool;
 
 import jdk.internal.org.objectweb.asm.Type;
+import kiss.ClassVariable;
 import kiss.I;
 import kiss.Manageable;
 import kiss.Singleton;
-import kiss.ClassVariable;
 
 /**
  * @version 2008/06/18 8:42:37
@@ -117,12 +117,12 @@ public class SinobuExperimental {
                 // [1] : Method Name
                 // [2] : Method Descriptor (internal qualified signature)
                 String[] info = constantPool.getMemberRefInfoAt(constantPool.getSize() - 3);
-                Class lambda = Class.forName(info[0].replaceAll("/", "."));
+                Class lambda = I.type(info[0].replaceAll("/", "."));
                 Type[] types = Type.getArgumentTypes(info[2]);
                 Class[] params = new Class[types.length];
 
                 for (int i = 0; i < params.length; i++) {
-                    params[i] = Class.forName(types[i].getClassName());
+                    params[i] = I.type(types[i].getClassName());
                 }
                 name = lambda.getDeclaredMethod(info[1], params).getParameters()[0].getName();
 
