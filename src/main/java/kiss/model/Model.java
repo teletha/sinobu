@@ -76,7 +76,7 @@ public class Model<M> {
     private Decoder decoder;
 
     /** The built-in codec. */
-    private Encoder encoder = String::valueOf;;
+    private Encoder encoder = String::valueOf;
 
     /**
      * Create Model instance.
@@ -275,8 +275,8 @@ public class Model<M> {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(
-                                of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field.getGenericType()), field.getName());
+                        Property property = new Property(of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field
+                                .getGenericType()), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;
 

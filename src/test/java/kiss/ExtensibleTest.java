@@ -114,21 +114,6 @@ public class ExtensibleTest {
         assert I.find(KEPClass.class, Person.class) == null;
     }
 
-    // @Test
-    // public void unSameKey() throws Exception {
-    // KEPClass extension = I.find(KEPClass.class, Integer.class);
-    // assert extension != null;
-    // assert SameKEP2.class == extension.getClass();
-    //
-    // I.make(I.class).unload(SameKEP2.class);
-    // extension = I.find(KEPClass.class, Integer.class);
-    // assert extension != null;
-    // assert SameKEP1.class == extension.getClass();
-    //
-    // I.make(I.class).unload(SameKEP1.class);
-    // assert I.find(KEPClass.class, Integer.class) == null;
-    // }
-
     @Test
     public void findAs() throws Exception {
         List<Class<EPClass>> extensions = I.findAs(EPClass.class);
