@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import kiss.Decoder;
 import kiss.Encoder;
-import kiss.model.Model;
+import kiss.I;
 
 /**
  * @version 2015/10/20 17:47:06
@@ -22,8 +22,8 @@ public class EnumTest {
 
     @Test
     public void codec() throws Exception {
-        Decoder<OverrideToString> decoder = Model.of(OverrideToString.class).decoder();
-        Encoder<OverrideToString> encoder = Model.of(OverrideToString.class).encoder();
+        Decoder<OverrideToString> decoder = I.find(Decoder.class, OverrideToString.class);
+        Encoder<OverrideToString> encoder = I.find(Encoder.class, OverrideToString.class);
         assert decoder.decode("A") == OverrideToString.A;
         assert encoder.encode(OverrideToString.A).equals("A");
     }
