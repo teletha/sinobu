@@ -112,6 +112,26 @@ public class EventsTest {
     }
 
     @Test
+    public void toMultiList() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>();
+        Events<Integer> events = facade.observe();
+        ListProperty<Integer> list1 = events.toList();
+        ListProperty<Integer> list2 = events.toList();
+
+        facade.emit(10);
+        assert list1.size() == 1;
+        assert list1.get(0) == 10;
+        assert list2.size() == 1;
+        assert list2.get(0) == 10;
+
+        facade.emit(20);
+        assert list1.size() == 2;
+        assert list1.get(1) == 20;
+        assert list2.size() == 2;
+        assert list2.get(1) == 20;
+    }
+
+    @Test
     public void toMap() {
         EventFacade<Integer, Integer> facade = new EventFacade<>();
         MapProperty<String, Integer> map = facade.observe().toMap(v -> String.valueOf(v));
