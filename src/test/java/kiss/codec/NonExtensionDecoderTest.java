@@ -7,13 +7,14 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.codec;
 
 import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Test;
 
-import kiss.model.Model;
+import kiss.Decoder;
+import kiss.I;
 
 /**
  * @version 2016/07/31 9:12:23
@@ -22,9 +23,6 @@ public class NonExtensionDecoderTest {
 
     @Test
     public void builtin() throws Exception {
-        Model<RetentionPolicy> model = Model.of(RetentionPolicy.class);
-        assert model.decoder() != null;
-
         Decoder decoder = I.find(Decoder.class, RetentionPolicy.class);
         assert decoder != null;
     }

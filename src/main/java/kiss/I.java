@@ -1274,8 +1274,10 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
-                    .getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL,
+                    className.substring(0, className.length() - 1),
+                    method.getName(),
+                    methodType.getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -2159,12 +2161,13 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             return null;
         }
 
-        String encoded = input instanceof String ? (String) input : Model.of(input).encoder().encode(input);
+        String encoded = input instanceof String ? (String) input : find(Encoder.class, input.getClass()).encode(input);
 
         if (output == String.class) {
             return (Out) encoded;
         }
-        return Model.of(output).decoder().decode(encoded);
+
+        return ((Decoder<Out>) find(Decoder.class, output)).decode(encoded);
     }
 
     /**

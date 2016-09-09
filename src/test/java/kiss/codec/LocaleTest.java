@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import kiss.Decoder;
 import kiss.Encoder;
-import kiss.model.Model;
+import kiss.I;
 
 /**
  * @version 2015/10/20 11:18:24
@@ -24,8 +24,8 @@ public class LocaleTest {
 
     @Test
     public void codec() throws Exception {
-        Decoder<Locale> decoder = Model.of(Locale.class).decoder();
-        Encoder<Locale> encoder = Model.of(Locale.class).encoder();
+        Decoder<Locale> decoder = I.find(Decoder.class, Locale.class);
+        Encoder<Locale> encoder = I.find(Encoder.class, Locale.class);
         assert decoder.decode("en") == Locale.ENGLISH;
         assert encoder.encode(Locale.ENGLISH).equals("en");
     }

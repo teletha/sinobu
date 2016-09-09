@@ -140,7 +140,6 @@ public class ModelTest {
         assert model != null;
         assert Map.class == model.type;
         assert 0 == model.properties().size();
-        assert model.decoder() == null;
 
         property = model.property("test");
         assert property != null;
@@ -232,7 +231,6 @@ public class ModelTest {
         assert model != null;
         assert Map.class == model.type;
         assert 0 == model.properties().size();
-        assert model.decoder() == null;
 
         property = model.property("1");
         assert property != null;
@@ -257,7 +255,6 @@ public class ModelTest {
         assert model != null;
         assert Map.class == model.type;
         assert 0 == model.properties().size();
-        assert model.decoder() == null;
     }
 
     /**

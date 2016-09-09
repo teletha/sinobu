@@ -18,7 +18,7 @@ import kiss.I;
 import kiss.Ⅲ;
 
 /**
- * @version 2016/05/01 9:50:17
+ * @version 2016/09/09 16:51:16
  */
 class MapModel<K, V> extends Model<Map<K, V>> {
 
@@ -50,7 +50,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public Property property(String propertyIName) {
-        return (key.decoder() == null) ? null : new Property(value, propertyIName);
+        return !key.attribute ? null : new Property(value, propertyIName);
     }
 
     /**
@@ -58,7 +58,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public Object get(Map object, Property property) {
-        if (key.decoder() == null) {
+        if (!key.attribute) {
             return super.get(object, property);
         } else {
             return object.get(I.transform(property.name, key.type));
@@ -70,7 +70,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public void set(Map object, Property property, Object propertyValue) {
-        if (key.decoder() == null) {
+        if (!key.attribute) {
             super.set(object, property, propertyValue);
         } else {
             object.put(I.transform(property.name, key.type), propertyValue);
@@ -82,7 +82,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public void walk(Map<K, V> object, Consumer<Ⅲ<Model<Map<K, V>>, Property, Object>> walker) {
-        if (key.decoder() == null) {
+        if (!key.attribute) {
             super.walk(object, walker);
         } else {
             for (Entry<K, V> entry : object.entrySet()) {

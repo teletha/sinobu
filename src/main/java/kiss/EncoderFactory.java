@@ -22,7 +22,7 @@ class EncoderFactory implements ExtensionFactory<Encoder> {
         if (key.isEnum()) {
             return value -> ((Enum) value).name();
         }
-        return null;
+        return String::valueOf;
     }
 
 }

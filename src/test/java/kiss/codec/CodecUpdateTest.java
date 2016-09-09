@@ -30,12 +30,12 @@ public class CodecUpdateTest {
     @Test
     public void loadAndUnload() {
         Model<Integer> model = Model.of(Integer.class);
-        assert model.encoder().encode(10).equals("UserDefinedCodec");
-        assert model.decoder().decode("10") == 0;
+        assert model.encode(10).equals("UserDefinedCodec");
+        assert model.decode("10") == 0;
 
         module.unload();
-        assert model.encoder().encode(10).equals("10");
-        assert model.decoder().decode("10") == 10;
+        assert model.encode(10).equals("10");
+        assert model.decode("10") == 10;
     }
 
     /**

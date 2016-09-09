@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import kiss.Decoder;
 import kiss.Encoder;
-import kiss.model.Model;
+import kiss.I;
 
 /**
  * @version 2016/01/20 11:04:29
@@ -26,8 +26,8 @@ public class FileTimeTest {
     @Test
     @Ignore
     public void codec() throws Exception {
-        Decoder<FileTime> decoder = Model.of(FileTime.class).decoder();
-        Encoder<FileTime> encoder = Model.of(FileTime.class).encoder();
+        Decoder<FileTime> decoder = I.find(Decoder.class, FileTime.class);
+        Encoder<FileTime> encoder = I.find(Encoder.class, FileTime.class);
         assert decoder.decode("0").equals(FileTime.fromMillis(0));
         assert encoder.encode(FileTime.fromMillis(0)).equals("0");
     }

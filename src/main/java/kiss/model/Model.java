@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -69,14 +68,11 @@ public class Model<M> {
     /** The human readable identifier of this object model. */
     public final String name;
 
+    /** The attribute type or object type. */
+    public final boolean attribute;
+
     /** The unmodifiable properties list of this object model. */
     private List<Property> properties = Collections.EMPTY_LIST;
-
-    /** The built-in codec. */
-    private Decoder decoder;
-
-    /** The built-in codec. */
-    private Encoder encoder = String::valueOf;
 
     /**
      * Create Model instance.
@@ -89,6 +85,7 @@ public class Model<M> {
         // if (type == null) throw new NullPointerException("Model class shouldn't be null.");
         this.type = type;
         this.name = type.getSimpleName();
+        this.attribute = I.find(Decoder.class, type) != null;
     }
 
     void init() {
@@ -97,96 +94,6 @@ public class Model<M> {
         models.set(type, this);
 
         try {
-            // search from built-in codecs
-            if (type.isEnum()) {
-                decoder = value -> Enum.valueOf((Class<Enum>) type, value);
-                encoder = value -> ((Enum) value).name();
-            } else {
-                switch (type.getName().hashCode()) {
-                case 64711720: // boolean
-                case 344809556: // java.lang.Boolean
-                case 104431: // int
-                case -2056817302: // java.lang.Integer
-                case 3327612: // long
-                case 398795216: // java.lang.Long
-                case 97526364: // float
-                case -527879800: // java.lang.Float
-                case -1325958191: // double
-                case 761287205: // java.lang.Double
-                case 3039496: // byte
-                case 398507100: // java.lang.Byte
-                case 109413500: // short
-                case -515992664: // java.lang.Short
-                case 1195259493: // java.lang.String
-                case -1555282570: // java.lang.StringBuilder
-                case 1196660485: // java.lang.StringBuffer
-                case 2130072984: // java.io.File
-                case 2050244018: // java.net.URL
-                case 2050244015: // java.net.URI
-                case -989675752: // java.math.BigInteger
-                case -1405464277: // java.math.BigDecimal
-                    // constructer pattern
-                    Constructor<?> constructor = I.wrap(type).getConstructor(String.class);
-
-                    decoder = value -> {
-                        try {
-                            return constructor.newInstance(value);
-                        } catch (Exception e) {
-                            throw I.quiet(e);
-                        }
-                    };
-                    break;
-
-                case 3052374: // char
-                case 155276373: // java.lang.Character
-                    decoder = value -> value.charAt(0);
-                    break;
-
-                case -1246033885: // java.time.LocalTime
-                case -1246518012: // java.time.LocalDate
-                case -1179039247: // java.time.LocalDateTime
-                case -682591005: // java.time.OffsetDateTime
-                case -1917484011: // java.time.OffsetTime
-                case 1505337278: // java.time.ZonedDateTime
-                case 649475153: // java.time.MonthDay
-                case -537503858: // java.time.YearMonth
-                case -1062742510: // java.time.Year
-                case -1023498007: // java.time.Duration
-                case 649503318: // java.time.Period
-                case 1296075756: // java.time.Instant
-                    // parse method pattern
-                    Method method = type.getMethod("parse", CharSequence.class);
-
-                    decoder = value -> {
-                        try {
-                            return method.invoke(null, value);
-                        } catch (Exception e) {
-                            throw I.quiet(e);
-                        }
-                    };
-                    break;
-
-                case -1165211622: // java.util.Locale
-                    decoder = Locale::forLanguageTag;
-                    break;
-
-                case 1464606545: // java.nio.file.Path
-                case -2015077501: // sun.nio.fs.WindowsPath
-                    decoder = I::locate;
-                    break;
-
-                // case -89228377: // java.nio.file.attribute.FileTime
-                // decoder = value -> FileTime.fromMillis(Long.valueOf(value));
-                // encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
-                // break;
-
-                default:
-                    decoder = I.find(Decoder.class, type);
-                    encoder = I.find(Encoder.class, type);
-                    break;
-                }
-            }
-
             // examine all methods without private, final, static or native
             Map<String, Method[]> candidates = new HashMap();
 
@@ -275,8 +182,8 @@ public class Model<M> {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field
-                                .getGenericType()), field.getName());
+                        Property property = new Property(
+                                of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field.getGenericType()), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;
 
@@ -344,10 +251,8 @@ public class Model<M> {
      * 
      * @return An associated {@link Decoder}.
      */
-    public Decoder<M> decoder() {
-        Decoder<M> decoder = I.find(Decoder.class, type);
-
-        return decoder == null ? this.decoder : decoder;
+    public M decode(String value) {
+        return ((Decoder<M>) I.find(Decoder.class, type)).decode(value);
     }
 
     /**
@@ -357,10 +262,8 @@ public class Model<M> {
      * 
      * @return An associated {@link Encoder}.
      */
-    public Encoder<M> encoder() {
-        Encoder<M> encoder = I.find(Encoder.class, type);
-
-        return encoder == null ? this.encoder == null ? String::valueOf : this.encoder : encoder;
+    public String encode(M value) {
+        return I.find(Encoder.class, type).encode(value);
     }
 
     /**

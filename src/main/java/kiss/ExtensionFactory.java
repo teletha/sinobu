@@ -14,5 +14,13 @@ package kiss;
  */
 public interface ExtensionFactory<E extends Extensible> extends Extensible {
 
+    /**
+     * <p>
+     * Create the extension by the specified key.
+     * </p>
+     * 
+     * @param key An extension key.
+     * @return A created extension.
+     */
     E create(Class key);
 }
