@@ -650,43 +650,49 @@ public class CollectParametersTest {
     /**
      * @version 2016/05/27 22:33:12
      */
-    private static class StyleDescriptor {
+    public static class StyleDescriptor {
+    }
+
+    /**
+     * @version 2016/09/11 2:47:58
+     */
+    public static class PieceStyle extends StyleDescriptor {
     }
 
     /**
      * @version 2016/05/27 22:32:52
      */
-    private static class UserStyle extends StyleDescriptor {
+    public static class UserStyle extends PieceStyle {
     }
 
     /**
      * @version 2016/05/27 22:34:05
      */
-    private static interface Declarable {
+    public static interface Declarable {
     }
 
     /**
      * @version 2016/05/27 22:33:47
      */
-    private static abstract class Widget<Styles extends StyleDescriptor> implements Declarable {
+    public static abstract class Widget<Styles extends StyleDescriptor> implements Declarable {
     }
 
     /**
      * @version 2016/05/27 22:33:36
      */
-    private static abstract class LowLevelWidget<Styles extends StyleDescriptor, T extends LowLevelWidget<Styles, T>>
+    public static abstract class LowLevelWidget<Styles extends StyleDescriptor, T extends LowLevelWidget<Styles, T>>
             extends Widget<Styles> {
     }
 
     /**
      * @version 2016/05/27 22:33:01
      */
-    private static abstract class MarkedButton<T extends MarkedButton<T, V>, V> extends LowLevelWidget<UserStyle, T> {
+    public static abstract class MarkedButton<T extends MarkedButton<T, V>, V> extends LowLevelWidget<UserStyle, T> {
     }
 
     /**
      * @version 2016/05/27 22:31:56
      */
-    private static class CheckBox<V> extends MarkedButton<CheckBox<V>, V> {
+    public static class CheckBox<V> extends MarkedButton<CheckBox<V>, V> {
     }
 }
