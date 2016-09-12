@@ -24,5 +24,4 @@ class EncoderFactory implements ExtensionFactory<Encoder> {
         }
         return String::valueOf;
     }
-
 }
