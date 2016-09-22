@@ -38,6 +38,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.WritableValue;
 
 /**
  * @version 2015/10/18 16:43:58
@@ -97,21 +98,7 @@ public class Events<V> {
      * @return A {@link Property} as value receiver.
      */
     public final Property<V> to() {
-        return to(new SimpleObjectProperty());
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Property} from this {@link Events}.
-     * </p>
-     * 
-     * @return A {@link Property} as value receiver.
-     */
-    public final Property<V> to(Property<V> property) {
-        // start receiving values
-        to(property::setValue);
-
-        return property;
+        return toValue(new SimpleObjectProperty());
     }
 
     /**
@@ -286,6 +273,20 @@ public class Events<V> {
 
         // API definition
         return property;
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link WritableValue} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link WritableValue} as value receiver.
+     */
+    public final <W extends WritableValue<V>> W toValue(W writable) {
+        // start receiving values
+        to(writable::setValue);
+    
+        return writable;
     }
 
     /**
