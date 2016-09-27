@@ -41,7 +41,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.WritableValue;
 
 /**
- * @version 2015/10/18 16:43:58
+ * @version 2016/09/27 15:06:17
  */
 public class Events<V> {
 
@@ -107,7 +107,18 @@ public class Events<V> {
      * items and notifications from the Observable.
      * 
      * @param next A delegator method of {@link Observer#accept(Object)}.
-     * @param error A delegator method of {@link Observer#error(Throwable)}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
+    public final Disposable to(Runnable next) {
+        return to(v -> next.run(), null, null);
+    }
+
+    /**
+     * <p>
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
+     * 
+     * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Consumer<? super V> next) {
@@ -285,7 +296,7 @@ public class Events<V> {
     public final <W extends WritableValue<V>> W toValue(W writable) {
         // start receiving values
         to(writable::setValue);
-    
+
         return writable;
     }
 
