@@ -18,7 +18,6 @@ import javafx.beans.property.SimpleMapProperty;
 import org.junit.Test;
 
 import kiss.I;
-import kiss.sample.bean.ArrayBean;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.Person;
@@ -75,18 +74,6 @@ public class BeanTest {
 
         primitive.setShort((short) 1);
         assert (short) 1 == primitive.getShort();
-    }
-
-    @Test
-    public void array() {
-        ArrayBean bean = I.make(ArrayBean.class);
-        bean.setObjects(new String[] {"first", "second"});
-        assert 2 == bean.getObjects().length;
-        assert "first" == bean.getObjects()[0];
-        assert "second" == bean.getObjects()[1];
-
-        bean.setPrimitives(new int[] {0, 2, 5});
-        assert 3 == bean.getPrimitives().length;
     }
 
     /**

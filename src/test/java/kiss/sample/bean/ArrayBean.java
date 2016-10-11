@@ -10,43 +10,23 @@
 package kiss.sample.bean;
 
 /**
- * @version 2014/07/18 22:32:53
+ * @version 2016/10/11 11:10:17
  */
 public class ArrayBean {
 
-    private String[] objects;
+    public String[] strings;
 
-    private int[] primitives;
+    public int[] ints;
 
-    /**
-     * Get the objects property of this {@link ArrayBean}.
-     * 
-     * @return The objects prperty.
-     */
-    public String[] getObjects() {
-        return objects;
-    }
+    public long[] longs;
 
-    /**
-     * Set the objects property of this {@link ArrayBean}.
-     */
-    public void setObjects(String[] objects) {
-        this.objects = objects;
-    }
+    public float[] floats;
 
-    /**
-     * Get the primitives property of this {@link ArrayBean}.
-     * 
-     * @return The primitives prperty.
-     */
-    public int[] getPrimitives() {
-        return primitives;
-    }
+    public double[] doubles;
 
-    /**
-     * Set the primitives property of this {@link ArrayBean}.
-     */
-    public void setPrimitives(int[] primitives) {
-        this.primitives = primitives;
-    }
+    public boolean[] booleans;
+
+    public char[] chars;
+
+    public short[] shorts;
 }
