@@ -848,26 +848,10 @@ public class I implements ClassListener<Extensible> {
      *            the resulting String.
      * @param items A {@link Iterable} items.
      * @return A concat expression.
-     * @throws NullPointerException If items is <code>null</code>.
      */
-    public static String join(CharSequence delimiter, CharSequence... items) {
-        return join(delimiter, Arrays.asList(items));
-    }
-
-    /**
-     * <p>
-     * Returns a string containing the string representation of each of items, using the specified
-     * separator between each.
-     * </p>
-     *
-     * @param delimiter A sequence of characters that is used to separate each of the elements in
-     *            the resulting String.
-     * @param items A {@link Iterable} items.
-     * @return A concat expression.
-     */
-    public static String join(CharSequence delimiter, Iterable items) {
+    public static StringBuilder join(CharSequence delimiter, Iterable items) {
         if (items == null) {
-            return "";
+            return new StringBuilder();
         }
 
         StringBuilder builder = new StringBuilder();
@@ -880,7 +864,7 @@ public class I implements ClassListener<Extensible> {
                 builder.append(delimiter).append(iterator.next());
             }
         }
-        return builder.toString();
+        return builder;
     }
 
     /**
