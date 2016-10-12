@@ -221,7 +221,7 @@ import kiss.model.Property;
  * @version 2016/04/04 19:26:39
  */
 @SuppressWarnings({"resource", "unchecked"})
-public class I implements ThreadFactory, ClassListener<Extensible> {
+public class I implements ClassListener<Extensible> {
 
     // Candidates of Method Name
     //
@@ -313,12 +313,18 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
     /** The accessible internal method for class loading. */
     private static final Method define;
 
+    /** The daemon thread factory. */
+    private static final ThreadFactory factory = run -> {
+        Thread thread = new Thread(run);
+        thread.setDaemon(true);
+        return thread;
+    };
+
     /** The parallel task manager. */
-    // private static final ExecutorService parallel = Executors.newWorkStealingPool(4);
-    private static final ExecutorService parallel = Executors.newCachedThreadPool(new I());
+    private static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
 
     /** The serial task manager. */
-    private static final ExecutorService serial = Executors.newSingleThreadExecutor(new I());
+    private static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
 
     /** The associatable object holder. */
     private static final WeakHashMap<Object, WeakHashMap> associatables = new WeakHashMap();
@@ -1274,10 +1280,8 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
             mv.visitLdcInsn(method.getName());
 
             // First parameter : Method delegation
-            Handle handle = new Handle(H_INVOKESPECIAL,
-                    className.substring(0, className.length() - 1),
-                    method.getName(),
-                    methodType.getDescriptor());
+            Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
+                    .getDescriptor());
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
@@ -2628,16 +2632,5 @@ public class I implements ThreadFactory, ClassListener<Extensible> {
                 }
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final Thread newThread(Runnable r) {
-        Thread thread = new Thread(r);
-        thread.setDaemon(true);
-
-        return thread;
     }
 }
