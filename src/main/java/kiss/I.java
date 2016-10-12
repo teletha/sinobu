@@ -849,9 +849,13 @@ public class I implements ClassListener<Extensible> {
      * @param items A {@link Iterable} items.
      * @return A concat expression.
      */
-    public static StringBuilder join(CharSequence delimiter, Iterable items) {
+    public static String join(CharSequence delimiter, Iterable items) {
         if (items == null) {
-            return new StringBuilder();
+            return "";
+        }
+
+        if (delimiter == null) {
+            delimiter = "";
         }
 
         StringBuilder builder = new StringBuilder();
@@ -864,7 +868,7 @@ public class I implements ClassListener<Extensible> {
                 builder.append(delimiter).append(iterator.next());
             }
         }
-        return builder;
+        return builder.toString();
     }
 
     /**

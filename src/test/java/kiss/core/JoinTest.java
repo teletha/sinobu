@@ -12,12 +12,12 @@ package kiss.core;
 import java.util.Arrays;
 import java.util.Collections;
 
-import kiss.I;
-
 import org.junit.Test;
 
+import kiss.I;
+
 /**
- * @version 2013/09/27 15:02:27
+ * @version 2016/10/12 16:47:07
  */
 public class JoinTest {
 
@@ -38,7 +38,7 @@ public class JoinTest {
 
     @Test
     public void nullSeparator() throws Exception {
-        assert I.join(null, Arrays.asList("a", "b")).equals("anullb");
+        assert I.join(null, Arrays.asList("a", "b")).equals("ab");
     }
 
     @Test
