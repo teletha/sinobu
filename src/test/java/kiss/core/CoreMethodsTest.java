@@ -13,17 +13,15 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+
 import kiss.I;
-import kiss.Manageable;
-import kiss.Singleton;
 import kiss.sample.bean.FinalBean;
 import kiss.sample.bean.Primitive;
 import kiss.sample.modifier.Abstract;
 import kiss.sample.modifier.Final;
 import kiss.sample.modifier.Nested.PublicStatic;
 import kiss.sample.modifier.Public;
-
-import org.junit.Test;
 
 /**
  * @version 2012/11/09 10:45:14
@@ -160,92 +158,6 @@ public class CoreMethodsTest {
     @Test(expected = ExceptionClass.E.class)
     public void instatiateExceptionThrower() throws Exception {
         I.make(ExceptionClass.class);
-    }
-
-    /**
-     * Test self circular reference.
-     */
-    @Test
-    public void testSelfCircularReferenceInStaticInitializer() {
-        SelfCircularReference instance = I.make(SelfCircularReference.class);
-        assert instance != null;
-        assert SelfCircularReference.instance != null;
-        assert instance != SelfCircularReference.instance;
-    }
-
-    /**
-     * @version 2008/11/03 21:44:17
-     */
-    private static class SelfCircularReference {
-
-        private static final SelfCircularReference instance;
-
-        static {
-            instance = I.make(SelfCircularReference.class);
-        }
-    }
-
-    /**
-     * Test self circular reference for singleton.
-     */
-    @Test
-    public void testSingletonSelfCircularReference() {
-        SingletonSelfCircularReference instance = I.make(SingletonSelfCircularReference.class);
-        assert instance != null;
-        assert SingletonSelfCircularReference.instance != null;
-        assert instance == SingletonSelfCircularReference.instance;
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/11/03 21:44:17
-     */
-    @Manageable(lifestyle = Singleton.class)
-    private static class SingletonSelfCircularReference {
-
-        private static final SingletonSelfCircularReference instance;
-
-        static {
-            instance = I.make(SingletonSelfCircularReference.class);
-        }
-    }
-
-    /**
-     * Test self circular reference.
-     */
-    @Test(expected = ClassCircularityError.class)
-    public void testSelfCircularReferenceInConstructor() {
-        I.make(SelfCircularReferenceInConstructor.class);
-    }
-
-    /**
-     * @version 2009/05/16 10:23:40
-     */
-    private static class SelfCircularReferenceInConstructor {
-
-        private SelfCircularReferenceInConstructor(SelfCircularReferenceInConstructor self) {
-            // something
-        }
-    }
-
-    /**
-     * Test self circular reference.
-     */
-    @Test(expected = ClassCircularityError.class)
-    public void testSingletonSelfCircularReferenceInConstructor() {
-        I.make(SingletonSelfCircularReferenceInConstructor.class);
-    }
-
-    /**
-     * @version 2009/05/16 10:23:40
-     */
-    @Manageable(lifestyle = Singleton.class)
-    private static class SingletonSelfCircularReferenceInConstructor {
-
-        private SingletonSelfCircularReferenceInConstructor(SingletonSelfCircularReferenceInConstructor self) {
-            // something
-        }
     }
 
     /**
