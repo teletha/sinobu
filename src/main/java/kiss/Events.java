@@ -1114,22 +1114,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Alias for take(condition.map(value -> !value).
-     * </p>
-     * 
-     * @param condition
-     * @return
-     */
-    public final Events<V> skip(Events<Boolean> condition) {
-        // ignore invalid parameter
-        if (condition == null) {
-            return this;
-        }
-        return take(condition.startWith(false).map(value -> !value));
-    }
-
-    /**
-     * <p>
      * Bypasses a specified number of values in an {@link Events} sequence and then returns the
      * remaining values.
      * </p>
@@ -1261,6 +1245,22 @@ public class Events<V> {
 
     /**
      * <p>
+     * Alias for take(condition.map(value -> !value).
+     * </p>
+     * 
+     * @param condition
+     * @return
+     */
+    public final Events<V> skipWhile(Events<Boolean> condition) {
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+        return takeWhile(condition.startWith(false).map(value -> !value));
+    }
+
+    /**
+     * <p>
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Events}.
      * </p>
@@ -1344,33 +1344,6 @@ public class Events<V> {
                     observer.accept(value);
                 }
             });
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
-     * given predicate.
-     * </p>
-     * 
-     * @param condition An external boolean {@link Events}. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Events<V> take(Events<Boolean> condition) {
-        // ignore invalid parameter
-        if (condition == null) {
-            return this;
-        }
-
-        return new Events<>(observer -> {
-            AtomicBoolean flag = new AtomicBoolean();
-
-            return condition.to(flag::set).and(to(v -> {
-                if (flag.get()) {
-                    observer.accept(v);
-                }
-            }));
         });
     }
 
@@ -1514,6 +1487,33 @@ public class Events<V> {
                 observer.complete();
                 disposer.dispose();
             })));
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} consisting of the values of this {@link Events} that match the
+     * given predicate.
+     * </p>
+     * 
+     * @param condition An external boolean {@link Events}. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Events<V> takeWhile(Events<Boolean> condition) {
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+    
+        return new Events<>(observer -> {
+            AtomicBoolean flag = new AtomicBoolean();
+    
+            return condition.to(flag::set).and(to(v -> {
+                if (flag.get()) {
+                    observer.accept(v);
+                }
+            }));
         });
     }
 

@@ -792,7 +792,7 @@ public class EventsTest {
     @Test
     public void skipByConditionEvent() {
         EventFacade<Boolean, Boolean> condition = new EventFacade();
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(condition.observe()));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skipWhile(condition.observe()));
 
         assert facade.emitAndRetrieve(10) == 10;
         assert facade.emitAndRetrieve(20) == 20;
@@ -988,7 +988,7 @@ public class EventsTest {
     @Test
     public void takeByConditionEvent() {
         EventFacade<Boolean, Boolean> condition = new EventFacade();
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.take(condition.observe()));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.takeWhile(condition.observe()));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
