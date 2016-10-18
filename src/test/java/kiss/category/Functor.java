@@ -9,9 +9,12 @@
  */
 package kiss.category;
 
+import java.util.function.Function;
+
 /**
  * @version 2016/03/30 2:56:04
  */
-public interface Functor<A> {
+public interface Functor<Param> {
 
+    <Return> Functor<Return> fmap(Function<Param, Return> function);
 }
