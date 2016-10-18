@@ -19,11 +19,12 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import antibug.AntiBug;
 import antibug.CleanRoom;
 import kiss.I;
 
 /**
- * @version 2015/07/02 13:48:37
+ * @version 2016/10/18 15:46:47
  */
 public class LocateTest {
 
@@ -76,6 +77,22 @@ public class LocateTest {
         assert archive != null;
         assert Files.exists(archive);
         assert Files.isDirectory(archive);
+    }
+
+    @Test
+    public void locateResource() {
+        Path resource = I.locate(LocateTest.class, LocateTest.class.getSimpleName() + ".class");
+        assert resource != null;
+        assert Files.exists(resource);
+        assert Files.isRegularFile(resource);
+    }
+
+    @Test
+    public void locateResourceInJar() {
+        Path resource = I.locate(AntiBug.class, AntiBug.class.getSimpleName() + ".class");
+        assert resource != null;
+        assert Files.exists(resource);
+        assert Files.isRegularFile(resource);
     }
 
     @Test

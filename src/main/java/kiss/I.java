@@ -33,6 +33,7 @@ import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkPermission;
 import java.nio.file.NoSuchFileException;
@@ -218,7 +219,7 @@ import kiss.model.Property;
  * matched. (root path will not match)</dd>
  * </dl>
  * 
- * @version 2016/04/04 19:26:39
+ * @version 2016/10/18 16:09:02
  */
 @SuppressWarnings({"resource", "unchecked"})
 public class I implements ClassListener<Extensible> {
@@ -924,6 +925,30 @@ public class I implements ClassListener<Extensible> {
 
         // API definition
         return (source == null) ? null : locate(source.getLocation());
+    }
+
+    /**
+     * <p>
+     * Locate the class resource (e.g. in jar file, in classes directory) by the specified sample
+     * class. If the sample class belongs to system classloader (e.g. {@link String}),
+     * <code>null</code> will be returned.
+     * </p>
+     * 
+     * @param clazz A sample class.
+     * @param filePath A location path.
+     * @return A class resource (e.g. in jar file, in classes directory) or <code>null</code>.
+     */
+    public static Path locate(Class clazz, String filePath) {
+        try {
+            Path root = locate(clazz);
+
+            if (Files.isRegularFile(root)) {
+                root = FileSystems.newFileSystem(root, null).getPath("/");
+            }
+            return root.resolve(clazz.getName().replaceAll("\\.", "/")).resolveSibling(filePath);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
