@@ -347,21 +347,15 @@ public class I implements ClassListener<Extensible> {
     // initialization
     static {
         // built-in lifestyles
-        modules.set(List.class, new Prototype(ArrayList.class));
-        modules.set(Map.class, new Prototype(HashMap.class));
-        modules.set(Set.class, new Prototype(HashSet.class));
+        modules.set(List.class, ArrayList::new);
+        modules.set(Map.class, HashMap::new);
+        modules.set(Set.class, HashSet::new);
         modules.set(Prototype.class, new Prototype(Prototype.class));
-        modules.set(ListProperty.class, () -> {
-            return new SimpleListProperty(FXCollections.observableArrayList());
-        });
+        modules.set(ListProperty.class, () -> new SimpleListProperty(FXCollections.observableArrayList()));
         modules.set(ObservableList.class, FXCollections::observableArrayList);
-        modules.set(MapProperty.class, () -> {
-            return new SimpleMapProperty(FXCollections.observableHashMap());
-        });
+        modules.set(MapProperty.class, () -> new SimpleMapProperty(FXCollections.observableHashMap()));
         modules.set(ObservableMap.class, FXCollections::observableHashMap);
-        modules.set(SetProperty.class, () -> {
-            return new SimpleSetProperty(FXCollections.observableSet());
-        });
+        modules.set(SetProperty.class, () -> new SimpleSetProperty(FXCollections.observableSet()));
         modules.set(ObservableSet.class, FXCollections::observableSet);
 
         try {
