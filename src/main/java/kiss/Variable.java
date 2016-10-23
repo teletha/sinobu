@@ -24,6 +24,9 @@ import java.util.function.UnaryOperator;
  */
 public class Variable<V> {
 
+    /** The accept condition. */
+    private static final Predicate Accept = c -> true;
+
     /** The current value. */
     private final AtomicReference<V> value = new AtomicReference();
 
@@ -34,23 +37,6 @@ public class Variable<V> {
      * Hide constructor.
      */
     private Variable() {
-    }
-
-    /**
-     * @param value A value to check the equality.
-     * @return A result of equality.
-     */
-    public boolean is(V value) {
-        return Objects.equals(this.value.get(), value);
-    }
-
-    /**
-     * @param value A value to check the equality.
-     * @return A result of equality.
-     */
-    public boolean is(Predicate<V> condition) {
-        V current = this.value.get();
-        return condition == null || current == null ? false : condition.test(current);
     }
 
     /**
@@ -78,6 +64,40 @@ public class Variable<V> {
     public V get(Supplier<V> value) {
         V current = this.value.get();
         return current == null ? value == null ? null : value.get() : current;
+    }
+
+    /**
+     * @param value A value to check the equality.
+     * @return A result of equality.
+     */
+    public boolean is(V value) {
+        return Objects.equals(this.value.get(), value);
+    }
+
+    /**
+     * @param value A value to check the equality.
+     * @return A result of equality.
+     */
+    public boolean is(Predicate<V> condition) {
+        return condition == null ? false : condition.test(this.value.get());
+    }
+
+    /**
+     * Check whether the value is absent or not.
+     * 
+     * @return A result.
+     */
+    public boolean isAbsent() {
+        return is(Objects::isNull);
+    }
+
+    /**
+     * Check whether the value is present or not.
+     * 
+     * @return A result.
+     */
+    public boolean isPresent() {
+        return is(Objects::nonNull);
     }
 
     /**
@@ -119,6 +139,56 @@ public class Variable<V> {
 
     /**
      * <p>
+     * Observe this {@link Variable}.
+     * </p>
+     * 
+     * @return
+     */
+    public Events<V> observe() {
+        return new Events<V>(observer -> {
+            if (observers == null) {
+                observers = new CopyOnWriteArrayList();
+            }
+            observers.add(observer);
+
+            return () -> {
+                observers.remove(observer);
+
+                if (observers.isEmpty()) {
+                    observers = null;
+                }
+            };
+        });
+    }
+
+    /**
+     * <p>
+     * If the value is present, return this {@link Variable}. If the value is absent, return other
+     * {@link Variable}.
+     * </p>
+     * 
+     * @param other An other value.
+     * @return A {@link Variable}.
+     */
+    public Variable<V> or(V other) {
+        return or(of(other));
+    }
+
+    /**
+     * <p>
+     * If the value is present, return this {@link Variable}. If the value is absent, return other
+     * {@link Variable}.
+     * </p>
+     * 
+     * @param other An other value.
+     * @return A {@link Variable}.
+     */
+    public Variable<V> or(Variable<V> other) {
+        return isAbsent() ? other == null ? of(null) : other : this;
+    }
+
+    /**
+     * <p>
      * Assign the new value.
      * </p>
      * 
@@ -126,7 +196,7 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V set(V value) {
-        return set(current -> value);
+        return setIf(Accept, value);
     }
 
     /**
@@ -138,7 +208,7 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V set(Supplier<V> value) {
-        return set(current -> value == null ? current : value.get());
+        return setIf(Accept, value);
     }
 
     /**
@@ -150,16 +220,7 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V set(UnaryOperator<V> value) {
-        return value == null ? this.value.get() : this.value.getAndUpdate(current -> {
-            V newValue = value.apply(current);
-
-            if (observers != null) {
-                for (Observer observer : observers) {
-                    observer.accept(newValue);
-                }
-            }
-            return newValue;
-        });
+        return setIf(Accept, value);
     }
 
     /**
@@ -198,7 +259,18 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V setIf(Predicate<V> condition, UnaryOperator<V> value) {
-        return set(current -> condition != null && value != null && condition.test(current) ? value.apply(current) : current);
+        return value == null || condition == null ? this.value.get() : this.value.getAndUpdate(current -> {
+            if (condition.test(current)) {
+                current = value.apply(current);
+
+                if (observers != null) {
+                    for (Observer observer : observers) {
+                        observer.accept(current);
+                    }
+                }
+            }
+            return current;
+        });
     }
 
     /**
@@ -271,30 +343,6 @@ public class Variable<V> {
      */
     public V setIfPresent(UnaryOperator<V> value) {
         return setIf(Objects::nonNull, value);
-    }
-
-    /**
-     * <p>
-     * Convert to {@link Events}.
-     * </p>
-     * 
-     * @return
-     */
-    public Events<V> to() {
-        return new Events<V>(observer -> {
-            if (observers == null) {
-                observers = new CopyOnWriteArrayList();
-            }
-            observers.add(observer);
-
-            return () -> {
-                observers.remove(observer);
-
-                if (observers.isEmpty()) {
-                    observers = null;
-                }
-            };
-        });
     }
 
     /**

@@ -47,9 +47,9 @@ public class VariableTest {
 
     @Test
     public void isCondition() {
-        Predicate<String> condition = value -> value.length() < 10;
-        assert empty.is(condition) == false;
-        assert string.is(condition) == true;
+        Predicate<String> condition = value -> value == null;
+        assert empty.is(condition) == true;
+        assert string.is(condition) == false;
     }
 
     @Test
@@ -86,5 +86,31 @@ public class VariableTest {
 
         assert empty.is("supply update");
         assert string.is("supply update");
+    }
+
+    @Test
+    public void or() throws Exception {
+        assert empty.or("text").is("text");
+        assert string.or("text").is("value");
+    }
+
+    @Test
+    public void orNull() throws Exception {
+        String nill = null;
+        assert empty.or(nill).isAbsent();
+        assert string.or(nill).is("value");
+    }
+
+    @Test
+    public void orVariable() throws Exception {
+        assert empty.or(string).is("value");
+        assert string.or(empty).is("value");
+    }
+
+    @Test
+    public void orNullVariable() throws Exception {
+        Variable<String> nill = null;
+        assert empty.or(nill).isAbsent();
+        assert string.or(nill).is("value");
     }
 }
