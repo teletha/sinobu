@@ -9,10 +9,11 @@
  */
 package kiss;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -24,11 +25,23 @@ import java.util.function.UnaryOperator;
  */
 public class Variable<V> {
 
+    /** The modifier. */
+    private static final Field modify;
+
+    static {
+        try {
+            modify = Variable.class.getField("v");
+            modify.setAccessible(true);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
     /** The accept condition. */
     private static final Predicate Accept = c -> true;
 
-    /** The current value. */
-    private final AtomicReference<V> value = new AtomicReference();
+    /** The current value. This value is not final but read-only. */
+    public transient final V v;
 
     /** The observers. */
     private volatile List<Observer> observers;
@@ -36,7 +49,21 @@ public class Variable<V> {
     /**
      * Hide constructor.
      */
-    private Variable() {
+    private Variable(V value) {
+        this.v = value;
+    }
+
+    /**
+     * <p>
+     * Compute the current value. If it is <code>null</code>, this method returns the specified
+     * default value.
+     * </p>
+     * 
+     * @param value The default value.
+     * @return The current value or the specified default value.
+     */
+    public V get() {
+        return get((V) null);
     }
 
     /**
@@ -62,8 +89,7 @@ public class Variable<V> {
      * @return The current value or the specified default value.
      */
     public V get(Supplier<V> value) {
-        V current = this.value.get();
-        return current == null ? value == null ? null : value.get() : current;
+        return v == null ? value == null ? null : value.get() : v;
     }
 
     /**
@@ -71,7 +97,7 @@ public class Variable<V> {
      * @return A result of equality.
      */
     public boolean is(V value) {
-        return Objects.equals(this.value.get(), value);
+        return Objects.equals(v, value);
     }
 
     /**
@@ -79,7 +105,7 @@ public class Variable<V> {
      * @return A result of equality.
      */
     public boolean is(Predicate<V> condition) {
-        return condition == null ? false : condition.test(this.value.get());
+        return condition == null ? false : condition.test(v);
     }
 
     /**
@@ -108,8 +134,8 @@ public class Variable<V> {
      * @param action An action to perform.
      */
     public void map(Consumer<V> action) {
-        if (this.value != null && action != null) {
-            action.accept(this.value.get());
+        if (v != null && action != null) {
+            action.accept(v);
         }
     }
 
@@ -122,7 +148,11 @@ public class Variable<V> {
      * @return The computed {@link Variable}.
      */
     public <R> Variable<R> map(Function<V, R> converter) {
-        return this.value == null || converter == null ? new Variable() : of(converter.apply(this.value.get()));
+        return v == null || converter == null ? new Variable(null) : of(converter.apply(v));
+    }
+
+    public <Param, R> Variable<R> map(BiFunction<V, Param, R> function, Param param) {
+        return v == null || function == null ? new Variable(null) : of(function.apply(get(), param));
     }
 
     /**
@@ -134,7 +164,7 @@ public class Variable<V> {
      * @return The computed {@link Variable}.
      */
     public <R> Variable<R> flatMap(Function<V, Variable<R>> converter) {
-        return this.value == null || converter == null ? new Variable() : converter.apply(this.value.get());
+        return v == null || converter == null ? new Variable(null) : converter.apply(v);
     }
 
     /**
@@ -259,18 +289,26 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V setIf(Predicate<V> condition, UnaryOperator<V> value) {
-        return value == null || condition == null ? this.value.get() : this.value.getAndUpdate(current -> {
-            if (condition.test(current)) {
-                current = value.apply(current);
+        if (value == null || condition == null) {
+            return v;
+        }
 
-                if (observers != null) {
-                    for (Observer observer : observers) {
-                        observer.accept(current);
-                    }
+        V previous = v;
+
+        if (condition.test(previous)) {
+            try {
+                modify.set(this, value.apply(previous));
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+
+            if (observers != null) {
+                for (Observer observer : observers) {
+                    observer.accept(v);
                 }
             }
-            return current;
-        });
+        }
+        return previous;
     }
 
     /**
@@ -354,8 +392,6 @@ public class Variable<V> {
      * @return A created {@link Variable}.
      */
     public static <T> Variable<T> of(T value) {
-        Variable<T> var = new Variable();
-        var.value.set(value);
-        return var;
+        return new Variable(value);
     }
 }

@@ -302,6 +302,19 @@ public class Events<V> {
 
     /**
      * <p>
+     * Receive values as {@link Variable} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link Variable} as value receiver.
+     */
+    public final Variable<V> toVariable() {
+        Variable<V> var = Variable.of(null);
+        to(var::set);
+        return var;
+    }
+
+    /**
+     * <p>
      * Filters the values of an {@link Events} sequence based on the specified type.
      * </p>
      * 
@@ -1505,10 +1518,10 @@ public class Events<V> {
         if (condition == null) {
             return this;
         }
-    
+
         return new Events<>(observer -> {
             AtomicBoolean flag = new AtomicBoolean();
-    
+
             return condition.to(flag::set).and(to(v -> {
                 if (flag.get()) {
                     observer.accept(v);
