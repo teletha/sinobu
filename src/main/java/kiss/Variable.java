@@ -12,8 +12,8 @@ package kiss;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -151,10 +151,6 @@ public class Variable<V> {
         return v == null || converter == null ? new Variable(null) : of(converter.apply(v));
     }
 
-    public <Param, R> Variable<R> map(BiFunction<V, Param, R> function, Param param) {
-        return v == null || function == null ? new Variable(null) : of(function.apply(get(), param));
-    }
-
     /**
      * <p>
      * Perform the specified action if the value is present.
@@ -201,7 +197,33 @@ public class Variable<V> {
      * @return A {@link Variable}.
      */
     public Variable<V> or(V other) {
-        return or(of(other));
+        return v != null ? this : of(other);
+    }
+
+    /**
+     * <p>
+     * If the value is present, return this {@link Variable}. If the value is absent, return other
+     * {@link Variable}.
+     * </p>
+     * 
+     * @param other An other value.
+     * @return A {@link Variable}.
+     */
+    public Variable<V> or(Supplier<V> other) {
+        return v != null ? this : of(other);
+    }
+
+    /**
+     * <p>
+     * If the value is present, return this {@link Variable}. If the value is absent, return other
+     * {@link Variable}.
+     * </p>
+     * 
+     * @param other An other value.
+     * @return A {@link Variable}.
+     */
+    public Variable<V> or(Optional<V> other) {
+        return v != null ? this : of(other);
     }
 
     /**
@@ -214,7 +236,7 @@ public class Variable<V> {
      * @return A {@link Variable}.
      */
     public Variable<V> or(Variable<V> other) {
-        return isAbsent() ? other == null ? of(null) : other : this;
+        return v != null ? this : other != null ? other : new Variable(null);
     }
 
     /**
@@ -393,5 +415,29 @@ public class Variable<V> {
      */
     public static <T> Variable<T> of(T value) {
         return new Variable(value);
+    }
+
+    /**
+     * <p>
+     * Create {@link Variable} with the specified value.
+     * </p>
+     * 
+     * @param value An actual value, <code>null</code> will be acceptable.
+     * @return A created {@link Variable}.
+     */
+    public static <T> Variable<T> of(Supplier<T> value) {
+        return of(value.get());
+    }
+
+    /**
+     * <p>
+     * Create {@link Variable} with the specified value.
+     * </p>
+     * 
+     * @param value An actual value, <code>null</code> will be acceptable.
+     * @return A created {@link Variable}.
+     */
+    public static <T> Variable<T> of(Optional<T> value) {
+        return of(value.orElse(null));
     }
 }

@@ -308,7 +308,7 @@ public class Events<V> {
      * @return A {@link Variable} as value receiver.
      */
     public final Variable<V> toVariable() {
-        Variable<V> var = Variable.of(null);
+        Variable<V> var = Variable.of((V) null);
         to(var::set);
         return var;
     }

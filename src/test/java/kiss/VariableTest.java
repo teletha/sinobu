@@ -27,7 +27,7 @@ public class VariableTest {
 
     @Before
     public void init() {
-        empty = Variable.of(null);
+        empty = Variable.of((String) null);
         string = Variable.of("value");
     }
 
