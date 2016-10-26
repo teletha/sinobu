@@ -1812,18 +1812,6 @@ public class I implements ClassListener<Extensible> {
      * </p>
      * 
      * @param param1 A first parameter.
-     * @return
-     */
-    public static <Param1> Ⅰ<Param1> pair(Param1 param1) {
-        return new Ⅰ(param1);
-    }
-
-    /**
-     * <p>
-     * Create value set.
-     * </p>
-     * 
-     * @param param1 A first parameter.
      * @param param2 A second parameter.
      * @return
      */

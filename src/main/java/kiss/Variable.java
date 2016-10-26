@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -98,6 +99,14 @@ public class Variable<V> {
      */
     public boolean is(V value) {
         return Objects.equals(v, value);
+    }
+
+    /**
+     * @param value A value to check the equality.
+     * @return A result of equality.
+     */
+    public boolean is(BooleanSupplier condition) {
+        return condition == null ? false : condition.getAsBoolean();
     }
 
     /**
