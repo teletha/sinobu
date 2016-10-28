@@ -260,12 +260,6 @@ public class I implements ClassListener<Extensible> {
         // no operation
     };
 
-    /** Accept Any */
-    public static final Predicate<?> Accept = e -> true;
-
-    /** Reject Any */
-    public static final Predicate<?> Reject = e -> false;
-
     /**
      * <p>
      * The configuration of charcter encoding in Sinobu, default value is <em>UTF-8</em>. It is
@@ -433,6 +427,17 @@ public class I implements ClassListener<Extensible> {
      * </p>
      */
     private I() {
+    }
+
+    /**
+     * <p>
+     * Create {@link Predicate} which accpets any item.
+     * </p>
+     * 
+     * @return An acceptable {@link Predicate}.
+     */
+    public static <V> Predicate<V> accept() {
+        return e -> true;
     }
 
     /**
@@ -2176,6 +2181,17 @@ public class I implements ClassListener<Extensible> {
 
         // API definition
         return java;
+    }
+
+    /**
+     * <p>
+     * Create {@link Predicate} which rejects any item.
+     * </p>
+     * 
+     * @return An rejectable {@link Predicate}.
+     */
+    public static <V> Predicate<V> reject() {
+        return e -> false;
     }
 
     /**

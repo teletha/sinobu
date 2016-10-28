@@ -37,9 +37,6 @@ public class Variable<V> {
         }
     }
 
-    /** The accept condition. */
-    private static final Predicate Accept = c -> true;
-
     /** The current value. This value is not final but read-only. */
     public transient final V v;
 
@@ -305,7 +302,7 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V set(V value) {
-        return setIf(Accept, value);
+        return setIf(I.accept(), value);
     }
 
     /**
@@ -317,7 +314,7 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V set(Supplier<V> value) {
-        return setIf(Accept, value);
+        return setIf(I.accept(), value);
     }
 
     /**
@@ -329,7 +326,7 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V set(UnaryOperator<V> value) {
-        return setIf(Accept, value);
+        return setIf(I.accept(), value);
     }
 
     /**
