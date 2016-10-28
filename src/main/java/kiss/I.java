@@ -70,6 +70,8 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -218,7 +220,7 @@ import kiss.model.Property;
  * <dd>All descendant paths which are under the user specified path and have ".html" suffix are
  * matched. (root path will not match)</dd>
  * </dl>
- * 
+ *
  * @version 2016/10/18 16:09:02
  */
 @SuppressWarnings({"resource", "unchecked"})
@@ -252,6 +254,17 @@ public class I implements ClassListener<Extensible> {
     // xml xerox
     // yield
     // zip
+
+    /** No Operation */
+    public static final Runnable NoOP = () -> {
+        // no operation
+    };
+
+    /** Accept Any */
+    public static final Predicate<?> Accept = e -> true;
+
+    /** Reject Any */
+    public static final Predicate<?> Reject = e -> false;
 
     /**
      * <p>
@@ -426,7 +439,7 @@ public class I implements ClassListener<Extensible> {
      * <p>
      * Retrieve the associated value with the specified object by the specified type.
      * </p>
-     * 
+     *
      * @param host A host object.
      * @param type An association type.
      * @return An associated value.
@@ -434,6 +447,60 @@ public class I implements ClassListener<Extensible> {
     public static <V> V associate(Object host, Class<V> type) {
         WeakHashMap<Class<V>, V> association = associatables.computeIfAbsent(host, key -> new WeakHashMap());
         return association.computeIfAbsent(type, I::make);
+    }
+
+    /**
+     * <p>
+     * Create the partial applied {@link Consumer}.
+     * </p>
+     *
+     * @param function A target function.
+     * @param param A parameter to apply.
+     * @return A partial applied function.
+     */
+    public static <Param> Runnable bind(Consumer<Param> function, Param param) {
+        return function == null ? NoOP : () -> function.accept(param);
+    }
+
+    /**
+     * <p>
+     * Create the partial applied {@link Consumer}.
+     * </p>
+     *
+     * @param function A target function.
+     * @param param A parameter to apply.
+     * @return A partial applied function.
+     */
+    public static <Param1, Param2> Runnable bind(BiConsumer<Param1, Param2> function, Param1 param1, Param2 param2) {
+        return function == null ? NoOP : () -> function.accept(param1, param2);
+    }
+
+    /**
+     * <p>
+     * Create the partial applied {@link Function}.
+     * </p>
+     *
+     * @param function A target function.
+     * @param param A parameter to apply.
+     * @return A partial applied function.
+     */
+    public static <Param, Return> Supplier<Return> bind(Function<Param, Return> function, Param param) {
+        Objects.requireNonNull(function);
+        return () -> function.apply(param);
+    }
+
+    /**
+     * <p>
+     * Create the partial applied {@link Function}.
+     * </p>
+     *
+     * @param function A target function.
+     * @param param A parameter to apply.
+     * @return A partial applied function.
+     */
+    public static <Param1, Param2, Return> Supplier<Return> bind(BiFunction<Param1, Param2, Return> function, Param1 param1, Param2 param2) {
+        Objects.requireNonNull(function);
+        return () -> function.apply(param1, param2);
     }
 
     /**
@@ -909,7 +976,7 @@ public class I implements ClassListener<Extensible> {
      * the sample class belongs to system classloader (e.g. {@link String}), <code>null</code> will
      * be returned.
      * </p>
-     * 
+     *
      * @param clazz A sample class.
      * @return A class archive (e.g. jar file, classes directory) or <code>null</code>.
      */
@@ -927,7 +994,7 @@ public class I implements ClassListener<Extensible> {
      * class. If the sample class belongs to system classloader (e.g. {@link String}),
      * <code>null</code> will be returned.
      * </p>
-     * 
+     *
      * @param clazz A sample class.
      * @param filePath A location path.
      * @return A class resource (e.g. in jar file, in classes directory) or <code>null</code>.
@@ -989,7 +1056,7 @@ public class I implements ClassListener<Extensible> {
      * @throws ClassCircularityError If the model has circular dependency.
      * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */
-    public static <M> M make(Class<M> modelClass) {
+    public static <M> M make(Class<? extends M> modelClass) {
         return makeLifestyle(modelClass).get();
     }
 
@@ -1075,6 +1142,12 @@ public class I implements ClassListener<Extensible> {
         try {
             // At first, we should search the associated lifestyle from extension points.
             lifestyle = find(Lifestyle.class, modelClass);
+
+            Variable<Lifestyle> var = Variable.<Lifestyle> of(lifestyle).or(actualClass, actual -> {
+                // If the actual model class doesn't provide its lifestyle explicitly, we use
+                // Prototype lifestyle which is default lifestyle in Sinobu.
+                return Variable.of(actual.getAnnotation(Manageable.class)).map(Manageable::lifestyle, Prototype.class).map(I::make).get();
+            });
 
             // Then, check its Manageable annotation.
             if (lifestyle == null) {
@@ -1666,7 +1739,7 @@ public class I implements ClassListener<Extensible> {
      * the value is not immediately recomputed after changes, but lazily the next time the value is
      * requested.
      * </p>
-     * 
+     *
      * @param observable A target to observe.
      * @return A observable event stream.
      */
@@ -1697,7 +1770,7 @@ public class I implements ClassListener<Extensible> {
      * the value is not immediately recomputed after changes, but lazily the next time the value is
      * requested.
      * </p>
-     * 
+     *
      * @param observable A target to observe.
      * @return A observable event stream.
      */
@@ -1810,7 +1883,7 @@ public class I implements ClassListener<Extensible> {
      * <p>
      * Create value set.
      * </p>
-     * 
+     *
      * @param param1 A first parameter.
      * @param param2 A second parameter.
      * @return
@@ -1823,7 +1896,7 @@ public class I implements ClassListener<Extensible> {
      * <p>
      * Create value set.
      * </p>
-     * 
+     *
      * @param param1 A first parameter.
      * @param param2 A second parameter.
      * @param param3 A third parameter.
@@ -1837,7 +1910,7 @@ public class I implements ClassListener<Extensible> {
      * <p>
      * Create paired value {@link Consumer}.
      * </p>
-     * 
+     *
      * @param consumer A {@link BiConsumer} to make parameters paired.
      * @return A paired value {@link Consumer}.
      */
@@ -1849,7 +1922,7 @@ public class I implements ClassListener<Extensible> {
      * <p>
      * Create paired value {@link Function}.
      * </p>
-     * 
+     *
      * @param funtion A {@link BiFunction} to make parameters paired.
      * @return A paired value {@link Function}.
      */
@@ -2147,7 +2220,7 @@ public class I implements ClassListener<Extensible> {
      * <p>
      * Transform any type object into the specified type if possible.
      * </p>
-     * 
+     *
      * @param <In> A input type you want to transform from.
      * @param <Out> An output type you want to transform into.
      * @param input A target object.
@@ -2173,7 +2246,7 @@ public class I implements ClassListener<Extensible> {
      * <p>
      * Find the class by the specified fully qualified class name.
      * </p>
-     * 
+     *
      * @param fqcn A fully qualified class name to want.
      * @return The specified class.
      */
@@ -2251,7 +2324,7 @@ public class I implements ClassListener<Extensible> {
      * Return a non-primitive {@link Class} of the specified {@link Class} object. <code>null</code>
      * will be return <code>null</code>.
      * </p>
-     * 
+     *
      * @param type A {@link Class} object to convert to non-primitive class.
      * @return A non-primitive {@link Class} object.
      */

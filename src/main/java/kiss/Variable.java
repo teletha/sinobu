@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -59,7 +58,7 @@ public class Variable<V> {
      * Compute the current value. If it is <code>null</code>, this method returns the specified
      * default value.
      * </p>
-     * 
+     *
      * @param value The default value.
      * @return The current value or the specified default value.
      */
@@ -72,7 +71,7 @@ public class Variable<V> {
      * Compute the current value. If it is <code>null</code>, this method returns the specified
      * default value.
      * </p>
-     * 
+     *
      * @param value The default value.
      * @return The current value or the specified default value.
      */
@@ -85,7 +84,7 @@ public class Variable<V> {
      * Compute the current value. If it is <code>null</code>, this method returns the specified
      * default value.
      * </p>
-     * 
+     *
      * @param value The default value supplier.
      * @return The current value or the specified default value.
      */
@@ -119,7 +118,7 @@ public class Variable<V> {
 
     /**
      * Check whether the value is absent or not.
-     * 
+     *
      * @return A result.
      */
     public boolean isAbsent() {
@@ -128,43 +127,79 @@ public class Variable<V> {
 
     /**
      * Check whether the value is present or not.
-     * 
+     *
      * @return A result.
      */
     public boolean isPresent() {
         return is(Objects::nonNull);
     }
 
+    // /**
+    // * <p>
+    // * Perform the specified action if the value is present.
+    // * </p>
+    // *
+    // * @param action An action to perform.
+    // */
+    // public void map(Consumer<V> action) {
+    // if (v != null && action != null) {
+    // action.accept(v);
+    // }
+    // }
+
     /**
      * <p>
      * Perform the specified action if the value is present.
      * </p>
-     * 
-     * @param action An action to perform.
+     *
+     * @param then An action to perform.
+     * @return The computed {@link Variable}.
      */
-    public void map(Consumer<V> action) {
-        if (v != null && action != null) {
-            action.accept(v);
-        }
+    public <R> Variable<R> map(Function<? super V, ? extends R> then) {
+        return map(then, empty());
     }
 
     /**
      * <p>
      * Perform the specified action if the value is present.
      * </p>
-     * 
+     *
      * @param action An action to perform.
      * @return The computed {@link Variable}.
      */
-    public <R> Variable<R> map(Function<V, R> converter) {
-        return v == null || converter == null ? new Variable(null) : of(converter.apply(v));
+    public <R> Variable<R> map(Function<? super V, ? extends R> then, R or) {
+        return map(then, of(or));
     }
 
     /**
      * <p>
      * Perform the specified action if the value is present.
      * </p>
-     * 
+     *
+     * @param action An action to perform.
+     * @return The computed {@link Variable}.
+     */
+    public <R> Variable<R> map(Function<? super V, ? extends R> then, Supplier<R> or) {
+        return map(then, of(or));
+    }
+
+    /**
+     * <p>
+     * Perform the specified action if the value is present.
+     * </p>
+     *
+     * @param action An action to perform.
+     * @return The computed {@link Variable}.
+     */
+    public <R> Variable<R> map(Function<? super V, ? extends R> then, Variable<R> or) {
+        return v == null || then == null ? or : of(then.apply(v));
+    }
+
+    /**
+     * <p>
+     * Perform the specified action if the value is present.
+     * </p>
+     *
      * @param action An action to perform.
      * @return The computed {@link Variable}.
      */
@@ -176,7 +211,7 @@ public class Variable<V> {
      * <p>
      * Observe this {@link Variable}.
      * </p>
-     * 
+     *
      * @return
      */
     public Events<V> observe() {
@@ -201,7 +236,7 @@ public class Variable<V> {
      * If the value is present, return this {@link Variable}. If the value is absent, return other
      * {@link Variable}.
      * </p>
-     * 
+     *
      * @param other An other value.
      * @return A {@link Variable}.
      */
@@ -214,7 +249,7 @@ public class Variable<V> {
      * If the value is present, return this {@link Variable}. If the value is absent, return other
      * {@link Variable}.
      * </p>
-     * 
+     *
      * @param other An other value.
      * @return A {@link Variable}.
      */
@@ -227,7 +262,20 @@ public class Variable<V> {
      * If the value is present, return this {@link Variable}. If the value is absent, return other
      * {@link Variable}.
      * </p>
-     * 
+     *
+     * @param other An other value.
+     * @return A {@link Variable}.
+     */
+    public <Param> Variable<V> or(Param param, Function<Param, V> other) {
+        return v != null ? this : of(other.apply(param));
+    }
+
+    /**
+     * <p>
+     * If the value is present, return this {@link Variable}. If the value is absent, return other
+     * {@link Variable}.
+     * </p>
+     *
      * @param other An other value.
      * @return A {@link Variable}.
      */
@@ -240,7 +288,7 @@ public class Variable<V> {
      * If the value is present, return this {@link Variable}. If the value is absent, return other
      * {@link Variable}.
      * </p>
-     * 
+     *
      * @param other An other value.
      * @return A {@link Variable}.
      */
@@ -252,7 +300,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value.
      * </p>
-     * 
+     *
      * @param value A value to assign.
      * @return A previous value.
      */
@@ -264,7 +312,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value.
      * </p>
-     * 
+     *
      * @param value A value generator.
      * @return A previous value.
      */
@@ -276,7 +324,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value.
      * </p>
-     * 
+     *
      * @param value A value generator.
      * @return A previous value.
      */
@@ -288,7 +336,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is valid..
      * </p>
-     * 
+     *
      * @param condition A condition for value assign.
      * @param value A value to assign.
      * @return A previous value.
@@ -301,7 +349,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is valid..
      * </p>
-     * 
+     *
      * @param condition A condition for value assign.
      * @param value A value to assign.
      * @return A previous value.
@@ -314,7 +362,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is valid..
      * </p>
-     * 
+     *
      * @param condition A condition for value assign.
      * @param value A value to assign.
      * @return A previous value.
@@ -346,7 +394,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is invalid.
      * </p>
-     * 
+     *
      * @param value A value to assign.
      * @return A previous value.
      */
@@ -358,7 +406,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is invalid.
      * </p>
-     * 
+     *
      * @param value A value to assign.
      * @return A previous value.
      */
@@ -370,7 +418,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is invalid.
      * </p>
-     * 
+     *
      * @param value A value to assign.
      * @return A previous value.
      */
@@ -382,7 +430,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is valid.
      * </p>
-     * 
+     *
      * @param value A value to assign.
      * @return A previous value.
      */
@@ -394,7 +442,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is valid.
      * </p>
-     * 
+     *
      * @param value A value to assign.
      * @return A previous value.
      */
@@ -406,7 +454,7 @@ public class Variable<V> {
      * <p>
      * Assign the new value when the specified condition is valid.
      * </p>
-     * 
+     *
      * @param value A value to assign.
      * @return A previous value.
      */
@@ -418,7 +466,7 @@ public class Variable<V> {
      * <p>
      * Create {@link Variable} with the specified value.
      * </p>
-     * 
+     *
      * @param value An actual value, <code>null</code> will be acceptable.
      * @return A created {@link Variable}.
      */
@@ -430,7 +478,7 @@ public class Variable<V> {
      * <p>
      * Create {@link Variable} with the specified value.
      * </p>
-     * 
+     *
      * @param value An actual value, <code>null</code> will be acceptable.
      * @return A created {@link Variable}.
      */
@@ -442,11 +490,22 @@ public class Variable<V> {
      * <p>
      * Create {@link Variable} with the specified value.
      * </p>
-     * 
+     *
      * @param value An actual value, <code>null</code> will be acceptable.
      * @return A created {@link Variable}.
      */
     public static <T> Variable<T> of(Optional<T> value) {
         return of(value.orElse(null));
+    }
+
+    /**
+     * <p>
+     * Create empty {@link Variable}.
+     * </p>
+     *
+     * @return
+     */
+    public static <T> Variable<T> empty() {
+        return new Variable(null);
     }
 }
