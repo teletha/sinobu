@@ -40,6 +40,9 @@ public class Variable<V> {
     /** The current value. This value is not final but read-only. */
     public transient final V v;
 
+    /** The immutability state. */
+    private volatile boolean immune;
+
     /** The observers. */
     private volatile List<Observer> observers;
 
@@ -331,7 +334,7 @@ public class Variable<V> {
 
     /**
      * <p>
-     * Assign the new value when the specified condition is valid..
+     * Assign the new value when the specified condition is valid.
      * </p>
      *
      * @param condition A condition for value assign.
@@ -344,7 +347,7 @@ public class Variable<V> {
 
     /**
      * <p>
-     * Assign the new value when the specified condition is valid..
+     * Assign the new value when the specified condition is valid.
      * </p>
      *
      * @param condition A condition for value assign.
@@ -357,7 +360,7 @@ public class Variable<V> {
 
     /**
      * <p>
-     * Assign the new value when the specified condition is valid..
+     * Assign the new value when the specified condition is valid.
      * </p>
      *
      * @param condition A condition for value assign.
@@ -365,13 +368,9 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V setIf(Predicate<V> condition, UnaryOperator<V> value) {
-        if (value == null || condition == null) {
-            return v;
-        }
-
         V previous = v;
 
-        if (condition.test(previous)) {
+        if (condition != null && value != null && condition.test(previous)) {
             try {
                 modify.set(this, value.apply(previous));
             } catch (Exception e) {
@@ -389,74 +388,16 @@ public class Variable<V> {
 
     /**
      * <p>
-     * Assign the new value when the specified condition is invalid.
+     * Assign the new value when the specified condition is valid. Then, this {@link Variable}
+     * becomes immutable.
      * </p>
      *
+     * @param condition A condition for value assign.
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V setIfAbsent(V value) {
-        return setIf(Objects::isNull, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is invalid.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public V setIfAbsent(Supplier<V> value) {
-        return setIf(Objects::isNull, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is invalid.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public V setIfAbsent(UnaryOperator<V> value) {
-        return setIf(Objects::isNull, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is valid.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public V setIfPresent(V value) {
-        return setIf(Objects::nonNull, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is valid.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public V setIfPresent(Supplier<V> value) {
-        return setIf(Objects::nonNull, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is valid.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public V setIfPresent(UnaryOperator<V> value) {
-        return setIf(Objects::nonNull, value);
+    public V letIf(Predicate<V> condition, UnaryOperator<V> value) {
+        return v;
     }
 
     /**
