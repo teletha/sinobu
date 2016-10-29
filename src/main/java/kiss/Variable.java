@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -23,7 +24,7 @@ import java.util.function.UnaryOperator;
 /**
  * @version 2016/10/23 13:23:45
  */
-public class Variable<V> {
+public class Variable<V> implements Supplier<V> {
 
     /** The modifier. */
     private static final Field modify;
@@ -40,8 +41,8 @@ public class Variable<V> {
     /** The current value. This value is not final but read-only. */
     public transient final V v;
 
-    /** The immutability state. */
-    private volatile boolean immune;
+    /** The immutability. */
+    private final AtomicBoolean fix = new AtomicBoolean();
 
     /** The observers. */
     private volatile List<Observer> observers;
@@ -62,6 +63,7 @@ public class Variable<V> {
      * @param value The default value.
      * @return The current value or the specified default value.
      */
+    @Override
     public V get() {
         return get((V) null);
     }
@@ -266,19 +268,6 @@ public class Variable<V> {
      * @param other An other value.
      * @return A {@link Variable}.
      */
-    public <Param> Variable<V> or(Param param, Function<Param, V> other) {
-        return v != null ? this : of(other.apply(param));
-    }
-
-    /**
-     * <p>
-     * If the value is present, return this {@link Variable}. If the value is absent, return other
-     * {@link Variable}.
-     * </p>
-     *
-     * @param other An other value.
-     * @return A {@link Variable}.
-     */
     public Variable<V> or(Optional<V> other) {
         return v != null ? this : of(other);
     }
@@ -293,7 +282,7 @@ public class Variable<V> {
      * @return A {@link Variable}.
      */
     public Variable<V> or(Variable<V> other) {
-        return v != null ? this : other != null ? other : new Variable(null);
+        return v != null ? this : other != null ? other : empty();
     }
 
     /**
@@ -305,6 +294,30 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V set(V value) {
+        return setIf(I.accept(), value);
+    }
+
+    /**
+     * <p>
+     * Assign the new value.
+     * </p>
+     *
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V set(Optional<V> value) {
+        return setIf(I.accept(), value);
+    }
+
+    /**
+     * <p>
+     * Assign the new value.
+     * </p>
+     *
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V set(Variable<V> value) {
         return setIf(I.accept(), value);
     }
 
@@ -342,7 +355,33 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V setIf(Predicate<V> condition, V value) {
-        return setIf(condition, current -> value);
+        return setIf(condition, of(value));
+    }
+
+    /**
+     * <p>
+     * Assign the new value when the specified condition is valid.
+     * </p>
+     *
+     * @param condition A condition for value assign.
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V setIf(Predicate<V> condition, Optional<V> value) {
+        return setIf(condition, of(value));
+    }
+
+    /**
+     * <p>
+     * Assign the new value when the specified condition is valid.
+     * </p>
+     *
+     * @param condition A condition for value assign.
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V setIf(Predicate<V> condition, Variable<V> value) {
+        return assign(condition, value, false);
     }
 
     /**
@@ -355,7 +394,7 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V setIf(Predicate<V> condition, Supplier<V> value) {
-        return setIf(condition, current -> value == null ? current : value.get());
+        return setIf(condition, of(value));
     }
 
     /**
@@ -368,28 +407,124 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V setIf(Predicate<V> condition, UnaryOperator<V> value) {
-        V previous = v;
-
-        if (condition != null && value != null && condition.test(previous)) {
-            try {
-                modify.set(this, value.apply(previous));
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-
-            if (observers != null) {
-                for (Observer observer : observers) {
-                    observer.accept(v);
-                }
-            }
-        }
-        return previous;
+        return setIf(condition, value == null ? null : value.apply(v));
     }
 
     /**
      * <p>
-     * Assign the new value when the specified condition is valid. Then, this {@link Variable}
-     * becomes immutable.
+     * Assign the new immutable value.
+     * </p>
+     *
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V let(V value) {
+        return letIf(I.accept(), value);
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value.
+     * </p>
+     *
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V let(Optional<V> value) {
+        return letIf(I.accept(), value);
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value.
+     * </p>
+     *
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V let(Variable<V> value) {
+        return letIf(I.accept(), value);
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value.
+     * </p>
+     *
+     * @param value A value generator.
+     * @return A previous value.
+     */
+    public V let(Supplier<V> value) {
+        return letIf(I.accept(), value);
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value.
+     * </p>
+     *
+     * @param value A value generator.
+     * @return A previous value.
+     */
+    public V let(UnaryOperator<V> value) {
+        return letIf(I.accept(), value);
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value when the specified condition is valid.
+     * </p>
+     *
+     * @param condition A condition for value assign.
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V letIf(Predicate<V> condition, V value) {
+        return letIf(condition, of(value));
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value when the specified condition is valid.
+     * </p>
+     *
+     * @param condition A condition for value assign.
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V letIf(Predicate<V> condition, Optional<V> value) {
+        return letIf(condition, of(value));
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value when the specified condition is valid.
+     * </p>
+     *
+     * @param condition A condition for value assign.
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V letIf(Predicate<V> condition, Variable<V> value) {
+        return assign(condition, value, true);
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value when the specified condition is valid.
+     * </p>
+     *
+     * @param condition A condition for value assign.
+     * @param value A value to assign.
+     * @return A previous value.
+     */
+    public V letIf(Predicate<V> condition, Supplier<V> value) {
+        return letIf(condition, of(value));
+    }
+
+    /**
+     * <p>
+     * Assign the new immutable value when the specified condition is valid.
      * </p>
      *
      * @param condition A condition for value assign.
@@ -397,7 +532,40 @@ public class Variable<V> {
      * @return A previous value.
      */
     public V letIf(Predicate<V> condition, UnaryOperator<V> value) {
-        return v;
+        return letIf(condition, value == null ? null : value.apply(v));
+    }
+
+    /**
+     * <p>
+     * Assign the new value if we can.
+     * </p>
+     * 
+     * @param condition A condition for value assign.
+     * @param value A value to assign.
+     * @param let A state of let or set.
+     * @return A previous value.
+     */
+    private V assign(Predicate<V> condition, Variable<V> value, boolean let) {
+        V prev = v;
+
+        if (fix.get() == false) {
+            if (condition != null && condition.test(prev)) {
+                if (fix.compareAndSet(false, let)) {
+                    try {
+                        modify.set(this, value == null ? null : value.v);
+                    } catch (Exception e) {
+                        throw I.quiet(e);
+                    }
+
+                    if (observers != null) {
+                        for (Observer observer : observers) {
+                            observer.accept(v);
+                        }
+                    }
+                }
+            }
+        }
+        return prev;
     }
 
     /**
@@ -421,7 +589,7 @@ public class Variable<V> {
      * @return A created {@link Variable}.
      */
     public static <T> Variable<T> of(Supplier<T> value) {
-        return of(value.get());
+        return of(value == null ? null : value.get());
     }
 
     /**
@@ -433,7 +601,7 @@ public class Variable<V> {
      * @return A created {@link Variable}.
      */
     public static <T> Variable<T> of(Optional<T> value) {
-        return of(value.orElse(null));
+        return of(value == null ? null : value.orElse(null));
     }
 
     /**
@@ -441,7 +609,7 @@ public class Variable<V> {
      * Create empty {@link Variable}.
      * </p>
      *
-     * @return
+     * @return A new empty {@link Variable}.
      */
     public static <T> Variable<T> empty() {
         return new Variable(null);

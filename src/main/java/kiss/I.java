@@ -1148,12 +1148,6 @@ public class I implements ClassListener<Extensible> {
             // At first, we should search the associated lifestyle from extension points.
             lifestyle = find(Lifestyle.class, modelClass);
 
-            Variable<Lifestyle> var = Variable.<Lifestyle> of(lifestyle).or(actualClass, actual -> {
-                // If the actual model class doesn't provide its lifestyle explicitly, we use
-                // Prototype lifestyle which is default lifestyle in Sinobu.
-                return Variable.of(actual.getAnnotation(Manageable.class)).map(Manageable::lifestyle, Prototype.class).map(I::make).get();
-            });
-
             // Then, check its Manageable annotation.
             if (lifestyle == null) {
                 // If the actual model class doesn't provide its lifestyle explicitly, we use
