@@ -65,33 +65,7 @@ public class Variable<V> implements Supplier<V> {
      */
     @Override
     public V get() {
-        return get((V) null);
-    }
-
-    /**
-     * <p>
-     * Compute the current value. If it is <code>null</code>, this method returns the specified
-     * default value.
-     * </p>
-     *
-     * @param value The default value.
-     * @return The current value or the specified default value.
-     */
-    public V get(V value) {
-        return get(() -> value);
-    }
-
-    /**
-     * <p>
-     * Compute the current value. If it is <code>null</code>, this method returns the specified
-     * default value.
-     * </p>
-     *
-     * @param value The default value supplier.
-     * @return The current value or the specified default value.
-     */
-    public V get(Supplier<V> value) {
-        return v == null ? value == null ? null : value.get() : v;
+        return v;
     }
 
     /**
@@ -136,19 +110,6 @@ public class Variable<V> implements Supplier<V> {
         return is(Objects::nonNull);
     }
 
-    // /**
-    // * <p>
-    // * Perform the specified action if the value is present.
-    // * </p>
-    // *
-    // * @param action An action to perform.
-    // */
-    // public void map(Consumer<V> action) {
-    // if (v != null && action != null) {
-    // action.accept(v);
-    // }
-    // }
-
     /**
      * <p>
      * Perform the specified action if the value is present.
@@ -158,43 +119,7 @@ public class Variable<V> implements Supplier<V> {
      * @return The computed {@link Variable}.
      */
     public <R> Variable<R> map(Function<? super V, ? extends R> then) {
-        return map(then, empty());
-    }
-
-    /**
-     * <p>
-     * Perform the specified action if the value is present.
-     * </p>
-     *
-     * @param action An action to perform.
-     * @return The computed {@link Variable}.
-     */
-    public <R> Variable<R> map(Function<? super V, ? extends R> then, R or) {
-        return map(then, of(or));
-    }
-
-    /**
-     * <p>
-     * Perform the specified action if the value is present.
-     * </p>
-     *
-     * @param action An action to perform.
-     * @return The computed {@link Variable}.
-     */
-    public <R> Variable<R> map(Function<? super V, ? extends R> then, Supplier<R> or) {
-        return map(then, of(or));
-    }
-
-    /**
-     * <p>
-     * Perform the specified action if the value is present.
-     * </p>
-     *
-     * @param action An action to perform.
-     * @return The computed {@link Variable}.
-     */
-    public <R> Variable<R> map(Function<? super V, ? extends R> then, Variable<R> or) {
-        return v == null || then == null ? or : of(then.apply(v));
+        return v == null || then == null ? empty() : of(then.apply(v));
     }
 
     /**
@@ -255,19 +180,6 @@ public class Variable<V> implements Supplier<V> {
      * @param other An other value.
      * @return A {@link Variable}.
      */
-    public Variable<V> or(Supplier<V> other) {
-        return v != null ? this : of(other);
-    }
-
-    /**
-     * <p>
-     * If the value is present, return this {@link Variable}. If the value is absent, return other
-     * {@link Variable}.
-     * </p>
-     *
-     * @param other An other value.
-     * @return A {@link Variable}.
-     */
     public Variable<V> or(Optional<V> other) {
         return v != null ? this : of(other);
     }
@@ -283,6 +195,19 @@ public class Variable<V> implements Supplier<V> {
      */
     public Variable<V> or(Variable<V> other) {
         return v != null ? this : other != null ? other : empty();
+    }
+
+    /**
+     * <p>
+     * If the value is present, return this {@link Variable}. If the value is absent, return other
+     * {@link Variable}.
+     * </p>
+     *
+     * @param other An other value.
+     * @return A {@link Variable}.
+     */
+    public Variable<V> or(Supplier<V> other) {
+        return v != null ? this : of(other);
     }
 
     /**
@@ -549,7 +474,7 @@ public class Variable<V> implements Supplier<V> {
         V prev = v;
 
         if (fix.get() == false) {
-            if (condition != null && condition.test(prev)) {
+            if (is(condition)) {
                 if (fix.compareAndSet(false, let)) {
                     try {
                         modify.set(this, value == null ? null : value.v);
@@ -566,6 +491,14 @@ public class Variable<V> implements Supplier<V> {
             }
         }
         return prev;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return fix.get() ? "Immutable" : "Mutable" + " Variable [" + v + "]";
     }
 
     /**

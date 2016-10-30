@@ -10,6 +10,7 @@
 package kiss;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -28,7 +29,7 @@ public class VariableTest {
 
     @Before
     public void init() {
-        empty = Variable.of((String) null);
+        empty = Variable.empty();
         string = Variable.of("value");
     }
 
@@ -118,18 +119,6 @@ public class VariableTest {
         Predicate<String> condition = null;
         assert empty.is(condition) == false;
         assert string.is(condition) == false;
-    }
-
-    @Test
-    public void getWithDefaultValue() {
-        assert empty.get("default").equals("default");
-        assert string.get("default").equals("value");
-    }
-
-    @Test
-    public void getWithDefaultValueSupplier() {
-        assert empty.get(() -> "default").equals("default");
-        assert string.get(() -> "default").equals("value");
     }
 
     @Test
@@ -272,5 +261,31 @@ public class VariableTest {
         Variable<String> nill = null;
         assert empty.or(nill).isAbsent();
         assert string.or(nill).is("value");
+    }
+
+    @Test
+    public void map() {
+        Function<String, Integer> size = e -> e.length();
+        assert string.map(size).is(5);
+        assert empty.map(size).isAbsent();
+    }
+
+    @Test
+    public void mapNull() {
+        assert string.map(null).isAbsent();
+        assert empty.map(null).isAbsent();
+    }
+
+    @Test
+    public void flatMap() {
+        Function<String, Variable<Integer>> size = e -> Variable.of(e.length());
+        assert string.flatMap(size).is(5);
+        assert empty.flatMap(size).isAbsent();
+    }
+
+    @Test
+    public void flatMapNull() {
+        assert string.flatMap(null).isAbsent();
+        assert empty.flatMap(null).isAbsent();
     }
 }

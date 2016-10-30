@@ -195,19 +195,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Receive values as {@link Property} from this {@link Events}.
-     * </p>
-     * 
-     * @return A {@link Property} as value receiver.
-     */
-    public final Property<V> toProperty() {
-        SimpleObjectProperty<V> property = new SimpleObjectProperty();
-        to(property::set);
-        return property;
-    }
-
-    /**
-     * <p>
      * Receive values as {@link SetProperty} from this {@link Events}. Each value alternates between
      * In and Out.
      * </p>
@@ -320,6 +307,19 @@ public class Events<V> {
         });
 
         // API definition
+        return property;
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link Property} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link Property} as value receiver.
+     */
+    public final Property<V> toProperty() {
+        SimpleObjectProperty<V> property = new SimpleObjectProperty();
+        to(property::set);
         return property;
     }
 
