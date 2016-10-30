@@ -92,13 +92,24 @@ public class Events<V> {
 
     /**
      * <p>
-     * Receive values as {@link Property} from this {@link Events}.
+     * Receive values as {@link Variable} from this {@link Events}.
      * </p>
      * 
-     * @return A {@link Property} as value receiver.
+     * @return A {@link Variable} as value receiver.
      */
-    public final Property<V> to() {
-        return toValue(new SimpleObjectProperty());
+    public final Disposable to(Variable<V> variable) {
+        return variable == null ? Disposable.Φ : to(variable::set);
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link Variable} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link Variable} as value receiver.
+     */
+    public final Disposable to(WritableValue<? super V> value) {
+        return value == null ? Disposable.Φ : to(value::setValue);
     }
 
     /**
@@ -167,6 +178,32 @@ public class Events<V> {
      */
     public final Disposable to(Observer<? super V> observer) {
         return subscriber.apply(observer);
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link Variable} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link Variable} as value receiver.
+     */
+    public final Variable<V> to() {
+        Variable<V> variable = Variable.empty();
+        to(variable::set);
+        return variable;
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link Property} from this {@link Events}.
+     * </p>
+     * 
+     * @return A {@link Property} as value receiver.
+     */
+    public final Property<V> toProperty() {
+        SimpleObjectProperty<V> property = new SimpleObjectProperty();
+        to(property::set);
+        return property;
     }
 
     /**
@@ -284,33 +321,6 @@ public class Events<V> {
 
         // API definition
         return property;
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link WritableValue} from this {@link Events}.
-     * </p>
-     * 
-     * @return A {@link WritableValue} as value receiver.
-     */
-    public final <W extends WritableValue<V>> W toValue(W writable) {
-        // start receiving values
-        to(writable::setValue);
-
-        return writable;
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Variable} from this {@link Events}.
-     * </p>
-     * 
-     * @return A {@link Variable} as value receiver.
-     */
-    public final Variable<V> toVariable() {
-        Variable<V> var = Variable.of((V) null);
-        to(var::set);
-        return var;
     }
 
     /**
@@ -733,7 +743,6 @@ public class Events<V> {
     public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
             Disposable disposer = Disposable.empty();
-
             disposer.and(to(value -> disposer.and(function.apply(value).to(observer))));
 
             return disposer;
