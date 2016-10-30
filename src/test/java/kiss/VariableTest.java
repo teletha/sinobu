@@ -288,4 +288,34 @@ public class VariableTest {
         assert string.flatMap(null).isAbsent();
         assert empty.flatMap(null).isAbsent();
     }
+
+    @Test
+    public void correctHashAndEqual() {
+        Variable<String> one = Variable.of("one");
+        Variable<String> other = Variable.of("one");
+        assert one != other;
+        assert one.hashCode() == other.hashCode();
+        assert one.equals(other);
+        assert other.equals(one);
+    }
+
+    @Test
+    public void incorrectHashAndEqual() {
+        Variable<String> one = Variable.of("one");
+        Variable<String> other = Variable.of("other");
+        assert one != other;
+        assert one.hashCode() != other.hashCode();
+        assert one.equals(other) == false;
+        assert other.equals(one) == false;
+    }
+
+    @Test
+    public void emptyHashAndEqual() {
+        Variable<String> one = Variable.empty();
+        Variable<String> other = Variable.empty();
+        assert one != other;
+        assert one.hashCode() == other.hashCode();
+        assert one.equals(other);
+        assert other.equals(one);
+    }
 }

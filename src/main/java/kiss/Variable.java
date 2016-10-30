@@ -497,6 +497,25 @@ public class Variable<V> implements Supplier<V> {
      * {@inheritDoc}
      */
     @Override
+    public int hashCode() {
+        return Objects.hash(v);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Variable == false) {
+            return false;
+        }
+        return ((Variable) obj).is(v);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         return fix.get() ? "Immutable" : "Mutable" + " Variable [" + v + "]";
     }
