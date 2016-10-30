@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -24,7 +25,7 @@ import java.util.function.UnaryOperator;
 /**
  * @version 2016/10/23 13:23:45
  */
-public class Variable<V> implements Supplier<V> {
+public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The modifier. */
     private static final Field modify;
@@ -52,6 +53,14 @@ public class Variable<V> implements Supplier<V> {
      */
     private Variable(V value) {
         this.v = value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void accept(V value) {
+        set(v);
     }
 
     /**

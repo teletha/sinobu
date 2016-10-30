@@ -97,17 +97,6 @@ public class Events<V> {
      * 
      * @return A {@link Variable} as value receiver.
      */
-    public final Disposable to(Variable<V> variable) {
-        return variable == null ? Disposable.Φ : to(variable::set);
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Variable} from this {@link Events}.
-     * </p>
-     * 
-     * @return A {@link Variable} as value receiver.
-     */
     public final Disposable to(WritableValue<? super V> value) {
         return value == null ? Disposable.Φ : to(value::setValue);
     }
