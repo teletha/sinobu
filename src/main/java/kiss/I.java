@@ -62,6 +62,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -333,6 +334,9 @@ public class I implements ClassListener<Extensible> {
 
     /** The serial task manager. */
     private static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
+
+    /** The scheduled task manager. */
+    private static final ScheduledExecutorService schedule = Executors.newScheduledThreadPool(0, factory);
 
     /** The associatable object holder. */
     private static final WeakHashMap<Object, WeakHashMap> associatables = new WeakHashMap();
@@ -2224,6 +2228,21 @@ public class I implements ClassListener<Extensible> {
             };
         }
         return (parallelExecution ? parallel : serial).submit(runnable);
+    }
+
+    /**
+     * <p>
+     * Execute the specified task in background {@link Thread} with the specified delay.
+     * </p>
+     *
+     * @param delay A initial delay time.
+     * @param unit A delay time unit.
+     * @param parallelExecution The <code>true</code> will execute task in parallel,
+     *            <code>false</code> will execute task in serial.
+     * @param task A task to execute.
+     */
+    public static Future<?> schedule(Runnable task, long interval, TimeUnit unit) {
+        return schedule.scheduleAtFixedRate(task, 0, interval, unit);
     }
 
     /**

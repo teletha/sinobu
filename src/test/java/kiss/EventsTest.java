@@ -250,8 +250,8 @@ public class EventsTest {
     @Test
     public void combine() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
-        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(
-                events -> events.combine(sub.observe(), (base, other) -> base + other));
+        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
+                .combine(sub.observe(), (base, other) -> base + other));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
@@ -303,8 +303,8 @@ public class EventsTest {
     public void combineTernary() throws Exception {
         EventFacade<Integer, Integer> other = new EventFacade<>();
         EventFacade<Double, Double> another = new EventFacade<>();
-        EventFacade<String, Ⅲ<String, Integer, Double>> main = new EventFacade<>(
-                events -> events.combine(other.observe(), another.observe()));
+        EventFacade<String, Ⅲ<String, Integer, Double>> main = new EventFacade<>(events -> events
+                .combine(other.observe(), another.observe()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -324,8 +324,8 @@ public class EventsTest {
     @Test
     public void combineLatest() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
-        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(
-                events -> events.combineLatest(sub.observe(), (base, other) -> base + other));
+        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
+                .combineLatest(sub.observe(), (base, other) -> base + other));
 
         assert facade.emitAndRetrieve(1) == null;
         assert facade.emitAndRetrieve(2) == null;
@@ -371,8 +371,8 @@ public class EventsTest {
     public void combineLatestTernary() throws Exception {
         EventFacade<Integer, Integer> other = new EventFacade<>();
         EventFacade<Double, Double> another = new EventFacade<>();
-        EventFacade<String, Ⅲ<String, Integer, Double>> main = new EventFacade<>(
-                events -> events.combineLatest(other.observe(), another.observe()));
+        EventFacade<String, Ⅲ<String, Integer, Double>> main = new EventFacade<>(events -> events
+                .combineLatest(other.observe(), another.observe()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -518,8 +518,8 @@ public class EventsTest {
     public void flatMapLatest() {
         EventFacade<String, String> emitA = new EventFacade();
         EventFacade<String, String> emitB = new EventFacade();
-        EventFacade<Integer, String> facade = new EventFacade<>(
-                events -> events.flatMapLatest(x -> x == 1 ? emitA.observe() : emitB.observe()));
+        EventFacade<Integer, String> facade = new EventFacade<>(events -> events
+                .flatMapLatest(x -> x == 1 ? emitA.observe() : emitB.observe()));
 
         facade.emit(1); // connect to emitA
         assert facade.retrieve() == null; // emitA doesn't emit value yet
@@ -1278,5 +1278,16 @@ public class EventsTest {
         assert facade.retrieve() == 2;
         assert facade.retrieve() == 3;
         assert facade.dispose();
+    }
+
+    @Test
+    public void infinite() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.infinite(1, 10, MILLISECONDS).take(2));
+
+        chronus.freeze(20);
+        assert facade.retrieve() == 1;
+        assert facade.retrieve() == 1;
+        assert facade.isCompleted();
+        assert facade.retrieve() == null;
     }
 }

@@ -1717,4 +1717,14 @@ public class Events<V> {
     public static <V> Events<V> from(Iterable<V> values) {
         return NEVER.startWith(values);
     }
+
+    public static <V> Events<V> infinite(V value, long time, TimeUnit unit) {
+        return new Events<V>(observer -> {
+            Future schedule = I.schedule(() -> observer.accept(value), time, unit);
+
+            return () -> {
+                schedule.cancel(true);
+            };
+        });
+    }
 }
