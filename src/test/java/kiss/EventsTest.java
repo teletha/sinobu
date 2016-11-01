@@ -390,15 +390,21 @@ public class EventsTest {
     }
 
     @Test
-    public void debounce() throws Exception {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.debounce(10, MILLISECONDS));
+    public void debounce() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.debounce(30, MILLISECONDS));
 
+        chronus.mark();
         assert facade.emitAndRetrieve(10) == null;
+        chronus.freezeFromMark(10);
         assert facade.emitAndRetrieve(20) == null;
+        chronus.freezeFromMark(20);
         assert facade.emitAndRetrieve(30) == null;
-
-        chronus.await();
-        assert facade.retrieve() == 30;
+        chronus.mark();
+        assert facade.retrieve() == null;
+        chronus.freezeFromMark(10);
+        assert facade.retrieve() == null;
+        chronus.freezeFromMark(30);
+        assert facade.retrieve() != null;
 
         assert facade.emitAndRetrieve(30) == null;
         assert facade.emitAndRetrieve(20) == null;
