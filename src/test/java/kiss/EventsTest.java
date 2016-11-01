@@ -1153,17 +1153,20 @@ public class EventsTest {
 
     @Test
     public void throttle() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.throttle(20, MILLISECONDS));
+        EventFacade<String, String> facade = new EventFacade<>(events -> events.throttle(30, MILLISECONDS));
 
-        assert facade.emitAndRetrieve(10) == 10;
-        assert facade.emitAndRetrieve(20) == null;
-        assert facade.emitAndRetrieve(30) == null;
+        chronus.mark();
+        assert facade.emitAndRetrieve("OK").equals("OK");
 
-        chronus.freeze(20);
-
-        assert facade.emitAndRetrieve(30) == 30;
-        assert facade.emitAndRetrieve(20) == null;
-        assert facade.emitAndRetrieve(10) == null;
+        chronus.freezeFromMark(10, 20, () -> {
+            assert facade.emitAndRetrieve("10ms skip") == null;
+        });
+        chronus.freezeFromMark(20, 30, () -> {
+            assert facade.emitAndRetrieve("20ms skip") == null;
+        });
+        chronus.freezeFromMark(35);
+        assert facade.emitAndRetrieve("30ms OK") != null;
+        assert facade.emitAndRetrieve("skip") == null;
     }
 
     @Test

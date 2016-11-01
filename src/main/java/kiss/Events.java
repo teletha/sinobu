@@ -828,8 +828,8 @@ public class Events<V> {
         context.ⅱ.accept(context.ⅰ);
 
         if (!buffer.isEmpty()) {
-            long now = System.currentTimeMillis();
-            I.schedule(Math.min(interval, now - latest), TimeUnit.MILLISECONDS, true, () -> interval(interval, now, buffer));
+            long now = System.nanoTime();
+            I.schedule(Math.min(interval, now - latest), TimeUnit.NANOSECONDS, true, () -> interval(interval, now, buffer));
         }
     }
 
@@ -1168,10 +1168,10 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            long timing = System.currentTimeMillis() + unit.toMillis(time);
+            long timing = System.nanoTime() + unit.toNanos(time);
 
             return to(value -> {
-                if (timing < System.currentTimeMillis()) {
+                if (timing < System.nanoTime()) {
                     observer.accept(value);
                 }
             });
@@ -1411,11 +1411,11 @@ public class Events<V> {
         }
 
         return new Events<>(observer -> {
-            long timing = System.currentTimeMillis() + unit.toMillis(time);
+            long timing = System.nanoTime() + unit.toNanos(time);
             Disposable disposer = Disposable.empty();
 
             return disposer.and(to(value -> {
-                if (System.currentTimeMillis() < timing) {
+                if (System.nanoTime() < timing) {
                     observer.accept(value);
                 } else {
                     observer.complete();
@@ -1599,11 +1599,17 @@ public class Events<V> {
         }
 
         AtomicLong latest = new AtomicLong();
-        long delay = unit.toMillis(time);
+        long delay = unit.toNanos(time);
 
         return take(value -> {
-            long now = System.currentTimeMillis();
-            return latest.getAndSet(now) + delay <= now;
+            long now = System.nanoTime();
+
+            if (latest.get() + delay <= now) {
+                latest.set(now);
+                return true;
+            } else {
+                return false;
+            }
         });
     }
 

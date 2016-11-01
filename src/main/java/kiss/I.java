@@ -2220,7 +2220,7 @@ public class I implements ClassListener<Extensible> {
         if (delay != 0 && unit != null) {
             runnable = () -> {
                 try {
-                    Thread.sleep(unit.toMillis(delay));
+                    unit.sleep(delay);
                     task.run();
                 } catch (Throwable e) {
                     throw quiet(e);
