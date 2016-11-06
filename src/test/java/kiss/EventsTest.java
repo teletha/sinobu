@@ -403,7 +403,7 @@ public class EventsTest {
         assert facade.retrieve() == null;
         chronus.freezeFromMark(10);
         assert facade.retrieve() == null;
-        chronus.freezeFromMark(30);
+        chronus.freezeFromMark(35);
         assert facade.retrieve() != null;
 
         assert facade.emitAndRetrieve(30) == null;
@@ -1291,11 +1291,16 @@ public class EventsTest {
 
     @Test
     public void infinite() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.infinite(1, 10, MILLISECONDS).take(2));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.infinite(1, 20, MILLISECONDS).take(2));
 
-        chronus.freeze(20);
+        chronus.mark();
+        chronus.freezeFromMark(10);
         assert facade.retrieve() == 1;
+        assert facade.retrieve() == null;
+        chronus.freezeFromMark(20);
         assert facade.retrieve() == 1;
+        assert facade.retrieve() == null;
+
         assert facade.isCompleted();
         assert facade.retrieve() == null;
     }
