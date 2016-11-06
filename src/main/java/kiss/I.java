@@ -361,6 +361,7 @@ public class I implements ClassListener<Extensible> {
         modules.set(List.class, ArrayList::new);
         modules.set(Map.class, HashMap::new);
         modules.set(Set.class, HashSet::new);
+        modules.set(Lifestyle.class, new Prototype(Prototype.class));
         modules.set(Prototype.class, new Prototype(Prototype.class));
         modules.set(ListProperty.class, () -> new SimpleListProperty(FXCollections.observableArrayList()));
         modules.set(ObservableList.class, FXCollections::observableArrayList);
@@ -1108,24 +1109,13 @@ public class I implements ClassListener<Extensible> {
             throw new UnsupportedOperationException(modelClass + " is  inner class.");
         }
 
-        int modifier = modelClass.getModifiers();
-
         // In the second place, we must find the actual model class which is associated with
         // this model class. If the actual model class is a concreate, we can use it directly.
         Class<M> actualClass = modelClass;
 
-        if (((Modifier.ABSTRACT | Modifier.INTERFACE) & modifier) != 0) {
-            // TODO model provider finding strategy
-            // This strategy is decided at execution phase.
-            actualClass = modules.find(modelClass);
-
-            // updata to the actual model class's modifier
-            modifier = actualClass.getModifiers();
-        }
-
         // If this model is non-private or final class, we can extend it for interceptor
         // mechanism.
-        if (((Modifier.PRIVATE | Modifier.FINAL) & modifier) == 0) {
+        if (((Modifier.PRIVATE | Modifier.FINAL) & modelClass.getModifiers()) == 0) {
             Map<Method, List<Annotation>> interceptables = Model.collectAnnotatedMethods(actualClass);
 
             // Enhance the actual model class if needed.

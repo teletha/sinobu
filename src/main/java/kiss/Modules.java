@@ -43,26 +43,6 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Decoder
     }
 
     /**
-     * <p>
-     * Find a service provider class associated with the service provider interface.
-     * </p>
-     * 
-     * @param <S> A type of service provider interface.
-     * @param spi A service provider interface to find. An abstract class is only accepted.
-     * @return A finded service provider class.
-     */
-    <S> Class<S> find(Class<S> spi) {
-        for (Module module : modules) {
-            List<Class<S>> list = module.find(spi, true);
-
-            if (list.size() != 0) {
-                return list.get(0);
-            }
-        }
-        return spi;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
