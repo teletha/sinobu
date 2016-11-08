@@ -264,16 +264,16 @@ public class VariableTest {
     }
 
     @Test
-    public void map() {
+    public void mapFunction() {
         Function<String, Integer> size = e -> e.length();
         assert string.map(size).is(5);
         assert empty.map(size).isAbsent();
     }
 
     @Test
-    public void mapNull() {
-        assert string.map(null).isAbsent();
-        assert empty.map(null).isAbsent();
+    public void mapFunctionNull() {
+        assert string.map((Function) null).isAbsent();
+        assert empty.map((Function) null).isAbsent();
     }
 
     @Test

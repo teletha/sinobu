@@ -121,6 +121,19 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /**
      * <p>
+     * Execute the specified action if the value is present.
+     * </p>
+     * 
+     * @param action A user action.
+     */
+    public void map(Consumer<V> action) {
+        if (v != null && action != null) {
+            action.accept(v);
+        }
+    }
+
+    /**
+     * <p>
      * Perform the specified action if the value is present.
      * </p>
      *
