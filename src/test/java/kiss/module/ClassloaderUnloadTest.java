@@ -62,7 +62,7 @@ public class ClassloaderUnloadTest {
         int loaded = classLoading.getLoadedClassCount();
         long unloaded = classLoading.getUnloadedClassCount();
 
-        assert 1 <= loaded - initialLoaded;
+        assert 2 <= loaded - initialLoaded;
         assert 0 == unloaded - initialUnloaded;
 
         // reload module and execute gc if possible
