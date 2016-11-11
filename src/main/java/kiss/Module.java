@@ -62,8 +62,8 @@ class Module {
     /** The module classloader. */
     final ClassLoader loader;
 
-    /** The list of service provider classes (by class and interface). [java.lang.String, int[]] */
-    private List<Object[]> infos = new CopyOnWriteArrayList();
+    /** The list of classes (by class and interface). [java.lang.String or Class, int[]] */
+    private final List<Object[]> infos = new CopyOnWriteArrayList();
 
     /**
      * <p>
@@ -135,16 +135,12 @@ class Module {
 
         // try to find all service providers
         for (Object[] info : infos) {
-            try {
-                if (test(hash, info)) {
-                    list.add(loader.loadClass((String) info[0]));
+            if (test(hash, info)) {
+                list.add(info[0]);
 
-                    if (single) {
-                        return list;
-                    }
+                if (single) {
+                    return list;
                 }
-            } catch (ClassNotFoundException e) {
-                throw I.quiet(e);
             }
         }
 
@@ -159,48 +155,54 @@ class Module {
      * @param info A class information.
      * @return A result.
      */
-    private boolean test(int hash, Object[] info) throws ClassNotFoundException {
+    private boolean test(int hash, Object[] info) {
         int[] hashs = (int[]) info[1];
 
         if (hashs != null) {
             return -1 < Arrays.binarySearch(hashs, hash);
         }
 
-        // lazy evaluation
-        Class clazz = loader.loadClass((String) info[0]);
+        try {
+            // lazy evaluation
+            Class clazz = loader.loadClass((String) info[0]);
 
-        if (Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum()) {
-            info[1] = new int[0];
+            if (Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum()) {
+                info[1] = new int[0];
+                return false;
+            }
+
+            Set<Class> types = Model.collectTypes(clazz);
+            Annotation[] marks = clazz.getAnnotations();
+
+            // compute hash
+            int i = 0;
+            hashs = new int[types.size() + marks.length];
+
+            if (hashs.length == 2) {
+                info[1] = new int[0];
+                return false;
+            }
+
+            for (Class c : types) {
+                hashs[i++] = c.getName().hashCode();
+            }
+
+            for (Annotation a : marks) {
+                hashs[i++] = a.annotationType().getName().hashCode();
+            }
+
+            // sort for search
+            Arrays.sort(hashs);
+
+            // register information of the service provider class
+            info[0] = clazz;
+            info[1] = hashs;
+
+            // API definition
             return test(hash, info);
-        }
-
-        Set<Class> set = Model.collectTypes(clazz);
-        Annotation[] annotations = clazz.getAnnotations();
-
-        // compute hash
-        int i = 0;
-        hashs = new int[set.size() + annotations.length];
-
-        if (hashs.length == 2) {
+        } catch (ClassNotFoundException e) {
             info[1] = new int[0];
-            return test(hash, info);
+            return false;
         }
-
-        for (Class c : set) {
-            hashs[i++] = c.getName().hashCode();
-        }
-
-        for (Annotation a : annotations) {
-            hashs[i++] = a.annotationType().getName().hashCode();
-        }
-
-        // sort for search
-        Arrays.sort(hashs);
-
-        // register information of the service provider class
-        info[1] = hashs;
-
-        // API definition
-        return test(hash, info);
     }
 }
