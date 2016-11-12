@@ -13,7 +13,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -1292,6 +1294,19 @@ public class Events<V> {
      * @param values The initial values.
      * @return Chainable API.
      */
+    public final Events<V> startWith(Enumeration<V> values) {
+        return startWith(Collections.list(values));
+    }
+
+    /**
+     * <p>
+     * Emit a specified sequence of items before beginning to emit the items from the source
+     * {@link Events}.
+     * </p>
+     * 
+     * @param values The initial values.
+     * @return Chainable API.
+     */
     public final Events<V> startWith(Iterable<V> values) {
         // ignore invalid parameter
         if (values == null) {
@@ -1721,6 +1736,18 @@ public class Events<V> {
      * @return An {@link Events} that emits values as a first sequence.
      */
     public static <V> Events<V> from(Iterable<V> values) {
+        return NEVER.startWith(values);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits the specified values.
+     * </p>
+     * 
+     * @param value A list of values to emit.
+     * @return An {@link Events} that emits values as a first sequence.
+     */
+    public static <V> Events<V> from(Enumeration<V> values) {
         return NEVER.startWith(values);
     }
 

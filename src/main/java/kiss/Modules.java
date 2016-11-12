@@ -9,9 +9,8 @@
  */
 package kiss;
 
+import java.io.File;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -90,13 +89,13 @@ class Modules extends ClassVariable<Lifestyle>implements ClassListener, Decoder<
      * 
      * @param path A module path to load. Directory or archive path (like Jar) can be accepted.
      */
-    ClassLoader load(Path path, String pattern) {
+    ClassLoader load(File path, String pattern) {
         // check module file
-        if (path != null && Files.exists(path)) {
+        if (path != null && path.exists()) {
             try {
                 // check duplication
                 for (Module module : modules) {
-                    if (Files.isSameFile(path, module.path) && pattern.startsWith(module.pattern)) {
+                    if (module.path.equals(path) && pattern.startsWith(module.pattern)) {
                         return module.loader;
                     }
                 }
@@ -132,12 +131,12 @@ class Modules extends ClassVariable<Lifestyle>implements ClassListener, Decoder<
      * 
      * @param path A module path to unload. Directory or archive path (like Jar) can be accepted.
      */
-    void unload(Path path) {
+    void unload(File path) {
         // check module file
-        if (path != null && Files.exists(path)) {
+        if (path != null && path.exists()) {
             for (Module module : modules) {
                 try {
-                    if (Files.isSameFile(path, module.path)) {
+                    if (module.path.equals(path)) {
                         // fire event
                         for (Object[] types : this.types) {
                             for (Class provider : module.find((Class<?>) types[1], false)) {

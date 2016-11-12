@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,35 +50,35 @@ public class ModuleTest {
 
     @Test
     public void modulePath() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
-        assert external.path == module.path;
+        assert external.path.toFile().equals(module.path);
     }
 
     @Test
     public void jarModulePath() throws Exception {
-        Module module = new Module(jar.path, "");
+        Module module = new Module(jar.path.toFile(), "");
         assert module != null;
-        assert jar.path == module.path;
+        assert jar.path.toFile().equals(module.path);
     }
 
     @Test
     public void moduleClassloader() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
         assert I.$loader != module.loader;
     }
 
     @Test
     public void jarModuleClassloader() throws Exception {
-        Module module = new Module(jar.path, "");
+        Module module = new Module(jar.path.toFile(), "");
         assert module != null;
         assert I.$loader != module.loader;
     }
 
     @Test
     public void findProviders1() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
 
         List<Class<MarkerInterface1>> providers = module.find(MarkerInterface1.class, false);
@@ -92,7 +91,7 @@ public class ModuleTest {
 
     @Test
     public void findProvidersFromJar1() throws Exception {
-        Module module = new Module(jar.path, "");
+        Module module = new Module(jar.path.toFile(), "");
         assert module != null;
 
         List<Class<MarkerInterface1>> providers = module.find(MarkerInterface1.class, false);
@@ -105,7 +104,7 @@ public class ModuleTest {
 
     @Test
     public void findProviders2() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
 
         List<Class<MarkerInterface2>> providers = module.find(MarkerInterface2.class, false);
@@ -118,7 +117,7 @@ public class ModuleTest {
 
     @Test
     public void findProvidersFomJar2() throws Exception {
-        Module module = new Module(jar.path, "");
+        Module module = new Module(jar.path.toFile(), "");
         assert module != null;
 
         List<Class<MarkerInterface2>> providers = module.find(MarkerInterface2.class, false);
@@ -135,7 +134,7 @@ public class ModuleTest {
      */
     @Test
     public void findProviders3() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
 
         List<Class<Object>> providers = module.find(Object.class, false);
@@ -148,7 +147,7 @@ public class ModuleTest {
 
     @Test
     public void findRuntimeAnnotatedClass1() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
 
         List<Class<RuntimeAnnotation1>> providers = module.find(RuntimeAnnotation1.class, false);
@@ -161,7 +160,7 @@ public class ModuleTest {
 
     @Test
     public void findRuntimeAnnotatedClass2() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
 
         List<Class<RuntimeAnnotation2>> providers = module.find(RuntimeAnnotation2.class, false);
@@ -174,7 +173,7 @@ public class ModuleTest {
 
     @Test
     public void findSourceAnnotatedClass() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
 
         List<Class<SourceAnnotation>> providers = module.find(SourceAnnotation.class, false);
@@ -184,20 +183,10 @@ public class ModuleTest {
 
     @Test
     public void findClassAnnotatedClass() throws Exception {
-        Module module = new Module(external.path, "");
+        Module module = new Module(external.path.toFile(), "");
         assert module != null;
 
         List<Class<ClassAnnotation>> providers = module.find(ClassAnnotation.class, false);
-        assert providers != null;
-        assert 0 == providers.size();
-    }
-
-    @Test
-    public void moduleInModule() throws Exception {
-        Module module = new Module(Paths.get("src/test/resources/kiss/inline.zip"), "");
-        assert module != null;
-
-        List<Class<Object>> providers = module.find(Object.class, false);
         assert providers != null;
         assert 0 == providers.size();
     }

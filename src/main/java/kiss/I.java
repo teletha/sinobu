@@ -2581,7 +2581,7 @@ public class I implements ClassListener<Extensible> {
     public static ClassLoader load(Class classPath, boolean filter) {
         Path path = locate(classPath);
 
-        return filter ? modules.load(path, classPath.getPackage().getName().replace('.', '/')) : load(path);
+        return filter ? modules.load(path.toFile(), classPath.getPackage().getName().replace('.', File.separatorChar)) : load(path);
     }
 
     /**
@@ -2613,7 +2613,10 @@ public class I implements ClassListener<Extensible> {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static ClassLoader load(Path classPath) {
-        return modules.load(classPath, "");
+        if (classPath == null) {
+            return null;
+        }
+        return modules.load(classPath.toFile(), "");
     }
 
     /**
@@ -2644,7 +2647,7 @@ public class I implements ClassListener<Extensible> {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static void unload(Path classPath) {
-        modules.unload(classPath);
+        modules.unload(classPath.toFile());
     }
 
     /**

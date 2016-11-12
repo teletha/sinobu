@@ -47,12 +47,12 @@ public class ClassListenerTest {
         modules.load(Interface1Listener.class);
 
         // load module
-        modules.load(module.path, "");
+        modules.load(module.path.toFile(), "");
 
         listener.assertClass(3, 0);
 
         // unload module
-        modules.unload(module.path);
+        modules.unload(module.path.toFile());
 
         listener.assertClass(3, 3);
     }
@@ -66,12 +66,12 @@ public class ClassListenerTest {
         modules.load(Interface2Listener.class);
 
         // load module
-        modules.load(module.path, "");
+        modules.load(module.path.toFile(), "");
 
         listener.assertClass(1, 0);
 
         // unload module
-        modules.unload(module.path);
+        modules.unload(module.path.toFile());
 
         listener.assertClass(1, 1);
     }
@@ -85,12 +85,12 @@ public class ClassListenerTest {
         modules.load(AnnotationListener.class);
 
         // load module
-        modules.load(module.path, "");
+        modules.load(module.path.toFile(), "");
 
         listener.assertClass(3, 0);
 
         // unload module
-        modules.unload(module.path);
+        modules.unload(module.path.toFile());
 
         listener.assertClass(3, 3);
     }
@@ -104,12 +104,12 @@ public class ClassListenerTest {
         modules.load(ClassLoadListener.class);
 
         // load module
-        modules.load(module.path, "");
+        modules.load(module.path.toFile(), "");
 
         listener.assertClass(10, 0);
 
         // unload module
-        modules.unload(module.path);
+        modules.unload(module.path.toFile());
 
         listener.assertClass(10, 10);
     }

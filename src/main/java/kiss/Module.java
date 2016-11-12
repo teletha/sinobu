@@ -16,15 +16,14 @@ import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import kiss.model.Model;
 
@@ -49,12 +48,12 @@ import kiss.model.Model;
  * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
  * </p>
  * 
- * @version 2016/11/11 11:34:12
+ * @version 2016/11/12 13:37:44
  */
 class Module {
 
     /** The root of this module. */
-    final Path path;
+    final File path;
 
     /** The class pattern which this module loads. */
     final String pattern;
@@ -70,46 +69,54 @@ class Module {
      * Module constructor should be package private.
      * </p>
      *
-     * @param path A module path as classpath, A <code>null</code> is not accepted.
+     * @param file A module path as classpath, A <code>null</code> is not accepted.
      */
-    Module(Path path, String pattern) throws MalformedURLException {
+    Module(File file, String pattern) throws MalformedURLException {
         // we don't need to check null because this is internal class
         // if (moduleFile == null) {
         // }
 
         // Store original module path for unloading.
-        this.path = path;
+        this.path = file.getAbsoluteFile();
         this.pattern = pattern;
-        this.loader = new URLClassLoader(new URL[] {path.toUri().toURL()}, I.$loader);
-
-        Path base = path;
+        this.loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, I.$loader);
 
         // start scanning class files
         try {
+            int prefix = this.path.getPath().length() + 1;
+
             // At first, we must scan the specified directory or archive. If the module file is
             // archive, Sinobu automatically try to switch to other file system (e.g.
             // ZipFileSystem).
-            if (Files.isRegularFile(path)) {
-                base = FileSystems.newFileSystem(base, loader).getPath("/");
-            }
+            Events<String> names = file.isFile() ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName)
+                    : Events.from(scan(file, new ArrayList())).map(File::getAbsolutePath).map(name -> name.substring(prefix));
 
-            // Then, we can scan module transparently. exclude non-class file
-            for (Path file : I.walk(base, pattern.concat("**.class"))) {
-                String name = base.relativize(file).toString();
-
-                // Don't write the following because "fqnc" field requires actual class name. If a
-                // module returns a non-class file (e.g. properties, xml, txt) at the end, there is
-                // a possibility that the module can't distinguish between system and Sinobu
-                // module correctly.
-                //
-                // this.fqcn = name;
-                //
-                // compute fully qualified class name
-                infos.add(new Object[] {name.substring(0, name.length() - 6).replace(File.separatorChar, '.').replace('/', '.'), null});
-            }
+            names.take(name -> name.endsWith(".class") && name.startsWith(pattern)).to(name -> {
+                infos.add(new Object[] {name.substring(0, name.length() - 6).replace(File.separatorChar, '.'), null});
+            });
         } catch (IOException e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Dig class files in directory.
+     * </p>
+     * 
+     * @param file
+     * @param files
+     * @return
+     */
+    private List<File> scan(File file, List<File> files) {
+        if (file.isDirectory()) {
+            for (File sub : file.listFiles()) {
+                scan(sub, files);
+            }
+        } else {
+            files.add(file);
+        }
+        return files;
     }
 
     /**
