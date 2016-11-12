@@ -88,7 +88,8 @@ class Module {
             // At first, we must scan the specified directory or archive. If the module file is
             // archive, Sinobu automatically try to switch to other file system (e.g.
             // ZipFileSystem).
-            Events<String> names = file.isFile() ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName)
+            Events<String> names = file.isFile()
+                    ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName).map(name -> name.replace('/', '.'))
                     : Events.from(scan(file, new ArrayList())).map(File::getAbsolutePath).map(name -> name.substring(prefix));
 
             names.take(name -> name.endsWith(".class") && name.startsWith(pattern)).to(name -> {
