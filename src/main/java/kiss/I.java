@@ -2613,10 +2613,7 @@ public class I implements ClassListener<Extensible> {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static ClassLoader load(Path classPath) {
-        if (classPath == null) {
-            return null;
-        }
-        return modules.load(classPath.toFile(), "");
+        return classPath == null ? null : modules.load(classPath.toFile(), "");
     }
 
     /**

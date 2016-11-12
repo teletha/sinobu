@@ -215,13 +215,6 @@ public class CoreMethodsTest {
         assert true == primitive.isBoolean();
     }
 
-    /**
-     * Test method with invalid argument.
-     */
-    @Test
-    public void testLoadWithNull() {
-        I.load((Path) null);
-    }
 
     /**
      * DOCUMENT.
