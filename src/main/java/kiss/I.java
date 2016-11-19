@@ -286,19 +286,16 @@ public class I implements ClassListener<Extensible> {
      */
     public static Path $working = Paths.get(""); // Poplar Taneshima
 
-    /** The namespace uri of Sinobu. */
-    static final String URI = "sinobu";
-
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
     /** The cache for Module, Model and Lifestyle. */
-    static final Modules modules = new Modules();
+   private static final Modules modules = new Modules();
 
     /** The mapping from extension point to extensions. */
     private static final Table<Class, Class> extensions = new Table();
 
-    /** The mapping from extension point to assosiated extension mapping. */
+    /** The mapping from extension point to associated extension mapping. */
     private static final Table<String, Class> keys = new Table();
 
     /** The lock for configurations. */
@@ -436,7 +433,7 @@ public class I implements ClassListener<Extensible> {
 
     /**
      * <p>
-     * Create {@link Predicate} which accpets any item.
+     * Create {@link Predicate} which accepts any item.
      * </p>
      * 
      * @return An acceptable {@link Predicate}.
@@ -2330,7 +2327,7 @@ public class I implements ClassListener<Extensible> {
      * Walk a file tree and collect directories you want to filter by various conditions.
      * </p>
      *
-     * @param start A depature point. The result list include this starting path.
+     * @param start A departure point. The result list include this starting path.
      * @param filter A directory filter.
      * @return All matched directories. (<em>not</em> including file)
      */
