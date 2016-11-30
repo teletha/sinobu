@@ -45,7 +45,7 @@ public class Prototype<M> implements Lifestyle<M> {
         params = instantiator.getParameterTypes();
 
         // We can safely call the method 'newInstance()' because the generated class has
-        // only one public constructor without arguments. But we shoud make this
+        // only one public constructor without arguments. But we should make this
         // instantiator accessible because it makes the creation speed faster.
         instantiator.setAccessible(true);
     }
@@ -62,6 +62,7 @@ public class Prototype<M> implements Lifestyle<M> {
      * 
      * @see kiss.Lifestyle#get()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public M get() {
         // constructor injection

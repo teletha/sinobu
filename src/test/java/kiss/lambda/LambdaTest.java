@@ -9,17 +9,16 @@
  */
 package kiss.lambda;
 
-import static kiss.lambda.Lambda.*;
+import kiss.I;
+import kiss.Ⅱ;
+import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.junit.Test;
-
-import kiss.I;
-import kiss.Ⅱ;
+import static kiss.lambda.Lambda.recursive;
 
 /**
  * @version 2016/04/04 19:28:05
@@ -35,7 +34,7 @@ public class LambdaTest {
     @Test
     public void pairConsumer() throws Exception {
         AtomicInteger value = new AtomicInteger();
-        Consumer<Ⅱ<Integer, Integer>> consumer = I.pair((a, b) -> value.addAndGet(a * 10 + b));
+        Consumer<Ⅱ<Integer, Integer>> consumer = I.<Integer, Integer>pair((a, b) -> value.addAndGet(a * 10 + b));
         consumer.accept(I.pair(1, 2));
 
         assert value.get() == 12;

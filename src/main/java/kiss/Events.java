@@ -9,51 +9,36 @@
  */
 package kiss;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import javafx.beans.property.*;
+import javafx.beans.value.WritableValue;
+
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SetProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.WritableValue;
+import java.util.function.*;
 
 /**
  * @version 2016/09/27 15:06:17
  */
 public class Events<V> {
 
-    /** For reuse. */
+    /**
+     * For reuse.
+     */
     public static final Events NEVER = new Events<>(observer -> Disposable.Φ);
 
-    /** For reuse. */
+    /**
+     * For reuse.
+     */
     private static final Object UNDEFINED = new Object();
 
-    /** The subscriber. */
+    /**
+     * The subscriber.
+     */
     private final Function<Observer<? super V>, Disposable> subscriber;
 
     /**
@@ -61,8 +46,8 @@ public class Events<V> {
      * Create {@link Events} with the specified subscriber {@link Collection} which will be invoked
      * whenever you calls {@link #to(Observer)} related methods.
      * </p>
-     * 
-     * @param subscriber A subscriber {@link Function}.
+     *
+     * @param observers A subscriber {@link Function}.
      * @see #to(Observer)
      * @see #to(Consumer, Consumer)
      * @see #to(Consumer, Consumer, Runnable)
@@ -71,9 +56,7 @@ public class Events<V> {
         this(observer -> {
             observers.add(observer);
 
-            return () -> {
-                observers.remove(observer);
-            };
+            return () -> observers.remove(observer);
         });
     }
 
@@ -82,7 +65,7 @@ public class Events<V> {
      * Create {@link Events} with the specified subscriber {@link Function} which will be invoked
      * whenever you calls {@link #to(Observer)} related methods.
      * </p>
-     * 
+     *
      * @param subscriber A subscriber {@link Function}.
      * @see #to(Observer)
      * @see #to(Consumer, Consumer)
@@ -96,7 +79,7 @@ public class Events<V> {
      * <p>
      * Receive values as {@link Variable} from this {@link Events}.
      * </p>
-     * 
+     *
      * @return A {@link Variable} as value receiver.
      */
     public final Disposable to(WritableValue<? super V> value) {
@@ -107,7 +90,7 @@ public class Events<V> {
      * <p>
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
-     * 
+     *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
@@ -119,7 +102,7 @@ public class Events<V> {
      * <p>
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
-     * 
+     *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
@@ -131,8 +114,8 @@ public class Events<V> {
      * <p>
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
-     * 
-     * @param next A delegator method of {@link Observer#accept(Object)}.
+     *
+     * @param next  A delegator method of {@link Observer#accept(Object)}.
      * @param error A delegator method of {@link Observer#error(Throwable)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
@@ -144,9 +127,9 @@ public class Events<V> {
      * <p>
      * Receive values from this {@link Events}.
      * </p>
-     * 
-     * @param next A delegator method of {@link Observer#accept(Object)}.
-     * @param error A delegator method of {@link Observer#error(Throwable)}.
+     *
+     * @param next     A delegator method of {@link Observer#accept(Object)}.
+     * @param error    A delegator method of {@link Observer#error(Throwable)}.
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
@@ -163,7 +146,7 @@ public class Events<V> {
      * <p>
      * Receive values from this {@link Events}.
      * </p>
-     * 
+     *
      * @param observer A value observer of this {@link Events}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
@@ -175,7 +158,7 @@ public class Events<V> {
      * <p>
      * Receive values as {@link Variable} from this {@link Events}.
      * </p>
-     * 
+     *
      * @return A {@link Variable} as value receiver.
      */
     public final Variable<V> to() {
@@ -189,7 +172,7 @@ public class Events<V> {
      * Receive values as {@link SetProperty} from this {@link Events}. Each value alternates between
      * In and Out.
      * </p>
-     * 
+     *
      * @return A {@link SetProperty} as value receiver.
      */
     public final SetProperty<V> toAlternate() {
@@ -205,7 +188,7 @@ public class Events<V> {
      * Receive values as {@link BooleanProperty} from this {@link Events}. Each value alternates
      * between true and false.
      * </p>
-     * 
+     *
      * @return A {@link BooleanProperty} as value receiver.
      */
     public final BooleanProperty toBinary() {
@@ -225,7 +208,7 @@ public class Events<V> {
      * <p>
      * Receive values as {@link SetProperty} from this {@link Events}.
      * </p>
-     * 
+     *
      * @return A {@link SetProperty} as value receiver.
      */
     public final ListProperty<V> toList() {
@@ -243,7 +226,7 @@ public class Events<V> {
      * <p>
      * Receive values as {@link MapProperty} from this {@link Events}.
      * </p>
-     * 
+     *
      * @return A {@link MapProperty} as value receiver.
      */
     public final <Key> MapProperty<Key, V> toMap(Function<V, Key> keyGenerator) {
@@ -254,7 +237,7 @@ public class Events<V> {
      * <p>
      * Receive values as {@link MapProperty} from this {@link Events}.
      * </p>
-     * 
+     *
      * @return A {@link MapProperty} as value receiver.
      */
     public final <Key, Value> MapProperty<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
@@ -274,7 +257,7 @@ public class Events<V> {
      * <p>
      * Receive values as {@link SetProperty} from this {@link Events}.
      * </p>
-     * 
+     *
      * @return A {@link SetProperty} as value receiver.
      */
     public final SetProperty<V> toSet() {
@@ -285,7 +268,7 @@ public class Events<V> {
      * <p>
      * Receive values as {@link SetProperty} from this {@link Events}.
      * </p>
-     * 
+     *
      * @return A {@link SetProperty} as value receiver.
      */
     private final SetProperty<V> toSet(BiConsumer<SetProperty<V>, V> collector) {
@@ -305,7 +288,7 @@ public class Events<V> {
      * <p>
      * Receive values as {@link Property} from this {@link Events}.
      * </p>
-     * 
+     *
      * @return A {@link Property} as value receiver.
      */
     public final Property<V> toProperty() {
@@ -318,7 +301,7 @@ public class Events<V> {
      * <p>
      * Filters the values of an {@link Events} sequence based on the specified type.
      * </p>
-     * 
+     *
      * @param type The type of result. <code>null</code> throws {@link NullPointerException}.
      * @return Chainable API.
      * @throws NullPointerException If the type is <code>null</code>.
@@ -332,7 +315,7 @@ public class Events<V> {
      * Indicates each value of an {@link Events} sequence into consecutive non-overlapping buffers
      * which are produced based on value count information.
      * </p>
-     * 
+     *
      * @param size A length of each buffer.
      * @return Chainable API.
      */
@@ -345,11 +328,11 @@ public class Events<V> {
      * Indicates each values of an {@link Events} sequence into zero or more buffers which are
      * produced based on value count information.
      * </p>
-     * 
-     * @param size A length of each buffer. Zero or negative number are treated exactly the same way
-     *            as 1.
+     *
+     * @param size     A length of each buffer. Zero or negative number are treated exactly the same way
+     *                 as 1.
      * @param interval A number of values to skip between creation of consecutive buffers. Zero or
-     *            negative number are treated exactly the same way as 1.
+     *                 negative number are treated exactly the same way as 1.
      * @return Chainable API.
      */
     public final Events<List<V>> buffer(int size, int interval) {
@@ -386,10 +369,10 @@ public class Events<V> {
      * Indicates each values of an {@link Events} sequence into zero or more buffers which are
      * produced based on time count information.
      * </p>
-     * 
+     *
      * @param time Time to collect values. Zero or negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
+     *             instruction.
      * @return Chainable API.
      */
     public final Events<List<V>> buffer(long time, TimeUnit unit) {
@@ -422,10 +405,10 @@ public class Events<V> {
      * combinations of two items emitted, in sequence, by this {@link Events} and the other
      * specified {@link Events}.
      * </p>
-     * 
+     *
      * @param other An other {@link Events} to combine.
      * @return A {@link Events} that emits items that are the result of combining the items emitted
-     *         by source {@link Events} by means of the given aggregation function.
+     * by source {@link Events} by means of the given aggregation function.
      */
     public final <O> Events<Ⅱ<V, O>> combine(Events<O> other) {
         return combine(other, I::pair);
@@ -437,14 +420,14 @@ public class Events<V> {
      * combinations of two items emitted, in sequence, by this {@link Events} and the other
      * specified {@link Events}.
      * </p>
-     * 
-     * @param other An other {@link Events} to combine.
+     *
+     * @param other   An other {@link Events} to combine.
      * @param another An another {@link Events} to combine.
      * @return A {@link Events} that emits items that are the result of combining the items emitted
-     *         by source {@link Events} by means of the given aggregation function.
+     * by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, I::pair).combine(another, Ⅱ<V, O>::<A> add);
+        return combine(other, I::pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -453,13 +436,13 @@ public class Events<V> {
      * combinations of two items emitted, in sequence, by this {@link Events} and the other
      * specified {@link Events}.
      * </p>
-     * 
-     * @param other An other {@link Events} to combine.
+     *
+     * @param other    An other {@link Events} to combine.
      * @param function A function that, when applied to an item emitted by each of the source
-     *            {@link Events}, results in an item that will be emitted by the resulting
-     *            {@link Events}.
+     *                 {@link Events}, results in an item that will be emitted by the resulting
+     *                 {@link Events}.
      * @return A {@link Events} that emits items that are the result of combining the items emitted
-     *         by source {@link Events} by means of the given aggregation function.
+     * by source {@link Events} by means of the given aggregation function.
      */
     public final <O, R> Events<R> combine(Events<O> other, BiFunction<V, O, R> function) {
         return new Events<>(observer -> {
@@ -488,13 +471,13 @@ public class Events<V> {
      * combinations of several items emitted, in sequence, by this {@link Events} and the other
      * specified {@link Events}.
      * </p>
-     * 
-     * @param others Other {@link Events} to combine.
-     * @param function A function that, when applied to an item emitted by each of the source
-     *            {@link Events}, results in an item that will be emitted by the resulting
-     *            {@link Events}.
+     *
+     * @param others   Other {@link Events} to combine.
+     * @param operator A function that, when applied to an item emitted by each of the source
+     *                 {@link Events}, results in an item that will be emitted by the resulting
+     *                 {@link Events}.
      * @return A {@link Events} that emits items that are the result of combining the items emitted
-     *         by source {@link Events} by means of the given aggregation function.
+     * by source {@link Events} by means of the given aggregation function.
      */
     public final Events<V> combine(Events<V>[] others, BinaryOperator<V> operator) {
         Events<V> base = this;
@@ -513,10 +496,10 @@ public class Events<V> {
      * each of the source {@link Events} each time an item is received from either of the source
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
-     * 
+     *
      * @param other An other constant {@link Events} to combine.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
-     *         by the source {@link Events} by means of the given aggregation function
+     * by the source {@link Events} by means of the given aggregation function
      */
     public final <O> Events<Ⅱ<V, O>> combineLatest(O other) {
         return combineLatest(from(other));
@@ -528,10 +511,10 @@ public class Events<V> {
      * each of the source {@link Events} each time an item is received from either of the source
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
-     * 
+     *
      * @param other An other {@link Events} to combine.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
-     *         by the source {@link Events} by means of the given aggregation function
+     * by the source {@link Events} by means of the given aggregation function
      */
     public final <O> Events<Ⅱ<V, O>> combineLatest(Events<O> other) {
         return combineLatest(other, I::pair);
@@ -543,14 +526,14 @@ public class Events<V> {
      * each of the source {@link Events} each time an item is received from either of the source
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
-     * 
-     * @param other An other {@link Events} to combine.
+     *
+     * @param other   An other {@link Events} to combine.
      * @param another An another {@link Events} to combine.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
-     *         by the source {@link Events} by means of the given aggregation function
+     * by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, I::pair).combineLatest(another, Ⅱ<V, O>::<A> add);
+        return combineLatest(other, I::pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -559,12 +542,12 @@ public class Events<V> {
      * each of the source {@link Events} each time an item is received from either of the source
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
-     * 
-     * @param other An other {@link Events} to combine.
+     *
+     * @param other    An other {@link Events} to combine.
      * @param function An aggregation function used to combine the items emitted by the source
-     *            {@link Events}.
+     *                 {@link Events}.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
-     *         by the source {@link Events} by means of the given aggregation function
+     * by the source {@link Events} by means of the given aggregation function
      */
     public final <O, R> Events<R> combineLatest(Events<O> other, BiFunction<V, O, R> function) {
         return new Events<>(observer -> {
@@ -596,12 +579,12 @@ public class Events<V> {
      * of each of the source {@link Events} each time an item is received from either of the source
      * {@link Events}, where this aggregation is defined by a specified function.
      * </p>
-     * 
-     * @param others Other {@link Events} to combine.
-     * @param function An aggregation function used to combine the items emitted by the source
-     *            {@link Events}.
+     *
+     * @param others   Other {@link Events} to combine.
+     * @param operator An aggregation function used to combine the items emitted by the source
+     *                 {@link Events}.
      * @return An {@link Events} that emits items that are the result of combining the items emitted
-     *         by the source {@link Events} by means of the given aggregation function
+     * by the source {@link Events} by means of the given aggregation function
      */
     public final Events<V> combineLatest(Events<V>[] others, BinaryOperator<V> operator) {
         Events<V> base = this;
@@ -619,7 +602,7 @@ public class Events<V> {
      * Drops values that are followed by newer values before a timeout. The timer resets on each
      * value emission.
      * </p>
-     * 
+     *
      * @param time A time value. Zero or negative number will ignore this instruction.
      * @param unit A time unit. <code>null</code> will ignore this instruction.
      * @return Chainable API.
@@ -651,11 +634,11 @@ public class Events<V> {
      * <p>
      * Indicates the {@link Events} sequence by due time with the specified source and time.
      * </p>
-     * 
+     *
      * @param time The absolute time used to shift the {@link Events} sequence. Zero or negative
-     *            number will ignore this instruction.
+     *             number will ignore this instruction.
      * @param unit A unit of time for the specified time. <code>null</code> will ignore this
-     *            instruction.
+     *             instruction.
      * @return Chainable API.
      */
     public final Events<V> delay(long time, TimeUnit unit) {
@@ -674,11 +657,11 @@ public class Events<V> {
      * Returns an {@link Events} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public final Events<V> diff() {
-        return take((V) null, (prev, now) -> !Objects.equals(prev, now));
+        return take((V) null, ((BiPredicate) Objects::equals).negate());
     }
 
     /**
@@ -686,7 +669,7 @@ public class Events<V> {
      * Returns an {@link Events} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public final Events<V> distinct() {
@@ -707,15 +690,15 @@ public class Events<V> {
      * each item emitted by the source {@link Events}, where that function returns an {@link Events}
      * , and then merging those resulting {@link Events} and emitting the results of this merger.
      * </p>
-     * 
+     *
      * @param function A function that, when applied to an item emitted by the source {@link Events}
-     *            , returns an {@link Events}.
+     *                 , returns an {@link Events}.
      * @return An {@link Events} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Events} and merging the results of the
-     *         {@link Events} obtained from this transformation.
+     * each item emitted by the source {@link Events} and merging the results of the
+     * {@link Events} obtained from this transformation.
      */
     public final <R> Events<R> flatIterable(Function<V, Iterable<R>> function) {
-        return flatMap(value -> from(function.apply(value)));
+        return flatMap(function.andThen(Events::from));
     }
 
     /**
@@ -724,12 +707,12 @@ public class Events<V> {
      * each item emitted by the source {@link Events}, where that function returns an {@link Events}
      * , and then merging those resulting {@link Events} and emitting the results of this merger.
      * </p>
-     * 
+     *
      * @param function A function that, when applied to an item emitted by the source {@link Events}
-     *            , returns an {@link Events}.
+     *                 , returns an {@link Events}.
      * @return An {@link Events} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Events} and merging the results of the
-     *         {@link Events} obtained from this transformation.
+     * each item emitted by the source {@link Events} and merging the results of the
+     * {@link Events} obtained from this transformation.
      */
     public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
@@ -747,12 +730,12 @@ public class Events<V> {
      * , and then merging the latest resulting {@link Events} and emitting the results of this
      * merger.
      * </p>
-     * 
+     *
      * @param function A function that, when applied to an item emitted by the source {@link Events}
-     *            , returns an {@link Events}.
+     *                 , returns an {@link Events}.
      * @return An {@link Events} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Events} and merging the results of the
-     *         {@link Events} obtained from this transformation.
+     * each item emitted by the source {@link Events} and merging the results of the
+     * {@link Events} obtained from this transformation.
      */
     public final <R> Events<R> flatMapLatest(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
@@ -771,13 +754,13 @@ public class Events<V> {
 
     /**
      * <p>
-     * Ensure the minimus interval time of each {@link Events} items.
+     * Ensure the minimum interval time of each {@link Events} items.
      * </p>
-     * 
+     *
      * @param time The absolute time used to interval the {@link Events} sequence. Zero or negative
-     *            number will ignore this instruction.
+     *             number will ignore this instruction.
      * @param unit A unit of time for the specified time. <code>null</code> will ignore this
-     *            instruction.
+     *             instruction.
      * @return Chainable API.
      */
     public final Events<V> interval(long time, TimeUnit unit) {
@@ -786,14 +769,14 @@ public class Events<V> {
 
     /**
      * <p>
-     * Ensure the minimus interval time of each {@link Events} items. The specified queue is shared
+     * Ensure the minimum interval time of each {@link Events} items. The specified queue is shared
      * by multiple {@link Events}.
      * </p>
-     * 
-     * @param time The absolute time used to interval the {@link Events} sequence. Zero or negative
-     *            number will ignore this instruction.
-     * @param unit A unit of time for the specified time. <code>null</code> will ignore this
-     *            instruction.
+     *
+     * @param time  The absolute time used to interval the {@link Events} sequence. Zero or negative
+     *              number will ignore this instruction.
+     * @param unit  A unit of time for the specified time. <code>null</code> will ignore this
+     *              instruction.
      * @param group A shared item group.
      * @return Chainable API.
      */
@@ -817,13 +800,13 @@ public class Events<V> {
 
     /**
      * <p>
-     * Ensure the minimus interval time of each {@link Events} items. The specified queue is shared
+     * Ensure the minimum interval time of each {@link Events} items. The specified queue is shared
      * by multiple {@link Events}.
      * </p>
-     * 
+     *
      * @param interval A specified interval time.
-     * @param latest A latest execution date.
-     * @param buffer The remaining values.
+     * @param latest   A latest execution date.
+     * @param buffer   The remaining values.
      */
     private void interval(long interval, long latest, Deque<Ⅱ<V, Observer>> buffer) {
         Ⅱ<V, Observer> context = buffer.pollFirst();
@@ -840,9 +823,9 @@ public class Events<V> {
      * Returns an {@link Events} that applies the given {@link Predicate} function to each value
      * emitted by an {@link Events} and emits the result.
      * </p>
-     * 
+     *
      * @param converter A converter function to apply to each value emitted by this {@link Events} .
-     *            <code>null</code> will ignore this instruction.
+     *                  <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
     public final Events<Boolean> is(Predicate<? super V> converter) {
@@ -858,7 +841,7 @@ public class Events<V> {
      * Returns an {@link Events} that applies the given constant to each item emitted by an
      * {@link Events} and emits the result.
      * </p>
-     * 
+     *
      * @param constant A constant to apply to each value emitted by this {@link Events}.
      * @return Chainable API.
      */
@@ -871,9 +854,9 @@ public class Events<V> {
      * Returns an {@link Events} that applies the given function to each value emitted by an
      * {@link Events} and emits the result.
      * </p>
-     * 
+     *
      * @param converter A converter function to apply to each value emitted by this {@link Events} .
-     *            <code>null</code> will ignore this instruction.
+     *                  <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
     public final <R> Events<R> map(Function<? super V, R> converter) {
@@ -889,10 +872,10 @@ public class Events<V> {
      * Returns an {@link Events} that applies the given function to each value emitted by an
      * {@link Events} and emits the result.
      * </p>
-     * 
-     * @param init A initial value.
+     *
+     * @param init      A initial value.
      * @param converter A converter function to apply to each value emitted by this {@link Events} .
-     *            <code>null</code> will ignore this instruction.
+     *                  <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
     public final <R> Events<R> map(V init, BiFunction<V, V, R> converter) {
@@ -915,8 +898,8 @@ public class Events<V> {
      * Flattens a sequence of {@link Events} emitted by an {@link Events} into one {@link Events},
      * without any transformation.
      * </p>
-     * 
-     * @param other A target {@link Events} to merge. <code>null</code> will be ignroed.
+     *
+     * @param others A target {@link Events} to merge. <code>null</code> will be ignored.
      * @return Chainable API.
      */
     public final Events<V> merge(Events<? extends V>... others) {
@@ -928,8 +911,8 @@ public class Events<V> {
      * Flattens a sequence of {@link Events} emitted by an {@link Events} into one {@link Events},
      * without any transformation.
      * </p>
-     * 
-     * @param others A target {@link Events} set to merge. <code>null</code> will be ignroed.
+     *
+     * @param others A target {@link Events} set to merge. <code>null</code> will be ignored.
      * @return Chainable API.
      */
     public final Events<V> merge(Iterable<? extends Events<? extends V>> others) {
@@ -954,7 +937,7 @@ public class Events<V> {
      * <p>
      * Invokes an action for each value in the {@link Events} sequence.
      * </p>
-     * 
+     *
      * @param next An action to invoke for each value in the {@link Events} sequence.
      * @return Chainable API.
      */
@@ -977,7 +960,7 @@ public class Events<V> {
      * <p>
      * Generates an {@link Events} sequence that repeats the given value infinitely.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public final Events<V> repeat() {
@@ -996,7 +979,7 @@ public class Events<V> {
      * <p>
      * Generates an {@link Events} sequence that repeats the given value finitely.
      * </p>
-     * 
+     *
      * @param count A number of repeat. Zero or negative number will ignore this instruction.
      * @return Chainable API.
      */
@@ -1029,7 +1012,7 @@ public class Events<V> {
      * emits the most recently emitted item (if any) emitted by the source {@link Events} since the
      * previous emission from the sampler {@link Events}.
      * </p>
-     * 
+     *
      * @param sampler An {@link Events} to use for sampling the source {@link Events}.
      * @return Chainable API.
      */
@@ -1060,13 +1043,13 @@ public class Events<V> {
      * until all items have been emitted by the source {@link Events}, emitting the result of each
      * of these iterations.
      * </p>
-     * 
-     * @param init An initial (seed) accumulator item.
+     *
+     * @param init     An initial (seed) accumulator item.
      * @param function An accumulator function to be invoked on each item emitted by the source
-     *            {@link Events}, whose result will be emitted to {@link Events} via
-     *            {@link Observer#onNext} and used in the next accumulator call.
+     *                 {@link Events}, whose result will be emitted to {@link Events} via
+     *                 {@link Observer#accept(Object)} and used in the next accumulator call.
      * @return An {@link Events} that emits initial value followed by the results of each call to
-     *         the accumulator function.
+     * the accumulator function.
      */
     public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
         return new Events<>(observer -> {
@@ -1083,8 +1066,8 @@ public class Events<V> {
      * <p>
      * Invokes an action for each value in the {@link Events} sequence.
      * </p>
-     * 
-     * @param next An action to invoke for each value in the {@link Events} sequence.
+     *
+     * @param effect An action to invoke for each value in the {@link Events} sequence.
      * @return Chainable API.
      */
     public final Events<V> sideEffect(Consumer<V> effect) {
@@ -1095,9 +1078,9 @@ public class Events<V> {
 
     /**
      * <p>
-     * Alias for take(condition.negete()).
+     * Alias for take(condition.negate()).
      * </p>
-     * 
+     *
      * @param condition
      * @return
      */
@@ -1111,9 +1094,9 @@ public class Events<V> {
 
     /**
      * <p>
-     * Alias for take(init, condition.negete()).
+     * Alias for take(init, condition.negate()).
      * </p>
-     * 
+     *
      * @param condition
      * @return
      */
@@ -1130,9 +1113,9 @@ public class Events<V> {
      * Bypasses a specified number of values in an {@link Events} sequence and then returns the
      * remaining values.
      * </p>
-     * 
+     *
      * @param count A number of values to skip. Zero or negative number will ignore this
-     *            instruction.
+     *              instruction.
      * @return Chainable API.
      */
     public final Events<V> skip(int count) {
@@ -1157,10 +1140,10 @@ public class Events<V> {
      * Bypasses a specified duration in an {@link Events} sequence and then returns the remaining
      * values.
      * </p>
-     * 
+     *
      * @param time Time to skip values. Zero or negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
+     *             instruction.
      * @return Chainable API.
      */
     public final Events<V> skip(long time, TimeUnit unit) {
@@ -1187,10 +1170,10 @@ public class Events<V> {
      * <pre>
      * skipUntil(v -> Objects.equals(v, value));
      * </pre>
-     * 
+     *
      * @param value A value to test each item emitted from the source {@link Events}.
      * @return An {@link Events} that begins emitting items emitted by the source {@link Events}
-     *         when the specified value is coming.
+     * when the specified value is coming.
      */
     public final Events<V> skipUntil(V value) {
         return skipUntil(v -> Objects.equals(v, value));
@@ -1202,12 +1185,12 @@ public class Events<V> {
      * as a specified condition holds true, but emits all further source items as soon as the
      * condition becomes false.
      * </p>
-     * 
+     *
      * @param predicate A function to test each item emitted from the source {@link Events}.
      * @return An {@link Events} that begins emitting items emitted by the source {@link Events}
-     *         when the specified predicate becomes false.
+     * when the specified predicate becomes false.
      */
-    public final <T> Events<V> skipUntil(Predicate<V> predicate) {
+    public final Events<V> skipUntil(Predicate<? super V> predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
@@ -1232,11 +1215,11 @@ public class Events<V> {
      * Returns the values from the source {@link Events} sequence only after the other
      * {@link Events} sequence produces a value.
      * </p>
-     * 
+     *
      * @param timing The second {@link Events} that has to emit an item before the source
-     *            {@link Events} elements begin to be mirrored by the resulting {@link Events}.
+     *               {@link Events} elements begin to be mirrored by the resulting {@link Events}.
      * @return An {@link Events} that skips items from the source {@link Events} until the second
-     *         {@link Events} emits an item, then emits the remaining items.
+     * {@link Events} emits an item, then emits the remaining items.
      */
     public final Events<V> skipUntil(Events timing) {
         // ignore invalid parameter
@@ -1260,7 +1243,7 @@ public class Events<V> {
      * <p>
      * Alias for take(condition.map(value -> !value).
      * </p>
-     * 
+     *
      * @param condition
      * @return
      */
@@ -1277,7 +1260,7 @@ public class Events<V> {
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Events}.
      * </p>
-     * 
+     *
      * @param values The initial values.
      * @return Chainable API.
      */
@@ -1290,7 +1273,7 @@ public class Events<V> {
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Events}.
      * </p>
-     * 
+     *
      * @param values The initial values.
      * @return Chainable API.
      */
@@ -1303,7 +1286,7 @@ public class Events<V> {
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Events}.
      * </p>
-     * 
+     *
      * @param values The initial values.
      * @return Chainable API.
      */
@@ -1326,10 +1309,10 @@ public class Events<V> {
      * Returns an {@link Events} consisting of the values of this {@link Events} that match the
      * given predicate.
      * </p>
-     * 
+     *
      * @param condition A function that evaluates the values emitted by the source {@link Events},
-     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
-     *            instruction.
+     *                  returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *                  instruction.
      * @return Chainable API.
      */
     public final Events<V> take(Predicate<V> condition) {
@@ -1350,10 +1333,10 @@ public class Events<V> {
      * Returns an {@link Events} consisting of the values of this {@link Events} that match the
      * given predicate.
      * </p>
-     * 
+     *
      * @param condition A function that evaluates the values emitted by the source {@link Events},
-     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
-     *            instruction.
+     *                  returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *                  instruction.
      * @return Chainable API.
      */
     public final Events<V> take(V init, BiPredicate<V, V> condition) {
@@ -1377,9 +1360,9 @@ public class Events<V> {
      * <p>
      * Returns a specified number of contiguous values from the start of an {@link Events} sequence.
      * </p>
-     * 
+     *
      * @param count A number of values to emit. Zero or negative number will ignore this
-     *            instruction.
+     *              instruction.
      * @return Chainable API.
      */
     public final Events<V> take(int count) {
@@ -1412,10 +1395,10 @@ public class Events<V> {
      * <p>
      * Returns an {@link Events} sequence while the specified duration.
      * </p>
-     * 
+     *
      * @param time Time to take values. Zero or negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
+     *             instruction.
      * @return Chainable API.
      */
     public final Events<V> take(long time, TimeUnit unit) {
@@ -1447,11 +1430,11 @@ public class Events<V> {
      * <pre>
      * takeUntil(v -> Objects.equals(v, value));
      * </pre>
-     * 
+     *
      * @param value A value to test each item emitted from the source {@link Events}.
      * @return An {@link Events} that first emits items emitted by the source {@link Events}, checks
-     *         the specified condition after each item, and then completes if the condition is
-     *         satisfied.
+     * the specified condition after each item, and then completes if the condition is
+     * satisfied.
      */
     public final Events<V> takeUntil(V value) {
         return takeUntil(v -> Objects.equals(v, value));
@@ -1462,12 +1445,12 @@ public class Events<V> {
      * Returns an {@link Events} that emits items emitted by the source {@link Events}, checks the
      * specified predicate for each item, and then completes if the condition is satisfied.
      * </p>
-     * 
+     *
      * @param predicate A function that evaluates an item emitted by the source {@link Events} and
-     *            returns a Boolean.
+     *                  returns a Boolean.
      * @return An {@link Events} that first emits items emitted by the source {@link Events}, checks
-     *         the specified condition after each item, and then completes if the condition is
-     *         satisfied.
+     * the specified condition after each item, and then completes if the condition is
+     * satisfied.
      */
     public final Events<V> takeUntil(Predicate<V> predicate) {
         // ignore invalid parameter
@@ -1495,9 +1478,9 @@ public class Events<V> {
      * Returns the values from the source {@link Events} sequence until the other {@link Events}
      * sequence produces a value.
      * </p>
-     * 
+     *
      * @param predicate An {@link Events} sequence that terminates propagation of values of the
-     *            source sequence. <code>null</code> will ignore this instruction.
+     *                  source sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
     public final Events<V> takeUntil(Events predicate) {
@@ -1521,9 +1504,9 @@ public class Events<V> {
      * Returns an {@link Events} consisting of the values of this {@link Events} that match the
      * given predicate.
      * </p>
-     * 
+     *
      * @param condition An external boolean {@link Events}. <code>null</code> will ignore this
-     *            instruction.
+     *                  instruction.
      * @return Chainable API.
      */
     public final Events<V> takeWhile(Events<Boolean> condition) {
@@ -1545,10 +1528,10 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that applies the boolean values alternatly to each item emitted by
+     * Returns an {@link Events} that applies the boolean values alternately to each item emitted by
      * an {@link Events} and emits the result. Initial value is true.
      * </p>
-     * 
+     *
      * @return Chainable API.
      */
     public final Events<Boolean> toggle() {
@@ -1557,10 +1540,10 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that applies the boolean values alternatly to each item emitted by
+     * Returns an {@link Events} that applies the boolean values alternately to each item emitted by
      * an {@link Events} and emits the result.
      * </p>
-     * 
+     *
      * @param initial A initial boolean value to apply to each value emitted by this {@link Events}.
      * @return Chainable API.
      */
@@ -1570,10 +1553,10 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that applies the given two constants alternatly to each item
+     * Returns an {@link Events} that applies the given two constants alternately to each item
      * emitted by an {@link Events} and emits the result.
      * </p>
-     * 
+     *
      * @param values A list of constants to apply to each value emitted by this {@link Events}.
      * @return Chainable API.
      */
@@ -1600,11 +1583,11 @@ public class Events<V> {
      * Ignores the values from an {@link Events} sequence which are followed by another value before
      * due time with the specified source and time.
      * </p>
-     * 
+     *
      * @param time Time to wait before sending another item after emitting the last item. Zero or
-     *            negative number will ignore this instruction.
+     *             negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
+     *             instruction.
      * @return Chainable API.
      */
     public final Events<V> throttle(long time, TimeUnit unit) {
@@ -1668,7 +1651,7 @@ public class Events<V> {
      * Create an {@link Events} that emits true if all specified observables emit true as latest
      * event.
      * </p>
-     * 
+     *
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
@@ -1685,7 +1668,7 @@ public class Events<V> {
      * Create an {@link Events} that emits true if any specified observable emits true as latest
      * event.
      * </p>
-     * 
+     *
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
@@ -1702,7 +1685,7 @@ public class Events<V> {
      * Create an {@link Events} that emits true if all specified observables emit false as latest
      * event.
      * </p>
-     * 
+     *
      * @param observables A list of target {@link Events} to test.
      * @return Chainable API.
      */
@@ -1718,8 +1701,8 @@ public class Events<V> {
      * <p>
      * Returns an {@link Events} that emits the specified values.
      * </p>
-     * 
-     * @param value A list of values to emit.
+     *
+     * @param values A list of values to emit.
      * @return An {@link Events} that emits values as a first sequence.
      */
     @SafeVarargs
@@ -1731,8 +1714,8 @@ public class Events<V> {
      * <p>
      * Returns an {@link Events} that emits the specified values.
      * </p>
-     * 
-     * @param value A list of values to emit.
+     *
+     * @param values A list of values to emit.
      * @return An {@link Events} that emits values as a first sequence.
      */
     public static <V> Events<V> from(Iterable<V> values) {
@@ -1743,8 +1726,8 @@ public class Events<V> {
      * <p>
      * Returns an {@link Events} that emits the specified values.
      * </p>
-     * 
-     * @param value A list of values to emit.
+     *
+     * @param values A list of values to emit.
      * @return An {@link Events} that emits values as a first sequence.
      */
     public static <V> Events<V> from(Enumeration<V> values) {

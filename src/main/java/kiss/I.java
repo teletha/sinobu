@@ -290,7 +290,7 @@ public class I implements ClassListener<Extensible> {
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
     /** The cache for Module, Model and Lifestyle. */
-   private static final Modules modules = new Modules();
+    private static final Modules modules = new Modules();
 
     /** The mapping from extension point to extensions. */
     private static final Table<Class, Class> extensions = new Table();

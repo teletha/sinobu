@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -490,6 +491,27 @@ public class EventsTest {
         assert facade.emitAndRetrieve(20) == 20;
 
         assert facade.disposeWithCountAlreadyDisposed(2);
+    }
+
+    @Test
+    public void flatIterable() {
+        Function<String, Iterable<String>> chars = value -> {
+            List<String> values = new ArrayList();
+
+            for (int i = 0; i < value.length(); i++) {
+                values.add(String.valueOf(value.charAt(i)));
+            }
+            return values;
+        };
+
+        EventFacade<String, String> facade = new EventFacade<>(events -> events.flatIterable(chars));
+
+        facade.emit("test");
+        assert facade.retrieve().equals("t");
+        assert facade.retrieve().equals("e");
+        assert facade.retrieve().equals("s");
+        assert facade.retrieve().equals("t");
+        assert facade.retrieve() == null;
     }
 
     @Test

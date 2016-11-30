@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import kiss.model.Model;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -16,16 +18,10 @@ import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import kiss.model.Model;
 
 /**
  * <h2>Module System</h2>
@@ -45,24 +41,32 @@ import kiss.model.Model;
  * <p>
  * We adopted Suffix Naming Strategy of an automatically generated class at first (e.g. SomeClass+,
  * AnotherClass-). But this strategy has problem against to core package classes (e.g.
- * java.util.Date class, java.awt.Dimension). Therefore, we adopt Preffix Naming Strategy now.
+ * java.util.Date class, java.awt.Dimension). Therefore, we adopt prefix Naming Strategy now.
  * </p>
- * 
+ *
  * @version 2016/11/12 13:37:44
  */
 class Module {
 
-    /** The root of this module. */
+    /**
+     * The root of this module.
+     */
     final File path;
 
-    /** The class pattern which this module loads. */
+    /**
+     * The class pattern which this module loads.
+     */
     final String pattern;
 
-    /** The module classloader. */
+    /**
+     * The module classloader.
+     */
     final ClassLoader loader;
 
-    /** The list of classes (by class and interface). [java.lang.String or Class, int[]] */
-    private final List<Object[]> infos = new CopyOnWriteArrayList();
+    /**
+     * The list of classes (by class and interface). [java.lang.String or Class, int[]]
+     */
+    private final List<Object[]> infos = new CopyOnWriteArrayList<>();
 
     /**
      * <p>
@@ -79,7 +83,7 @@ class Module {
         // Store original module path for unloading.
         this.path = file.getAbsoluteFile();
         this.pattern = pattern;
-        this.loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, I.$loader);
+        this.loader = new URLClassLoader(new URL[]{file.toURI().toURL()}, I.$loader);
 
         // start scanning class files
         try {
@@ -90,11 +94,9 @@ class Module {
             // ZipFileSystem).
             Events<String> names = file.isFile()
                     ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName).map(name -> name.replace('/', '.'))
-                    : Events.from(scan(file, new ArrayList())).map(File::getAbsolutePath).map(name -> name.substring(prefix));
+                    : Events.from(scan(file, new ArrayList<>())).map(File::getAbsolutePath).map(name -> name.substring(prefix));
 
-            names.take(name -> name.endsWith(".class") && name.startsWith(pattern)).to(name -> {
-                infos.add(new Object[] {name.substring(0, name.length() - 6).replace(File.separatorChar, '.'), null});
-            });
+            names.take(name -> name.endsWith(".class") && name.startsWith(pattern)).to(name -> infos.add(new Object[]{name.substring(0, name.length() - 6).replace(File.separatorChar, '.'), null}));
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -104,10 +106,10 @@ class Module {
      * <p>
      * Dig class files in directory.
      * </p>
-     * 
-     * @param file
-     * @param files
-     * @return
+     *
+     * @param file  A current location.
+     * @param files A list of collected files.
+     * @return A list of collected files.
      */
     private List<File> scan(File file, List<File> files) {
         if (file.isDirectory()) {
@@ -123,10 +125,10 @@ class Module {
     /**
      * Collect all service provider classes which is managed by this module.
      *
-     * @param <S> A type of service provider interface.
-     * @param spi A service provider interface.
+     * @param <S>    A type of service provider interface.
+     * @param spi    A service provider interface.
      * @param single A flag for finding mode. <code>true</code> is single mode, <code>false</code>
-     *            is all mode.
+     *               is all mode.
      * @return A list of all service provider classes in this module. Never be <code>null</code>.
      */
     <S> List<Class<S>> find(Class<S> spi, boolean single) {

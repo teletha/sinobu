@@ -39,8 +39,16 @@ public class Ⅱ<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ⅲ<Param1, Param2, AdditionalParam> add(AdditionalParam param) {
+    public <AdditionalParam> Ⅲ<Param1, Param2, AdditionalParam> append(AdditionalParam param) {
         return I.pair(ⅰ, ⅱ, param);
+    }
+
+    /**
+     * @param value
+     * @return
+     */
+    public <AdditionalParam> Ⅲ<AdditionalParam, Param1, Param2> prepend(AdditionalParam value) {
+        return I.pair(value, ⅰ, ⅱ);
     }
 
     /**
