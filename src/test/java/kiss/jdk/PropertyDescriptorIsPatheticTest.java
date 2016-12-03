@@ -13,11 +13,11 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
+import org.junit.Test;
+
 import kiss.sample.bean.Primitive;
 import kiss.sample.bean.PrimitiveWrapper;
 import kiss.sample.bean.invalid.ProtectedAccessor;
-
-import org.junit.Test;
 
 /**
  * {@link PropertyDescriptor} is not pathetic in JDK7.

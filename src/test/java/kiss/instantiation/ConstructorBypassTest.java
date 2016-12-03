@@ -20,12 +20,11 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
-import kiss.I;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import antibug.util.UnsafeUtility;
+import kiss.I;
 
 /**
  * @version 2011/03/22 16:54:33
@@ -44,12 +43,12 @@ public class ConstructorBypassTest {
     public void byReflectionFactory() throws Exception {
         // no bypass
         Child child = I.make(Child.class);
-        assert child instanceof Child;
+        assert Child.class.isInstance(child);
         assert 2 == call;
 
         // bypass
         child = UnsafeUtility.newInstance(Child.class);
-        assert child instanceof Child;
+        assert Child.class.isInstance(child);
         assert 2 == call; // Cool!!!
     }
 
@@ -57,7 +56,7 @@ public class ConstructorBypassTest {
     public void byObjectStreamClass() throws Exception {
         // no bypass
         Child child = I.make(Child.class);
-        assert child instanceof Child;
+        assert Child.class.isInstance(child);
         assert 2 == call;
 
         // bypass
@@ -65,7 +64,7 @@ public class ConstructorBypassTest {
         method.setAccessible(true);
 
         child = (Child) method.invoke(ObjectStreamClass.lookup(Child.class));
-        assert child instanceof Child;
+        assert Child.class.isInstance(child);
         assert 3 == call; // Umm...
     }
 
@@ -73,12 +72,12 @@ public class ConstructorBypassTest {
     public void byMockObjectInputStream() throws Exception {
         // no bypass
         Child child = I.make(Child.class);
-        assert child instanceof Child;
+        assert Child.class.isInstance(child);
         assert 2 == call;
 
         // bypass
         child = (Child) new Mock(Child.class).readObject();
-        assert child instanceof Child;
+        assert Child.class.isInstance(child);
         assert 3 == call; // Umm...
     }
 

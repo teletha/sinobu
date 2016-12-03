@@ -80,7 +80,7 @@ public class LifestyleTest {
     @Test
     public void extendPrototypeWithClassParameter() {
         Student person = I.make(Student.class);
-        assert person instanceof Student;
+        assert Student.class.isInstance(person);
         assert CONSTANT.equals(person.getFirstName());
     }
 

@@ -163,14 +163,13 @@ public class EventFacade<V, R> {
         // all result values must be same
         if (results.isEmpty()) {
             return null;
-        } else {
-            R value = results.get(0);
-
-            for (R result : results) {
-                assert Objects.equals(value, result);
-            }
-            return value;
         }
+        R value = results.get(0);
+
+        for (R result : results) {
+            assert Objects.equals(value, result);
+        }
+        return value;
     }
 
     /**

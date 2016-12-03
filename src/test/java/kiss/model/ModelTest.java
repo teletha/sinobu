@@ -51,7 +51,7 @@ public class ModelTest {
 
     static {
         // dirty code to load I class at first
-        assert I.$loader instanceof ClassLoader;
+        assert I.$loader != null;
     }
 
     /**
@@ -191,7 +191,7 @@ public class ModelTest {
 
         model.set(bean, integer, 10);
         assert bean.integer.get() == 10;
-        assert (Integer) model.get(bean, integer) == 10;
+        assert(Integer) model.get(bean, integer) == 10;
 
         model.set(bean, string, "value");
         assert bean.string.get().equals("value");
