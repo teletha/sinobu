@@ -9,7 +9,6 @@
  */
 package kiss.core;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -214,7 +213,6 @@ public class CoreMethodsTest {
         primitive.setBoolean(true);
         assert true == primitive.isBoolean();
     }
-
 
     /**
      * DOCUMENT.

@@ -103,7 +103,7 @@ public class EventFacade<V, R> {
      * @return
      */
     public Events<V> observe() {
-        return new Events<V>(observer -> {
+        return new Events<>(observer -> {
             if (observer != null) observers.add(observer);
 
             return () -> {
