@@ -251,8 +251,7 @@ public class EventsTest {
     @Test
     public void combine() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
-        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
-                .combine(sub.observe(), (base, other) -> base + other));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.combine(sub.observe(), (base, other) -> base + other));
 
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == null;
@@ -325,7 +324,7 @@ public class EventsTest {
     @Test
     public void combineLatest() {
         EventFacade<Integer, Integer> sub = new EventFacade<>();
-        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events
                 .combineLatest(sub.observe(), (base, other) -> base + other));
 
         assert facade.emitAndRetrieve(1) == null;
@@ -578,7 +577,7 @@ public class EventsTest {
 
     @Test
     public void map() throws Exception {
-        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> events.map(value -> value * 2));
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.map(value -> value * 2));
 
         assert facade.emitAndRetrieve(10) == 20;
         assert facade.emitAndRetrieve(20) == 40;
