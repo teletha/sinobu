@@ -1169,6 +1169,17 @@ public class Events<V> {
 
     /**
      * <p>
+     * Alias for skip(Objects::isNull).
+     * </p>
+     *
+     * @return Chainable API.
+     */
+    public final Events<V> skipNull() {
+        return skip(Objects::isNull);
+    }
+
+    /**
+     * <p>
      * This method is equivalent to the following code.
      * </p>
      * <pre>
