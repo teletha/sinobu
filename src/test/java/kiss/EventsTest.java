@@ -794,6 +794,32 @@ public class EventsTest {
     }
 
     @Test
+    public void skipByItems() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(10, 30));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.dispose();
+    }
+
+    @Test
+    public void skipByItemCollection() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(I.set(10, 30)));
+
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.emitAndRetrieve(10) == null;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.emitAndRetrieve(30) == null;
+        assert facade.dispose();
+    }
+
+    @Test
     public void skipByCondition() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(value -> value % 3 == 0));
 

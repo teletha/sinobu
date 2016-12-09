@@ -1098,6 +1098,38 @@ public class Events<V> {
 
     /**
      * <p>
+     * Alias for skip(I.set(excludes)).
+     * </p>
+     *
+     * @param excludes A collection of skip items.
+     * @return Chainable API.
+     */
+    public final Events<V> skip(V... excludes) {
+        // ignore invalid parameter
+        if (excludes == null) {
+            return this;
+        }
+        return skip(I.set(excludes));
+    }
+
+    /**
+     * <p>
+     * Alias for skip(v -> excludes.contains(v)).
+     * </p>
+     *
+     * @param excludes A collection of skip items.
+     * @return Chainable API.
+     */
+    public final Events<V> skip(Collection<V> excludes) {
+        // ignore invalid parameter
+        if (excludes == null) {
+            return this;
+        }
+        return skip(v -> excludes.contains(v));
+    }
+
+    /**
+     * <p>
      * Alias for take(init, condition.negate()).
      * </p>
      *

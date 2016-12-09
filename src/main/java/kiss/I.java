@@ -2234,6 +2234,26 @@ public class I implements ClassListener<Extensible> {
 
     /**
      * <p>
+     * Create {@link Set} with the specified items.
+     * </p>
+     * 
+     * @param items A list of itmes.
+     * @return The new created {@link Set}.
+     */
+    public static <V> Set<V> set(V... items) {
+        Set<V> set = new HashSet();
+
+        if (items != null) {
+            for (V item : items) {
+                set.add(item);
+            }
+        }
+
+        return set;
+    }
+
+    /**
+     * <p>
      * Transform any type object into the specified type if possible.
      * </p>
      *
