@@ -2542,7 +2542,7 @@ public class I implements ClassListener<Extensible> {
                     // ========================
                     // XML Literal
                     // ========================
-                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value).concat("</m>"))));
+                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
 
                     return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
                 }
