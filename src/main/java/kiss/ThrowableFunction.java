@@ -9,11 +9,10 @@
  */
 package kiss;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * @version 2016/12/10 23:40:32
+ * @version 2016/12/12 9:28:01
  */
 public interface ThrowableFunction<Param, Return> extends Function<Param, Return> {
 
@@ -24,7 +23,7 @@ public interface ThrowableFunction<Param, Return> extends Function<Param, Return
      * @return The function result.
      * @throws Throwable The execution error.
      */
-    Return applyWith(Param param) throws Throwable;
+    Return APPLY(Param param) throws Throwable;
 
     /**
      * {@inheritDoc}
@@ -32,36 +31,9 @@ public interface ThrowableFunction<Param, Return> extends Function<Param, Return
     @Override
     default Return apply(Param param) {
         try {
-            return applyWith(param);
+            return APPLY(param);
         } catch (Throwable e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default <V> ThrowableFunction<Param, V> andThen(Function<? super Return, ? extends V> after) {
-        Objects.requireNonNull(after);
-        return param -> after.apply(applyWith(param));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    default <V> ThrowableFunction<Param, V> andThen(ThrowableFunction<? super Return, ? extends V> after) {
-        Objects.requireNonNull(after);
-        return param -> after.applyWith(applyWith(param));
-    }
-
-    /**
-     * Returns a function that always returns its input argument.
-     *
-     * @param <T> the type of the input and output objects to the function
-     * @return a function that always returns its input argument
-     */
-    static <T> ThrowableFunction<T, T> identity() {
-        return param -> param;
     }
 }

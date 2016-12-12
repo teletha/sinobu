@@ -248,8 +248,8 @@ public class Events<V> {
      *
      * @return A {@link MapProperty} as value receiver.
      */
-    public final <Key> MapProperty<Key, V> toMap(ThrowableFunction<V, Key> keyGenerator) {
-        return toMap(keyGenerator, ThrowableFunction.identity());
+    public final <Key> MapProperty<Key, V> toMap(Function<V, Key> keyGenerator) {
+        return toMap(keyGenerator, Function.identity());
     }
 
     /**
@@ -259,7 +259,7 @@ public class Events<V> {
      *
      * @return A {@link MapProperty} as value receiver.
      */
-    public final <Key, Value> MapProperty<Key, Value> toMap(ThrowableFunction<V, Key> keyGenerator, ThrowableFunction<V, Value> valueGenerator) {
+    public final <Key, Value> MapProperty<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
         // value receiver
         MapProperty<Key, Value> property = I.make(MapProperty.class);
 
@@ -319,8 +319,8 @@ public class Events<V> {
      *
      * @return A {@link MapProperty} as value receiver.
      */
-    public final <Key> Table<Key, V> toTable(ThrowableFunction<V, Key> keyGenerator) {
-        return toTable(keyGenerator, ThrowableFunction.identity());
+    public final <Key> Table<Key, V> toTable(Function<V, Key> keyGenerator) {
+        return toTable(keyGenerator, Function.identity());
     }
 
     /**
@@ -330,7 +330,7 @@ public class Events<V> {
      *
      * @return A {@link MapProperty} as value receiver.
      */
-    public final <Key, Value> Table<Key, Value> toTable(ThrowableFunction<V, Key> keyGenerator, ThrowableFunction<V, Value> valueGenerator) {
+    public final <Key, Value> Table<Key, Value> toTable(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
         // value receiver
         Table<Key, Value> property = I.make(Table.class);
 
@@ -735,7 +735,7 @@ public class Events<V> {
      *         each item emitted by the source {@link Events} and merging the results of the
      *         {@link Events} obtained from this transformation.
      */
-    public final <R> Events<R> flatIterable(ThrowableFunction<V, Iterable<R>> function) {
+    public final <R> Events<R> flatIterable(Function<V, Iterable<R>> function) {
         return flatMap(function.andThen(Events::from));
     }
 
@@ -752,7 +752,7 @@ public class Events<V> {
      *         each item emitted by the source {@link Events} and merging the results of the
      *         {@link Events} obtained from this transformation.
      */
-    public final <R> Events<R> flatMap(ThrowableFunction<V, Events<R>> function) {
+    public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
             Disposable disposer = Disposable.empty();
             disposer.and(to(value -> disposer.and(function.apply(value).to(observer))));
@@ -775,7 +775,7 @@ public class Events<V> {
      *         each item emitted by the source {@link Events} and merging the results of the
      *         {@link Events} obtained from this transformation.
      */
-    public final <R> Events<R> flatMapLatest(ThrowableFunction<V, Events<R>> function) {
+    public final <R> Events<R> flatMapLatest(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
             Disposable[] disposables = {null, Disposable.Φ};
 
@@ -895,7 +895,7 @@ public class Events<V> {
      *            <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <R> Events<R> map(ThrowableFunction<? super V, R> converter) {
+    public final <R> Events<R> map(Function<? super V, R> converter) {
         // ignore invalid parameters
         if (converter == null) {
             return (Events<R>) this;

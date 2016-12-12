@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -494,7 +495,7 @@ public class EventsTest {
 
     @Test
     public void flatIterable() {
-        ThrowableFunction<String, Iterable<String>> chars = value -> {
+        Function<String, Iterable<String>> chars = value -> {
             List<String> values = new ArrayList();
 
             for (int i = 0; i < value.length(); i++) {

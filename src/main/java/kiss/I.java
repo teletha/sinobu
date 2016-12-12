@@ -2000,6 +2000,18 @@ public class I implements ClassListener<Extensible> {
 
     /**
      * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param function A checked function.
+     * @return A unchecked function.
+     */
+    public static <P, R> Function<P, R> quiet(ThrowableFunction<P, R> function) {
+        return function;
+    }
+
+    /**
+     * <p>
      * Deceive complier that the specified checked exception is unchecked exception.
      * </p>
      *
