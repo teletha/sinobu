@@ -182,8 +182,8 @@ public class Model<M> {
 
                     if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
                         // property
-                        Property property = new Property(
-                                of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field.getGenericType()), field.getName());
+                        Property property = new Property(of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field
+                                .getGenericType()), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;
 

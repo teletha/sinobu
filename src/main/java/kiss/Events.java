@@ -320,7 +320,18 @@ public class Events<V> {
      * @return A {@link MapProperty} as value receiver.
      */
     public final <Key> Table<Key, V> toTable(Function<V, Key> keyGenerator) {
-        return toTable(keyGenerator, Function.identity());
+        return toTable(new Table(), keyGenerator);
+    }
+
+    /**
+     * <p>
+     * Receive values as {@link MapProperty} from this {@link Events}.
+     * </p>
+     *
+     * @return A {@link MapProperty} as value receiver.
+     */
+    public final <Key> Table<Key, V> toTable(Table<Key, V> table, Function<V, Key> keyGenerator) {
+        return toTable(table, keyGenerator, Function.identity());
     }
 
     /**
@@ -331,14 +342,22 @@ public class Events<V> {
      * @return A {@link MapProperty} as value receiver.
      */
     public final <Key, Value> Table<Key, Value> toTable(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        // value receiver
-        Table<Key, Value> property = I.make(Table.class);
+        return toTable(new Table(), keyGenerator, valueGenerator);
+    }
 
+    /**
+     * <p>
+     * Receive values as {@link MapProperty} from this {@link Events}.
+     * </p>
+     *
+     * @return A {@link MapProperty} as value receiver.
+     */
+    public final <Key, Value> Table<Key, Value> toTable(Table<Key, Value> table, Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
         // start receiving values
-        to(v -> property.push(keyGenerator.apply(v), valueGenerator.apply(v)));
+        to(v -> table.push(keyGenerator.apply(v), valueGenerator.apply(v)));
 
         // API definition
-        return property;
+        return table;
     }
 
     /**
@@ -467,7 +486,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, I::pair).combine(another, Ⅱ::<A> append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -573,7 +592,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, I::pair).combineLatest(another, Ⅱ::<A> append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
