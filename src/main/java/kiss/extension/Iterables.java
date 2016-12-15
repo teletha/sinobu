@@ -31,6 +31,7 @@ public class Iterables {
      * @param suffix the sequence of characters to be used at the end
      * @return
      */
+    @Extension.Method
     public static <V> String join(Iterable<V> values, CharSequence delimiter) {
         return join(values, delimiter, "", "");
     }
@@ -47,6 +48,7 @@ public class Iterables {
      * @param suffix the sequence of characters to be used at the end
      * @return
      */
+    @Extension.Method
     public static <V> String join(Iterable<V> values, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
         StringJoiner joiner = new StringJoiner(delimiter, prefix, suffix);
         for (Object value : values) {
