@@ -782,35 +782,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that emits items based on applying a function that you supply to
-     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
-     * , and then merging the latest resulting {@link Events} and emitting the results of this
-     * merger.
-     * </p>
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Events}
-     *            , returns an {@link Events}.
-     * @return An {@link Events} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Events} and merging the results of the
-     *         {@link Events} obtained from this transformation.
-     */
-    public final <R> Events<R> flatMapLatest(Function<V, Events<R>> function) {
-        return new Events<>(observer -> {
-            Disposable[] disposables = {null, Disposable.Φ};
-
-            disposables[0] = to(value -> {
-                disposables[1].dispose();
-                disposables[1] = function.apply(value).to(observer);
-            });
-            return () -> {
-                disposables[0].dispose();
-                disposables[1].dispose();
-            };
-        });
-    }
-
-    /**
-     * <p>
      * Ensure the minimum interval time of each {@link Events} items.
      * </p>
      *
@@ -893,19 +864,6 @@ public class Events<V> {
 
     /**
      * <p>
-     * Returns an {@link Events} that applies the given constant to each item emitted by an
-     * {@link Events} and emits the result.
-     * </p>
-     *
-     * @param constant A constant to apply to each value emitted by this {@link Events}.
-     * @return Chainable API.
-     */
-    public final <R> Events<R> map(R constant) {
-        return map(v -> constant);
-    }
-
-    /**
-     * <p>
      * Returns an {@link Events} that applies the given function to each value emitted by an
      * {@link Events} and emits the result.
      * </p>
@@ -944,6 +902,19 @@ public class Events<V> {
 
             return to(value -> observer.accept(converter.apply(ref.getAndSet(value), value)));
         });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that applies the given constant to each item emitted by an
+     * {@link Events} and emits the result.
+     * </p>
+     *
+     * @param constant A constant to apply to each value emitted by this {@link Events}.
+     * @return Chainable API.
+     */
+    public final <R> Events<R> mapTo(R constant) {
+        return map(v -> constant);
     }
 
     /**
@@ -1410,6 +1381,35 @@ public class Events<V> {
                 observer.accept(value);
             }
             return to(observer);
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
+     * , and then merging the latest resulting {@link Events} and emitting the results of this
+     * merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Events}
+     *            , returns an {@link Events}.
+     * @return An {@link Events} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Events} and merging the results of the
+     *         {@link Events} obtained from this transformation.
+     */
+    public final <R> Events<R> switchMap(Function<V, Events<R>> function) {
+        return new Events<>(observer -> {
+            Disposable[] disposables = {null, Disposable.Φ};
+    
+            disposables[0] = to(value -> {
+                disposables[1].dispose();
+                disposables[1] = function.apply(value).to(observer);
+            });
+            return () -> {
+                disposables[0].dispose();
+                disposables[1].dispose();
+            };
         });
     }
 

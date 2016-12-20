@@ -9,6 +9,7 @@
  */
 package kiss.extension;
 
+import java.util.Objects;
 import java.util.StringJoiner;
 
 import bee.extension.Extension;
@@ -18,6 +19,16 @@ import bee.extension.Extension;
  */
 @Extension
 public class Iterables {
+
+    @Extension.Method
+    public static <V> boolean contains(Iterable<V> values, V value) {
+        for (V v : values) {
+            if (Objects.equals(v, value)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * <p>

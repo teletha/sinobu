@@ -543,11 +543,11 @@ public class EventsTest {
     }
 
     @Test
-    public void flatMapLatest() {
+    public void switchMap() {
         EventFacade<String, String> emitA = new EventFacade();
         EventFacade<String, String> emitB = new EventFacade();
         EventFacade<Integer, String> facade = new EventFacade<>(events -> events
-                .flatMapLatest(x -> x == 1 ? emitA.observe() : emitB.observe()));
+                .switchMap(x -> x == 1 ? emitA.observe() : emitB.observe()));
 
         facade.emit(1); // connect to emitA
         assert facade.retrieve() == null; // emitA doesn't emit value yet
@@ -587,8 +587,8 @@ public class EventsTest {
     }
 
     @Test
-    public void mapConstant() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.map(100));
+    public void mapTo() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.mapTo(100));
 
         assert facade.emitAndRetrieve(1) == 100;
         assert facade.emitAndRetrieve(2) == 100;
