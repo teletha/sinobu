@@ -754,6 +754,23 @@ public class Events<V> {
      *         each item emitted by the source {@link Events} and merging the results of the
      *         {@link Events} obtained from this transformation.
      */
+    public final <R> Events<R> flatArray(Function<V, R[]> function) {
+        return flatMap(function.andThen(Events::from));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
+     * , and then merging those resulting {@link Events} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Events}
+     *            , returns an {@link Events}.
+     * @return An {@link Events} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Events} and merging the results of the
+     *         {@link Events} obtained from this transformation.
+     */
     public final <R> Events<R> flatIterable(Function<V, Iterable<R>> function) {
         return flatMap(function.andThen(Events::from));
     }
@@ -1401,7 +1418,7 @@ public class Events<V> {
     public final <R> Events<R> switchMap(Function<V, Events<R>> function) {
         return new Events<>(observer -> {
             Disposable[] disposables = {null, Disposable.Φ};
-    
+
             disposables[0] = to(value -> {
                 disposables[1].dispose();
                 disposables[1] = function.apply(value).to(observer);

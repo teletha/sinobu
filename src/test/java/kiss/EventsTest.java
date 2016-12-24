@@ -494,6 +494,18 @@ public class EventsTest {
     }
 
     @Test
+    public void flatArray() {
+        EventFacade<String, String> facade = new EventFacade<>(events -> events.flatArray(v -> v.split("")));
+
+        facade.emit("test");
+        assert facade.retrieve().equals("t");
+        assert facade.retrieve().equals("e");
+        assert facade.retrieve().equals("s");
+        assert facade.retrieve().equals("t");
+        assert facade.retrieve() == null;
+    }
+
+    @Test
     public void flatIterable() {
         Function<String, Iterable<String>> chars = value -> {
             List<String> values = new ArrayList();
