@@ -121,19 +121,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /**
      * <p>
-     * Execute the specified action if the value is present.
-     * </p>
-     * 
-     * @param action A user action.
-     */
-    public void map(Consumer<V> action) {
-        if (v != null && action != null) {
-            action.accept(v);
-        }
-    }
-
-    /**
-     * <p>
      * Perform the specified action if the value is present.
      * </p>
      *
@@ -513,6 +500,31 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
             }
         }
         return prev;
+    }
+
+    /**
+     * <p>
+     * Require the specified condition.
+     * </p>
+     * 
+     * @param condition
+     * @return
+     */
+    public Variable<V> require(Predicate<V> condition) {
+        return condition == null || condition.test(v) ? this : empty();
+    }
+
+    /**
+     * <p>
+     * Execute the specified action if the value is present.
+     * </p>
+     * 
+     * @param action A user action.
+     */
+    public void to(Consumer<V> action) {
+        if (v != null && action != null) {
+            action.accept(v);
+        }
     }
 
     /**
