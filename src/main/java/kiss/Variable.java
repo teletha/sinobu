@@ -128,7 +128,14 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return The computed {@link Variable}.
      */
     public <R> Variable<R> map(Function<? super V, ? extends R> then) {
-        return v == null || then == null ? empty() : of(then.apply(v));
+        if (v != null && then != null) {
+            try {
+                return of(then.apply(v));
+            } catch (Throwable e) {
+                // ignore
+            }
+        }
+        return empty();
     }
 
     /**
