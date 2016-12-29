@@ -28,7 +28,7 @@ public class BindParameterTest {
     @Test
     public void consumer() {
         AtomicInteger value = new AtomicInteger(0);
-        Runnable run = I.bind(e -> value.set(e), 10);
+        Runnable run = I.bind((Consumer<Integer>) e -> value.set(e), 10);
         assert value.get() == 0;
         run.run();
         assert value.get() == 10;
@@ -45,7 +45,7 @@ public class BindParameterTest {
     @Test
     public void biconsumer() {
         AtomicInteger value = new AtomicInteger(0);
-        Runnable run = I.bind((a, b) -> value.set(a + b), 10, 20);
+        Runnable run = I.bind((BiConsumer<Integer, Integer>) (a, b) -> value.set(a + b), 10, 20);
         assert value.get() == 0;
         run.run();
         assert value.get() == 30;

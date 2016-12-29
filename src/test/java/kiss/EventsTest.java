@@ -346,7 +346,8 @@ public class EventsTest {
     @Test
     public void combineLatestBinary() throws Exception {
         EventFacade<Integer, Integer> other = new EventFacade<>();
-        EventFacade<String, Ⅱ<String, Integer>> main = new EventFacade<>(events -> events.combineLatest(other.observe()));
+        EventFacade<String, Ⅱ<String, Integer>> main = new EventFacade<String, Ⅱ<String, Integer>>(events -> events
+                .combineLatest(other.observe()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -1341,7 +1342,7 @@ public class EventsTest {
 
     @Test
     public void fromIterable() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.from(Arrays.asList(1, 2, 3)));
+        EventFacade<Integer, Integer> facade = new EventFacade<Integer, Integer>(events -> Events.from(Arrays.asList(1, 2, 3)));
 
         assert facade.retrieve() == 1;
         assert facade.retrieve() == 2;
