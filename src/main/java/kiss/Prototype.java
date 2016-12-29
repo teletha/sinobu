@@ -62,7 +62,6 @@ public class Prototype<M> implements Lifestyle<M> {
      * 
      * @see kiss.Lifestyle#get()
      */
-    @SuppressWarnings("unchecked")
     @Override
     public M get() {
         // constructor injection
@@ -75,7 +74,8 @@ public class Prototype<M> implements Lifestyle<M> {
 
             for (int i = 0; i < params.length; i++) {
                 if (this.params[i] == Lifestyle.class) {
-                    params[i] = I.makeLifestyle((Class) Model.collectParameters(instantiator.getGenericParameterTypes()[i], Lifestyle.class)[0]);
+                    params[i] = I
+                            .makeLifestyle((Class) Model.collectParameters(instantiator.getGenericParameterTypes()[i], Lifestyle.class)[0]);
                 } else if (this.params[i] == Class.class) {
                     params[i] = I.dependencies.get().peekLast();
                 } else {

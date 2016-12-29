@@ -34,8 +34,8 @@ import com.sun.nio.zipfs.ZipPath;
 /**
  * @version 2015/07/04 16:56:44
  */
-@SuppressWarnings({"serial", "unchecked"})
-class Visitor extends ArrayList<Path>implements FileVisitor<Path>, Runnable, Disposable {
+@SuppressWarnings({"serial"})
+class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Disposable {
 
     // =======================================================
     // For Pattern Matching Facility

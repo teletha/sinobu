@@ -279,7 +279,6 @@ public class XMLParserTest {
      * Parse as HTML.
      * </p>
      */
-    @SuppressWarnings("resource")
     private XML parse(String html) {
         try {
             XMLUtil parser = new XMLUtil(Files.newInputStream(AntiBug.note(html)));
@@ -294,7 +293,6 @@ public class XMLParserTest {
      * Parse as HTML.
      * </p>
      */
-    @SuppressWarnings("resource")
     private XML parse(String html, String encoding) {
         try {
             ByteBuffer buffer = Charset.forName(encoding).encode(html);

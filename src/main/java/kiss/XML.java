@@ -41,7 +41,6 @@ import com.sun.org.apache.xml.internal.utils.TreeWalker;
 /**
  * @version 2014/07/31 23:06:05
  */
-@SuppressWarnings("unchecked")
 public class XML implements Iterable<XML> {
 
     /**

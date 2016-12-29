@@ -32,7 +32,6 @@ import java.util.Map;
  * 
  * @version 2009/07/17 15:03:16
  */
-@SuppressWarnings("unchecked")
 public class Property implements Comparable<Property> {
 
     /** The assosiated object model with this {@link Property}. */

@@ -224,7 +224,6 @@ import kiss.model.Property;
  *
  * @version 2016/10/18 16:09:02
  */
-@SuppressWarnings({"resource", "unchecked"})
 public class I implements ClassListener<Extensible> {
 
     // Candidates of Method Name
@@ -1983,7 +1982,7 @@ public class I implements ClassListener<Extensible> {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2020,7 +2019,6 @@ public class I implements ClassListener<Extensible> {
      * @return A runtime error.
      * @throws T Dummy error to deceive compiler.
      */
-    @SuppressWarnings("unchecked")
     private static <T extends Throwable> T quietly(Throwable throwable) throws T {
         throw (T) throwable;
     }

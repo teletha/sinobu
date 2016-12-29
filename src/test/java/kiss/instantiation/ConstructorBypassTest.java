@@ -29,7 +29,6 @@ import kiss.I;
 /**
  * @version 2011/03/22 16:54:33
  */
-@SuppressWarnings("resource")
 public class ConstructorBypassTest {
 
     private static int call = 0;

@@ -56,7 +56,6 @@ import kiss.Ⅲ;
  * 
  * @version 2016/05/04 1:25:12
  */
-@SuppressWarnings("unchecked")
 public class Model<M> {
 
     /** The model repository. */
@@ -582,7 +581,7 @@ public class Model<M> {
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] constructors = clazz.getDeclaredConstructors();
-        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(Constructor::getParameterCount));
+        Arrays.sort(constructors, Comparator.<Constructor>comparingInt(Constructor::getParameterCount));
         return constructors;
     }
 
