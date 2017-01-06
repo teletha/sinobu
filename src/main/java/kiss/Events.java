@@ -743,6 +743,91 @@ public class Events<V> {
 
     /**
      * <p>
+     * Instructs an Observable to emit an item (returned by a specified function) rather than
+     * invoking onError if it encounters an error.
+     * </p>
+     * 
+     * @param resumer
+     * @return
+     */
+    public final Events<V> errorResume(Function<? super Throwable, ? extends V> resumer) {
+        return error(false, (agent, e) -> {
+            agent.observer.accept(resumer.apply(e));
+        });
+    }
+
+    /**
+     * <p>
+     * Instructs an Observable to emit an item (returned by a specified function) rather than
+     * invoking onError if it encounters an error.
+     * </p>
+     * 
+     * @param resumer
+     * @return
+     */
+    public final Events<V> errorResume(Events<? extends V> resumer) {
+        return error(false, (agent, e) -> {
+            agent.and(resumer.to(agent.observer));
+        });
+    }
+
+    /**
+     * <p>
+     * Instructs an Observable to emit an item (returned by a specified function) rather than
+     * invoking onError if it encounters an error.
+     * </p>
+     * 
+     * @param resumer
+     * @return
+     */
+    public final Events<V> errorEnd(Function<? super Throwable, ? extends V> resumer) {
+        return error(true, (agent, e) -> {
+            agent.observer.accept(resumer.apply(e));
+        });
+    }
+
+    /**
+     * <p>
+     * Instructs an Observable to emit an item (returned by a specified function) rather than
+     * invoking onError if it encounters an error.
+     * </p>
+     * 
+     * @param resumer
+     * @return
+     */
+    public final Events<V> errorEnd(Events<? extends V> resumer) {
+        return error(true, (agent, e) -> {
+            agent.and(resumer.to(agent.observer));
+        });
+    }
+
+    /**
+     * <p>
+     * Instructs an Observable to emit an item (returned by a specified function) rather than
+     * invoking onError if it encounters an error.
+     * </p>
+     * 
+     * @param resumer
+     * @return
+     */
+    private Events<V> error(boolean shouldComplete, BiConsumer<Agent<V>, ? super Throwable> process) {
+        return new Events<>(observer -> {
+            Agent<V> agent = new Agent();
+            agent.observer = observer;
+            agent.error = value -> {
+                process.accept(agent, value);
+
+                if (shouldComplete) {
+                    observer.complete();
+                    agent.dispose();
+                }
+            };
+            return agent.and(to(agent));
+        });
+    }
+
+    /**
+     * <p>
      * Returns an {@link Events} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Events}, where that function returns an {@link Events}
      * , and then merging those resulting {@link Events} and emitting the results of this merger.
@@ -894,7 +979,14 @@ public class Events<V> {
         if (converter == null) {
             return (Events<R>) this;
         }
-        return new Events<>(observer -> to(value -> observer.accept(converter.apply(value))));
+
+        return new Events<R>(observer -> to(value -> {
+            try {
+                observer.accept(converter.apply(value));
+            } catch (Throwable e) {
+                observer.error(e);
+            }
+        }));
     }
 
     /**

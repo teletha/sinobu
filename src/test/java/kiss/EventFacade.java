@@ -274,6 +274,14 @@ public class EventFacade<V, R> {
     }
 
     /**
+     * @return
+     */
+    public boolean isNotCompleted() {
+        assert observers.isEmpty() == false;
+        return true;
+    }
+
+    /**
      * @version 2015/05/23 9:24:51
      */
     private static class Listener<V> implements Observer<V> {

@@ -495,6 +495,82 @@ public class EventsTest {
     }
 
     @Test
+    public void errorResumeException() {
+        ThrowableFunction<Integer, Integer> thrower = v -> {
+            if (v == 30) {
+                throw new Exception();
+            } else {
+                return v;
+            }
+        };
+
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.map(thrower).errorResume(e -> 300));
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.isNotCompleted();
+        assert facade.emitAndRetrieve(30) == 300;
+        assert facade.isNotCompleted();
+    }
+
+    @Test
+    public void errorResumeError() {
+        Function<Integer, Integer> thrower = v -> {
+            if (v == 30) {
+                throw new Error();
+            } else {
+                return v;
+            }
+        };
+
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.map(thrower).errorResume(e -> 300));
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.isNotCompleted();
+        assert facade.emitAndRetrieve(30) == 300;
+        assert facade.isNotCompleted();
+    }
+
+    @Test
+    public void errorResumeEvents() {
+        Function<Integer, Integer> thrower = v -> {
+            if (v == 30) {
+                throw new Error();
+            } else {
+                return v;
+            }
+        };
+
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.map(thrower).errorResume(Events.from(1, 2)));
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.isNotCompleted();
+        assert facade.emitAndRetrieve(30) == 1;
+        assert facade.retrieve() == 2;
+        assert facade.isNotCompleted();
+        assert facade.emitAndRetrieve(40) == 40;
+        assert facade.emitAndRetrieve(30) == 1;
+        assert facade.retrieve() == 2;
+    }
+
+    @Test
+    public void errorEnd() {
+        Function<Integer, Integer> thrower = v -> {
+            if (v == 30) {
+                throw new Error();
+            } else {
+                return v;
+            }
+        };
+
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.map(thrower).errorEnd(e -> 300));
+        assert facade.emitAndRetrieve(10) == 10;
+        assert facade.emitAndRetrieve(20) == 20;
+        assert facade.isNotCompleted();
+        assert facade.emitAndRetrieve(30) == 300;
+        assert facade.isCompleted();
+    }
+
+    @Test
     public void flatArray() {
         EventFacade<String, String> facade = new EventFacade<>(events -> events.flatArray(v -> v.split("")));
 
