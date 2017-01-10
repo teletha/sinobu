@@ -558,7 +558,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     @Override
     public String toString() {
-        return fix.get() ? "Immutable" : "Mutable" + " Variable [" + v + "]";
+        return String.valueOf(v);
     }
 
     /**

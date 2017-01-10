@@ -24,9 +24,11 @@ import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.FileLock;
@@ -1064,6 +1066,25 @@ public class I implements ClassListener<Extensible> {
      */
     public static <M> M make(Class<? extends M> modelClass) {
         return makeLifestyle(modelClass).get();
+    }
+
+    /**
+     * <p>
+     * Create proxy instance.
+     * </p>
+     * 
+     * @param type A model type.
+     * @param handler A proxy handler.
+     * @return
+     */
+    public static <T> T make(Class<T> type, InvocationHandler handler) {
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(handler);
+
+        if (type.isInterface() == false) {
+            throw new IllegalArgumentException("Type must be interface.");
+        }
+        return (T) Proxy.newProxyInstance($loader, new Class[] {type}, handler);
     }
 
     /**
