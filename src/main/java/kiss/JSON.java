@@ -22,7 +22,7 @@ import kiss.model.Property;
  * but same object in sibling nodes will be acceptable.
  * </p>
  * 
- * @version 2016/03/15 18:10:13
+ * @version 2017/01/16 13:09:11
  */
 class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
 
@@ -65,14 +65,14 @@ class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
 
                     // property key (List node doesn't need key)
                     if (context.ⅰ.type != List.class) {
-                        write(context.ⅱ.name);
+                        write(context.ⅱ.name, String.class);
                         out.append(": ");
                     }
                 }
 
                 // property value
                 if (context.ⅱ.isAttribute()) {
-                    write(I.transform(context.ⅲ, String.class));
+                    write(I.transform(context.ⅲ, String.class), context.ⅱ.model.type);
                 } else {
                     JSON walker = new JSON(out, indent + 1);
                     out.append(context.ⅱ.model.type == List.class ? '[' : '{');
@@ -91,14 +91,17 @@ class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
      * Write JSON literal with quote.
      * </p>
      * 
-     * @param value A character sequence.
+     * @param value A value.
+     * @param type A value type.
      * @throws IOException
      */
-    private void write(String value) throws IOException {
+    private void write(String value, Class type) throws IOException {
         if (value == null) {
             out.append("null");
         } else {
-            out.append('"');
+            boolean primitive = type.isPrimitive() && type != char.class;
+
+            if (!primitive) out.append('"');
 
             for (int i = 0; i < value.length(); i++) {
                 char c = value.charAt(i);
@@ -136,7 +139,7 @@ class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
                     out.append(c);
                 }
             }
-            out.append('"');
+            if (!primitive) out.append('"');
         }
     }
 

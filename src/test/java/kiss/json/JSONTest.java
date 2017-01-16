@@ -38,7 +38,7 @@ import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
 
 /**
- * @version 2016/03/17 1:52:38
+ * @version 2017/01/16 13:09:02
  */
 public class JSONTest {
 
@@ -61,7 +61,7 @@ public class JSONTest {
         // @formatter:off
         validate(person,
         "{",
-        "  'age': '20'",
+        "  'age': 20",
         "}");
         // @formatter:on
     }
@@ -76,7 +76,7 @@ public class JSONTest {
         // @formatter:off
         validate(person,
         "{",
-        "  'age': '20',",
+        "  'age': 20,",
         "  'firstName': 'Umi',",
         "  'lastName': 'Sonoda'",
         "}");
@@ -92,7 +92,7 @@ public class JSONTest {
         // @formatter:off
         validate(bean,
         "{",
-        "  'none': '15'",
+        "  'none': 15",
         "}");
         // @formatter:on
     }
@@ -257,14 +257,14 @@ public class JSONTest {
         // @formatter:off
         validate(primitive,
         "{",
-        "  'boolean': 'true',",
-        "  'byte': '0',",
+        "  'boolean': true,",
+        "  'byte': 0,",
         "  'char': 'c',",
-        "  'double': '0.0',",
-        "  'float': '0.1',",
-        "  'int': '-5',",
-        "  'long': '0',",
-        "  'short': '0'",
+        "  'double': 0.0,",
+        "  'float': 0.1,",
+        "  'int': -5,",
+        "  'long': 0,",
+        "  'short': 0",
         "}");
         // @formatter:on
     }
@@ -279,7 +279,7 @@ public class JSONTest {
         // @formatter:off
         validate(person,
         "{",
-        "  'age': '20',",
+        "  'age': 20,",
         "  'firstName': 'A\\r\\nA\\t',",
         "  'lastName': 'B\\n\\\"\\\\B'",
         "}");
@@ -317,7 +317,7 @@ public class JSONTest {
         // @formatter:off
         validate(student,
         "{",
-        "  'age': '15',",
+        "  'age': 15,",
         "  'firstName': 'Mio',",
         "  'lastName': 'Akiyama',",
         "  'school': {",
