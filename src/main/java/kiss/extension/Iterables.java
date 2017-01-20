@@ -12,8 +12,6 @@ package kiss.extension;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import bee.extension.Extension;
-
 /**
  * @version 2016/12/15 9:03:45
  */
@@ -42,7 +40,7 @@ public class Iterables {
      * @param suffix the sequence of characters to be used at the end
      * @return
      */
-    @Extension.Method
+    // @Extension.Method
     public static <V> String join(Iterable<V> values, CharSequence delimiter) {
         return join(values, delimiter, "", "");
     }
@@ -59,7 +57,7 @@ public class Iterables {
      * @param suffix the sequence of characters to be used at the end
      * @return
      */
-    @Extension.Method
+    // @Extension.Method
     public static <V> String join(Iterable<V> values, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
         StringJoiner joiner = new StringJoiner(delimiter, prefix, suffix);
         for (Object value : values) {
