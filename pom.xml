@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>npc</groupId>
   <artifactId>Sinobu</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>jar</packaging>
   <name>Sinobu</name>
   <description>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.</description>
