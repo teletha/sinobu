@@ -14,7 +14,7 @@ import org.junit.Test;
 import kiss.I;
 
 /**
- * @version 2017/01/19 11:36:47
+ * @version 2017/01/20 9:33:41
  */
 public class ProxyTest {
 
@@ -32,6 +32,16 @@ public class ProxyTest {
         assert proxy.text().equals("OK");
     }
 
+    @Test(expected = IllegalAccessError.class)
+    public void proxyPackagePrivate() {
+        I.make(PackagePrivate.class, (instance, method, args) -> "ERROR");
+    }
+
+    @Test(expected = IllegalAccessError.class)
+    public void proxyPrivate() {
+        I.make(Private.class, (instance, method, args) -> "ERROR");
+    }
+
     /**
      * @version 2017/01/19 11:37:37
      */
@@ -42,7 +52,21 @@ public class ProxyTest {
     /**
      * @version 2017/01/19 11:37:37
      */
-    static interface Protected {
+    protected static interface Protected {
+        String text();
+    }
+
+    /**
+     * @version 2017/01/19 11:37:37
+     */
+    static interface PackagePrivate {
+        String text();
+    }
+
+    /**
+     * @version 2017/01/19 11:37:37
+     */
+    private static interface Private {
         String text();
     }
 }
