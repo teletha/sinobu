@@ -14,6 +14,13 @@
       <scope>test</scope>
       <exclusions/>
     </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>5.2</version>
+      <scope>compile</scope>
+      <exclusions/>
+    </dependency>
   </dependencies>
   <licenses>
     <license>
