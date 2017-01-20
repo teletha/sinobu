@@ -5,7 +5,7 @@
   <version>1.0</version>
   <packaging>jar</packaging>
   <name>Sinobu</name>
-  <descriotion>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.</descriotion>
+  <description>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.</description>
   <dependencies>
     <dependency>
       <groupId>npc</groupId>
