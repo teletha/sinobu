@@ -1,5 +1,5 @@
 #
-#Fri Jan 20 15:43:02 JST 2017
+#Fri Jan 20 16:48:14 JST 2017
 org.eclipse.jdt.apt.aptEnabled=false
 org.eclipse.jdt.apt.genSrcDir=src/main/auto
 org.eclipse.jdt.apt.processorOptions/bee.task.AnnotationProcessor$ProjectInfo={\r\n\t"root"\: "F\:\\\\Development\\\\Sinobu",\r\n\t"sources"\: [\r\n\t\t"F\:\\\\Development\\\\Sinobu\\\\src\\\\main\\\\java",\r\n\t\t"F\:\\\\Development\\\\Sinobu\\\\src\\\\main\\\\resources"\r\n\t]\r\n}
