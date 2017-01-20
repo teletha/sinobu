@@ -12,12 +12,10 @@ package kiss.extension;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import bee.extension.Extension;
-
 /**
  * @version 2016/12/13 11:50:04
  */
-@Extension
+// @Extension
 public class Functions {
 
     /**
@@ -29,7 +27,7 @@ public class Functions {
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    @Extension.Method
+    // @Extension.Method
     public static <P, R> Supplier<R> with(Function<P, R> function, P param) {
         return () -> function.apply(param);
     }

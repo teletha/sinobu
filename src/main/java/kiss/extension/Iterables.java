@@ -17,10 +17,10 @@ import bee.extension.Extension;
 /**
  * @version 2016/12/15 9:03:45
  */
-@Extension
+// @Extension
 public class Iterables {
 
-    @Extension.Method
+    // @Extension.Method
     public static <V> boolean contains(Iterable<V> values, V value) {
         for (V v : values) {
             if (Objects.equals(v, value)) {
