@@ -18,9 +18,10 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.objectweb.asm.Type;
+
 import sun.reflect.ConstantPool;
 
-import jdk.internal.org.objectweb.asm.Type;
 import kiss.ClassVariable;
 import kiss.I;
 import kiss.Manageable;

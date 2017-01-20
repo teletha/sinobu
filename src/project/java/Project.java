@@ -14,6 +14,7 @@ public class Project extends bee.api.Project {
         producer("Nameless Production Committee");
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
 
+        require("org.ow2.asm", "asm", "5.2");
         require("npc", "antibug", "0.3").atTest();
         repository("http://npc.bintray.com/maven");
 
