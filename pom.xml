@@ -21,7 +21,13 @@
       <url>https://opensource.org/licenses/MIT</url>
     </license>
   </licenses>
-  <repositories/>
+  <repositories>
+    <repository>
+      <id>npc.bintray.com</id>
+      <name>npc.bintray.com</name>
+      <url>http://npc.bintray.com/maven</url>
+    </repository>
+  </repositories>
   <url>https://github.com/Teletha/Sinobu</url>
   <scm>
     <url>https://github.com/Teletha/Sinobu</url>

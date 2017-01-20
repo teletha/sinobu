@@ -15,6 +15,7 @@ public class Project extends bee.api.Project {
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
 
         require("npc", "antibug", "0.3").atTest();
+        repository("http://npc.bintray.com/maven");
 
         versionControlSystem("https://github.com/Teletha/Sinobu");
     }
