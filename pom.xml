@@ -1,0 +1,42 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>npc</groupId>
+  <artifactId>Sinobu</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+  <name>Sinobu</name>
+  <descriotion>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.</descriotion>
+  <dependencies>
+    <dependency>
+      <groupId>npc</groupId>
+      <artifactId>antibug</artifactId>
+      <version>0.3</version>
+      <scope>test</scope>
+      <exclusions/>
+    </dependency>
+  </dependencies>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+  <repositories/>
+  <url>https://github.com/Teletha/Sinobu</url>
+  <scm>
+    <url>https://github.com/Teletha/Sinobu</url>
+    <connection>scm:git:https://github.com/Teletha/Sinobu.git</connection>
+    <developerConnection>scm:git:https://github.com/Teletha/Sinobu.git</developerConnection>
+  </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/Teletha/Sinobu/issues</url>
+  </issueManagement>
+  <developers>
+    <developer>
+      <name>Teletha</name>
+      <email/>
+      <url>https://github.com/Teletha</url>
+    </developer>
+  </developers>
+</project>
