@@ -1,10 +1,10 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>npc</groupId>
-  <artifactId>Sinobu</artifactId>
-  <version>1.0.3</version>
+  <artifactId>sinobu</artifactId>
+  <version>1.0</version>
   <packaging>jar</packaging>
-  <name>Sinobu</name>
+  <name>sinobu</name>
   <description>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.</description>
   <dependencies>
     <dependency>
