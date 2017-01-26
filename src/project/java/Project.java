@@ -10,14 +10,13 @@
 public class Project extends bee.api.Project {
 
     {
-        product("npc", "sinobu", "1.0");
+        product("com.github.teletha", "sinobu", "1.0");
         producer("Nameless Production Committee");
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
 
         require("org.ow2.asm", "asm", "5.2");
         require("npc", "antibug", "0.3").atTest();
-        repository("http://npc.bintray.com/maven");
 
-        versionControlSystem("https://github.com/Teletha/Sinobu");
+        versionControlSystem("https://github.com/teletha/Sinobu");
     }
 }
