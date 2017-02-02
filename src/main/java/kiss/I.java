@@ -20,10 +20,14 @@ import java.io.OutputStream;
 import java.io.PushbackReader;
 import java.io.RandomAccessFile;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodType;
+import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -352,6 +356,9 @@ public class I implements ClassListener<Extensible> {
     /** The list of wrapper classes. (except for void type) */
     private static final Class[] wrappers = {Boolean.class, Integer.class, Long.class, Float.class, Double.class, Byte.class, Short.class,
             Character.class, Void.class};
+
+    /** The holder for lambda reference. */
+    private static final ClassVariable<Executable> executables = new ClassVariable();
 
     // initialization
     static {
@@ -939,6 +946,41 @@ public class I implements ClassListener<Extensible> {
             }
         }
         return builder.toString();
+    }
+
+    /**
+     * <p>
+     * Retrieve lambda reference.
+     * </p>
+     * 
+     * @param lambda A lambda instance.
+     * @return An actual reference.
+     */
+    static Executable lambda(Serializable lambda) {
+        Class clazz = lambda.getClass();
+        Executable executable = I.executables.get(clazz);
+
+        if (executable == null) {
+            try {
+                Method replaceMethod = clazz.getDeclaredMethod("writeReplace");
+                replaceMethod.setAccessible(true);
+                SerializedLambda serializedLambda = (SerializedLambda) replaceMethod.invoke(lambda);
+
+                ClassLoader classLoader = clazz.getClassLoader();
+                Class<?> containingClass = Class.forName(serializedLambda.getImplClass().replace('/', '.'), false, classLoader);
+                MethodType method = MethodType.fromMethodDescriptorString(serializedLambda.getImplMethodSignature(), classLoader);
+
+                if (serializedLambda.getImplMethodKind() == 8) {
+                    executable = containingClass.getDeclaredConstructor(method.parameterArray());
+                } else {
+                    executable = containingClass.getDeclaredMethod(serializedLambda.getImplMethodName(), method.parameterArray());
+                }
+                I.executables.set(clazz, executable);
+            } catch (Exception e) {
+                throw quiet(e);
+            }
+        }
+        return executable;
     }
 
     /**

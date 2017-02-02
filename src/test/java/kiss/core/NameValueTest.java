@@ -7,12 +7,14 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.experimental;
+package kiss.core;
 
 import org.junit.Test;
 
+import kiss.ThrowableFunction;
+
 /**
- * @version 2015/08/27 11:03:09
+ * @version 2017/02/02 12:09:38
  */
 public class NameValueTest {
 
@@ -21,18 +23,18 @@ public class NameValueTest {
         string(key -> "value");
     }
 
-    private void string(NamedValue param) {
-        assert param.name().equals("key");
-        assert param.value().equals("value");
+    private void string(ThrowableFunction param) {
+        assert param.parameterName(0).equals("key");
+        assert param.apply(null).equals("value");
     }
 
     @Test
     public void integer() {
-        integer(key -> 10);
+        integer(value -> 10);
     }
 
-    private void integer(NamedValue<Integer> param) {
-        assert param.name().equals("key");
-        assert param.value() == 10;
+    private void integer(ThrowableFunction<Integer, Integer> param) {
+        assert param.parameterName(0).equals("value");
+        assert param.apply(null) == 10;
     }
 }

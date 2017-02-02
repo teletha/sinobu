@@ -18,23 +18,17 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import org.objectweb.asm.Type;
-
 import sun.reflect.ConstantPool;
 
-import kiss.ClassVariable;
 import kiss.I;
 import kiss.Manageable;
 import kiss.Singleton;
 
 /**
- * @version 2008/06/18 8:42:37
+ * @version 2017/02/02 11:19:33
  */
 @Manageable(lifestyle = Singleton.class)
 public class SinobuExperimental {
-
-    /** The holder for lambda parameter names. */
-    private static final ClassVariable<String> methods = new ClassVariable();
 
     /** The accessible internal method for lambda info. */
     private static final Method findConstants;
@@ -95,44 +89,6 @@ public class SinobuExperimental {
         } catch (Exception e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * <p>
-     * Findthe first parameter name of lambda method.
-     * </p>
-     * 
-     * @param object A lambda instance.
-     * @return A parameter name.
-     */
-    static String method(Object object) {
-        Class clazz = object.getClass();
-        String name = methods.get(clazz);
-
-        if (name == null) {
-            try {
-                ConstantPool constantPool = (ConstantPool) findConstants.invoke(clazz);
-
-                // MethodInfo
-                // [0] : Declared Class Name (internal qualified name)
-                // [1] : Method Name
-                // [2] : Method Descriptor (internal qualified signature)
-                String[] info = constantPool.getMemberRefInfoAt(constantPool.getSize() - 3);
-                Class lambda = I.type(info[0].replaceAll("/", "."));
-                Type[] types = Type.getArgumentTypes(info[2]);
-                Class[] params = new Class[types.length];
-
-                for (int i = 0; i < params.length; i++) {
-                    params[i] = I.type(types[i].getClassName());
-                }
-                name = lambda.getDeclaredMethod(info[1], params).getParameters()[0].getName();
-
-                methods.set(clazz, name);
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-        }
-        return name;
     }
 
     /**

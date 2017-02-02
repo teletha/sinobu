@@ -12,9 +12,9 @@ package kiss;
 import java.util.function.Function;
 
 /**
- * @version 2016/12/12 9:28:01
+ * @version 2017/02/02 12:18:34
  */
-public interface ThrowableFunction<Param, Return> extends Function<Param, Return> {
+public interface ThrowableFunction<Param, Return> extends Function<Param, Return>, EnhancedLambda {
 
     /**
      * Applies this function to the given argument.
