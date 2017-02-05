@@ -505,61 +505,63 @@ public class Model<M> {
         Table<Method, Annotation> table = new Table();
 
         for (Class type : collectTypes(clazz)) {
-            for (Method method : type.getDeclaredMethods()) {
-                // exclude the method which is created by compiler
-                // exclude the private method which is not declared in the specified class
-                if (!method.isBridge() && !method
-                        .isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
-                    Annotation[] annotations = method.getAnnotations();
+            if (type != Object.class) {
+                for (Method method : type.getDeclaredMethods()) {
+                    // exclude the method which is created by compiler
+                    // exclude the private method which is not declared in the specified class
+                    if (!method.isBridge() && !method
+                            .isSynthetic() && (((method.getModifiers() & Modifier.PRIVATE) == 0) || method.getDeclaringClass() == clazz)) {
+                        Annotation[] annotations = method.getAnnotations();
 
-                    if (annotations.length != 0) {
-                        List<Annotation> list = new ArrayList();
+                        if (annotations.length != 0) {
+                            List<Annotation> list = new ArrayList();
 
-                        // disclose container annotation
-                        for (Annotation annotation : annotations) {
-                            try {
+                            // disclose container annotation
+                            for (Annotation annotation : annotations) {
+                                try {
+                                    Class annotationType = annotation.annotationType();
+                                    Method value = annotationType.getMethod("value");
+                                    Class returnType = value.getReturnType();
+
+                                    if (returnType.isArray()) {
+                                        Class<?> componentType = returnType.getComponentType();
+                                        Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
+
+                                        if (repeatable != null && repeatable.value() == annotationType) {
+                                            value.setAccessible(true);
+
+                                            Collections.addAll(list, (Annotation[]) value.invoke(annotation));
+                                            continue;
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    // do nothing
+                                }
+                                list.add(annotation);
+                            }
+
+                            // check method overriding
+                            for (Method candidate : table.keySet()) {
+                                if (candidate.getName().equals(method.getName()) && Arrays
+                                        .deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
+                                    method = candidate; // detect overriding
+                                    break;
+                                }
+                            }
+
+                            add: for (Annotation annotation : list) {
                                 Class annotationType = annotation.annotationType();
-                                Method value = annotationType.getMethod("value");
-                                Class returnType = value.getReturnType();
 
-                                if (returnType.isArray()) {
-                                    Class<?> componentType = returnType.getComponentType();
-                                    Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
-
-                                    if (repeatable != null && repeatable.value() == annotationType) {
-                                        value.setAccessible(true);
-
-                                        Collections.addAll(list, (Annotation[]) value.invoke(annotation));
-                                        continue;
+                                if (!annotationType.isAnnotationPresent(Repeatable.class)) {
+                                    for (Annotation item : table.get(method)) {
+                                        if (item.annotationType() == annotationType) {
+                                            continue add;
+                                        }
                                     }
                                 }
-                            } catch (Exception e) {
-                                // do nothing
+
+                                table.push(method, annotation);
                             }
-                            list.add(annotation);
-                        }
-
-                        // check method overriding
-                        for (Method candidate : table.keySet()) {
-                            if (candidate.getName().equals(method.getName()) && Arrays
-                                    .deepEquals(candidate.getParameterTypes(), method.getParameterTypes())) {
-                                method = candidate; // detect overriding
-                                break;
-                            }
-                        }
-
-                        add: for (Annotation annotation : list) {
-                            Class annotationType = annotation.annotationType();
-
-                            if (!annotationType.isAnnotationPresent(Repeatable.class)) {
-                                for (Annotation item : table.get(method)) {
-                                    if (item.annotationType() == annotationType) {
-                                        continue add;
-                                    }
-                                }
-                            }
-
-                            table.push(method, annotation);
                         }
                     }
                 }

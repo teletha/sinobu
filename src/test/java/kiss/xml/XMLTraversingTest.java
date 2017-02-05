@@ -15,7 +15,7 @@ import kiss.I;
 import kiss.XML;
 
 /**
- * @version 2012/11/18 2:55:32
+ * @version 2017/02/05 21:17:41
  */
 public class XMLTraversingTest {
 
@@ -65,42 +65,5 @@ public class XMLTraversingTest {
 
         assert xml.find("Q").size() == 2;
         assert xml.find("Q").children().size() == 3;
-    }
-
-    @Test
-    public void nextUntil() throws Exception {
-        XML xml = I.xml("<p><Q/><A/><B/><Q/><A class='stop'/><B/><Q/><A/><B/></p>");
-
-        assert xml.find("Q").nextUntil("A").size() == 3;
-        assert xml.find("Q").nextUntil("B").size() == 6;
-        assert xml.find("Q").nextUntil("A.stop").size() == 7;
-    }
-
-    @Test
-    public void next() throws Exception {
-        XML xml = I.xml("<p><Q/><A>here</A></p>");
-
-        assert xml.find("Q").next().text().equals("here");
-    }
-
-    @Test
-    public void nextNone() throws Exception {
-        XML xml = I.xml("<p><Q/></p>");
-
-        assert xml.find("Q").next().size() == 0;
-    }
-
-    @Test
-    public void nextMulti() throws Exception {
-        XML xml = I.xml("<p><Q/><A/><Q/><B/></p>");
-
-        assert xml.find("Q").next().size() == 2;
-    }
-
-    @Test
-    public void nextMultiNone() throws Exception {
-        XML xml = I.xml("<p><Q/><A/><Q/></p>");
-
-        assert xml.find("Q").next().size() == 1;
     }
 }

@@ -77,7 +77,7 @@ class PathOperationTestHelper {
                     assert sameDirectory(oneChild, otherChild);
                 }
             }
-            assert!otherChildren.hasNext();
+            assert !otherChildren.hasNext();
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -162,7 +162,7 @@ class PathOperationTestHelper {
      */
     protected static boolean file(Path... paths) {
         for (Path path : paths) {
-            if (path instanceof com.sun.nio.zipfs.ZipPath && path.toString().equals("/")) {
+            if (isZip(path) && path.toString().equals("/")) {
                 // archive root directory is as archive file
             } else {
                 assert Files.isRegularFile(path);
@@ -258,5 +258,17 @@ class PathOperationTestHelper {
         } catch (IOException e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Helper method to check zip path.
+     * </p>
+     * 
+     * @param path
+     * @return
+     */
+    private static boolean isZip(Path path) {
+        return path.getClass().getSimpleName().endsWith("ZipPath");
     }
 }

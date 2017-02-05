@@ -29,8 +29,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.function.BiPredicate;
 
-import com.sun.nio.zipfs.ZipPath;
-
 /**
  * @version 2015/07/04 16:56:44
  */
@@ -107,7 +105,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
                 include = glob(include, pattern);
             } else if (pattern.endsWith("/**")) {
                 // exclude directory
-                directory = glob(directory, pattern.substring(1, pattern.length() - 3).concat(from instanceof ZipPath ? "/" : ""));
+                directory = glob(directory, pattern.substring(1, pattern.length() - 3).concat(isZip(from) ? "/" : ""));
             } else if (type < 4) {
                 // exclude files
                 exclude = glob(exclude, pattern.substring(1));
@@ -155,7 +153,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
         this.original = from;
         this.type = type;
         this.include = filter;
-        this.root = filter == null && !(from instanceof ZipPath);
+        this.root = filter == null && !isZip(from);
 
         try {
             boolean directory = Files.isDirectory(from);
@@ -297,6 +295,18 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
     @Override
     public FileVisitResult visitFileFailed(Path path, IOException e) throws IOException {
         return CONTINUE;
+    }
+
+    /**
+     * <p>
+     * Helper method to check zip path.
+     * </p>
+     * 
+     * @param path A path to check.
+     * @return
+     */
+    private static boolean isZip(Path path) {
+        return path.getClass().getSimpleName().endsWith("ZipPath");
     }
 
     /**

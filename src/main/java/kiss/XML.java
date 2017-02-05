@@ -11,7 +11,6 @@ package kiss;
 
 import static javax.xml.XMLConstants.*;
 
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -26,17 +25,15 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.ContentHandler;
-
-import com.sun.org.apache.xerces.internal.util.DOMUtil;
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XML11Serializer;
-import com.sun.org.apache.xml.internal.utils.TreeWalker;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
  * @version 2014/07/31 23:06:05
@@ -476,54 +473,6 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
-     * Get the immediately following sibling of each element in the set of matched elements.
-     * </p>
-     *
-     * @return A set of matched elements.
-     */
-    public XML next() {
-        CopyOnWriteArrayList list = new CopyOnWriteArrayList();
-
-        for (Node node : nodes) {
-            node = DOMUtil.getNextSiblingElement(node);
-
-            if (node != null) {
-                list.addIfAbsent(node);
-            }
-        }
-        return new XML(doc, list);
-    }
-
-    /**
-     * <p>
-     * Get all following siblings of each element up to but not including the element matched by the
-     * given selector.
-     * </p>
-     *
-     * @param selector CSS selector.
-     * @return A set of matched elements.
-     */
-    public XML nextUntil(String selector) {
-        CopyOnWriteArrayList list = new CopyOnWriteArrayList();
-
-        for (XML xml : this) {
-            XML until = xml.find("+".concat(selector));
-            Node node = xml.nodes.get(0);
-            Node untilNode = until.size() == 0 ? null : until.nodes.get(0);
-
-            do {
-                // collect matching node
-                list.addIfAbsent(node);
-
-                // search next sibling node
-                node = DOMUtil.getNextSiblingElement(node);
-            } while (node != untilNode);
-        }
-        return new XML(doc, list);
-    }
-
-    /**
-     * <p>
      * Append the given xml as child element and traverse into them.
      * </p>
      *
@@ -649,30 +598,17 @@ public class XML implements Iterable<XML> {
      * @param output A output channel.
      */
     public void to(Appendable output) {
-        OutputFormat format = new OutputFormat();
-        format.setIndent(2);
-        format.setLineWidth(0);
-        format.setOmitXMLDeclaration(true);
-
-        to(new XML11Serializer(output instanceof Writer ? (Writer) output : new XMLUtil(output), format));
-    }
-
-    /**
-     * <p>
-     * Write this elements to the specified output.
-     * </p>
-     *
-     * @param output A output channel.
-     */
-    public void to(ContentHandler output) {
         try {
-            output.startDocument();
-            TreeWalker walker = new TreeWalker(output);
+            LSSerializer writer = ((DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS"))
+                    .createLSSerializer();
+
+            DOMConfiguration config = writer.getDomConfig();
+            config.setParameter("format-pretty-print", Boolean.TRUE);
+            config.setParameter("xml-declaration", Boolean.FALSE);
 
             for (Node node : nodes) {
-                walker.traverseFragment(node);
+                output.append(writer.writeToString(node));
             }
-            output.endDocument();
         } catch (Exception e) {
             throw I.quiet(e);
         }

@@ -14,18 +14,13 @@ import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
-import sun.reflect.ConstantPool;
 
 import kiss.I;
 import kiss.Manageable;
 import kiss.Singleton;
 
 /**
- * @version 2017/02/02 11:19:33
+ * @version 2017/02/05 12:21:39
  */
 @Manageable(lifestyle = Singleton.class)
 public class SinobuExperimental {
@@ -38,54 +33,6 @@ public class SinobuExperimental {
             // reflect lambda info related methods
             findConstants = Class.class.getDeclaredMethod("getConstantPool");
             findConstants.setAccessible(true);
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * <p>
-     * Type inference create method. It's cooool!
-     * </p>
-     * <pre>
-     * Person person = I.create();
-     * </pre>
-     * 
-     * @param <M> A model type.
-     * @param m A model type indicator.
-     * @return A created object.
-     */
-    public static <M> M create(M... m) {
-        return (M) I.make(m.getClass().getComponentType());
-    }
-
-    public static <M, P1, P2> M make(BiFunction<P1, P2, M> modelConstructor, P1 param1, P2 param2) {
-        try {
-            ConstantPool constantPool = (ConstantPool) findConstants.invoke(modelConstructor.getClass());
-
-            // MethodInfo
-            // [0] : Declared Class Name (internal qualified name)
-            // [1] : Method Name
-            // [2] : Method Descriptor (internal qualified signature)
-            String[] methodInfo = constantPool.getMemberRefInfoAt(constantPool.getSize() - 3);
-            System.out.println(Arrays.toString(methodInfo));
-            return null;
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
-    public static <M, P1> M make(Function<P1, M> modelConstructor, P1 param) {
-        try {
-            ConstantPool constantPool = (ConstantPool) findConstants.invoke(modelConstructor.getClass());
-
-            // MethodInfo
-            // [0] : Declared Class Name (internal qualified name)
-            // [1] : Method Name
-            // [2] : Method Descriptor (internal qualified signature)
-            String[] methodInfo = constantPool.getMemberRefInfoAt(19);
-            System.out.println(Arrays.toString(methodInfo));
-            return null;
         } catch (Exception e) {
             throw I.quiet(e);
         }
