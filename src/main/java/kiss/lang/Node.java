@@ -10,11 +10,8 @@
 package kiss.lang;
 
 /**
- * @version 2017/02/06 14:04:56
+ * @version 2017/02/06 17:09:42
  */
-public abstract class StructureBuilder<N> {
+public class Node {
 
-    public abstract N enterNode(N parent, String name);
-
-    public abstract void leaveNode(String name);
 }

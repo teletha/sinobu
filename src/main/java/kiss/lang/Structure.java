@@ -10,6 +10,7 @@
 package kiss.lang;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -22,68 +23,24 @@ import kiss.model.Model;
 /**
  * @version 2017/02/06 13:57:33
  */
-public abstract class Structure<BUILDER extends StructureBuilder> {
+public abstract class Structure<BUILDER extends StructureBuilder<N>, N> {
 
     /** The associated builder. */
     private final BUILDER builder = I.make((Class<BUILDER>) Model.collectParameters(getClass(), Structure.class)[0]);
 
+    private final ArrayList<N> root = new ArrayList();
+
     /** The node tree. */
-    private final ArrayDeque nodes = new ArrayDeque();
+    private final ArrayDeque<N> nodes = new ArrayDeque();
+
+    private N current;
 
     private Object context;
 
     private int contenxtModifier;
 
-    /**
-     * <p>
-     * Declare node with name.
-     * </p>
-     * 
-     * @param name A node name.
-     */
-    protected final void $(String name, Declarable... declarables) {
-        Object node = builder.enterNode(nodes.peekLast(), name);
-
-        for (Declarable declarable : declarables) {
-            if (declarable != null) {
-                declarable.declare(node);
-            }
-        }
-
-        builder.leaveNode(name);
-    }
-
-    protected final Declarable $(Declarable declarable) {
-        declarable.declare(builder);
-        return declarable;
-    }
-
-    /**
-     * <p>
-     * Declare node attribute with name.
-     * </p>
-     * 
-     * @param name An attribute name.
-     * @return
-     */
-    protected final Declarable attr(String name) {
-        return attr(name, null);
-    }
-
-    /**
-     * <p>
-     * Declare node attribute with name.
-     * </p>
-     * 
-     * @param name An attribute name.
-     * @return
-     */
-    protected final Declarable attr(String name, String value) {
-        return () -> {
-            if (name != null && !name.isEmpty()) {
-                builder.attribute(nodes.peekLast(), name, value);
-            }
-        };
+    protected final void $(Declarable<N> declarable) {
+        declarable.declare(builder.parent());
     }
 
     /**

@@ -9,6 +9,7 @@
  */
 package kiss.lang;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class StructureTest {
     public void element() {
         HTML html = new HTML() {
             {
-                $("html");
+                e("html");
             }
         };
         assert html.toString().equals("<html/>");
@@ -33,8 +34,8 @@ public class StructureTest {
     public void elementNest() {
         HTML html = new HTML() {
             {
-                $("html", () -> {
-                    $("body");
+                e("html", () -> {
+                    e("body");
                 });
             }
         };
@@ -45,30 +46,18 @@ public class StructureTest {
     public void elements() {
         HTML html = new HTML() {
             {
-                $("div");
-                $("div");
+                e("div");
+                e("div");
             }
         };
         assert html.toString().equals("<div/><div/>");
     }
 
     @Test
-    public void contentsIterable() {
-        HTML html = new HTML() {
-            {
-                $("ol", $$(list("A", "B"), item -> {
-                    $("li", text(item));
-                }));
-            }
-        };
-        assert html.toString().equals("<ol><li>A</li><li>B</li></ol>");
-    }
-
-    @Test
     public void attribute() {
         HTML html = new HTML() {
             {
-                $("div", attr("id", "test"));
+                e("div", attr("id", "test"));
             }
         };
         assert html.toString().equals("<div id='test'/>");
@@ -78,7 +67,7 @@ public class StructureTest {
     public void attributeNullName() {
         HTML html = new HTML() {
             {
-                $("div", attr(null, "ok"));
+                e("div", attr(null, "ok"));
             }
         };
         assert html.toString().equals("<div/>");
@@ -88,7 +77,7 @@ public class StructureTest {
     public void attributeEmptyName() {
         HTML html = new HTML() {
             {
-                $("div", attr("", "ok"));
+                e("div", attr("", "ok"));
             }
         };
         assert html.toString().equals("<div/>");
@@ -98,7 +87,7 @@ public class StructureTest {
     public void attributeNullValue() {
         HTML html = new HTML() {
             {
-                $("input", attr("checked", null));
+                e("input", attr("checked", null));
             }
         };
         assert html.toString().equals("<input checked/>");
@@ -108,7 +97,7 @@ public class StructureTest {
     public void attributeEmptyValue() {
         HTML html = new HTML() {
             {
-                $("div", attr("id", ""));
+                e("div", attr("id", ""));
             }
         };
         assert html.toString().equals("<div id=''/>");
@@ -118,10 +107,22 @@ public class StructureTest {
     public void attributeWithoutValue() {
         HTML html = new HTML() {
             {
-                $("input", attr("checked"));
+                e("input", attr("checked"));
             }
         };
         assert html.toString().equals("<input checked/>");
+    }
+
+    @Test
+    public void contentsIterable() {
+        HTML html = new HTML() {
+            {
+                e("ol", $$(list("A", "B"), item -> {
+                    e("li", () -> text(item));
+                }));
+            }
+        };
+        assert html.toString().equals("<ol><li>A</li><li>B</li></ol>");
     }
 
     /**
@@ -139,17 +140,77 @@ public class StructureTest {
     /**
      * @version 2017/02/06 14:01:17
      */
-    public static abstract class HTML extends Structure<HTMLBuilder> {
+    public static abstract class HTML extends Structure<HTMLBuilder, ElementNode> {
 
-        protected Declarable text(String text) {
-            return $(new TextNode(text));
+        /**
+         * <p>
+         * Declare node with name.
+         * </p>
+         * 
+         * @param name A node name.
+         */
+        protected final void e(String name, Declarable... declarables) {
+            ElementNode e = new ElementNode(name);
+
+            $(e);
+
+            for (Declarable declarable : declarables) {
+                if (declarable != null) {
+                    $(declarable);
+                }
+            }
+        }
+
+        /**
+         * <p>
+         * Declare node attribute with name.
+         * </p>
+         * 
+         * @param name An attribute name.
+         * @return
+         */
+        protected final Declarable attr(String name) {
+            return attr(name, null);
+        }
+
+        /**
+         * <p>
+         * Declare node attribute with name.
+         * </p>
+         * 
+         * @param name An attribute name.
+         * @return
+         */
+        protected final Declarable attr(String name, String value) {
+            return () -> {
+                if (name != null && !name.isEmpty()) {
+                    $(new AttributeNode(name, value));
+                }
+            };
+        }
+
+        protected void text(String text) {
+            $(new TextNode(text));
         }
     }
 
     /**
      * @version 2017/02/06 16:02:42
      */
-    private static class ElementNode implements Declarable<StringBuilder> {
+    private static class ElementNode implements Declarable<ElementNode> {
+
+        private String name;
+
+        private List<AttributeNode> attrs = new ArrayList();
+
+        private List<ElementNode> children = new ArrayList();
+
+        /**
+         * @param name
+         */
+        private ElementNode(String name) {
+            this.name = name;
+        }
 
         /**
          * {@inheritDoc}
@@ -162,23 +223,21 @@ public class StructureTest {
          * {@inheritDoc}
          */
         @Override
-        public void declare(StringBuilder builder) {
-
+        public void declare(ElementNode parent) {
+            parent.children.add(this);
         }
     }
 
     /**
      * @version 2017/02/06 15:52:47
      */
-    private static class TextNode implements Declarable<StringBuilder> {
-
-        private String text;
+    private static class TextNode extends ElementNode {
 
         /**
          * @param text
          */
         private TextNode(String text) {
-            this.text = text;
+            super(text);
         }
 
         /**
@@ -192,15 +251,15 @@ public class StructureTest {
          * {@inheritDoc}
          */
         @Override
-        public void declare(StringBuilder builder) {
-            builder.append(text);
+        public void declare(ElementNode parent) {
+            parent.children.add(this);
         }
     }
 
     /**
      * @version 2017/02/06 16:12:23
      */
-    private static class AttributeNode implements Declarable<StringBuilder> {
+    private static class AttributeNode implements Declarable<ElementNode> {
 
         private final String name;
 
@@ -226,24 +285,15 @@ public class StructureTest {
          * {@inheritDoc}
          */
         @Override
-        public void declare(StringBuilder builder) {
-            int length = builder.length() - 1;
-
-            if (0 <= length) {
-                builder.deleteCharAt(length);
-                builder.append(" ").append(name);
-                if (value != null) {
-                    builder.append("='").append(value).append("'");
-                }
-                builder.append(">");
-            }
+        public void declare(ElementNode parent) {
+            parent.attrs.add(this);
         }
     }
 
     /**
      * @version 2017/02/06 14:10:16
      */
-    private static class HTMLBuilder extends StructureBuilder<StringBuilder> {
+    private static class HTMLBuilder extends StructureBuilder<ElementNode> {
 
         private final StringBuilder builder = new StringBuilder();
 
@@ -269,23 +319,6 @@ public class StructureTest {
                 builder.append("/>");
             } else {
                 builder.append("</" + name + ">");
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void attribute(StringBuilder node, String name, String value) {
-            int length = builder.length() - 1;
-
-            if (0 <= length) {
-                builder.deleteCharAt(length);
-                builder.append(" ").append(name);
-                if (value != null) {
-                    builder.append("='").append(value).append("'");
-                }
-                builder.append(">");
             }
         }
 
