@@ -10,14 +10,16 @@
 package kiss.lang;
 
 /**
- * @version 2017/02/07 11:25:21
+ * @version 2017/02/07 11:19:13
  */
-public interface Declarable<N> {
+public interface Definable<C> {
 
     /**
      * <p>
-     * Declare the definition.
+     * Define something.
      * </p>
+     * 
+     * @param context A current context.
      */
-    void declare();
+    void define(C context);
 }
