@@ -53,9 +53,7 @@ public abstract class HTML extends Structure<ElementNode, HTML> {
     }
 
     protected final <D extends Declarable<ElementNode>> void e(String name, D one, Runnable children) {
-        $(new ElementNode(name), one, context -> {
-            if (children != null) children.run();
-        });
+        $(new ElementNode(name), new Declarable[] {one}, children);
     }
 
     /**

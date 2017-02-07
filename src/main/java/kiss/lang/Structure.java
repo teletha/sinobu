@@ -85,6 +85,31 @@ public abstract class Structure<N extends Declarable<N>, Self extends Structure>
         current = parentNode;
     }
 
+    protected final void $(N node, Declarable<N>[] followers, Runnable children) {
+        // store parent context
+        N parentNode = current;
+
+        if (current == null) {
+            root.add(node);
+        } else {
+            $(node);
+        }
+
+        // update context
+        current = node;
+
+        for (Declarable<N> follower : followers) {
+            $(follower);
+        }
+
+        if (children != null) {
+            children.run();
+        }
+
+        // restore parent context
+        current = parentNode;
+    }
+
     /**
      * <p>
      * Define children.
