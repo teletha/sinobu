@@ -7,15 +7,13 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.lang.test;
+package kiss.lang;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
-import kiss.lang.Declarable;
-import kiss.lang.HTML;
 import kiss.lang.HTML.ElementNode;
 
 /**

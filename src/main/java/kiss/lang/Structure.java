@@ -20,7 +20,7 @@ import java.util.function.Function;
 /**
  * @version 2017/02/07 11:09:59
  */
-public abstract class Structure<N extends Declarable<N>, Self extends Structure> {
+public abstract class Structure<N extends Declarable<N>> {
 
     /** The root nodes. */
     private final List<N> root = new ArrayList(1);
@@ -44,8 +44,8 @@ public abstract class Structure<N extends Declarable<N>, Self extends Structure>
      * 
      * @param root A root node.
      */
-    protected Structure(Function<Self, BiConsumer<N, Declarable>> process) {
-        this.process = Objects.requireNonNull(process).apply((Self) this);
+    protected Structure(BiConsumer<N, Declarable> process) {
+        this.process = Objects.requireNonNull(process);
     }
 
     public List<N> root() {
@@ -79,31 +79,6 @@ public abstract class Structure<N extends Declarable<N>, Self extends Structure>
 
         for (Declarable<N> follower : followers) {
             $(follower);
-        }
-
-        // restore parent context
-        current = parentNode;
-    }
-
-    protected final void $(N node, Declarable<N>[] followers, Runnable children) {
-        // store parent context
-        N parentNode = current;
-
-        if (current == null) {
-            root.add(node);
-        } else {
-            $(node);
-        }
-
-        // update context
-        current = node;
-
-        for (Declarable<N> follower : followers) {
-            $(follower);
-        }
-
-        if (children != null) {
-            children.run();
         }
 
         // restore parent context

@@ -13,20 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kiss.lang.HTML.ElementNode;
-import kiss.lang.test.StructureTest.Id;
+import kiss.lang.StructureTest.Id;
 
 /**
  * @version 2017/02/06 14:01:17
  */
-public abstract class HTML extends Structure<ElementNode, HTML> {
+public abstract class HTML extends Structure<ElementNode> {
 
     /**
      * 
      */
     public HTML() {
-        super(that -> (context, declarable) -> {
+        super((context, declarable) -> {
             if (declarable instanceof Id) {
-                that.attr("id", ((Id) declarable).id);
+                context.attrs.add(new AttributeNode("id", ((Id) declarable).id));
             } else {
                 declarable.declare(context);
             }
@@ -53,7 +53,9 @@ public abstract class HTML extends Structure<ElementNode, HTML> {
     }
 
     protected final <D extends Declarable<ElementNode>> void e(String name, D one, Runnable children) {
-        $(new ElementNode(name), new Declarable[] {one}, children);
+        $(new ElementNode(name), new Declarable[] {one, e -> {
+            if (children != null) children.run();
+        }});
     }
 
     /**
