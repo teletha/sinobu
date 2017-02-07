@@ -22,4 +22,19 @@ public interface Declarable<N> {
      * @param context A context.
      */
     void declare(N context);
+
+    /**
+     * <p>
+     * Conflate this {@link Declarable} with the specified {@link Declarable}.
+     * </p>
+     * 
+     * @param other An other {@link Declarable} to conflate.
+     * @return A conflated {@link Declarable}.
+     */
+    default Declarable<N> and(Declarable<N> other) {
+        return context -> {
+            declare(context);
+            other.declare(context);
+        };
+    }
 }

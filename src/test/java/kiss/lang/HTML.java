@@ -40,16 +40,12 @@ public abstract class HTML extends Structure<ElementNode> {
      * 
      * @param name A node name.
      */
-    protected final <D extends Declarable<ElementNode>> void e(String name) {
-        e(name, null, null);
+    protected final <D extends Declarable<ElementNode>> void e(String name, D... declarables) {
+        $(new ElementNode(name), declarables);
     }
 
     protected final void e(String name, Runnable children) {
         e(name, null, children);
-    }
-
-    protected final <D extends Declarable<ElementNode>> void e(String name, D one) {
-        e(name, one, null);
     }
 
     protected final <D extends Declarable<ElementNode>> void e(String name, D one, Runnable children) {
@@ -81,13 +77,13 @@ public abstract class HTML extends Structure<ElementNode> {
     protected final Declarable attr(String name, String value) {
         return (context) -> {
             if (name != null && !name.isEmpty()) {
-                $(new AttributeNode(name, value));
+                $(null, new AttributeNode(name, value));
             }
         };
     }
 
     protected void text(String text) {
-        $(new TextNode(text));
+        $(null, new TextNode(text));
     }
 
     /**
@@ -112,7 +108,7 @@ public abstract class HTML extends Structure<ElementNode> {
 
         private List<AttributeNode> attrs = new ArrayList();
 
-        private List<ElementNode> children = new ArrayList();
+        private List children = new ArrayList();
 
         /**
          * @param name
@@ -144,7 +140,7 @@ public abstract class HTML extends Structure<ElementNode> {
             StringBuilder builder = new StringBuilder();
 
             if (name.isEmpty()) {
-                for (ElementNode child : children) {
+                for (Object child : children) {
                     builder.append(child);
                 }
                 return builder.toString();
@@ -160,7 +156,7 @@ public abstract class HTML extends Structure<ElementNode> {
                 builder.append("/>");
             } else {
                 builder.append(">");
-                for (ElementNode child : children) {
+                for (Object child : children) {
                     builder.append(child);
                 }
                 builder.append("</").append(name).append(">");
@@ -172,13 +168,23 @@ public abstract class HTML extends Structure<ElementNode> {
     /**
      * @version 2017/02/06 15:52:47
      */
-    private static class TextNode extends ElementNode {
+    private static class TextNode implements Declarable<ElementNode> {
+
+        private final String text;
 
         /**
          * @param text
          */
         private TextNode(String text) {
-            super(text);
+            this.text = text;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void declare(ElementNode context) {
+            context.children.add(this);
         }
 
         /**
@@ -186,7 +192,7 @@ public abstract class HTML extends Structure<ElementNode> {
          */
         @Override
         public String toString() {
-            return name;
+            return text;
         }
     }
 

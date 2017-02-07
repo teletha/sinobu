@@ -52,10 +52,6 @@ public abstract class Structure<N extends Declarable<N>> {
         return root;
     }
 
-    protected final void $(Declarable declarable) {
-        if (declarable != null) process.accept(current, declarable);
-    }
-
     /**
      * <p>
      * Make parent-child relationship between the current node and the specified node.
@@ -68,17 +64,23 @@ public abstract class Structure<N extends Declarable<N>> {
         // store parent context
         N parentNode = current;
 
-        if (current == null) {
-            root.add(node);
-        } else {
-            $(node);
+        if (node != null) {
+            if (current == null) {
+                root.add(node);
+            } else {
+                process.accept(current, node);
+            }
+
+            // update context
+            current = node;
         }
 
-        // update context
-        current = node;
-
-        for (Declarable<N> follower : followers) {
-            $(follower);
+        if (followers != null) {
+            for (Declarable<N> declarable : followers) {
+                if (declarable != null) {
+                    process.accept(current, declarable);
+                }
+            }
         }
 
         // restore parent context
