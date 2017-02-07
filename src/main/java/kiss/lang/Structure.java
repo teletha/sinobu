@@ -18,10 +18,13 @@ import java.util.function.Function;
 /**
  * @version 2017/02/07 11:09:59
  */
-public abstract class Structure<N extends Definable<N>> {
+public abstract class Structure<N extends Declarable<N>, Self extends Structure> {
 
     /** The root node. */
     public final N root;
+
+    /** The root node. */
+    private final BiConsumer<N, Declarable> process;
 
     /** The current processing node. */
     private N current;
@@ -39,12 +42,13 @@ public abstract class Structure<N extends Definable<N>> {
      * 
      * @param root A root node.
      */
-    protected Structure(N root) {
+    protected Structure(N root, Function<Self, BiConsumer<N, Declarable>> process) {
         this.root = current = Objects.requireNonNull(root);
+        this.process = Objects.requireNonNull(process).apply((Self) this);
     }
 
-    protected final void $(Definable<N> definable) {
-        definable.define(current);
+    protected final void $(Declarable declarable) {
+        process.accept(current, declarable);
     }
 
     /**
@@ -65,7 +69,7 @@ public abstract class Structure<N extends Definable<N>> {
         current = node;
 
         for (Declarable<N> follower : followers) {
-            follower.declare();
+            process.accept(current, follower);
         }
 
         // restore parent context
@@ -83,7 +87,7 @@ public abstract class Structure<N extends Definable<N>> {
      */
     protected final <C> Declarable<N> $$(Iterable<C> children, Consumer<C> generator) {
         return $$(children, (index, child) -> {
-            return () -> generator.accept(child);
+            return current -> generator.accept(child);
         });
     }
 
@@ -113,7 +117,7 @@ public abstract class Structure<N extends Definable<N>> {
      */
     protected final <C> Declarable<N> $$(Iterable<C> children, BiConsumer<Integer, C> generator) {
         return $$(children, (index, child) -> {
-            return () -> generator.accept(index, child);
+            return current -> generator.accept(index, child);
         });
     }
 
@@ -127,7 +131,7 @@ public abstract class Structure<N extends Definable<N>> {
      * @return A declaration of contents.
      */
     protected final <C> Declarable<N> $$(Iterable<C> children, BiFunction<Integer, C, Declarable<N>> generator) {
-        return () -> {
+        return current -> {
             // store parent context
             Object parentContext = context;
             int parentModifier = contenxtModifier;
@@ -136,7 +140,7 @@ public abstract class Structure<N extends Definable<N>> {
             for (C child : children) {
                 context = child;
                 contenxtModifier = (Objects.hash(child) + 117) ^ 31;
-                generator.apply(index++, child).declare();
+                generator.apply(index++, child).declare(current);
             }
 
             // restore parent context

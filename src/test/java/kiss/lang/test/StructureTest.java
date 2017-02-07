@@ -7,12 +7,16 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.lang;
+package kiss.lang.test;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+
+import kiss.lang.Declarable;
+import kiss.lang.HTML;
+import kiss.lang.HTML.ElementNode;
 
 /**
  * @version 2017/02/06 14:00:16
@@ -33,7 +37,7 @@ public class StructureTest {
     public void elementNest() {
         HTML html = new HTML() {
             {
-                e("html", () -> {
+                e("html", (context) -> {
                     e("body");
                 });
             }
@@ -117,7 +121,7 @@ public class StructureTest {
         HTML html = new HTML() {
             {
                 e("ol", $$(list("A", "B"), item -> {
-                    e("li", () -> text(item));
+                    e("li", (context) -> text(item));
                 }));
             }
         };
@@ -139,9 +143,9 @@ public class StructureTest {
     /**
      * @version 2017/02/07 11:43:11
      */
-    static class Id implements Declarable {
+    public static class Id implements Declarable<ElementNode> {
 
-        private final String id;
+        public final String id;
 
         /**
          * @param id
@@ -154,7 +158,7 @@ public class StructureTest {
          * {@inheritDoc}
          */
         @Override
-        public void declare() {
+        public void declare(ElementNode context) {
         }
     }
 }

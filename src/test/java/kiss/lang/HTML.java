@@ -13,17 +13,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kiss.lang.HTML.ElementNode;
+import kiss.lang.test.StructureTest.Id;
 
 /**
  * @version 2017/02/06 14:01:17
  */
-public abstract class HTML extends Structure<ElementNode> {
+public abstract class HTML extends Structure<ElementNode, HTML> {
 
     /**
      * 
      */
-    protected HTML() {
-        super(new ElementNode(""));
+    public HTML() {
+        super(new ElementNode(""), that -> (context, declarable) -> {
+            if (declarable instanceof Id) {
+                that.attr("id", ((Id) declarable).id);
+            } else {
+                declarable.declare(context);
+            }
+        });
     }
 
     /**
@@ -58,7 +65,7 @@ public abstract class HTML extends Structure<ElementNode> {
      * @return
      */
     protected final Declarable attr(String name, String value) {
-        return () -> {
+        return (context) -> {
             if (name != null && !name.isEmpty()) {
                 $(new AttributeNode(name, value));
             }
@@ -72,13 +79,20 @@ public abstract class HTML extends Structure<ElementNode> {
     /**
      * @version 2017/02/06 16:02:42
      */
-    static class ElementNode implements Definable<ElementNode> {
+    public static class ElementNode implements Declarable<ElementNode> {
 
         protected String name;
 
         private List<AttributeNode> attrs = new ArrayList();
 
         private List<ElementNode> children = new ArrayList();
+
+        /**
+         * @param name
+         */
+        private ElementNode() {
+            this("");
+        }
 
         /**
          * @param name
@@ -91,8 +105,8 @@ public abstract class HTML extends Structure<ElementNode> {
          * {@inheritDoc}
          */
         @Override
-        public void define(ElementNode parent) {
-            parent.children.add(this);
+        public void declare(ElementNode context) {
+            context.children.add(this);
         }
 
         /**
@@ -152,7 +166,7 @@ public abstract class HTML extends Structure<ElementNode> {
     /**
      * @version 2017/02/06 16:12:23
      */
-    private static class AttributeNode implements Definable<ElementNode> {
+    private static class AttributeNode implements Declarable<ElementNode> {
 
         private final String name;
 
@@ -171,8 +185,8 @@ public abstract class HTML extends Structure<ElementNode> {
          * {@inheritDoc}
          */
         @Override
-        public void define(ElementNode parent) {
-            parent.attrs.add(this);
+        public void declare(ElementNode context) {
+            context.attrs.add(this);
         }
 
         /**
@@ -188,20 +202,6 @@ public abstract class HTML extends Structure<ElementNode> {
             }
 
             return builder.toString();
-        }
-    }
-
-    /**
-     * @version 2017/02/07 11:44:19
-     */
-    private static class IdBuilder implements Definable<ElementNode> {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void define(ElementNode context) {
-            context.attrs.add(new AttributeNode("id", ""));
         }
     }
 }

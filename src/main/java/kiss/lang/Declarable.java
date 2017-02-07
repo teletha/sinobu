@@ -18,6 +18,8 @@ public interface Declarable<N> {
      * <p>
      * Declare the definition.
      * </p>
+     * 
+     * @param context A context.
      */
-    void declare();
+    void declare(N context);
 }
