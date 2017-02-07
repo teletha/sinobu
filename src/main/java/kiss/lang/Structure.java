@@ -9,6 +9,8 @@
  */
 package kiss.lang;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -20,8 +22,8 @@ import java.util.function.Function;
  */
 public abstract class Structure<N extends Declarable<N>, Self extends Structure> {
 
-    /** The root node. */
-    public final N root;
+    /** The root nodes. */
+    private final List<N> root = new ArrayList(1);
 
     /** The root node. */
     private final BiConsumer<N, Declarable> process;
@@ -42,13 +44,16 @@ public abstract class Structure<N extends Declarable<N>, Self extends Structure>
      * 
      * @param root A root node.
      */
-    protected Structure(N root, Function<Self, BiConsumer<N, Declarable>> process) {
-        this.root = current = Objects.requireNonNull(root);
+    protected Structure(Function<Self, BiConsumer<N, Declarable>> process) {
         this.process = Objects.requireNonNull(process).apply((Self) this);
     }
 
+    public List<N> root() {
+        return root;
+    }
+
     protected final void $(Declarable declarable) {
-        process.accept(current, declarable);
+        if (declarable != null) process.accept(current, declarable);
     }
 
     /**
@@ -63,13 +68,17 @@ public abstract class Structure<N extends Declarable<N>, Self extends Structure>
         // store parent context
         N parentNode = current;
 
-        $(node);
+        if (current == null) {
+            root.add(node);
+        } else {
+            $(node);
+        }
 
         // update context
         current = node;
 
         for (Declarable<N> follower : followers) {
-            process.accept(current, follower);
+            $(follower);
         }
 
         // restore parent context
@@ -85,7 +94,7 @@ public abstract class Structure<N extends Declarable<N>, Self extends Structure>
      * @param generator A content generator.
      * @return A declaration of contents.
      */
-    protected final <C> Declarable<N> $$(Iterable<C> children, Consumer<C> generator) {
+    protected final <C> Declarable<N> $(Iterable<C> children, Consumer<C> generator) {
         return $$(children, (index, child) -> {
             return current -> generator.accept(child);
         });

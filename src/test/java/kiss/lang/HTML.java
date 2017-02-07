@@ -24,7 +24,7 @@ public abstract class HTML extends Structure<ElementNode, HTML> {
      * 
      */
     public HTML() {
-        super(new ElementNode(""), that -> (context, declarable) -> {
+        super(that -> (context, declarable) -> {
             if (declarable instanceof Id) {
                 that.attr("id", ((Id) declarable).id);
             } else {
@@ -40,8 +40,22 @@ public abstract class HTML extends Structure<ElementNode, HTML> {
      * 
      * @param name A node name.
      */
-    protected final void e(String name, Declarable<ElementNode>... declarables) {
-        $(new ElementNode(name), declarables);
+    protected final <D extends Declarable<ElementNode>> void e(String name) {
+        e(name, null, null);
+    }
+
+    protected final void e(String name, Runnable children) {
+        e(name, null, children);
+    }
+
+    protected final <D extends Declarable<ElementNode>> void e(String name, D one) {
+        e(name, one, null);
+    }
+
+    protected final <D extends Declarable<ElementNode>> void e(String name, D one, Runnable children) {
+        $(new ElementNode(name), one, context -> {
+            if (children != null) children.run();
+        });
     }
 
     /**
@@ -74,6 +88,19 @@ public abstract class HTML extends Structure<ElementNode, HTML> {
 
     protected void text(String text) {
         $(new TextNode(text));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        for (ElementNode node : root()) {
+            builder.append(node);
+        }
+        return builder.toString();
     }
 
     /**

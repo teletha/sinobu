@@ -30,19 +30,19 @@ public class StructureTest {
                 e("html");
             }
         };
-        assert html.root.toString().equals("<html/>");
+        assert html.toString().equals("<html/>");
     }
 
     @Test
     public void elementNest() {
         HTML html = new HTML() {
             {
-                e("html", (context) -> {
+                e("html", () -> {
                     e("body");
                 });
             }
         };
-        assert html.root.toString().equals("<html><body/></html>");
+        assert html.toString().equals("<html><body/></html>");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class StructureTest {
                 e("div");
             }
         };
-        assert html.root.toString().equals("<div/><div/>");
+        assert html.toString().equals("<div/><div/>");
     }
 
     @Test
@@ -63,7 +63,7 @@ public class StructureTest {
                 e("div", attr("id", "test"));
             }
         };
-        assert html.root.toString().equals("<div id='test'/>");
+        assert html.toString().equals("<div id='test'/>");
     }
 
     @Test
@@ -73,7 +73,7 @@ public class StructureTest {
                 e("div", attr(null, "ok"));
             }
         };
-        assert html.root.toString().equals("<div/>");
+        assert html.toString().equals("<div/>");
     }
 
     @Test
@@ -83,7 +83,7 @@ public class StructureTest {
                 e("div", attr("", "ok"));
             }
         };
-        assert html.root.toString().equals("<div/>");
+        assert html.toString().equals("<div/>");
     }
 
     @Test
@@ -93,7 +93,7 @@ public class StructureTest {
                 e("input", attr("checked", null));
             }
         };
-        assert html.root.toString().equals("<input checked/>");
+        assert html.toString().equals("<input checked/>");
     }
 
     @Test
@@ -103,7 +103,7 @@ public class StructureTest {
                 e("div", attr("id", ""));
             }
         };
-        assert html.root.toString().equals("<div id=''/>");
+        assert html.toString().equals("<div id=''/>");
     }
 
     @Test
@@ -113,19 +113,19 @@ public class StructureTest {
                 e("input", attr("checked"));
             }
         };
-        assert html.root.toString().equals("<input checked/>");
+        assert html.toString().equals("<input checked/>");
     }
 
     @Test
     public void contentsIterable() {
         HTML html = new HTML() {
             {
-                e("ol", $$(list("A", "B"), item -> {
-                    e("li", (context) -> text(item));
+                e("ol", $(list("A", "B"), item -> {
+                    e("li", () -> text(item));
                 }));
             }
         };
-        assert html.root.toString().equals("<ol><li>A</li><li>B</li></ol>");
+        assert html.toString().equals("<ol><li>A</li><li>B</li></ol>");
     }
 
     /**
