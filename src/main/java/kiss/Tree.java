@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.lang;
+package kiss;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +17,16 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import kiss.lang.HTML.ElementNode;
-
 /**
  * @version 2017/02/08 9:12:12
  */
-public abstract class Structure<N extends Declarable<N>> {
+public abstract class Tree<N extends Declarable<N>> {
 
     /** The root nodes. */
     private final List<N> root = new ArrayList(1);
 
     /** The named node creator. */
-    private final Function<String, N> namedNodeBuilder;
+    private final ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder;
 
     /** The child node creator. */
     private final BiConsumer<N, Declarable> relationshipBuilder;
@@ -40,17 +38,18 @@ public abstract class Structure<N extends Declarable<N>> {
     private Object context;
 
     /** The current context id. */
-    private int contenxtModifier;
+    private int contenxtModifier = 31;
 
     /**
      * <p>
      * Create tree structure DSL.
      * </p>
-     * 
-     * @param namedNodeBuilder A builder for special named node.
+     *
+     * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and
+     *            unique id.
      * @param relationshipBuilder A builder for parent-child node relationship.
      */
-    protected Structure(Function<String, N> namedNodeBuilder, BiConsumer<N, Declarable> relationshipBuilder) {
+    protected Tree(ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder, BiConsumer<N, Declarable> relationshipBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
         this.relationshipBuilder = Objects.requireNonNull(relationshipBuilder);
     }
@@ -82,7 +81,7 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param nodes A list of following {@link Declarable} node.
      */
     protected final void $(String name, Declarable<N>... nodes) {
-        $(namedNodeBuilder.apply(name), nodes);
+        $(namedNodeBuilder.apply(name, contenxtModifier, context), nodes);
     }
 
     /**
@@ -112,8 +111,8 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param one A following node.
      * @param nest A list of following {@link Declarable} node by lambda expression.
      */
-    protected final <D extends Declarable<ElementNode>> void $(String name, D one, Runnable nest) {
-        $(name, one, null, null, null, null, nest);
+    protected final void $(String name, Declarable<N> one, Runnable nest) {
+        $(name, one, null, null, null, nest);
     }
 
     /**
@@ -129,26 +128,8 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param two A following node.
      * @param nest A list of following {@link Declarable} node by lambda expression.
      */
-    protected final <D extends Declarable<ElementNode>> void $(String name, D one, D two, Runnable nest) {
-        $(name, one, two, null, null, null, nest);
-    }
-
-    /**
-     * <p>
-     * Declare node with name.
-     * </p>
-     * <p>
-     * Generic named node builder because named node is frequently used in tree structure.
-     * </p>
-     * 
-     * @param name A name of new node.
-     * @param one A following node.
-     * @param two A following node.
-     * @param three A following node.
-     * @param nest A list of following {@link Declarable} node by lambda expression.
-     */
-    protected final <D extends Declarable<ElementNode>> void $(String name, D one, D two, D three, Runnable nest) {
-        $(name, one, two, three, null, null, nest);
+    protected final void $(String name, Declarable<N> one, Declarable<N> two, Runnable nest) {
+        $(name, one, two, null, null, nest);
     }
 
     /**
@@ -163,11 +144,10 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param one A following node.
      * @param two A following node.
      * @param three A following node.
-     * @param four A following node.
      * @param nest A list of following {@link Declarable} node by lambda expression.
      */
-    protected final <D extends Declarable<ElementNode>> void $(String name, D one, D two, D three, D four, Runnable nest) {
-        $(name, one, two, three, four, null, nest);
+    protected final void $(String name, Declarable<N> one, Declarable<N> two, Declarable<N> three, Runnable nest) {
+        $(name, one, two, three, null, nest);
     }
 
     /**
@@ -183,12 +163,11 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param two A following node.
      * @param three A following node.
      * @param four A following node.
-     * @param five A following node.
      * @param nest A list of following {@link Declarable} node by lambda expression.
      */
-    protected final <D extends Declarable<ElementNode>> void $(String name, D one, D two, D three, D four, D five, Runnable children) {
-        $(namedNodeBuilder.apply(name), new Declarable[] {one, two, three, four, five, e -> {
-            if (children != null) children.run();
+    protected final void $(String name, Declarable<N> one, Declarable<N> two, Declarable<N> three, Declarable<N> four, Runnable nest) {
+        $(namedNodeBuilder.apply(name, contenxtModifier, context), new Declarable[] {one, two, three, four, e -> {
+            if (nest != null) nest.run();
         }});
     }
 
@@ -237,7 +216,7 @@ public abstract class Structure<N extends Declarable<N>> {
      * @return A declaration of contents.
      */
     protected final <C> Declarable<N> $(Iterable<C> children, Consumer<C> generator) {
-        return $$(children, (index, child) -> {
+        return $(children, (index, child) -> {
             return current -> generator.accept(child);
         });
     }
@@ -251,8 +230,8 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param generator A content generator.
      * @return A declaration of contents.
      */
-    protected final <C> Declarable<N> $$(Iterable<C> children, Function<C, Declarable<N>> generator) {
-        return $$(children, (index, child) -> {
+    protected final <C> Declarable<N> $(Iterable<C> children, Function<C, Declarable<N>> generator) {
+        return $(children, (index, child) -> {
             return generator.apply(child);
         });
     }
@@ -266,8 +245,8 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param generator A content generator.
      * @return A declaration of contents.
      */
-    protected final <C> Declarable<N> $$(Iterable<C> children, BiConsumer<Integer, C> generator) {
-        return $$(children, (index, child) -> {
+    protected final <C> Declarable<N> $(Iterable<C> children, BiConsumer<Integer, C> generator) {
+        return $(children, (index, child) -> {
             return current -> generator.accept(index, child);
         });
     }
@@ -281,7 +260,7 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param generator A content generator.
      * @return A declaration of contents.
      */
-    protected final <C> Declarable<N> $$(Iterable<C> children, BiFunction<Integer, C, Declarable<N>> generator) {
+    protected final <C> Declarable<N> $(Iterable<C> children, BiFunction<Integer, C, Declarable<N>> generator) {
         return current -> {
             // store parent context
             Object parentContext = context;

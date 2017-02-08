@@ -7,10 +7,10 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.lang;
+package kiss;
 
 /**
- * @version 2017/02/07 11:25:21
+ * @version 2017/02/08 11:10:15
  */
 public interface Declarable<N> {
 
@@ -22,19 +22,4 @@ public interface Declarable<N> {
      * @param context A context.
      */
     void declare(N context);
-
-    /**
-     * <p>
-     * Conflate this {@link Declarable} with the specified {@link Declarable}.
-     * </p>
-     * 
-     * @param other An other {@link Declarable} to conflate.
-     * @return A conflated {@link Declarable}.
-     */
-    default Declarable<N> and(Declarable<N> other) {
-        return context -> {
-            declare(context);
-            other.declare(context);
-        };
-    }
 }
