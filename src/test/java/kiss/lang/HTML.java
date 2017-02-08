@@ -24,34 +24,13 @@ public abstract class HTML extends Structure<ElementNode> {
      * 
      */
     public HTML() {
-        super((context, declarable) -> {
+        super(ElementNode::new, (context, declarable) -> {
             if (declarable instanceof Id) {
                 context.attrs.add(new AttributeNode("id", ((Id) declarable).id));
             } else {
                 declarable.declare(context);
             }
         });
-    }
-
-    /**
-     * <p>
-     * Declare node with name.
-     * </p>
-     * 
-     * @param name A node name.
-     */
-    protected final <D extends Declarable<ElementNode>> void e(String name, D... declarables) {
-        $(new ElementNode(name), declarables);
-    }
-
-    protected final void e(String name, Runnable children) {
-        e(name, null, children);
-    }
-
-    protected final <D extends Declarable<ElementNode>> void e(String name, D one, Runnable children) {
-        $(new ElementNode(name), new Declarable[] {one, e -> {
-            if (children != null) children.run();
-        }});
     }
 
     /**

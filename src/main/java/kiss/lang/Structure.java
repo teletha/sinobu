@@ -17,16 +17,21 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import kiss.lang.HTML.ElementNode;
+
 /**
- * @version 2017/02/07 11:09:59
+ * @version 2017/02/08 9:12:12
  */
 public abstract class Structure<N extends Declarable<N>> {
 
     /** The root nodes. */
     private final List<N> root = new ArrayList(1);
 
-    /** The root node. */
-    private final BiConsumer<N, Declarable> process;
+    /** The named node creator. */
+    private final Function<String, N> namedNodeBuilder;
+
+    /** The child node creator. */
+    private final BiConsumer<N, Declarable> relationshipBuilder;
 
     /** The current processing node. */
     private N current;
@@ -42,14 +47,68 @@ public abstract class Structure<N extends Declarable<N>> {
      * Create tree structure DSL.
      * </p>
      * 
-     * @param root A root node.
+     * @param namedNodeBuilder A builder for special named node.
+     * @param relationshipBuilder A builder for parent-child node relationship.
      */
-    protected Structure(BiConsumer<N, Declarable> process) {
-        this.process = Objects.requireNonNull(process);
+    protected Structure(Function<String, N> namedNodeBuilder, BiConsumer<N, Declarable> relationshipBuilder) {
+        this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
+        this.relationshipBuilder = Objects.requireNonNull(relationshipBuilder);
     }
 
     public List<N> root() {
         return root;
+    }
+
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param followers A list of following {@link Declarable} node.
+     */
+    protected final void e(String name, Declarable<N>... followers) {
+        $(namedNodeBuilder.apply(name), followers);
+    }
+
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param followers A list of following {@link Declarable} node.
+     */
+    protected final void e(String name, Runnable nest) {
+        e(name, null, nest);
+    }
+
+    protected final <D extends Declarable<ElementNode>> void e(String name, D one, Runnable nest) {
+        e(name, one, null, null, null, null, nest);
+    }
+
+    protected final <D extends Declarable<ElementNode>> void e(String name, D one, D two, Runnable nest) {
+        e(name, one, two, null, null, null, nest);
+    }
+
+    protected final <D extends Declarable<ElementNode>> void e(String name, D one, D two, D three, Runnable nest) {
+        e(name, one, two, three, null, null, nest);
+    }
+
+    protected final <D extends Declarable<ElementNode>> void e(String name, D one, D two, D three, D four, Runnable nest) {
+        e(name, one, two, three, four, null, nest);
+    }
+
+    protected final <D extends Declarable<ElementNode>> void e(String name, D one, D two, D three, D four, D five, Runnable children) {
+        $(namedNodeBuilder.apply(name), new Declarable[] {one, two, three, four, five, e -> {
+            if (children != null) children.run();
+        }});
     }
 
     /**
@@ -68,7 +127,7 @@ public abstract class Structure<N extends Declarable<N>> {
             if (current == null) {
                 root.add(node);
             } else {
-                process.accept(current, node);
+                relationshipBuilder.accept(current, node);
             }
 
             // update context
@@ -78,7 +137,7 @@ public abstract class Structure<N extends Declarable<N>> {
         if (followers != null) {
             for (Declarable<N> declarable : followers) {
                 if (declarable != null) {
-                    process.accept(current, declarable);
+                    relationshipBuilder.accept(current, declarable);
                 }
             }
         }
