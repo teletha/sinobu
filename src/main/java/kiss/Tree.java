@@ -10,20 +10,29 @@
 package kiss;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+
+import javafx.beans.property.ReadOnlyProperty;
 
 /**
+ * <p>
+ * The skeleton of DSL for tree structure.
+ * </p>
+ * 
  * @version 2017/02/08 11:17:30
  */
 public abstract class Tree<N extends Consumer<N>> {
 
-    /** The root nodes. */
-    private final List<N> root = new ArrayList(1);
+    /** The anonymous root nodes. */
+    public final List<N> root = new ArrayList<>(1);
 
     /** The named node creator. */
     private final ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder;
@@ -31,14 +40,14 @@ public abstract class Tree<N extends Consumer<N>> {
     /** The child node creator. */
     private final BiConsumer<N, Consumer> relationshipBuilder;
 
-    /** The current processing node. */
+    /** The current writering node. */
     private N current;
 
     /** The current context object. */
     private Object context;
 
     /** The current context id. */
-    private int contenxtModifier = 31;
+    private int modifier = 31;
 
     /**
      * <p>
@@ -52,10 +61,6 @@ public abstract class Tree<N extends Consumer<N>> {
     protected Tree(ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder, BiConsumer<N, Consumer> relationshipBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
         this.relationshipBuilder = Objects.requireNonNull(relationshipBuilder);
-    }
-
-    public List<N> root() {
-        return root;
     }
 
     /**
@@ -81,7 +86,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param nodes A list of following {@link Consumer} node.
      */
     protected final void $(String name, Consumer<N>... nodes) {
-        $(namedNodeBuilder.apply(name, contenxtModifier, context), nodes);
+        $(namedNodeBuilder.apply(name, modifier, context), nodes);
     }
 
     /**
@@ -93,7 +98,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * </p>
      * 
      * @param name A name of new node.
-     * @param nest A list of following {@link Consumer} node by lambda expression.
+     * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(String name, Runnable nest) {
         $(name, null, nest);
@@ -109,7 +114,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * 
      * @param name A name of new node.
      * @param one A following node.
-     * @param nest A list of following {@link Consumer} node by lambda expression.
+     * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(String name, Consumer<N> one, Runnable nest) {
         $(name, one, null, null, null, nest);
@@ -126,7 +131,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param name A name of new node.
      * @param one A following node.
      * @param two A following node.
-     * @param nest A list of following {@link Consumer} node by lambda expression.
+     * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(String name, Consumer<N> one, Consumer<N> two, Runnable nest) {
         $(name, one, two, null, null, nest);
@@ -144,7 +149,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param one A following node.
      * @param two A following node.
      * @param three A following node.
-     * @param nest A list of following {@link Consumer} node by lambda expression.
+     * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Runnable nest) {
         $(name, one, two, three, null, nest);
@@ -163,11 +168,11 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param two A following node.
      * @param three A following node.
      * @param four A following node.
-     * @param nest A list of following {@link Consumer} node by lambda expression.
+     * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Consumer<N> four, Runnable nest) {
-        $(namedNodeBuilder.apply(name, contenxtModifier, context), new Consumer[] {one, two, three, four, e -> {
-            if (nest != null) nest.run();
+    protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Consumer<N> four, Runnable writer) {
+        $(namedNodeBuilder.apply(name, modifier, context), new Consumer[] {one, two, three, four, e -> {
+            if (writer != null) writer.run();
         }});
     }
 
@@ -208,74 +213,226 @@ public abstract class Tree<N extends Consumer<N>> {
 
     /**
      * <p>
-     * Define children.
+     * Nest-like range writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
      * </p>
      * 
-     * @param children A children contents.
-     * @param generator A content generator.
+     * @param size An exclusive upper bound.
+     * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> $(Iterable<C> children, Consumer<C> generator) {
-        return $(children, (index, child) -> {
-            return current -> generator.accept(child);
+    protected final Consumer<N> foŕ(int size, Consumer<Integer> writer) {
+        // we can optimize code using IntConsumer, but the uniformity has high priority than that
+        return foŕ(0, size, writer);
+    }
+
+    /**
+     * <p>
+     * Nest-like range writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
+     * </p>
+     * 
+     * @param startInclusive An inclusive initial value
+     * @param endExclusive An exclusive upper bound.
+     * @param writer A content writer.
+     * @return A declaration of contents.
+     */
+    protected final Consumer<N> foŕ(int startInclusive, int endExclusive, Consumer<Integer> writer) {
+        // we can optimize code using IntConsumer, but the uniformity has high priority than that
+        return foŕ(() -> IntStream.range(startInclusive, endExclusive).iterator(), writer);
+    }
+
+    /**
+     * <p>
+     * Nest-like collection writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
+     * </p>
+     * 
+     * @param type A type of {@link Enum} contents.
+     * @param writer A content writer.
+     * @return A declaration of contents.
+     */
+    protected final <E extends Enum> Consumer<N> foŕ(Class<E> type, Consumer<E> writer) {
+        return foŕ(type.getEnumConstants(), writer);
+    }
+
+    /**
+     * <p>
+     * Nest-like collection writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
+     * </p>
+     * 
+     * @param type A type of {@link Enum} contents.
+     * @param writer A content writer.
+     * @return A declaration of contents.
+     */
+    protected final <E extends Enum> Consumer<N> foŕ(Class<E> type, Function<E, Consumer<N>> writer) {
+        return foŕ(type.getEnumConstants(), writer);
+    }
+
+    /**
+     * <p>
+     * Nest-like collection writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
+     * </p>
+     * 
+     * @param contents A list of child contents.
+     * @param writer A content writer.
+     * @return A declaration of contents.
+     */
+    protected final <C> Consumer<N> foŕ(C[] contents, Consumer<C> writer) {
+        return foŕ(Arrays.asList(contents), writer);
+    }
+
+    /**
+     * <p>
+     * Nest-like collection writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
+     * </p>
+     * 
+     * @param contents A list of child contents.
+     * @param writer A content writer.
+     * @return A declaration of contents.
+     */
+    protected final <C> Consumer<N> foŕ(C[] contents, Function<C, Consumer<N>> writer) {
+        return foŕ(Arrays.asList(contents), writer);
+    }
+
+    /**
+     * <p>
+     * Nest-like collection writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
+     * </p>
+     * 
+     * @param contents A list of child contents.
+     * @param writer A content writer.
+     * @return A declaration of contents.
+     */
+    protected final <C> Consumer<N> foŕ(Iterable<C> contents, Consumer<C> writer) {
+        return foŕ(contents, (index, child) -> {
+            return current -> writer.accept(child);
         });
     }
 
     /**
      * <p>
-     * Define children.
+     * Nest-like collection writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
      * </p>
      * 
-     * @param children A children contents.
-     * @param generator A content generator.
+     * @param contents A list of child contents.
+     * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> $(Iterable<C> children, Function<C, Consumer<N>> generator) {
-        return $(children, (index, child) -> {
-            return generator.apply(child);
+    protected final <C> Consumer<N> foŕ(Iterable<C> contents, Function<C, Consumer<N>> writer) {
+        return foŕ(contents, (index, child) -> {
+            return writer.apply(child);
         });
     }
 
     /**
      * <p>
-     * Declare children.
+     * Nest-like collection writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
      * </p>
      * 
-     * @param children A children contents.
-     * @param generator A content generator.
+     * @param contents A list of child contents.
+     * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> $(Iterable<C> children, BiConsumer<Integer, C> generator) {
-        return $(children, (index, child) -> {
-            return current -> generator.accept(index, child);
+    protected final <C> Consumer<N> foŕ(Iterable<C> contents, BiConsumer<Integer, C> writer) {
+        return foŕ(contents, (index, child) -> {
+            return current -> writer.accept(index, child);
         });
     }
 
     /**
      * <p>
-     * Declare children.
+     * Nest-like collection writer.
+     * </p>
+     * <p>
+     * Each item is identified by id and its object, you can receive them on node builder.
      * </p>
      * 
-     * @param children A children contents.
-     * @param generator A content generator.
+     * @param contents A list of child contents.
+     * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> $(Iterable<C> children, BiFunction<Integer, C, Consumer<N>> generator) {
+    protected final <C> Consumer<N> foŕ(Iterable<C> contents, BiFunction<Integer, C, Consumer<N>> writer) {
         return current -> {
             // store parent context
             Object parentContext = context;
-            int parentModifier = contenxtModifier;
+            int parentModifier = modifier;
             int index = 0;
 
-            for (C child : children) {
+            for (C child : contents) {
                 context = child;
-                contenxtModifier = (Objects.hash(child) + 117) ^ 31;
-                generator.apply(index++, child).accept(current);
+                modifier = (Objects.hash(child) + 117) ^ 31;
+                writer.apply(index++, child).accept(current);
             }
 
             // restore parent context
             context = parentContext;
-            contenxtModifier = parentModifier;
+            modifier = parentModifier;
+        };
+    }
+
+    /**
+     * <p>
+     * Conditional writer.
+     * </p>
+     * 
+     * @param condition A condition.
+     * @param nodes A list of successible nodes.
+     * @return A declaration of contents.
+     */
+    protected final Consumer<N> iｆ(ReadOnlyProperty<Boolean> condition, Consumer... success) {
+        return iｆ(condition != null && Boolean.TRUE.equals(condition.getValue()), success);
+    }
+
+    /**
+     * <p>
+     * Conditional writer.
+     * </p>
+     * 
+     * @param condition A condition.
+     * @param nodes A list of successible nodes.
+     * @return A declaration of contents.
+     */
+    protected final Consumer<N> iｆ(Supplier<Boolean> condition, Consumer... success) {
+        return iｆ(condition != null && Boolean.TRUE.equals(condition.get()), success);
+    }
+
+    /**
+     * <p>
+     * Conditional writer.
+     * </p>
+     * 
+     * @param condition A condition.
+     * @param nodes A list of successible nodes.
+     * @return A declaration of contents.
+     */
+    protected final Consumer<N> iｆ(boolean condition, Consumer... success) {
+        return current -> {
+            if (condition) $(success);
         };
     }
 }

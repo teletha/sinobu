@@ -13,6 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import org.junit.Test;
 
@@ -25,7 +31,7 @@ import kiss.tree.TreeTest.HTML.ElementNode;
 public class TreeTest {
 
     @Test
-    public void element() {
+    public void node() {
         HTML html = new HTML() {
             {
                 $("html");
@@ -35,7 +41,7 @@ public class TreeTest {
     }
 
     @Test
-    public void elementNest() {
+    public void nodeNest() {
         HTML html = new HTML() {
             {
                 $("html", () -> {
@@ -47,7 +53,7 @@ public class TreeTest {
     }
 
     @Test
-    public void elements() {
+    public void nodes() {
         HTML html = new HTML() {
             {
                 $("div");
@@ -118,15 +124,188 @@ public class TreeTest {
     }
 
     @Test
-    public void contentsIterable() {
+    public void attributes2() {
         HTML html = new HTML() {
             {
-                $("ol", $(list("A", "B"), item -> {
-                    $("li", () -> text(item));
+                $("num", attr(1), attr(2), () -> {
+                    $("ok");
+                });
+            }
+        };
+        assert html.toString().equals("<num 1 2><ok/></num>");
+    }
+
+    @Test
+    public void attributes3() {
+        HTML html = new HTML() {
+            {
+                $("num", attr(1), attr(2), attr(3), () -> {
+                    $("ok");
+                });
+            }
+        };
+        assert html.toString().equals("<num 1 2 3><ok/></num>");
+    }
+
+    @Test
+    public void attributes4() {
+        HTML html = new HTML() {
+            {
+                $("num", attr(1), attr(2), attr(3), attr(4), () -> {
+                    $("ok");
+                });
+            }
+        };
+        assert html.toString().equals("<num 1 2 3 4><ok/></num>");
+    }
+
+    @Test
+    public void whenBoolean() {
+        boolean ok = true;
+        boolean fail = false;
+
+        HTML html = new HTML() {
+            {
+                $("num", iｆ(ok, attr(1)), iｆ(fail, attr(2)));
+            }
+        };
+        assert html.toString().equals("<num 1/>");
+    }
+
+    @Test
+    public void whenSupplier() {
+        Supplier<Boolean> ok = () -> true;
+        Supplier<Boolean> fail = () -> false;
+        Supplier<Boolean> nul = null;
+        Supplier<Boolean> empty = () -> null;
+
+        HTML html = new HTML() {
+            {
+                $("num", iｆ(ok, attr(1)), iｆ(fail, attr(2)), iｆ(nul, attr(3)), iｆ(empty, attr(4)));
+            }
+        };
+        assert html.toString().equals("<num 1/>");
+    }
+
+    @Test
+    public void whenProperty() {
+        BooleanProperty ok = new SimpleBooleanProperty(true);
+        BooleanProperty fail = new SimpleBooleanProperty(false);
+        BooleanProperty nul = null;
+        Property<Boolean> empty = new SimpleObjectProperty(null);
+
+        HTML html = new HTML() {
+            {
+                $("num", iｆ(ok, attr(1)), iｆ(fail, attr(2)), iｆ(nul, attr(3)), iｆ(empty, attr(4)));
+            }
+        };
+        assert html.toString().equals("<num 1/>");
+    }
+
+    @Test
+    public void forRange() {
+        HTML html = new HTML() {
+            {
+                $("ol", foŕ(2, index -> {
+                    $("li", () -> text(index));
                 }));
+
+            }
+        };
+        assert html.toString().equals("<ol><li>0</li><li>1</li></ol>");
+    }
+
+    @Test
+    public void forRangeWithInitial() {
+        HTML html = new HTML() {
+            {
+                $("ol", foŕ(1, 3, index -> {
+                    $("li", () -> text(index));
+                }));
+
+            }
+        };
+        assert html.toString().equals("<ol><li>1</li><li>2</li></ol>");
+    }
+
+    @Test
+    public void forEnumType() {
+        HTML html = new HTML() {
+            {
+                $("ol", foŕ(ENUM.class, value -> {
+                    $("li", () -> text(value.name()));
+                }));
+
             }
         };
         assert html.toString().equals("<ol><li>A</li><li>B</li></ol>");
+    }
+
+    /**
+     * @version 2017/02/08 14:04:08
+     */
+    private static enum ENUM {
+        A, B;
+    }
+
+    @Test
+    public void forArray() {
+        String[] array = {"A", "B"};
+
+        HTML html = new HTML() {
+            {
+                $("ol", foŕ(array, value -> {
+                    $("li", () -> text(value));
+                }));
+
+            }
+        };
+        assert html.toString().equals("<ol><li>A</li><li>B</li></ol>");
+    }
+
+    @Test
+    public void forIterableConsumer() {
+        HTML html = new HTML() {
+            {
+                $("ol", foŕ(list("A", "B"), item -> {
+                    $("li", () -> text(item));
+                }));
+
+            }
+        };
+        assert html.toString().equals("<ol><li>A</li><li>B</li></ol>");
+    }
+
+    @Test
+    public void forIterableConsumerWithIndex() {
+        HTML html = new HTML() {
+            {
+                $("ol", foŕ(list("A", "B"), (id, item) -> {
+                    $("li", () -> text(item + id));
+                }));
+            }
+        };
+        assert html.toString().equals("<ol><li>A0</li><li>B1</li></ol>");
+    }
+
+    @Test
+    public void forIterableFunction() {
+        HTML html = new HTML() {
+            {
+                $("div", foŕ(list("a", "b"), Clazz::new));
+            }
+        };
+        assert html.toString().equals("<div class='a b'/>");
+    }
+
+    @Test
+    public void forIterableFunctionWithIndex() {
+        HTML html = new HTML() {
+            {
+                $("div", foŕ(list("a", "b"), Clazz::withId));
+            }
+        };
+        assert html.toString().equals("<div class='a0 b1'/>");
     }
 
     /**
@@ -139,6 +318,36 @@ public class TreeTest {
      */
     private <T> List<T> list(T... names) {
         return Arrays.asList(names);
+    }
+
+    /**
+     * @version 2017/02/08 11:33:04
+     */
+    public static class Clazz implements Consumer<ElementNode> {
+
+        private String value;
+
+        private Clazz(String value) {
+            this.value = value;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void accept(ElementNode context) {
+            for (kiss.tree.TreeTest.HTML.AttributeNode node : context.attrs) {
+                if (node.name.equals("class")) {
+                    node.value += " " + value;
+                    return;
+                }
+            }
+            context.attrs.add(new kiss.tree.TreeTest.HTML.AttributeNode("class", value));
+        }
+
+        public static Clazz withId(int id, String value) {
+            return new Clazz(value + id);
+        }
     }
 
     @Test
@@ -198,7 +407,7 @@ public class TreeTest {
          * 
          * @param name An attribute name.
          */
-        protected final Consumer attr(String name) {
+        protected final Consumer attr(Object name) {
             return attr(name, null);
         }
 
@@ -209,10 +418,14 @@ public class TreeTest {
          * 
          * @param name An attribute name.
          */
-        protected final Consumer attr(String name, String value) {
+        protected final Consumer attr(Object name, String value) {
             return context -> {
-                if (name != null && !name.isEmpty()) {
-                    $(new AttributeNode(name, value));
+                if (name != null) {
+                    String n = String.valueOf(name);
+
+                    if (!n.isEmpty()) {
+                        $(new AttributeNode(n, value));
+                    }
                 }
             };
         }
@@ -224,8 +437,8 @@ public class TreeTest {
          * 
          * @param text A text.
          */
-        protected final void text(String text) {
-            $(new TextNode(text));
+        protected final void text(Object text) {
+            $(new TextNode(String.valueOf(text)));
         }
 
         /**
@@ -235,7 +448,7 @@ public class TreeTest {
         public String toString() {
             StringBuilder builder = new StringBuilder();
 
-            for (ElementNode node : root()) {
+            for (ElementNode node : root) {
                 builder.append(node);
             }
             return builder.toString();
@@ -336,9 +549,9 @@ public class TreeTest {
          */
         private static class AttributeNode implements Consumer<ElementNode> {
 
-            private final String name;
+            private String name;
 
-            private final String value;
+            private String value;
 
             /**
              * @param name
