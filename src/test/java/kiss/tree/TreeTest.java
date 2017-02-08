@@ -12,10 +12,10 @@ package kiss.tree;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import kiss.Declarable;
 import kiss.Tree;
 import kiss.tree.TreeTest.HTML.ElementNode;
 
@@ -142,7 +142,7 @@ public class TreeTest {
     }
 
     @Test
-    public void outerDefinedDeclarable() {
+    public void outerDefinedConsumer() {
         HTML html = new HTML() {
             {
                 $("div", new Id("ok"));
@@ -154,7 +154,7 @@ public class TreeTest {
     /**
      * @version 2017/02/07 11:43:11
      */
-    public static class Id implements Declarable<ElementNode> {
+    public static class Id implements Consumer<ElementNode> {
 
         public final String id;
 
@@ -169,7 +169,7 @@ public class TreeTest {
          * {@inheritDoc}
          */
         @Override
-        public void declare(ElementNode context) {
+        public void accept(ElementNode context) {
         }
     }
 
@@ -182,34 +182,34 @@ public class TreeTest {
          * 
          */
         public HTML() {
-            super(ElementNode::new, (context, declarable) -> {
-                if (declarable instanceof Id) {
-                    context.attrs.add(new AttributeNode("id", ((Id) declarable).id));
+            super(ElementNode::new, (context, Consumer) -> {
+                if (Consumer instanceof Id) {
+                    context.attrs.add(new AttributeNode("id", ((Id) Consumer).id));
                 } else {
-                    declarable.declare(context);
+                    Consumer.accept(context);
                 }
             });
         }
 
         /**
          * <p>
-         * Declare node attribute with name.
+         * accept node attribute with name.
          * </p>
          * 
          * @param name An attribute name.
          */
-        protected final Declarable attr(String name) {
+        protected final Consumer attr(String name) {
             return attr(name, null);
         }
 
         /**
          * <p>
-         * Declare node attribute with name.
+         * accept node attribute with name.
          * </p>
          * 
          * @param name An attribute name.
          */
-        protected final Declarable attr(String name, String value) {
+        protected final Consumer attr(String name, String value) {
             return context -> {
                 if (name != null && !name.isEmpty()) {
                     $(new AttributeNode(name, value));
@@ -219,7 +219,7 @@ public class TreeTest {
 
         /**
          * <p>
-         * Declare text node.
+         * accept text node.
          * </p>
          * 
          * @param text A text.
@@ -244,7 +244,7 @@ public class TreeTest {
         /**
          * @version 2017/02/06 16:02:42
          */
-        public static class ElementNode implements Declarable<ElementNode> {
+        public static class ElementNode implements Consumer<ElementNode> {
 
             protected String name;
 
@@ -263,7 +263,7 @@ public class TreeTest {
              * {@inheritDoc}
              */
             @Override
-            public void declare(ElementNode context) {
+            public void accept(ElementNode context) {
                 context.children.add(this);
             }
 
@@ -303,7 +303,7 @@ public class TreeTest {
         /**
          * @version 2017/02/06 15:52:47
          */
-        private static class TextNode implements Declarable<ElementNode> {
+        private static class TextNode implements Consumer<ElementNode> {
 
             private final String text;
 
@@ -318,7 +318,7 @@ public class TreeTest {
              * {@inheritDoc}
              */
             @Override
-            public void declare(ElementNode context) {
+            public void accept(ElementNode context) {
                 context.children.add(this);
             }
 
@@ -334,7 +334,7 @@ public class TreeTest {
         /**
          * @version 2017/02/06 16:12:23
          */
-        private static class AttributeNode implements Declarable<ElementNode> {
+        private static class AttributeNode implements Consumer<ElementNode> {
 
             private final String name;
 
@@ -353,7 +353,7 @@ public class TreeTest {
              * {@inheritDoc}
              */
             @Override
-            public void declare(ElementNode context) {
+            public void accept(ElementNode context) {
                 context.attrs.add(this);
             }
 

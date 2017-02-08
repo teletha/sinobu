@@ -18,9 +18,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * @version 2017/02/08 9:12:12
+ * @version 2017/02/08 11:17:30
  */
-public abstract class Tree<N extends Declarable<N>> {
+public abstract class Tree<N extends Consumer<N>> {
 
     /** The root nodes. */
     private final List<N> root = new ArrayList(1);
@@ -29,7 +29,7 @@ public abstract class Tree<N extends Declarable<N>> {
     private final ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder;
 
     /** The child node creator. */
-    private final BiConsumer<N, Declarable> relationshipBuilder;
+    private final BiConsumer<N, Consumer> relationshipBuilder;
 
     /** The current processing node. */
     private N current;
@@ -49,7 +49,7 @@ public abstract class Tree<N extends Declarable<N>> {
      *            unique id.
      * @param relationshipBuilder A builder for parent-child node relationship.
      */
-    protected Tree(ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder, BiConsumer<N, Declarable> relationshipBuilder) {
+    protected Tree(ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder, BiConsumer<N, Consumer> relationshipBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
         this.relationshipBuilder = Objects.requireNonNull(relationshipBuilder);
     }
@@ -63,9 +63,9 @@ public abstract class Tree<N extends Declarable<N>> {
      * Declare nodes.
      * </p>
      * 
-     * @param nodes A list of following {@link Declarable} node.
+     * @param nodes A list of following {@link Consumer} node.
      */
-    protected final void $(Declarable<N>... nodes) {
+    protected final void $(Consumer<N>... nodes) {
         $((N) null, nodes);
     }
 
@@ -78,9 +78,9 @@ public abstract class Tree<N extends Declarable<N>> {
      * </p>
      * 
      * @param name A name of new node.
-     * @param nodes A list of following {@link Declarable} node.
+     * @param nodes A list of following {@link Consumer} node.
      */
-    protected final void $(String name, Declarable<N>... nodes) {
+    protected final void $(String name, Consumer<N>... nodes) {
         $(namedNodeBuilder.apply(name, contenxtModifier, context), nodes);
     }
 
@@ -93,7 +93,7 @@ public abstract class Tree<N extends Declarable<N>> {
      * </p>
      * 
      * @param name A name of new node.
-     * @param nest A list of following {@link Declarable} node by lambda expression.
+     * @param nest A list of following {@link Consumer} node by lambda expression.
      */
     protected final void $(String name, Runnable nest) {
         $(name, null, nest);
@@ -109,9 +109,9 @@ public abstract class Tree<N extends Declarable<N>> {
      * 
      * @param name A name of new node.
      * @param one A following node.
-     * @param nest A list of following {@link Declarable} node by lambda expression.
+     * @param nest A list of following {@link Consumer} node by lambda expression.
      */
-    protected final void $(String name, Declarable<N> one, Runnable nest) {
+    protected final void $(String name, Consumer<N> one, Runnable nest) {
         $(name, one, null, null, null, nest);
     }
 
@@ -126,9 +126,9 @@ public abstract class Tree<N extends Declarable<N>> {
      * @param name A name of new node.
      * @param one A following node.
      * @param two A following node.
-     * @param nest A list of following {@link Declarable} node by lambda expression.
+     * @param nest A list of following {@link Consumer} node by lambda expression.
      */
-    protected final void $(String name, Declarable<N> one, Declarable<N> two, Runnable nest) {
+    protected final void $(String name, Consumer<N> one, Consumer<N> two, Runnable nest) {
         $(name, one, two, null, null, nest);
     }
 
@@ -144,9 +144,9 @@ public abstract class Tree<N extends Declarable<N>> {
      * @param one A following node.
      * @param two A following node.
      * @param three A following node.
-     * @param nest A list of following {@link Declarable} node by lambda expression.
+     * @param nest A list of following {@link Consumer} node by lambda expression.
      */
-    protected final void $(String name, Declarable<N> one, Declarable<N> two, Declarable<N> three, Runnable nest) {
+    protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Runnable nest) {
         $(name, one, two, three, null, nest);
     }
 
@@ -163,10 +163,10 @@ public abstract class Tree<N extends Declarable<N>> {
      * @param two A following node.
      * @param three A following node.
      * @param four A following node.
-     * @param nest A list of following {@link Declarable} node by lambda expression.
+     * @param nest A list of following {@link Consumer} node by lambda expression.
      */
-    protected final void $(String name, Declarable<N> one, Declarable<N> two, Declarable<N> three, Declarable<N> four, Runnable nest) {
-        $(namedNodeBuilder.apply(name, contenxtModifier, context), new Declarable[] {one, two, three, four, e -> {
+    protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Consumer<N> four, Runnable nest) {
+        $(namedNodeBuilder.apply(name, contenxtModifier, context), new Consumer[] {one, two, three, four, e -> {
             if (nest != null) nest.run();
         }});
     }
@@ -179,7 +179,7 @@ public abstract class Tree<N extends Declarable<N>> {
      * @param node A child node.
      * @param followers
      */
-    private final void $(N node, Declarable<N>... followers) {
+    private final void $(N node, Consumer<N>... followers) {
         // store parent context
         N parentNode = current;
 
@@ -195,9 +195,9 @@ public abstract class Tree<N extends Declarable<N>> {
         }
 
         if (followers != null) {
-            for (Declarable<N> declarable : followers) {
-                if (declarable != null) {
-                    relationshipBuilder.accept(current, declarable);
+            for (Consumer<N> Consumer : followers) {
+                if (Consumer != null) {
+                    relationshipBuilder.accept(current, Consumer);
                 }
             }
         }
@@ -215,7 +215,7 @@ public abstract class Tree<N extends Declarable<N>> {
      * @param generator A content generator.
      * @return A declaration of contents.
      */
-    protected final <C> Declarable<N> $(Iterable<C> children, Consumer<C> generator) {
+    protected final <C> Consumer<N> $(Iterable<C> children, Consumer<C> generator) {
         return $(children, (index, child) -> {
             return current -> generator.accept(child);
         });
@@ -230,7 +230,7 @@ public abstract class Tree<N extends Declarable<N>> {
      * @param generator A content generator.
      * @return A declaration of contents.
      */
-    protected final <C> Declarable<N> $(Iterable<C> children, Function<C, Declarable<N>> generator) {
+    protected final <C> Consumer<N> $(Iterable<C> children, Function<C, Consumer<N>> generator) {
         return $(children, (index, child) -> {
             return generator.apply(child);
         });
@@ -245,7 +245,7 @@ public abstract class Tree<N extends Declarable<N>> {
      * @param generator A content generator.
      * @return A declaration of contents.
      */
-    protected final <C> Declarable<N> $(Iterable<C> children, BiConsumer<Integer, C> generator) {
+    protected final <C> Consumer<N> $(Iterable<C> children, BiConsumer<Integer, C> generator) {
         return $(children, (index, child) -> {
             return current -> generator.accept(index, child);
         });
@@ -260,7 +260,7 @@ public abstract class Tree<N extends Declarable<N>> {
      * @param generator A content generator.
      * @return A declaration of contents.
      */
-    protected final <C> Declarable<N> $(Iterable<C> children, BiFunction<Integer, C, Declarable<N>> generator) {
+    protected final <C> Consumer<N> $(Iterable<C> children, BiFunction<Integer, C, Consumer<N>> generator) {
         return current -> {
             // store parent context
             Object parentContext = context;
@@ -270,7 +270,7 @@ public abstract class Tree<N extends Declarable<N>> {
             for (C child : children) {
                 context = child;
                 contenxtModifier = (Objects.hash(child) + 117) ^ 31;
-                generator.apply(index++, child).declare(current);
+                generator.apply(index++, child).accept(current);
             }
 
             // restore parent context
