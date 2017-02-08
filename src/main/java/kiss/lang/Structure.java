@@ -61,17 +61,13 @@ public abstract class Structure<N extends Declarable<N>> {
 
     /**
      * <p>
-     * Declare node with name.
-     * </p>
-     * <p>
-     * Generic named node builder because named node is frequently used in tree structure.
+     * Declare nodes.
      * </p>
      * 
-     * @param name A name of new node.
-     * @param followers A list of following {@link Declarable} node.
+     * @param nodes A list of following {@link Declarable} node.
      */
-    protected final void e(String name, Declarable<N>... followers) {
-        $(namedNodeBuilder.apply(name), followers);
+    protected final void $(Declarable<N>... nodes) {
+        $((N) null, nodes);
     }
 
     /**
@@ -83,29 +79,114 @@ public abstract class Structure<N extends Declarable<N>> {
      * </p>
      * 
      * @param name A name of new node.
-     * @param followers A list of following {@link Declarable} node.
+     * @param nodes A list of following {@link Declarable} node.
      */
-    protected final void e(String name, Runnable nest) {
-        e(name, null, nest);
+    protected final void $(String name, Declarable<N>... nodes) {
+        $(namedNodeBuilder.apply(name), nodes);
     }
 
-    protected final <D extends Declarable<ElementNode>> void e(String name, D one, Runnable nest) {
-        e(name, one, null, null, null, null, nest);
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param nest A list of following {@link Declarable} node by lambda expression.
+     */
+    protected final void $(String name, Runnable nest) {
+        $(name, null, nest);
     }
 
-    protected final <D extends Declarable<ElementNode>> void e(String name, D one, D two, Runnable nest) {
-        e(name, one, two, null, null, null, nest);
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param one A following node.
+     * @param nest A list of following {@link Declarable} node by lambda expression.
+     */
+    protected final <D extends Declarable<ElementNode>> void $(String name, D one, Runnable nest) {
+        $(name, one, null, null, null, null, nest);
     }
 
-    protected final <D extends Declarable<ElementNode>> void e(String name, D one, D two, D three, Runnable nest) {
-        e(name, one, two, three, null, null, nest);
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param one A following node.
+     * @param two A following node.
+     * @param nest A list of following {@link Declarable} node by lambda expression.
+     */
+    protected final <D extends Declarable<ElementNode>> void $(String name, D one, D two, Runnable nest) {
+        $(name, one, two, null, null, null, nest);
     }
 
-    protected final <D extends Declarable<ElementNode>> void e(String name, D one, D two, D three, D four, Runnable nest) {
-        e(name, one, two, three, four, null, nest);
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param one A following node.
+     * @param two A following node.
+     * @param three A following node.
+     * @param nest A list of following {@link Declarable} node by lambda expression.
+     */
+    protected final <D extends Declarable<ElementNode>> void $(String name, D one, D two, D three, Runnable nest) {
+        $(name, one, two, three, null, null, nest);
     }
 
-    protected final <D extends Declarable<ElementNode>> void e(String name, D one, D two, D three, D four, D five, Runnable children) {
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param one A following node.
+     * @param two A following node.
+     * @param three A following node.
+     * @param four A following node.
+     * @param nest A list of following {@link Declarable} node by lambda expression.
+     */
+    protected final <D extends Declarable<ElementNode>> void $(String name, D one, D two, D three, D four, Runnable nest) {
+        $(name, one, two, three, four, null, nest);
+    }
+
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param one A following node.
+     * @param two A following node.
+     * @param three A following node.
+     * @param four A following node.
+     * @param five A following node.
+     * @param nest A list of following {@link Declarable} node by lambda expression.
+     */
+    protected final <D extends Declarable<ElementNode>> void $(String name, D one, D two, D three, D four, D five, Runnable children) {
         $(namedNodeBuilder.apply(name), new Declarable[] {one, two, three, four, five, e -> {
             if (children != null) children.run();
         }});
@@ -119,7 +200,7 @@ public abstract class Structure<N extends Declarable<N>> {
      * @param node A child node.
      * @param followers
      */
-    protected final void $(N node, Declarable<N>... followers) {
+    private final void $(N node, Declarable<N>... followers) {
         // store parent context
         N parentNode = current;
 

@@ -16,7 +16,7 @@ import kiss.lang.HTML.ElementNode;
 import kiss.lang.StructureTest.Id;
 
 /**
- * @version 2017/02/06 14:01:17
+ * @version 2017/02/08 9:40:08
  */
 public abstract class HTML extends Structure<ElementNode> {
 
@@ -39,7 +39,6 @@ public abstract class HTML extends Structure<ElementNode> {
      * </p>
      * 
      * @param name An attribute name.
-     * @return
      */
     protected final Declarable attr(String name) {
         return attr(name, null);
@@ -51,18 +50,24 @@ public abstract class HTML extends Structure<ElementNode> {
      * </p>
      * 
      * @param name An attribute name.
-     * @return
      */
     protected final Declarable attr(String name, String value) {
         return (context) -> {
             if (name != null && !name.isEmpty()) {
-                $(null, new AttributeNode(name, value));
+                $(new AttributeNode(name, value));
             }
         };
     }
 
-    protected void text(String text) {
-        $(null, new TextNode(text));
+    /**
+     * <p>
+     * Declare text node.
+     * </p>
+     * 
+     * @param text A text.
+     */
+    protected final void text(String text) {
+        $(new TextNode(text));
     }
 
     /**

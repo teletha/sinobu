@@ -25,7 +25,7 @@ public class StructureTest {
     public void element() {
         HTML html = new HTML() {
             {
-                e("html");
+                $("html");
             }
         };
         assert html.toString().equals("<html/>");
@@ -35,8 +35,8 @@ public class StructureTest {
     public void elementNest() {
         HTML html = new HTML() {
             {
-                e("html", () -> {
-                    e("body");
+                $("html", () -> {
+                    $("body");
                 });
             }
         };
@@ -47,8 +47,8 @@ public class StructureTest {
     public void elements() {
         HTML html = new HTML() {
             {
-                e("div");
-                e("div");
+                $("div");
+                $("div");
             }
         };
         assert html.toString().equals("<div/><div/>");
@@ -58,7 +58,7 @@ public class StructureTest {
     public void attribute() {
         HTML html = new HTML() {
             {
-                e("div", attr("id", "test"));
+                $("div", attr("id", "test"));
             }
         };
         assert html.toString().equals("<div id='test'/>");
@@ -68,7 +68,7 @@ public class StructureTest {
     public void attributeNullName() {
         HTML html = new HTML() {
             {
-                e("div", attr(null, "ok"));
+                $("div", attr(null, "ok"));
             }
         };
         assert html.toString().equals("<div/>");
@@ -78,7 +78,7 @@ public class StructureTest {
     public void attributeEmptyName() {
         HTML html = new HTML() {
             {
-                e("div", attr("", "ok"));
+                $("div", attr("", "ok"));
             }
         };
         assert html.toString().equals("<div/>");
@@ -88,7 +88,7 @@ public class StructureTest {
     public void attributeNullValue() {
         HTML html = new HTML() {
             {
-                e("input", attr("checked", null));
+                $("input", attr("checked", null));
             }
         };
         assert html.toString().equals("<input checked/>");
@@ -98,7 +98,7 @@ public class StructureTest {
     public void attributeEmptyValue() {
         HTML html = new HTML() {
             {
-                e("div", attr("id", ""));
+                $("div", attr("id", ""));
             }
         };
         assert html.toString().equals("<div id=''/>");
@@ -108,7 +108,7 @@ public class StructureTest {
     public void attributeWithoutValue() {
         HTML html = new HTML() {
             {
-                e("input", attr("checked"));
+                $("input", attr("checked"));
             }
         };
         assert html.toString().equals("<input checked/>");
@@ -118,8 +118,8 @@ public class StructureTest {
     public void contentsIterable() {
         HTML html = new HTML() {
             {
-                e("ol", $(list("A", "B"), item -> {
-                    e("li", () -> text(item));
+                $("ol", $(list("A", "B"), item -> {
+                    $("li", () -> text(item));
                 }));
             }
         };
