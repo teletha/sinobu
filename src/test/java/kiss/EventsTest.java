@@ -762,6 +762,25 @@ public class EventsTest {
     }
 
     @Test
+    public void on() throws Exception {
+        String mainThread = Thread.currentThread().getName();
+        EventFacade<Integer, String> facade = new EventFacade<>(events -> events.map(v -> mainThread)
+                .on(this::runOtherThread)
+                .map(v -> v + " - " + Thread.currentThread().getName()));
+
+        facade.emit(10);
+        chronus.freeze(10);
+        assert facade.retrieve().equals(mainThread + " - other");
+    }
+
+    private void runOtherThread(Runnable action) {
+        Thread thread = new Thread(action);
+        thread.setName("other");
+        thread.start();
+
+    }
+
+    @Test
     public void repeat() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.skip(1).take(1).repeat());
 

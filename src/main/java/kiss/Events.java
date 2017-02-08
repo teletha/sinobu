@@ -1092,6 +1092,27 @@ public class Events<V> {
 
     /**
      * <p>
+     * Switch event stream context.
+     * </p>
+     * 
+     * @param scheduler A new context
+     * @return Chainable API.
+     */
+    public final Events<V> on(Consumer<Runnable> scheduler) {
+        // ignore invalid parameters
+        if (scheduler == null) {
+            return this;
+        }
+
+        return new Events<>(observer -> to(v -> {
+            scheduler.accept(() -> {
+                observer.accept(v);
+            });
+        }));
+    }
+
+    /**
+     * <p>
      * Generates an {@link Events} sequence that repeats the given value infinitely.
      * </p>
      *
