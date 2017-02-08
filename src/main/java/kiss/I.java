@@ -520,6 +520,54 @@ public class I implements ClassListener<Extensible> {
 
     /**
      * <p>
+     * Bundle all given funcitons into single function.
+     * </p>
+     * 
+     * @param functions A list of functions to bundle.
+     * @return A bundled function.
+     */
+    public static Runnable bundle(Runnable... functions) {
+        return () -> {
+            for (Runnable function : functions) {
+                function.run();
+            }
+        };
+    }
+
+    /**
+     * <p>
+     * Bundle all given funcitons into single function.
+     * </p>
+     * 
+     * @param functions A list of functions to bundle.
+     * @return A bundled function.
+     */
+    public static <T> Consumer<T> bundle(Consumer<T>... functions) {
+        return c -> {
+            for (Consumer<T> function : functions) {
+                function.accept(c);
+            }
+        };
+    }
+
+    /**
+     * <p>
+     * Bundle all given funcitons into single function.
+     * </p>
+     * 
+     * @param functions A list of functions to bundle.
+     * @return A bundled function.
+     */
+    public static <P, Q> BiConsumer<P, Q> bundle(BiConsumer<P, Q>... functions) {
+        return (p, q) -> {
+            for (BiConsumer<P, Q> function : functions) {
+                function.accept(p, q);
+            }
+        };
+    }
+
+    /**
+     * <p>
      * Note : This method closes both input and output stream carefully.
      * </p>
      * <p>
@@ -2045,7 +2093,7 @@ public class I implements ClassListener<Extensible> {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {

@@ -386,7 +386,7 @@ public abstract class Tree<N extends Consumer<N>> {
             for (C child : contents) {
                 context = child;
                 modifier = (Objects.hash(child) + 117) ^ 31;
-                writer.apply(index++, child).accept(current);
+                $(writer.apply(index++, child));
             }
 
             // restore parent context
@@ -404,8 +404,8 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param nodes A list of successible nodes.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> iｆ(ReadOnlyProperty<Boolean> condition, Consumer... success) {
-        return iｆ(condition != null && Boolean.TRUE.equals(condition.getValue()), success);
+    protected final Consumer<N> iｆ(ReadOnlyProperty<Boolean> condition, Consumer<N>... success) {
+        return either(condition, I.bundle(success), null);
     }
 
     /**
@@ -417,8 +417,8 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param nodes A list of successible nodes.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> iｆ(Supplier<Boolean> condition, Consumer... success) {
-        return iｆ(condition != null && Boolean.TRUE.equals(condition.get()), success);
+    protected final Consumer<N> iｆ(Supplier<Boolean> condition, Consumer<N>... success) {
+        return either(condition, I.bundle(success), null);
     }
 
     /**
@@ -430,9 +430,69 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param nodes A list of successible nodes.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> iｆ(boolean condition, Consumer... success) {
+    protected final Consumer<N> iｆ(boolean condition, Consumer<N>... success) {
+        return either(condition, success, null);
+    }
+
+    /**
+     * <p>
+     * Conditional writer.
+     * </p>
+     * 
+     * @param condition A condition.
+     * @param success A success node.
+     * @param failure A failure node.
+     * @return A declaration of contents.
+     */
+    protected final Consumer<N> either(ReadOnlyProperty<Boolean> condition, Consumer<N> success, Consumer<N> failure) {
+        return either(condition != null && Boolean.TRUE.equals(condition.getValue()), success, failure);
+    }
+
+    /**
+     * <p>
+     * Conditional writer.
+     * </p>
+     * 
+     * @param condition A condition.
+     * @param success A success node.
+     * @param failure A failure node.
+     * @return A declaration of contents.
+     */
+    protected final Consumer<N> either(Supplier<Boolean> condition, Consumer<N> success, Consumer<N> failure) {
+        return either(condition != null && Boolean.TRUE.equals(condition.get()), success, failure);
+    }
+
+    /**
+     * <p>
+     * Conditional writer.
+     * </p>
+     * 
+     * @param condition A condition.
+     * @param success A success node.
+     * @param failure A failure node.
+     * @return A declaration of contents.
+     */
+    protected final Consumer<N> either(boolean condition, Consumer<N> success, Consumer<N> failure) {
+        return either(condition, new Consumer[] {success}, failure);
+    }
+
+    /**
+     * <p>
+     * Conditional writer.
+     * </p>
+     * 
+     * @param condition A condition.
+     * @param success A success node.
+     * @param failure A failure node.
+     * @return A declaration of contents.
+     */
+    private final Consumer<N> either(boolean condition, Consumer<N>[] success, Consumer<N> failure) {
         return current -> {
-            if (condition) $(success);
+            if (condition) {
+                $(success);
+            } else {
+                $(failure);
+            }
         };
     }
 }

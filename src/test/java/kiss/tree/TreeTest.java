@@ -160,7 +160,7 @@ public class TreeTest {
     }
 
     @Test
-    public void whenBoolean() {
+    public void ifBoolean() {
         boolean ok = true;
         boolean fail = false;
 
@@ -173,7 +173,7 @@ public class TreeTest {
     }
 
     @Test
-    public void whenSupplier() {
+    public void ifSupplier() {
         Supplier<Boolean> ok = () -> true;
         Supplier<Boolean> fail = () -> false;
         Supplier<Boolean> nul = null;
@@ -188,7 +188,7 @@ public class TreeTest {
     }
 
     @Test
-    public void whenProperty() {
+    public void ifProperty() {
         BooleanProperty ok = new SimpleBooleanProperty(true);
         BooleanProperty fail = new SimpleBooleanProperty(false);
         BooleanProperty nul = null;
@@ -200,6 +200,16 @@ public class TreeTest {
             }
         };
         assert html.toString().equals("<num 1/>");
+    }
+
+    @Test
+    public void either() {
+        HTML html = new HTML() {
+            {
+                $("num", either(true, attr(1), attr(-1)), either(false, attr(2), attr(-2)));
+            }
+        };
+        assert html.toString().equals("<num 1 -2/>");
     }
 
     @Test
@@ -292,20 +302,54 @@ public class TreeTest {
     public void forIterableFunction() {
         HTML html = new HTML() {
             {
-                $("div", foŕ(list("a", "b"), Clazz::new));
+                $("div", foŕ(list("a", "b"), Id::new));
             }
         };
-        assert html.toString().equals("<div class='a b'/>");
+        assert html.toString().equals("<div id='a' id='b'/>");
     }
 
     @Test
     public void forIterableFunctionWithIndex() {
         HTML html = new HTML() {
             {
-                $("div", foŕ(list("a", "b"), Clazz::withId));
+                $("ol", foŕ(list("a", "b"), ListItem::new));
             }
         };
-        assert html.toString().equals("<div class='a0 b1'/>");
+        assert html.toString().equals("<ol><li>a0</li><li>b1</li></ol>");
+    }
+
+    /**
+     * @version 2017/02/08 16:44:25
+     */
+    private static class ListItem implements Consumer<ElementNode> {
+
+        private int index;
+
+        private String name;
+
+        /**
+         * @param index
+         * @param name
+         */
+        private ListItem(int index, String name) {
+            this.index = index;
+            this.name = name;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void accept(ElementNode context) {
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            return name + index;
+        }
     }
 
     /**
@@ -318,36 +362,6 @@ public class TreeTest {
      */
     private <T> List<T> list(T... names) {
         return Arrays.asList(names);
-    }
-
-    /**
-     * @version 2017/02/08 11:33:04
-     */
-    public static class Clazz implements Consumer<ElementNode> {
-
-        private String value;
-
-        private Clazz(String value) {
-            this.value = value;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void accept(ElementNode context) {
-            for (kiss.tree.TreeTest.HTML.AttributeNode node : context.attrs) {
-                if (node.name.equals("class")) {
-                    node.value += " " + value;
-                    return;
-                }
-            }
-            context.attrs.add(new kiss.tree.TreeTest.HTML.AttributeNode("class", value));
-        }
-
-        public static Clazz withId(int id, String value) {
-            return new Clazz(value + id);
-        }
     }
 
     @Test
@@ -391,11 +405,15 @@ public class TreeTest {
          * 
          */
         public HTML() {
-            super(ElementNode::new, (context, Consumer) -> {
-                if (Consumer instanceof Id) {
-                    context.attrs.add(new AttributeNode("id", ((Id) Consumer).id));
+            super(ElementNode::new, (context, node) -> {
+                if (node instanceof Id) {
+                    context.attrs.add(new AttributeNode("id", ((Id) node).id));
+                } else if (node instanceof ListItem) {
+                    ElementNode e = new ElementNode("li", 0, node);
+                    e.children.add(new TextNode(node));
+                    context.children.add(e);
                 } else {
-                    Consumer.accept(context);
+                    node.accept(context);
                 }
             });
         }
@@ -523,8 +541,8 @@ public class TreeTest {
             /**
              * @param text
              */
-            private TextNode(String text) {
-                this.text = text;
+            private TextNode(Object text) {
+                this.text = String.valueOf(text);
             }
 
             /**
