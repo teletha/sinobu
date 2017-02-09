@@ -24,6 +24,7 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
@@ -54,7 +55,7 @@ import kiss.Ⅲ;
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
  * </p>
  * 
- * @version 2016/05/04 1:25:12
+ * @version 2017/02/09 20:47:50
  */
 public class Model<M> {
 
@@ -97,42 +98,44 @@ public class Model<M> {
             Map<String, Method[]> candidates = new HashMap();
 
             for (Class clazz : Model.collectTypes(type)) {
-                for (Method method : clazz.getDeclaredMethods()) {
-                    // exclude the method which modifier is final, static, private or native
-                    if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
-                        // exclude the method which is created by compiler
-                        if (!method.isBridge() && !method.isSynthetic()) {
-                            // if (method.getAnnotations().length != 0) {
-                            // intercepts.add(method);
-                            // }
+                if (!Proxy.isProxyClass(clazz)) {
+                    for (Method method : clazz.getDeclaredMethods()) {
+                        // exclude the method which modifier is final, static, private or native
+                        if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
+                            // exclude the method which is created by compiler
+                            if (!method.isBridge() && !method.isSynthetic()) {
+                                // if (method.getAnnotations().length != 0) {
+                                // intercepts.add(method);
+                                // }
 
-                            int length = 1;
-                            String prefix = "set";
-                            String name = method.getName();
+                                int length = 1;
+                                String prefix = "set";
+                                String name = method.getName();
 
-                            if (method.getGenericReturnType() != Void.TYPE) {
-                                length = 0;
-                                prefix = name.charAt(0) == 'i' ? "is" : "get";
-                            }
+                                if (method.getGenericReturnType() != Void.TYPE) {
+                                    length = 0;
+                                    prefix = name.charAt(0) == 'i' ? "is" : "get";
+                                }
 
-                            // exclude the method (by name)
-                            if (prefix.length() < name.length() && name.startsWith(prefix) && !Character
-                                    .isLowerCase(name.charAt(prefix.length()))) {
-                                // exclude the method (by parameter signature)
-                                if (method.getGenericParameterTypes().length == length) {
-                                    // compute property name
-                                    name = Introspector.decapitalize(name.substring(prefix.length()));
+                                // exclude the method (by name)
+                                if (prefix.length() < name.length() && name.startsWith(prefix) && !Character
+                                        .isLowerCase(name.charAt(prefix.length()))) {
+                                    // exclude the method (by parameter signature)
+                                    if (method.getGenericParameterTypes().length == length) {
+                                        // compute property name
+                                        name = Introspector.decapitalize(name.substring(prefix.length()));
 
-                                    // store a candidate of property accessor
-                                    Method[] methods = candidates.get(name);
+                                        // store a candidate of property accessor
+                                        Method[] methods = candidates.get(name);
 
-                                    if (methods == null) {
-                                        methods = new Method[2];
-                                        candidates.put(name, methods);
-                                    }
+                                        if (methods == null) {
+                                            methods = new Method[2];
+                                            candidates.put(name, methods);
+                                        }
 
-                                    if (methods[length] == null) {
-                                        methods[length] = method;
+                                        if (methods[length] == null) {
+                                            methods[length] = method;
+                                        }
                                     }
                                 }
                             }
@@ -148,7 +151,6 @@ public class Model<M> {
 
             for (Entry<String, Method[]> entry : candidates.entrySet()) {
                 Method[] methods = entry.getValue();
-
                 if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
                     // create model for the property
                     try {

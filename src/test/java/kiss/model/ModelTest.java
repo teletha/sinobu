@@ -191,7 +191,7 @@ public class ModelTest {
 
         model.set(bean, integer, 10);
         assert bean.integer.get() == 10;
-        assert(Integer) model.get(bean, integer) == 10;
+        assert (Integer) model.get(bean, integer) == 10;
 
         model.set(bean, string, "value");
         assert bean.string.get().equals("value");
@@ -574,5 +574,23 @@ public class ModelTest {
         List<Property> properties = model.properties();
 
         Collections.sort(properties);
+    }
+
+    @Test
+    public void proxy() throws Exception {
+        ProxyModel proxy = I.make(ProxyModel.class, (p, m, a) -> null);
+        Model model = Model.of(proxy);
+        List<Property> properties = model.properties();
+
+        assert properties.size() == 1;
+    }
+
+    /**
+     * @version 2017/02/09 20:35:34
+     */
+    public static interface ProxyModel {
+        int getValue();
+
+        void setValue(int v);
     }
 }
