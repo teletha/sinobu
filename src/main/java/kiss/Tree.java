@@ -17,10 +17,13 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import javafx.beans.property.ReadOnlyProperty;
+
+import sun.misc.SharedSecrets;
 
 /**
  * <p>
@@ -31,6 +34,9 @@ import javafx.beans.property.ReadOnlyProperty;
  */
 public abstract class Tree<N extends Consumer<N>> {
 
+    /** The condition to filter backtraces. */
+    private static final String THIS = Tree.class.getName();
+
     /** The anonymous root nodes. */
     public final List<N> root = new ArrayList<>(1);
 
@@ -39,6 +45,9 @@ public abstract class Tree<N extends Consumer<N>> {
 
     /** The child node creator. */
     private final BiConsumer<N, Consumer> relationshipBuilder;
+
+    /** The unique key builder. */
+    private final IntUnaryOperator uniqueKeyBuilder;
 
     /** The current writering node. */
     private N current;
@@ -57,10 +66,23 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and
      *            unique id.
      * @param relationshipBuilder A builder for parent-child node relationship.
+     * @param uniqueKeyBuilder A builder for identical key.
      */
-    protected Tree(ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder, BiConsumer<N, Consumer> relationshipBuilder) {
+    protected Tree(ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder, BiConsumer<N, Consumer> relationshipBuilder, IntUnaryOperator uniqueKeyBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
         this.relationshipBuilder = Objects.requireNonNull(relationshipBuilder);
+        this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder : id -> {
+            Exception e = new Exception();
+
+            for (int i = 2; i < 7; i++) {
+                StackTraceElement element = SharedSecrets.getJavaLangAccess().getStackTraceElement(e, i);
+
+                if (!element.getClassName().equals(THIS)) {
+                    return hash(element.getLineNumber() ^ id);
+                }
+            }
+            return id;
+        };
     }
 
     /**
@@ -83,25 +105,10 @@ public abstract class Tree<N extends Consumer<N>> {
      * </p>
      * 
      * @param name A name of new node.
-     * @param nodes A list of following {@link Consumer} node.
-     */
-    protected final void $(String name, Consumer<N>... nodes) {
-        $(namedNodeBuilder.apply(name, modifier, context), nodes);
-    }
-
-    /**
-     * <p>
-     * Declare node with name.
-     * </p>
-     * <p>
-     * Generic named node builder because named node is frequently used in tree structure.
-     * </p>
-     * 
-     * @param name A name of new node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Runnable nest) {
-        $(name, null, nest);
+    protected final void $(String name, Runnable writer) {
+        $(name, new Consumer[] {$(writer)});
     }
 
     /**
@@ -116,8 +123,8 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param one A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Consumer<N> one, Runnable nest) {
-        $(name, one, null, null, null, nest);
+    protected final void $(String name, Consumer<N> one, Runnable writer) {
+        $(name, new Consumer[] {one, $(writer)});
     }
 
     /**
@@ -133,8 +140,8 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param two A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Consumer<N> one, Consumer<N> two, Runnable nest) {
-        $(name, one, two, null, null, nest);
+    protected final void $(String name, Consumer<N> one, Consumer<N> two, Runnable writer) {
+        $(name, new Consumer[] {one, two, $(writer)});
     }
 
     /**
@@ -151,8 +158,8 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param three A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Runnable nest) {
-        $(name, one, two, three, null, nest);
+    protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Runnable writer) {
+        $(name, new Consumer[] {one, two, three, $(writer)});
     }
 
     /**
@@ -171,9 +178,34 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Consumer<N> four, Runnable writer) {
-        $(namedNodeBuilder.apply(name, modifier, context), new Consumer[] {one, two, three, four, e -> {
-            if (writer != null) writer.run();
-        }});
+        $(name, new Consumer[] {one, two, three, four, $(writer)});
+    }
+
+    /**
+     * <p>
+     * Declare node with name.
+     * </p>
+     * <p>
+     * Generic named node builder because named node is frequently used in tree structure.
+     * </p>
+     * 
+     * @param name A name of new node.
+     * @param nodes A list of following {@link Consumer} node.
+     */
+    protected final void $(String name, Consumer<N>... nodes) {
+        $(namedNodeBuilder.apply(name, uniqueKeyBuilder.applyAsInt(modifier), context), nodes);
+    }
+
+    /**
+     * Helper method to convert {@link Runnable} to {@link Consumer}.
+     * 
+     * @param run A target {@link Runnable} to convert.
+     * @return A converted {@link Consumer}.
+     */
+    private final Consumer<N> $(Runnable run) {
+        return e -> {
+            if (run != null) run.run();
+        };
     }
 
     /**
@@ -385,7 +417,7 @@ public abstract class Tree<N extends Consumer<N>> {
 
             for (C child : contents) {
                 context = child;
-                modifier = (Objects.hash(child) + 117) ^ 31;
+                modifier = hash(child == null ? 0 : child.hashCode());
                 $(writer.apply(index++, child));
             }
 
@@ -494,5 +526,25 @@ public abstract class Tree<N extends Consumer<N>> {
                 $(failure);
             }
         };
+    }
+
+    /** The bit mask size. */
+    private static final int[] MASK = {0, 8, 16, 24};
+
+    /**
+     * <p>
+     * FNV-1a 32bit hash function.
+     * </p>
+     * 
+     * @param value A target value.
+     * @return A hash value.
+     */
+    private final int hash(int value) {
+        int hash = 0x811c9dc5;
+
+        for (int i = 0; i < 4; i++) {
+            hash = (hash ^ (0x000000ff & (value >>> MASK[i]))) * 0x01000193;
+        }
+        return hash;
     }
 }

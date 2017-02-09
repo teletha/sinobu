@@ -415,7 +415,7 @@ public class TreeTest {
                 } else {
                     node.accept(context);
                 }
-            });
+            }, null);
         }
 
         /**
