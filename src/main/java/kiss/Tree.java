@@ -528,26 +528,13 @@ public abstract class Tree<N extends Consumer<N>> {
         };
     }
 
-    // Constants for 32 bit variant
-    private static final int C1_32 = 0xcc9e2d51;
-
-    private static final int C2_32 = 0x1b873593;
-
-    private static final int R1_32 = 15;
-
-    private static final int R2_32 = 13;
-
-    private static final int M_32 = 5;
-
-    private static final int N_32 = 0xe6546b64;
-
     /**
      * Murmur3 32-bit hash function.
      *
      * @param value A input value.
      * @return A hash value.
      */
-    public static int hash(int value) {
+    private static int hash(int value) {
         byte[] data = new byte[] {(byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value};
 
         int hash = 0;
@@ -559,11 +546,11 @@ public abstract class Tree<N extends Consumer<N>> {
             int k = (data[i_4] & 0xff) | ((data[i_4 + 1] & 0xff) << 8) | ((data[i_4 + 2] & 0xff) << 16) | ((data[i_4 + 3] & 0xff) << 24);
 
             // mix functions
-            k *= C1_32;
-            k = Integer.rotateLeft(k, R1_32);
-            k *= C2_32;
+            k *= 0xcc9e2d51;
+            k = Integer.rotateLeft(k, 15);
+            k *= 0x1b873593;
             hash ^= k;
-            hash = Integer.rotateLeft(hash, R2_32) * M_32 + N_32;
+            hash = Integer.rotateLeft(hash, 13) * 5 + 0xe6546b64;
         }
 
         // tail
@@ -578,9 +565,9 @@ public abstract class Tree<N extends Consumer<N>> {
             k1 ^= data[idx];
 
             // mix functions
-            k1 *= C1_32;
-            k1 = Integer.rotateLeft(k1, R1_32);
-            k1 *= C2_32;
+            k1 *= 0xcc9e2d51;
+            k1 = Integer.rotateLeft(k1, 15);
+            k1 *= 0x1b873593;
             hash ^= k1;
         }
 
