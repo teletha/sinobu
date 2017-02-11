@@ -399,7 +399,7 @@ public class TreeTest {
     /**
      * @version 2017/02/08 9:40:08
      */
-    public static abstract class HTML extends Tree<ElementNode> {
+    public static abstract class HTML extends Tree<String, ElementNode> {
 
         /**
          * 

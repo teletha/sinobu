@@ -30,27 +30,27 @@ import sun.misc.SharedSecrets;
  * The skeleton of DSL for tree structure.
  * </p>
  * 
- * @version 2017/02/08 11:17:30
+ * @version 2017/02/11 17:22:03
  */
-public abstract class Tree<N extends Consumer<N>> {
+public abstract class Tree<Name, Node extends Consumer<Node>> {
 
     /** The condition to filter backtraces. */
     private static final String THIS = Tree.class.getName();
 
     /** The anonymous root nodes. */
-    public final List<N> root = new ArrayList<>(1);
+    public final List<Node> root = new ArrayList<>(1);
 
     /** The named node creator. */
-    private final ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder;
+    private final ThrowableTriFunction<Name, Integer, Object, Node> namedNodeBuilder;
 
     /** The child node creator. */
-    private final BiConsumer<N, Consumer> relationshipBuilder;
+    private final BiConsumer<Node, Consumer> relationshipBuilder;
 
     /** The unique key builder. */
     private final IntUnaryOperator uniqueKeyBuilder;
 
     /** The current writering node. */
-    private N current;
+    private Node current;
 
     /** The current context object. */
     private Object context;
@@ -68,7 +68,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param relationshipBuilder A builder for parent-child node relationship.
      * @param uniqueKeyBuilder A builder for identical key.
      */
-    protected Tree(ThrowableTriFunction<String, Integer, Object, N> namedNodeBuilder, BiConsumer<N, Consumer> relationshipBuilder, IntUnaryOperator uniqueKeyBuilder) {
+    protected Tree(ThrowableTriFunction<Name, Integer, Object, Node> namedNodeBuilder, BiConsumer<Node, Consumer> relationshipBuilder, IntUnaryOperator uniqueKeyBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
         this.relationshipBuilder = Objects.requireNonNull(relationshipBuilder);
         this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder : id -> {
@@ -92,8 +92,8 @@ public abstract class Tree<N extends Consumer<N>> {
      * 
      * @param nodes A list of following {@link Consumer} node.
      */
-    protected final void $(Consumer<N>... nodes) {
-        $((N) null, nodes);
+    protected final void $(Consumer<Node>... nodes) {
+        $((Node) null, nodes);
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param name A name of new node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Runnable writer) {
+    protected final void $(Name name, Runnable writer) {
         $(name, new Consumer[] {$(writer)});
     }
 
@@ -123,7 +123,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param one A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Consumer<N> one, Runnable writer) {
+    protected final void $(Name name, Consumer<Node> one, Runnable writer) {
         $(name, new Consumer[] {one, $(writer)});
     }
 
@@ -140,7 +140,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param two A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Consumer<N> one, Consumer<N> two, Runnable writer) {
+    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Runnable writer) {
         $(name, new Consumer[] {one, two, $(writer)});
     }
 
@@ -158,7 +158,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param three A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Runnable writer) {
+    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Consumer<Node> three, Runnable writer) {
         $(name, new Consumer[] {one, two, three, $(writer)});
     }
 
@@ -177,7 +177,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param four A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(String name, Consumer<N> one, Consumer<N> two, Consumer<N> three, Consumer<N> four, Runnable writer) {
+    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Consumer<Node> three, Consumer<Node> four, Runnable writer) {
         $(name, new Consumer[] {one, two, three, four, $(writer)});
     }
 
@@ -192,7 +192,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param name A name of new node.
      * @param nodes A list of following {@link Consumer} node.
      */
-    protected final void $(String name, Consumer<N>... nodes) {
+    protected final void $(Name name, Consumer<Node>... nodes) {
         $(namedNodeBuilder.apply(name, uniqueKeyBuilder.applyAsInt(modifier), context), nodes);
     }
 
@@ -202,7 +202,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param run A target {@link Runnable} to convert.
      * @return A converted {@link Consumer}.
      */
-    private final Consumer<N> $(Runnable run) {
+    private final Consumer<Node> $(Runnable run) {
         return e -> {
             if (run != null) run.run();
         };
@@ -216,9 +216,9 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param node A child node.
      * @param followers
      */
-    private final void $(N node, Consumer<N>... followers) {
+    private final void $(Node node, Consumer<Node>... followers) {
         // store parent context
-        N parentNode = current;
+        Node parentNode = current;
 
         if (node != null) {
             if (current == null) {
@@ -232,7 +232,7 @@ public abstract class Tree<N extends Consumer<N>> {
         }
 
         if (followers != null) {
-            for (Consumer<N> Consumer : followers) {
+            for (Consumer<Node> Consumer : followers) {
                 if (Consumer != null) {
                     relationshipBuilder.accept(current, Consumer);
                 }
@@ -255,7 +255,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> foŕ(int size, Consumer<Integer> writer) {
+    protected final Consumer<Node> foŕ(int size, Consumer<Integer> writer) {
         // we can optimize code using IntConsumer, but the uniformity has high priority than that
         return foŕ(0, size, writer);
     }
@@ -273,7 +273,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> foŕ(int startInclusive, int endExclusive, Consumer<Integer> writer) {
+    protected final Consumer<Node> foŕ(int startInclusive, int endExclusive, Consumer<Integer> writer) {
         // we can optimize code using IntConsumer, but the uniformity has high priority than that
         return foŕ(() -> IntStream.range(startInclusive, endExclusive).iterator(), writer);
     }
@@ -290,7 +290,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <E extends Enum> Consumer<N> foŕ(Class<E> type, Consumer<E> writer) {
+    protected final <E extends Enum> Consumer<Node> foŕ(Class<E> type, Consumer<E> writer) {
         return foŕ(type.getEnumConstants(), writer);
     }
 
@@ -306,7 +306,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <E extends Enum> Consumer<N> foŕ(Class<E> type, Function<E, Consumer<N>> writer) {
+    protected final <E extends Enum> Consumer<Node> foŕ(Class<E> type, Function<E, Consumer<Node>> writer) {
         return foŕ(type.getEnumConstants(), writer);
     }
 
@@ -322,7 +322,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> foŕ(C[] contents, Consumer<C> writer) {
+    protected final <C> Consumer<Node> foŕ(C[] contents, Consumer<C> writer) {
         return foŕ(Arrays.asList(contents), writer);
     }
 
@@ -338,7 +338,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> foŕ(C[] contents, Function<C, Consumer<N>> writer) {
+    protected final <C> Consumer<Node> foŕ(C[] contents, Function<C, Consumer<Node>> writer) {
         return foŕ(Arrays.asList(contents), writer);
     }
 
@@ -354,7 +354,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> foŕ(Iterable<C> contents, Consumer<C> writer) {
+    protected final <C> Consumer<Node> foŕ(Iterable<C> contents, Consumer<C> writer) {
         return foŕ(contents, (index, child) -> {
             return current -> writer.accept(child);
         });
@@ -372,7 +372,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> foŕ(Iterable<C> contents, Function<C, Consumer<N>> writer) {
+    protected final <C> Consumer<Node> foŕ(Iterable<C> contents, Function<C, Consumer<Node>> writer) {
         return foŕ(contents, (index, child) -> {
             return writer.apply(child);
         });
@@ -390,7 +390,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> foŕ(Iterable<C> contents, BiConsumer<Integer, C> writer) {
+    protected final <C> Consumer<Node> foŕ(Iterable<C> contents, BiConsumer<Integer, C> writer) {
         return foŕ(contents, (index, child) -> {
             return current -> writer.accept(index, child);
         });
@@ -408,7 +408,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param writer A content writer.
      * @return A declaration of contents.
      */
-    protected final <C> Consumer<N> foŕ(Iterable<C> contents, BiFunction<Integer, C, Consumer<N>> writer) {
+    protected final <C> Consumer<Node> foŕ(Iterable<C> contents, BiFunction<Integer, C, Consumer<Node>> writer) {
         return current -> {
             // store parent context
             Object parentContext = context;
@@ -436,7 +436,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param nodes A list of successible nodes.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> iｆ(ReadOnlyProperty<Boolean> condition, Consumer<N>... success) {
+    protected final Consumer<Node> iｆ(ReadOnlyProperty<Boolean> condition, Consumer<Node>... success) {
         return either(condition, I.bundle(success), null);
     }
 
@@ -449,7 +449,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param nodes A list of successible nodes.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> iｆ(Supplier<Boolean> condition, Consumer<N>... success) {
+    protected final Consumer<Node> iｆ(Supplier<Boolean> condition, Consumer<Node>... success) {
         return either(condition, I.bundle(success), null);
     }
 
@@ -462,7 +462,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param nodes A list of successible nodes.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> iｆ(boolean condition, Consumer<N>... success) {
+    protected final Consumer<Node> iｆ(boolean condition, Consumer<Node>... success) {
         return either(condition, success, null);
     }
 
@@ -476,7 +476,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param failure A failure node.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> either(ReadOnlyProperty<Boolean> condition, Consumer<N> success, Consumer<N> failure) {
+    protected final Consumer<Node> either(ReadOnlyProperty<Boolean> condition, Consumer<Node> success, Consumer<Node> failure) {
         return either(condition != null && Boolean.TRUE.equals(condition.getValue()), success, failure);
     }
 
@@ -490,7 +490,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param failure A failure node.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> either(Supplier<Boolean> condition, Consumer<N> success, Consumer<N> failure) {
+    protected final Consumer<Node> either(Supplier<Boolean> condition, Consumer<Node> success, Consumer<Node> failure) {
         return either(condition != null && Boolean.TRUE.equals(condition.get()), success, failure);
     }
 
@@ -504,7 +504,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param failure A failure node.
      * @return A declaration of contents.
      */
-    protected final Consumer<N> either(boolean condition, Consumer<N> success, Consumer<N> failure) {
+    protected final Consumer<Node> either(boolean condition, Consumer<Node> success, Consumer<Node> failure) {
         return either(condition, new Consumer[] {success}, failure);
     }
 
@@ -518,7 +518,7 @@ public abstract class Tree<N extends Consumer<N>> {
      * @param failure A failure node.
      * @return A declaration of contents.
      */
-    private final Consumer<N> either(boolean condition, Consumer<N>[] success, Consumer<N> failure) {
+    private final Consumer<Node> either(boolean condition, Consumer<Node>[] success, Consumer<Node> failure) {
         return current -> {
             if (condition) {
                 $(success);

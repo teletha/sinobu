@@ -884,6 +884,23 @@ public class Events<V> {
 
     /**
      * <p>
+     * Returns an {@link Events} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Events}, where that function returns an {@link Events}
+     * , and then merging those resulting {@link Events} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Events}
+     *            , returns an {@link Events}.
+     * @return An {@link Events} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Events} and merging the results of the
+     *         {@link Events} obtained from this transformation.
+     */
+    public final <R> Events<R> flatVariable(Function<V, Variable<R>> function) {
+        return flatMap(function.andThen(Events::from));
+    }
+
+    /**
+     * <p>
      * Ensure the minimum interval time of each {@link Events} items.
      * </p>
      *
@@ -1460,6 +1477,19 @@ public class Events<V> {
      * {@link Events}.
      * </p>
      *
+     * @param value The initial values.
+     * @return Chainable API.
+     */
+    public final Events<V> startWith(Variable<V> value) {
+        return startWith(value.v).skipNull();
+    }
+
+    /**
+     * <p>
+     * Emit a specified sequence of items before beginning to emit the items from the source
+     * {@link Events}.
+     * </p>
+     *
      * @param value The initial value.
      * @return Chainable API.
      */
@@ -1972,6 +2002,18 @@ public class Events<V> {
      */
     public static <V> Events<V> from(Enumeration<V> values) {
         return NEVER.startWith(values);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Events} that emits the specified value.
+     * </p>
+     *
+     * @param value A value to emit.
+     * @return An {@link Events} that emits values as a first sequence.
+     */
+    public static <V> Events<V> from(Variable<V> value) {
+        return NEVER.startWith(value);
     }
 
     /**
