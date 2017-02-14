@@ -70,7 +70,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      */
     protected Tree(ThrowableTriFunction<Name, Integer, Object, Node> namedNodeBuilder, BiConsumer<Node, Consumer> relationshipBuilder, IntUnaryOperator uniqueKeyBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
-        this.relationshipBuilder = Objects.requireNonNull(relationshipBuilder);
+        this.relationshipBuilder = relationshipBuilder != null ? relationshipBuilder : (context, consumer) -> consumer.accept(context);
         this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder : id -> {
             Exception e = new Exception();
 
