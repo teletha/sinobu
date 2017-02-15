@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  */
 public abstract class TreeNode<Self extends TreeNode, Context> implements Consumer<Context> {
 
-    /** The node identity. */
+    /** The node identifier. */
     public int id;
 
     /** The associated user context. */

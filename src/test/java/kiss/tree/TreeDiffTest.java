@@ -109,6 +109,20 @@ public class TreeDiffTest {
     }
 
     @Test
+    public void moveChild() {
+        String[] prev = {"1", "2", "3"};
+        String[] next = {"2", "3", "1"};
+
+        assertDiff(1, state -> new XML() {
+            {
+                $("div", foŕ(!state ? prev : next, value -> {
+                    $(value);
+                }));
+            }
+        });
+    }
+
+    @Test
     public void addAttribute() {
         assertDiff(1, state -> new XML() {
             {
@@ -307,7 +321,8 @@ public class TreeDiffTest {
          */
         @Override
         protected void moveTo(XMLNode parent) {
-            System.err.println("move");
+            parent.nodes.remove(this);
+            parent.nodes.add(this);
         }
 
         /**
