@@ -9,7 +9,10 @@
  */
 package kiss.tree;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.junit.Test;
 
@@ -22,20 +25,136 @@ import kiss.TreeNode;
 public class TreeDiffTest {
 
     @Test
-    public void diff() {
-        XML prev = new XML() {
+    public void noChange() {
+        assertDiff(0, state -> new XML() {
             {
                 $("div");
             }
-        };
+        });
+    }
 
-        XML next = new XML() {
+    @Test
+    public void replaceNode() {
+        assertDiff(1, state -> new XML() {
             {
-                $("change");
+                if (state) {
+                    $("div");
+                } else {
+                    $("change");
+                }
             }
-        };
+        });
+    }
 
-        TreeNode.diff(null, prev.root, next.root);
+    @Test
+    public void appendNode() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div");
+                if (state) $("append");
+            }
+        });
+    }
+
+    @Test
+    public void prependNode() {
+        assertDiff(1, state -> new XML() {
+            {
+                if (state) $("prepend");
+                $("div");
+            }
+        });
+    }
+
+    @Test
+    public void insertNode() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div");
+                if (state) $("insert");
+                $("div");
+            }
+        });
+    }
+
+    @Test
+    public void addChild() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div", () -> {
+                    if (state) $("child");
+                });
+            }
+        });
+    }
+
+    @Test
+    public void addAttribute() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div", iｆ(state, attr("ok")));
+            }
+        });
+    }
+
+    @Test
+    public void removeAttribute() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div", iｆ(state == false, attr("ok")));
+            }
+        });
+    }
+
+    @Test
+    public void replaceAttribute() {
+        assertDiff(2, state -> new XML() {
+            {
+                $("div", either(state, attr("ok"), attr("no")));
+            }
+        });
+    }
+
+    @Test
+    public void changeAttributeValue() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div", either(state, attr("class", "ok"), attr("class", "no")));
+            }
+        });
+    }
+
+    @Test
+    public void addText() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div", () -> {
+                    if (state) text("ok");
+                });
+            }
+        });
+    }
+
+    /**
+     * <p>
+     * Assertion helper.
+     * </p>
+     * 
+     * @param expectedPatchSize
+     * @param prev
+     * @param next
+     */
+    private void assertDiff(int expectedPatchSize, Function<Boolean, XML> builder) {
+        XML prev = builder.apply(false);
+        XML next = builder.apply(true);
+
+        List<Runnable> patches = TreeNode.diff(prev.dummyRoot(), prev.root, next.root);
+        assert patches.size() == expectedPatchSize : prev;
+
+        for (Runnable patch : patches) {
+            patch.run();
+        }
+        assert prev.toString().equals(next.toString());
     }
 
     /**
@@ -53,22 +172,200 @@ public class TreeDiffTest {
         }
 
         /**
-         * @param next
+         * <p>
+         * Write attribute.
+         * </p>
+         * 
+         * @param name
          */
-        public void diff(XML next) {
+        protected Consumer<XMLNode> attr(String name) {
+            return attr(name, null);
+        }
+
+        /**
+         * <p>
+         * Write attribute.
+         * </p>
+         * 
+         * @param name
+         */
+        protected Consumer<XMLNode> attr(String name, String value) {
+            return context -> $(new AttributeNode(name, null));
+        }
+
+        /**
+         * <p>
+         * Write text.
+         * </p>
+         * 
+         * @param name
+         */
+        protected void text(String text) {
+            $(new TextNode(text));
+        }
+
+        /** The dummy root node. */
+        private XMLNode dummy;
+
+        /** The lazy initialization for dummy root. */
+        private XMLNode dummyRoot() {
+            if (dummy == null) {
+                dummy = new XMLNode("", 0, null);
+                dummy.nodes.addAll(root);
+            }
+            return dummy;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            for (Object child : dummyRoot().nodes) {
+                builder.append(child);
+            }
+            return builder.toString();
         }
     }
 
     /**
-     * @version 2017/02/14 16:16:54
+     * @version 2017/02/15 9:22:42
      */
-    private static class XMLNode extends TreeNode<XMLike> implements Consumer<XMLNode> {
+    public static class XMLNode extends TreeNode<XMLNode, XMLNode> implements Consumer<XMLNode> {
+
+        protected String name;
+
+        private List<AttributeNode> attrs = new ArrayList();
 
         /**
-         * 
+         * @param name
          */
-        public XMLNode(String name, int id, Object object) {
+        private XMLNode(String name, int id, Object context) {
+            this.name = name;
             this.id = id;
+            this.context = this;
+            System.out.println(name + "  " + id);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void add(XMLNode context) {
+            System.out.println("add");
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void remove(XMLNode context) {
+            System.out.println("remove");
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void insert(XMLNode context, Object index) {
+            if (index == null) {
+                context.nodes.add(this);
+            } else {
+                context.nodes.add(context.nodes.indexOf(index), this);
+            }
+            System.out.println("insert to " + index);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void move(XMLNode context) {
+            System.err.println("move");
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void replace(XMLNode context, XMLNode item) {
+            int index = context.nodes.indexOf(this);
+            context.nodes.set(index, item);
+            System.out.println("replace");
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void diff(XMLNode next, List<Runnable> patches) {
+            /**
+             * <p>
+             * We passes the Real DOM from the previous Virtual DOM to the next Virtual DOM. To tell
+             * the truth, we don't want to manipulate Real DOM in here. But here is the best place
+             * to pass the reference.
+             * </p>
+             */
+            next.context = context;
+
+            diff(patches, attrs, next.attrs, attrs::add, attrs::remove);
+            diffItems(next.context, nodes, next.nodes, patches);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void accept(XMLNode context) {
+            context.nodes.add(this);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+
+            if (name.isEmpty()) {
+                for (Object child : nodes) {
+                    builder.append(child);
+                }
+                return builder.toString();
+            }
+
+            builder.append("<").append(name);
+
+            for (AttributeNode attr : attrs) {
+                builder.append(" ").append(attr);
+            }
+
+            if (nodes.isEmpty()) {
+                builder.append("/>");
+            } else {
+                builder.append(">");
+                for (Object child : nodes) {
+                    builder.append(child);
+                }
+                builder.append("</").append(name).append(">");
+            }
+            return builder.toString();
+        }
+    }
+
+    /**
+     * @version 2017/02/15 9:22:47
+     */
+    private static class TextNode implements Consumer<XMLNode> {
+
+        private final String text;
+
+        /**
+         * @param text
+         */
+        private TextNode(Object text) {
+            this.text = String.valueOf(text);
         }
 
         /**
@@ -76,13 +373,57 @@ public class TreeDiffTest {
          */
         @Override
         public void accept(XMLNode parent) {
+            parent.nodes.add(this);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            return text;
         }
     }
 
     /**
-     * @version 2017/02/14 16:18:10
+     * @version 2017/02/06 16:12:23
      */
-    private static class XMLike {
+    private static class AttributeNode implements Consumer<XMLNode> {
 
+        private String name;
+
+        private String value;
+
+        /**
+         * @param name
+         * @param value
+         */
+        private AttributeNode(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void accept(XMLNode context) {
+            context.attrs.add(this);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(name);
+
+            if (value != null) {
+                builder.append("='").append(value).append("'");
+            }
+
+            return builder.toString();
+        }
     }
 }
