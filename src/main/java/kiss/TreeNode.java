@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * 
  * @version 2017/02/14 13:54:02
  */
-public abstract class TreeNode<Self extends TreeNode, VirtualContext, RealContext> implements Consumer<VirtualContext> {
+public abstract class TreeNode<Self extends TreeNode, VirtualContext extends TreeNode, RealContext> implements Consumer<VirtualContext> {
 
     /** The node identifier. */
     public int id;
@@ -90,6 +90,14 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext, RealContex
      * {@inheritDoc}
      */
     @Override
+    public void accept(VirtualContext parent) {
+        parent.nodes.add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int hashCode() {
         return id;
     }
@@ -111,7 +119,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext, RealContex
      * @param next A next state.
      * @return A list of gap closers.
      */
-    public static <VirtualContext, Self extends TreeNode<Self, VirtualContext, RealContext>, RealContext> List<Runnable> diff(RealContext context, List<Self> prev, List<Self> next) {
+    public static <VirtualContext extends TreeNode, Self extends TreeNode<Self, VirtualContext, RealContext>, RealContext> List<Runnable> diff(RealContext context, List<Self> prev, List<Self> next) {
         List<Runnable> patches = new ArrayList();
         diff(patches, context, prev, next);
         return patches;
@@ -127,13 +135,13 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext, RealContex
      * @param prev A previous state.
      * @param next A next state.
      */
-    protected static <VirtualContext, Self extends TreeNode<Self, VirtualContext, RealContext>, RealContext> void diff(List<Runnable> patches, RealContext context, List<Self> prev, List<Self> next) {
+    protected static <VirtualContext extends TreeNode, Self extends TreeNode<Self, VirtualContext, RealContext>, RealContext> void diff(List<Runnable> patches, RealContext context, List<Self> prev, List<Self> next) {
         int prevSize = prev.size();
         int nextSize = next.size();
         int max = prevSize + nextSize;
         int prevPosition = 0;
         int nextPosition = 0;
-    
+
         for (int i = 0; i < max; i++) {
             if (prevSize <= prevPosition) {
                 if (nextSize <= nextPosition) {
@@ -142,12 +150,12 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext, RealContex
                     // all prev items are scanned, but next items are remaining
                     Self nextItem = next.get(nextPosition++);
                     int index = prev.indexOf(nextItem);
-    
+
                     if (index == -1) {
                         patches.add(() -> nextItem.addTo(context, null));
                     } else {
                         Self prevItem = prev.get(index);
-    
+
                         /**
                          * <p>
                          * We passes the actual context from the previous node to the next node. To
@@ -156,7 +164,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext, RealContex
                          * </p>
                          */
                         nextItem.context = prevItem.context;
-    
+
                         patches.add(() -> prevItem.moveTo(context));
                     }
                 }
@@ -169,10 +177,10 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext, RealContex
                     // prev and next items are remaining
                     Self prevItem = prev.get(prevPosition);
                     Self nextItem = next.get(nextPosition);
-    
+
                     if (prevItem.id == nextItem.id) {
                         // same item
-    
+
                         /**
                          * <p>
                          * We passes the actual context from the previous node to the next node. To
@@ -181,16 +189,16 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext, RealContex
                          * </p>
                          */
                         nextItem.context = prevItem.context;
-    
+
                         prevItem.diff(patches, nextItem);
-    
+
                         prevPosition++;
                         nextPosition++;
                     } else {
                         // different item
                         int nextItemInPrev = prev.indexOf(nextItem);
                         int prevItemInNext = next.indexOf(prevItem);
-    
+
                         if (nextItemInPrev == -1) {
                             if (prevItemInNext == -1) {
                                 patches.add(() -> prevItem.replaceFrom(context, nextItem));

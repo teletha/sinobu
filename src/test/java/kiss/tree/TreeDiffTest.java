@@ -347,14 +347,6 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        public void accept(XMLNode context) {
-            context.nodes.add(this);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
 
@@ -426,14 +418,6 @@ public class TreeDiffTest {
         @Override
         protected void replaceFrom(XMLNode parent, TextNode item) {
             text = item.text;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void accept(XMLNode parent) {
-            parent.nodes.add(this);
         }
 
         /**
