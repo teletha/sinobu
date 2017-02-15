@@ -110,7 +110,7 @@ public class TreeDiffTest {
     public void replaceAttribute() {
         assertDiff(2, state -> new XML() {
             {
-                $("div", either(state, attr("ok"), attr("no")));
+                $("div", either(state, attr("yes"), attr("no")));
             }
         });
     }
@@ -119,7 +119,7 @@ public class TreeDiffTest {
     public void changeAttributeValue() {
         assertDiff(1, state -> new XML() {
             {
-                $("div", either(state, attr("class", "ok"), attr("class", "no")));
+                $("div", either(state, attr("class", "yes"), attr("class", "no")));
             }
         });
     }
@@ -130,6 +130,28 @@ public class TreeDiffTest {
             {
                 $("div", () -> {
                     if (state) text("ok");
+                });
+            }
+        });
+    }
+
+    @Test
+    public void removeText() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div", () -> {
+                    if (state == false) text("ok");
+                });
+            }
+        });
+    }
+
+    @Test
+    public void replaceText() {
+        assertDiff(1, state -> new XML() {
+            {
+                $("div", () -> {
+                    text(state ? "yes" : "no");
                 });
             }
         });
@@ -232,7 +254,7 @@ public class TreeDiffTest {
     /**
      * @version 2017/02/15 9:22:42
      */
-    public static class XMLNode extends TreeNode<XMLNode, XMLNode> implements Consumer<XMLNode> {
+    public static class XMLNode extends TreeNode<XMLNode, XMLNode> {
 
         protected String name;
 
@@ -252,15 +274,7 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        protected void add(XMLNode context) {
-            System.out.println("add");
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void remove(XMLNode context) {
+        protected void removeFrom(XMLNode parent) {
             System.out.println("remove");
         }
 
@@ -268,11 +282,11 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        protected void insert(XMLNode context, Object index) {
+        protected void insertTo(XMLNode parent, Object index) {
             if (index == null) {
-                context.nodes.add(this);
+                parent.nodes.add(this);
             } else {
-                context.nodes.add(context.nodes.indexOf(index), this);
+                parent.nodes.add(parent.nodes.indexOf(index), this);
             }
             System.out.println("insert to " + index);
         }
@@ -281,7 +295,7 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        protected void move(XMLNode context) {
+        protected void moveTo(XMLNode parent) {
             System.err.println("move");
         }
 
@@ -289,9 +303,9 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        protected void replace(XMLNode context, XMLNode item) {
-            int index = context.nodes.indexOf(this);
-            context.nodes.set(index, item);
+        protected void replaceFrom(XMLNode parent, XMLNode item) {
+            int index = parent.nodes.indexOf(this);
+            parent.nodes.set(index, item);
             System.out.println("replace");
         }
 
@@ -357,15 +371,45 @@ public class TreeDiffTest {
     /**
      * @version 2017/02/15 9:22:47
      */
-    private static class TextNode implements Consumer<XMLNode> {
+    private static class TextNode extends TreeNode<XMLNode, TextNode> {
 
-        private final String text;
+        /** The current text. */
+        private String text;
 
         /**
          * @param text
          */
         private TextNode(Object text) {
             this.text = String.valueOf(text);
+            this.id = text.hashCode();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void insertTo(XMLNode parent, Object index) {
+            if (index == null) {
+                parent.nodes.add(this);
+            } else {
+                parent.nodes.add(parent.nodes.indexOf(index), this);
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void removeFrom(XMLNode parent) {
+            parent.nodes.remove(this);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void replaceFrom(XMLNode parent, TextNode item) {
+            text = item.text;
         }
 
         /**
