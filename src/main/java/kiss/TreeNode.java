@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * 
  * @version 2017/02/14 13:54:02
  */
-public abstract class TreeNode<Self extends TreeNode, VirtualContext extends TreeNode, RealContext> implements Consumer<VirtualContext> {
+public abstract class TreeNode<Self extends TreeNode, VirtualContext extends TreeNode, RealContext> implements Consumer<Self> {
 
     /** The node identifier. */
     public int id;
@@ -90,7 +90,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
      * {@inheritDoc}
      */
     @Override
-    public void accept(VirtualContext parent) {
+    public void accept(Self parent) {
         parent.nodes.add(this);
     }
 
