@@ -272,7 +272,7 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        protected void insertTo(XMLNode parent, Object index) {
+        protected void addTo(XMLNode parent, Object index) {
             if (index == null) {
                 parent.nodes.add(this);
             } else {
@@ -301,9 +301,9 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        protected void diff(XMLNode next, List<Runnable> patches) {
+        protected void diff(List<Runnable> patches, XMLNode next) {
             diff(patches, attrs, next.attrs, attrs::add, attrs::remove);
-            diffItems(patches, next.context, nodes, next.nodes);
+            diff(patches, next.context, nodes, next.nodes);
         }
 
         /**
@@ -348,9 +348,9 @@ public class TreeDiffTest {
     }
 
     /**
-     * @version 2017/02/15 9:22:47
+     * @version 2017/02/15 19:09:58
      */
-    private static class TextNode extends TreeNode<XMLNode, TextNode> {
+    private static class TextNode extends TreeNode<TextNode, XMLNode> {
 
         /** The current text. */
         private String text;
@@ -367,7 +367,7 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        protected void insertTo(XMLNode parent, Object index) {
+        protected void addTo(XMLNode parent, Object index) {
             if (index == null) {
                 parent.nodes.add(this);
             } else {
@@ -409,7 +409,7 @@ public class TreeDiffTest {
     }
 
     /**
-     * @version 2017/02/06 16:12:23
+     * @version 2017/02/15 19:09:43
      */
     private static class AttributeNode implements Consumer<XMLNode> {
 
@@ -417,10 +417,6 @@ public class TreeDiffTest {
 
         private String value;
 
-        /**
-         * @param name
-         * @param value
-         */
         private AttributeNode(String name, String value) {
             this.name = name;
             this.value = value;
@@ -430,8 +426,8 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        public void accept(XMLNode context) {
-            context.attrs.add(this);
+        public void accept(XMLNode parent) {
+            parent.attrs.add(this);
         }
 
         /**

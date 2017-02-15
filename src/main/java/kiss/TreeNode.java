@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * 
  * @version 2017/02/14 13:54:02
  */
-public abstract class TreeNode<Context, Self extends TreeNode> implements Consumer<Context> {
+public abstract class TreeNode<Self extends TreeNode, Context> implements Consumer<Context> {
 
     /** The associated user context. */
     protected Context context;
@@ -39,7 +39,7 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
      * @param parent The contexual parent node.
      * @param index The index node.
      */
-    protected void insertTo(Context parent, Object index) {
+    protected void addTo(Context parent, Object index) {
     }
 
     /**
@@ -71,11 +71,19 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
      * @param newly A new node.
      */
     protected void replaceFrom(Context parent, Self newly) {
-        newly.insertTo(parent, this);
+        newly.addTo(parent, this);
         removeFrom(parent);
     }
 
-    protected void diff(Self next, List<Runnable> patches) {
+    /**
+     * <p>
+     * Diff against to the next state.
+     * </p>
+     * 
+     * @param patches A list of diff patches.
+     * @param next A next state.
+     */
+    protected void diff(List<Runnable> patches, Self next) {
     }
 
     /**
@@ -103,12 +111,23 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
      * @param next A next state.
      * @return A list of gap closers.
      */
-    public static <Context, Self extends TreeNode<Context, Self>> List<Runnable> diff(Context context, List<Self> prev, List<Self> next) {
+    public static <Context, Self extends TreeNode<Self, Context>> List<Runnable> diff(Context context, List<Self> prev, List<Self> next) {
         List<Runnable> patches = new ArrayList();
-        diffItems(patches, context, prev, next);
+        diff(patches, context, prev, next);
         return patches;
     }
 
+    /**
+     * <p>
+     * Helper method to diff {@link List} items. This method supports add and remove operations.
+     * </p>
+     * 
+     * @param patches A list of diff patches.
+     * @param prev A previous state.
+     * @param next A next state.
+     * @param add An ADD operation.
+     * @param remove A REMOVE operation.
+     */
     protected static <Context, T> void diff(List<Runnable> patches, List<T> prev, List<T> next, Consumer<T> add, Consumer<T> remove) {
         for (int i = 0, length = next.size(); i < length; i++) {
             T nextItem = next.get(i);
@@ -128,13 +147,22 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
         }
     }
 
-    protected static <Context, Self extends TreeNode<Context, Self>> void diffItems(List<Runnable> patches, Context context, List<Self> prev, List<Self> next) {
+    /**
+     * <p>
+     * Helper method to diff list of {@link TreeNode} items. This method supports add, remove, move
+     * and replace operations.
+     * </p>
+     * 
+     * @param patches A list of diff patches.
+     * @param prev A previous state.
+     * @param next A next state.
+     */
+    protected static <Context, Self extends TreeNode<Self, Context>> void diff(List<Runnable> patches, Context context, List<Self> prev, List<Self> next) {
         int prevSize = prev.size();
         int nextSize = next.size();
         int max = prevSize + nextSize;
         int prevPosition = 0;
         int nextPosition = 0;
-        int actualManipulationPosition = 0;
 
         for (int i = 0; i < max; i++) {
             if (prevSize <= prevPosition) {
@@ -146,7 +174,7 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
                     int index = prev.indexOf(nextItem);
 
                     if (index == -1) {
-                        patches.add(() -> nextItem.insertTo(context, null));
+                        patches.add(() -> nextItem.addTo(context, null));
                     } else {
                         Self prevItem = prev.get(index);
 
@@ -184,9 +212,8 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
                          */
                         nextItem.context = prevItem.context;
 
-                        prevItem.diff(nextItem, patches);
+                        prevItem.diff(patches, nextItem);
 
-                        actualManipulationPosition++;
                         prevPosition++;
                         nextPosition++;
                     } else {
@@ -199,17 +226,15 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
                                 patches.add(() -> prevItem.replaceFrom(context, nextItem));
                                 prevPosition++;
                             } else {
-                                patches.add(() -> nextItem.insertTo(context, prevItem.context));
+                                patches.add(() -> nextItem.addTo(context, prevItem.context));
                             }
                             nextPosition++;
-                            actualManipulationPosition++;
                         } else {
                             if (prevItemInNext == -1) {
                                 patches.add(() -> prevItem.removeFrom(context));
                             } else {
                                 // both items are found in each other list
                                 // hold and skip the current value
-                                actualManipulationPosition++;
                             }
                             prevPosition++;
                         }
