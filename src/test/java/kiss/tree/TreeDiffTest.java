@@ -279,7 +279,7 @@ public class TreeDiffTest {
     /**
      * @version 2017/02/15 9:22:42
      */
-    private static class XMLNode extends TreeNode<XMLNode, XMLNode> {
+    private static class XMLNode extends TreeNode<XMLNode, XMLNode, XMLNode> {
 
         /** The element name. */
         private String name;
@@ -387,7 +387,7 @@ public class TreeDiffTest {
     /**
      * @version 2017/02/15 19:09:58
      */
-    private static class TextNode extends TreeNode<TextNode, XMLNode> {
+    private static class TextNode extends TreeNode<TextNode, XMLNode, XMLNode> {
 
         /** The current text. */
         private String text;
