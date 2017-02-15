@@ -78,12 +78,32 @@ public class TreeDiffTest {
     }
 
     @Test
+    public void removeNode() {
+        assertDiff(1, state -> new XML() {
+            {
+                if (state == false) $("remove");
+            }
+        });
+    }
+
+    @Test
     public void addChild() {
         assertDiff(1, state -> new XML() {
             {
                 $("div", () -> {
                     if (state) $("child");
                 });
+            }
+        });
+    }
+
+    @Test
+    public void addChildren() {
+        assertDiff(2, state -> new XML() {
+            {
+                $("div", iｆ(state, foŕ(2, count -> {
+                    $(String.valueOf(count));
+                })));
             }
         });
     }
@@ -245,10 +265,12 @@ public class TreeDiffTest {
     /**
      * @version 2017/02/15 9:22:42
      */
-    public static class XMLNode extends TreeNode<XMLNode, XMLNode> {
+    private static class XMLNode extends TreeNode<XMLNode, XMLNode> {
 
-        protected String name;
+        /** The element name. */
+        private String name;
 
+        /** The list of attributes. */
         private List<AttributeNode> attrs = new ArrayList();
 
         /**
@@ -264,20 +286,20 @@ public class TreeDiffTest {
          * {@inheritDoc}
          */
         @Override
-        protected void removeFrom(XMLNode parent) {
-            System.out.println("remove");
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
         protected void addTo(XMLNode parent, Object index) {
             if (index == null) {
                 parent.nodes.add(this);
             } else {
                 parent.nodes.add(parent.nodes.indexOf(index), this);
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void removeFrom(XMLNode parent) {
+            parent.nodes.remove(this);
         }
 
         /**
