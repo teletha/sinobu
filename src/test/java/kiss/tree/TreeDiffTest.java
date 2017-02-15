@@ -116,15 +116,6 @@ public class TreeDiffTest {
     }
 
     @Test
-    public void changeAttributeValue() {
-        assertDiff(1, state -> new XML() {
-            {
-                $("div", either(state, attr("class", "yes"), attr("class", "no")));
-            }
-        });
-    }
-
-    @Test
     public void addText() {
         assertDiff(1, state -> new XML() {
             {
@@ -267,7 +258,6 @@ public class TreeDiffTest {
             this.name = name;
             this.id = id;
             this.context = this;
-            System.out.println(name + "  " + id);
         }
 
         /**
@@ -288,7 +278,6 @@ public class TreeDiffTest {
             } else {
                 parent.nodes.add(parent.nodes.indexOf(index), this);
             }
-            System.out.println("insert to " + index);
         }
 
         /**
@@ -306,7 +295,6 @@ public class TreeDiffTest {
         protected void replaceFrom(XMLNode parent, XMLNode item) {
             int index = parent.nodes.indexOf(this);
             parent.nodes.set(index, item);
-            System.out.println("replace");
         }
 
         /**
@@ -314,17 +302,8 @@ public class TreeDiffTest {
          */
         @Override
         protected void diff(XMLNode next, List<Runnable> patches) {
-            /**
-             * <p>
-             * We passes the Real DOM from the previous Virtual DOM to the next Virtual DOM. To tell
-             * the truth, we don't want to manipulate Real DOM in here. But here is the best place
-             * to pass the reference.
-             * </p>
-             */
-            next.context = context;
-
             diff(patches, attrs, next.attrs, attrs::add, attrs::remove);
-            diffItems(next.context, nodes, next.nodes, patches);
+            diffItems(patches, next.context, nodes, next.nodes);
         }
 
         /**

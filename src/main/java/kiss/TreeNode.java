@@ -105,7 +105,7 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
      */
     public static <Context, Self extends TreeNode<Context, Self>> List<Runnable> diff(Context context, List<Self> prev, List<Self> next) {
         List<Runnable> patches = new ArrayList();
-        diffItems(context, prev, next, patches);
+        diffItems(patches, context, prev, next);
         return patches;
     }
 
@@ -128,7 +128,7 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
         }
     }
 
-    protected static <Context, Self extends TreeNode<Context, Self>> void diffItems(Context context, List<Self> prev, List<Self> next, List<Runnable> patches) {
+    protected static <Context, Self extends TreeNode<Context, Self>> void diffItems(List<Runnable> patches, Context context, List<Self> prev, List<Self> next) {
         int prevSize = prev.size();
         int nextSize = next.size();
         int max = prevSize + nextSize;
@@ -151,11 +151,10 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
                         Self prevItem = prev.get(index);
 
                         /**
-                         * {@link VirtualNode#dom}
                          * <p>
-                         * We passes the Real DOM from the previous Virtual DOM to the next Virtual
-                         * DOM. To tell the truth, we don't want to manipulate Real DOM in here. But
-                         * here is the best place to pass the reference.
+                         * We passes the actual context from the previous node to the next node. To
+                         * tell the truth, we don't want to manipulate the actual context in here.
+                         * But here is the best place to pass the reference.
                          * </p>
                          */
                         nextItem.context = prevItem.context;
@@ -175,6 +174,16 @@ public abstract class TreeNode<Context, Self extends TreeNode> implements Consum
 
                     if (prevItem.id == nextItem.id) {
                         // same item
+
+                        /**
+                         * <p>
+                         * We passes the actual context from the previous node to the next node. To
+                         * tell the truth, we don't want to manipulate the actual context in here.
+                         * But here is the best place to pass the reference.
+                         * </p>
+                         */
+                        nextItem.context = prevItem.context;
+
                         prevItem.diff(nextItem, patches);
 
                         actualManipulationPosition++;
