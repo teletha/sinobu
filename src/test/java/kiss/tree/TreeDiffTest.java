@@ -281,7 +281,7 @@ public class TreeDiffTest {
     /**
      * @version 2017/02/15 9:22:42
      */
-    private static class XMLNode extends TreeNode<XMLNode, XMLNode, XMLNode> {
+    private static class XMLNode extends TreeNode<XMLNode, XMLNode> {
 
         /** The element name. */
         private String name;
@@ -381,7 +381,7 @@ public class TreeDiffTest {
     /**
      * @version 2017/02/15 19:09:58
      */
-    private static class TextNode extends TreeNode<TextNode, XMLNode, XMLNode> {
+    private static class TextNode extends TreeNode<TextNode, XMLNode> {
 
         /** The current text. */
         private String text;
@@ -420,6 +420,20 @@ public class TreeDiffTest {
         @Override
         protected void replaceFrom(XMLNode parent, TextNode item) {
             text = item.text;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void moveTo(XMLNode parent) {
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void diff(List<Runnable> patches, TextNode next) {
         }
 
         /**

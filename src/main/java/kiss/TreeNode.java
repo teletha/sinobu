@@ -20,13 +20,13 @@ import java.util.function.Consumer;
  * 
  * @version 2017/02/14 13:54:02
  */
-public abstract class TreeNode<Self extends TreeNode, VirtualContext extends TreeNode, RealContext> implements Consumer<Self> {
+public abstract class TreeNode<Self extends TreeNode, Context> implements Consumer<Self> {
 
     /** The node identifier. */
     public int id;
 
     /** The associated user context. */
-    public RealContext context;
+    public Context context;
 
     /** The children nodes. */
     public List nodes = new ArrayList();
@@ -39,8 +39,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
      * @param parent The contexual parent node.
      * @param index The index node.
      */
-    protected void addTo(RealContext parent, Object index) {
-    }
+    protected abstract void addTo(Context parent, Object index);
 
     /**
      * <p>
@@ -49,8 +48,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
      * 
      * @param parent The contexual parent node.
      */
-    protected void removeFrom(RealContext parent) {
-    }
+    protected abstract void removeFrom(Context parent);
 
     /**
      * <p>
@@ -59,8 +57,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
      * 
      * @param parent The contexual parent node.
      */
-    protected void moveTo(RealContext parent) {
-    }
+    protected abstract void moveTo(Context parent);
 
     /**
      * <p>
@@ -70,7 +67,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
      * @param parent The contexual parent node.
      * @param newly A new node.
      */
-    protected void replaceFrom(RealContext parent, Self newly) {
+    protected void replaceFrom(Context parent, Self newly) {
         newly.addTo(parent, this);
         removeFrom(parent);
     }
@@ -83,8 +80,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
      * @param patches A list of diff patches.
      * @param next A next state.
      */
-    protected void diff(List<Runnable> patches, Self next) {
-    }
+    protected abstract void diff(List<Runnable> patches, Self next);
 
     /**
      * {@inheritDoc}
@@ -119,7 +115,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
      * @param next A next state.
      * @return A list of gap closers.
      */
-    public static <VirtualContext extends TreeNode, Self extends TreeNode<Self, VirtualContext, RealContext>, RealContext> List<Runnable> diff(RealContext context, List<Self> prev, List<Self> next) {
+    public static <Node extends TreeNode<Node, Context>, Context> List<Runnable> diff(Context context, List<Node> prev, List<Node> next) {
         List<Runnable> patches = new ArrayList();
         diff(patches, context, prev, next);
         return patches;
@@ -135,7 +131,7 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
      * @param prev A previous state.
      * @param next A next state.
      */
-    protected static <VirtualContext extends TreeNode, Self extends TreeNode<Self, VirtualContext, RealContext>, RealContext> void diff(List<Runnable> patches, RealContext context, List<Self> prev, List<Self> next) {
+    protected static <Node extends TreeNode<Node, Context>, Context> void diff(List<Runnable> patches, Context context, List<Node> prev, List<Node> next) {
         int prevSize = prev.size();
         int nextSize = next.size();
         int max = prevSize + nextSize;
@@ -148,13 +144,13 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
                     break; // all items were scanned
                 } else {
                     // all prev items are scanned, but next items are remaining
-                    Self nextItem = next.get(nextPosition++);
+                    Node nextItem = next.get(nextPosition++);
                     int index = prev.indexOf(nextItem);
 
                     if (index == -1) {
                         patches.add(() -> nextItem.addTo(context, null));
                     } else {
-                        Self prevItem = prev.get(index);
+                        Node prevItem = prev.get(index);
 
                         /**
                          * <p>
@@ -171,12 +167,12 @@ public abstract class TreeNode<Self extends TreeNode, VirtualContext extends Tre
             } else {
                 if (nextSize <= nextPosition) {
                     // all next items are scanned, but prev items are remaining
-                    Self prevItem = prev.get(prevPosition++);
+                    Node prevItem = prev.get(prevPosition++);
                     patches.add(() -> prevItem.removeFrom(context));
                 } else {
                     // prev and next items are remaining
-                    Self prevItem = prev.get(prevPosition);
-                    Self nextItem = next.get(nextPosition);
+                    Node prevItem = prev.get(prevPosition);
+                    Node nextItem = next.get(nextPosition);
 
                     if (prevItem.id == nextItem.id) {
                         // same item
