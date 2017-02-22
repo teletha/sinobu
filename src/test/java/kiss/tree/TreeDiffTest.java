@@ -249,7 +249,7 @@ public class TreeDiffTest {
          */
         protected void text(String text) {
             $(parent -> {
-                parent.nodes.add(new TextNode(text));
+                parent.nodes().add(new TextNode(text));
             });
         }
 
@@ -260,7 +260,7 @@ public class TreeDiffTest {
         private XMLNode dummyRoot() {
             if (dummy == null) {
                 dummy = new XMLNode("", 0, null);
-                dummy.nodes.addAll(root);
+                dummy.nodes().addAll(root);
             }
             return dummy;
         }
@@ -271,7 +271,7 @@ public class TreeDiffTest {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            for (Object child : dummyRoot().nodes) {
+            for (Object child : dummyRoot().nodes()) {
                 builder.append(child);
             }
             return builder.toString();
@@ -293,8 +293,9 @@ public class TreeDiffTest {
          * @param name
          */
         private XMLNode(String name, int id, Object context) {
+            super(id);
+
             this.name = name;
-            this.id = id;
             this.context = this;
         }
 
@@ -304,9 +305,9 @@ public class TreeDiffTest {
         @Override
         protected void addTo(XMLNode parent, Object index) {
             if (index == null) {
-                parent.nodes.add(this);
+                parent.nodes().add(this);
             } else {
-                parent.nodes.add(parent.nodes.indexOf(index), this);
+                parent.nodes().add(parent.nodes().indexOf(index), this);
             }
         }
 
@@ -315,7 +316,7 @@ public class TreeDiffTest {
          */
         @Override
         protected void removeFrom(XMLNode parent) {
-            parent.nodes.remove(this);
+            parent.nodes().remove(this);
         }
 
         /**
@@ -323,8 +324,8 @@ public class TreeDiffTest {
          */
         @Override
         protected void moveTo(XMLNode parent) {
-            parent.nodes.remove(this);
-            parent.nodes.add(this);
+            parent.nodes().remove(this);
+            parent.nodes().add(this);
         }
 
         /**
@@ -332,8 +333,8 @@ public class TreeDiffTest {
          */
         @Override
         protected void replaceFrom(XMLNode parent, XMLNode item) {
-            int index = parent.nodes.indexOf(this);
-            parent.nodes.set(index, item);
+            int index = parent.nodes().indexOf(this);
+            parent.nodes().set(index, item);
         }
 
         /**
@@ -342,7 +343,7 @@ public class TreeDiffTest {
         @Override
         protected void diff(List<Runnable> patches, XMLNode next) {
             diff(patches, attrs, next.attrs, attrs::add, attrs::remove);
-            diff(patches, next.context, nodes, next.nodes);
+            diff(patches, next.context, nodes(), next.nodes());
         }
 
         /**
@@ -353,7 +354,7 @@ public class TreeDiffTest {
             StringBuilder builder = new StringBuilder();
 
             if (name.isEmpty()) {
-                for (Object child : nodes) {
+                for (Object child : nodes()) {
                     builder.append(child);
                 }
                 return builder.toString();
@@ -365,11 +366,11 @@ public class TreeDiffTest {
                 builder.append(" ").append(attr);
             }
 
-            if (nodes.isEmpty()) {
+            if (nodes().isEmpty()) {
                 builder.append("/>");
             } else {
                 builder.append(">");
-                for (Object child : nodes) {
+                for (Object child : nodes()) {
                     builder.append(child);
                 }
                 builder.append("</").append(name).append(">");
@@ -390,8 +391,9 @@ public class TreeDiffTest {
          * @param text
          */
         private TextNode(Object text) {
+            super(text.hashCode());
+            
             this.text = String.valueOf(text);
-            this.id = text.hashCode();
         }
 
         /**
@@ -400,9 +402,9 @@ public class TreeDiffTest {
         @Override
         protected void addTo(XMLNode parent, Object index) {
             if (index == null) {
-                parent.nodes.add(this);
+                parent.nodes().add(this);
             } else {
-                parent.nodes.add(parent.nodes.indexOf(index), this);
+                parent.nodes().add(parent.nodes().indexOf(index), this);
             }
         }
 
@@ -411,7 +413,7 @@ public class TreeDiffTest {
          */
         @Override
         protected void removeFrom(XMLNode parent) {
-            parent.nodes.remove(this);
+            parent.nodes().remove(this);
         }
 
         /**

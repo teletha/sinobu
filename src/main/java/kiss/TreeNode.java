@@ -23,13 +23,27 @@ import java.util.function.Consumer;
 public abstract class TreeNode<Self extends TreeNode, Context> implements Consumer<Self> {
 
     /** The node identifier. */
-    public int id;
+    protected final int id;
 
     /** The associated user context. */
-    public Context context;
+    protected Context context;
 
     /** The children nodes. */
-    public List nodes = new ArrayList();
+    private List nodes;
+
+    /**
+     * @param id
+     */
+    protected TreeNode(int id) {
+        this.id = id;
+    }
+
+    public final List nodes() {
+        if (nodes == null) {
+            nodes = new ArrayList<>();
+        }
+        return nodes;
+    }
 
     /**
      * <p>
@@ -87,7 +101,7 @@ public abstract class TreeNode<Self extends TreeNode, Context> implements Consum
      */
     @Override
     public void accept(Self parent) {
-        parent.nodes.add(this);
+        parent.nodes().add(this);
     }
 
     /**
