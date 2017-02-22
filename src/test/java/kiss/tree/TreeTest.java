@@ -340,7 +340,8 @@ public class TreeTest {
          * {@inheritDoc}
          */
         @Override
-        public void accept(ElementNode context) {
+        public void accept(ElementNode parent) {
+            parent.add(this);
         }
 
         /**
@@ -392,7 +393,8 @@ public class TreeTest {
          * {@inheritDoc}
          */
         @Override
-        public void accept(ElementNode context) {
+        public void accept(ElementNode parent) {
+            parent.add(this);
         }
     }
 
@@ -405,17 +407,7 @@ public class TreeTest {
          * 
          */
         public HTML() {
-            super(ElementNode::new, (context, node) -> {
-                if (node instanceof Id) {
-                    context.attrs.add(new AttributeNode("id", ((Id) node).id));
-                } else if (node instanceof ListItem) {
-                    ElementNode e = new ElementNode("li", 0, node);
-                    e.children.add(new TextNode(node));
-                    context.children.add(e);
-                } else {
-                    node.accept(context);
-                }
-            }, null);
+            super(ElementNode::new, null);
         }
 
         /**
@@ -436,13 +428,13 @@ public class TreeTest {
          * 
          * @param name An attribute name.
          */
-        protected final Consumer attr(Object name, String value) {
-            return context -> {
+        protected final Consumer<ElementNode> attr(Object name, String value) {
+            return parent -> {
                 if (name != null) {
                     String n = String.valueOf(name);
 
                     if (!n.isEmpty()) {
-                        $(new AttributeNode(n, value));
+                        parent.attrs.add(new AttributeNode(n, value));
                     }
                 }
             };
@@ -488,6 +480,22 @@ public class TreeTest {
              */
             private ElementNode(String name, int id, Object context) {
                 this.name = name;
+            }
+
+            /**
+             * @param listItem
+             */
+            public void add(ListItem item) {
+                ElementNode e = new ElementNode("li", 0, item);
+                e.children.add(new TextNode(item));
+                children.add(e);
+            }
+
+            /**
+             * @param id
+             */
+            public void add(Id id) {
+                attrs.add(new AttributeNode("id", id.id));
             }
 
             /**
@@ -565,7 +573,7 @@ public class TreeTest {
         /**
          * @version 2017/02/06 16:12:23
          */
-        private static class AttributeNode implements Consumer<ElementNode> {
+        private static class AttributeNode {
 
             private String name;
 
@@ -578,14 +586,6 @@ public class TreeTest {
             private AttributeNode(String name, String value) {
                 this.name = name;
                 this.value = value;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public void accept(ElementNode context) {
-                context.attrs.add(this);
             }
 
             /**

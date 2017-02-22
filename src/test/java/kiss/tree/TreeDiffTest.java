@@ -215,7 +215,7 @@ public class TreeDiffTest {
          * @param uniqueKeyBuilder
          */
         protected XML() {
-            super(XMLNode::new, null, null);
+            super(XMLNode::new, null);
         }
 
         /**
@@ -248,7 +248,9 @@ public class TreeDiffTest {
          * @param name
          */
         protected void text(String text) {
-            $(new TextNode(text));
+            $(parent -> {
+                parent.nodes.add(new TextNode(text));
+            });
         }
 
         /** The dummy root node. */

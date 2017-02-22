@@ -43,9 +43,6 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     /** The named node creator. */
     private final ThrowableTriFunction<Name, Integer, Object, Node> namedNodeBuilder;
 
-    /** The child node creator. */
-    private final BiConsumer<Node, Consumer> relationshipBuilder;
-
     /** The unique key builder. */
     private final IntUnaryOperator uniqueKeyBuilder;
 
@@ -65,12 +62,10 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      *
      * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and
      *            unique id.
-     * @param relationshipBuilder A builder for parent-child node relationship.
      * @param uniqueKeyBuilder A builder for identical key.
      */
-    protected Tree(ThrowableTriFunction<Name, Integer, Object, Node> namedNodeBuilder, BiConsumer<Node, Consumer> relationshipBuilder, IntUnaryOperator uniqueKeyBuilder) {
+    protected Tree(ThrowableTriFunction<Name, Integer, Object, Node> namedNodeBuilder, IntUnaryOperator uniqueKeyBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
-        this.relationshipBuilder = relationshipBuilder != null ? relationshipBuilder : (context, consumer) -> consumer.accept(context);
         this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder : id -> {
             Exception e = new Exception();
 
@@ -224,7 +219,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
             if (current == null) {
                 root.add(node);
             } else {
-                relationshipBuilder.accept(current, node);
+                node.accept(current);
             }
 
             // update context
@@ -232,9 +227,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
         }
 
         if (followers != null) {
-            for (Consumer<Node> Consumer : followers) {
-                if (Consumer != null) {
-                    relationshipBuilder.accept(current, Consumer);
+            for (Consumer<Node> follower : followers) {
+                if (follower != null) {
+                    follower.accept(current);
                 }
             }
         }
