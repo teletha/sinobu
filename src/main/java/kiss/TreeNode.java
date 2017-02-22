@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * Diffable node of tree structure.
  * </p>
  * 
- * @version 2017/02/14 13:54:02
+ * @version 2017/02/22 16:28:18
  */
 public abstract class TreeNode<Self extends TreeNode, Context> implements Consumer<Self> {
 
@@ -29,18 +29,29 @@ public abstract class TreeNode<Self extends TreeNode, Context> implements Consum
     protected Context context;
 
     /** The children nodes. */
-    private List nodes;
+    private List<TreeNode> nodes;
 
     /**
-     * @param id
+     * <p>
+     * Create node with identifier.
+     * </p>
+     * 
+     * @param id A node identifier.
      */
     protected TreeNode(int id) {
         this.id = id;
     }
 
-    public final List nodes() {
+    /**
+     * <p>
+     * Retrieve the list of child nodes.
+     * </p>
+     * 
+     * @return A list of child nodes.
+     */
+    public final List<TreeNode> nodes() {
         if (nodes == null) {
-            nodes = new ArrayList<>();
+            nodes = new ArrayList<>(2);
         }
         return nodes;
     }
@@ -94,7 +105,8 @@ public abstract class TreeNode<Self extends TreeNode, Context> implements Consum
      * @param patches A list of diff patches.
      * @param next A next state.
      */
-    protected abstract void diff(List<Runnable> patches, Self next);
+    protected void diff(List<Runnable> patches, Self next) {
+    }
 
     /**
      * {@inheritDoc}

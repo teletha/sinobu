@@ -392,7 +392,7 @@ public class TreeDiffTest {
          */
         private TextNode(Object text) {
             super(text.hashCode());
-            
+
             this.text = String.valueOf(text);
         }
 
@@ -429,13 +429,6 @@ public class TreeDiffTest {
          */
         @Override
         protected void moveTo(XMLNode parent) {
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void diff(List<Runnable> patches, TextNode next) {
         }
 
         /**
