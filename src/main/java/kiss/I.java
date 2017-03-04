@@ -2714,72 +2714,7 @@ public class I {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static Disposable load(Class classPath, boolean filter) {
-        Path path = locate(classPath);
-
-        return filter ? modules.load(path.toFile(), classPath.getPackage().getName().replace('.', File.separatorChar)) : load(path);
-    }
-
-    /**
-     * <p>
-     * Load the file as an additional classpath into JVM. If the file indicates the classpath which
-     * is already loaded, that will do nothing at all. The classpath can accept directory or archive
-     * (like Jar). If it is <code>null</code> or a file, this method does nothing.
-     * </p>
-     * <p>
-     * There are two advantages in the classpath loaded by this method. One is that you can add
-     * classpath dynamically and the other is that you can listen to the specified class loading
-     * event.
-     * </p>
-     * <p>
-     * Generally, JVM collects classpath information from various sources (environment variable,
-     * command line option and so on). However those means can't add or remove a classpath
-     * dynamically. This method removes such limitations.
-     * </p>
-     * <p>
-     * <em>NOTE</em> : System class loader in JVM can recognize the classpath which is specified by
-     * usual means, but not by this method. Because Sinobu manages additional classpath for enabling
-     * dynamic manipulation.
-     * </p>
-     *
-     * @param classPath A classpath to load. Directory or archive file (like Jar) can be accepted.
-     * @return A managed {@link ClassLoader}.
-     * @see #unload(Path)
-     * @see kiss.ClassListener#load(Class)
-     * @see java.lang.ClassLoader#getSystemClassLoader()
-     */
-    public static Disposable load(Path classPath) {
-        return classPath == null ? null : modules.load(classPath.toFile(), "");
-    }
-
-    /**
-     * <p>
-     * Unload the file which is an additional classpath in JVM. If the file indicates the classpath
-     * which is not loaded yet, that will be ignored. The classpath can accept directory or archive
-     * (like Jar). If it is <code>null</code> or a file, this method does nothing.
-     * </p>
-     * <p>
-     * There are two advantages in the classpath loaded by this method. One is that you can remove
-     * classpath dynamically and the other is that you can listen to the specified class unloading
-     * event.
-     * </p>
-     * <p>
-     * Generally, JVM collects classpath information from various sources (environment variable,
-     * command line option and so on). However those means can't add or remove a classpath
-     * dynamically. This method removes such limitations.
-     * </p>
-     * <p>
-     * <em>NOTE</em> : System class loader in JVM can recognize the classpath which is specified by
-     * usual means, but not by this method. Because Sinobu manages additional classpath for enabling
-     * dynamic manipulation.
-     * </p>
-     *
-     * @param classPath A classpath to unload. Directory or archive file (like Jar) can be accepted.
-     * @see #load(Path)
-     * @see kiss.ClassListener#unload(Class)
-     * @see java.lang.ClassLoader#getSystemClassLoader()
-     */
-    public static void unload(Path classPath) {
-        modules.unload(classPath.toFile());
+        return modules.load(locate(classPath), filter ? classPath.getPackage().getName().replace('.', File.separatorChar) : "");
     }
 
     /**

@@ -10,6 +10,8 @@
 package kiss;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,9 +40,9 @@ class Modules extends ClassVariable<Lifestyle> implements Decoder<Class>, Encode
      * 
      * @param path A module path to load. Directory or archive path (like Jar) can be accepted.
      */
-    Disposable load(File path, String pattern) {
+    Disposable load(Path path, String pattern) {
         // check module file
-        if (path != null && path.exists()) {
+        if (path != null && Files.exists(path)) {
             try {
                 // check duplication
                 for (Module module : modules) {
@@ -50,7 +52,7 @@ class Modules extends ClassVariable<Lifestyle> implements Decoder<Class>, Encode
                 }
 
                 // build module
-                Module module = new Module(path, pattern);
+                Module module = new Module(path.toFile(), pattern);
 
                 // Load module for the specified directory. The new module has high priority than
                 // previous.
