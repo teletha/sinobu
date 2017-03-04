@@ -2748,14 +2748,10 @@ public class I {
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();
 
-            for (Class extension : list) {
-                manage(extension, true);
-            }
+            manage(list, true);
 
             return () -> {
-                for (Class extension : list) {
-                    manage(extension, false);
-                }
+                manage(list, false);
             };
         } catch (Exception e) {
             throw I.quiet(e);
@@ -2787,45 +2783,49 @@ public class I {
      * Extension (un)registration.
      * </p>
      * 
-     * @param extension A target extension.
+     * @param list A list of extensions.
      * @param regist A state for registration or unregistration.
      */
-    private static void manage(Class<Extensible> extension, boolean regist) {
-        // search and collect information for all extension points
-        for (Class extensionPoint : Model.collectTypes(extension)) {
-            if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
-                // register new extension
-                if (regist) {
-                    extensions.push(extensionPoint, extension);
-                } else {
-                    extensions.pull(extensionPoint, extension);
-                }
-
-                // register extension key
-                java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
-
-                if (params.length != 0 && params[0] != Object.class) {
-                    Class clazz = (Class) params[0];
-                    // register extension by key
-                    String key = extensionPoint.getName().concat(clazz.getName());
+    private static void manage(List<Class> list, boolean regist) {
+        for (Class<Extensible> extension : list) {
+            // search and collect information for all extension points
+            for (Class extensionPoint : Model.collectTypes(extension)) {
+                if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
+                    // register new extension
                     if (regist) {
-                        keys.push(key, extension);
+                        extensions.push(extensionPoint, extension);
                     } else {
-                        keys.pull(key, extension);
+                        extensions.pull(extensionPoint, extension);
                     }
 
-                    // Task : unregister extension by key
+                    // register extension key
+                    java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
 
-                    // The user has registered a newly custom lifestyle, so we should update
-                    // lifestyle for this extension key class. Normally, when we update some data,
-                    // it is desirable to store the previous data to be able to restore it later.
-                    // But, in this case, the contextual sensitive instance that the lifestyle emits
-                    // changes twice on "load" and "unload" event from the point of view of the
-                    // user. So the previous data becomes all but meaningless for a cacheable
-                    // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
-                    // refresh lifestyles associated with this extension key class.
-                    if (extensionPoint == Lifestyle.class) {
-                        lifestyles.remove(clazz);
+                    if (params.length != 0 && params[0] != Object.class) {
+                        Class clazz = (Class) params[0];
+                        // register extension by key
+                        String key = extensionPoint.getName().concat(clazz.getName());
+                        if (regist) {
+                            keys.push(key, extension);
+                        } else {
+                            keys.pull(key, extension);
+                        }
+
+                        // Task : unregister extension by key
+
+                        // The user has registered a newly custom lifestyle, so we should update
+                        // lifestyle for this extension key class. Normally, when we update some
+                        // data, it is desirable to store the previous data to be able to restore it
+                        // later.
+                        // But, in this case, the contextual sensitive instance that the lifestyle
+                        // emits changes twice on "load" and "unload" event from the point of view
+                        // of the user.
+                        // So the previous data becomes all but meaningless for a cacheable
+                        // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we
+                        // completely refresh lifestyles associated with this extension key class.
+                        if (extensionPoint == Lifestyle.class) {
+                            lifestyles.remove(clazz);
+                        }
                     }
                 }
             }
