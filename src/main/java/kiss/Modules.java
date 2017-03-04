@@ -10,7 +10,6 @@
 package kiss;
 
 import java.io.File;
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -39,7 +38,7 @@ class Modules extends ClassVariable<Lifestyle> implements Decoder<Class>, Encode
      * 
      * @param path A module path to load. Directory or archive path (like Jar) can be accepted.
      */
-    URLClassLoader load(File path, String pattern) {
+    Disposable load(File path, String pattern) {
         // check module file
         if (path != null && path.exists()) {
             try {

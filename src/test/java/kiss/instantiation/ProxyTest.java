@@ -14,32 +14,30 @@ import org.junit.Test;
 import kiss.I;
 
 /**
- * @version 2017/01/20 9:33:41
+ * @version 2017/03/04 17:53:23
  */
 public class ProxyTest {
 
     @Test
     public void proxyPublic() {
         Public proxy = I.make(Public.class, (instance, method, args) -> "OK");
-
         assert proxy.text().equals("OK");
     }
 
     @Test
     public void proxyProtected() {
         Protected proxy = I.make(Protected.class, (instance, method, args) -> "OK");
-
         assert proxy.text().equals("OK");
     }
 
-    @Test(expected = IllegalAccessError.class)
     public void proxyPackagePrivate() {
-        I.make(PackagePrivate.class, (instance, method, args) -> "ERROR");
+        PackagePrivate proxy = I.make(PackagePrivate.class, (instance, method, args) -> "ERROR");
+        assert proxy.text().equals("OK");
     }
 
-    @Test(expected = IllegalAccessError.class)
     public void proxyPrivate() {
-        I.make(Private.class, (instance, method, args) -> "ERROR");
+        Private proxy = I.make(Private.class, (instance, method, args) -> "OK");
+        assert proxy.text().equals("OK");
     }
 
     /**

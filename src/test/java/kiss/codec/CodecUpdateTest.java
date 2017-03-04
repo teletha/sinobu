@@ -9,11 +9,10 @@
  */
 package kiss.codec;
 
-import java.net.URLClassLoader;
-
 import org.junit.Test;
 
 import kiss.Decoder;
+import kiss.Disposable;
 import kiss.Encoder;
 import kiss.I;
 import kiss.model.Model;
@@ -25,13 +24,13 @@ public class CodecUpdateTest {
 
     @Test
     public void loadAndUnload() throws Exception {
-        URLClassLoader loader = I.load(CodecUpdateTest.class, true);
+        Disposable unloader = I.load(CodecUpdateTest.class, true);
 
         Model<Integer> model = Model.of(Integer.class);
         assert model.encode(10).equals("UserDefinedCodec");
         assert model.decode("10") == 0;
 
-        loader.close();
+        unloader.dispose();
 
         assert model.encode(10).equals("10");
         assert model.decode("10") == 10;

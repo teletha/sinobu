@@ -9,9 +9,6 @@
  */
 package kiss;
 
-import java.io.IOException;
-import java.net.URLClassLoader;
-
 import org.junit.After;
 import org.junit.Before;
 
@@ -22,7 +19,7 @@ public abstract class LoadableTestBase {
 
     private final Class base;
 
-    private URLClassLoader loaded;
+    private Disposable loaded;
 
     /**
      * 
@@ -50,13 +47,9 @@ public abstract class LoadableTestBase {
      */
     @After
     public final void unloadClasses() {
-        try {
-            if (loaded != null) {
-                loaded.close();
-                loaded = null;
-            }
-        } catch (IOException e) {
-            throw I.quiet(e);
+        if (loaded != null) {
+            loaded.dispose();
+            loaded = null;
         }
     }
 }

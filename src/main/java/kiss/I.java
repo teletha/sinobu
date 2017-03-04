@@ -35,7 +35,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -429,7 +428,7 @@ public class I {
 
         // Load myself as module. All built-in classload listeners and extension points will be
         // loaded and activated.
-        $loader = load(I.class, true);
+        load(I.class, true);
     }
 
     /**
@@ -2415,14 +2414,11 @@ public class I {
             }
         }
 
-        for (Module module : modules.modules) {
-            try {
-                return Class.forName(fqcn, false, module);
-            } catch (ClassNotFoundException e) {
-                // continue
-            }
+        try {
+            return Class.forName(fqcn);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(fqcn);
         }
-        throw new IllegalArgumentException(fqcn);
     }
 
     /**
@@ -2717,7 +2713,7 @@ public class I {
      * @see kiss.ClassListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static URLClassLoader load(Class classPath, boolean filter) {
+    public static Disposable load(Class classPath, boolean filter) {
         Path path = locate(classPath);
 
         return filter ? modules.load(path.toFile(), classPath.getPackage().getName().replace('.', File.separatorChar)) : load(path);
@@ -2751,7 +2747,7 @@ public class I {
      * @see kiss.ClassListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static URLClassLoader load(Path classPath) {
+    public static Disposable load(Path classPath) {
         return classPath == null ? null : modules.load(classPath.toFile(), "");
     }
 

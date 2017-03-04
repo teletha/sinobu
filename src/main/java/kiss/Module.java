@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +48,7 @@ import kiss.model.Model;
  *
  * @version 2016/11/12 13:37:44
  */
-class Module extends URLClassLoader {
+class Module implements Disposable {
 
     /**
      * The root of this module.
@@ -75,8 +73,6 @@ class Module extends URLClassLoader {
      * @param file A module path as classpath, A <code>null</code> is not accepted.
      */
     Module(File file, String pattern) throws MalformedURLException {
-        super(new URL[] {file.toURI().toURL()}, I.$loader);
-
         // Store original module path for unloading.
         this.path = file.getAbsoluteFile();
         this.pattern = pattern;
@@ -171,7 +167,7 @@ class Module extends URLClassLoader {
 
         try {
             // lazy evaluation
-            Class clazz = loadClass((String) info[0]);
+            Class clazz = Class.forName((String) info[0]);
 
             if (Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum()) {
                 info[1] = new int[0];
@@ -217,16 +213,13 @@ class Module extends URLClassLoader {
      * {@inheritDoc}
      */
     @Override
-    public void close() throws IOException {
+    public void dispose() {
         // fire event
         for (Class provider : find(Extensible.class, false)) {
             if (!provider.isAnonymousClass()) I.unload(provider);
         }
 
         // unload
-        boolean remove = I.modules.modules.remove(this);
-
-        // close classloader
-        super.close();
+        I.modules.modules.remove(this);
     }
 }
