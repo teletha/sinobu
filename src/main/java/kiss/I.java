@@ -2115,11 +2115,23 @@ public class I {
      * Ease the checked exception on lambda.
      * </p>
      * 
-     * @param function A checked function.
-     * @return A unchecked function.
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
      */
-    public static <P, R> Function<P, R> quiet(ThrowableFunction<P, R> function) {
-        return function;
+    public static <P, R> Function<P, R> quiet(ThrowableFunction<P, R> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <P> Consumer<P> quiet(ThrowableConsumer<P> lambda) {
+        return lambda;
     }
 
     /**
@@ -2731,8 +2743,7 @@ public class I {
 
             List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
-                    .map(I.quiet(Class::forName))
-                    .as(Class.class)
+                    .map(I.<String, Class>quiet(Class::forName))
                     .take(clazz -> Extensible.class.isAssignableFrom(clazz))
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();

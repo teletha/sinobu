@@ -297,7 +297,7 @@ public class CoreMethodsTest {
      */
     @Test
     public void testQuietWithNull() {
-        I.quiet(null);
+        I.quiet((Object) null);
     }
 
     /**
