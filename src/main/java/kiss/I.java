@@ -79,6 +79,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -2719,16 +2721,56 @@ public class I {
 
         try {
             // build module
-            Module module = new Module(path.toFile(), pattern);
+            File file = path.toFile();
+            int prefix = file.getAbsolutePath().length() + 1;
 
-            // fire event
-            for (Class provider : module.find(Extensible.class, false)) {
-                if (!provider.isAnonymousClass()) I.load(provider);
+            // At first, we must scan the specified directory or archive. If the module file is
+            // archive, Sinobu automatically try to switch to other file system (e.g.
+            // ZipFileSystem).
+            Events<String> names = file.isFile()
+                    ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName).map(name -> name.replace('/', '.'))
+                    : Events.from(scan(file, new ArrayList<>())).map(File::getAbsolutePath).map(name -> name.substring(prefix));
+
+            ListProperty<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
+                    .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
+                    .map(I.quiet(Class::forName))
+                    .as(Class.class)
+                    .take(clazz -> Extensible.class.isAssignableFrom(clazz))
+                    .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
+                    .toList();
+
+            for (Class extensible : list) {
+                load(extensible);
             }
-            return module;
+
+            return () -> {
+                for (Class extensible : list) {
+                    unload(extensible);
+                }
+            };
         } catch (Exception e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Dig class files in directory.
+     * </p>
+     *
+     * @param file A current location.
+     * @param files A list of collected files.
+     * @return A list of collected files.
+     */
+    private static List<File> scan(File file, List<File> files) {
+        if (file.isDirectory()) {
+            for (File sub : file.listFiles()) {
+                scan(sub, files);
+            }
+        } else {
+            files.add(file);
+        }
+        return files;
     }
 
     /**
