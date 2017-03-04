@@ -230,7 +230,7 @@ import kiss.model.Property;
  *
  * @version 2016/10/18 16:09:02
  */
-public class I implements ClassListener<Extensible> {
+public class I {
 
     // Candidates of Method Name
     //
@@ -2093,7 +2093,7 @@ public class I implements ClassListener<Extensible> {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2788,8 +2788,7 @@ public class I implements ClassListener<Extensible> {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void load(Class<Extensible> extension) {
+    static void load(Class<Extensible> extension) {
         // search and collect information for all extension points
         for (Class extensionPoint : Model.collectTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
@@ -2825,8 +2824,7 @@ public class I implements ClassListener<Extensible> {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void unload(Class<Extensible> extension) {
+    static void unload(Class<Extensible> extension) {
         // search and collect information for all extension points
         for (Class extensionPoint : Model.collectTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {

@@ -50,7 +50,6 @@ public class ModulesTest {
     public void before() {
         modules = new Modules();
         modules.modules.clear();
-        modules.types.clear();
     }
 
     @Test
@@ -147,7 +146,7 @@ public class ModulesTest {
         I.copy(module1.path, relativeModule);
 
         try {
-            assert!relativeModule.isAbsolute();
+            assert !relativeModule.isAbsolute();
             assert 0 == modules.modules.size();
 
             // as relative

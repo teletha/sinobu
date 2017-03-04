@@ -10,73 +10,23 @@
 package kiss;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import kiss.model.Model;
 
 /**
  * @version 2014/01/31 10:54:06
  */
 @Manageable(lifestyle = Singleton.class)
-class Modules extends ClassVariable<Lifestyle> implements ClassListener, Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
+class Modules extends ClassVariable<Lifestyle> implements Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
 
     /** The module list. */
     final List<Module> modules = new CopyOnWriteArrayList();
 
     /**
-     * The two length class array for class load listener. (0 : ClassLoadListener class, 1 : Target
-     * class to listen)
-     */
-    final List<Object[]> types = new CopyOnWriteArrayList();
-
-    /**
      * Avoid construction
      */
     Modules() {
-        // built-in ClassLoadListener
-        types.add(new Object[] {this, ClassListener.class});
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void load(Class clazz) {
-        if (clazz != Modules.class) {
-            Object[] types = {I.make(clazz), Object.class};
-            Type[] params = Model.collectParameters(clazz, ClassListener.class);
-
-            if (params.length != 0) {
-                types[1] = params[0];
-            }
-
-            // The new ClassLoadListener is introduced by some module. For all existing modules,
-            // that is unknown. So we must notify this event to all modules.
-            for (Module module : modules) {
-                for (Class provider : module.find((Class<?>) types[1], false)) {
-                    ((ClassListener) types[0]).load(provider);
-                }
-            }
-
-            // register
-            this.types.add(types);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void unload(Class clazz) {
-        for (Object[] types : this.types) {
-            if (Model.of(types[0]).type == clazz) {
-                this.types.remove(types);
-                return;
-            }
-        }
     }
 
     /**
@@ -107,10 +57,8 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Decoder
                 modules.add(0, module);
 
                 // fire event
-                for (Object[] types : this.types) {
-                    for (Class provider : module.find((Class<?>) types[1], false)) {
-                        if (!provider.isAnonymousClass()) ((ClassListener) types[0]).load(provider);
-                    }
+                for (Class provider : module.find(Extensible.class, false)) {
+                    if (!provider.isAnonymousClass()) I.load(provider);
                 }
                 return module.loader;
             } catch (Exception e) {
@@ -137,10 +85,8 @@ class Modules extends ClassVariable<Lifestyle> implements ClassListener, Decoder
                 try {
                     if (module.path.equals(path)) {
                         // fire event
-                        for (Object[] types : this.types) {
-                            for (Class provider : module.find((Class<?>) types[1], false)) {
-                                if (!provider.isAnonymousClass()) ((ClassListener) types[0]).unload(provider);
-                            }
+                        for (Class provider : module.find(Extensible.class, false)) {
+                            if (!provider.isAnonymousClass()) I.unload(provider);
                         }
 
                         // unload

@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import kiss.model.Model;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -18,10 +16,16 @@ import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import kiss.model.Model;
 
 /**
  * <h2>Module System</h2>
@@ -83,7 +87,7 @@ class Module {
         // Store original module path for unloading.
         this.path = file.getAbsoluteFile();
         this.pattern = pattern;
-        this.loader = new URLClassLoader(new URL[]{file.toURI().toURL()}, I.$loader);
+        this.loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, I.$loader);
 
         // start scanning class files
         try {
@@ -96,7 +100,8 @@ class Module {
                     ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName).map(name -> name.replace('/', '.'))
                     : Events.from(scan(file, new ArrayList<>())).map(File::getAbsolutePath).map(name -> name.substring(prefix));
 
-            names.take(name -> name.endsWith(".class") && name.startsWith(pattern)).to(name -> infos.add(new Object[]{name.substring(0, name.length() - 6).replace(File.separatorChar, '.'), null}));
+            names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
+                    .to(name -> infos.add(new Object[] {name.substring(0, name.length() - 6).replace(File.separatorChar, '.'), null}));
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -107,7 +112,7 @@ class Module {
      * Dig class files in directory.
      * </p>
      *
-     * @param file  A current location.
+     * @param file A current location.
      * @param files A list of collected files.
      * @return A list of collected files.
      */
@@ -125,10 +130,10 @@ class Module {
     /**
      * Collect all service provider classes which is managed by this module.
      *
-     * @param <S>    A type of service provider interface.
-     * @param spi    A service provider interface.
+     * @param <S> A type of service provider interface.
+     * @param spi A service provider interface.
      * @param single A flag for finding mode. <code>true</code> is single mode, <code>false</code>
-     *               is all mode.
+     *            is all mode.
      * @return A list of all service provider classes in this module. Never be <code>null</code>.
      */
     <S> List<Class<S>> find(Class<S> spi, boolean single) {
@@ -210,7 +215,7 @@ class Module {
 
             // API definition
             return test(hash, info);
-        } catch (ClassNotFoundException e) {
+        } catch (Throwable e) {
             info[1] = new int[0];
             return false;
         }
