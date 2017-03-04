@@ -227,8 +227,8 @@ import kiss.model.Property;
  * <dd>All descendant paths which are under the user specified path and have ".html" suffix are
  * matched. (root path will not match)</dd>
  * </dl>
- *
- * @version 2016/10/18 16:09:02
+ * 
+ * @version 2017/03/04 19:10:01
  */
 public class I {
 
@@ -294,8 +294,8 @@ public class I {
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
-    /** The cache for Module, Model and Lifestyle. */
-    static final Modules modules = new Modules();
+    /** The cache for {@link Lifestyle}. */
+    private static final ClassVariable<Lifestyle> lifestyles = new ClassVariable<>();
 
     /** The mapping from extension point to extensions. */
     private static final Table<Class, Class> extensions = new Table();
@@ -363,17 +363,17 @@ public class I {
     // initialization
     static {
         // built-in lifestyles
-        modules.set(List.class, ArrayList::new);
-        modules.set(Map.class, HashMap::new);
-        modules.set(Set.class, HashSet::new);
-        modules.set(Lifestyle.class, new Prototype(Prototype.class));
-        modules.set(Prototype.class, new Prototype(Prototype.class));
-        modules.set(ListProperty.class, () -> new SimpleListProperty(FXCollections.observableArrayList()));
-        modules.set(ObservableList.class, FXCollections::observableArrayList);
-        modules.set(MapProperty.class, () -> new SimpleMapProperty(FXCollections.observableHashMap()));
-        modules.set(ObservableMap.class, FXCollections::observableHashMap);
-        modules.set(SetProperty.class, () -> new SimpleSetProperty(FXCollections.observableSet()));
-        modules.set(ObservableSet.class, FXCollections::observableSet);
+        lifestyles.set(List.class, ArrayList::new);
+        lifestyles.set(Map.class, HashMap::new);
+        lifestyles.set(Set.class, HashSet::new);
+        lifestyles.set(Lifestyle.class, new Prototype(Prototype.class));
+        lifestyles.set(Prototype.class, new Prototype(Prototype.class));
+        lifestyles.set(ListProperty.class, () -> new SimpleListProperty(FXCollections.observableArrayList()));
+        lifestyles.set(ObservableList.class, FXCollections::observableArrayList);
+        lifestyles.set(MapProperty.class, () -> new SimpleMapProperty(FXCollections.observableHashMap()));
+        lifestyles.set(ObservableMap.class, FXCollections::observableHashMap);
+        lifestyles.set(SetProperty.class, () -> new SimpleSetProperty(FXCollections.observableSet()));
+        lifestyles.set(ObservableSet.class, FXCollections::observableSet);
 
         try {
             // Create the root temporary directory for Sinobu.
@@ -1204,7 +1204,7 @@ public class I {
 
         // At first, we must confirm the cached lifestyle associated with the model class. If
         // there is no such cache, we will try to create newly lifestyle.
-        Lifestyle<M> lifestyle = modules.get(modelClass);
+        Lifestyle<M> lifestyle = lifestyles.get(modelClass);
 
         if (lifestyle != null) return lifestyle; // use cache
 
@@ -1269,7 +1269,7 @@ public class I {
             }
 
             // This lifestyle is safe and has no circular dependencies.
-            return modules.let(modelClass, lifestyle);
+            return lifestyles.let(modelClass, lifestyle);
         } finally {
             dependency.pollLast();
         }
@@ -2507,7 +2507,7 @@ public class I {
      * @throws NullPointerException If the input Java object is <code>null</code> .
      */
     public static void write(Object input) {
-        Lifestyle lifestyle = modules.get(Model.of(input).type);
+        Lifestyle lifestyle = lifestyles.get(Model.of(input).type);
 
         if (lifestyle instanceof Preference) {
             write(input, ((Preference) lifestyle).path);
@@ -2714,7 +2714,21 @@ public class I {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static Disposable load(Class classPath, boolean filter) {
-        return modules.load(locate(classPath), filter ? classPath.getPackage().getName().replace('.', File.separatorChar) : "");
+        Path path = locate(classPath);
+        String pattern = filter ? classPath.getPackage().getName().replace('.', File.separatorChar) : "";
+
+        try {
+            // build module
+            Module module = new Module(path.toFile(), pattern);
+
+            // fire event
+            for (Class provider : module.find(Extensible.class, false)) {
+                if (!provider.isAnonymousClass()) I.load(provider);
+            }
+            return module;
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -2746,7 +2760,7 @@ public class I {
                     // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
-                        modules.remove(clazz);
+                        lifestyles.remove(clazz);
                     }
                 }
             }
@@ -2782,7 +2796,7 @@ public class I {
                     // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
                     // refresh lifestyles associated with this extension key class.
                     if (extensionPoint == Lifestyle.class) {
-                        modules.remove(clazz);
+                        lifestyles.remove(clazz);
                     }
                 }
             }

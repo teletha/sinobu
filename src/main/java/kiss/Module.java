@@ -218,8 +218,5 @@ class Module implements Disposable {
         for (Class provider : find(Extensible.class, false)) {
             if (!provider.isAnonymousClass()) I.unload(provider);
         }
-
-        // unload
-        I.modules.modules.remove(this);
     }
 }
