@@ -2716,22 +2716,20 @@ public class I {
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
     public static Disposable load(Class classPath, boolean filter) {
-        Path path = locate(classPath);
         String pattern = filter ? classPath.getPackage().getName().replace('.', File.separatorChar) : "";
 
         try {
-            // build module
-            File file = path.toFile();
-            int prefix = file.getAbsolutePath().length() + 1;
+            File file = locate(classPath).toFile().getAbsoluteFile();
+            int prefix = file.getPath().length() + 1;
 
             // At first, we must scan the specified directory or archive. If the module file is
             // archive, Sinobu automatically try to switch to other file system (e.g.
             // ZipFileSystem).
             Events<String> names = file.isFile()
                     ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName).map(name -> name.replace('/', '.'))
-                    : Events.from(scan(file, new ArrayList<>())).map(File::getAbsolutePath).map(name -> name.substring(prefix));
+                    : Events.from(scan(file, new ArrayList<>())).map(File::getPath).map(name -> name.substring(prefix));
 
-            ListProperty<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
+            List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
                     .map(I.quiet(Class::forName))
                     .as(Class.class)
@@ -2739,13 +2737,13 @@ public class I {
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();
 
-            for (Class extensible : list) {
-                load(extensible);
+            for (Class extension : list) {
+                manage(extension, true);
             }
 
             return () -> {
-                for (Class extensible : list) {
-                    unload(extensible);
+                for (Class extension : list) {
+                    manage(extension, false);
                 }
             };
         } catch (Exception e) {
@@ -2774,50 +2772,23 @@ public class I {
     }
 
     /**
-     * {@inheritDoc}
+     * <p>
+     * Extension (un)registration.
+     * </p>
+     * 
+     * @param extension A target extension.
+     * @param regist A state for registration or unregistration.
      */
-    static void load(Class<Extensible> extension) {
+    private static void manage(Class<Extensible> extension, boolean regist) {
         // search and collect information for all extension points
         for (Class extensionPoint : Model.collectTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register new extension
-                extensions.push(extensionPoint, extension);
-
-                // register extension key
-                java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
-
-                if (params.length != 0 && params[0] != Object.class) {
-                    Class clazz = (Class) params[0];
-                    // register extension by key
-                    keys.push(extensionPoint.getName().concat(clazz.getName()), extension);
-
-                    // Task : unregister extension by key
-
-                    // The user has registered a newly custom lifestyle, so we should update
-                    // lifestyle for this extension key class. Normally, when we update some data,
-                    // it is desirable to store the previous data to be able to restore it later.
-                    // But, in this case, the contextual sensitive instance that the lifestyle emits
-                    // changes twice on "load" and "unload" event from the point of view of the
-                    // user. So the previous data becomes all but meaningless for a cacheable
-                    // lifestyles (e.g. Singleton and ThreadSpecifiec). Therefore we we completely
-                    // refresh lifestyles associated with this extension key class.
-                    if (extensionPoint == Lifestyle.class) {
-                        lifestyles.remove(clazz);
-                    }
+                if (regist) {
+                    extensions.push(extensionPoint, extension);
+                } else {
+                    extensions.pull(extensionPoint, extension);
                 }
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    static void unload(Class<Extensible> extension) {
-        // search and collect information for all extension points
-        for (Class extensionPoint : Model.collectTypes(extension)) {
-            if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
-                // register new extension
-                extensions.pull(extensionPoint, extension);
 
                 // register extension key
                 java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
@@ -2825,7 +2796,12 @@ public class I {
                 if (params.length != 0 && params[0] != Object.class) {
                     Class clazz = (Class) params[0];
                     // register extension by key
-                    keys.pull(extensionPoint.getName().concat(clazz.getName()), extension);
+                    String key = extensionPoint.getName().concat(clazz.getName());
+                    if (regist) {
+                        keys.push(key, extension);
+                    } else {
+                        keys.pull(key, extension);
+                    }
 
                     // Task : unregister extension by key
 
