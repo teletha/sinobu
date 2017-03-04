@@ -9,13 +9,13 @@
  */
 package kiss.codec;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
+import java.net.URLClassLoader;
+
 import org.junit.Test;
 
-import antibug.PrivateModule;
 import kiss.Decoder;
 import kiss.Encoder;
+import kiss.I;
 import kiss.model.Model;
 
 /**
@@ -23,17 +23,16 @@ import kiss.model.Model;
  */
 public class CodecUpdateTest {
 
-    @Rule
-    @ClassRule
-    public static PrivateModule module = new PrivateModule(true, false);
-
     @Test
-    public void loadAndUnload() {
+    public void loadAndUnload() throws Exception {
+        URLClassLoader loader = I.load(CodecUpdateTest.class, true);
+
         Model<Integer> model = Model.of(Integer.class);
         assert model.encode(10).equals("UserDefinedCodec");
         assert model.decode("10") == 0;
 
-        module.unload();
+        loader.close();
+
         assert model.encode(10).equals("10");
         assert model.decode("10") == 10;
     }

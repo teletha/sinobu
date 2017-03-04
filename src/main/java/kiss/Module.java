@@ -50,7 +50,7 @@ import kiss.model.Model;
  *
  * @version 2016/11/12 13:37:44
  */
-class Module {
+class Module extends URLClassLoader {
 
     /**
      * The root of this module.
@@ -61,11 +61,6 @@ class Module {
      * The class pattern which this module loads.
      */
     final String pattern;
-
-    /**
-     * The module classloader.
-     */
-    final ClassLoader loader;
 
     /**
      * The list of classes (by class and interface). [java.lang.String or Class, int[]]
@@ -80,14 +75,11 @@ class Module {
      * @param file A module path as classpath, A <code>null</code> is not accepted.
      */
     Module(File file, String pattern) throws MalformedURLException {
-        // we don't need to check null because this is internal class
-        // if (moduleFile == null) {
-        // }
+        super(new URL[] {file.toURI().toURL()}, I.$loader);
 
         // Store original module path for unloading.
         this.path = file.getAbsoluteFile();
         this.pattern = pattern;
-        this.loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, I.$loader);
 
         // start scanning class files
         try {
@@ -179,7 +171,7 @@ class Module {
 
         try {
             // lazy evaluation
-            Class clazz = loader.loadClass((String) info[0]);
+            Class clazz = loadClass((String) info[0]);
 
             if (Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum()) {
                 info[1] = new int[0];
@@ -219,5 +211,22 @@ class Module {
             info[1] = new int[0];
             return false;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() throws IOException {
+        // fire event
+        for (Class provider : find(Extensible.class, false)) {
+            if (!provider.isAnonymousClass()) I.unload(provider);
+        }
+
+        // unload
+        boolean remove = I.modules.modules.remove(this);
+
+        // close classloader
+        super.close();
     }
 }

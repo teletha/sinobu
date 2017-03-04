@@ -7,17 +7,17 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.extension;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import antibug.PrivateModule;
+import kiss.Extensible;
+import kiss.I;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
 import kiss.sample.bean.Student;
@@ -27,9 +27,10 @@ import kiss.sample.bean.Student;
  */
 public class ExtensibleTest {
 
-    @Rule
-    @ClassRule
-    public static PrivateModule module = new PrivateModule();
+    @BeforeClass
+    public static void init() {
+        I.load(ExtensibleTest.class, true);
+    }
 
     @Test
     public void listByClass() {
@@ -50,13 +51,6 @@ public class ExtensibleTest {
     @Test(expected = NullPointerException.class)
     public void listByNull() {
         I.find(null);
-    }
-
-    @Test
-    public void unlist() throws Exception {
-        assert 5 == I.find(EPClass.class).size();
-        module.unload();
-        assert 0 == I.find(EPClass.class).size();
     }
 
     @Test
@@ -102,16 +96,6 @@ public class ExtensibleTest {
     @Test
     public void keyByNullExtensionPoint() throws Exception {
         assert I.find(null, Person.class) == null;
-    }
-
-    @Test
-    public void unkey() throws Exception {
-        KEPClass extension = I.find(KEPClass.class, Person.class);
-        assert extension != null;
-        assert KEPClassExtension1.class == extension.getClass();
-
-        module.unload();
-        assert I.find(KEPClass.class, Person.class) == null;
     }
 
     @Test

@@ -35,6 +35,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -295,7 +296,7 @@ public class I {
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
     /** The cache for Module, Model and Lifestyle. */
-    private static final Modules modules = new Modules();
+    static final Modules modules = new Modules();
 
     /** The mapping from extension point to extensions. */
     private static final Table<Class, Class> extensions = new Table();
@@ -2416,7 +2417,7 @@ public class I {
 
         for (Module module : modules.modules) {
             try {
-                return Class.forName(fqcn, false, module.loader);
+                return Class.forName(fqcn, false, module);
             } catch (ClassNotFoundException e) {
                 // continue
             }
@@ -2716,7 +2717,7 @@ public class I {
      * @see kiss.ClassListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static ClassLoader load(Class classPath, boolean filter) {
+    public static URLClassLoader load(Class classPath, boolean filter) {
         Path path = locate(classPath);
 
         return filter ? modules.load(path.toFile(), classPath.getPackage().getName().replace('.', File.separatorChar)) : load(path);
@@ -2750,7 +2751,7 @@ public class I {
      * @see kiss.ClassListener#load(Class)
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static ClassLoader load(Path classPath) {
+    public static URLClassLoader load(Path classPath) {
         return classPath == null ? null : modules.load(classPath.toFile(), "");
     }
 

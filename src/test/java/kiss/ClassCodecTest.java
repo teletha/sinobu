@@ -9,62 +9,57 @@
  */
 package kiss;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
-import antibug.PrivateModule;
-
 /**
- * @version 2013/07/27 3:53:40
+ * @version 2017/03/04 16:23:33
  */
 public class ClassCodecTest {
 
-    @Rule
-    @ClassRule
-    public static final PrivateModule module = new PrivateModule(true, false);
+    private Decoder<Class> decoder = I.find(Decoder.class, Class.class);
+
+    private Encoder<Class> encoder = I.find(Encoder.class, Class.class);
 
     @Test
     public void systemClass() throws Exception {
-        Modules codec = new Modules();
-        Class clazz = codec.decode("java.lang.String");
-        assert clazz != null;
-        assert codec.encode(clazz).equals("java.lang.String");
+        assertClass(String.class);
     }
 
     @Test
     public void systemClassArray() throws Exception {
-        Modules codec = new Modules();
-        Class clazz = codec.decode("[Ljava.lang.String;");
-        assert clazz != null;
-        assert codec.encode(clazz).equals("[Ljava.lang.String;");
+        assertClass(String[].class);
     }
 
     @Test
-    public void moduleClass() throws Exception {
-        Class clazz = module.convert(Private.class);
-        assert Private.class != clazz;
-
-        Modules codec = new Modules();
-        String fqcn = codec.encode(clazz);
-        assert Private.class.getName() != fqcn;
-        assert codec.decode(fqcn).equals(clazz);
+    public void userClass() throws Exception {
+        assertClass(ClassCodecTest.class);
     }
 
     @Test
-    public void moduleClassArray() throws Exception {
-        Class clazz = module.convert(Private[].class);
-        assert Private[].class != clazz;
+    public void userClassArray() throws Exception {
+        assertClass(ClassCodecTest[].class);
+    }
 
-        Modules codec = new Modules();
-        String fqcn = codec.encode(clazz);
-        assert Private[].class.getName() != fqcn;
-        assert codec.decode(fqcn).equals(clazz);
+    @Test
+    public void primitiveClass() throws Exception {
+        assertClass(int.class);
+    }
+
+    @Test
+    public void primitiveClassArray() throws Exception {
+        assertClass(int[].class);
     }
 
     /**
-     * @version 2010/02/04 9:43:23
+     * <p>
+     * Helper method to test.
+     * </p>
+     * 
+     * @param clazz
      */
-    private static class Private {
+    private void assertClass(Class clazz) {
+        String encoded = encoder.encode(clazz);
+        assert encoded != null;
+        assert decoder.decode(encoded) == clazz;
     }
 }

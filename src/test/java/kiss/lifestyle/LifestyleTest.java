@@ -12,13 +12,11 @@ package kiss.lifestyle;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
-import antibug.PrivateModule;
 import kiss.I;
 import kiss.Lifestyle;
+import kiss.LoadableTestBase;
 import kiss.Manageable;
 import kiss.Prototype;
 import kiss.Singleton;
@@ -28,11 +26,7 @@ import kiss.sample.bean.Student;
 /**
  * @version 2014/07/12 11:40:46
  */
-public class LifestyleTest {
-
-    @Rule
-    @ClassRule
-    public static final PrivateModule module = new PrivateModule();
+public class LifestyleTest extends LoadableTestBase {
 
     private static final String CONSTANT = "Set by " + LifestyleTest.class.getSimpleName();
 
@@ -42,7 +36,7 @@ public class LifestyleTest {
         assert object != I.make(HasCustomLifestyleInPrivateModule.class);
 
         // unload module
-        module.unload();
+        unloadClasses();
 
         object = I.make(HasCustomLifestyleInPrivateModule.class);
         assert object == I.make(HasCustomLifestyleInPrivateModule.class);
@@ -54,7 +48,7 @@ public class LifestyleTest {
         assert WithoutLifestyle.object == I.make(Without.class);
 
         // unload module
-        module.unload();
+        unloadClasses();
 
         Without object = I.make(Without.class);
         assert WithoutLifestyle.object != object;
