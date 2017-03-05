@@ -28,6 +28,7 @@ import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,7 +36,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -49,7 +49,6 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSource;
-import java.security.ProtectionDomain;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +65,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -116,6 +116,8 @@ import org.objectweb.asm.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+
+import sun.misc.Unsafe;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -312,11 +314,11 @@ public class I {
     /** The temporary directory for the current processing JVM. */
     private static final Path temporary;
 
-    /** The accessible internal method for class loading. */
-    private static final Method find;
+    /** The accessible internal API. */
+    private static Unsafe unsafe;
 
-    /** The accessible internal method for class loading. */
-    private static final Method define;
+    /** The modified class definitions. */
+    private static final Map<String, Class> classes = new ConcurrentHashMap();
 
     /** The daemon thread factory. */
     private static final ThreadFactory factory = run -> {
@@ -400,11 +402,9 @@ public class I {
             new RandomAccessFile(temporary.resolve("lock").toFile(), "rw").getChannel().tryLock();
 
             // reflect class loading related methods
-            find = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
-            find.setAccessible(true);
-            define = ClassLoader.class
-                    .getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
-            define.setAccessible(true);
+            Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            unsafe = (Unsafe) field.get(null);
 
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -1269,26 +1269,6 @@ public class I {
         }
     }
 
-    private static class L extends URLClassLoader {
-
-        /**
-         * @param urls
-         */
-        private L(URL... urls) {
-            super(urls);
-        }
-
-        private Class find(String name) {
-            return findLoadedClass(name);
-        }
-
-        private Class define(String name, byte[] bytes, ProtectionDomain domain) {
-            return defineClass(name, bytes, 0, bytes.length, domain);
-        }
-    }
-
-    private static L loader = new L();
-
     /**
      * Returns the automatic generated class which implements or extends the given model.
      *
@@ -1297,42 +1277,31 @@ public class I {
      * @return A generated {@link Class} object.
      */
     private static synchronized Class define(Class model, Map<Method, List<Annotation>> interceptables) {
-        model = Model.of(model).type;
-
         // Compute fully qualified class name for the generated class.
         // The coder class name is prefix to distinguish enhancer type by a name and make core
         // package classes (e.g. swing components) enhance.
         // The statement "String name = coder.getName() + model.type.getName();" produces larger
         // byte code and more objects. To reduce them, we should use the method "concat".
-        String name = model.getName().concat(interceptables == null ? "-" : "+");
+        String name = model.getName().concat("+");
 
         if (name.startsWith("java.")) {
             name = "$".concat(name);
         }
 
-        // find class from cache of class loader
-        try {
-            Class clazz = loader.find(name);
+        // API definition
+        return classes.computeIfAbsent(name, key -> {
+            // start writing byte code
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 
-            if (clazz == null) {
-                // start writing byte code
-                ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+            // write code actually
+            write(writer, model, key.replace('.', '/'), interceptables);
 
-                // write code actually
-                write(writer, model, name.replace('.', '/'), interceptables);
+            // retrieve byte code
+            byte[] bytes = writer.toByteArray();
 
-                // retrieve byte code
-                byte[] bytes = writer.toByteArray();
-
-                // define class
-                clazz = loader.define(name, bytes, model.getProtectionDomain());
-            }
-
-            // API definition
-            return clazz;
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
+            // define class
+            return unsafe.defineClass(key, bytes, 0, bytes.length, ClassLoader.getSystemClassLoader(), model.getProtectionDomain());
+        });
     }
 
     /**
@@ -2101,7 +2070,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2749,7 +2718,7 @@ public class I {
 
             List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
-                    .map(I.<String, Class> quiet(Class::forName))
+                    .map(I.<String, Class>quiet(Class::forName))
                     .take(clazz -> Extensible.class.isAssignableFrom(clazz))
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();

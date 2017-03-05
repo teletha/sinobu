@@ -14,7 +14,7 @@ import java.util.Locale;
 /**
  * @version 2017/03/04 19:11:00
  */
-class Util extends ClassVariable<Lifestyle> implements Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
+class Util implements Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
 
     /**
      * Avoid construction
