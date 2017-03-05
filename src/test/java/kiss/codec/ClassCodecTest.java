@@ -7,9 +7,13 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.codec;
 
 import org.junit.Test;
+
+import kiss.Decoder;
+import kiss.Encoder;
+import kiss.I;
 
 /**
  * @version 2017/03/04 16:23:33
