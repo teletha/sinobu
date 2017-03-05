@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.event;
 
 import static java.util.concurrent.TimeUnit.*;
 
@@ -27,6 +27,11 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import antibug.Chronus;
+import kiss.Events;
+import kiss.I;
+import kiss.ThrowableFunction;
+import kiss.Ⅱ;
+import kiss.Ⅲ;
 
 /**
  * @version 2015/10/18 16:43:51

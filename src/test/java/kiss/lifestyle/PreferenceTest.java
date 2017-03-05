@@ -12,23 +12,31 @@ package kiss.lifestyle;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kiss.I;
 import kiss.Manageable;
 import kiss.Preference;
-import kiss.SinobuSetting;
 
 /**
- * @version 2012/10/20 16:46:23
+ * @version 2017/03/05 22:27:31
  */
 public class PreferenceTest {
 
-    @Rule
-    @ClassRule
-    public static final SinobuSetting env = new SinobuSetting(I.locateTemporary());
+    private static Path original;
+
+    @BeforeClass
+    public static void init() {
+        original = I.$working;
+        I.$working = I.locateTemporary();
+    }
+
+    @AfterClass
+    public static void clean() {
+        I.$working = original;
+    }
 
     @Test
     public void notExist() throws Exception {

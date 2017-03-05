@@ -315,7 +315,7 @@ public class I {
     private static final Path temporary;
 
     /** The accessible internal API. */
-    private static Unsafe unsafe;
+    private static final Unsafe unsafe;
 
     /** The modified class definitions. */
     private static final Map<String, Class> classes = new ConcurrentHashMap();
@@ -1300,7 +1300,7 @@ public class I {
             byte[] bytes = writer.toByteArray();
 
             // define class
-            return unsafe.defineClass(key, bytes, 0, bytes.length, ClassLoader.getSystemClassLoader(), model.getProtectionDomain());
+            return unsafe.defineClass(key, bytes, 0, bytes.length, I.class.getClassLoader(), model.getProtectionDomain());
         });
     }
 
