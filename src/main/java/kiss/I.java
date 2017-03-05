@@ -35,6 +35,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -1268,6 +1269,26 @@ public class I {
         }
     }
 
+    private static class L extends URLClassLoader {
+
+        /**
+         * @param urls
+         */
+        private L(URL... urls) {
+            super(urls);
+        }
+
+        private Class find(String name) {
+            return findLoadedClass(name);
+        }
+
+        private Class define(String name, byte[] bytes, ProtectionDomain domain) {
+            return defineClass(name, bytes, 0, bytes.length, domain);
+        }
+    }
+
+    private static L loader = new L();
+
     /**
      * Returns the automatic generated class which implements or extends the given model.
      *
@@ -1289,15 +1310,9 @@ public class I {
             name = "$".concat(name);
         }
 
-        ClassLoader loader = model.getClassLoader();
-
-        if (loader == null) {
-            loader = I.class.getClassLoader();
-        }
-
         // find class from cache of class loader
         try {
-            Class clazz = (Class) find.invoke(loader, name);
+            Class clazz = loader.find(name);
 
             if (clazz == null) {
                 // start writing byte code
@@ -1310,7 +1325,7 @@ public class I {
                 byte[] bytes = writer.toByteArray();
 
                 // define class
-                clazz = (Class) define.invoke(loader, name, bytes, 0, bytes.length, model.getProtectionDomain());
+                clazz = loader.define(name, bytes, model.getProtectionDomain());
             }
 
             // API definition
