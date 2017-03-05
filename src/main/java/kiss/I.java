@@ -1438,7 +1438,7 @@ public class I {
 
             // First parameter : Method delegation
             Handle handle = new Handle(H_INVOKESPECIAL, className.substring(0, className.length() - 1), method.getName(), methodType
-                    .getDescriptor());
+                    .getDescriptor(), false);
             mv.visitLdcInsn(handle);
 
             // Second parameter : Callee instance
