@@ -169,7 +169,6 @@ import kiss.model.Property;
  * </p>
  * <ul>
  * <li><a href="#encoding">Character Encoding</a></li>
- * <li><a href="#loader">Parent Class Loader</a></li>
  * <li><a href="#working">Working Directory</a></li>
  * <li><a href="#scheduler">Task Scheduler</a></li>
  * </ul>
@@ -276,14 +275,6 @@ public class I {
      * </p>
      */
     public static Charset $encoding = StandardCharsets.UTF_8;
-
-    /**
-     * <p>
-     * The configuration of parent class loader in Sinobu, default value is
-     * <code><em>I.class.getClassLoader()</em></code>.
-     * </p>
-     */
-    public static ClassLoader $loader = I.class.getClassLoader();
 
     /**
      * <p>
@@ -426,7 +417,7 @@ public class I {
         }
 
         // configure javascript engine
-        script = new ScriptEngineManager($loader).getEngineByName("js");
+        script = new ScriptEngineManager().getEngineByName("js");
 
         // Load myself as module. All built-in classload listeners and extension points will be
         // loaded and activated.
@@ -1176,7 +1167,7 @@ public class I {
         if (type.isInterface() == false) {
             throw new IllegalArgumentException("Type must be interface.");
         }
-        return (T) Proxy.newProxyInstance($loader, new Class[] {type}, handler);
+        return (T) Proxy.newProxyInstance(I.class.getClassLoader(), new Class[] {type}, handler);
     }
 
     /**
@@ -1301,7 +1292,7 @@ public class I {
         ClassLoader loader = model.getClassLoader();
 
         if (loader == null) {
-            loader = $loader;
+            loader = I.class.getClassLoader();
         }
 
         // find class from cache of class loader

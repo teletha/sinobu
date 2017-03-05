@@ -51,7 +51,7 @@ public class ModelTest {
 
     static {
         // dirty code to load I class at first
-        assert I.$loader != null;
+        assert I.$encoding != null;
     }
 
     /**

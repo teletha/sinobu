@@ -37,7 +37,7 @@ public class CollectParametersTest {
 
     static {
         // dirty code to load I class at first
-        assert I.$loader != null;
+        assert I.$encoding != null;
     }
 
     @Test
@@ -489,7 +489,7 @@ public class CollectParametersTest {
      * 
      * @version 2008/06/20 15:15:56
      */
-    private static class ParameterFromMultipleSource extends ParameterClass<Class>implements ParameterInterface<Type> {
+    private static class ParameterFromMultipleSource extends ParameterClass<Class> implements ParameterInterface<Type> {
     }
 
     /**
