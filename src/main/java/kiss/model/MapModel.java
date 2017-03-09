@@ -85,8 +85,10 @@ class MapModel<K, V> extends Model<Map<K, V>> {
         if (!key.attribute) {
             super.walk(object, walker);
         } else {
-            for (Entry<K, V> entry : object.entrySet()) {
-                walker.accept(I.pair(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue()));
+            if (object != null) {
+                for (Entry<K, V> entry : object.entrySet()) {
+                    walker.accept(I.pair(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue()));
+                }
             }
         }
     }

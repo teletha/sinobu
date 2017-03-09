@@ -2070,7 +2070,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2257,19 +2257,22 @@ public class I {
 
             for (Property property : properties) {
                 if (!property.isTransient) {
-                    // calculate value
-                    Object value = map.get(property.name);
-                    Class type = property.model.type;
+                    if (map.containsKey(property.name)) {
+                        // calculate value
+                        map.containsKey(property.name);
+                        Object value = map.get(property.name);
+                        Class type = property.model.type;
 
-                    // convert value
-                    if (property.isAttribute()) {
-                        value = transform(value, type);
-                    } else {
-                        value = read(property.model, make(type), value);
+                        // convert value
+                        if (property.isAttribute()) {
+                            value = transform(value, type);
+                        } else {
+                            value = read(property.model, make(type), value);
+                        }
+
+                        // assign value
+                        model.set(java, property, value);
                     }
-
-                    // assign value
-                    model.set(java, property, value);
                 }
             }
         }
@@ -2718,7 +2721,7 @@ public class I {
 
             List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
-                    .map(I.<String, Class>quiet(Class::forName))
+                    .map(I.<String, Class> quiet(Class::forName))
                     .take(clazz -> Extensible.class.isAssignableFrom(clazz))
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();

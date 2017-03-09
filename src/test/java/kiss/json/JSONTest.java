@@ -48,8 +48,17 @@ public class JSONTest {
 
         // @formatter:off
         validate(instance,
-        "{}"
-        );
+        "{",
+        "  'bigDecimal': null,",
+        "  'bigInteger': null,",
+        "  'date': null,",
+        "  'file': null,",
+        "  'path': null,",
+        "  'schoolEnum': null,",
+        "  'someClass': null,",
+        "  'stringBuffer': null,",
+        "  'stringBuilder': null",
+        "}");
         // @formatter:on
     }
 
@@ -61,7 +70,9 @@ public class JSONTest {
         // @formatter:off
         validate(person,
         "{",
-        "  'age': 20",
+        "  'age': 20,",
+        "  'firstName': null,",
+        "  'lastName': null",
         "}");
         // @formatter:on
     }
@@ -144,8 +155,10 @@ public class JSONTest {
 
         // @formatter:off
         validate(instant,
-        "{}"
-        );
+        "{",
+        "  'value': null,",
+        "  'items': []",
+        "}");
         // @formatter:on
     }
 
@@ -296,9 +309,15 @@ public class JSONTest {
         // @formatter:off
         validate(bean,
         "{",
+        "  'bigDecimal': null,",
         "  'bigInteger': '1234567890987654321',",
         "  'date': '1970-01-01T09:00:00',",
-        "  'someClass': 'java.lang.String'",
+        "  'file': null,",
+        "  'path': null,",
+        "  'schoolEnum': null,",
+        "  'someClass': 'java.lang.String',",
+        "  'stringBuffer': null,",
+        "  'stringBuilder': null",
         "}");
         // @formatter:on
     }
@@ -322,7 +341,8 @@ public class JSONTest {
         "  'lastName': 'Akiyama',",
         "  'school': {",
         "    'name': 'Sakura High School',",
-        "    'students': []",
+        "    'students': [],",
+        "    'teachers': {}",
         "  }",
         "}");
         // @formatter:on

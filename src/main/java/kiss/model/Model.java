@@ -333,9 +333,7 @@ public class Model<M> {
         // check whether this model is attribute or not.
         if (walker != null) {
             for (Property property : properties) {
-                Object value = get(object, property);
-
-                if (value != null) walker.accept(I.pair(this, property, value));
+                walker.accept(I.pair(this, property, get(object, property)));
             }
         }
     }
@@ -585,7 +583,7 @@ public class Model<M> {
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] constructors = clazz.getDeclaredConstructors();
-        Arrays.sort(constructors, Comparator.<Constructor>comparingInt(Constructor::getParameterCount));
+        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(Constructor::getParameterCount));
         return constructors;
     }
 
