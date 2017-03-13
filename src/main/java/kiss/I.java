@@ -2093,7 +2093,7 @@ public class I {
      * @param lambda A checked lambda.
      * @return A unchecked lambda.
      */
-    public static <P, R> Function<P, R> quiet(ThrowableFunction<P, R> lambda) {
+    public static Runnable quiet(UsefulRunnable lambda) {
         return lambda;
     }
 
@@ -2105,7 +2105,55 @@ public class I {
      * @param lambda A checked lambda.
      * @return A unchecked lambda.
      */
-    public static <P> Consumer<P> quiet(ThrowableConsumer<P> lambda) {
+    public static <P> Consumer<P> quiet(UsefulConsumer<P> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <P1, P2> BiConsumer<P1, P2> quiet(UsefulBiConsumer<P1, P2> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <R> Supplier<R> quiet(UsefulSupplier<R> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <P, R> Function<P, R> quiet(UsefulFunction<P, R> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <P1, P2, R> BiFunction<P1, P2, R> quiet(UsefulBiFunction<P1, P2, R> lambda) {
         return lambda;
     }
 

@@ -11,7 +11,7 @@ package kiss.core;
 
 import org.junit.Test;
 
-import kiss.ThrowableFunction;
+import kiss.UsefulFunction;
 
 /**
  * @version 2017/02/02 12:09:38
@@ -23,7 +23,7 @@ public class NameValueTest {
         string(key -> "value");
     }
 
-    private void string(ThrowableFunction param) {
+    private void string(UsefulFunction param) {
         assert param.parameterName(0).equals("key");
         assert param.apply(null).equals("value");
     }
@@ -33,7 +33,7 @@ public class NameValueTest {
         integer(value -> 10);
     }
 
-    private void integer(ThrowableFunction<Integer, Integer> param) {
+    private void integer(UsefulFunction<Integer, Integer> param) {
         assert param.parameterName(0).equals("value");
         assert param.apply(null) == 10;
     }

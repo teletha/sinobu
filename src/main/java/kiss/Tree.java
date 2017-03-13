@@ -41,7 +41,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     public final List<Node> root = new ArrayList<>(1);
 
     /** The named node creator. */
-    private final ThrowableTriFunction<Name, Integer, Object, Node> namedNodeBuilder;
+    private final UsefulTriFunction<Name, Integer, Object, Node> namedNodeBuilder;
 
     /** The unique key builder. */
     private final IntUnaryOperator uniqueKeyBuilder;
@@ -64,7 +64,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      *            unique id.
      * @param uniqueKeyBuilder A builder for identical key.
      */
-    protected Tree(ThrowableTriFunction<Name, Integer, Object, Node> namedNodeBuilder, IntUnaryOperator uniqueKeyBuilder) {
+    protected Tree(UsefulTriFunction<Name, Integer, Object, Node> namedNodeBuilder, IntUnaryOperator uniqueKeyBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
         this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder : id -> {
             Exception e = new Exception();

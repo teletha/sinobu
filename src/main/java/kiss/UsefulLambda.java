@@ -13,9 +13,9 @@ import java.io.Serializable;
 import java.lang.reflect.Executable;
 
 /**
- * @version 2017/02/02 12:12:04
+ * @version 2017/03/13 9:35:29
  */
-public interface EnhancedLambda<V> extends Serializable {
+public interface UsefulLambda<V> extends Serializable {
 
     /**
      * <p>

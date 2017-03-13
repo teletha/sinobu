@@ -9,27 +9,31 @@
  */
 package kiss;
 
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
- * @version 2017/02/02 12:27:22
+ * @version 2017/03/13 10:20:57
  */
-public interface ThrowableConsumer<P> extends Consumer<P>, EnhancedLambda {
+@FunctionalInterface
+public interface UsefulSupplier<Return> extends Supplier<Return> {
 
     /**
-     * Performs this operation on the given argument.
-     *
-     * @param param The input argument.
+     * <p>
+     * Internal API.
+     * </p>
+     * 
+     * @return A proxy result.
+     * @throws Throwable A sneaky exception for lambda.
      */
-    void ACCEPT(P param) throws Throwable;
+    Return GET() throws Throwable;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default void accept(P param) {
+    default Return get() {
         try {
-            ACCEPT(param);
+            return GET();
         } catch (Throwable e) {
             throw I.quiet(e);
         }

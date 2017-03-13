@@ -10,24 +10,31 @@
 package kiss;
 
 /**
- * @version 2017/02/08 10:06:56
+ * @version 2017/03/13 9:36:29
  */
-public interface ThrowableTriFunction<Param1, Param2, Param3, Return> extends EnhancedLambda {
+@FunctionalInterface
+public interface UsefulTriFunction<Param1, Param2, Param3, Return> extends UsefulLambda {
+
     /**
-     * Applies this function to the given argument.
-     *
-     * @param param The function argument.
-     * @return The function result.
-     * @throws Throwable The execution error.
+     * <p>
+     * Internal API.
+     * </p>
+     * 
+     * @param param1 A proxy parameter.
+     * @param param2 A proxy parameter.
+     * @param param3 A proxy parameter.
+     * @return A proxy result.
+     * @throws Throwable A sneaky exception for lambda.
      */
     Return APPLY(Param1 param1, Param2 param2, Param3 param3) throws Throwable;
 
     /**
      * Applies this function to the given argument.
      *
-     * @param param The function argument.
+     * @param param1 The function argument.
+     * @param param2 The function argument.
+     * @param param3 The function argument.
      * @return The function result.
-     * @throws Throwable The execution error.
      */
     default Return apply(Param1 param1, Param2 param2, Param3 param3) {
         try {

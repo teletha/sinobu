@@ -12,16 +12,19 @@ package kiss;
 import java.util.function.Function;
 
 /**
- * @version 2017/02/02 12:18:34
+ * @version 2017/03/13 9:36:18
  */
-public interface ThrowableFunction<Param, Return> extends Function<Param, Return>, EnhancedLambda {
+@FunctionalInterface
+public interface UsefulFunction<Param, Return> extends Function<Param, Return>, UsefulLambda {
 
     /**
-     * Applies this function to the given argument.
-     *
-     * @param param The function argument.
-     * @return The function result.
-     * @throws Throwable The execution error.
+     * <p>
+     * Internal API.
+     * </p>
+     * 
+     * @param param A proxy parameter.
+     * @return A proxy result.
+     * @throws Throwable A sneaky exception for lambda.
      */
     Return APPLY(Param param) throws Throwable;
 

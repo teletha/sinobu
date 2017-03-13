@@ -29,7 +29,7 @@ import org.junit.Test;
 import antibug.Chronus;
 import kiss.Events;
 import kiss.I;
-import kiss.ThrowableFunction;
+import kiss.UsefulFunction;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
@@ -501,7 +501,7 @@ public class EventsTest {
 
     @Test
     public void errorResumeException() {
-        ThrowableFunction<Integer, Integer> thrower = v -> {
+        UsefulFunction<Integer, Integer> thrower = v -> {
             if (v == 30) {
                 throw new Exception();
             } else {
