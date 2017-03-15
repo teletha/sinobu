@@ -1465,4 +1465,13 @@ public class EventsTest {
         assert facade.isCompleted();
         assert facade.retrieve() == null;
     }
+
+    @Test
+    public void range() {
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.range(1, 4));
+        assert facade.emitAndRetrieve(100, 1);
+        assert facade.retrieve() == 2;
+        assert facade.retrieve() == 3;
+        assert facade.retrieve() == null;
+    }
 }

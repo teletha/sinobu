@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -486,7 +487,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -592,7 +593,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -2028,6 +2029,58 @@ public class Events<V> {
             Future schedule = I.schedule(() -> observer.accept(value), time, unit);
 
             return () -> schedule.cancel(true);
+        });
+    }
+
+    /**
+     * Returns a sequential ordered {@code Events} from {@code startInclusive} (inclusive) to
+     * {@code endExclusive} (exclusive) by an incremental step of {@code 1}.
+     *
+     * @apiNote An equivalent sequence of increasing values can be produced sequentially using a
+     *          {@code for} loop as follows: <pre>{@code
+     *     for (int i = startInclusive; i < endExclusive ; i++) { ... }
+     * }</pre>
+     * @param startInclusive A (inclusive) initial value.
+     * @param endExclusive An exclusive upper bound.
+     * @return a sequential {@code Events} for the range of {@code Integer} elements
+     */
+    public static Events<Integer> range(int startInclusive, int endExclusive) {
+        return range(startInclusive, endExclusive, 1);
+    }
+
+    /**
+     * Returns a sequential ordered {@code Events} from {@code startInclusive} (inclusive) to
+     * {@code endExclusive} (exclusive) by an incremental step of {@code 1}.
+     *
+     * @apiNote An equivalent sequence of increasing values can be produced sequentially using a
+     *          {@code for} loop as follows: <pre>{@code
+     *     for (int i = startInclusive; i < endExclusive ; i += step) { ... }
+     * }</pre>
+     * @param startInclusive A (inclusive) initial value.
+     * @param endExclusive An exclusive upper bound.
+     * @param step A incremental step.
+     * @return a sequential {@code Events} for the range of {@code Integer} elements
+     */
+    public static Events<Integer> range(int startInclusive, int endExclusive, int step) {
+        return endExclusive <= startInclusive ? NEVER : from(() -> new Iterator<Integer>() {
+
+            private int now = startInclusive;
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean hasNext() {
+                return now < endExclusive;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public Integer next() {
+                return (now += step) - step; // guilty?
+            }
         });
     }
 }
