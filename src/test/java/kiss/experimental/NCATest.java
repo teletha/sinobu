@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 /**
- * @version 2011/03/22 17:11:06
+ * @version 2017/03/16 11:02:24
  */
 public class NCATest {
 
@@ -37,8 +37,26 @@ public class NCATest {
         assert getNCA(1, 2d, 3f).equals(Number.class);
         assert getNCA("test").equals(String.class);
         assert getNCA(new IOException(), new SAXException()).equals(Exception.class);
+        assert getNCA(new IF1(), new IF2()).equals(IF.class);
 
         // Class AbstractStringBuilder = getNCA(new StringBuffer(), new StringBuilder());
     }
 
+    /**
+     * @version 2017/03/16 11:01:25
+     */
+    private static interface IF {
+    }
+
+    /**
+     * @version 2017/03/16 11:01:40
+     */
+    private static class IF1 implements IF {
+    }
+
+    /**
+     * @version 2017/03/16 11:01:40
+     */
+    private static class IF2 implements IF {
+    }
 }

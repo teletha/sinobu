@@ -520,44 +520,32 @@ public class I {
      * @param functions A list of functions to bundle.
      * @return A bundled function.
      */
-    public static Runnable bundle(Runnable... functions) {
-        return () -> {
-            for (Runnable function : functions) {
-                function.run();
-            }
-        };
+    public static <F> F bundle(F... functions) {
+        return bundle((Class<F>) functions.getClass().getComponentType(), functions);
     }
 
     /**
      * <p>
-     * Bundle all given funcitons into single function.
+     * Bundle all given typed funcitons into single typed function.
      * </p>
      * 
+     * @param type A function type.
      * @param functions A list of functions to bundle.
      * @return A bundled function.
      */
-    public static <T> Consumer<T> bundle(Consumer<T>... functions) {
-        return c -> {
-            for (Consumer<T> function : functions) {
-                function.accept(c);
-            }
-        };
-    }
+    public static <F> F bundle(Class<F> type, F... functions) {
+        return make(type, (proxy, method, args) -> {
+            Object result = null;
 
-    /**
-     * <p>
-     * Bundle all given funcitons into single function.
-     * </p>
-     * 
-     * @param functions A list of functions to bundle.
-     * @return A bundled function.
-     */
-    public static <P, Q> BiConsumer<P, Q> bundle(BiConsumer<P, Q>... functions) {
-        return (p, q) -> {
-            for (BiConsumer<P, Q> function : functions) {
-                function.accept(p, q);
+            if (functions != null) {
+                for (F fun : functions) {
+                    if (fun != null) {
+                        result = method.invoke(fun, args);
+                    }
+                }
             }
-        };
+            return result;
+        });
     }
 
     /**
