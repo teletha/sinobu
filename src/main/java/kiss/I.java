@@ -2618,7 +2618,7 @@ public class I {
      * <ul>
      * <li>{@link XML}</li>
      * <li>{@link Path}</li>
-     * <li>{@link InputSource}</li>
+     * <li>{@link InputStream}</li>
      * <li>{@link URL}</li>
      * <li>{@link Node}</li>
      * <li>{@link String}</li>
@@ -2643,7 +2643,7 @@ public class I {
      * <ul>
      * <li>{@link XML}</li>
      * <li>{@link Path}</li>
-     * <li>{@link InputSource}</li>
+     * <li>{@link InputStream}</li>
      * <li>{@link URL}</li>
      * <li>{@link Node}</li>
      * <li>{@link String}</li>
@@ -2670,8 +2670,8 @@ public class I {
                 return (XML) xml;
             } else if (xml instanceof Path) {
                 doc = dom.parse(((Path) xml).toFile());
-            } else if (xml instanceof InputSource) {
-                doc = dom.parse((InputSource) xml);
+            } else if (xml instanceof InputStream) {
+                return new XMLUtil((InputStream) xml).parse($encoding);
             } else if (xml instanceof URL) {
                 return new XMLUtil(((URL) xml).openStream()).parse($encoding);
             } else if (xml instanceof Document) {
