@@ -119,6 +119,17 @@ class XMLUtil extends Writer {
 
     /**
      * <p>
+     * Constructor.
+     * </p>
+     * 
+     * @param input
+     */
+    XMLUtil(String input) {
+        row = input.getBytes();
+    }
+
+    /**
+     * <p>
      * Parse HTML and build {@link XML}.
      * </p>
      * 

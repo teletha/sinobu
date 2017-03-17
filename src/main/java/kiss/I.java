@@ -2673,7 +2673,7 @@ public class I {
             } else if (xml instanceof InputSource) {
                 doc = dom.parse((InputSource) xml);
             } else if (xml instanceof URL) {
-                return new XMLUtil(((URL) xml).openStream()).parse(I.$encoding);
+                return new XMLUtil(((URL) xml).openStream()).parse($encoding);
             } else if (xml instanceof Document) {
                 doc = (Document) xml;
             } else if (xml instanceof Node) {
@@ -2685,19 +2685,26 @@ public class I {
                 String value = xml.toString();
 
                 if (value.charAt(0) == '<' && 3 < value.length()) {
-                    // ========================
-                    // XML Literal
-                    // ========================
-                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<[!|\\?].+?>", "")).concat("</m>"))));
+                    if (value.charAt(1) == '!') {
+                        // ========================
+                        // HTML Literal
+                        // ========================
+                        return new XMLUtil(value).parse($encoding);
+                    } else {
+                        // ========================
+                        // XML Literal
+                        // ========================
+                        doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
 
-                    return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+                        return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+                    }
                 }
 
                 if (value.startsWith("http://") || value.startsWith("https://")) {
                     // ========================
                     // HTML from URL
                     // ========================
-                    return new XMLUtil(new URL(value).openStream()).parse(I.$encoding);
+                    return new XMLUtil(new URL(value).openStream()).parse($encoding);
                 }
 
                 // ========================
