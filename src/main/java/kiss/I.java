@@ -2058,7 +2058,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2688,7 +2688,7 @@ public class I {
                     // ========================
                     // XML Literal
                     // ========================
-                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
+                    doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<[!|\\?].+?>", "")).concat("</m>"))));
 
                     return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
                 }
@@ -2757,7 +2757,7 @@ public class I {
 
             List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
-                    .map(I.<String, Class> quiet(Class::forName))
+                    .map(I.<String, Class>quiet(Class::forName))
                     .take(clazz -> Extensible.class.isAssignableFrom(clazz))
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();

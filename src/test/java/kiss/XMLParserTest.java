@@ -18,6 +18,9 @@ import java.nio.file.Files;
 import org.junit.Test;
 
 import antibug.AntiBug;
+import kiss.I;
+import kiss.XML;
+import kiss.XMLUtil;
 
 /**
  * @version 2012/11/18 2:56:12
@@ -29,6 +32,11 @@ public class XMLParserTest {
         XML xml = parse("<html><head></head><body></body></html>");
 
         assert xml.find("> *").size() == 2;
+    }
+
+    @Test
+    public void htmlWithDoctype() throws Exception {
+        I.xml("<!DOCTYPE html><html/>");
     }
 
     @Test
