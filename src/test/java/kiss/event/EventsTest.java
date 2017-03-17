@@ -1181,6 +1181,38 @@ public class EventsTest {
     }
 
     @Test
+    public void takeByCount3() {
+        List<Integer> sides = new ArrayList();
+        ListProperty<Integer> list = Events.from(1, 2, 3, 4).sideEffect(v -> sides.add(v)).sideEffect(v -> {
+            System.out.println("before " + v);
+        }).take(1).sideEffect(v -> {
+            System.out.println("after  " + v);
+        }).toList();
+
+        assert list.size() == 1;
+        assert sides.size() == 1;
+    }
+
+    @Test
+    public void takeByCount2() {
+        List<Integer> sides = new ArrayList();
+        ListProperty<Integer> list = Events.from(1, 2, 3, 4)
+                .flatMap(v -> Events.from(v * 10, v * 10 + 1))
+                .sideEffect(v -> sides.add(v))
+                .sideEffect(v -> {
+                    System.out.println("before " + v);
+                })
+                .take(1)
+                .sideEffect(v -> {
+                    System.out.println("after  " + v);
+                })
+                .toList();
+
+        assert list.size() == 1;
+        assert sides.size() == 1;
+    }
+
+    @Test
     public void takeByTime() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.take(30, MILLISECONDS));
 
