@@ -82,25 +82,9 @@ public class Events<V> {
         });
     }
 
-    // /**
-    // * <p>
-    // * Create {@link Events} with the specified subscriber {@link Function} which will be invoked
-    // * whenever you calls {@link #to(Observer)} related methods.
-    // * </p>
-    // *
-    // * @param subscriber A subscriber {@link Function}.
-    // * @see #to(Observer)
-    // * @see #to(Consumer, Consumer)
-    // * @see #to(Consumer, Consumer, Runnable)
-    // */
-    // public Events(Function<Observer<? super V>, Disposable> subscriber) {
-    // this.subscriber = subscriber;
-    // EventsDebugger.dump("Create ", this);
-    // }
-
     /**
      * <p>
-     * Create {@link Events} with the specified subscriber {@link Function} which will be invoked
+     * Create {@link Events} with the specified subscriber {@link BiFunction} which will be invoked
      * whenever you calls {@link #to(Observer)} related methods.
      * </p>
      *
@@ -189,7 +173,7 @@ public class Events<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return to(observer, (Disposable) new Agent());
+        return to(observer, Disposable.empty());
     }
 
     /**
@@ -200,7 +184,7 @@ public class Events<V> {
      * @param observer A value observer of this {@link Events}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Observer<? super V> observer, Disposable disposer) {
+    private final Disposable to(Observer<? super V> observer, Disposable disposer) {
         return subscriber.apply(observer, disposer);
     }
 
@@ -515,7 +499,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -621,7 +605,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -1099,14 +1083,14 @@ public class Events<V> {
         }
 
         return new Events<>((observer, disposer) -> {
-            Disposable disposable = to(observer, disposer);
+            disposer = to(observer, disposer);
 
             for (Events<? extends V> other : others) {
-                if (other != null) {
-                    disposable = disposable.and(other.to(observer));
+                if (other != null && disposer.isDisposed() == false) {
+                    disposer = disposer.and(other.to(observer, disposer));
                 }
             }
-            return disposable;
+            return disposer;
         });
     }
 

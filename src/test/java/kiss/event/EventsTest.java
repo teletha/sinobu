@@ -11,8 +11,10 @@ package kiss.event;
 
 import static java.util.concurrent.TimeUnit.*;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -470,28 +472,6 @@ public class EventsTest {
         assert facade.emitAndRetrieve(10) == null;
         assert facade.emitAndRetrieve(20) == 20;
         assert facade.dispose();
-    }
-
-    @Test
-    public void disposeMustEffectPreviousEventChain() {
-        List<Integer> effects = new ArrayList();
-        List<Integer> results = Events.from(1, 2, 3, 4).sideEffect(effects::add).take(1).toList();
-
-        assert results.size() == 1;
-        assert effects.size() == 1;
-    }
-
-    @Test
-    public void disposeMustEffectPreviousEventChain_FlatMap() {
-        List<Integer> effects = new ArrayList();
-        List<Integer> results = Events.from(1, 2, 3, 4)
-                .flatMap(v -> Events.from(v * 10, v * 10 + 1))
-                .sideEffect(effects::add)
-                .take(1)
-                .toList();
-
-        assert results.size() == 1;
-        assert effects.size() == 1;
     }
 
     @Test
@@ -1489,10 +1469,83 @@ public class EventsTest {
 
     @Test
     public void range() {
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> Events.range(1, 4));
+        EventFacade<Integer, Integer> facade = new EventFacade(e -> Events.range(1, 4));
         assert facade.emitAndRetrieve(100, 1);
         assert facade.retrieve() == 2;
         assert facade.retrieve() == 3;
         assert facade.retrieve() == null;
+    }
+
+    @Test
+    public void rangeTake() {
+        Store<Integer> store = new Store();
+        Events.range(1, 10).sideEffect(store::before).take(2).to(store::after);
+
+        assert store.size() == 2;
+    }
+
+    @Test
+    public void disposeFrom() {
+        Store<Integer> store = new Store();
+        Events.from(1, 2, 3, 4).sideEffect(store::before).take(1).to(store::after);
+
+        assert store.size() == 1;
+    }
+
+    @Test
+    public void disposeFlatMap() {
+        Store<Integer> store = new Store();
+        Events.from(10, 20, 30, 40).flatMap(v -> Events.from(v, v + 1)).sideEffect(store::before).take(2).to(store::after);
+
+        assert store.size() == 2;
+        assert store.retrieve() == 10;
+        assert store.retrieve() == 11;
+    }
+
+    @Test
+    public void disposeFlatArray() {
+        Store<Integer> store = new Store();
+        Events.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1}).sideEffect(store::before).take(2).to(store::after);
+
+        assert store.size() == 2;
+        assert store.retrieve() == 10;
+        assert store.retrieve() == 11;
+    }
+
+    @Test
+    public void disposeMerge() {
+        Store<Integer> store = new Store();
+        Events.from(1).merge(Events.from(10, 20)).sideEffect(store::before).take(2).to(store::after);
+
+        assert store.size() == 2;
+        assert store.retrieve() == 1;
+        assert store.retrieve() == 10;
+    }
+
+    /**
+     * @version 2017/03/18 21:00:47
+     */
+    private static class Store<T> {
+
+        private Deque<T> before = new ArrayDeque();
+
+        public void before(T item) {
+            before.add(item);
+        }
+
+        private Deque<T> after = new ArrayDeque();
+
+        public void after(T item) {
+            after.add(item);
+        }
+
+        private int size() {
+            assert before.size() == after.size();
+            return before.size();
+        }
+
+        private T retrieve() {
+            return before.pollFirst();
+        }
     }
 }
