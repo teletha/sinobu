@@ -16,6 +16,7 @@ public class Project extends bee.api.Project {
 
         require("org.ow2.asm", "asm", "5.2");
         require("com.github.teletha", "antibug", "0.3").atTest();
+        require("io.reactivex", "rxjava", "1.2.7");
 
         versionControlSystem("https://github.com/teletha/Sinobu");
     }

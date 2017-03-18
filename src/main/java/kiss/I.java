@@ -1813,7 +1813,7 @@ public class I {
             return Events.NEVER;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             // create actual listener
             InvalidationListener listener = value -> observer.accept((E) value);
 
@@ -1844,7 +1844,7 @@ public class I {
             return Events.NEVER;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             // create actual listener
             ChangeListener<E> listener = (o, oldValue, newValue) -> observer.accept(newValue);
 
@@ -1932,7 +1932,7 @@ public class I {
             return observe(path.getParent(), path.getFileName().toString());
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             // Create logical file system watch service.
             Visitor watcher = new Visitor(path, observer, patterns);
 
@@ -2058,7 +2058,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2764,7 +2764,7 @@ public class I {
 
             List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
-                    .map(I.<String, Class>quiet(Class::forName))
+                    .map(I.<String, Class> quiet(Class::forName))
                     .take(clazz -> Extensible.class.isAssignableFrom(clazz))
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();

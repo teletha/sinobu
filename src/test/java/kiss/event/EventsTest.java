@@ -473,6 +473,28 @@ public class EventsTest {
     }
 
     @Test
+    public void disposeMustEffectPreviousEventChain() {
+        List<Integer> effects = new ArrayList();
+        List<Integer> results = Events.from(1, 2, 3, 4).sideEffect(effects::add).take(1).toList();
+    
+        assert results.size() == 1;
+        assert effects.size() == 1;
+    }
+
+    @Test
+    public void disposeMustEffectPreviousEventChain_FlatMap() {
+        List<Integer> effects = new ArrayList();
+        List<Integer> results = Events.from(1, 2, 3, 4)
+                .flatMap(v -> Events.from(v * 10, v * 10 + 1))
+                .sideEffect(effects::add)
+                .take(1)
+                .toList();
+    
+        assert results.size() == 1;
+        assert effects.size() == 1;
+    }
+
+    @Test
     public void distinct() {
         EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.distinct());
 
@@ -1178,38 +1200,6 @@ public class EventsTest {
         assert facade.emitAndRetrieve(10) == 10;
         assert facade.emitAndRetrieve(20) == null;
         assert facade.isCompleted();
-    }
-
-    @Test
-    public void takeByCount3() {
-        List<Integer> sides = new ArrayList();
-        ListProperty<Integer> list = Events.from(1, 2, 3, 4).sideEffect(v -> sides.add(v)).sideEffect(v -> {
-            System.out.println("before " + v);
-        }).take(1).sideEffect(v -> {
-            System.out.println("after  " + v);
-        }).toList();
-
-        assert list.size() == 1;
-        assert sides.size() == 1;
-    }
-
-    @Test
-    public void takeByCount2() {
-        List<Integer> sides = new ArrayList();
-        ListProperty<Integer> list = Events.from(1, 2, 3, 4)
-                .flatMap(v -> Events.from(v * 10, v * 10 + 1))
-                .sideEffect(v -> sides.add(v))
-                .sideEffect(v -> {
-                    System.out.println("before " + v);
-                })
-                .take(1)
-                .sideEffect(v -> {
-                    System.out.println("after  " + v);
-                })
-                .toList();
-
-        assert list.size() == 1;
-        assert sides.size() == 1;
     }
 
     @Test

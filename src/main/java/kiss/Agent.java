@@ -51,6 +51,7 @@ class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>,
             }
             disposables = null;
         }
+        disposed = true;
     }
 
     /**
@@ -68,6 +69,16 @@ class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>,
             }
         }
         return this;
+    }
+
+    private boolean disposed;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDisposed() {
+        return disposed;
     }
 
     // ============================================================

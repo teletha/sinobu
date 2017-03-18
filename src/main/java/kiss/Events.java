@@ -51,7 +51,7 @@ public class Events<V> {
     /**
      * For reuse.
      */
-    public static final Events NEVER = new Events<>(observer -> Disposable.Φ);
+    public static final Events NEVER = new Events<>((observer, disposable) -> disposable);
 
     /**
      * For reuse.
@@ -61,7 +61,7 @@ public class Events<V> {
     /**
      * The subscriber.
      */
-    private final Function<Observer<? super V>, Disposable> subscriber;
+    private final BiFunction<Observer<? super V>, Disposable, Disposable> subscriber;
 
     /**
      * <p>
@@ -75,12 +75,28 @@ public class Events<V> {
      * @see #to(Consumer, Consumer, Runnable)
      */
     public Events(Collection<Observer<? super V>> observers) {
-        this(observer -> {
+        this((observer, disposable) -> {
             observers.add(observer);
 
             return () -> observers.remove(observer);
         });
     }
+
+    // /**
+    // * <p>
+    // * Create {@link Events} with the specified subscriber {@link Function} which will be invoked
+    // * whenever you calls {@link #to(Observer)} related methods.
+    // * </p>
+    // *
+    // * @param subscriber A subscriber {@link Function}.
+    // * @see #to(Observer)
+    // * @see #to(Consumer, Consumer)
+    // * @see #to(Consumer, Consumer, Runnable)
+    // */
+    // public Events(Function<Observer<? super V>, Disposable> subscriber) {
+    // this.subscriber = subscriber;
+    // EventsDebugger.dump("Create ", this);
+    // }
 
     /**
      * <p>
@@ -93,7 +109,7 @@ public class Events<V> {
      * @see #to(Consumer, Consumer)
      * @see #to(Consumer, Consumer, Runnable)
      */
-    public Events(Function<Observer<? super V>, Disposable> subscriber) {
+    public Events(BiFunction<Observer<? super V>, Disposable, Disposable> subscriber) {
         this.subscriber = subscriber;
     }
 
@@ -173,7 +189,19 @@ public class Events<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return subscriber.apply(observer);
+        return to(observer, (Disposable) new Agent());
+    }
+
+    /**
+     * <p>
+     * Receive values from this {@link Events}.
+     * </p>
+     *
+     * @param observer A value observer of this {@link Events}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
+    public final Disposable to(Observer<? super V> observer, Disposable disposer) {
+        return subscriber.apply(observer, disposer);
     }
 
     /**
@@ -403,7 +431,7 @@ public class Events<V> {
         int creationSize = 0 < size ? size : 1;
         int creationInterval = 0 < interval ? interval : 1;
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             Deque<V> buffer = new ArrayDeque<>();
             AtomicInteger timing = new AtomicInteger();
 
@@ -424,7 +452,7 @@ public class Events<V> {
                 if (validSize) {
                     buffer.pollFirst();
                 }
-            });
+            }, disposer);
         });
     }
 
@@ -445,7 +473,7 @@ public class Events<V> {
             return NEVER;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicReference<List<V>> ref = new AtomicReference<>();
 
             return to(value -> ref.updateAndGet(buffer -> {
@@ -455,7 +483,7 @@ public class Events<V> {
                     I.schedule(time, unit, true, () -> observer.accept(ref.getAndSet(null)));
                 }
                 return buffer;
-            }).add(value));
+            }).add(value), disposer);
         });
     }
 
@@ -487,7 +515,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -505,7 +533,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, R> Events<R> combine(Events<O> other, BiFunction<V, O, R> function) {
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             ArrayDeque<V> baseValue = new ArrayDeque();
             ArrayDeque<O> otherValue = new ArrayDeque();
 
@@ -515,13 +543,13 @@ public class Events<V> {
                 } else {
                     observer.accept(function.apply(value, otherValue.pollFirst()));
                 }
-            }).and(other.to(value -> {
+            }, disposer).and(other.to(value -> {
                 if (baseValue.isEmpty()) {
                     otherValue.add(value);
                 } else {
                     observer.accept(function.apply(baseValue.pollFirst(), value));
                 }
-            }));
+            }, disposer));
         });
     }
 
@@ -593,7 +621,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -610,7 +638,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, R> Events<R> combineLatest(Events<O> other, BiFunction<V, O, R> function) {
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicReference<V> baseValue = new AtomicReference(UNDEFINED);
             AtomicReference<O> otherValue = new AtomicReference(UNDEFINED);
 
@@ -621,7 +649,7 @@ public class Events<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(value, joined));
                 }
-            }).and(other.to(value -> {
+            }, disposer).and(other.to(value -> {
                 otherValue.set(value);
 
                 V joined = baseValue.get();
@@ -629,7 +657,7 @@ public class Events<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(joined, value));
                 }
-            }));
+            }, disposer));
         });
     }
 
@@ -731,14 +759,14 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> distinct() {
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             HashSet set = new HashSet();
 
             return to(value -> {
                 if (set.add(value)) {
                     observer.accept(value);
                 }
-            });
+            }, disposer);
         });
     }
 
@@ -752,7 +780,7 @@ public class Events<V> {
      * @return
      */
     public final Events<V> errorResume(Function<? super Throwable, ? extends V> resumer) {
-        return error(false, (agent, e) -> {
+        return error(false, (agent, e, disposer) -> {
             agent.observer.accept(resumer.apply(e));
         });
     }
@@ -767,8 +795,8 @@ public class Events<V> {
      * @return
      */
     public final Events<V> errorResume(Events<? extends V> resumer) {
-        return error(false, (agent, e) -> {
-            agent.and(resumer.to(agent.observer));
+        return error(false, (agent, e, disposer) -> {
+            agent.and(resumer.to(agent.observer, disposer));
         });
     }
 
@@ -782,7 +810,7 @@ public class Events<V> {
      * @return
      */
     public final Events<V> errorEnd(Function<? super Throwable, ? extends V> resumer) {
-        return error(true, (agent, e) -> {
+        return error(true, (agent, e, disposer) -> {
             agent.observer.accept(resumer.apply(e));
         });
     }
@@ -797,8 +825,8 @@ public class Events<V> {
      * @return
      */
     public final Events<V> errorEnd(Events<? extends V> resumer) {
-        return error(true, (agent, e) -> {
-            agent.and(resumer.to(agent.observer));
+        return error(true, (agent, e, disposer) -> {
+            agent.and(resumer.to(agent.observer, disposer));
         });
     }
 
@@ -811,19 +839,19 @@ public class Events<V> {
      * @param resumer
      * @return
      */
-    private Events<V> error(boolean shouldComplete, BiConsumer<Agent<V>, ? super Throwable> process) {
-        return new Events<>(observer -> {
+    private Events<V> error(boolean shouldComplete, UsefulTriConsumer<Agent<V>, ? super Throwable, Disposable> process) {
+        return new Events<>((observer, disposer) -> {
             Agent<V> agent = new Agent();
             agent.observer = observer;
             agent.error = value -> {
-                process.accept(agent, value);
+                process.accept(agent, value, disposer);
 
                 if (shouldComplete) {
                     observer.complete();
                     agent.dispose();
                 }
             };
-            return agent.and(to(agent));
+            return agent.and(to(agent, disposer));
         });
     }
 
@@ -875,11 +903,8 @@ public class Events<V> {
      *         {@link Events} obtained from this transformation.
      */
     public final <R> Events<R> flatMap(Function<V, Events<R>> function) {
-        return new Events<>(observer -> {
-            Disposable disposer = Disposable.empty();
-            disposer.and(to(value -> disposer.and(function.apply(value).to(observer))));
-
-            return disposer;
+        return new Events<>((observer, disposer) -> {
+            return to(value -> disposer.and(function.apply(value).to(observer, disposer)), disposer);
         });
     }
 
@@ -936,12 +961,12 @@ public class Events<V> {
 
         Deque<Ⅱ<V, Observer>> buffer = I.associate(group, ArrayDeque.class);
 
-        return new Events<>(observer -> to(value -> {
+        return new Events<>((observer, disposer) -> to(value -> {
             if (buffer.isEmpty()) {
                 I.schedule(() -> interval(unit.toMillis(time), 0, buffer));
             }
             buffer.addLast(I.pair(value, observer));
-        }));
+        }, disposer));
     }
 
     /**
@@ -998,13 +1023,13 @@ public class Events<V> {
             return (Events<R>) this;
         }
 
-        return new Events<R>(observer -> to(value -> {
+        return new Events<R>((observer, disposer) -> to(value -> {
             try {
                 observer.accept(converter.apply(value));
             } catch (Throwable e) {
                 observer.error(e);
             }
-        }));
+        }, disposer));
     }
 
     /**
@@ -1024,10 +1049,10 @@ public class Events<V> {
             return (Events<R>) this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicReference<V> ref = new AtomicReference(init);
 
-            return to(value -> observer.accept(converter.apply(ref.getAndSet(value), value)));
+            return to(value -> observer.accept(converter.apply(ref.getAndSet(value), value)), disposer);
         });
     }
 
@@ -1073,8 +1098,8 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
-            Disposable disposable = to(observer);
+        return new Events<>((observer, disposer) -> {
+            Disposable disposable = to(observer, disposer);
 
             for (Events<? extends V> other : others) {
                 if (other != null) {
@@ -1099,12 +1124,12 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             Agent<V> agent = new Agent();
             agent.observer = observer;
             agent.next = value -> next.accept(observer, value);
 
-            return to(agent);
+            return to(agent, disposer);
         });
     }
 
@@ -1122,11 +1147,11 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> to(v -> {
+        return new Events<>((observer, disposer) -> to(v -> {
             scheduler.accept(() -> {
                 observer.accept(v);
             });
-        }));
+        }, disposer));
     }
 
     /**
@@ -1137,14 +1162,14 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> repeat() {
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             Agent agent = new Agent();
             agent.observer = observer;
             agent.complete = () -> {
                 observer.complete();
                 agent.and(to(agent));
             };
-            return agent.and(to(agent));
+            return agent.and(to(agent, disposer));
         });
     }
 
@@ -1162,7 +1187,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicInteger counter = new AtomicInteger(count);
             Agent agent = new Agent();
             agent.observer = observer;
@@ -1174,8 +1199,7 @@ public class Events<V> {
                     agent.and(to(agent));
                 }
             };
-
-            return agent.and(to(agent));
+            return agent.and(to(agent, disposer));
         });
     }
 
@@ -1195,16 +1219,16 @@ public class Events<V> {
             return NEVER;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicReference<V> latest = new AtomicReference(UNDEFINED);
 
-            return to(latest::set).and(sampler.to(sample -> {
+            return to(latest::set, disposer).and(sampler.to(sample -> {
                 V value = latest.getAndSet((V) UNDEFINED);
 
                 if (value != UNDEFINED) {
                     observer.accept(value);
                 }
-            }));
+            }, disposer));
         });
     }
 
@@ -1225,13 +1249,13 @@ public class Events<V> {
      *         the accumulator function.
      */
     public final <R> Events<R> scan(R init, BiFunction<R, V, R> function) {
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicReference<R> ref = new AtomicReference(init);
 
             return to(value -> {
                 ref.set(function.apply(ref.get(), value));
                 observer.accept(ref.get());
-            });
+            }, disposer);
         });
     }
 
@@ -1244,10 +1268,10 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> sideEffect(Consumer<? super V> effect) {
-        return new Events<>(observer -> to(v -> {
+        return new Events<>((observer, disposer) -> to(v -> {
             effect.accept(v);
             observer.accept(v);
-        }));
+        }, disposer));
     }
 
     /**
@@ -1329,15 +1353,14 @@ public class Events<V> {
         if (count <= 0) {
             return this;
         }
-
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicInteger counter = new AtomicInteger();
 
             return to(value -> {
                 if (count < counter.incrementAndGet()) {
                     observer.accept(value);
                 }
-            });
+            }, disposer);
         });
     }
 
@@ -1358,14 +1381,14 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             long timing = System.nanoTime() + unit.toNanos(time);
 
             return to(value -> {
                 if (timing < System.nanoTime()) {
                     observer.accept(value);
                 }
-            });
+            }, disposer);
         });
     }
 
@@ -1413,7 +1436,7 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicBoolean flag = new AtomicBoolean();
 
             return to(value -> {
@@ -1423,7 +1446,7 @@ public class Events<V> {
                     flag.set(true);
                     observer.accept(value);
                 }
-            });
+            }, disposer);
         });
     }
 
@@ -1444,15 +1467,14 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
-            Agent agent = new Agent();
-            agent.and(timing.to(value -> agent.dispose()));
+        return new Events<>((observer, disposer) -> {
+            BooleanProperty take = timing.take(1).toBinary();
 
             return to(value -> {
-                if (agent.disposables == null) {
+                if (take.get()) {
                     observer.accept(value);
                 }
-            }).and(agent);
+            }, disposer);
         });
     }
 
@@ -1540,11 +1562,13 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             for (V value : values) {
-                observer.accept(value);
+                if (disposer.isDisposed() == false) {
+                    observer.accept(value);
+                }
             }
-            return to(observer);
+            return to(observer, disposer);
         });
     }
 
@@ -1563,13 +1587,13 @@ public class Events<V> {
      *         {@link Events} obtained from this transformation.
      */
     public final <R> Events<R> switchMap(Function<V, Events<R>> function) {
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             Disposable[] disposables = {null, Disposable.Φ};
 
             disposables[0] = to(value -> {
                 disposables[1].dispose();
                 disposables[1] = function.apply(value).to(observer);
-            });
+            }, disposer);
             return () -> {
                 disposables[0].dispose();
                 disposables[1].dispose();
@@ -1618,14 +1642,14 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicReference<V> ref = new AtomicReference(init);
 
             return to(value -> {
                 if (condition.test(ref.getAndSet(value), value)) {
                     observer.accept(value);
                 }
-            });
+            }, disposer);
         });
     }
 
@@ -1644,12 +1668,9 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicInteger counter = new AtomicInteger(count);
-
-            Disposable disposer = Disposable.empty();
-
-            return disposer.and(to(value -> {
+            return to(value -> {
                 int current = counter.decrementAndGet();
 
                 if (0 <= current) {
@@ -1660,7 +1681,7 @@ public class Events<V> {
                         disposer.dispose();
                     }
                 }
-            }));
+            }, disposer);
         });
     }
 
@@ -1675,24 +1696,22 @@ public class Events<V> {
      * @return Chainable API.
      */
     public final Events<V> take(long time, TimeUnit unit) {
-        // ignore invalid parameter
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             long timing = System.nanoTime() + unit.toNanos(time);
-            Disposable disposer = Disposable.empty();
 
-            return disposer.and(to(value -> {
+            return to(value -> {
                 if (System.nanoTime() < timing) {
                     observer.accept(value);
                 } else {
                     observer.complete();
                     disposer.dispose();
                 }
-            }));
+            }, disposer);
         });
     }
 
@@ -1731,10 +1750,8 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
-            Disposable disposer = Disposable.empty();
-
-            return disposer.and(to(value -> {
+        return new Events<>((observer, disposer) -> {
+            return to(value -> {
                 if (predicate.test(value)) {
                     observer.accept(value);
                     observer.complete();
@@ -1742,7 +1759,7 @@ public class Events<V> {
                 } else {
                     observer.accept(value);
                 }
-            }));
+            }, disposer);
         });
     }
 
@@ -1762,12 +1779,12 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
-            Disposable disposer = Disposable.empty();
+        return new Events<>((observer, disposer) -> {
+            Disposable disposable = Disposable.empty();
 
-            return disposer.and(to(observer).and(predicate.to(value -> {
+            return disposable.and(to(observer, disposer).and(predicate.to(value -> {
                 observer.complete();
-                disposer.dispose();
+                disposable.dispose();
             })));
         });
     }
@@ -1788,14 +1805,14 @@ public class Events<V> {
             return this;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposer) -> {
             AtomicBoolean flag = new AtomicBoolean();
 
-            return condition.to(flag::set).and(to(v -> {
+            return condition.to(flag::set, disposer).and(to(v -> {
                 if (flag.get()) {
                     observer.accept(v);
                 }
-            }));
+            }, disposer));
         });
     }
 
@@ -1839,7 +1856,7 @@ public class Events<V> {
             return NEVER;
         }
 
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposable) -> {
             AtomicInteger count = new AtomicInteger();
 
             return to(value -> observer.accept(values[count.getAndIncrement() % values.length]));
@@ -2025,7 +2042,7 @@ public class Events<V> {
      * @return An {@link Events} that emits values as a first sequence.
      */
     public static <V> Events<V> infinite(V value, long time, TimeUnit unit) {
-        return new Events<>(observer -> {
+        return new Events<>((observer, disposable) -> {
             Future schedule = I.schedule(() -> observer.accept(value), time, unit);
 
             return () -> schedule.cancel(true);

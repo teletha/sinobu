@@ -32,6 +32,10 @@ public interface Disposable {
      */
     void dispose();
 
+    default boolean isDisposed() {
+        return false;
+    }
+
     /**
      * <p>
      * Returns a composed {@link Disposable}.
