@@ -476,7 +476,7 @@ public class EventsTest {
     public void disposeMustEffectPreviousEventChain() {
         List<Integer> effects = new ArrayList();
         List<Integer> results = Events.from(1, 2, 3, 4).sideEffect(effects::add).take(1).toList();
-    
+
         assert results.size() == 1;
         assert effects.size() == 1;
     }
@@ -489,7 +489,7 @@ public class EventsTest {
                 .sideEffect(effects::add)
                 .take(1)
                 .toList();
-    
+
         assert results.size() == 1;
         assert effects.size() == 1;
     }
@@ -1063,7 +1063,6 @@ public class EventsTest {
         assert facade.emitAndRetrieve(30) == null;
 
         assert facade.disposeWithCountAlreadyDisposed(2);
-        assert condition.isCompleted();
     }
 
     @Test

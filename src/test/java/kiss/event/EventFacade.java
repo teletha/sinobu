@@ -252,7 +252,7 @@ public class EventFacade<V, R> {
         disposables.clear();
 
         if (disposed != 0) assert disposed / multiplier >= alreadyDisposed;
-        // assert observers.isEmpty() == true;
+        assert observers.isEmpty() == true;
 
         return isCompleted();
     }
@@ -263,7 +263,7 @@ public class EventFacade<V, R> {
      * </p>
      */
     public boolean isCompleted() {
-        // assert observers.isEmpty();
+        assert observers.isEmpty();
         return true;
     }
 

@@ -71,7 +71,7 @@ class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>,
         return this;
     }
 
-    private boolean disposed;
+    boolean disposed;
 
     /**
      * {@inheritDoc}

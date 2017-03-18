@@ -15,7 +15,7 @@ package kiss;
  * prior to their destruction.
  * </p>
  * 
- * @version 2014/07/22 15:54:50
+ * @version 2017/03/18 17:22:17
  */
 public interface Disposable {
 
@@ -32,6 +32,13 @@ public interface Disposable {
      */
     void dispose();
 
+    /**
+     * <p>
+     * Check the state of operation. (default : false)
+     * </p>
+     * 
+     * @return A result.
+     */
     default boolean isDisposed() {
         return false;
     }
