@@ -38,7 +38,7 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
 /**
- * @version 2014/07/31 23:06:05
+ * @version 2017/03/19 18:00:27
  */
 public class XML implements Iterable<XML> {
 
@@ -1024,13 +1024,15 @@ public class XML implements Iterable<XML> {
      * <p>
      * Parse HTML and build {@link XML}.
      * </p>
+     * 
+     * @param raw The raw date of HTML.
      */
-    XML(byte[] raw, Charset encoding) {
+    XML(byte[] raw) {
         // ====================
         // Initialization
         // ====================
         XML xml = I.xml(null);
-        html = new String(raw, 0, raw.length, encoding);
+        html = new String(raw, 0, raw.length, I.$encoding);
         pos = 0;
 
         // If crazy html provides multiple meta element for character encoding,
@@ -1157,7 +1159,7 @@ public class XML implements Iterable<XML> {
                                 int index = value.lastIndexOf('=');
                                 Charset detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
 
-                                if (!encoding.equals(detect)) {
+                                if (!I.$encoding.equals(detect)) {
                                     // reset and parse again if the current encoding is wrong
                                     xml = I.xml(null);
                                     html = new String(raw, 0, raw.length, detect);
