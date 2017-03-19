@@ -11,7 +11,9 @@ package kiss;
 
 import static javax.xml.XMLConstants.*;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -54,10 +56,10 @@ public class XML implements Iterable<XML> {
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
 
     /** The current document. */
-    Document doc;
+    private Document doc;
 
     /** The current node set. */
-    private final List<Node> nodes;
+    private List<Node> nodes;
 
     /**
      * <p>
@@ -1000,5 +1002,259 @@ public class XML implements Iterable<XML> {
             }
         }
         return xpath.toString();
+    }
+
+    // =======================================================================
+    // HTML Parser for building XML
+    // =======================================================================
+    /** The defiened empty elements. */
+    private static final String[] empties = {"area", "base", "br", "col", "command", "device", "embed", "frame", "hr", "img", "input",
+            "keygen", "link", "meta", "param", "source", "track", "wbr"};
+
+    /** The defiened data elements. */
+    private static final String[] datas = {"noframes", "script", "style", "textarea", "title"};
+
+    /** The position for something. */
+    private int pos = 0;
+
+    /** The encoded text data. */
+    private String html;
+
+    /**
+     * <p>
+     * Parse HTML and build {@link XML}.
+     * </p>
+     */
+    XML(byte[] raw, Charset encoding) {
+        // ====================
+        // Initialization
+        // ====================
+        XML xml = I.xml(null);
+        html = new String(raw, 0, raw.length, encoding);
+        pos = 0;
+
+        // If crazy html provides multiple meta element for character encoding,
+        // we should adopt first one.
+        boolean detectable = true;
+
+        // ====================
+        // Start Parsing
+        // ====================
+        parseSpace();
+
+        init: while (pos != html.length()) {
+            if (test("<!--")) {
+                // =====================
+                // Comment
+                // =====================
+                xml.append(xml.doc.createComment(parse("->")));
+            } else if (test("<![CDATA[")) {
+                // =====================
+                // CDATA
+                // =====================
+                xml.append(xml.doc.createCDATASection(parse("]]>")));
+            } else if (test("<!") || test("<?")) {
+                // =====================
+                // DocType and PI
+                // =====================
+                // ignore doctype and pi
+                parse(">");
+            } else if (test("</")) {
+                // =====================
+                // End Element
+                // =====================
+                parse(">");
+
+                // update current element into parent
+                xml = xml.parent();
+            } else if (test("<")) {
+                // =====================
+                // Start Element
+                // =====================
+                String name = parseName();
+                parseSpace();
+
+                XML child = xml.child(name);
+
+                // parse attributes
+                while (html.charAt(pos) != '/' && html.charAt(pos) != '>') {
+                    String attr = parseName();
+                    parseSpace();
+
+                    if (!test("=")) {
+                        // single value attribute
+                        child.attr(attr, attr);
+
+                        // step into next
+                        pos++;
+                    } else {
+                        // name-value pair attribute
+                        parseSpace();
+
+                        if (test("\"")) {
+                            // quote attribute
+                            child.attr(attr, parse("\""));
+                        } else if (test("'")) {
+                            // apostrophe attribute
+                            child.attr(attr, parse("'"));
+                        } else {
+                            // non-quoted attribute
+                            int start = pos;
+                            char c = html.charAt(pos);
+
+                            while (c != '>' && !Character.isWhitespace(c)) {
+                                c = html.charAt(++pos);
+                            }
+
+                            if (html.charAt(pos - 1) == '/') {
+                                pos--;
+                            }
+                            child.attr(attr, html.substring(start, pos));
+                        }
+                    }
+                    parseSpace();
+                }
+
+                // close start element
+                if (parse(">").length() == 0 && Arrays.binarySearch(empties, name) < 0) {
+                    // container element
+                    if (0 <= Arrays.binarySearch(datas, name)) {
+                        // text data only element - add contents as text
+
+                        // At first, we find the end element, but the some html provides crazy
+                        // element pair like <div></DIV>. So we should search by case-insensitive,
+                        // don't use find("</" + name + ">").
+                        int start = pos;
+
+                        parse("</");
+                        while (!parseName().equals(name)) {
+                            parse("</");
+                        }
+                        parse(">");
+
+                        child.text(html.substring(start, pos - 3 - name.length()));
+                        // don't update current elment
+                    } else {
+                        // mixed element
+                        // update current element into child
+                        xml = child;
+                    }
+                } else {
+                    // empty element
+
+                    // check encoding in meta element
+                    if (detectable && name.equals("meta")) {
+                        String value = child.attr("charset");
+
+                        if (value.length() == 0 && child.attr("http-equiv").equalsIgnoreCase("content-type")) {
+                            value = child.attr("content");
+                        }
+
+                        if (value.length() != 0) {
+                            detectable = false;
+
+                            try {
+                                int index = value.lastIndexOf('=');
+                                Charset detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
+
+                                // reset and parse again if the current encoding is wrong
+                                if (!encoding.equals(detect)) {
+                                    xml = I.xml(null);
+                                    html = new String(raw, 0, raw.length, detect);
+                                    pos = 0;
+                                    continue init;
+                                }
+                            } catch (Exception e) {
+                                // unkwnown encoding name
+                            }
+                        }
+                    }
+                    // don't update current elment
+                }
+            } else {
+                // =====================
+                // Text
+                // =====================
+                xml.append(xml.doc.createTextNode(parse("<")));
+
+                // If the current positon is not end of document, we should continue to parse
+                // next elements. So rollback position(1) for the "<" next start element.
+                if (pos != html.length()) {
+                    pos--;
+                }
+            }
+            parseSpace();
+        }
+
+        this.doc = xml.doc;
+        this.nodes = convert(xml.doc.getChildNodes());
+    }
+
+    /**
+     * <p>
+     * Check whether the current sequence is started with the specified characters or not. If it is
+     * matched, cursor positioning step into it.
+     * </p>
+     * 
+     * @param until A condition.
+     * @return A result.
+     */
+    private boolean test(String until) {
+        if (html.startsWith(until, pos)) {
+            pos += until.length();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * <p>
+     * Consume the next run of characters until the specified sequence will be appered.
+     * </p>
+     * 
+     * @param until A target character sequence. (include this sequence)
+     * @return A consumed character sequence. (exclude the specified sequence)
+     */
+    private String parse(String until) {
+        int start = pos;
+        int index = html.indexOf(until, pos);
+
+        if (index == -1) {
+            // until last
+            pos = html.length();
+        } else {
+            // until matched sequence
+            pos = index + until.length();
+        }
+        return html.substring(start, pos - until.length());
+    }
+
+    /**
+     * <p>
+     * Consume an identical name. (word or :, _, -)
+     * </p>
+     * 
+     * @return An identical name for XML.
+     */
+    private String parseName() {
+        int start = pos;
+        char c = html.charAt(pos);
+
+        while (Character.isLetterOrDigit(c) || c == '_' || c == ':' || c == '-') {
+            c = html.charAt(++pos);
+        }
+        return html.substring(start, pos).toLowerCase();
+    }
+
+    /**
+     * <p>
+     * Consume the next run of whitespace characters.
+     * </p>
+     */
+    private void parseSpace() {
+        while (pos < html.length() && Character.isWhitespace(html.charAt(pos))) {
+            pos++;
+        }
     }
 }

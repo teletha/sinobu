@@ -2673,7 +2673,7 @@ public class I {
             } else if (xml instanceof InputStream) {
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
                 copy((InputStream) xml, output, true);
-                return new XMLParser().parse(output.toByteArray(), $encoding);
+                return new XML(output.toByteArray(), $encoding);
             } else if (xml instanceof URL) {
                 return xml(((URL) xml).openStream());
             } else if (xml instanceof Path) {
@@ -2693,7 +2693,7 @@ public class I {
                         // ========================
                         // HTML Literal
                         // ========================
-                        return new XMLParser().parse(value.getBytes(), $encoding);
+                        return new XML(value.getBytes(), $encoding);
                     } else {
                         // ========================
                         // XML Literal
