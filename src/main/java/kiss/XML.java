@@ -1040,30 +1040,30 @@ public class XML implements Iterable<XML> {
         // ====================
         // Start Parsing
         // ====================
-        parseSpace();
+        nextSpace();
 
-        init: while (pos != html.length()) {
+        parse: while (pos != html.length()) {
             if (test("<!--")) {
                 // =====================
                 // Comment
                 // =====================
-                xml.append(xml.doc.createComment(parse("->")));
+                xml.append(xml.doc.createComment(next("->")));
             } else if (test("<![CDATA[")) {
                 // =====================
                 // CDATA
                 // =====================
-                xml.append(xml.doc.createCDATASection(parse("]]>")));
+                xml.append(xml.doc.createCDATASection(next("]]>")));
             } else if (test("<!") || test("<?")) {
                 // =====================
                 // DocType and PI
                 // =====================
                 // ignore doctype and pi
-                parse(">");
+                next(">");
             } else if (test("</")) {
                 // =====================
                 // End Element
                 // =====================
-                parse(">");
+                next(">");
 
                 // update current element into parent
                 xml = xml.parent();
@@ -1071,15 +1071,15 @@ public class XML implements Iterable<XML> {
                 // =====================
                 // Start Element
                 // =====================
-                String name = parseName();
-                parseSpace();
+                String name = nextName();
+                nextSpace();
 
                 XML child = xml.child(name);
 
                 // parse attributes
                 while (html.charAt(pos) != '/' && html.charAt(pos) != '>') {
-                    String attr = parseName();
-                    parseSpace();
+                    String attr = nextName();
+                    nextSpace();
 
                     if (!test("=")) {
                         // single value attribute
@@ -1089,14 +1089,14 @@ public class XML implements Iterable<XML> {
                         pos++;
                     } else {
                         // name-value pair attribute
-                        parseSpace();
+                        nextSpace();
 
                         if (test("\"")) {
                             // quote attribute
-                            child.attr(attr, parse("\""));
+                            child.attr(attr, next("\""));
                         } else if (test("'")) {
                             // apostrophe attribute
-                            child.attr(attr, parse("'"));
+                            child.attr(attr, next("'"));
                         } else {
                             // non-quoted attribute
                             int start = pos;
@@ -1112,11 +1112,11 @@ public class XML implements Iterable<XML> {
                             child.attr(attr, html.substring(start, pos));
                         }
                     }
-                    parseSpace();
+                    nextSpace();
                 }
 
                 // close start element
-                if (parse(">").length() == 0 && Arrays.binarySearch(empties, name) < 0) {
+                if (next(">").length() == 0 && Arrays.binarySearch(empties, name) < 0) {
                     // container element
                     if (0 <= Arrays.binarySearch(datas, name)) {
                         // text data only element - add contents as text
@@ -1126,11 +1126,11 @@ public class XML implements Iterable<XML> {
                         // don't use find("</" + name + ">").
                         int start = pos;
 
-                        parse("</");
-                        while (!parseName().equals(name)) {
-                            parse("</");
+                        next("</");
+                        while (!nextName().equals(name)) {
+                            next("</");
                         }
-                        parse(">");
+                        next(">");
 
                         child.text(html.substring(start, pos - 3 - name.length()));
                         // don't update current elment
@@ -1157,12 +1157,12 @@ public class XML implements Iterable<XML> {
                                 int index = value.lastIndexOf('=');
                                 Charset detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
 
-                                // reset and parse again if the current encoding is wrong
                                 if (!encoding.equals(detect)) {
+                                    // reset and parse again if the current encoding is wrong
                                     xml = I.xml(null);
                                     html = new String(raw, 0, raw.length, detect);
                                     pos = 0;
-                                    continue init;
+                                    continue parse;
                                 }
                             } catch (Exception e) {
                                 // unkwnown encoding name
@@ -1175,7 +1175,7 @@ public class XML implements Iterable<XML> {
                 // =====================
                 // Text
                 // =====================
-                xml.append(xml.doc.createTextNode(parse("<")));
+                xml.append(xml.doc.createTextNode(next("<")));
 
                 // If the current positon is not end of document, we should continue to parse
                 // next elements. So rollback position(1) for the "<" next start element.
@@ -1183,7 +1183,7 @@ public class XML implements Iterable<XML> {
                     pos--;
                 }
             }
-            parseSpace();
+            nextSpace();
         }
 
         this.doc = xml.doc;
@@ -1216,7 +1216,7 @@ public class XML implements Iterable<XML> {
      * @param until A target character sequence. (include this sequence)
      * @return A consumed character sequence. (exclude the specified sequence)
      */
-    private String parse(String until) {
+    private String next(String until) {
         int start = pos;
         int index = html.indexOf(until, pos);
 
@@ -1237,7 +1237,7 @@ public class XML implements Iterable<XML> {
      * 
      * @return An identical name for XML.
      */
-    private String parseName() {
+    private String nextName() {
         int start = pos;
         char c = html.charAt(pos);
 
@@ -1252,7 +1252,7 @@ public class XML implements Iterable<XML> {
      * Consume the next run of whitespace characters.
      * </p>
      */
-    private void parseSpace() {
+    private void nextSpace() {
         while (pos < html.length() && Character.isWhitespace(html.charAt(pos))) {
             pos++;
         }
