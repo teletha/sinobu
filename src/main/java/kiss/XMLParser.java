@@ -9,83 +9,13 @@
  */
 package kiss;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Flushable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
- * <p>
- * This is multi-purpose implementation class. Please connive this extremely-dirty code.
- * </p>
- * <p>
- * XML writer for Object Graph serialization.
- * </p>
- * <p>
- * We could select to use List implementaion instead of Map for management of implicit object
- * identifier. But it requires linear time to search the existing element. So we should use Map
- * which provides constant-time performance for seaching element.
- * </p>
- * <p>
- * This is also {@link Appendable} {@link Writer}.
- * </p>
- * 
- * @version 2016/05/03 16:44:19
+ * @version 2017/03/19 17:02:07
  */
-class XMLUtil extends Writer {
-
-    // =======================================================================
-    // General Fields
-    // =======================================================================
-    /** The current processing element. */
-    XML xml;
-
-    /** The position for something. */
-    private int pos = 0;
-
-    // =======================================================================
-    // AppendableWriter
-    // =======================================================================
-    /** The actual output. */
-    private Appendable output;
-
-    /**
-     * <p>
-     * Constructor for AppendableWriter.
-     * </p>
-     */
-    XMLUtil(Appendable output) {
-        this.output = output;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void close() throws IOException {
-        I.quiet(output);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void flush() throws IOException {
-        if (output instanceof Flushable) {
-            ((Flushable) output).flush();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
-        output.append(new String(cbuf, off, len));
-    }
+class XMLParser {
 
     // =======================================================================
     // HTML Parser for building XML
@@ -97,36 +27,11 @@ class XMLUtil extends Writer {
     /** The defiened data elements. */
     private static final String[] datas = {"noframes", "script", "style", "textarea", "title"};
 
-    /** The raw text data. */
-    private byte[] row;
+    /** The position for something. */
+    private int pos = 0;
 
     /** The encoded text data. */
     private String html;
-
-    /**
-     * <p>
-     * Constructor.
-     * </p>
-     * 
-     * @param input
-     */
-    XMLUtil(InputStream input) {
-        // read actual data
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        I.copy(input, output, true);
-        row = output.toByteArray();
-    }
-
-    /**
-     * <p>
-     * Constructor.
-     * </p>
-     * 
-     * @param input
-     */
-    XMLUtil(String input) {
-        row = input.getBytes();
-    }
 
     /**
      * <p>
@@ -135,12 +40,12 @@ class XMLUtil extends Writer {
      * 
      * @return A normalized {@link XML}.
      */
-    XML parse(Charset encoding) {
+    XML parse(byte[] raw, Charset encoding) {
         // ====================
         // Initialization
         // ====================
-        xml = I.xml(null);
-        html = new String(row, 0, row.length, encoding);
+        XML xml = I.xml(null);
+        html = new String(raw, 0, raw.length, encoding);
         pos = 0;
 
         // If crazy html provides multiple meta element for character encoding,
@@ -269,7 +174,7 @@ class XMLUtil extends Writer {
 
                                 // reset and parse again if the current encoding is wrong
                                 if (!encoding.equals(detect)) {
-                                    return parse(detect);
+                                    return parse(raw, detect);
                                 }
                             } catch (Exception e) {
                                 // unkwnown encoding name

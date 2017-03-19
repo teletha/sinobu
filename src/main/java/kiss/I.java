@@ -11,6 +11,7 @@ package kiss;
 
 import static org.objectweb.asm.Opcodes.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
@@ -2651,6 +2652,7 @@ public class I {
      * <ul>
      * <li>URL Expression (http and https)</li>
      * <li>XML Literal</li>
+     * <li>HTML Literal</li>
      * <li>Element Name</li>
      * </ul>
      *
@@ -2668,12 +2670,14 @@ public class I {
                 return new XML(doc, new ArrayList(Collections.singleton(doc)));
             } else if (xml instanceof XML) {
                 return (XML) xml;
-            } else if (xml instanceof Path) {
-                doc = dom.parse(((Path) xml).toFile());
             } else if (xml instanceof InputStream) {
-                return new XMLUtil((InputStream) xml).parse($encoding);
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                copy((InputStream) xml, output, true);
+                return new XMLParser().parse(output.toByteArray(), $encoding);
             } else if (xml instanceof URL) {
-                return new XMLUtil(((URL) xml).openStream()).parse($encoding);
+                return xml(((URL) xml).openStream());
+            } else if (xml instanceof Path) {
+                return xml(Files.newInputStream((Path) xml));
             } else if (xml instanceof Document) {
                 doc = (Document) xml;
             } else if (xml instanceof Node) {
@@ -2689,7 +2693,7 @@ public class I {
                         // ========================
                         // HTML Literal
                         // ========================
-                        return new XMLUtil(value).parse($encoding);
+                        return new XMLParser().parse(value.getBytes(), $encoding);
                     } else {
                         // ========================
                         // XML Literal
@@ -2704,7 +2708,7 @@ public class I {
                     // ========================
                     // HTML from URL
                     // ========================
-                    return new XMLUtil(new URL(value).openStream()).parse($encoding);
+                    return xml(new URL(value));
                 }
 
                 // ========================
@@ -2721,38 +2725,20 @@ public class I {
 
     /**
      * <p>
-     * Load the file as an additional classpath into JVM. If the file indicates the classpath which
-     * is already loaded, that will do nothing at all. The classpath can accept directory or archive
-     * (like Jar). If it is <code>null</code> or a file, this method does nothing.
-     * </p>
-     * <p>
-     * There are two advantages in the classpath loaded by this method. One is that you can add
-     * classpath dynamically and the other is that you can listen to the specified class loading
-     * event.
-     * </p>
-     * <p>
-     * Generally, JVM collects classpath information from various sources (environment variable,
-     * command line option and so on). However those means can't add or remove a classpath
-     * dynamically. This method removes such limitations.
-     * </p>
-     * <p>
-     * <em>NOTE</em> : System class loader in JVM can recognize the classpath which is specified by
-     * usual means, but not by this method. Because Sinobu manages additional classpath for enabling
-     * dynamic manipulation.
+     * Load {@link Extensible} typs from the path that the specified class indicates to. If the path
+     * is already loaded, that will do nothing at all.
      * </p>
      *
-     * @param classPath A classpath to load.
+     * @param path A path to load.
      * @param filter Filter classes by package of the specified class.
      * @return A managed {@link ClassLoader}.
-     * @see #unload(Path)
-     * @see kiss.ClassListener#load(Class)
-     * @see java.lang.ClassLoader#getSystemClassLoader()
+     * @see {@link Extensible}
      */
-    public static Disposable load(Class classPath, boolean filter) {
-        String pattern = filter ? classPath.getPackage().getName().replace('.', File.separatorChar) : "";
+    public static Disposable load(Class path, boolean filter) {
+        String pattern = filter ? path.getPackage().getName().replace('.', File.separatorChar) : "";
 
         try {
-            File file = locate(classPath).toFile().getAbsoluteFile();
+            File file = locate(path).toFile().getAbsoluteFile();
             int prefix = file.getPath().length() + 1;
 
             // At first, we must scan the specified directory or archive. If the module file is
