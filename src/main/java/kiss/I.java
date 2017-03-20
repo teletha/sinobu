@@ -2689,15 +2689,13 @@ public class I {
 
         try {
             if (xml == null) {
-                // If this exception will be thrown, it is bug of this program. So we must rethrow
-                // the wrapped error in here.
-                throw new Error();
+                return new XML(null, null);
             } else if (xml instanceof XML) {
                 return (XML) xml;
             } else if (xml instanceof InputStream) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 copy((InputStream) xml, out, true);
-                return new XML(out.toByteArray());
+                return new XML(null, null).parse(out.toByteArray(), $encoding);
             } else if (xml instanceof URL) {
                 return xml(((URL) xml).openStream());
             } else if (xml instanceof Path) {
@@ -2717,7 +2715,7 @@ public class I {
                         // ========================
                         // HTML Literal
                         // ========================
-                        return new XML(value.getBytes());
+                        return new XML(null, null).parse(value.getBytes(), $encoding);
                     } else {
                         // ========================
                         // XML Literal

@@ -66,11 +66,12 @@ public class XML implements Iterable<XML> {
      * From node set.
      * </p>
      *
-     * @param nodes
+     * @param doc A parent document.
+     * @param nodes A current node set.
      */
     XML(Document doc, List nodes) {
-        this.doc = doc;
-        this.nodes = nodes;
+        this.doc = doc == null ? I.dom.newDocument() : doc;
+        this.nodes = nodes == null ? I.list(this.doc) : nodes;
     }
 
     /**
@@ -664,7 +665,7 @@ public class XML implements Iterable<XML> {
      * @param list A {@link NodeList} to convert.
      * @return
      */
-    static List convert(NodeList list) {
+    static List<Node> convert(NodeList list) {
         CopyOnWriteArrayList<Node> nodes = new CopyOnWriteArrayList();
 
         for (int i = 0; i < list.getLength(); i++) {
@@ -1015,7 +1016,7 @@ public class XML implements Iterable<XML> {
     private static final String[] datas = {"noframes", "script", "style", "textarea", "title"};
 
     /** The position for something. */
-    private int pos = 0;
+    private int pos;
 
     /** The encoded text data. */
     private String html;
@@ -1026,15 +1027,14 @@ public class XML implements Iterable<XML> {
      * </p>
      * 
      * @param raw The raw date of HTML.
+     * @param encoding The charset to parse.
      */
-    XML(byte[] raw) {
+    XML parse(byte[] raw, Charset encoding) {
         // ====================
         // Initialization
         // ====================
-        doc = I.dom.newDocument();
-        nodes = I.list(doc);
         XML xml = this;
-        html = new String(raw, 0, raw.length, I.$encoding);
+        html = new String(raw, 0, raw.length, encoding);
         pos = 0;
 
         // If crazy html provides multiple meta element for character encoding,
@@ -1046,7 +1046,7 @@ public class XML implements Iterable<XML> {
         // ====================
         nextSpace();
 
-        parse: while (pos != html.length()) {
+        while (pos != html.length()) {
             if (test("<!--")) {
                 // =====================
                 // Comment
@@ -1161,13 +1161,9 @@ public class XML implements Iterable<XML> {
                                 int index = value.lastIndexOf('=');
                                 Charset detect = Charset.forName(index == -1 ? value : value.substring(index + 1));
 
-                                if (!I.$encoding.equals(detect)) {
+                                if (!encoding.equals(detect)) {
                                     // reset and parse again if the current encoding is wrong
-                                    doc = I.dom.newDocument();
-                                    nodes = I.list(doc);
-                                    html = new String(raw, 0, raw.length, detect);
-                                    pos = 0;
-                                    continue parse;
+                                    return parse(raw, detect);
                                 }
                             } catch (Exception e) {
                                 // unkwnown encoding name
@@ -1192,6 +1188,7 @@ public class XML implements Iterable<XML> {
         }
 
         this.nodes = convert(xml.doc.getChildNodes());
+        return this;
     }
 
     /**
