@@ -1031,7 +1031,9 @@ public class XML implements Iterable<XML> {
         // ====================
         // Initialization
         // ====================
-        XML xml = I.xml(null);
+        doc = I.dom.newDocument();
+        nodes = I.list(doc);
+        XML xml = this;
         html = new String(raw, 0, raw.length, I.$encoding);
         pos = 0;
 
@@ -1161,7 +1163,8 @@ public class XML implements Iterable<XML> {
 
                                 if (!I.$encoding.equals(detect)) {
                                     // reset and parse again if the current encoding is wrong
-                                    xml = I.xml(null);
+                                    doc = I.dom.newDocument();
+                                    nodes = I.list(doc);
                                     html = new String(raw, 0, raw.length, detect);
                                     pos = 0;
                                     continue parse;
@@ -1188,7 +1191,6 @@ public class XML implements Iterable<XML> {
             nextSpace();
         }
 
-        this.doc = xml.doc;
         this.nodes = convert(xml.doc.getChildNodes());
     }
 

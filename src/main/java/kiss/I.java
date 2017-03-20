@@ -53,7 +53,7 @@ import java.security.CodeSource;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -341,7 +341,7 @@ public class I {
     private static final WeakHashMap<Object, WeakHashMap> associatables = new WeakHashMap();
 
     /** The document builder. */
-    private static final DocumentBuilder dom;
+    static final DocumentBuilder dom;
 
     /** The xpath evaluator. */
     static final XPath xpath;
@@ -547,6 +547,26 @@ public class I {
             }
             return result;
         });
+    }
+
+    /**
+     * <p>
+     * Create the specified {@link Collection} with the specified items.
+     * </p>
+     * 
+     * @param type A {@link Collection} type.
+     * @param items A list of itmes.
+     * @return The new created {@link Collection}.
+     */
+    public static <T extends Collection<V>, V> T collect(Class<T> type, V... items) {
+        T collection = I.make(type);
+
+        if (items != null) {
+            for (V item : items) {
+                collection.add(item);
+            }
+        }
+        return collection;
     }
 
     /**
@@ -1012,6 +1032,18 @@ public class I {
             }
         }
         return executable;
+    }
+
+    /**
+     * <p>
+     * Create {@link ArrayList} with the specified items.
+     * </p>
+     * 
+     * @param items A list of itmes.
+     * @return The new created {@link ArrayList}.
+     */
+    public static <V> List<V> list(V... items) {
+        return collect(ArrayList.class, items);
     }
 
     /**
@@ -2384,22 +2416,14 @@ public class I {
 
     /**
      * <p>
-     * Create {@link Set} with the specified items.
+     * Create {@link HashSet} with the specified items.
      * </p>
      * 
      * @param items A list of itmes.
-     * @return The new created {@link Set}.
+     * @return The new created {@link HashSet}.
      */
     public static <V> Set<V> set(V... items) {
-        Set<V> set = new HashSet();
-
-        if (items != null) {
-            for (V item : items) {
-                set.add(item);
-            }
-        }
-
-        return set;
+        return collect(HashSet.class, items);
     }
 
     /**
@@ -2665,15 +2689,15 @@ public class I {
 
         try {
             if (xml == null) {
-                doc = dom.newDocument();
-
-                return new XML(doc, new ArrayList(Collections.singleton(doc)));
+                // If this exception will be thrown, it is bug of this program. So we must rethrow
+                // the wrapped error in here.
+                throw new Error();
             } else if (xml instanceof XML) {
                 return (XML) xml;
             } else if (xml instanceof InputStream) {
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                copy((InputStream) xml, output, true);
-                return new XML(output.toByteArray());
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                copy((InputStream) xml, out, true);
+                return new XML(out.toByteArray());
             } else if (xml instanceof URL) {
                 return xml(((URL) xml).openStream());
             } else if (xml instanceof Path) {
@@ -2681,7 +2705,7 @@ public class I {
             } else if (xml instanceof Document) {
                 doc = (Document) xml;
             } else if (xml instanceof Node) {
-                return new XML(((Node) xml).getOwnerDocument(), new ArrayList(Collections.singleton(xml)));
+                return new XML(((Node) xml).getOwnerDocument(), list(xml));
             } else {
                 // ================================
                 // Parse as String

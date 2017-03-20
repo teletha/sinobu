@@ -19,7 +19,7 @@ import kiss.I;
 import kiss.XML;
 
 /**
- * @version 2012/11/18 2:56:12
+ * @version 2017/03/20 9:08:45
  */
 public class XMLParserTest {
 
