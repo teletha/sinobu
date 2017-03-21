@@ -21,7 +21,7 @@ import org.junit.Test;
 import kiss.I;
 
 /**
- * @version 2017/03/16 11:09:49
+ * @version 2017/03/21 22:57:13
  */
 public class BundleFunctionTest {
 
@@ -36,11 +36,33 @@ public class BundleFunctionTest {
     }
 
     @Test
+    public void functionList() {
+        AtomicInteger value = new AtomicInteger();
+        assert value.get() == 0;
+
+        List<Runnable> list = I.list(runnable(() -> value.addAndGet(1)), runnable(() -> value.addAndGet(2)));
+        Runnable bundled = I.bundle(list);
+        bundled.run();
+        assert value.get() == 3;
+    }
+
+    @Test
     public void generic() {
         AtomicInteger value = new AtomicInteger();
         assert value.get() == 0;
 
         Consumer<Integer> bundled = I.bundle(consumer(v -> value.addAndGet(v)), consumer(v -> value.addAndGet(v * 2)));
+        bundled.accept(10);
+        assert value.get() == 30;
+    }
+
+    @Test
+    public void genericList() {
+        AtomicInteger value = new AtomicInteger();
+        assert value.get() == 0;
+
+        List<Consumer<Integer>> list = I.list(consumer(v -> value.addAndGet(v)), consumer(v -> value.addAndGet(v * 2)));
+        Consumer<Integer> bundled = I.bundle(list);
         bundled.accept(10);
         assert value.get() == 30;
     }

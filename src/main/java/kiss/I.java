@@ -534,20 +534,48 @@ public class I {
      * @return A bundled function.
      */
     public static <F> F bundle(Collection<F> functions) {
-        return bundle(functions, functions);
+        return bundle(findNCA(functions, Class::isInterface), functions);
     }
+
+    // /**
+    // * <p>
+    // * Find the nearest common ancestor class of the given classes.
+    // * </p>
+    // *
+    // * @param <X> A type.
+    // * @param classes A list of classes.
+    // * @return A nearest common ancestor class.
+    // */
+    // private static <X> Class findNCA(X... classes) {
+    // return classes.getClass().getComponentType();
+    // }
 
     /**
      * <p>
-     * Bundle all given typed funcitons into single typed function.
+     * Find the nearest common ancestor class of the given classes.
      * </p>
      * 
-     * @param type A function type.
-     * @param functions A list of functions to bundle.
-     * @return A bundled function.
+     * @param <X> A type.
+     * @param items A list of items.
+     * @return A nearest common ancestor class.
      */
-    public static <F> F bundle(Class<F> type, Collection<F> functions) {
-        return bundle(type, functions.toArray((F[]) Array.newInstance(type, functions.size())));
+    private static <X> Class<X> findNCA(Collection<X> items, Predicate<Class> filter) {
+        if (filter == null) {
+            filter = accept();
+        }
+
+        Set<Class> types = null;
+        Iterator<X> iterator = items.iterator();
+
+        if (iterator.hasNext()) {
+            types = Model.collectTypes(iterator.next().getClass());
+            types.removeIf(filter.negate());
+
+            while (iterator.hasNext()) {
+                types.retainAll(Model.collectTypes(iterator.next().getClass()));
+            }
+        }
+        return types == null || types.isEmpty() ? null : types.iterator().next();
     }
 
     /**
@@ -560,6 +588,19 @@ public class I {
      * @return A bundled function.
      */
     public static <F> F bundle(Class<F> type, F... functions) {
+        return bundle(type, Arrays.asList(functions));
+    }
+
+    /**
+     * <p>
+     * Bundle all given typed funcitons into single typed function.
+     * </p>
+     * 
+     * @param type A function type.
+     * @param functions A list of functions to bundle.
+     * @return A bundled function.
+     */
+    public static <F> F bundle(Class<F> type, Collection<F> functions) {
         return make(type, (proxy, method, args) -> {
             Object result = null;
 
@@ -2116,7 +2157,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2797,7 +2838,7 @@ public class I {
 
             List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
-                    .map(I.<String, Class> quiet(Class::forName))
+                    .map(I.<String, Class>quiet(Class::forName))
                     .take(clazz -> Extensible.class.isAssignableFrom(clazz))
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();
