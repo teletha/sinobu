@@ -521,9 +521,18 @@ public class EventsTest {
     public void effectOnComplete() throws Exception {
         Subject<Integer, Integer> subject = Subject.recorde(r -> e -> e.effectOnComplete(r::complete));
 
-        assert subject.recorder.isCompleted();
+        assert subject.recorder.isNotCompleted();
         subject.complete();
         assert subject.recorder.isCompleted();
+    }
+
+    @Test
+    public void effectOnError() throws Exception {
+        Subject<Integer, Integer> subject = Subject.recorde(r -> e -> e.effectOnError(r::error));
+
+        assert subject.recorder.hasError() == false;
+        subject.error(Error.class);
+        assert subject.recorder.hasError() == true;
     }
 
     @Test

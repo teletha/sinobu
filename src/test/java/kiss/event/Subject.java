@@ -24,7 +24,7 @@ import kiss.I;
 import kiss.Observer;
 
 /**
- * @version 2015/05/23 9:07:18
+ * @version 2017/03/21 23:11:40
  */
 public class Subject<V, R> {
 
@@ -98,16 +98,14 @@ public class Subject<V, R> {
      */
     public static final <V, R> Subject<V, R> recorde(Function<Recorde<V>, Function<Events<V>, Events<R>>> declaration) {
         Subject<V, R> subject = new Subject();
-        List<Recorde<V>> recordes = new ArrayList<>();
+        Recorde<V>[] recordes = new Recorde[multiplier];
 
         for (int i = 0; i < multiplier; i++) {
-            Recorde<V> recorder = new Recorder();
             Listener<R> listener = new Listener<>();
+            recordes[i] = new Recorder();
+
             subject.listeners.add(listener);
-
-            subject.disposables.add(declaration.apply(recorder).apply(subject.observe()).to(listener));
-
-            recordes.add(recorder);
+            subject.disposables.add(declaration.apply(recordes[i]).apply(subject.observe()).to(listener));
         }
         subject.recorder = I.bundle(recordes);
         return subject;
@@ -322,6 +320,14 @@ public class Subject<V, R> {
         return true;
     }
 
+    public void error(Class<? extends Throwable> throwable) {
+        assert throwable != null;
+
+        for (Observer<? super V> observer : observers) {
+            observer.error(I.make(throwable));
+        }
+    }
+
     /**
      * @version 2015/05/23 9:24:51
      */
@@ -347,6 +353,18 @@ public class Subject<V, R> {
         public void complete();
 
         public boolean isCompleted();
+
+        public default boolean isNotCompleted() {
+            return !isCompleted();
+        }
+
+        public void error(Throwable throwable);
+
+        public Throwable error();
+
+        public default boolean hasError() {
+            return error() != null;
+        }
     }
 
     /**
@@ -370,6 +388,24 @@ public class Subject<V, R> {
         @Override
         public boolean isCompleted() {
             return completed;
+        }
+
+        private Throwable error;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void error(Throwable throwable) {
+            this.error = throwable;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Throwable error() {
+            return error;
         }
     }
 }

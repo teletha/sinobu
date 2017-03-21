@@ -513,7 +513,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -619,7 +619,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -802,6 +802,24 @@ public class Events<V> {
 
         return new Events<>((observer, disposer) -> {
             return to(observer::accept, observer::error, I.bundle(effect, observer::complete), disposer);
+        });
+    }
+
+    /**
+     * <p>
+     * Invokes an action for each value in the {@link Events} sequence.
+     * </p>
+     *
+     * @param effect An action to invoke for each value in the {@link Events} sequence.
+     * @return Chainable API.
+     */
+    public final Events<V> effectOnError(Consumer<Throwable> effect) {
+        if (effect == null) {
+            return this;
+        }
+
+        return new Events<>((observer, disposer) -> {
+            return to(observer::accept, I.bundle(effect, observer::error), observer::complete, disposer);
         });
     }
 
