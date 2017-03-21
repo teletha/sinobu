@@ -502,6 +502,17 @@ public class EventsTest {
     }
 
     @Test
+    public void effect() {
+        Set<Integer> list = new HashSet();
+        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.effect(list::add));
+    
+        assert facade.emitAndRetrieve(10) == 10;
+        assert list.contains(10);
+        assert facade.emitAndRetrieve(20) == 20;
+        assert list.contains(20);
+    }
+
+    @Test
     public void errorResumeException() {
         UsefulFunction<Integer, Integer> thrower = v -> {
             if (v == 30) {
@@ -895,17 +906,6 @@ public class EventsTest {
         assert facade.emitAndRetrieve(2) == 13; // 11 + 2
         assert facade.emitAndRetrieve(3) == 16; // 13 + 3
         assert facade.dispose();
-    }
-
-    @Test
-    public void sideEffect() {
-        Set<Integer> list = new HashSet();
-        EventFacade<Integer, Integer> facade = new EventFacade<>(events -> events.sideEffect(list::add));
-
-        assert facade.emitAndRetrieve(10) == 10;
-        assert list.contains(10);
-        assert facade.emitAndRetrieve(20) == 20;
-        assert list.contains(20);
     }
 
     @Test
@@ -1479,7 +1479,7 @@ public class EventsTest {
     @Test
     public void rangeTake() {
         Store<Integer> store = new Store();
-        Events.range(1, 10).sideEffect(store::before).take(2).to(store::after);
+        Events.range(1, 10).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
     }
@@ -1487,7 +1487,7 @@ public class EventsTest {
     @Test
     public void disposeFrom() {
         Store<Integer> store = new Store();
-        Events.from(1, 2, 3, 4).sideEffect(store::before).take(1).to(store::after);
+        Events.from(1, 2, 3, 4).effect(store::before).take(1).to(store::after);
 
         assert store.size() == 1;
     }
@@ -1495,7 +1495,7 @@ public class EventsTest {
     @Test
     public void disposeFlatMap() {
         Store<Integer> store = new Store();
-        Events.from(10, 20, 30, 40).flatMap(v -> Events.from(v, v + 1)).sideEffect(store::before).take(2).to(store::after);
+        Events.from(10, 20, 30, 40).flatMap(v -> Events.from(v, v + 1)).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 10;
@@ -1505,7 +1505,7 @@ public class EventsTest {
     @Test
     public void disposeFlatArray() {
         Store<Integer> store = new Store();
-        Events.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1}).sideEffect(store::before).take(2).to(store::after);
+        Events.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1}).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 10;
@@ -1515,7 +1515,7 @@ public class EventsTest {
     @Test
     public void disposeMerge() {
         Store<Integer> store = new Store();
-        Events.from(1).merge(Events.from(10, 20)).sideEffect(store::before).take(2).to(store::after);
+        Events.from(1).merge(Events.from(10, 20)).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 1;

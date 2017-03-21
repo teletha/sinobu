@@ -1251,7 +1251,7 @@ public class Events<V> {
      * @param effect An action to invoke for each value in the {@link Events} sequence.
      * @return Chainable API.
      */
-    public final Events<V> sideEffect(Consumer<? super V> effect) {
+    public final Events<V> effect(Consumer<? super V> effect) {
         return new Events<>((observer, disposer) -> to(v -> {
             effect.accept(v);
             observer.accept(v);
