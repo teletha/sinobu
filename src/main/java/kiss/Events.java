@@ -156,12 +156,26 @@ public class Events<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
+        return to(next, error, complete, null);
+    }
+
+    /**
+     * <p>
+     * Receive values from this {@link Events}.
+     * </p>
+     *
+     * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @param error A delegator method of {@link Observer#error(Throwable)}.
+     * @param complete A delegator method of {@link Observer#complete()}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
+    public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
         Agent agent = new Agent();
         agent.next = next;
         agent.error = error;
         agent.complete = complete;
 
-        return to(agent);
+        return to(agent, disposer);
     }
 
     /**
@@ -173,7 +187,7 @@ public class Events<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return to(observer, Disposable.empty());
+        return to(observer, (Disposable) null);
     }
 
     /**
@@ -185,7 +199,7 @@ public class Events<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     private final Disposable to(Observer<? super V> observer, Disposable disposer) {
-        return subscriber.apply(observer, disposer);
+        return subscriber.apply(observer, disposer != null ? disposer : Disposable.empty());
     }
 
     /**
@@ -499,7 +513,7 @@ public class Events<V> {
      *         by source {@link Events} by means of the given aggregation function.
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combine(Events<O> other, Events<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -605,7 +619,7 @@ public class Events<V> {
      *         by the source {@link Events} by means of the given aggregation function
      */
     public final <O, A> Events<Ⅲ<V, O, A>> combineLatest(Events<O> other, Events<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -751,6 +765,43 @@ public class Events<V> {
                     observer.accept(value);
                 }
             }, disposer);
+        });
+    }
+
+    /**
+     * <p>
+     * Invokes an action for each value in the {@link Events} sequence.
+     * </p>
+     *
+     * @param effect An action to invoke for each value in the {@link Events} sequence.
+     * @return Chainable API.
+     */
+    public final Events<V> effect(Consumer<? super V> effect) {
+        if (effect == null) {
+            return this;
+        }
+
+        return new Events<>((observer, disposer) -> to(v -> {
+            effect.accept(v);
+            observer.accept(v);
+        }, disposer));
+    }
+
+    /**
+     * <p>
+     * Invokes an action for each value in the {@link Events} sequence.
+     * </p>
+     *
+     * @param effect An action to invoke for each value in the {@link Events} sequence.
+     * @return Chainable API.
+     */
+    public final Events<V> effectOnComplete(Runnable effect) {
+        if (effect == null) {
+            return this;
+        }
+
+        return new Events<>((observer, disposer) -> {
+            return to(observer::accept, observer::error, I.bundle(effect, observer::complete), disposer);
         });
     }
 
@@ -1241,21 +1292,6 @@ public class Events<V> {
                 observer.accept(ref.get());
             }, disposer);
         });
-    }
-
-    /**
-     * <p>
-     * Invokes an action for each value in the {@link Events} sequence.
-     * </p>
-     *
-     * @param effect An action to invoke for each value in the {@link Events} sequence.
-     * @return Chainable API.
-     */
-    public final Events<V> effect(Consumer<? super V> effect) {
-        return new Events<>((observer, disposer) -> to(v -> {
-            effect.accept(v);
-            observer.accept(v);
-        }, disposer));
     }
 
     /**

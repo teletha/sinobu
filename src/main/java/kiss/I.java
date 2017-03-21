@@ -527,6 +527,31 @@ public class I {
 
     /**
      * <p>
+     * Bundle all given funcitons into single function.
+     * </p>
+     * 
+     * @param functions A list of functions to bundle.
+     * @return A bundled function.
+     */
+    public static <F> F bundle(Collection<F> functions) {
+        return bundle(functions, functions);
+    }
+
+    /**
+     * <p>
+     * Bundle all given typed funcitons into single typed function.
+     * </p>
+     * 
+     * @param type A function type.
+     * @param functions A list of functions to bundle.
+     * @return A bundled function.
+     */
+    public static <F> F bundle(Class<F> type, Collection<F> functions) {
+        return bundle(type, functions.toArray((F[]) Array.newInstance(type, functions.size())));
+    }
+
+    /**
+     * <p>
      * Bundle all given typed funcitons into single typed function.
      * </p>
      * 
@@ -539,7 +564,7 @@ public class I {
             Object result = null;
 
             if (functions != null) {
-                for (F fun : functions) {
+                for (Object fun : functions) {
                     if (fun != null) {
                         result = method.invoke(fun, args);
                     }

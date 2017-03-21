@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import javafx.beans.property.Property;
 
@@ -27,7 +26,7 @@ import kiss.Observer;
 /**
  * @version 2015/05/23 9:07:18
  */
-public class EventFacade<V, R> {
+public class Subject<V, R> {
 
     /** The multiplier. */
     private static final int multiplier = 2;
@@ -44,10 +43,12 @@ public class EventFacade<V, R> {
     /** The counter. */
     private int disposed = 0;
 
+    public Recorde recorder;
+
     /**
      * 
      */
-    public EventFacade() {
+    public Subject() {
         assert 1 < multiplier;
     }
 
@@ -58,7 +59,7 @@ public class EventFacade<V, R> {
      * 
      * @param declaration
      */
-    public EventFacade(Function<Events<V>, Events<R>> declaration) {
+    public Subject(Function<Events<V>, Events<R>> declaration) {
         this();
 
         for (int i = 0; i < multiplier; i++) {
@@ -76,7 +77,7 @@ public class EventFacade<V, R> {
      * 
      * @param declaration
      */
-    public EventFacade(BiFunction<Events<V>, EventFacade<V, R>, Events<R>> declaration) {
+    public Subject(BiFunction<Events<V>, Subject<V, R>, Events<R>> declaration) {
         this();
 
         for (int i = 0; i < multiplier; i++) {
@@ -88,9 +89,34 @@ public class EventFacade<V, R> {
     }
 
     /**
+     * <p>
+     * Create {@link Subject} with recoder utility.
+     * </p>
+     * 
+     * @param declaration
+     * @return
+     */
+    public static final <V, R> Subject<V, R> recorde(Function<Recorde<V>, Function<Events<V>, Events<R>>> declaration) {
+        Subject<V, R> subject = new Subject();
+        List<Recorde<V>> recordes = new ArrayList<>();
+
+        for (int i = 0; i < multiplier; i++) {
+            Recorde<V> recorder = new Recorder();
+            Listener<R> listener = new Listener<>();
+            subject.listeners.add(listener);
+
+            subject.disposables.add(declaration.apply(recorder).apply(subject.observe()).to(listener));
+
+            recordes.add(recorder);
+        }
+        subject.recorder = I.bundle(recordes);
+        return subject;
+    }
+
+    /**
      * @param property
      */
-    public EventFacade(Property<R> property) {
+    public Subject(Property<R> property) {
         this();
 
         for (int i = 0; i < multiplier; i++) {
@@ -259,6 +285,15 @@ public class EventFacade<V, R> {
     }
 
     /**
+     * Complete all observers.
+     */
+    public void complete() {
+        for (Observer<? super V> observer : observers) {
+            observer.complete();
+        }
+    }
+
+    /**
      * <p>
      * Helper method to check whether the related event observers are disposed completely or not.
      * </p>
@@ -301,6 +336,40 @@ public class EventFacade<V, R> {
         @Override
         public void accept(V value) {
             values.add(value);
+        }
+    }
+
+    /**
+     * @version 2017/03/21 17:52:42
+     */
+    public static interface Recorde<V> {
+
+        public void complete();
+
+        public boolean isCompleted();
+    }
+
+    /**
+     * @version 2017/03/21 18:04:15
+     */
+    private static class Recorder<V> implements Recorde<V> {
+
+        private boolean completed;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void complete() {
+            completed = true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isCompleted() {
+            return completed;
         }
     }
 }
