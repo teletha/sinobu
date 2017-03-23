@@ -1032,6 +1032,12 @@ public class I {
     // return make(bundleClass);
     // }
 
+    public static <P> Consumer<P> imitateConsumer(Runnable lambda) {
+        return p -> {
+            if (lambda != null) lambda.run();
+        };
+    }
+
     public static <P, R> Function<P, R> imitateFunction(Consumer<P> function) {
         return p -> {
             function.accept(p);
