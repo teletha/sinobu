@@ -10,6 +10,7 @@
 package kiss;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -119,6 +120,14 @@ public class VariableTest {
         Predicate<String> condition = null;
         assert empty.is(condition) == false;
         assert string.is(condition) == false;
+    }
+
+    @Test
+    public void isIfConsumer() throws Exception {
+        AtomicReference<String> value = new AtomicReference();
+
+        string.is("value", value::set);
+        assert value.get().equals("value");
     }
 
     @Test
