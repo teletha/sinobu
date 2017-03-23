@@ -474,14 +474,16 @@ public class Events<V> {
         return new Events<>((observer, disposer) -> {
             AtomicReference<List<V>> ref = new AtomicReference<>();
 
-            return to(value -> ref.updateAndGet(buffer -> {
-                if (buffer == null) {
-                    buffer = new ArrayList<>();
+            return to(value -> {
+                List<V> list = ref.updateAndGet(buffer -> buffer == null ? new ArrayList() : buffer);
+                list.add(value);
 
-                    I.schedule(time, unit, true, () -> observer.accept(ref.getAndSet(null)));
+                if (list.size() == 1) {
+                    I.schedule(time, unit, false, () -> {
+                        observer.accept(ref.getAndSet(null));
+                    });
                 }
-                return buffer;
-            }).add(value), disposer);
+            }, disposer);
         });
     }
 

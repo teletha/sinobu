@@ -67,7 +67,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -329,13 +328,10 @@ public class I {
     };
 
     /** The parallel task manager. */
-    private static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
+    private static final ScheduledExecutorService parallel = Executors.newScheduledThreadPool(4, factory);
 
     /** The serial task manager. */
-    private static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
-
-    /** The scheduled task manager. */
-    private static final ScheduledExecutorService schedule = Executors.newScheduledThreadPool(0, factory);
+    private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(factory);
 
     /** The associatable object holder. */
     private static final WeakHashMap<Object, WeakHashMap> associatables = new WeakHashMap();
@@ -2174,7 +2170,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2467,19 +2463,8 @@ public class I {
      * @param task A task to execute.
      */
     public static Future<?> schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
-        Runnable runnable = task;
+        return (parallelExecution ? parallel : serial).schedule(task, delay, unit);
 
-        if (delay != 0 && unit != null) {
-            runnable = () -> {
-                try {
-                    unit.sleep(delay);
-                    task.run();
-                } catch (Throwable e) {
-                    throw quiet(e);
-                }
-            };
-        }
-        return (parallelExecution ? parallel : serial).submit(runnable);
     }
 
     /**
@@ -2494,7 +2479,7 @@ public class I {
      * @param task A task to execute.
      */
     public static Future<?> schedule(Runnable task, long interval, TimeUnit unit) {
-        return schedule.scheduleAtFixedRate(task, 0, interval, unit);
+        return parallel.scheduleAtFixedRate(task, 0, interval, unit);
     }
 
     /**
@@ -2855,7 +2840,7 @@ public class I {
 
             List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
-                    .map(I.<String, Class> quiet(Class::forName))
+                    .map(I.<String, Class>quiet(Class::forName))
                     .take(clazz -> Extensible.class.isAssignableFrom(clazz))
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();
