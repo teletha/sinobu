@@ -222,76 +222,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /**
      * Emulate if statement.
      * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(BooleanSupplier condition, Runnable valid) {
-        return is(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(BooleanSupplier condition, Consumer<V> valid) {
-        return is(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(BooleanSupplier condition, Runnable valid, Runnable invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(BooleanSupplier condition, Runnable valid, Consumer<V> invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(BooleanSupplier condition, Consumer<V> valid, Runnable invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(BooleanSupplier condition, Consumer<V> valid, Consumer<V> invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
      * @param value A condition.
      * @param valid A valid process.
      * @return Chainable API.
@@ -567,6 +497,76 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     public final Variable<V> isNot(Predicate<V> condition, Consumer<V> valid, Consumer<V> invalid) {
         return effect(isNot(condition), valid, invalid);
+    }
+
+    /**
+     * Emulate if statement.
+     * 
+     * @param condition A condition.
+     * @param valid A valid process.
+     * @return Chainable API.
+     */
+    public final Variable<V> effectIf(BooleanSupplier condition, Runnable valid) {
+        return effectIf(condition, valid, (Consumer) null);
+    }
+
+    /**
+     * Emulate if statement.
+     * 
+     * @param condition A condition.
+     * @param valid A valid process.
+     * @return Chainable API.
+     */
+    public final Variable<V> effectIf(BooleanSupplier condition, Consumer<V> valid) {
+        return effectIf(condition, valid, (Consumer) null);
+    }
+
+    /**
+     * Emulate if-else statement.
+     * 
+     * @param condition A condition.
+     * @param valid A valid process.
+     * @param invalid A invalid process.
+     * @return Chainable API.
+     */
+    public final Variable<V> effectIf(BooleanSupplier condition, Runnable valid, Runnable invalid) {
+        return effect(is(condition), valid, invalid);
+    }
+
+    /**
+     * Emulate if-else statement.
+     * 
+     * @param condition A condition.
+     * @param valid A valid process.
+     * @param invalid A invalid process.
+     * @return Chainable API.
+     */
+    public final Variable<V> effectIf(BooleanSupplier condition, Runnable valid, Consumer<V> invalid) {
+        return effect(is(condition), valid, invalid);
+    }
+
+    /**
+     * Emulate if-else statement.
+     * 
+     * @param condition A condition.
+     * @param valid A valid process.
+     * @param invalid A invalid process.
+     * @return Chainable API.
+     */
+    public final Variable<V> effectIf(BooleanSupplier condition, Consumer<V> valid, Runnable invalid) {
+        return effect(is(condition), valid, invalid);
+    }
+
+    /**
+     * Emulate if-else statement.
+     * 
+     * @param condition A condition.
+     * @param valid A valid process.
+     * @param invalid A invalid process.
+     * @return Chainable API.
+     */
+    public final Variable<V> effectIf(BooleanSupplier condition, Consumer<V> valid, Consumer<V> invalid) {
+        return effect(is(condition), valid, invalid);
     }
 
     /**
