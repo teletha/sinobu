@@ -30,13 +30,13 @@ class Format extends Formatter {
      */
     @Override
     public String format(LogRecord record) {
-        StringBuilder builder = new StringBuilder("[");
+        StringBuilder builder = new StringBuilder();
 
         String message = record.getMessage();
         Object[] params = record.getParameters();
 
         builder.append(time.format(LocalDateTime.now(ZoneId.systemDefault())))
-                .append("]  ")
+                .append("   ")
                 .append(params == null ? message : String.format(message, params))
                 .append(System.lineSeparator());
 

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PushbackReader;
 import java.io.RandomAccessFile;
 import java.io.Reader;
@@ -80,10 +81,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -366,7 +367,12 @@ public class I {
         for (Handler h : $logger.getHandlers()) {
             $logger.removeHandler(h);
         }
-        config(new StreamHandler(System.out, new Format()));
+
+        // switch err temporaly to create console handler with System.out stream
+        PrintStream error = System.err;
+        System.setErr(System.out);
+        config(new ConsoleHandler());
+        System.setErr(error);
 
         // built-in lifestyles
         lifestyles.set(List.class, ArrayList::new);
