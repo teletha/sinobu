@@ -80,6 +80,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -279,6 +283,9 @@ public class I {
      */
     public static Charset $encoding = StandardCharsets.UTF_8;
 
+    /** The configuration of root logger in Sinobu. */
+    public static Logger $logger = Logger.getLogger("");
+
     /**
      * <p>
      * The configuration of working directory in Sinobu, default value is <em>current directory</em>
@@ -355,6 +362,12 @@ public class I {
 
     // initialization
     static {
+        // remove all built-in log handlers
+        for (Handler h : $logger.getHandlers()) {
+            $logger.removeHandler(h);
+        }
+        config(new ConsoleHandler());
+
         // built-in lifestyles
         lifestyles.set(List.class, ArrayList::new);
         lifestyles.set(Map.class, HashMap::new);
@@ -439,6 +452,30 @@ public class I {
      */
     public static <V> Predicate<V> accept() {
         return e -> true;
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#SEVERE} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void alarm(String message) {
+        $logger.logp(Level.SEVERE, "", "", message);
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#SEVERE} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void alarm(String message, Object... params) {
+        $logger.logp(Level.SEVERE, "", "", message, params);
     }
 
     /**
@@ -633,6 +670,18 @@ public class I {
 
     /**
      * <p>
+     * Rgister the specified log handler.
+     * </p>
+     * 
+     * @param handler
+     */
+    public static void config(Handler handler) {
+        handler.setFormatter(new Format());
+        $logger.addHandler(handler);
+    }
+
+    /**
+     * <p>
      * Note : This method closes both input and output stream carefully.
      * </p>
      * <p>
@@ -770,6 +819,30 @@ public class I {
      */
     public static void copy(Path input, Path output, BiPredicate<Path, BasicFileAttributes> filter) {
         new Visitor(input, output, 0, filter).walk();
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#FINEST} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void debug(String message) {
+        $logger.logp(Level.FINEST, "", "", message);
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#FINEST} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void debug(String message, Object... params) {
+        $logger.logp(Level.FINEST, "", "", message, params);
     }
 
     /**
@@ -1227,6 +1300,30 @@ public class I {
         } catch (IOException e) {
             throw quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#INFO} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void log(String message) {
+        $logger.logp(Level.INFO, "", "", message);
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#INFO} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void log(String message, Object... params) {
+        $logger.logp(Level.INFO, "", "", message, params);
     }
 
     /**
@@ -2592,6 +2689,30 @@ public class I {
      */
     public static List<Path> walkDirectory(Path start, BiPredicate<Path, BasicFileAttributes> filter) {
         return new Visitor(start, null, 4, filter).walk();
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#WARNING} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void warn(String message) {
+        $logger.logp(Level.WARNING, "", "", message);
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#WARNING} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void warn(String message, Object... params) {
+        $logger.logp(Level.WARNING, "", "", message, params);
     }
 
     /**
