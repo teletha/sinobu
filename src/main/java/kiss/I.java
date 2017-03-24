@@ -462,7 +462,7 @@ public class I {
      * @param message A message log.
      * @param params A list of parameters to format.
      */
-    public static void alarm(String message) {
+    public static void alert(String message) {
         $logger.logp(Level.SEVERE, "", "", message);
     }
 
@@ -474,7 +474,7 @@ public class I {
      * @param message A message log.
      * @param params A list of parameters to format.
      */
-    public static void alarm(String message, Object... params) {
+    public static void alert(String message, Object... params) {
         $logger.logp(Level.SEVERE, "", "", message, params);
     }
 
