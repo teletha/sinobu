@@ -1525,6 +1525,18 @@ public class EventsTest {
     }
 
     @Test
+    public void disposeInternalFlatMap() {
+        Store<Integer> store = new Store();
+        Events.from(10, 20).flatMap(v -> Events.from(v, v + 1, v + 2).take(2)).to(store::before);
+
+        assert store.before.size() == 4;
+        assert store.retrieve() == 10;
+        assert store.retrieve() == 11;
+        assert store.retrieve() == 20;
+        assert store.retrieve() == 21;
+    }
+
+    @Test
     public void disposeFlatArray() {
         Store<Integer> store = new Store();
         Events.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1}).effect(store::before).take(2).to(store::after);
