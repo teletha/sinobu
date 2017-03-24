@@ -328,7 +328,7 @@ public class I {
     };
 
     /** The parallel task manager. */
-    private static final ScheduledExecutorService parallel = Executors.newScheduledThreadPool(0, factory);
+    private static final ScheduledExecutorService parallel = Executors.newScheduledThreadPool(4, factory);
 
     /** The serial task manager. */
     private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(factory);
