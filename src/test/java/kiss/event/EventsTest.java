@@ -246,12 +246,12 @@ public class EventsTest {
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
-        chronus.freeze(30);
+        chronus.freeze(50);
         assert subject.retrieveAsList(10, 20);
         assert subject.emitAndRetrieve(30) == null;
         assert subject.emitAndRetrieve(40) == null;
         assert subject.emitAndRetrieve(50) == null;
-        chronus.freeze(30);
+        chronus.freeze(50);
         assert subject.retrieveAsList(30, 40, 50);
     }
 
@@ -1481,7 +1481,7 @@ public class EventsTest {
         chronus.freezeFromMark(10);
         assert subject.retrieve() == 1;
         assert subject.retrieve() == null;
-        chronus.freezeFromMark(20);
+        chronus.freezeFromMark(30);
         assert subject.retrieve() == 1;
         assert subject.retrieve() == null;
 
