@@ -80,10 +80,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -366,7 +366,7 @@ public class I {
         for (Handler h : $logger.getHandlers()) {
             $logger.removeHandler(h);
         }
-        config(new ConsoleHandler());
+        config(new StreamHandler(System.out, new Format()));
 
         // built-in lifestyles
         lifestyles.set(List.class, ArrayList::new);
