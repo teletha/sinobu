@@ -67,7 +67,7 @@ public class IllegalInputTest {
         I.read((Reader) null, bean);
     }
 
-    @Test(expected = IOError.class)
+    @Test(expected = NullPointerException.class)
     public void readNullOutput() throws Exception {
         I.read("{\"age\":\"15\"}", (Object) null);
     }

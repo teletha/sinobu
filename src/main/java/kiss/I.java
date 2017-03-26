@@ -124,8 +124,6 @@ import org.xml.sax.InputSource;
 
 import sun.misc.Unsafe;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import kiss.lambda.Lambda;
 import kiss.model.Model;
 import kiss.model.Property;
 
@@ -1157,6 +1155,81 @@ public class I {
             }
         }
         return builder.toString();
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * <ul>
+     * <li>{@link JSON}</li>
+     * <li>{@link Path}</li>
+     * <li>{@link InputStream}</li>
+     * <li>{@link Reader}</li>
+     * <li>{@link URL}</li>
+     * <li>{@link String}</li>
+     * <li>URL Expression (http and https)</li>
+     * </ul>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link ScriptException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
+    public static JSON json(Object input) {
+        try {
+            if (input instanceof JSON) {
+                return (JSON) input;
+            } else if (input instanceof Reader) {
+                return parse((Reader) input);
+            } else if (input instanceof InputStream) {
+                return parse(new InputStreamReader((InputStream) input, $encoding));
+            } else if (input instanceof URL) {
+                return json(((URL) input).openStream());
+            } else if (input instanceof Path) {
+                return json(Files.newInputStream((Path) input));
+            } else {
+                String value = input.toString();
+
+                if (value.startsWith("http://") || value.startsWith("https://")) {
+                    return json(new URL(value));
+                }
+                return parse(new StringReader(value));
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Helper method to parse JSON.
+     * </p>
+     * 
+     * @param input A JSON text.
+     * @return
+     */
+    private static JSON parse(Reader input) {
+        PushbackReader reader = new PushbackReader(input, 2);
+
+        try {
+            // aquire lock
+            lock.readLock().lock();
+
+            // Parse as JSON
+            reader.unread(new char[] {'a', '='});
+
+            return new JSON(script.eval(reader));
+        } catch (Exception e) {
+            throw new IOError(e);
+        } finally {
+            // relese lock
+            lock.readLock().unlock();
+
+            // close carefuly
+            quiet(reader);
+        }
     }
 
     /**
@@ -2395,11 +2468,7 @@ public class I {
      * @throws AccessDeniedException If the input is not regular file but directory.
      */
     public static <M> M read(Path input, M output) {
-        try {
-            return read(Files.newBufferedReader(input, $encoding), output);
-        } catch (Exception e) {
-            throw quiet(e);
-        }
+        return json(input).to(output);
     }
 
     /**
@@ -2419,22 +2488,7 @@ public class I {
      * @throws ScriptException If the input data is empty or invalid format.
      */
     public static <M> M read(CharSequence input, M output) {
-        Objects.nonNull(input);
-
-        String value = input.toString();
-
-        if (value.startsWith("http://") || value.startsWith("https://")) {
-            // ========================
-            // from URL
-            // ========================
-            try {
-                return read(new InputStreamReader(new URL(value).openStream(), $encoding), output);
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
-        } else {
-            return read(new StringReader(value), output);
-        }
+        return json(input).to(output);
     }
 
     /**
@@ -2458,166 +2512,7 @@ public class I {
      * @throws IOError If the input data is empty or invalid format.
      */
     public static <M> M read(Reader input, M output) {
-        Objects.nonNull(output);
-
-        PushbackReader reader = new PushbackReader(input, 2);
-
-        try {
-            // aquire lock
-            lock.readLock().lock();
-
-            // Parse as JSON
-            reader.unread(new char[] {'a', '='});
-
-            return read(Model.of(output), output, script.eval(reader));
-        } catch (Exception e) {
-            throw new IOError(e);
-        } finally {
-            // relese lock
-            lock.readLock().unlock();
-
-            // close carefuly
-            quiet(reader);
-        }
-    }
-
-    public static <M> Events<M> json(String json, String path, Class<M> type) {
-        String[] names = path.split("\\.");
-
-        Events<Object> current = Events.from(json(json));
-
-        for (int i = 0; i < names.length; i++) {
-            String name = names[i];
-
-            current = current.flatMap(Lambda.<Object, Events<Object>> recursive(r -> v -> {
-                if (v == null) {
-                    return Events.NEVER;
-                } else if (v instanceof ScriptObjectMirror) {
-                    ScriptObjectMirror m = (ScriptObjectMirror) v;
-                    int start = name.lastIndexOf('[');
-
-                    if (start == -1) {
-                        // all values
-                        Object o = m.get(name);
-
-                        if (o instanceof ScriptObjectMirror) {
-                            ScriptObjectMirror om = (ScriptObjectMirror) o;
-
-                            if (om.isArray()) {
-                                return Events.from(om.values());
-                            } else {
-                                return Events.from(o);
-                            }
-                        } else {
-                            return Events.from(o);
-                        }
-                    } else {
-                        // indexed value
-                        String na = name.substring(0, start);
-                        String index = name.substring(start + 1, name.length() - 1);
-                        Object o = m.get(na);
-
-                        if (o instanceof ScriptObjectMirror) {
-                            ScriptObjectMirror om = (ScriptObjectMirror) o;
-
-                            return Events.from(om.get(index));
-                        } else {
-                            return Events.from(o);
-                        }
-                    }
-                } else {
-                    return Events.from(v);
-                }
-            }));
-        }
-        return current.map(o -> transform(o, type));
-    }
-
-    private static Object json(String input) {
-        return json(new StringReader(input));
-    }
-
-    /**
-     * <p>
-     * Helper method to parse JSON.
-     * </p>
-     * 
-     * @param input A JSON text.
-     * @return
-     */
-    private static Object json(Reader input) {
-        PushbackReader reader = new PushbackReader(input, 2);
-
-        try {
-            // aquire lock
-            lock.readLock().lock();
-
-            // Parse as JSON
-            reader.unread(new char[] {'a', '='});
-
-            return script.eval(reader);
-        } catch (Exception e) {
-            throw new IOError(e);
-        } finally {
-            // relese lock
-            lock.readLock().unlock();
-
-            // close carefuly
-            quiet(reader);
-        }
-    }
-
-    /**
-     * <p>
-     * Helper method to traverse json structure using Java Object {@link Model}.
-     * </p>
-     *
-     * @param <M> A current model type.
-     * @param model A java object model.
-     * @param java A java value.
-     * @param js A javascript value.
-     * @return A restored java object.
-     */
-    private static <M> M read(Model<M> model, M java, Object js) {
-        if (js instanceof Map) {
-            Map<String, Object> map = (Map) js;
-
-            List<Property> properties = new ArrayList(model.properties());
-
-            if (properties.isEmpty()) {
-                for (String id : map.keySet()) {
-                    Property property = model.property(id);
-
-                    if (property != null) {
-                        properties.add(property);
-                    }
-                }
-            }
-
-            for (Property property : properties) {
-                if (!property.isTransient) {
-                    if (map.containsKey(property.name)) {
-                        // calculate value
-                        map.containsKey(property.name);
-                        Object value = map.get(property.name);
-                        Class type = property.model.type;
-
-                        // convert value
-                        if (property.isAttribute()) {
-                            value = transform(value, type);
-                        } else {
-                            value = read(property.model, make(type), value);
-                        }
-
-                        // assign value
-                        model.set(java, property, value);
-                    }
-                }
-            }
-        }
-
-        // API definition
-        return java;
+        return json(input).to(output);
     }
 
     /**
@@ -2909,7 +2804,7 @@ public class I {
 
             // traverse object as json
             Model model = Model.of(input);
-            new JSON(out, 0).accept(pair(model, new Property(model, ""), input));
+            new JSONWriter(out, 0).accept(pair(model, new Property(model, ""), input));
         } finally {
             // relese lock
             lock.writeLock().unlock();

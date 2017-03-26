@@ -5,156 +5,131 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *          https://opensource.org/licenses/MIT
+ *          http://opensource.org/licenses/mit-license.php
  */
 package kiss;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Map;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import kiss.model.Model;
 import kiss.model.Property;
 
 /**
- * <p>
- * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor nodes,
- * but same object in sibling nodes will be acceptable.
- * </p>
- * 
- * @version 2017/01/16 13:09:11
+ * @version 2017/03/26 12:53:30
  */
-class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
+public class JSON {
 
-    /** The charcter sequence for output as JSON. */
-    private final Appendable out;
-
-    /** The size of indent. */
-    private final int indent;
-
-    /** The location number. */
-    int index;
+    /** The root object. */
+    private final Object root;
 
     /**
-     * JSON serializer.
+     * Hide constructor.
      * 
-     * @param out An output target.
-     * @param indent A size of indent.
+     * @param root A root json object.
      */
-    JSON(Appendable out, int indent) {
-        if (64 < indent) {
-            throw new ClassCircularityError();
+    JSON(Object root) {
+        this.root = root;
+    }
+
+    public Events<String> find(String expression) {
+        return find(expression, String.class);
+    }
+
+    public <M> Events<M> find(String expression, Class<M> type) {
+        return select(expression).map(v -> v.to(type));
+    }
+
+    private Events<JSON> select(String expression) {
+        Events<Object> current = Events.from(root);
+
+        for (String name : expression.split("\\.")) {
+            current = current.flatMap(v -> {
+                if (v instanceof Map) {
+                    int i = name.lastIndexOf('[');
+                    String main = i == -1 ? name : name.substring(0, i);
+                    String sub = i == -1 ? null : name.substring(i + 1, name.length() - 1);
+                    Object value = ((Map) v).get(main);
+
+                    if (value instanceof ScriptObjectMirror) {
+                        ScriptObjectMirror m = (ScriptObjectMirror) value;
+
+                        if (sub != null) {
+                            return Events.from(m.get(sub));
+                        } else if (m.isArray()) {
+                            return Events.from(m.values());
+                        }
+                    }
+                    return Events.from(value);
+                } else {
+                    return Events.NEVER;
+                }
+            });
         }
-        this.out = out;
-        this.indent = indent;
+        return current.map(JSON::new);
+    }
+
+    public <M> M to(Class<M> type) {
+        Model<M> model = Model.of(type);
+        return model.attribute ? I.transform(root, type) : to(model, I.make(type), root);
+    }
+
+    public <M> M to(M value) {
+        return to(Model.of(value), value, root);
     }
 
     /**
-     * {@inheritDoc}
+     * <p>
+     * Helper method to traverse json structure using Java Object {@link Model}.
+     * </p>
+     *
+     * @param <M> A current model type.
+     * @param model A java object model.
+     * @param java A java value.
+     * @param js A javascript value.
+     * @return A restored java object.
      */
-    @Override
-    public void accept(Ⅲ<Model, Property, Object> context) {
-        if (!context.ⅱ.isTransient && context.ⅱ.name != null) {
-            try {
-                // non-first properties requires separator
-                if (index++ != 0) out.append(',');
+    private <M> M to(Model<M> model, M java, Object js) {
+        if (js instanceof Map) {
+            Map<String, Object> map = (Map) js;
 
-                // all properties need the properly indents
-                if (0 < indent) {
-                    indent();
+            List<Property> properties = new ArrayList(model.properties());
 
-                    // property key (List node doesn't need key)
-                    if (context.ⅰ.type != List.class) {
-                        write(context.ⅱ.name, String.class);
-                        out.append(": ");
+            if (properties.isEmpty()) {
+                for (String id : map.keySet()) {
+                    Property property = model.property(id);
+
+                    if (property != null) {
+                        properties.add(property);
                     }
                 }
-
-                // property value
-                if (context.ⅱ.isAttribute()) {
-                    write(I.transform(context.ⅲ, String.class), context.ⅱ.model.type);
-                } else {
-                    JSON walker = new JSON(out, indent + 1);
-                    out.append(context.ⅱ.model.type == List.class ? '[' : '{');
-                    context.ⅱ.model.walk(context.ⅲ, walker);
-                    if (walker.index != 0) indent();
-                    out.append(context.ⅱ.model.type == List.class ? ']' : '}');
-                }
-            } catch (IOException e) {
-                throw I.quiet(e);
             }
-        }
-    }
 
-    /**
-     * <p>
-     * Write JSON literal with quote.
-     * </p>
-     * 
-     * @param value A value.
-     * @param type A value type.
-     * @throws IOException
-     */
-    private void write(String value, Class type) throws IOException {
-        if (value == null) {
-            out.append("null");
-        } else {
-            boolean primitive = type.isPrimitive() && type != char.class;
+            for (Property property : properties) {
+                if (!property.isTransient) {
+                    if (map.containsKey(property.name)) {
+                        // calculate value
+                        map.containsKey(property.name);
+                        Object value = map.get(property.name);
+                        Class type = property.model.type;
 
-            if (!primitive) out.append('"');
+                        // convert value
+                        if (property.isAttribute()) {
+                            value = I.transform(value, type);
+                        } else {
+                            value = to(property.model, I.make(type), value);
+                        }
 
-            for (int i = 0; i < value.length(); i++) {
-                char c = value.charAt(i);
-
-                switch (c) {
-                case '"':
-                    out.append("\\\"");
-                    break;
-
-                case '\\':
-                    out.append("\\\\");
-                    break;
-
-                case '\b':
-                    out.append("\\b");
-                    break;
-
-                case '\f':
-                    out.append("\\f");
-                    break;
-
-                case '\n':
-                    out.append("\\n");
-                    break;
-
-                case '\r':
-                    out.append("\\r");
-                    break;
-
-                case '\t':
-                    out.append("\\t");
-                    break;
-
-                default:
-                    out.append(c);
+                        // assign value
+                        model.set(java, property, value);
+                    }
                 }
             }
-            if (!primitive) out.append('"');
         }
-    }
 
-    /**
-     * <p>
-     * Helper method to write line and indent.
-     * </p>
-     * 
-     * @throws IOException
-     */
-    private void indent() throws IOException {
-        out.append("\r\n");
-
-        for (int i = 0; i < indent; i++) {
-            out.append('\t');
-        }
+        // API definition
+        return java;
     }
 }
