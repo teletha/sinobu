@@ -124,6 +124,8 @@ import org.xml.sax.InputSource;
 
 import sun.misc.Unsafe;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import kiss.lambda.Lambda;
 import kiss.model.Model;
 import kiss.model.Property;
 
@@ -2273,7 +2275,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2468,6 +2470,92 @@ public class I {
             reader.unread(new char[] {'a', '='});
 
             return read(Model.of(output), output, script.eval(reader));
+        } catch (Exception e) {
+            throw new IOError(e);
+        } finally {
+            // relese lock
+            lock.readLock().unlock();
+
+            // close carefuly
+            quiet(reader);
+        }
+    }
+
+    public static <M> Events<M> json(String json, String path, Class<M> type) {
+        String[] names = path.split("\\.");
+
+        Events<Object> current = Events.from(json(json));
+
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+
+            current = current.flatMap(Lambda.<Object, Events<Object>> recursive(r -> v -> {
+                if (v == null) {
+                    return Events.NEVER;
+                } else if (v instanceof ScriptObjectMirror) {
+                    ScriptObjectMirror m = (ScriptObjectMirror) v;
+                    int start = name.lastIndexOf('[');
+
+                    if (start == -1) {
+                        // all values
+                        Object o = m.get(name);
+
+                        if (o instanceof ScriptObjectMirror) {
+                            ScriptObjectMirror om = (ScriptObjectMirror) o;
+
+                            if (om.isArray()) {
+                                return Events.from(om.values());
+                            } else {
+                                return Events.from(o);
+                            }
+                        } else {
+                            return Events.from(o);
+                        }
+                    } else {
+                        // indexed value
+                        String na = name.substring(0, start);
+                        String index = name.substring(start + 1, name.length() - 1);
+                        Object o = m.get(na);
+
+                        if (o instanceof ScriptObjectMirror) {
+                            ScriptObjectMirror om = (ScriptObjectMirror) o;
+
+                            return Events.from(om.get(index));
+                        } else {
+                            return Events.from(o);
+                        }
+                    }
+                } else {
+                    return Events.from(v);
+                }
+            }));
+        }
+        return current.map(o -> transform(o, type));
+    }
+
+    private static Object json(String input) {
+        return json(new StringReader(input));
+    }
+
+    /**
+     * <p>
+     * Helper method to parse JSON.
+     * </p>
+     * 
+     * @param input A JSON text.
+     * @return
+     */
+    private static Object json(Reader input) {
+        PushbackReader reader = new PushbackReader(input, 2);
+
+        try {
+            // aquire lock
+            lock.readLock().lock();
+
+            // Parse as JSON
+            reader.unread(new char[] {'a', '='});
+
+            return script.eval(reader);
         } catch (Exception e) {
             throw new IOError(e);
         } finally {
@@ -2967,7 +3055,7 @@ public class I {
 
             List<Class> list = names.take(name -> name.endsWith(".class") && name.startsWith(pattern))
                     .map(name -> name.substring(0, name.length() - 6).replace(File.separatorChar, '.'))
-                    .map(I.<String, Class>quiet(Class::forName))
+                    .map(I.<String, Class> quiet(Class::forName))
                     .take(clazz -> Extensible.class.isAssignableFrom(clazz))
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();
