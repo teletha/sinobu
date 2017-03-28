@@ -9,14 +9,11 @@
  */
 package kiss;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.junit.Test;
-
-import kiss.I;
-import kiss.UsefulRunnable;
-import kiss.UsefulSupplier;
 
 /**
  * @version 2017/03/27 2:37:40
@@ -78,8 +75,14 @@ public class RecoverableTest {
 
     @Test
     public void recoverErrorAndException() throws Exception {
-        int value = I.run(unstableOperation(() -> 10, Error.class, Exception.class), I
-                .retryWhen(Exception.class), I.retryWhen(Error.class));
+        int value = I
+                .run(unstableOperation(() -> 10, Error.class, Exception.class), I.retryWhen(Exception.class), I.retryWhen(Error.class));
+        assert value == 10;
+    }
+
+    @Test
+    public void recoverSubType() throws Exception {
+        int value = I.run(unstableOperation(() -> 10, IOException.class), I.retryWhen(Exception.class));
         assert value == 10;
     }
 

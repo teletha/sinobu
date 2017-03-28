@@ -2613,10 +2613,10 @@ public class I {
      * @see #recoverWhen(Class, int, UnaryOperator)
      */
     public static void run(UsefulRunnable operation, UsefulTriFunction<Runnable, Throwable, Integer, Runnable>... recoveries) {
-        recover(0, operation, operation, o -> {
+        run(operation, operation, o -> {
             o.run();
             return null;
-        }, recoveries);
+        }, recoveries, new int[recoveries.length]);
     }
 
     /**
@@ -2634,7 +2634,7 @@ public class I {
      * @see #recoverWhen(Class, int, UnaryOperator)
      */
     public static <R> R run(UsefulSupplier<R> operation, UsefulTriFunction<Supplier<R>, Throwable, Integer, Supplier<R>>... recoveries) {
-        return recover(0, operation, operation, Supplier<R>::get, recoveries);
+        return run(operation, operation, Supplier<R>::get, recoveries, new int[recoveries.length]);
     }
 
     /**
@@ -2642,23 +2642,24 @@ public class I {
      * Perform recoverable operation. If some recoverable error will occur, this method perform
      * recovery operation automatically.
      * </p>
-     * 
-     * @param now A current number of trials.
      * @param original A original user operation.
      * @param recover A current (original or recovery) operation.
      * @param invoker A operation invoker.
      * @param recoveries A list of recovery operations.
+     * @param counts A current number of trials.
+     * 
      * @return A operation result.
      */
-    private static <O, R> R recover(int now, O original, O recover, Function<O, R> invoker, UsefulTriFunction<O, Throwable, Integer, O>... recoveries) {
+    private static <O, R> R run(O original, O recover, Function<O, R> invoker, UsefulTriFunction<O, Throwable, Integer, O>[] recoveries, int[] counts) {
         try {
             return invoker.apply(recover);
         } catch (Throwable e) {
-            for (UsefulTriFunction<O, Throwable, Integer, O> recovery : recoveries) {
-                O next = recovery.apply(original, e, now);
+            for (int i = 0; i < recoveries.length; i++) {
+                O next = recoveries[i].apply(original, e, counts[i]);
 
                 if (next != null) {
-                    return recover(now + 1, original, next, invoker, recoveries);
+                    counts[i]++;
+                    return run(original, next, invoker, recoveries, counts);
                 }
             }
             throw e;
