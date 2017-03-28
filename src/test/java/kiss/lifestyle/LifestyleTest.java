@@ -115,7 +115,7 @@ public class LifestyleTest extends LoadableTestBase {
         private static final Without object = new Without();
 
         /**
-         * @see kiss.Lifestyle#get()
+         * {@inheritDoc}
          */
         @Override
         public Without get() {

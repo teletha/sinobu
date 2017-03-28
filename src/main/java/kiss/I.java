@@ -61,7 +61,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -303,10 +302,10 @@ public class I {
     private static final ClassVariable<Lifestyle> lifestyles = new ClassVariable<>();
 
     /** The mapping from extension point to extensions. */
-    private static final Table<Class, Class> extensions = new Table();
+    private static final Table<Class, Supplier> extensions = new Table();
 
     /** The mapping from extension point to associated extension mapping. */
-    private static final Table<String, Class> keys = new Table();
+    private static final Table<String, Supplier> keys = new Table();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -942,13 +941,13 @@ public class I {
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
         // Skip null check because this method can throw NullPointerException.
-        List<Class> classes = extensions.get(extensionPoint);
+        List<Supplier> classes = extensions.get(extensionPoint);
 
         // instantiate all found extesions
         List list = new ArrayList(classes.size());
 
-        for (Class extension : classes) {
-            list.add(make(extension));
+        for (Supplier extension : classes) {
+            list.add(extension.get());
         }
         return list;
     }
@@ -973,10 +972,10 @@ public class I {
         }
 
         for (Class clazz : Model.collectTypes(key)) {
-            Class<E> supplier = keys.find(extensionPoint.getName().concat(clazz.getName()));
+            Supplier<E> supplier = keys.find(extensionPoint.getName().concat(clazz.getName()));
 
             if (supplier != null) {
-                return make(supplier);
+                return supplier.get();
             }
         }
 
@@ -1012,101 +1011,6 @@ public class I {
     public static <E extends Extensible> List<Class<E>> findAs(Class<E> extensionPoint) {
         return new ArrayList(extensions.get(extensionPoint));
     }
-
-    /**
-     * <p>
-     * Gets a <em>type-safe and refactoring-safe</em> resource bundle (<em>not</em>
-     * {@link java.util.ResourceBundle}) corresponding to the specified resource bundle class.
-     * </p>
-     * <p>
-     * Conceptually, i18n method uses the following strategy for locating and instantiating resource
-     * bundles:
-     * </p>
-     * <p>
-     * i18n method uses the bundle class name and the default locale (obtained from
-     * <code>I.make(Locale.class)</code>)) to generate a sequence of candidate bundle names. If the
-     * default locale's language, country, and variant are all empty strings, then the bundle class
-     * name is the only candidate bundle name. Otherwise, the following sequence is generated from
-     * the attribute values of the default locale (language, country, and variant):
-     * </p>
-     * <ol>
-     * <li>bundleClassSimpleName + "_" + language + "_" + country + "_" + variant</li>
-     * <li>bundleClassSimpleName + "_" + language + "_" + country</li>
-     * <li>bundleClassSimpleName + "_" + language</li>
-     * <li>bundleClassSimpleName</li>
-     * </ol>
-     * <p>
-     * Candidate bundle names where the final component is an empty string are omitted. For example,
-     * if country is an empty string, the second candidate bundle name is omitted.
-     * </p>
-     * <p>
-     * i18n method then iterates over the candidate bundle names to find the first one for which it
-     * can instantiate an actual resource bundle. For each candidate bundle name, it attempts to
-     * create a resource bundle:
-     * </p>
-     * <ol>
-     * <li>First, it attempts to find a class using the candidate bundle name. If such a class can
-     * be found and loaded using {@link I#find(Class)}, is assignment compatible with the given
-     * bundle class, and can be instantiated, i18n method creates a new instance of this class and
-     * uses it as the result resource bundle.</li>
-     * </ol>
-     * <p>
-     * If the following classes are provided:
-     * </p>
-     * <ul>
-     * <li>MyResources.class</li>
-     * <li>MyResources_fr.class</li>
-     * <li>MyResources_fr_CH.class</li>
-     * </ul>
-     * <p>
-     * The contents of all files are valid (that is non-abstract subclasses of {@link Extensible}
-     * for the ".class" files). The default locale is Locale("en", "GB").
-     * </p>
-     * <p>
-     * Calling i18n method with the shown locale argument values instantiates resource bundles from
-     * the following sources:
-     * </p>
-     * <ol>
-     * <li>Locale("fr", "CH"): result MyResources_fr_CH.class</li>
-     * <li>Locale("fr", "FR"): result MyResources_fr.class</li>
-     * <li>Locale("es"): result MyResources.class</li>
-     * </ol>
-     *
-     * @param <B> A resource bundle.
-     * @param bundleClass A resource bundle class. <code>null</code> will throw
-     *            {@link NullPointerException}.
-     * @return A suitable resource bundle class for the given bundle class and locale.
-     * @throws NullPointerException If the bundle class is <code>null</code>.
-     */
-    public static <B extends Extensible> B i18n(Class<B> bundleClass) {
-        String lang = "_".concat(make(Locale.class).getLanguage());
-
-        for (Class clazz : extensions.get(bundleClass)) {
-            if (clazz.getName().endsWith(lang)) {
-                bundleClass = clazz;
-                break;
-            }
-        }
-        return make(bundleClass);
-    }
-
-    // GAE doesn't allow ResourceBundle.Control.
-    //
-    // public static <B extends Extensible> B i18n(Class<B> bundleClass) {
-    // root: for (Locale locale : control.getCandidateLocales("", I.make(Locale.class))) {
-    // List<Class> list = extensions.get(bundleClass);
-    //
-    // if (list != null) {
-    // for (Class clazz : list) {
-    // if (clazz.getName().endsWith(locale.getLanguage())) {
-    // bundleClass = clazz;
-    // break root;
-    // }
-    // }
-    // }
-    // }
-    // return make(bundleClass);
-    // }
 
     public static <P> Consumer<P> imitateConsumer(Runnable lambda) {
         return p -> {
@@ -2642,12 +2546,12 @@ public class I {
      * Perform recoverable operation. If some recoverable error will occur, this method perform
      * recovery operation automatically.
      * </p>
+     * 
      * @param original A original user operation.
      * @param recover A current (original or recovery) operation.
      * @param invoker A operation invoker.
      * @param recoveries A list of recovery operations.
      * @param counts A current number of trials.
-     * 
      * @return A operation result.
      */
     private static <O, R> R run(O original, O recover, Function<O, R> invoker, UsefulTriFunction<O, Throwable, Integer, O>[] recoveries, int[] counts) {
@@ -3095,11 +2999,7 @@ public class I {
                     .skip(clazz -> Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass())
                     .toList();
 
-            manage(list, true);
-
-            return () -> {
-                manage(list, false);
-            };
+            return manage(list);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -3131,19 +3031,19 @@ public class I {
      * </p>
      * 
      * @param list A list of extensions.
-     * @param regist A state for registration or unregistration.
      */
-    private static void manage(List<Class> list, boolean regist) {
+    private static Disposable manage(List<Class> list) {
+        Disposable disposer = Disposable.empty();
+
         for (Class<Extensible> extension : list) {
+            Supplier supplier = () -> I.make(extension);
+
             // search and collect information for all extension points
             for (Class extensionPoint : Model.collectTypes(extension)) {
                 if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                     // register new extension
-                    if (regist) {
-                        extensions.push(extensionPoint, extension);
-                    } else {
-                        extensions.pull(extensionPoint, extension);
-                    }
+                    extensions.push(extensionPoint, supplier);
+                    disposer.and(() -> extensions.pull(extensionPoint, supplier));
 
                     // register extension key
                     java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
@@ -3152,11 +3052,8 @@ public class I {
                         Class clazz = (Class) params[0];
                         // register extension by key
                         String key = extensionPoint.getName().concat(clazz.getName());
-                        if (regist) {
-                            keys.push(key, extension);
-                        } else {
-                            keys.pull(key, extension);
-                        }
+                        keys.push(key, supplier);
+                        disposer.and(() -> keys.pull(key, supplier));
 
                         // Task : unregister extension by key
 
@@ -3172,10 +3069,12 @@ public class I {
                         // completely refresh lifestyles associated with this extension key class.
                         if (extensionPoint == Lifestyle.class) {
                             lifestyles.remove(clazz);
+                            disposer.and(() -> lifestyles.remove(clazz));
                         }
                     }
                 }
             }
         }
+        return disposer;
     }
 }
