@@ -81,6 +81,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -2524,6 +2525,144 @@ public class I {
      */
     public static <V> Predicate<V> reject() {
         return e -> false;
+    }
+
+    /**
+     * <p>
+     * Convenient method to describe the recovery operation.
+     * </p>
+     * <p>
+     * If the specified error will occur, retry the original action.
+     * </p>
+     * 
+     * @param type A target error type.
+     * @param recovery A recovery operation builder.
+     * @return A recovery operation.
+     * @see #run(UsefulRunnable, UsefulTriFunction...)
+     * @see #run(UsefulSupplier, UsefulTriFunction...)
+     */
+    public static <O> UsefulTriFunction<O, Throwable, Integer, O> recoverWhen(Class<? extends Throwable> type, UnaryOperator<O> recovery) {
+        return recoverWhen(type, Integer.MAX_VALUE, recovery);
+    }
+
+    /**
+     * <p>
+     * Convenient method to describe the recovery operation.
+     * </p>
+     * <p>
+     * If the specified error will occur, retry the original action.
+     * </p>
+     * 
+     * @param type A target error type.
+     * @param limit A limit number of trials.
+     * @param recovery A recovery operation builder.
+     * @return A recovery operation.
+     * @see #run(UsefulRunnable, UsefulTriFunction...)
+     * @see #run(UsefulSupplier, UsefulTriFunction...)
+     */
+    public static <O> UsefulTriFunction<O, Throwable, Integer, O> recoverWhen(Class<? extends Throwable> type, int limit, UnaryOperator<O> recovery) {
+        return (o, e, i) -> type.isInstance(e) && i < limit ? recovery.apply(o) : null;
+    }
+
+    /**
+     * <p>
+     * Convenient method to describe the recovery operation.
+     * </p>
+     * <p>
+     * If the specified error will occur, retry the original action.
+     * </p>
+     * 
+     * @param type A target error type.
+     * @return A recovery operation.
+     * @see #run(UsefulRunnable, UsefulTriFunction...)
+     * @see #run(UsefulSupplier, UsefulTriFunction...)
+     */
+    public static <O> UsefulTriFunction<O, Throwable, Integer, O> retryWhen(Class<? extends Throwable> type) {
+        return retryWhen(type, Integer.MAX_VALUE);
+    }
+
+    /**
+     * <p>
+     * Convenient method to describe the recovery operation.
+     * </p>
+     * <p>
+     * If the specified error will occur, retry the original action.
+     * </p>
+     * 
+     * @param type A target error type.
+     * @param limit A limit number of trials.
+     * @return A recovery operation.
+     * @see #run(UsefulRunnable, UsefulTriFunction...)
+     * @see #run(UsefulSupplier, UsefulTriFunction...)
+     */
+    public static <O> UsefulTriFunction<O, Throwable, Integer, O> retryWhen(Class<? extends Throwable> type, int limit) {
+        return (o, e, i) -> type.isInstance(e) && i < limit ? o : null;
+    }
+
+    /**
+     * <p>
+     * Perform recoverable operation. If some recoverable error will occur, this method perform
+     * recovery operation automatically.
+     * </p>
+     * 
+     * @param operation A original user operation.
+     * @param recoveries A list of recovery operations.
+     * @see #retryWhen(Class)
+     * @see #retryWhen(Class, int)
+     * @see #recoverWhen(Class, UnaryOperator)
+     * @see #recoverWhen(Class, int, UnaryOperator)
+     */
+    public static void run(UsefulRunnable operation, UsefulTriFunction<Runnable, Throwable, Integer, Runnable>... recoveries) {
+        recover(0, operation, operation, o -> {
+            o.run();
+            return null;
+        }, recoveries);
+    }
+
+    /**
+     * <p>
+     * Perform recoverable operation. If some recoverable error will occur, this method perform
+     * recovery operation automatically.
+     * </p>
+     * 
+     * @param operation A original user operation.
+     * @param recoveries A list of recovery operations.
+     * @return A operation result.
+     * @see #retryWhen(Class)
+     * @see #retryWhen(Class, int)
+     * @see #recoverWhen(Class, UnaryOperator)
+     * @see #recoverWhen(Class, int, UnaryOperator)
+     */
+    public static <R> R run(UsefulSupplier<R> operation, UsefulTriFunction<Supplier<R>, Throwable, Integer, Supplier<R>>... recoveries) {
+        return recover(0, operation, operation, Supplier<R>::get, recoveries);
+    }
+
+    /**
+     * <p>
+     * Perform recoverable operation. If some recoverable error will occur, this method perform
+     * recovery operation automatically.
+     * </p>
+     * 
+     * @param now A current number of trials.
+     * @param original A original user operation.
+     * @param recover A current (original or recovery) operation.
+     * @param invoker A operation invoker.
+     * @param recoveries A list of recovery operations.
+     * @return A operation result.
+     */
+    private static <O, R> R recover(int now, O original, O recover, Function<O, R> invoker, UsefulTriFunction<O, Throwable, Integer, O>... recoveries) {
+        try {
+            return invoker.apply(recover);
+        } catch (Throwable e) {
+            for (UsefulTriFunction<O, Throwable, Integer, O> recovery : recoveries) {
+                O next = recovery.apply(original, e, now);
+
+                if (next != null) {
+                    return recover(now + 1, original, next, invoker, recoveries);
+                }
+            }
+            throw e;
+        }
     }
 
     /**
