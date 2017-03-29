@@ -14,13 +14,14 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
 /**
- * @version 2017/03/24 20:45:28
+ * @version 2017/03/29 10:47:02
  */
-class Format extends Formatter {
+class Format extends Formatter implements Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
 
     /** The date time format. */
     private static final DateTimeFormatter time = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
@@ -55,5 +56,29 @@ class Format extends Formatter {
             }
         }
         return builder.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Class decode(String value) {
+        return I.type(value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String encode(Class value) {
+        return value.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Locale get() {
+        return Locale.getDefault();
     }
 }
