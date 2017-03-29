@@ -1231,7 +1231,7 @@ public class I {
                     return;
                 }
 
-                name = name.substring(0, name.length() - 6).replace(File.separatorChar, '.');
+                name = name.substring(0, name.length() - 6).replace('/', '.').replace(File.separatorChar, '.');
 
                 // exclude out of the specified package
                 if (!name.startsWith(pattern)) {
@@ -1249,7 +1249,7 @@ public class I {
                 if (!Extensible.class.isAssignableFrom(extension)) {
                     return;
                 }
-
+                System.out.println("add " + extension);
                 Supplier supplier = () -> I.make(extension);
 
                 // search and collect information for all extension points
@@ -2388,7 +2388,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
