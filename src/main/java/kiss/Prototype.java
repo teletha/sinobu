@@ -23,7 +23,6 @@ import kiss.model.Model;
  * @param <M> A {@link Manageable} class.
  * @see Singleton
  * @see ThreadSpecific
- * @see Preference
  * @version 2011/11/04 0:11:32
  */
 public class Prototype<M> implements Lifestyle<M> {

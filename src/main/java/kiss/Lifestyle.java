@@ -24,7 +24,6 @@ import java.util.function.Supplier;
  * control. If the lifestyle is not specified, Sinobu uses {@link Prototype} lifestyle as default.
  * The following is example.
  * </p>
- * 
  * <pre>
  * &#064;Manageable(lifestyle = Singleton.class)
  * public class TargetClass {
@@ -35,7 +34,6 @@ import java.util.function.Supplier;
  * lifestyle class is loaded or unloaded by {@link I#load(java.nio.file.Path)} and
  * {@link I#unload(java.nio.file.Path)} methods. The following is example.
  * </p>
- * 
  * <pre>
  * public class CustomLifestyle implements Lifestyle&lt;ClassNotUnderYourControl&gt; {
  * 
@@ -49,7 +47,6 @@ import java.util.function.Supplier;
  * @see Prototype
  * @see Singleton
  * @see ThreadSpecific
- * @see Preference
  * @see Manageable#lifestyle()
  * @version 2014/02/03 12:25:46
  */

@@ -1207,51 +1207,51 @@ public class I {
     public static Disposable load(Class path, boolean filter) {
         Disposable disposer = Disposable.empty();
         String pattern = filter ? path.getPackage().getName() : "";
-    
+
         try {
             File file = locate(path).toFile().getAbsoluteFile();
-    
+
             // exclude registered file or directory
             if (!extensionArea.add(file + pattern)) {
                 return disposer;
             }
             disposer.and(() -> extensionArea.remove(file + pattern));
-    
+
             int prefix = file.getPath().length() + 1;
-    
+
             // At first, we must scan the specified directory or archive. If the module file is
             // archive, Sinobu automatically try to switch to other file system (e.g.
             // ZipFileSystem).
             Events<String> names = file.isFile() ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName)
                     : Events.from(scan(file, new ArrayList<>())).map(File::getPath).map(name -> name.substring(prefix));
-    
+
             names.to(name -> {
                 // exclude non-class files
                 if (!name.endsWith(".class")) {
                     return;
                 }
-    
+
                 name = name.substring(0, name.length() - 6).replace(File.separatorChar, '.');
-    
+
                 // exclude out of the specified package
                 if (!name.startsWith(pattern)) {
                     return;
                 }
-    
+
                 Class extension = I.type(name);
-    
+
                 // fast check : exclude non-initializable class
                 if (extension.isEnum() || extension.isAnonymousClass() || Modifier.isAbstract(extension.getModifiers())) {
                     return;
                 }
-    
+
                 // slow check : exclude non-extensible class
                 if (!Extensible.class.isAssignableFrom(extension)) {
                     return;
                 }
-    
+
                 Supplier supplier = () -> I.make(extension);
-    
+
                 // search and collect information for all extension points
                 for (Class extensionPoint : Model.collectTypes(extension)) {
                     if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
@@ -1262,17 +1262,17 @@ public class I {
                             extensionBuilder.pull(extensionPoint, supplier);
                             extensionClass.pull(extensionPoint, extension);
                         });
-    
+
                         // register extension key
                         java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
-    
+
                         if (params.length != 0 && params[0] != Object.class) {
                             Class clazz = (Class) params[0];
                             // register extension by key
                             String key = extensionPoint.getName().concat(clazz.getName());
                             extensionKey.push(key, supplier);
                             disposer.and(() -> extensionKey.pull(key, supplier));
-    
+
                             // The user has registered a newly custom lifestyle, so we
                             // should update lifestyle for this extension key class.
                             // Normally, when we update some data, it is desirable to store
@@ -1292,7 +1292,7 @@ public class I {
                     }
                 }
             });
-    
+
             return disposer;
         } catch (Exception e) {
             throw I.quiet(e);
@@ -2904,26 +2904,6 @@ public class I {
 
         // the specified class is not primitive
         return type;
-    }
-
-    /**
-     * <p>
-     * Writes Java object tree as preference XML.
-     * </p>
-     * <p>
-     * The encoding of output data is equivalent to {@link #$encoding}.
-     * </p>
-     *
-     * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
-     *            throw {@link java.lang.NullPointerException}.
-     * @throws NullPointerException If the input Java object is <code>null</code> .
-     */
-    public static void write(Object input) {
-        Lifestyle lifestyle = lifestyles.get(Model.of(input).type);
-
-        if (lifestyle instanceof Preference) {
-            write(input, ((Preference) lifestyle).path);
-        }
     }
 
     /**

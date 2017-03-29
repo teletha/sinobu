@@ -16,14 +16,12 @@ package kiss;
  * <p>
  * This class can be used instead of {@link ThreadLocal} class like the following:
  * </p>
- * 
  * <pre>
  * private static final ThreadSpecific&lt;SimpleDateFormat&gt; formatter = new ThreadSpecific(SimpleDateFormat.class);
  * </pre>
  * <p>
  * This is equivalent to the next code.
  * </p>
- * 
  * <pre>
  * private static final ThreadLocal&lt;SimpleDateFormat&gt; formatter = new ThreadLocal&lt;SimpleDateFormat&gt;() {
  *     &#064;Override
@@ -36,7 +34,6 @@ package kiss;
  * @param <M> A {@link Manageable} class.
  * @see Prototype
  * @see Singleton
- * @see Preference
  * @version 2011/11/04 0:12:03
  */
 public class ThreadSpecific<M> extends Prototype<M> {
