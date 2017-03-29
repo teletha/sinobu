@@ -1249,7 +1249,7 @@ public class I {
                 if (!Extensible.class.isAssignableFrom(extension)) {
                     return;
                 }
-                System.out.println("add " + extension);
+
                 Supplier supplier = () -> I.make(extension);
 
                 // search and collect information for all extension points
