@@ -19,11 +19,6 @@ package kiss;
  */
 public interface Disposable {
 
-    /** The task to do nothing. */
-    public static final Disposable Φ = () -> {
-        // do nothing
-    };
-
     /**
      * <p>
      * The dispose operation is called at the end of a components lifecycle. Components use this

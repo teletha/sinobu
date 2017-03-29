@@ -105,7 +105,7 @@ public class Signal<V> {
      * @return A {@link Variable} as value receiver.
      */
     public final Disposable to(WritableValue<? super V> value) {
-        return value == null ? Disposable.Φ : to(value::setValue);
+        return value == null ? Disposable.empty() : to(value::setValue);
     }
 
     /**
@@ -513,7 +513,7 @@ public class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -619,7 +619,7 @@ public class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -1626,7 +1626,7 @@ public class Signal<V> {
      */
     public final <R> Signal<R> switchMap(Function<V, Signal<R>> function) {
         return new Signal<>((observer, disposer) -> {
-            Disposable[] disposables = {null, Disposable.Φ};
+            Disposable[] disposables = {null, Disposable.empty()};
 
             disposables[0] = to(value -> {
                 disposables[1].dispose();
