@@ -1408,8 +1408,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      *
      * @return
      */
-    public Events<V> observe() {
-        return new Events<>((observer, disposer) -> {
+    public Signal<V> observe() {
+        return new Signal<>((observer, disposer) -> {
             if (observers == null) {
                 observers = new CopyOnWriteArrayList();
             }

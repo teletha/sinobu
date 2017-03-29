@@ -34,16 +34,16 @@ public class JSON {
         this.root = root;
     }
 
-    public Events<String> find(String expression) {
+    public Signal<String> find(String expression) {
         return find(expression, String.class);
     }
 
-    public <M> Events<M> find(String expression, Class<M> type) {
+    public <M> Signal<M> find(String expression, Class<M> type) {
         return select(expression).map(v -> v.to(type));
     }
 
-    private Events<JSON> select(String expression) {
-        Events<Object> current = Events.from(root);
+    private Signal<JSON> select(String expression) {
+        Signal<Object> current = Signal.from(root);
 
         for (String name : expression.split("\\.")) {
             current = current.flatMap(v -> {
@@ -57,14 +57,14 @@ public class JSON {
                         ScriptObjectMirror m = (ScriptObjectMirror) value;
 
                         if (sub != null) {
-                            return Events.from(m.get(sub));
+                            return Signal.from(m.get(sub));
                         } else if (m.isArray()) {
-                            return Events.from(m.values());
+                            return Signal.from(m.values());
                         }
                     }
-                    return Events.from(value);
+                    return Signal.from(value);
                 } else {
-                    return Events.NEVER;
+                    return Signal.NEVER;
                 }
             });
         }

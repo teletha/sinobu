@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.event;
+package kiss.signal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.function.Function;
 import javafx.beans.property.Property;
 
 import kiss.Disposable;
-import kiss.Events;
+import kiss.Signal;
 import kiss.I;
 import kiss.Observer;
 
@@ -59,7 +59,7 @@ public class Subject<V, R> {
      * 
      * @param declaration
      */
-    public Subject(Function<Events<V>, Events<R>> declaration) {
+    public Subject(Function<Signal<V>, Signal<R>> declaration) {
         this();
 
         for (int i = 0; i < multiplier; i++) {
@@ -77,7 +77,7 @@ public class Subject<V, R> {
      * 
      * @param declaration
      */
-    public Subject(BiFunction<Events<V>, Subject<V, R>, Events<R>> declaration) {
+    public Subject(BiFunction<Signal<V>, Subject<V, R>, Signal<R>> declaration) {
         this();
 
         for (int i = 0; i < multiplier; i++) {
@@ -96,7 +96,7 @@ public class Subject<V, R> {
      * @param declaration
      * @return
      */
-    public static final <V, R> Subject<V, R> recorde(Function<Recorde<V>, Function<Events<V>, Events<R>>> declaration) {
+    public static final <V, R> Subject<V, R> recorde(Function<Recorde<V>, Function<Signal<V>, Signal<R>>> declaration) {
         Subject<V, R> subject = new Subject();
         Recorde<V>[] recordes = new Recorde[multiplier];
 
@@ -132,8 +132,8 @@ public class Subject<V, R> {
      * 
      * @return
      */
-    public Events<V> observe() {
-        return new Events<>((observer, disposer) -> {
+    public Signal<V> observe() {
+        return new Signal<>((observer, disposer) -> {
             if (observer != null) observers.add(observer);
 
             return disposer.and(() -> {
@@ -150,7 +150,7 @@ public class Subject<V, R> {
      * 
      * @return
      */
-    public Events<V> observeWith(V... values) {
+    public Signal<V> observeWith(V... values) {
         return observe().startWith(values);
     }
 

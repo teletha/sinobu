@@ -13,8 +13,8 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- * Lifestyle manages the instance in the specific context. Sinobu provides four commonly used
- * lifestyles ({@link Prototype}, {@link Singleton}, {@link ThreadSpecific} and {@link Preference}).
+ * Lifestyle manages the instance in the specific context. Sinobu provides three commonly used
+ * lifestyles ({@link Prototype}, {@link Singleton} and {@link ThreadSpecific}).
  * </p>
  * <p>
  * There are two ways to specify {@link Lifestyle} for the class.
@@ -48,7 +48,7 @@ import java.util.function.Supplier;
  * @see Singleton
  * @see ThreadSpecific
  * @see Manageable#lifestyle()
- * @version 2014/02/03 12:25:46
+ * @version 2017/03/29 11:16:17
  */
 public interface Lifestyle<M> extends Supplier<M>, Extensible {
 }

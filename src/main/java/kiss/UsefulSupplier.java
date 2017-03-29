@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 /**
  * @version 2017/03/13 10:20:57
  */
-@FunctionalInterface
 public interface UsefulSupplier<Return> extends Supplier<Return> {
 
     /**

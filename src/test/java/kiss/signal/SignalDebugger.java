@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.event;
+package kiss.signal;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -18,24 +18,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 import kiss.Disposable;
-import kiss.Events;
 import kiss.I;
+import kiss.Signal;
 
 /**
  * @version 2017/03/18 10:55:14
  */
-public class EventsDebugger {
+public class SignalDebugger {
 
     private static final Class Agent;
 
     private static final Field AgentDisposableList;
 
-    private static final String EVENTS = Events.class.getName();
+    private static final String SIGNAL = Signal.class.getName();
 
     /** Ignorable methods. */
     private static final Set<String> ignores = I.set("<init>");
 
-    private static final Map<Events, Integer> eventManager = new ConcurrentHashMap();
+    private static final Map<Signal, Integer> eventManager = new ConcurrentHashMap();
 
     private static int eventId = 0;
 
@@ -68,8 +68,8 @@ public class EventsDebugger {
         StringBuilder builder = new StringBuilder();
 
         for (Object text : texts) {
-            if (text instanceof Events) {
-                builder.append(info((Events) text));
+            if (text instanceof Signal) {
+                builder.append(info((Signal) text));
             } else if (text instanceof Disposable) {
                 builder.append(info((Disposable) text));
             } else {
@@ -86,8 +86,8 @@ public class EventsDebugger {
      * 
      * @return
      */
-    private static String info(Events events) {
-        return computeName() + " ID : " + id(events) + "  Subscriber : " + id(subscriber(events));
+    private static String info(Signal signal) {
+        return computeName() + " ID : " + id(signal) + "  Subscriber : " + id(subscriber(signal));
     }
 
     private static String info(Disposable disposable) {
@@ -99,11 +99,11 @@ public class EventsDebugger {
      * Assign human-readable id.
      * </p>
      * 
-     * @param events
+     * @param signal
      * @return
      */
-    private static Integer id(Events events) {
-        return eventManager.computeIfAbsent(events, k -> eventId++);
+    private static Integer id(Signal signal) {
+        return eventManager.computeIfAbsent(signal, k -> eventId++);
     }
 
     /**
@@ -111,7 +111,7 @@ public class EventsDebugger {
      * Assign human-readable id.
      * </p>
      * 
-     * @param events
+     * @param SIGNAL
      * @return
      */
     private static Integer id(Disposable key) {
@@ -123,7 +123,7 @@ public class EventsDebugger {
      * Assign human-readable id.
      * </p>
      * 
-     * @param events
+     * @param SIGNAL
      * @return
      */
     private static Integer id(BiFunction key) {
@@ -154,11 +154,11 @@ public class EventsDebugger {
         return joiner.toString();
     }
 
-    private static BiFunction subscriber(Events events) {
+    private static BiFunction subscriber(Signal signal) {
         try {
-            Field field = Events.class.getDeclaredField("subscriber");
+            Field field = Signal.class.getDeclaredField("subscriber");
             field.setAccessible(true);
-            return (BiFunction) field.get(events);
+            return (BiFunction) field.get(signal);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -175,10 +175,10 @@ public class EventsDebugger {
         Error error = new Error();
 
         for (StackTraceElement e : error.getStackTrace()) {
-            if (e.getClassName().equals(EVENTS)) {
+            if (e.getClassName().equals(SIGNAL)) {
                 String name = e.getMethodName();
                 if (!ignores.contains(name)) {
-                    return EVENTS + "." + name + "(" + Events.class.getSimpleName() + ".java:" + e.getLineNumber() + ")";
+                    return SIGNAL + "." + name + "(" + Signal.class.getSimpleName() + ".java:" + e.getLineNumber() + ")";
                 }
             }
         }

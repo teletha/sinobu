@@ -12,7 +12,6 @@ package kiss;
 /**
  * @version 2017/03/13 9:27:11
  */
-@FunctionalInterface
 public interface UsefulRunnable extends Runnable {
 
     /**

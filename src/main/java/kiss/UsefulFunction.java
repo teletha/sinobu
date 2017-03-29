@@ -14,7 +14,6 @@ import java.util.function.Function;
 /**
  * @version 2017/03/13 9:36:18
  */
-@FunctionalInterface
 public interface UsefulFunction<Param, Return> extends Function<Param, Return>, UsefulLambda {
 
     /**

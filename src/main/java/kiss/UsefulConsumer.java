@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 /**
  * @version 2017/03/13 9:34:23
  */
-@FunctionalInterface
 public interface UsefulConsumer<P> extends Consumer<P>, UsefulLambda {
 
     /**

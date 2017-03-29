@@ -1222,8 +1222,8 @@ public class I {
             // At first, we must scan the specified directory or archive. If the module file is
             // archive, Sinobu automatically try to switch to other file system (e.g.
             // ZipFileSystem).
-            Events<String> names = file.isFile() ? Events.from(new ZipFile(file).entries()).map(ZipEntry::getName)
-                    : Events.from(scan(file, new ArrayList<>())).map(File::getPath).map(name -> name.substring(prefix));
+            Signal<String> names = file.isFile() ? Signal.from(new ZipFile(file).entries()).map(ZipEntry::getName)
+                    : Signal.from(scan(file, new ArrayList<>())).map(File::getPath).map(name -> name.substring(prefix));
 
             names.to(name -> {
                 // exclude non-class files
@@ -2138,12 +2138,12 @@ public class I {
      * @param observable A target to observe.
      * @return A observable event stream.
      */
-    public static <E extends Observable> Events<E> observe(E observable) {
+    public static <E extends Observable> Signal<E> observe(E observable) {
         if (observable == null) {
-            return Events.NEVER;
+            return Signal.NEVER;
         }
 
-        return new Events<>((observer, disposer) -> {
+        return new Signal<>((observer, disposer) -> {
             // create actual listener
             InvalidationListener listener = value -> observer.accept((E) value);
 
@@ -2169,12 +2169,12 @@ public class I {
      * @param observable A target to observe.
      * @return A observable event stream.
      */
-    public static <E> Events<E> observe(ObservableValue<E> observable) {
+    public static <E> Signal<E> observe(ObservableValue<E> observable) {
         if (observable == null) {
-            return Events.NEVER;
+            return Signal.NEVER;
         }
 
-        return new Events<>((observer, disposer) -> {
+        return new Signal<>((observer, disposer) -> {
             // create actual listener
             ChangeListener<E> listener = (o, oldValue, newValue) -> observer.accept(newValue);
 
@@ -2219,7 +2219,7 @@ public class I {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static Events<WatchEvent<Path>> observe(Path path) {
+    public static Signal<WatchEvent<Path>> observe(Path path) {
         return observe(path, new String[0]);
     }
 
@@ -2257,12 +2257,12 @@ public class I {
      *             the target file. If a symbolic link is copied the security manager is invoked to
      *             check {@link LinkPermission}("symbolic").
      */
-    public static Events<WatchEvent<Path>> observe(Path path, String... patterns) {
+    public static Signal<WatchEvent<Path>> observe(Path path, String... patterns) {
         if (!Files.isDirectory(path)) {
             return observe(path.getParent(), path.getFileName().toString());
         }
 
-        return new Events<>((observer, disposer) -> {
+        return new Signal<>((observer, disposer) -> {
             // Create logical file system watch service.
             Visitor watcher = new Visitor(path, observer, patterns);
 

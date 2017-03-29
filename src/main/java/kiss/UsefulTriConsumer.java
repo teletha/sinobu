@@ -12,7 +12,6 @@ package kiss;
 /**
  * @version 2017/03/13 9:34:23
  */
-@FunctionalInterface
 public interface UsefulTriConsumer<Param1, Param2, Param3> extends UsefulLambda {
 
     /**

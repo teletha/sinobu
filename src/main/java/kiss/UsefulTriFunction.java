@@ -12,7 +12,6 @@ package kiss;
 /**
  * @version 2017/03/13 9:36:29
  */
-@FunctionalInterface
 public interface UsefulTriFunction<Param1, Param2, Param3, Return> extends UsefulLambda {
 
     /**

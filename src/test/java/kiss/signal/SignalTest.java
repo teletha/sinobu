@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.event;
+package kiss.signal;
 
 import static java.util.concurrent.TimeUnit.*;
 
@@ -29,8 +29,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import antibug.Chronus;
-import kiss.Events;
 import kiss.I;
+import kiss.Signal;
 import kiss.UsefulFunction;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
@@ -38,14 +38,14 @@ import kiss.Ⅲ;
 /**
  * @version 2015/10/18 16:43:51
  */
-public class EventsTest {
+public class SignalTest {
 
     @ClassRule
     public static final Chronus chronus = new Chronus(I.class);
 
     @Test
     public void to() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events);
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal);
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -122,9 +122,9 @@ public class EventsTest {
     @Test
     public void toMultiList() {
         Subject<Integer, Integer> subject = new Subject<>();
-        Events<Integer> events = subject.observe();
-        ListProperty<Integer> list1 = events.toList();
-        ListProperty<Integer> list2 = events.toList();
+        Signal<Integer> signal = subject.observe();
+        ListProperty<Integer> list1 = signal.toList();
+        ListProperty<Integer> list2 = signal.toList();
 
         subject.emit(10);
         assert list1.size() == 1;
@@ -179,7 +179,7 @@ public class EventsTest {
 
     @Test
     public void as() {
-        Subject<Number, Integer> subject = new Subject<>(events -> events.as(Integer.class));
+        Subject<Number, Integer> subject = new Subject<>(signal -> signal.as(Integer.class));
 
         assert subject.emitAndRetrieve(10).intValue() == 10;
         assert subject.emitAndRetrieve(2.1F) == null;
@@ -190,7 +190,7 @@ public class EventsTest {
 
     @Test
     public void buffer() {
-        Subject<Integer, List<Integer>> subject = new Subject<>(events -> events.buffer(2));
+        Subject<Integer, List<Integer>> subject = new Subject<>(signal -> signal.buffer(2));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieveAsList(20, 10, 20);
@@ -201,8 +201,8 @@ public class EventsTest {
 
     @Test
     public void bufferRepeat() {
-        Subject<Integer, List<Integer>> subject = new Subject<>(events -> {
-            return events.buffer(2).skip(1).take(1).repeat();
+        Subject<Integer, List<Integer>> subject = new Subject<>(signal -> {
+            return signal.buffer(2).skip(1).take(1).repeat();
         });
 
         subject.emit(10);
@@ -218,7 +218,7 @@ public class EventsTest {
 
     @Test
     public void bufferInterval1() {
-        Subject<Integer, List<Integer>> subject = new Subject<>(events -> events.buffer(2, 1));
+        Subject<Integer, List<Integer>> subject = new Subject<>(signal -> signal.buffer(2, 1));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieveAsList(20, 10, 20);
@@ -229,7 +229,7 @@ public class EventsTest {
 
     @Test
     public void bufferInterval2() {
-        Subject<Integer, List<Integer>> subject = new Subject<>(events -> events.buffer(2, 3));
+        Subject<Integer, List<Integer>> subject = new Subject<>(signal -> signal.buffer(2, 3));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -242,7 +242,7 @@ public class EventsTest {
 
     @Test
     public void bufferTime() {
-        Subject<Integer, List<Integer>> subject = new Subject<>(events -> events.buffer(30, MILLISECONDS));
+        Subject<Integer, List<Integer>> subject = new Subject<>(signal -> signal.buffer(30, MILLISECONDS));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -258,7 +258,7 @@ public class EventsTest {
     @Test
     public void combine() {
         Subject<Integer, Integer> sub = new Subject<>();
-        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(events -> events
+        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> signal
                 .combine(sub.observe(), (base, other) -> base + other));
 
         assert subject.emitAndRetrieve(10) == null;
@@ -285,7 +285,7 @@ public class EventsTest {
     @Test
     public void combineBinary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
-        Subject<String, Ⅱ<String, Integer>> main = new Subject<>(events -> events.combine(other.observe()));
+        Subject<String, Ⅱ<String, Integer>> main = new Subject<>(signal -> signal.combine(other.observe()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -311,7 +311,7 @@ public class EventsTest {
     public void combineTernary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
         Subject<Double, Double> another = new Subject<>();
-        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(events -> events.combine(other.observe(), another.observe()));
+        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(signal -> signal.combine(other.observe(), another.observe()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -331,7 +331,7 @@ public class EventsTest {
     @Test
     public void combineLatest() {
         Subject<Integer, Integer> sub = new Subject<>();
-        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(events -> events
+        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> signal
                 .combineLatest(sub.observe(), (base, other) -> base + other));
 
         assert subject.emitAndRetrieve(1) == null;
@@ -352,7 +352,7 @@ public class EventsTest {
     @Test
     public void combineLatestBinary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
-        Subject<String, Ⅱ<String, Integer>> main = new Subject<String, Ⅱ<String, Integer>>(events -> events.combineLatest(other.observe()));
+        Subject<String, Ⅱ<String, Integer>> main = new Subject<String, Ⅱ<String, Integer>>(signal -> signal.combineLatest(other.observe()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -378,7 +378,7 @@ public class EventsTest {
     public void combineLatestTernary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
         Subject<Double, Double> another = new Subject<>();
-        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(events -> events
+        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(signal -> signal
                 .combineLatest(other.observe(), another.observe()));
 
         main.emit("1");
@@ -398,7 +398,7 @@ public class EventsTest {
 
     @Test
     public void debounce() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.debounce(30, MILLISECONDS));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.debounce(30, MILLISECONDS));
 
         chronus.mark();
         assert subject.emitAndRetrieve(10) == null;
@@ -423,7 +423,7 @@ public class EventsTest {
 
     @Test
     public void debounceRepeat() throws Exception {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.debounce(10, MILLISECONDS).skip(1).take(1).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.debounce(10, MILLISECONDS).skip(1).take(1).repeat());
 
         assert subject.emitAndRetrieve(11) == null;
         assert subject.emitAndRetrieve(22) == null;
@@ -446,7 +446,7 @@ public class EventsTest {
 
     @Test
     public void delay() throws Exception {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.delay(10, MILLISECONDS));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.delay(10, MILLISECONDS));
 
         assert subject.emitAndRetrieve(10) == null;
         chronus.await();
@@ -461,7 +461,7 @@ public class EventsTest {
 
     @Test
     public void diff() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.diff());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.diff());
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -474,7 +474,7 @@ public class EventsTest {
 
     @Test
     public void distinct() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.distinct());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.distinct());
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -486,7 +486,7 @@ public class EventsTest {
 
     @Test
     public void distinctRepeat() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.distinct().take(2).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.distinct().take(2).repeat());
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(10) == null;
@@ -502,7 +502,7 @@ public class EventsTest {
     @Test
     public void effect() {
         Set<Integer> list = new HashSet();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.effect(list::add));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.effect(list::add));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert list.contains(10);
@@ -512,8 +512,8 @@ public class EventsTest {
 
     @Test
     public void effectNull() {
-        Events<Integer> from = Events.from(0);
-        Events<Integer> effect = from.effect(null);
+        Signal<Integer> from = Signal.from(0);
+        Signal<Integer> effect = from.effect(null);
         assert from == effect;
     }
 
@@ -545,7 +545,7 @@ public class EventsTest {
             }
         };
 
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.map(thrower).errorResume(e -> 300));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorResume(e -> 300));
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
         assert subject.isNotCompleted();
@@ -563,7 +563,7 @@ public class EventsTest {
             }
         };
 
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.map(thrower).errorResume(e -> 300));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorResume(e -> 300));
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
         assert subject.isNotCompleted();
@@ -572,7 +572,7 @@ public class EventsTest {
     }
 
     @Test
-    public void errorResumeEvents() {
+    public void errorResumesignal() {
         Function<Integer, Integer> thrower = v -> {
             if (v == 30) {
                 throw new Error();
@@ -581,7 +581,7 @@ public class EventsTest {
             }
         };
 
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.map(thrower).errorResume(Events.from(1, 2)));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorResume(Signal.from(1, 2)));
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
         assert subject.isNotCompleted();
@@ -603,7 +603,7 @@ public class EventsTest {
             }
         };
 
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.map(thrower).errorEnd(e -> 300));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorEnd(e -> 300));
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
         assert subject.isNotCompleted();
@@ -613,7 +613,7 @@ public class EventsTest {
 
     @Test
     public void flatArray() {
-        Subject<String, String> subject = new Subject<>(events -> events.flatArray(v -> v.split("")));
+        Subject<String, String> subject = new Subject<>(signal -> signal.flatArray(v -> v.split("")));
 
         subject.emit("test");
         assert subject.retrieve().equals("t");
@@ -634,7 +634,7 @@ public class EventsTest {
             return values;
         };
 
-        Subject<String, String> subject = new Subject<>(events -> events.flatIterable(chars));
+        Subject<String, String> subject = new Subject<>(signal -> signal.flatIterable(chars));
 
         subject.emit("test");
         assert subject.retrieve().equals("t");
@@ -648,7 +648,7 @@ public class EventsTest {
     public void flatMap() {
         Subject<String, String> emitA = new Subject();
         Subject<String, String> emitB = new Subject();
-        Subject<Integer, String> subject = new Subject<>(events -> events.flatMap(x -> x == 1 ? emitA.observe() : emitB.observe()));
+        Subject<Integer, String> subject = new Subject<>(signal -> signal.flatMap(x -> x == 1 ? emitA.observe() : emitB.observe()));
 
         subject.emit(1); // connect to emitA
         assert subject.retrieve() == null; // emitA doesn't emit value yet
@@ -676,7 +676,7 @@ public class EventsTest {
     public void switchMap() {
         Subject<String, String> emitA = new Subject();
         Subject<String, String> emitB = new Subject();
-        Subject<Integer, String> subject = new Subject<>(events -> events.switchMap(x -> x == 1 ? emitA.observe() : emitB.observe()));
+        Subject<Integer, String> subject = new Subject<>(signal -> signal.switchMap(x -> x == 1 ? emitA.observe() : emitB.observe()));
 
         subject.emit(1); // connect to emitA
         assert subject.retrieve() == null; // emitA doesn't emit value yet
@@ -707,7 +707,7 @@ public class EventsTest {
 
     @Test
     public void map() throws Exception {
-        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(events -> events.map(value -> value * 2));
+        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> signal.map(value -> value * 2));
 
         assert subject.emitAndRetrieve(10) == 20;
         assert subject.emitAndRetrieve(20) == 40;
@@ -717,7 +717,7 @@ public class EventsTest {
 
     @Test
     public void mapTo() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.mapTo(100));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.mapTo(100));
 
         assert subject.emitAndRetrieve(1) == 100;
         assert subject.emitAndRetrieve(2) == 100;
@@ -727,7 +727,7 @@ public class EventsTest {
 
     @Test
     public void mapWithPreviousValue() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.map(1, (prev, now) -> prev + now));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(1, (prev, now) -> prev + now));
 
         assert subject.emitAndRetrieve(1) == 2;
         assert subject.emitAndRetrieve(2) == 3;
@@ -738,7 +738,7 @@ public class EventsTest {
     @Test
     public void merge() {
         Subject<Integer, Integer> subject2 = new Subject<>();
-        Subject<Integer, Integer> subject1 = new Subject<>(events -> events.merge(subject2.observe()));
+        Subject<Integer, Integer> subject1 = new Subject<>(signal -> signal.merge(subject2.observe()));
 
         // from subject1
         assert subject1.emitAndRetrieve(10) == 10;
@@ -760,12 +760,12 @@ public class EventsTest {
         Subject<Integer, Integer> subject3 = new Subject<>();
         Subject<Integer, Integer> subject2 = new Subject<>();
 
-        List<Events<Integer>> list = new ArrayList();
+        List<Signal<Integer>> list = new ArrayList();
         list.add(subject2.observe());
         list.add(subject3.observe());
         list.add(subject4.observe());
 
-        Subject<Integer, Integer> subject1 = new Subject<>(events -> events.merge(list));
+        Subject<Integer, Integer> subject1 = new Subject<>(signal -> signal.merge(list));
 
         // from main
         assert subject1.emitAndRetrieve(10) == 10;
@@ -786,7 +786,7 @@ public class EventsTest {
 
     @Test
     public void mergeNull() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.merge((Events) null));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.merge((Signal) null));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.dispose();
@@ -794,7 +794,7 @@ public class EventsTest {
 
     @Test
     public void never() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> Events.NEVER);
+        Subject<Integer, Integer> subject = new Subject<>(signal -> Signal.NEVER);
 
         assert subject.emitAndRetrieve(0) == null;
         assert subject.emitAndRetrieve(1) == null;
@@ -804,7 +804,7 @@ public class EventsTest {
     @Test
     public void on() throws Exception {
         String mainThread = Thread.currentThread().getName();
-        Subject<Integer, String> subject = new Subject<>(events -> events.map(v -> mainThread)
+        Subject<Integer, String> subject = new Subject<>(signal -> signal.map(v -> mainThread)
                 .on(this::runOtherThread)
                 .map(v -> v + " - " + Thread.currentThread().getName()));
 
@@ -822,7 +822,7 @@ public class EventsTest {
 
     @Test
     public void repeat() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(1).take(1).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat());
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -838,7 +838,7 @@ public class EventsTest {
 
     @Test
     public void repeatFinitely() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(1).take(1).repeat(2));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat(2));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -855,7 +855,7 @@ public class EventsTest {
     @Test
     public void repeatTakeUntil() {
         Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(1).take(1).repeat().takeUntil(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat().takeUntil(condition.observe()));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -874,7 +874,7 @@ public class EventsTest {
     @Test
     public void repeatThen() {
         Subject<Integer, Integer> sub = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(1).take(2).repeat().merge(sub.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(2).repeat().merge(sub.observe()));
 
         // from main subject
         assert subject.emitAndRetrieve(10) == null;
@@ -900,9 +900,9 @@ public class EventsTest {
     }
 
     @Test
-    public void sampleBySamplerEvents() {
+    public void sampleBySamplersignal() {
         Subject<String, String> sampler = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.sample(sampler.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.sample(sampler.observe()));
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
         assert subject.emitAndRetrieve(30) == null;
@@ -922,7 +922,7 @@ public class EventsTest {
 
     @Test
     public void scan() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.scan(10, (accumulated, value) -> accumulated + value));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.scan(10, (accumulated, value) -> accumulated + value));
 
         assert subject.emitAndRetrieve(1) == 11; // 10 + 1
         assert subject.emitAndRetrieve(2) == 13; // 11 + 2
@@ -932,7 +932,7 @@ public class EventsTest {
 
     @Test
     public void skipByItems() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(10, 30));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(10, 30));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -945,7 +945,7 @@ public class EventsTest {
 
     @Test
     public void skipByItemCollection() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(I.set(10, 30)));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(I.set(10, 30)));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -958,7 +958,7 @@ public class EventsTest {
 
     @Test
     public void skipByCondition() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(value -> value % 3 == 0));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(value -> value % 3 == 0));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -983,7 +983,7 @@ public class EventsTest {
     @Test
     public void skipByConditionEvent() {
         Subject<Boolean, Boolean> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skipWhile(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipWhile(condition.observe()));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1001,7 +1001,7 @@ public class EventsTest {
 
     @Test
     public void skipByCount() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(1));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1011,7 +1011,7 @@ public class EventsTest {
 
     @Test
     public void skipByTime() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(10, MILLISECONDS));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(10, MILLISECONDS));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1023,7 +1023,7 @@ public class EventsTest {
 
     @Test
     public void skipByTimeWaitingAtFirst() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(10, MILLISECONDS));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(10, MILLISECONDS));
 
         chronus.freeze(100);
         assert subject.emitAndRetrieve(10) == 10;
@@ -1034,7 +1034,7 @@ public class EventsTest {
     @Test
     public void skipUntil() {
         Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skipUntil(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(condition.observe()));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1049,7 +1049,7 @@ public class EventsTest {
     @Test
     public void skipUntilWithRepeat() throws Exception {
         Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skipUntil(condition.observe()).take(1).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(condition.observe()).take(1).repeat());
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1069,7 +1069,7 @@ public class EventsTest {
 
     @Test
     public void skipUntilValue() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skipUntil(30));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(30));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1081,7 +1081,7 @@ public class EventsTest {
 
     @Test
     public void skipUntilNullValue() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skipUntil((Integer) null));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil((Integer) null));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1092,7 +1092,7 @@ public class EventsTest {
 
     @Test
     public void skipUntilValueWithRepeat() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skipUntil(30).take(2).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(30).take(2).repeat());
 
         assert subject.emitAndRetrieve(20) == null;
         assert subject.emitAndRetrieve(30) == 30;
@@ -1107,7 +1107,7 @@ public class EventsTest {
 
     @Test
     public void skipUntilCondition() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skipUntil(value -> value % 3 == 0));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(value -> value % 3 == 0));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1119,7 +1119,7 @@ public class EventsTest {
 
     @Test
     public void skipUntilConditionWithRepeat() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skipUntil(value -> value % 3 == 0).take(2).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(value -> value % 3 == 0).take(2).repeat());
 
         assert subject.emitAndRetrieve(20) == null;
         assert subject.emitAndRetrieve(30) == 30;
@@ -1134,7 +1134,7 @@ public class EventsTest {
 
     @Test
     public void startWith() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.startWith(10));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.startWith(10));
 
         assert subject.retrieve() == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1143,7 +1143,7 @@ public class EventsTest {
 
     @Test
     public void startWithTwice() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.startWith(0).startWith(10));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.startWith(0).startWith(10));
 
         assert subject.retrieve() == 10;
         assert subject.retrieve() == 0;
@@ -1153,7 +1153,7 @@ public class EventsTest {
 
     @Test
     public void takeByCondition() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.take(value -> value % 3 == 0));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.take(value -> value % 3 == 0));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1178,7 +1178,7 @@ public class EventsTest {
     @Test
     public void takeByConditionEvent() {
         Subject<Boolean, Boolean> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.takeWhile(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeWhile(condition.observe()));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1196,7 +1196,7 @@ public class EventsTest {
 
     @Test
     public void takeByCount() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.take(1));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.take(1));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == null;
@@ -1205,7 +1205,7 @@ public class EventsTest {
 
     @Test
     public void takeByTime() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.take(30, MILLISECONDS));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.take(30, MILLISECONDS));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1218,7 +1218,7 @@ public class EventsTest {
     @Test
     public void takeUntil() {
         Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.takeUntil(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(condition.observe()));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1230,7 +1230,7 @@ public class EventsTest {
 
     @Test
     public void takeUntilValue() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.takeUntil(30));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(30));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1241,7 +1241,7 @@ public class EventsTest {
 
     @Test
     public void takeUntilNullValue() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.takeUntil((Integer) null));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil((Integer) null));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1252,7 +1252,7 @@ public class EventsTest {
 
     @Test
     public void takeUntilValueRepeat() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(1).takeUntil(30).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).takeUntil(30).repeat());
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1267,7 +1267,7 @@ public class EventsTest {
 
     @Test
     public void takeUntilCondition() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.takeUntil(value -> value % 3 == 0));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(value -> value % 3 == 0));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1278,7 +1278,7 @@ public class EventsTest {
 
     @Test
     public void takeUntilConditionRepeat() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> events.skip(1).takeUntil(value -> value % 3 == 0).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).takeUntil(value -> value % 3 == 0).repeat());
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -1296,7 +1296,7 @@ public class EventsTest {
 
     @Test
     public void toggle() {
-        Subject<String, Boolean> subject = new Subject<>(events -> events.toggle());
+        Subject<String, Boolean> subject = new Subject<>(signal -> signal.toggle());
         assert subject.emitAndRetrieve("1") == true;
         assert subject.emitAndRetrieve("2") == false;
         assert subject.emitAndRetrieve("3") == true;
@@ -1305,7 +1305,7 @@ public class EventsTest {
 
     @Test
     public void toggleWithInitialValue() {
-        Subject<String, Boolean> subject = new Subject<>(events -> events.toggle(false));
+        Subject<String, Boolean> subject = new Subject<>(signal -> signal.toggle(false));
         assert subject.emitAndRetrieve("1") == false;
         assert subject.emitAndRetrieve("2") == true;
         assert subject.emitAndRetrieve("3") == false;
@@ -1314,7 +1314,7 @@ public class EventsTest {
 
     @Test
     public void toggleWithValues() {
-        Subject<Integer, String> subject = new Subject<>(events -> events.toggle("one", "other"));
+        Subject<Integer, String> subject = new Subject<>(signal -> signal.toggle("one", "other"));
         assert subject.emitAndRetrieve(1).equals("one");
         assert subject.emitAndRetrieve(2).equals("other");
         assert subject.emitAndRetrieve(3).equals("one");
@@ -1323,7 +1323,7 @@ public class EventsTest {
 
     @Test
     public void toggleWithValuesMore() {
-        Subject<Integer, String> subject = new Subject<>(events -> events.toggle("one", "two", "three"));
+        Subject<Integer, String> subject = new Subject<>(signal -> signal.toggle("one", "two", "three"));
         assert subject.emitAndRetrieve(1).equals("one");
         assert subject.emitAndRetrieve(2).equals("two");
         assert subject.emitAndRetrieve(3).equals("three");
@@ -1334,7 +1334,7 @@ public class EventsTest {
 
     @Test
     public void toggleWithNull() {
-        Subject<Integer, String> subject = new Subject<>(events -> events.toggle("one", null));
+        Subject<Integer, String> subject = new Subject<>(signal -> signal.toggle("one", null));
         assert subject.emitAndRetrieve(1).equals("one");
         assert subject.emitAndRetrieve(2) == null;
         assert subject.emitAndRetrieve(3).equals("one");
@@ -1343,7 +1343,7 @@ public class EventsTest {
 
     @Test
     public void throttle() {
-        Subject<String, String> subject = new Subject<>(events -> events.throttle(30, MILLISECONDS));
+        Subject<String, String> subject = new Subject<>(signal -> signal.throttle(30, MILLISECONDS));
 
         chronus.mark();
         assert subject.emitAndRetrieve("OK").equals("OK");
@@ -1363,7 +1363,7 @@ public class EventsTest {
     public void all() {
         Subject<Boolean, Boolean> subject1 = new Subject();
         Subject<Boolean, Boolean> subject2 = new Subject();
-        Subject<Boolean, Boolean> base = new Subject(events -> Events.all(subject1.observe(), subject2.observe()));
+        Subject<Boolean, Boolean> base = new Subject(signal -> Signal.all(subject1.observe(), subject2.observe()));
         assert base.retrieve() == null;
 
         subject1.emit(true);
@@ -1383,7 +1383,7 @@ public class EventsTest {
 
     @Test
     public void allNoArg() {
-        Subject<Boolean, Boolean> base = new Subject(events -> Events.all());
+        Subject<Boolean, Boolean> base = new Subject(signal -> Signal.all());
         assert base.retrieve() == null;
         assert base.dispose();
     }
@@ -1392,7 +1392,7 @@ public class EventsTest {
     public void any() {
         Subject<Boolean, Boolean> subject1 = new Subject();
         Subject<Boolean, Boolean> subject2 = new Subject();
-        Subject<Boolean, Boolean> base = new Subject(events -> Events.any(subject1.observe(), subject2.observe()));
+        Subject<Boolean, Boolean> base = new Subject(signal -> Signal.any(subject1.observe(), subject2.observe()));
         assert base.retrieve() == null;
 
         subject1.emit(true);
@@ -1412,7 +1412,7 @@ public class EventsTest {
 
     @Test
     public void anyNoArg() {
-        Subject<Boolean, Boolean> base = new Subject(events -> Events.any());
+        Subject<Boolean, Boolean> base = new Subject(signal -> Signal.any());
         assert base.retrieve() == null;
         assert base.dispose();
     }
@@ -1421,7 +1421,7 @@ public class EventsTest {
     public void none() {
         Subject<Boolean, Boolean> subject1 = new Subject();
         Subject<Boolean, Boolean> subject2 = new Subject();
-        Subject<Boolean, Boolean> base = new Subject(events -> Events.none(subject1.observe(), subject2.observe()));
+        Subject<Boolean, Boolean> base = new Subject(signal -> Signal.none(subject1.observe(), subject2.observe()));
         assert base.retrieve() == null;
 
         subject1.emit(true);
@@ -1441,14 +1441,14 @@ public class EventsTest {
 
     @Test
     public void noneNoArg() {
-        Subject<Boolean, Boolean> base = new Subject(events -> Events.none());
+        Subject<Boolean, Boolean> base = new Subject(signal -> Signal.none());
         assert base.retrieve() == null;
         assert base.dispose();
     }
 
     @Test
     public void from() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> Events.from(1, 2, 3));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> Signal.from(1, 2, 3));
 
         assert subject.retrieve() == 1;
         assert subject.retrieve() == 2;
@@ -1458,14 +1458,14 @@ public class EventsTest {
 
     @Test
     public void fromNoArg() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> Events.from());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> Signal.from());
         assert subject.retrieve() == null;
         assert subject.dispose();
     }
 
     @Test
     public void fromIterable() {
-        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(events -> Events.from(Arrays.asList(1, 2, 3)));
+        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> Signal.from(Arrays.asList(1, 2, 3)));
 
         assert subject.retrieve() == 1;
         assert subject.retrieve() == 2;
@@ -1475,7 +1475,7 @@ public class EventsTest {
 
     @Test
     public void infinite() {
-        Subject<Integer, Integer> subject = new Subject<>(events -> Events.infinite(1, 20, MILLISECONDS).take(2));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> Signal.infinite(1, 20, MILLISECONDS).take(2));
 
         chronus.mark();
         chronus.freezeFromMark(10);
@@ -1491,7 +1491,7 @@ public class EventsTest {
 
     @Test
     public void range() {
-        Subject<Integer, Integer> subject = new Subject(e -> Events.range(1, 4));
+        Subject<Integer, Integer> subject = new Subject(e -> Signal.range(1, 4));
         assert subject.emitAndRetrieve(100, 1);
         assert subject.retrieve() == 2;
         assert subject.retrieve() == 3;
@@ -1501,7 +1501,7 @@ public class EventsTest {
     @Test
     public void rangeTake() {
         Store<Integer> store = new Store();
-        Events.range(1, 10).effect(store::before).take(2).to(store::after);
+        Signal.range(1, 10).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
     }
@@ -1509,7 +1509,7 @@ public class EventsTest {
     @Test
     public void disposeFrom() {
         Store<Integer> store = new Store();
-        Events.from(1, 2, 3, 4).effect(store::before).take(1).to(store::after);
+        Signal.from(1, 2, 3, 4).effect(store::before).take(1).to(store::after);
 
         assert store.size() == 1;
     }
@@ -1517,7 +1517,7 @@ public class EventsTest {
     @Test
     public void disposeFlatMap() {
         Store<Integer> store = new Store();
-        Events.from(10, 20, 30, 40).flatMap(v -> Events.from(v, v + 1)).effect(store::before).take(2).to(store::after);
+        Signal.from(10, 20, 30, 40).flatMap(v -> Signal.from(v, v + 1)).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 10;
@@ -1527,7 +1527,7 @@ public class EventsTest {
     @Test
     public void disposeInternalFlatMap() {
         Store<Integer> store = new Store();
-        Events.from(10, 20).flatMap(v -> Events.from(v, v + 1, v + 2).take(2)).to(store::before);
+        Signal.from(10, 20).flatMap(v -> Signal.from(v, v + 1, v + 2).take(2)).to(store::before);
 
         assert store.before.size() == 4;
         assert store.retrieve() == 10;
@@ -1539,7 +1539,7 @@ public class EventsTest {
     @Test
     public void disposeFlatArray() {
         Store<Integer> store = new Store();
-        Events.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1}).effect(store::before).take(2).to(store::after);
+        Signal.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1}).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 10;
@@ -1549,7 +1549,7 @@ public class EventsTest {
     @Test
     public void disposeMerge() {
         Store<Integer> store = new Store();
-        Events.from(1).merge(Events.from(10, 20)).effect(store::before).take(2).to(store::after);
+        Signal.from(1).merge(Signal.from(10, 20)).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 1;
@@ -1559,6 +1559,7 @@ public class EventsTest {
     /**
      * @version 2017/03/18 21:00:47
      */
+    @SuppressWarnings("unused")
     private static class Store<T> {
 
         private Deque<T> before = new ArrayDeque();
