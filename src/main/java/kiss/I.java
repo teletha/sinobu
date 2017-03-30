@@ -2965,7 +2965,9 @@ public class I {
 
             // traverse object as json
             Model model = Model.of(input);
-            new JSONWriter(out, 0).accept(pair(model, new Property(model, ""), input));
+            Format formatter = new Format();
+            formatter.out = out;
+            formatter.accept(pair(model, new Property(model, ""), input));
         } finally {
             // relese lock
             lock.writeLock().unlock();
