@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +32,7 @@ import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -38,7 +40,7 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
 /**
- * @version 2017/03/19 18:00:27
+ * @version 2017/03/30 16:10:29
  */
 public class XML implements Iterable<XML> {
 
@@ -84,7 +86,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML append(Object xml) {
-        Node n = convert(I.xml(xml, true, false));
+        Node n = convert(I.xml(xml, true));
 
         for (Node node : nodes) {
             node.appendChild(n.cloneNode(true));
@@ -104,7 +106,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML prepend(Object xml) {
-        Node n = convert(I.xml(xml, true, false));
+        Node n = convert(I.xml(xml, true));
 
         for (Node node : nodes) {
             node.insertBefore(n.cloneNode(true), node.getFirstChild());
@@ -124,7 +126,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML before(Object xml) {
-        Node n = convert(I.xml(xml, true, false));
+        Node n = convert(I.xml(xml, true));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node);
@@ -144,7 +146,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML after(Object xml) {
-        Node n = convert(I.xml(xml, true, false));
+        Node n = convert(I.xml(xml, true));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
@@ -476,25 +478,14 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
-     * Append the given xml as child element and traverse into them.
+     * Append new child element with the specified name and traverse into them.
      * </p>
      *
-     * @param xml A xml element.
+     * @param name A child element name.
      * @return A created child elements.
      */
-    public XML child(Object xml) {
-        ArrayList list = new ArrayList();
-        Node child = convert(I.xml(xml, false, false));
-
-        for (Node node : nodes) {
-            Node copy = child.cloneNode(true);
-            list.addAll(convert(copy.getChildNodes()));
-            node.appendChild(copy);
-        }
-        return new XML(doc, list);
-
-        // Don't use the below code because xpath is too slow.
-        // return append(xml).find(">*:last-child");
+    public XML child(String name) {
+        return append("<" + name + "/>").find(Node::getLastChild);
     }
 
     /**
@@ -515,21 +506,115 @@ public class XML implements Iterable<XML> {
 
     /**
      * <p>
+     * Get the last child element of each element in the current set of matched elements.
+     * </p>
+     * 
+     * @return A set of fisrt elements.
+     */
+    public XML firstChild() {
+        return find(n -> {
+            Node child = n.getFirstChild();
+            while (child != null) {
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    return child;
+                }
+                child = child.getNextSibling();
+            }
+            return null;
+        });
+    }
+
+    /**
+     * <p>
+     * Get the last child element of each element in the current set of matched elements.
+     * </p>
+     * 
+     * @return A set of last elements.
+     */
+    public XML lastChild() {
+        return find(n -> {
+            Node child = n.getLastChild();
+            while (child != null) {
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    return child;
+                }
+                child = child.getPreviousSibling();
+            }
+            return null;
+        });
+    }
+
+    /**
+     * <p>
      * Get the parent of each element in the current set of matched elements.
      * </p>
      *
      * @return A set of parent elements.
      */
     public XML parent() {
-        CopyOnWriteArrayList list = new CopyOnWriteArrayList();
+        return find(n -> {
+            Node parent = n.getParentNode();
+            return parent instanceof Element ? parent : n;
+        });
+    }
+
+    /**
+     * <p>
+     * Get the previous sibling element of each element in the current set of matched elements.
+     * </p>
+     *
+     * @return A set of previous elements.
+     */
+    public XML prev() {
+        return find(n -> {
+            Node sibling = n.getPreviousSibling();
+            while (sibling != null) {
+                if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                    return sibling;
+                }
+                sibling = sibling.getPreviousSibling();
+            }
+            return null;
+        });
+    }
+
+    /**
+     * <p>
+     * Get the next sibling element of each element in the current set of matched elements.
+     * </p>
+     *
+     * @return A set of next elements.
+     */
+    public XML next() {
+        return find(n -> {
+            Node sibling = n.getNextSibling();
+            while (sibling != null) {
+                if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                    return sibling;
+                }
+                sibling = sibling.getNextSibling();
+            }
+            return null;
+        });
+    }
+
+    /**
+     * <p>
+     * Get the descendants of each element in the current set of matched elements, filtered by
+     * {@link UnaryOperator} selector.
+     * </p>
+     * 
+     * @param selector
+     * @return Chainable API.
+     */
+    private XML find(UnaryOperator<Node> selector) {
+        CopyOnWriteArrayList<Node> list = new CopyOnWriteArrayList();
 
         for (Node node : nodes) {
-            Node parent = node.getParentNode();
+            Node found = selector.apply(node);
 
-            if (parent.getNodeType() == Node.ELEMENT_NODE) {
-                list.addIfAbsent(parent);
-            } else {
-                list.addIfAbsent(node);
+            if (found != null) {
+                list.addIfAbsent(found);
             }
         }
         return new XML(doc, list);
@@ -1077,7 +1162,7 @@ public class XML implements Iterable<XML> {
                 // =====================
                 String name = nextName();
                 nextSpace();
-                System.out.println(name);
+
                 XML child = xml.child(name);
 
                 // parse attributes

@@ -15,7 +15,7 @@ import kiss.I;
 import kiss.XML;
 
 /**
- * @version 2017/02/05 21:17:41
+ * @version 2017/03/30 16:11:07
  */
 public class XMLTraversingTest {
 
@@ -65,5 +65,41 @@ public class XMLTraversingTest {
 
         assert xml.find("Q").size() == 2;
         assert xml.find("Q").children().size() == 3;
+    }
+
+    @Test
+    public void firstChild() throws Exception {
+        XML xml = I.xml("<m><Q><p/><q/><r/></Q></m>");
+
+        assert xml.find("Q").size() == 1;
+        assert xml.find("Q").firstChild().size() == 1;
+        assert xml.find("Q").firstChild().name() == "p";
+    }
+
+    @Test
+    public void lastChild() throws Exception {
+        XML xml = I.xml("<m><Q><p/><q/><r/></Q></m>");
+
+        assert xml.find("Q").size() == 1;
+        assert xml.find("Q").lastChild().size() == 1;
+        assert xml.find("Q").lastChild().name() == "r";
+    }
+
+    @Test
+    public void prev() throws Exception {
+        XML xml = I.xml("<m><Q><p/><q/><r/></Q></m>");
+    
+        assert xml.find("q").size() == 1;
+        assert xml.find("q").prev().size() == 1;
+        assert xml.find("q").prev().name() == "p";
+    }
+
+    @Test
+    public void next() throws Exception {
+        XML xml = I.xml("<m><Q><p/><q/><r/></Q></m>");
+
+        assert xml.find("q").size() == 1;
+        assert xml.find("q").next().size() == 1;
+        assert xml.find("q").next().name() == "r";
     }
 }

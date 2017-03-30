@@ -11,7 +11,6 @@ package kiss;
 
 import static org.objectweb.asm.Opcodes.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOError;
@@ -121,7 +120,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
 
 import sun.misc.Unsafe;
@@ -3002,7 +3001,7 @@ public class I {
      * @return A constructed {@link XML}.
      */
     public static XML xml(Object xml) {
-        return xml(xml, false, false);
+        return xml(xml, false);
     }
 
     /**
@@ -3026,10 +3025,9 @@ public class I {
      *
      * @param xml A xml expression.
      * @param text Allow text contents.
-     * @param html TODO
      * @return A constructed {@link XML}.
      */
-    static XML xml(Object xml, boolean text, boolean html) {
+    static XML xml(Object xml, boolean text) {
         Document doc;
 
         try {
@@ -3055,22 +3053,19 @@ public class I {
                 // ================================
                 String value = xml.toString().trim();
 
-                if (value.charAt(0) == '<' && 3 < value.length()) {
-                    return parse(value.getBytes($encoding));
+                if (value.startsWith("http://") || value.startsWith("https://")) {
+                    return xml(new URL(value));
                 }
 
-                if (value.startsWith("http://") || value.startsWith("https://")) {
-                    // ========================
-                    // HTML from URL
-                    // ========================
-                    return xml(new URL(value));
+                if (value.charAt(0) == '<' && 3 < value.length()) {
+                    return parse(value.getBytes($encoding));
                 }
 
                 // ========================
                 // Element Name or Text
                 // ========================
                 doc = dom.newDocument();
-                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text, html);
+                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text);
             }
         } catch (Exception e) {
             throw I.quiet(e);
@@ -3078,7 +3073,16 @@ public class I {
         return new XML(doc, XML.convert(doc.getChildNodes()));
     }
 
-    private static XML parse(byte[] bytes) {
+    /**
+     * <p>
+     * Parse text bytes as XML.
+     * </p>
+     * 
+     * @param bytes A target text to parse.
+     * @return A parsed {@link XML}.
+     * @throws Exception Parser related exception.
+     */
+    private static XML parse(byte[] bytes) throws Exception {
         if (6 < bytes.length) {
             // doctype declaration (starts with <! )
             // root element is html (starts with <html> )
@@ -3087,16 +3091,9 @@ public class I {
             }
         }
 
-        try {
-            Document doc = dom.parse(new ByteArrayInputStream(bytes));
-            return new XML(doc, XML.convert(doc.getChildNodes()));
-        } catch (SAXException e) {
-            System.out.println("OO");
-            e.printStackTrace();
-            System.out.println(new String(bytes));
-            return new XML(null, null).parse(bytes, $encoding);
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
+        Document doc = dom.parse(new InputSource(new StringReader( //
+                "<m>".concat(new String(bytes, $encoding).replaceAll("<\\?.+\\?>", "")).concat("</m>") //
+        )));
+        return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
     }
 }
