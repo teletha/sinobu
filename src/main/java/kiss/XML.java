@@ -84,7 +84,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML append(Object xml) {
-        Node n = convert(I.xml(xml, true));
+        Node n = convert(I.xml(xml, true, false));
 
         for (Node node : nodes) {
             node.appendChild(n.cloneNode(true));
@@ -104,7 +104,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML prepend(Object xml) {
-        Node n = convert(I.xml(xml, true));
+        Node n = convert(I.xml(xml, true, false));
 
         for (Node node : nodes) {
             node.insertBefore(n.cloneNode(true), node.getFirstChild());
@@ -124,7 +124,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML before(Object xml) {
-        Node n = convert(I.xml(xml, true));
+        Node n = convert(I.xml(xml, true, false));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node);
@@ -144,7 +144,7 @@ public class XML implements Iterable<XML> {
      * @return Chainable API.
      */
     public XML after(Object xml) {
-        Node n = convert(I.xml(xml, true));
+        Node n = convert(I.xml(xml, true, false));
 
         for (Node node : nodes) {
             node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
@@ -484,7 +484,7 @@ public class XML implements Iterable<XML> {
      */
     public XML child(Object xml) {
         ArrayList list = new ArrayList();
-        Node child = convert(I.xml(xml, false));
+        Node child = convert(I.xml(xml, false, false));
 
         for (Node node : nodes) {
             Node copy = child.cloneNode(true);

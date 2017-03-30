@@ -121,6 +121,8 @@ import org.objectweb.asm.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import sun.misc.Unsafe;
 
@@ -434,6 +436,7 @@ public class I {
             factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
             dom = factory.newDocumentBuilder();
+            dom.setErrorHandler(new DefaultHandler());
             xpath = XPathFactory.newInstance().newXPath();
         } catch (Exception e) {
             throw I.quiet(e);
@@ -2388,7 +2391,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2999,7 +3002,7 @@ public class I {
      * @return A constructed {@link XML}.
      */
     public static XML xml(Object xml) {
-        return xml(xml, false);
+        return xml(xml, false, false);
     }
 
     /**
@@ -3023,9 +3026,10 @@ public class I {
      *
      * @param xml A xml expression.
      * @param text Allow text contents.
+     * @param html TODO
      * @return A constructed {@link XML}.
      */
-    static XML xml(Object xml, boolean text) {
+    static XML xml(Object xml, boolean text, boolean html) {
         Document doc;
 
         try {
@@ -3036,7 +3040,7 @@ public class I {
             } else if (xml instanceof InputStream) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 copy((InputStream) xml, out, true);
-                return new XML(null, null).parse(out.toByteArray(), $encoding);
+                return parse(out.toByteArray(), $encoding, false);
             } else if (xml instanceof URL) {
                 return xml(((URL) xml).openStream());
             } else if (xml instanceof Path) {
@@ -3049,22 +3053,10 @@ public class I {
                 // ================================
                 // Parse as String
                 // ================================
-                String value = xml.toString();
+                String value = xml.toString().trim();
 
                 if (value.charAt(0) == '<' && 3 < value.length()) {
-                    if (value.charAt(1) == '!') {
-                        // ========================
-                        // HTML Literal
-                        // ========================
-                        return new XML(null, null).parse(value.getBytes(), $encoding);
-                    } else {
-                        // ========================
-                        // XML Literal
-                        // ========================
-                        doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
-
-                        return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
-                    }
+                    return parse(value.getBytes($encoding), $encoding, false);
                 }
 
                 if (value.startsWith("http://") || value.startsWith("https://")) {
@@ -3078,11 +3070,39 @@ public class I {
                 // Element Name or Text
                 // ========================
                 doc = dom.newDocument();
-                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text);
+                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text, html);
             }
         } catch (Exception e) {
             throw I.quiet(e);
         }
         return new XML(doc, XML.convert(doc.getChildNodes()));
+    }
+
+    private static XML parse(byte[] bytes, Charset encoding, boolean html) {
+        if (html) {
+            return new XML(null, null).parse(bytes, encoding);
+        }
+
+        if (6 < bytes.length) {
+            // doctype declaration (starts with <! )
+            if (bytes[0] == 60 && bytes[1] == 33) {
+                return parse(bytes, encoding, true);
+            }
+
+            // root element is html (starts with <html> )
+            if (bytes[0] == 60 && bytes[1] == 104 && bytes[2] == 116 && bytes[3] == 109 && bytes[4] == 108 && bytes[5] == 62) {
+                return parse(bytes, encoding, true);
+            }
+        }
+
+        try {
+            Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(new String(bytes, encoding).replaceAll("<\\?.+\\?>", ""))
+                    .concat("</m>"))));
+            return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+        } catch (SAXException e) {
+            return parse(bytes, encoding, true);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
     }
 }
