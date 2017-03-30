@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PushbackReader;
 import java.io.RandomAccessFile;
@@ -38,6 +39,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.CharBuffer;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -719,6 +721,38 @@ public class I {
         try {
             while ((size = input.read(buffer)) != -1) {
                 output.write(buffer, 0, size);
+            }
+        } catch (IOException e) {
+            throw quiet(e);
+        } finally {
+            if (close) {
+                quiet(input);
+                quiet(output);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Copy data from a {@link Readable} to an {@link Appendable}. This method buffers the input
+     * internally, so there is no need to use a buffer.
+     * </p>
+     *
+     * @param input A {@link Readable} to read from.
+     * @param output An {@link Appendable} to write to.
+     * @param close Whether input and output steream will be closed automatically or not.
+     * @throws IOException If an I/O error occurs.
+     * @throws NullPointerException If the input or output is null.
+     */
+    public static void copy(Readable input, Appendable output, boolean close) {
+        int size;
+        CharBuffer buffer = CharBuffer.allocate(8192);
+
+        try {
+            while ((size = input.read(buffer)) != -1) {
+                buffer.flip();
+                output.append(buffer, 0, size);
+                buffer.clear();
             }
         } catch (IOException e) {
             throw quiet(e);
@@ -2390,7 +2424,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -3000,31 +3034,60 @@ public class I {
      * @return A constructed {@link XML}.
      */
     public static XML xml(Object xml) {
+        return xml(null, xml);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     * <ul>
+     * <li>{@link XML}</li>
+     * <li>{@link Path}</li>
+     * <li>{@link InputStream}</li>
+     * <li>{@link URL}</li>
+     * <li>{@link Node}</li>
+     * <li>{@link String}</li>
+     * </ul>
+     * <ul>
+     * <li>XML Literal</li>
+     * <li>HTML Literal</li>
+     * </ul>
+     *
+     * @param xml A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    static XML xml(Document doc, Object xml) {
         try {
-            if (xml == null) {
-                return new XML(null, null);
-            } else if (xml instanceof XML) {
+            // XML related types
+            if (xml instanceof XML) {
                 return (XML) xml;
+            } else if (xml instanceof Node) {
+                return new XML(((Node) xml).getOwnerDocument(), list(xml));
+            }
+
+            // streamable types
+            if (xml instanceof URL) {
+                xml = ((URL) xml).openStream();
+            } else if (xml instanceof Path) {
+                xml = Files.newInputStream((Path) xml);
+            }
+
+            if (xml instanceof Reader) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                copy((Reader) xml, new OutputStreamWriter(out, $encoding), true);
+                return parse(out.toByteArray());
             } else if (xml instanceof InputStream) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 copy((InputStream) xml, out, true);
                 return parse(out.toByteArray());
-            } else if (xml instanceof URL) {
-                return xml(((URL) xml).openStream());
-            } else if (xml instanceof Path) {
-                return xml(Files.newInputStream((Path) xml));
-            } else if (xml instanceof Document) {
-                Document doc = (Document) xml;
-                return new XML(doc, XML.convert(doc.getChildNodes()));
-            } else if (xml instanceof Node) {
-                return new XML(((Node) xml).getOwnerDocument(), list(xml));
             } else {
                 String value = xml.toString().trim();
 
                 if (value.charAt(0) == '<' && 3 < value.length()) {
                     return parse(value.getBytes($encoding));
                 } else {
-                    return xml(dom.newDocument().createTextNode(value));
+                    return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
                 }
             }
         } catch (Exception e) {
