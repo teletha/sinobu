@@ -1077,7 +1077,7 @@ public class XML implements Iterable<XML> {
                 // =====================
                 String name = nextName();
                 nextSpace();
-
+                System.out.println(name);
                 XML child = xml.child(name);
 
                 // parse attributes

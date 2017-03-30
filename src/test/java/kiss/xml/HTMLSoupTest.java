@@ -26,9 +26,21 @@ public class HTMLSoupTest {
     }
 
     @Test
-    public void nameCaseInconsistency() throws Exception {
-        XML xml = parse("<case>crazy</CASE>");
-        assert xml.find("case").size() == 1;
+    public void caseInconsistencyLowerUpper() throws Exception {
+        XML xml = parse("<div>crazy</DIV>");
+        assert xml.find("div").size() == 1;
+    }
+
+    @Test
+    public void caseInconsistencyUpperLower() throws Exception {
+        XML xml = parse("<DIV>crazy</div>");
+        assert xml.find("div").size() == 1;
+    }
+
+    @Test
+    public void rootMultiple() throws Exception {
+        XML xml = I.xml("<html><body/></html><other><body/></other>");
+        assert xml.find("body").size() == 2;
     }
 
     /**

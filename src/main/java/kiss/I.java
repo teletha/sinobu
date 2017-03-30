@@ -11,6 +11,7 @@ package kiss;
 
 import static org.objectweb.asm.Opcodes.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOError;
@@ -120,7 +121,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -3040,7 +3040,7 @@ public class I {
             } else if (xml instanceof InputStream) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 copy((InputStream) xml, out, true);
-                return parse(out.toByteArray(), $encoding, false);
+                return parse(out.toByteArray());
             } else if (xml instanceof URL) {
                 return xml(((URL) xml).openStream());
             } else if (xml instanceof Path) {
@@ -3056,7 +3056,7 @@ public class I {
                 String value = xml.toString().trim();
 
                 if (value.charAt(0) == '<' && 3 < value.length()) {
-                    return parse(value.getBytes($encoding), $encoding, false);
+                    return parse(value.getBytes($encoding));
                 }
 
                 if (value.startsWith("http://") || value.startsWith("https://")) {
@@ -3078,29 +3078,23 @@ public class I {
         return new XML(doc, XML.convert(doc.getChildNodes()));
     }
 
-    private static XML parse(byte[] bytes, Charset encoding, boolean html) {
-        if (html) {
-            return new XML(null, null).parse(bytes, encoding);
-        }
-
+    private static XML parse(byte[] bytes) {
         if (6 < bytes.length) {
             // doctype declaration (starts with <! )
-            if (bytes[0] == 60 && bytes[1] == 33) {
-                return parse(bytes, encoding, true);
-            }
-
             // root element is html (starts with <html> )
-            if (bytes[0] == 60 && bytes[1] == 104 && bytes[2] == 116 && bytes[3] == 109 && bytes[4] == 108 && bytes[5] == 62) {
-                return parse(bytes, encoding, true);
+            if ((bytes[0] == 60 && bytes[1] == 33) || (bytes[0] == 60 && bytes[1] == 104 && bytes[2] == 116 && bytes[3] == 109 && bytes[4] == 108 && bytes[5] == 62)) {
+                return new XML(null, null).parse(bytes, $encoding);
             }
         }
 
         try {
-            Document doc = dom.parse(new InputSource(new StringReader("<m>".concat(new String(bytes, encoding).replaceAll("<\\?.+\\?>", ""))
-                    .concat("</m>"))));
-            return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+            Document doc = dom.parse(new ByteArrayInputStream(bytes));
+            return new XML(doc, XML.convert(doc.getChildNodes()));
         } catch (SAXException e) {
-            return parse(bytes, encoding, true);
+            System.out.println("OO");
+            e.printStackTrace();
+            System.out.println(new String(bytes));
+            return new XML(null, null).parse(bytes, $encoding);
         } catch (IOException e) {
             throw I.quiet(e);
         }
