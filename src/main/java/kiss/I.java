@@ -2992,44 +2992,14 @@ public class I {
      * <li>{@link String}</li>
      * </ul>
      * <ul>
-     * <li>URL Expression (http and https)</li>
      * <li>XML Literal</li>
-     * <li>Element Name</li>
+     * <li>HTML Literal</li>
      * </ul>
      *
      * @param xml A xml expression.
      * @return A constructed {@link XML}.
      */
     public static XML xml(Object xml) {
-        return xml(xml, false);
-    }
-
-    /**
-     * <p>
-     * Parse as xml fragment.
-     * </p>
-     * <ul>
-     * <li>{@link XML}</li>
-     * <li>{@link Path}</li>
-     * <li>{@link InputStream}</li>
-     * <li>{@link URL}</li>
-     * <li>{@link Node}</li>
-     * <li>{@link String}</li>
-     * </ul>
-     * <ul>
-     * <li>URL Expression (http and https)</li>
-     * <li>XML Literal</li>
-     * <li>HTML Literal</li>
-     * <li>Element Name</li>
-     * </ul>
-     *
-     * @param xml A xml expression.
-     * @param text Allow text contents.
-     * @return A constructed {@link XML}.
-     */
-    static XML xml(Object xml, boolean text) {
-        Document doc;
-
         try {
             if (xml == null) {
                 return new XML(null, null);
@@ -3044,33 +3014,22 @@ public class I {
             } else if (xml instanceof Path) {
                 return xml(Files.newInputStream((Path) xml));
             } else if (xml instanceof Document) {
-                doc = (Document) xml;
+                Document doc = (Document) xml;
+                return new XML(doc, XML.convert(doc.getChildNodes()));
             } else if (xml instanceof Node) {
                 return new XML(((Node) xml).getOwnerDocument(), list(xml));
             } else {
-                // ================================
-                // Parse as String
-                // ================================
                 String value = xml.toString().trim();
-
-                if (value.startsWith("http://") || value.startsWith("https://")) {
-                    return xml(new URL(value));
-                }
 
                 if (value.charAt(0) == '<' && 3 < value.length()) {
                     return parse(value.getBytes($encoding));
+                } else {
+                    return xml(dom.newDocument().createTextNode(value));
                 }
-
-                // ========================
-                // Element Name or Text
-                // ========================
-                doc = dom.newDocument();
-                return xml(text ? doc.createTextNode(value) : doc.createElement(value), text);
             }
         } catch (Exception e) {
             throw I.quiet(e);
         }
-        return new XML(doc, XML.convert(doc.getChildNodes()));
     }
 
     /**
