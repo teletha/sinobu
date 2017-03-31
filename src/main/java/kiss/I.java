@@ -105,6 +105,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -2531,7 +2532,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -3147,6 +3148,9 @@ public class I {
         return xml(null, xml);
     }
 
+    /** XML literal pattern. */
+    private static final Pattern XMLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
+
     /**
      * <p>
      * Parse as xml fragment.
@@ -3192,12 +3196,12 @@ public class I {
 
             String value = new String(bytes, $encoding);
 
-            if (value.charAt(0) != '<') {
+            if (XMLiteral.matcher(value).matches()) {
+                doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
+                return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+            } else {
                 return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
             }
-
-            doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
-            return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
         } catch (Exception e) {
             throw quiet(e);
         }
@@ -3237,6 +3241,6 @@ public class I {
                 input = out.toByteArray();
             }
         }
-        return input instanceof byte[] ? (byte[]) input : input.toString().trim().getBytes();
+        return input instanceof byte[] ? (byte[]) input : input.toString().getBytes();
     }
 }
