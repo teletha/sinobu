@@ -10,23 +10,18 @@
 package kiss;
 
 import java.nio.file.WatchEvent;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
-
-import kiss.model.Model;
-import kiss.model.Property;
 
 /**
  * <p>
  * Versatile wrapper or delegator.
  * </p>
  * 
- * @version 2015/06/24 13:07:48
+ * @version 2017/03/31 23:47:11
  */
-class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>, Disposable {
+class Agent<T> implements Observer<T>, WatchEvent, Disposable {
 
     /** For reuse. */
     T object;
@@ -166,47 +161,6 @@ class Agent<T> implements Observer<T>, WatchEvent, Decoder<Date>, Encoder<Date>,
         return object;
     }
 
-    // ============================================================
-    // For XML Desirialization and Bean Conversion
-    // ============================================================
-    /** The current model. */
-    Model model;
-
-    /** The property for xml deserialization process. */
-    Property property;
-
     /** The current location for deserialization process. */
     int index;
-
-    // ============================================================
-    // For XML Desirialization and Bean Conversion
-    // ============================================================
-    /**
-     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
-     * separate format instances for each thread. If multiple threads access a format concurrently,
-     * it must be synchronized externally.
-     */
-    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Date decode(String value) {
-        try {
-            return format.parse(value);
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-        // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String encode(Date value) {
-        return format.format(value);
-        // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
-    }
 }

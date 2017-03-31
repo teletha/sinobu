@@ -54,6 +54,7 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSource;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -1009,11 +1010,11 @@ public class I {
             return null;
         }
 
-        Ⅲ<List<Class<E>>, List<Ⅱ<Class, Supplier<E>>>, List<ExtensionFactory<E>>> extensions = ex(extensionPoint);
+        Ⅲ<List<Class<E>>, List<Ⅱ<Class, E>>, List<ExtensionFactory<E>>> extensions = ex(extensionPoint);
 
-        for (Ⅱ<Class, Supplier<E>> extension : extensions.ⅱ) {
+        for (Ⅱ<Class, E> extension : extensions.ⅱ) {
             if (extension.ⅰ.isAssignableFrom(key)) {
-                return extension.ⅱ.get();
+                return extension.ⅱ;
             }
         }
 
@@ -1154,19 +1155,35 @@ public class I {
         return collect(ArrayList.class, items);
     }
 
+    /**
+     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
+     * separate format instances for each thread. If multiple threads access a format concurrently,
+     * it must be synchronized externally.
+     */
+    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
     static {
         registerExtension(Encoder.class, type -> {
             if (type.isEnum()) {
                 return value -> ((Enum) value).name();
             }
-            return String::valueOf;
+
+            switch (type.getName().hashCode()) {
+            case -530663260: // java.lang.Class
+                return value -> ((Class) value).getName();
+            case 65575278: // java.util.Date
+                // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
+                return format::format;
+
+            default:
+                return String::valueOf;
+            }
         });
 
         registerExtension(Decoder.class, type -> {
             if (type.isEnum()) {
                 return value -> Enum.valueOf((Class<Enum>) type, value);
             }
-
             switch (type.getName().hashCode()) {
             case 64711720: // boolean
             case 344809556: // java.lang.Boolean
@@ -1192,6 +1209,8 @@ public class I {
             case 3052374: // char
             case 155276373: // java.lang.Character
                 return value -> value.charAt(0);
+            case -530663260: // java.lang.Class
+                return I::type;
             case 1195259493: // java.lang.String
                 return String::new;
             case -1555282570: // java.lang.StringBuilder
@@ -1214,6 +1233,15 @@ public class I {
                 return BigInteger::new;
             case -1405464277: // java.math.BigDecimal
                 return BigDecimal::new;
+            case 65575278: // java.util.Date
+                // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+                return value -> {
+                    try {
+                        return format.parse(value);
+                    } catch (Exception e) {
+                        throw I.quiet(e);
+                    }
+                };
             case -1246033885: // java.time.LocalTime
                 return LocalTime::parse;
             case -1246518012: // java.time.LocalDate
@@ -1254,13 +1282,13 @@ public class I {
         });
     }
 
-    private static <E extends Extensible> Ⅲ<List<Class<E>>, List<Ⅱ<Class, Supplier<E>>>, List<ExtensionFactory<E>>> ex(Class<E> key) {
-        return (Ⅲ<List<Class<E>>, List<Ⅱ<Class, Supplier<E>>>, List<ExtensionFactory<E>>>) extensionDefinitions
+    private static <E extends Extensible> Ⅲ<List<Class<E>>, List<Ⅱ<Class, E>>, List<ExtensionFactory<E>>> ex(Class<E> key) {
+        return (Ⅲ<List<Class<E>>, List<Ⅱ<Class, E>>, List<ExtensionFactory<E>>>) extensionDefinitions
                 .computeIfAbsent(key, k -> pair(new ArrayList(), new ArrayList(), new ArrayList()));
     }
 
-    private static <E extends Extensible> Disposable registerExtension(Class<E> extensionPoint, Class extensionKey, Supplier<E> builder) {
-        Ⅱ<Class, Supplier<E>> pair = pair(extensionKey, builder);
+    private static <E extends Extensible> Disposable registerExtension(Class<E> extensionPoint, Class extensionKey, E builder) {
+        Ⅱ<Class, E> pair = pair(extensionKey, builder);
         ex(extensionPoint).ⅱ.add(0, pair);
 
         return () -> ex(extensionPoint).ⅱ.remove(pair);
@@ -1332,8 +1360,6 @@ public class I {
                     return;
                 }
 
-                Supplier supplier = () -> I.make(extension);
-
                 // search and collect information for all extension points
                 for (Class<E> extensionPoint : Model.collectTypes(extension)) {
                     if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
@@ -1346,11 +1372,12 @@ public class I {
 
                         if (params.length != 0 && params[0] != Object.class) {
                             Class clazz = (Class) params[0];
-                            // register extension by key
-                            disposer.and(registerExtension(extensionPoint, clazz, supplier));
 
+                            // register extension by key
                             if (extensionPoint == ExtensionFactory.class) {
-                                disposer.and(registerExtension(clazz, (ExtensionFactory) supplier.get()));
+                                disposer.and(registerExtension(clazz, (ExtensionFactory) I.make(extension)));
+                            } else {
+                                disposer.and(registerExtension(extensionPoint, clazz, (E) I.make(extension)));
                             }
 
                             // The user has registered a newly custom lifestyle, so we

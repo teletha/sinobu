@@ -32,7 +32,7 @@ import kiss.model.Property;
  * 
  * @version 2017/03/29 10:47:02
  */
-class Format implements Consumer<Ⅲ<Model, Property, Object>>, Decoder<Class>, Encoder<Class>, Lifestyle<Locale> {
+class Format implements Consumer<Ⅲ<Model, Property, Object>>, Lifestyle<Locale> {
 
     /** The charcter sequence for output as JSON. */
     Appendable out;
@@ -156,22 +156,6 @@ class Format implements Consumer<Ⅲ<Model, Property, Object>>, Decoder<Class>, 
         for (int i = 0; i < indent; i++) {
             out.append('\t');
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Class decode(String value) {
-        return I.type(value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String encode(Class value) {
-        return value.getName();
     }
 
     /**
