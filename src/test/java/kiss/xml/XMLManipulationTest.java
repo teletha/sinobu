@@ -39,15 +39,6 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void appendXMLLikeText() throws Exception {
-        String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
-
-        XML e = I.xml(xml);
-        assert e.find("Q").append("<").find("P").size() == 2;
-        assert e.find("Q").text().equals("<<");
-    }
-
-    @Test
     public void prepend() throws Exception {
         String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
 

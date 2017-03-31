@@ -9,8 +9,6 @@
  */
 package kiss.xml;
 
-import java.io.ByteArrayInputStream;
-
 import org.junit.Test;
 
 import kiss.I;
@@ -207,27 +205,6 @@ public class XMLParserTest {
     }
 
     @Test
-    public void encoding() throws Exception {
-        XML xml = parse("<html><head><meta charset='euc-jp'><title>てすと</title></head></html>", "euc-jp");
-
-        assert xml.find("title").text().equals("てすと");
-    }
-
-    @Test
-    public void encodingMultiple() throws Exception {
-        XML xml = parse("<html><head><meta no/><meta charset='euc-jp'/><meta charset='shift_jis'><title>てすと</title></head></html>", "euc-jp");
-
-        assert xml.find("title").text().equals("てすと");
-    }
-
-    @Test
-    public void encodingInvalid() throws Exception {
-        XML xml = parse("<html><head><meta charset='uft-3'><title>てすと</title></head></html>", "utf-8");
-
-        assert xml.find("title").text().equals("てすと");
-    }
-
-    @Test
     public void invalidSlashPosition() throws Exception {
         XML xml = parse("<html><img height='0' / width='64'></html>");
 
@@ -269,19 +246,5 @@ public class XMLParserTest {
      */
     private XML parse(String xml) {
         return I.xml(xml);
-    }
-
-    /**
-     * <p>
-     * Parse with encoding.
-     * </p>
-     */
-    private XML parse(String xml, String encoding) {
-        try {
-            byte[] bytes = xml.getBytes(encoding);
-            return I.xml(new ByteArrayInputStream(bytes, 0, bytes.length));
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
     }
 }

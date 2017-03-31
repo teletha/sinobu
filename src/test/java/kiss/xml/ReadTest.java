@@ -14,6 +14,7 @@ import java.io.StringReader;
 import java.nio.file.Path;
 
 import org.junit.Test;
+import org.xml.sax.SAXParseException;
 
 import antibug.AntiBug;
 import kiss.I;
@@ -22,13 +23,13 @@ import kiss.XML;
 /**
  * @version 2017/03/30 16:50:34
  */
-public class CreationTest {
+public class ReadTest {
 
     @Test
     public void elementName() throws Exception {
         XML xml = I.xml("test");
         assert xml.size() == 1;
-        assert xml.name() == "test";
+        assert xml.name().equals("test");
     }
 
     @Test
@@ -75,8 +76,29 @@ public class CreationTest {
         assert xml.name() == "html";
     }
 
+    @Test
+    public void url() throws Exception {
+        Path memo = AntiBug.memo("<html/>");
+        XML xml = I.xml(memo.toUri().toURL());
+        assert xml.size() == 1;
+        assert xml.name() == "html";
+    }
+
+    @Test
+    public void uri() throws Exception {
+        Path memo = AntiBug.memo("<html/>");
+        XML xml = I.xml(memo.toUri());
+        assert xml.size() == 1;
+        assert xml.name() == "html";
+    }
+
     @Test(expected = NullPointerException.class)
-    public void Null() throws Exception {
+    public void inputNull() throws Exception {
         I.xml(null);
+    }
+
+    @Test(expected = SAXParseException.class)
+    public void invalidLiteral() throws Exception {
+        I.xml("<m><></m>");
     }
 }

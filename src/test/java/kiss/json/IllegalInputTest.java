@@ -9,12 +9,13 @@
  */
 package kiss.json;
 
-import java.io.IOError;
 import java.io.Reader;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+
+import javax.script.ScriptException;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -78,12 +79,12 @@ public class IllegalInputTest {
         assert clazz == Class.class;
     }
 
-    @Test(expected = IOError.class)
+    @Test(expected = ScriptException.class)
     public void readEmpty() {
         assert I.read("", bean) != null;
     }
 
-    @Test(expected = IOError.class)
+    @Test(expected = ScriptException.class)
     public void readInvalid() {
         assert I.read("@", bean) != null;
     }

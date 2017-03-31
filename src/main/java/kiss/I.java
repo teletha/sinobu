@@ -11,6 +11,7 @@ package kiss;
 
 import static org.objectweb.asm.Opcodes.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
@@ -58,6 +60,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1126,51 +1129,20 @@ public class I {
      * @throws ScriptException If the input data is empty or invalid format.
      */
     public static JSON json(Object input) {
-        try {
-            if (input instanceof JSON) {
-                return (JSON) input;
-            } else if (input instanceof Reader) {
-                return parse((Reader) input);
-            } else if (input instanceof InputStream) {
-                return parse(new InputStreamReader((InputStream) input, $encoding));
-            } else if (input instanceof URL) {
-                return json(((URL) input).openStream());
-            } else if (input instanceof Path) {
-                return json(Files.newInputStream((Path) input));
-            } else {
-                String value = input.toString();
-
-                if (value.startsWith("http://") || value.startsWith("https://")) {
-                    return json(new URL(value));
-                }
-                return parse(new StringReader(value));
-            }
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * <p>
-     * Helper method to parse JSON.
-     * </p>
-     * 
-     * @param input A JSON text.
-     * @return
-     */
-    private static JSON parse(Reader input) {
-        PushbackReader reader = new PushbackReader(input, 2);
+        PushbackReader reader = null;
 
         try {
             // aquire lock
             lock.readLock().lock();
+
+            reader = new PushbackReader(new InputStreamReader(new ByteArrayInputStream(read(input)), $encoding), 2);
 
             // Parse as JSON
             reader.unread(new char[] {'a', '='});
 
             return new JSON(script.eval(reader));
         } catch (Exception e) {
-            throw new IOError(e);
+            throw quiet(e);
         } finally {
             // relese lock
             lock.readLock().unlock();
@@ -3040,50 +3012,18 @@ public class I {
 
     /**
      * <p>
-     * Convert data to {@link CharSequence} or {@link byte[]}.
-     * </p>
-     * 
-     * @param data
-     * @return
-     * @throws Exception
-     */
-    private static Object data(Object data) throws Exception {
-        // skip character data
-        if (data instanceof CharSequence == false) {
-            // object to stream
-            if (data instanceof URL) {
-                data = ((URL) data).openStream();
-            } else if (data instanceof Path) {
-                data = Files.newInputStream((Path) data);
-            } else if (data instanceof File) {
-                data = new FileInputStream((File) data);
-            }
-
-            // stream to byte
-            if (data instanceof InputStream) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                copy((InputStream) data, out, true);
-                data = out.toByteArray();
-            } else if (data instanceof Readable) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                copy((Readable) data, new OutputStreamWriter(out, $encoding), true);
-                data = out.toByteArray();
-            }
-        }
-        return data;
-    }
-
-    /**
-     * <p>
      * Parse as xml fragment.
      * </p>
      * <ul>
      * <li>{@link XML}</li>
      * <li>{@link Path}</li>
+     * <li>{@link File}</li>
      * <li>{@link InputStream}</li>
+     * <li>{@link Readable}</li>
      * <li>{@link URL}</li>
+     * <li>{@link URI}</li>
      * <li>{@link Node}</li>
-     * <li>{@link String}</li>
+     * <li>{@link CharSequence}</li>
      * </ul>
      * <ul>
      * <li>XML Literal</li>
@@ -3099,35 +3039,27 @@ public class I {
             if (xml instanceof XML) {
                 return (XML) xml;
             } else if (xml instanceof Node) {
-                return new XML(((Node) xml).getOwnerDocument(), list(xml));
+                return new XML(((Node) xml).getOwnerDocument(), Collections.singletonList(xml));
             }
 
             // byte data types
-            xml = data(xml);
+            byte[] bytes = read(xml);
 
-            if (xml instanceof byte[] == false) {
-                String value = xml.toString().trim();
-
-                if (value.charAt(0) == '<' && 3 < value.length()) {
-                    xml = value.getBytes($encoding);
-                } else {
-                    return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
-                }
-            }
-
-            byte[] bytes = (byte[]) xml;
-
-            if (6 < bytes.length) {
+            if (6 < bytes.length && bytes[0] == '<') {
                 // doctype declaration (starts with <! )
                 // root element is html (starts with <html> )
-                if ((bytes[0] == 60 && bytes[1] == 33) || (bytes[0] == 60 && bytes[1] == 104 && bytes[2] == 116 && bytes[3] == 109 && bytes[4] == 108 && bytes[5] == 62)) {
+                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>')) {
                     return new XML(null, null).parse(bytes, $encoding);
                 }
             }
 
-            doc = dom.parse(new InputSource(new StringReader( //
-                    "<m>".concat(new String(bytes, $encoding).replaceAll("<\\?.+\\?>", "")).concat("</m>") //
-            )));
+            String value = new String(bytes, $encoding);
+
+            if (value.charAt(0) != '<') {
+                return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
+            }
+
+            doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
             return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
         } catch (Exception e) {
             throw I.quiet(e);
@@ -3136,25 +3068,38 @@ public class I {
 
     /**
      * <p>
-     * Parse text bytes as XML.
+     * Read byte data from various sources.
      * </p>
      * 
-     * @param bytes A target text to parse.
-     * @return A parsed {@link XML}.
-     * @throws Exception Parser related exception.
+     * @param input A data source.
+     * @return A data.
      */
-    private static XML parse(byte[] bytes) throws Exception {
-        if (6 < bytes.length) {
-            // doctype declaration (starts with <! )
-            // root element is html (starts with <html> )
-            if ((bytes[0] == 60 && bytes[1] == 33) || (bytes[0] == 60 && bytes[1] == 104 && bytes[2] == 116 && bytes[3] == 109 && bytes[4] == 108 && bytes[5] == 62)) {
-                return new XML(null, null).parse(bytes, $encoding);
+    private static byte[] read(Object input) throws Exception {
+        // skip character data
+        if (input instanceof CharSequence == false) {
+            // object to stream
+            if (input instanceof URI) {
+                input = ((URI) input).toURL();
+            }
+            if (input instanceof URL) {
+                input = ((URL) input).openStream();
+            } else if (input instanceof Path) {
+                input = Files.newInputStream((Path) input);
+            } else if (input instanceof File) {
+                input = new FileInputStream((File) input);
+            }
+
+            // stream to byte
+            if (input instanceof InputStream) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                copy((InputStream) input, out, true);
+                input = out.toByteArray();
+            } else if (input instanceof Readable) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                copy((Readable) input, new OutputStreamWriter(out, $encoding), true);
+                input = out.toByteArray();
             }
         }
-
-        Document doc = dom.parse(new InputSource(new StringReader( //
-                "<m>".concat(new String(bytes, $encoding).replaceAll("<\\?.+\\?>", "")).concat("</m>") //
-        )));
-        return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
+        return input instanceof byte[] ? (byte[]) input : input.toString().trim().getBytes();
     }
 }
