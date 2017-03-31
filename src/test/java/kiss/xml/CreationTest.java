@@ -11,9 +11,11 @@ package kiss.xml;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.nio.file.Path;
 
 import org.junit.Test;
 
+import antibug.AntiBug;
 import kiss.I;
 import kiss.XML;
 
@@ -53,6 +55,22 @@ public class CreationTest {
     @Test
     public void reader() throws Exception {
         XML xml = I.xml(new StringReader("<html/>"));
+        assert xml.size() == 1;
+        assert xml.name() == "html";
+    }
+
+    @Test
+    public void path() throws Exception {
+        Path memo = AntiBug.memo("<html/>");
+        XML xml = I.xml(memo);
+        assert xml.size() == 1;
+        assert xml.name() == "html";
+    }
+
+    @Test
+    public void file() throws Exception {
+        Path memo = AntiBug.memo("<html/>");
+        XML xml = I.xml(memo.toFile());
         assert xml.size() == 1;
         assert xml.name() == "html";
     }

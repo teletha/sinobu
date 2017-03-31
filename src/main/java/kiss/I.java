@@ -13,6 +13,7 @@ import static org.objectweb.asm.Opcodes.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
@@ -2424,7 +2425,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -3039,6 +3040,41 @@ public class I {
 
     /**
      * <p>
+     * Convert data to {@link CharSequence} or {@link byte[]}.
+     * </p>
+     * 
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    private static Object data(Object data) throws Exception {
+        // skip character data
+        if (data instanceof CharSequence == false) {
+            // object to stream
+            if (data instanceof URL) {
+                data = ((URL) data).openStream();
+            } else if (data instanceof Path) {
+                data = Files.newInputStream((Path) data);
+            } else if (data instanceof File) {
+                data = new FileInputStream((File) data);
+            }
+
+            // stream to byte
+            if (data instanceof InputStream) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                copy((InputStream) data, out, true);
+                data = out.toByteArray();
+            } else if (data instanceof Readable) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                copy((Readable) data, new OutputStreamWriter(out, $encoding), true);
+                data = out.toByteArray();
+            }
+        }
+        return data;
+    }
+
+    /**
+     * <p>
      * Parse as xml fragment.
      * </p>
      * <ul>
@@ -3066,30 +3102,33 @@ public class I {
                 return new XML(((Node) xml).getOwnerDocument(), list(xml));
             }
 
-            // streamable types
-            if (xml instanceof URL) {
-                xml = ((URL) xml).openStream();
-            } else if (xml instanceof Path) {
-                xml = Files.newInputStream((Path) xml);
-            }
+            // byte data types
+            xml = data(xml);
 
-            if (xml instanceof Reader) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                copy((Reader) xml, new OutputStreamWriter(out, $encoding), true);
-                return parse(out.toByteArray());
-            } else if (xml instanceof InputStream) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                copy((InputStream) xml, out, true);
-                return parse(out.toByteArray());
-            } else {
+            if (xml instanceof byte[] == false) {
                 String value = xml.toString().trim();
 
                 if (value.charAt(0) == '<' && 3 < value.length()) {
-                    return parse(value.getBytes($encoding));
+                    xml = value.getBytes($encoding);
                 } else {
                     return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
                 }
             }
+
+            byte[] bytes = (byte[]) xml;
+
+            if (6 < bytes.length) {
+                // doctype declaration (starts with <! )
+                // root element is html (starts with <html> )
+                if ((bytes[0] == 60 && bytes[1] == 33) || (bytes[0] == 60 && bytes[1] == 104 && bytes[2] == 116 && bytes[3] == 109 && bytes[4] == 108 && bytes[5] == 62)) {
+                    return new XML(null, null).parse(bytes, $encoding);
+                }
+            }
+
+            doc = dom.parse(new InputSource(new StringReader( //
+                    "<m>".concat(new String(bytes, $encoding).replaceAll("<\\?.+\\?>", "")).concat("</m>") //
+            )));
+            return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
         } catch (Exception e) {
             throw I.quiet(e);
         }
