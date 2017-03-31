@@ -1115,11 +1115,12 @@ public class I {
      * <ul>
      * <li>{@link JSON}</li>
      * <li>{@link Path}</li>
+     * <li>{@link File}</li>
      * <li>{@link InputStream}</li>
-     * <li>{@link Reader}</li>
+     * <li>{@link Readable}</li>
      * <li>{@link URL}</li>
-     * <li>{@link String}</li>
-     * <li>URL Expression (http and https)</li>
+     * <li>{@link URI}</li>
+     * <li>{@link CharSequence}</li>
      * </ul>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
