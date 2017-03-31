@@ -37,7 +37,7 @@ public abstract class LoadableTestBase {
 
     @Before
     public final void loadClasses() {
-        loaded = I.load(base);
+        loaded = I.load(base, true);
     }
 
     /**

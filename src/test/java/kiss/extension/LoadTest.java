@@ -23,12 +23,12 @@ public class LoadTest {
 
     @Test
     public void twice() throws Exception {
-        I.load(LoadTest.class);
+        I.load(LoadTest.class, true);
 
         List<Ex> find = I.find(Ex.class);
         assert find.size() == 1;
 
-        I.load(LoadTest.class);
+        I.load(LoadTest.class, true);
 
         find = I.find(Ex.class);
         assert find.size() == 1;
