@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 /**
  * @version 2017/03/13 9:34:23
  */
-public interface UsefulBiConsumer<Param1, Param2> extends BiConsumer<Param1, Param2>, UsefulLambda {
+public interface UsefulBiConsumer<Param1, Param2> extends BiConsumer<Param1, Param2> {
 
     /**
      * <p>

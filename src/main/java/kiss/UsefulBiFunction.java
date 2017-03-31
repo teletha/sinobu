@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 /**
  * @version 2017/03/13 9:36:29
  */
-public interface UsefulBiFunction<Param1, Param2, Return> extends BiFunction<Param1, Param2, Return>, UsefulLambda {
+public interface UsefulBiFunction<Param1, Param2, Return> extends BiFunction<Param1, Param2, Return> {
 
     /**
      * <p>

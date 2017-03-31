@@ -60,7 +60,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -696,7 +695,7 @@ public class I {
      * @param handler
      */
     public static void config(Handler handler) {
-        handler.setFormatter(new Format());
+        handler.setFormatter(new Log());
         $logger.addHandler(handler);
     }
 
@@ -3041,7 +3040,7 @@ public class I {
             if (xml instanceof XML) {
                 return (XML) xml;
             } else if (xml instanceof Node) {
-                return new XML(((Node) xml).getOwnerDocument(), Collections.singletonList(xml));
+                return new XML(((Node) xml).getOwnerDocument(), list(xml));
             }
 
             // byte data types

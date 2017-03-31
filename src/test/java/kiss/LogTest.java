@@ -29,7 +29,7 @@ public class LogTest {
 
     @BeforeClass
     public static void store() {
-        buffer.setFormatter(new Format());
+        buffer.setFormatter(new Log());
 
         handlers = I.$logger.getHandlers();
 
