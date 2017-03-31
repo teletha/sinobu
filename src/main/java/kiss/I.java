@@ -39,6 +39,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -56,6 +58,18 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSource;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +80,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -310,14 +325,8 @@ public class I {
     /** The extension file cache to check duplication. */
     private static final Set<String> extensionArea = new HashSet<>();
 
-    /** The mapping from extension point to extensions. */
-    private static final Table<Class, Supplier> extensionBuilder = new Table();
-
-    /** The mapping from extension point to extensions. */
-    private static final Table<Class, Class> extensionClass = new Table();
-
-    /** The mapping from extension point to associated extension mapping. */
-    private static final Table<String, Supplier> extensionKey = new Table();
+    /** The definitions for extensions. */
+    private static final Map<Class, Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>>> extensionDefinitions = new HashMap();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -986,13 +995,13 @@ public class I {
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
         // Skip null check because this method can throw NullPointerException.
-        List<Supplier> classes = extensionBuilder.get(extensionPoint);
+        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> extensions = ex(extensionPoint);
 
         // instantiate all found extesions
-        List list = new ArrayList(classes.size());
+        List list = new ArrayList();
 
-        for (Supplier extension : classes) {
-            list.add(extension.get());
+        for (Class<E> extension : extensions.ⅰ) {
+            list.add(make(extension));
         }
         return list;
     }
@@ -1016,22 +1025,21 @@ public class I {
             return null;
         }
 
-        for (Class clazz : Model.collectTypes(key)) {
-            Supplier<E> supplier = extensionKey.find(extensionPoint.getName().concat(clazz.getName()));
+        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> extensions = extensionDefinitions.get(extensionPoint);
 
-            if (supplier != null) {
-                return supplier.get();
+        for (Ⅱ<Class, Supplier> extension : extensions.ⅱ) {
+            if (extension.ⅰ.isAssignableFrom(key)) {
+                return (E) extension.ⅱ.get();
             }
         }
 
-        if (extensionPoint != ExtensionFactory.class) {
-            ExtensionFactory factory = find(ExtensionFactory.class, extensionPoint);
+        for (Supplier<ExtensionFactory> factory : extensions.ⅲ) {
+            E extension = (E) factory.get().create(key);
 
-            if (factory != null) {
-                return (E) factory.create(key);
+            if (extension != null) {
+                return extension;
             }
         }
-
         return null;
     }
 
@@ -1054,7 +1062,7 @@ public class I {
      * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
     public static <E extends Extensible> List<Class<E>> findAs(Class<E> extensionPoint) {
-        return new ArrayList(extensionClass.get(extensionPoint));
+        return new ArrayList(ex(extensionPoint).ⅰ);
     }
 
     public static <P> Consumer<P> imitateConsumer(Runnable lambda) {
@@ -1197,6 +1205,137 @@ public class I {
         return collect(ArrayList.class, items);
     }
 
+    static {
+        register(Encoder.class, type -> {
+            if (type.isEnum()) {
+                return value -> ((Enum) value).name();
+            }
+            return String::valueOf;
+        });
+
+        register(Decoder.class, type -> {
+            if (type.isEnum()) {
+                return value -> Enum.valueOf((Class<Enum>) type, value);
+            }
+
+            switch (type.getName().hashCode()) {
+            case 64711720: // boolean
+            case 344809556: // java.lang.Boolean
+                return Boolean::new;
+            case 104431: // int
+            case -2056817302: // java.lang.Integer
+                return Integer::new;
+            case 3327612: // long
+            case 398795216: // java.lang.Long
+                return Long::new;
+            case 97526364: // float
+            case -527879800: // java.lang.Float
+                return Float::new;
+            case -1325958191: // double
+            case 761287205: // java.lang.Double
+                return Double::new;
+            case 3039496: // byte
+            case 398507100: // java.lang.Byte
+                return Byte::new;
+            case 109413500: // short
+            case -515992664: // java.lang.Short
+                return Short::new;
+            case 3052374: // char
+            case 155276373: // java.lang.Character
+                return value -> value.charAt(0);
+            case 1195259493: // java.lang.String
+                return String::new;
+            case -1555282570: // java.lang.StringBuilder
+                return StringBuilder::new;
+            case 1196660485: // java.lang.StringBuffer
+                return StringBuffer::new;
+            case 2130072984: // java.io.File
+                return File::new;
+            case 2050244018: // java.net.URL
+                return value -> {
+                    try {
+                        return new URL(value);
+                    } catch (Exception e) {
+                        throw I.quiet(e);
+                    }
+                };
+            case 2050244015: // java.net.URI
+                return URI::create;
+            case -989675752: // java.math.BigInteger
+                return BigInteger::new;
+            case -1405464277: // java.math.BigDecimal
+                return BigDecimal::new;
+            case -1246033885: // java.time.LocalTime
+                return LocalTime::parse;
+            case -1246518012: // java.time.LocalDate
+                return LocalDate::parse;
+            case -1179039247: // java.time.LocalDateTime
+                return LocalDateTime::parse;
+            case -682591005: // java.time.OffsetDateTime
+                return OffsetDateTime::parse;
+            case -1917484011: // java.time.OffsetTime
+                return OffsetTime::parse;
+            case 1505337278: // java.time.ZonedDateTime
+                return ZonedDateTime::parse;
+            case 649475153: // java.time.MonthDay
+                return MonthDay::parse;
+            case -537503858: // java.time.YearMonth
+                return YearMonth::parse;
+            case -1062742510: // java.time.Year
+                return Year::parse;
+            case -1023498007: // java.time.Duration
+                return Duration::parse;
+            case 649503318: // java.time.Period
+                return Period::parse;
+            case 1296075756: // java.time.Instant
+                return Instant::parse;
+            case -1165211622: // java.util.Locale
+                return Locale::forLanguageTag;
+            case 1464606545: // java.nio.file.Path
+            case -2015077501: // sun.nio.fs.WindowsPath
+                return I::locate;
+
+            // case -89228377: // java.nio.file.attribute.FileTime
+            // decoder = value -> FileTime.fromMillis(Long.valueOf(value));
+            // encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
+            // break;
+            default:
+                return null;
+            }
+        });
+    }
+
+    public static <F extends ExtensionFactory<E>, E extends Extensible> Disposable register(Class<E> extensionKey, F factory) {
+        ex(extensionKey).ⅲ.add(() -> factory);
+        return null;
+    }
+
+    private static Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> ex(Class key) {
+        return extensionDefinitions.computeIfAbsent(key, k -> pair(new ArrayList(), new ArrayList(), new ArrayList()));
+    }
+
+    private static <E extends Extensible> Disposable registerExtension(Class<E> extensionPoint, Class extension) {
+        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> extensions = ex(extensionPoint);
+        extensions.ⅰ.add(extension);
+
+        return () -> extensions.ⅰ.remove(extension);
+    }
+
+    private static <E extends Extensible> Disposable registerExtension(Class<E> extensionPoint, Class key, Supplier builder) {
+        Ⅱ<Class, Supplier> pair = pair(key, builder);
+        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> extensions = ex(extensionPoint);
+        extensions.ⅱ.add(0, pair);
+
+        return () -> extensions.ⅱ.remove(pair);
+    }
+
+    private static <E extends Extensible> Disposable registerExtension(Class key, Supplier builder) {
+        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> factories = ex(ExtensionFactory.class);
+        factories.ⅲ.add(builder);
+
+        return () -> factories.ⅲ.remove(builder);
+    }
+
     /**
      * <p>
      * Load {@link Extensible} typs from the path that the specified class indicates to. If same
@@ -1263,12 +1402,7 @@ public class I {
                 for (Class extensionPoint : Model.collectTypes(extension)) {
                     if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                         // register as new extension
-                        extensionBuilder.push(extensionPoint, supplier);
-                        extensionClass.push(extensionPoint, extension);
-                        disposer.and(() -> {
-                            extensionBuilder.pull(extensionPoint, supplier);
-                            extensionClass.pull(extensionPoint, extension);
-                        });
+                        disposer.and(registerExtension(extensionPoint, extension));
 
                         // register extension key
                         java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
@@ -1276,9 +1410,11 @@ public class I {
                         if (params.length != 0 && params[0] != Object.class) {
                             Class clazz = (Class) params[0];
                             // register extension by key
-                            String key = extensionPoint.getName().concat(clazz.getName());
-                            extensionKey.push(key, supplier);
-                            disposer.and(() -> extensionKey.pull(key, supplier));
+                            disposer.and(registerExtension(extensionPoint, clazz, supplier));
+
+                            if (extensionPoint == ExtensionFactory.class) {
+                                disposer.and(registerExtension(clazz, supplier));
+                            }
 
                             // The user has registered a newly custom lifestyle, so we
                             // should update lifestyle for this extension key class.

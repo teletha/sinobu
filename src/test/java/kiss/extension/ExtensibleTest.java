@@ -48,9 +48,10 @@ public class ExtensibleTest {
         assert 0 == I.find(EPBoth.class).size();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void listByNull() {
-        I.find(null);
+        List<Extensible> find = I.find(null);
+        assert find.size() == 0;
     }
 
     @Test
