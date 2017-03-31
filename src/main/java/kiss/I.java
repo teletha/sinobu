@@ -462,7 +462,7 @@ public class I {
 
         // Load myself as module. All built-in classload listeners and extension points will be
         // loaded and activated.
-        load(I.class, true);
+        load(I.class);
 
         // built-in encoders
         load(ExtensionFactory.class, Encoder.class, (ExtensionFactory<Encoder>) type -> {
@@ -1299,16 +1299,15 @@ public class I {
      * </p>
      *
      * @param path A path to load.
-     * @param filter <code>true</code> makes filter classes by package of the specified class.
      * @return The unloader.
      * @see {@link Extensible}
      * @see #find(Class)
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    public static <E extends Extensible> Disposable load(Class path, boolean filter) {
+    public static <E extends Extensible> Disposable load(Class path) {
         Disposable disposer = Disposable.empty();
-        String pattern = filter ? path.getPackage().getName() : "";
+        String pattern = path.getPackage().getName();
 
         try {
             File file = locate(path).toFile().getAbsoluteFile();

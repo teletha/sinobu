@@ -21,7 +21,7 @@ import kiss.I;
 public class MonoidTest {
 
     static {
-        I.load(MonoidTest.class, true);
+        I.load(MonoidTest.class);
     }
 
     @Test
