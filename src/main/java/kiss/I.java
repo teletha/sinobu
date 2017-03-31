@@ -377,6 +377,13 @@ public class I {
     private static final Class[] wrappers = {Boolean.class, Integer.class, Long.class, Float.class, Double.class, Byte.class, Short.class,
             Character.class, Void.class};
 
+    /**
+     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
+     * separate format instances for each thread. If multiple threads access a format concurrently,
+     * it must be synchronized externally.
+     */
+    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
     // initialization
     static {
         // remove all built-in log handlers
@@ -456,6 +463,126 @@ public class I {
         // Load myself as module. All built-in classload listeners and extension points will be
         // loaded and activated.
         load(I.class, true);
+
+        // built-in encoders
+        registerExtension(Encoder.class, type -> {
+            if (type.isEnum()) {
+                return value -> ((Enum) value).name();
+            }
+
+            switch (type.getName().hashCode()) {
+            case -530663260: // java.lang.Class
+                return value -> ((Class) value).getName();
+            case 65575278: // java.util.Date
+                // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
+                return format::format;
+
+            default:
+                return String::valueOf;
+            }
+        });
+
+        // built-in decoders
+        registerExtension(Decoder.class, type -> {
+            if (type.isEnum()) {
+                return value -> Enum.valueOf((Class<Enum>) type, value);
+            }
+            switch (type.getName().hashCode()) {
+            case 64711720: // boolean
+            case 344809556: // java.lang.Boolean
+                return Boolean::new;
+            case 104431: // int
+            case -2056817302: // java.lang.Integer
+                return Integer::new;
+            case 3327612: // long
+            case 398795216: // java.lang.Long
+                return Long::new;
+            case 97526364: // float
+            case -527879800: // java.lang.Float
+                return Float::new;
+            case -1325958191: // double
+            case 761287205: // java.lang.Double
+                return Double::new;
+            case 3039496: // byte
+            case 398507100: // java.lang.Byte
+                return Byte::new;
+            case 109413500: // short
+            case -515992664: // java.lang.Short
+                return Short::new;
+            case 3052374: // char
+            case 155276373: // java.lang.Character
+                return value -> value.charAt(0);
+            case -530663260: // java.lang.Class
+                return I::type;
+            case 1195259493: // java.lang.String
+                return String::new;
+            case -1555282570: // java.lang.StringBuilder
+                return StringBuilder::new;
+            case 1196660485: // java.lang.StringBuffer
+                return StringBuffer::new;
+            case 2130072984: // java.io.File
+                return File::new;
+            case 2050244018: // java.net.URL
+                return value -> {
+                    try {
+                        return new URL(value);
+                    } catch (Exception e) {
+                        throw I.quiet(e);
+                    }
+                };
+            case 2050244015: // java.net.URI
+                return URI::create;
+            case -989675752: // java.math.BigInteger
+                return BigInteger::new;
+            case -1405464277: // java.math.BigDecimal
+                return BigDecimal::new;
+            case 65575278: // java.util.Date
+                // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
+                return value -> {
+                    try {
+                        return format.parse(value);
+                    } catch (Exception e) {
+                        throw I.quiet(e);
+                    }
+                };
+            case -1246033885: // java.time.LocalTime
+                return LocalTime::parse;
+            case -1246518012: // java.time.LocalDate
+                return LocalDate::parse;
+            case -1179039247: // java.time.LocalDateTime
+                return LocalDateTime::parse;
+            case -682591005: // java.time.OffsetDateTime
+                return OffsetDateTime::parse;
+            case -1917484011: // java.time.OffsetTime
+                return OffsetTime::parse;
+            case 1505337278: // java.time.ZonedDateTime
+                return ZonedDateTime::parse;
+            case 649475153: // java.time.MonthDay
+                return MonthDay::parse;
+            case -537503858: // java.time.YearMonth
+                return YearMonth::parse;
+            case -1062742510: // java.time.Year
+                return Year::parse;
+            case -1023498007: // java.time.Duration
+                return Duration::parse;
+            case 649503318: // java.time.Period
+                return Period::parse;
+            case 1296075756: // java.time.Instant
+                return Instant::parse;
+            case -1165211622: // java.util.Locale
+                return Locale::forLanguageTag;
+            case 1464606545: // java.nio.file.Path
+            case -2015077501: // sun.nio.fs.WindowsPath
+                return I::locate;
+
+            // case -89228377: // java.nio.file.attribute.FileTime
+            // decoder = value -> FileTime.fromMillis(Long.valueOf(value));
+            // encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
+            // break;
+            default:
+                return null;
+            }
+        });
     }
 
     /**
@@ -988,7 +1115,7 @@ public class I {
      * @return All Extensions of the given Extension Point or empty list.
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
-        return Signal.from(ex(extensionPoint)).flatIterable(Ⅲ::ⅰ).map(I::make).toList();
+        return Signal.from(ex(extensionPoint)).flatIterable(Ⅱ::ⅰ).map(I::make).toList();
     }
 
     /**
@@ -1010,7 +1137,7 @@ public class I {
             return null;
         }
 
-        Ⅲ<List<Class<E>>, List<Ⅱ<Class, E>>, List<ExtensionFactory<E>>> extensions = ex(extensionPoint);
+        Ⅱ<List<Class<E>>, List<Ⅱ<Class, E>>> extensions = ex(extensionPoint);
 
         for (Ⅱ<Class, E> extension : extensions.ⅱ) {
             if (extension.ⅰ.isAssignableFrom(key)) {
@@ -1018,11 +1145,11 @@ public class I {
             }
         }
 
-        for (ExtensionFactory<E> factory : extensions.ⅲ) {
-            E extension = factory.create(key);
+        if (extensionPoint != ExtensionFactory.class) {
+            ExtensionFactory<E> factory = find(ExtensionFactory.class, extensionPoint);
 
-            if (extension != null) {
-                return extension;
+            if (factory != null) {
+                return factory.create(key);
             }
         }
         return null;
@@ -1155,136 +1282,9 @@ public class I {
         return collect(ArrayList.class, items);
     }
 
-    /**
-     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
-     * separate format instances for each thread. If multiple threads access a format concurrently,
-     * it must be synchronized externally.
-     */
-    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-    static {
-        registerExtension(Encoder.class, type -> {
-            if (type.isEnum()) {
-                return value -> ((Enum) value).name();
-            }
-
-            switch (type.getName().hashCode()) {
-            case -530663260: // java.lang.Class
-                return value -> ((Class) value).getName();
-            case 65575278: // java.util.Date
-                // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
-                return format::format;
-
-            default:
-                return String::valueOf;
-            }
-        });
-
-        registerExtension(Decoder.class, type -> {
-            if (type.isEnum()) {
-                return value -> Enum.valueOf((Class<Enum>) type, value);
-            }
-            switch (type.getName().hashCode()) {
-            case 64711720: // boolean
-            case 344809556: // java.lang.Boolean
-                return Boolean::new;
-            case 104431: // int
-            case -2056817302: // java.lang.Integer
-                return Integer::new;
-            case 3327612: // long
-            case 398795216: // java.lang.Long
-                return Long::new;
-            case 97526364: // float
-            case -527879800: // java.lang.Float
-                return Float::new;
-            case -1325958191: // double
-            case 761287205: // java.lang.Double
-                return Double::new;
-            case 3039496: // byte
-            case 398507100: // java.lang.Byte
-                return Byte::new;
-            case 109413500: // short
-            case -515992664: // java.lang.Short
-                return Short::new;
-            case 3052374: // char
-            case 155276373: // java.lang.Character
-                return value -> value.charAt(0);
-            case -530663260: // java.lang.Class
-                return I::type;
-            case 1195259493: // java.lang.String
-                return String::new;
-            case -1555282570: // java.lang.StringBuilder
-                return StringBuilder::new;
-            case 1196660485: // java.lang.StringBuffer
-                return StringBuffer::new;
-            case 2130072984: // java.io.File
-                return File::new;
-            case 2050244018: // java.net.URL
-                return value -> {
-                    try {
-                        return new URL(value);
-                    } catch (Exception e) {
-                        throw I.quiet(e);
-                    }
-                };
-            case 2050244015: // java.net.URI
-                return URI::create;
-            case -989675752: // java.math.BigInteger
-                return BigInteger::new;
-            case -1405464277: // java.math.BigDecimal
-                return BigDecimal::new;
-            case 65575278: // java.util.Date
-                // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
-                return value -> {
-                    try {
-                        return format.parse(value);
-                    } catch (Exception e) {
-                        throw I.quiet(e);
-                    }
-                };
-            case -1246033885: // java.time.LocalTime
-                return LocalTime::parse;
-            case -1246518012: // java.time.LocalDate
-                return LocalDate::parse;
-            case -1179039247: // java.time.LocalDateTime
-                return LocalDateTime::parse;
-            case -682591005: // java.time.OffsetDateTime
-                return OffsetDateTime::parse;
-            case -1917484011: // java.time.OffsetTime
-                return OffsetTime::parse;
-            case 1505337278: // java.time.ZonedDateTime
-                return ZonedDateTime::parse;
-            case 649475153: // java.time.MonthDay
-                return MonthDay::parse;
-            case -537503858: // java.time.YearMonth
-                return YearMonth::parse;
-            case -1062742510: // java.time.Year
-                return Year::parse;
-            case -1023498007: // java.time.Duration
-                return Duration::parse;
-            case 649503318: // java.time.Period
-                return Period::parse;
-            case 1296075756: // java.time.Instant
-                return Instant::parse;
-            case -1165211622: // java.util.Locale
-                return Locale::forLanguageTag;
-            case 1464606545: // java.nio.file.Path
-            case -2015077501: // sun.nio.fs.WindowsPath
-                return I::locate;
-
-            // case -89228377: // java.nio.file.attribute.FileTime
-            // decoder = value -> FileTime.fromMillis(Long.valueOf(value));
-            // encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
-            // break;
-            default:
-                return null;
-            }
-        });
-    }
-
-    private static <E extends Extensible> Ⅲ<List<Class<E>>, List<Ⅱ<Class, E>>, List<ExtensionFactory<E>>> ex(Class<E> key) {
-        return (Ⅲ<List<Class<E>>, List<Ⅱ<Class, E>>, List<ExtensionFactory<E>>>) extensionDefinitions
-                .computeIfAbsent(key, k -> pair(new ArrayList(), new ArrayList(), new ArrayList()));
+    private static <E extends Extensible> Ⅱ<List<Class<E>>, List<Ⅱ<Class, E>>> ex(Class<E> key) {
+        return (Ⅱ<List<Class<E>>, List<Ⅱ<Class, E>>>) extensionDefinitions
+                .computeIfAbsent(key, k -> pair(new ArrayList(), new ArrayList()));
     }
 
     private static <E extends Extensible> Disposable registerExtension(Class<E> extensionPoint, Class extensionKey, E builder) {
@@ -1295,9 +1295,7 @@ public class I {
     }
 
     public static <F extends ExtensionFactory<E>, E extends Extensible> Disposable registerExtension(Class<E> extensionKey, F factory) {
-        ex(extensionKey).ⅲ.add(0, factory);
-
-        return () -> ex(extensionKey).ⅲ.remove(factory);
+        return registerExtension(ExtensionFactory.class, extensionKey, factory);
     }
 
     /**
@@ -1374,11 +1372,7 @@ public class I {
                             Class clazz = (Class) params[0];
 
                             // register extension by key
-                            if (extensionPoint == ExtensionFactory.class) {
-                                disposer.and(registerExtension(clazz, (ExtensionFactory) I.make(extension)));
-                            } else {
-                                disposer.and(registerExtension(extensionPoint, clazz, (E) I.make(extension)));
-                            }
+                            disposer.and(registerExtension(extensionPoint, clazz, (E) I.make(extension)));
 
                             // The user has registered a newly custom lifestyle, so we
                             // should update lifestyle for this extension key class.
