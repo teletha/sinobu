@@ -1136,11 +1136,9 @@ public class I {
             // aquire lock
             lock.readLock().lock();
 
-            reader = new PushbackReader(new InputStreamReader(new ByteArrayInputStream(read(input)), $encoding), 2);
-
             // Parse as JSON
+            reader = new PushbackReader(new InputStreamReader(new ByteArrayInputStream(read(input)), $encoding), 2);
             reader.unread(new char[] {'a', '='});
-
             return new JSON(script.eval(reader));
         } catch (Exception e) {
             throw quiet(e);
@@ -2994,10 +2992,13 @@ public class I {
      * <ul>
      * <li>{@link XML}</li>
      * <li>{@link Path}</li>
+     * <li>{@link File}</li>
      * <li>{@link InputStream}</li>
+     * <li>{@link Readable}</li>
      * <li>{@link URL}</li>
+     * <li>{@link URI}</li>
      * <li>{@link Node}</li>
-     * <li>{@link String}</li>
+     * <li>{@link CharSequence}</li>
      * </ul>
      * <ul>
      * <li>XML Literal</li>
@@ -3063,7 +3064,7 @@ public class I {
             doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
             return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
         } catch (Exception e) {
-            throw I.quiet(e);
+            throw quiet(e);
         }
     }
 
