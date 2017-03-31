@@ -34,6 +34,24 @@ public class Ⅱ<Param1, Param2> {
     }
 
     /**
+     * <p>
+     * Method access to {@link #ⅰ}.
+     * </p>
+     */
+    public Param1 ⅰ() {
+        return ⅰ;
+    }
+
+    /**
+     * <p>
+     * Method access to {@link #ⅱ}.
+     * </p>
+     */
+    public Param2 ⅱ() {
+        return ⅱ;
+    }
+
+    /**
      * Create new tuple which add the third parameter.
      * 
      * @param param New third parameter.

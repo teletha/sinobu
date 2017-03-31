@@ -323,7 +323,7 @@ public class I {
     private static final Set<String> extensionArea = new HashSet<>();
 
     /** The definitions for extensions. */
-    private static final Map<Class, Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>>> extensionDefinitions = new HashMap();
+    private static final Map extensionDefinitions = new HashMap();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -985,19 +985,9 @@ public class I {
      *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
      *            otherwise this method will return empty list.
      * @return All Extensions of the given Extension Point or empty list.
-     * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
-        // Skip null check because this method can throw NullPointerException.
-        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> extensions = ex(extensionPoint);
-
-        // instantiate all found extesions
-        List list = new ArrayList();
-
-        for (Class<E> extension : extensions.ⅰ) {
-            list.add(make(extension));
-        }
-        return list;
+        return Signal.from(ex(extensionPoint)).flatIterable(Ⅲ::ⅰ).map(I::make).toList();
     }
 
     /**
@@ -1019,16 +1009,16 @@ public class I {
             return null;
         }
 
-        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> extensions = extensionDefinitions.get(extensionPoint);
+        Ⅲ<List<Class<E>>, List<Ⅱ<Class, Supplier<E>>>, List<ExtensionFactory<E>>> extensions = ex(extensionPoint);
 
-        for (Ⅱ<Class, Supplier> extension : extensions.ⅱ) {
+        for (Ⅱ<Class, Supplier<E>> extension : extensions.ⅱ) {
             if (extension.ⅰ.isAssignableFrom(key)) {
-                return (E) extension.ⅱ.get();
+                return extension.ⅱ.get();
             }
         }
 
-        for (Supplier<ExtensionFactory> factory : extensions.ⅲ) {
-            E extension = (E) factory.get().create(key);
+        for (ExtensionFactory<E> factory : extensions.ⅲ) {
+            E extension = factory.create(key);
 
             if (extension != null) {
                 return extension;
@@ -1165,14 +1155,14 @@ public class I {
     }
 
     static {
-        register(Encoder.class, type -> {
+        registerExtension(Encoder.class, type -> {
             if (type.isEnum()) {
                 return value -> ((Enum) value).name();
             }
             return String::valueOf;
         });
 
-        register(Decoder.class, type -> {
+        registerExtension(Decoder.class, type -> {
             if (type.isEnum()) {
                 return value -> Enum.valueOf((Class<Enum>) type, value);
             }
@@ -1264,35 +1254,22 @@ public class I {
         });
     }
 
-    public static <F extends ExtensionFactory<E>, E extends Extensible> Disposable register(Class<E> extensionKey, F factory) {
-        ex(extensionKey).ⅲ.add(() -> factory);
-        return null;
+    private static <E extends Extensible> Ⅲ<List<Class<E>>, List<Ⅱ<Class, Supplier<E>>>, List<ExtensionFactory<E>>> ex(Class<E> key) {
+        return (Ⅲ<List<Class<E>>, List<Ⅱ<Class, Supplier<E>>>, List<ExtensionFactory<E>>>) extensionDefinitions
+                .computeIfAbsent(key, k -> pair(new ArrayList(), new ArrayList(), new ArrayList()));
     }
 
-    private static Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> ex(Class key) {
-        return extensionDefinitions.computeIfAbsent(key, k -> pair(new ArrayList(), new ArrayList(), new ArrayList()));
+    private static <E extends Extensible> Disposable registerExtension(Class<E> extensionPoint, Class extensionKey, Supplier<E> builder) {
+        Ⅱ<Class, Supplier<E>> pair = pair(extensionKey, builder);
+        ex(extensionPoint).ⅱ.add(0, pair);
+
+        return () -> ex(extensionPoint).ⅱ.remove(pair);
     }
 
-    private static <E extends Extensible> Disposable registerExtension(Class<E> extensionPoint, Class extension) {
-        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> extensions = ex(extensionPoint);
-        extensions.ⅰ.add(extension);
+    public static <F extends ExtensionFactory<E>, E extends Extensible> Disposable registerExtension(Class<E> extensionKey, F factory) {
+        ex(extensionKey).ⅲ.add(0, factory);
 
-        return () -> extensions.ⅰ.remove(extension);
-    }
-
-    private static <E extends Extensible> Disposable registerExtension(Class<E> extensionPoint, Class key, Supplier builder) {
-        Ⅱ<Class, Supplier> pair = pair(key, builder);
-        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> extensions = ex(extensionPoint);
-        extensions.ⅱ.add(0, pair);
-
-        return () -> extensions.ⅱ.remove(pair);
-    }
-
-    private static <E extends Extensible> Disposable registerExtension(Class key, Supplier builder) {
-        Ⅲ<List<Class>, List<Ⅱ<Class, Supplier>>, List<Supplier<ExtensionFactory>>> factories = ex(ExtensionFactory.class);
-        factories.ⅲ.add(builder);
-
-        return () -> factories.ⅲ.remove(builder);
+        return () -> ex(extensionKey).ⅲ.remove(factory);
     }
 
     /**
@@ -1309,7 +1286,7 @@ public class I {
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    public static Disposable load(Class path, boolean filter) {
+    public static <E extends Extensible> Disposable load(Class path, boolean filter) {
         Disposable disposer = Disposable.empty();
         String pattern = filter ? path.getPackage().getName() : "";
 
@@ -1358,10 +1335,11 @@ public class I {
                 Supplier supplier = () -> I.make(extension);
 
                 // search and collect information for all extension points
-                for (Class extensionPoint : Model.collectTypes(extension)) {
+                for (Class<E> extensionPoint : Model.collectTypes(extension)) {
                     if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                         // register as new extension
-                        disposer.and(registerExtension(extensionPoint, extension));
+                        ex(extensionPoint).ⅰ.add(extension);
+                        disposer.and(() -> ex(extensionPoint).ⅰ.remove(extension));
 
                         // register extension key
                         java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
@@ -1372,7 +1350,7 @@ public class I {
                             disposer.and(registerExtension(extensionPoint, clazz, supplier));
 
                             if (extensionPoint == ExtensionFactory.class) {
-                                disposer.and(registerExtension(clazz, supplier));
+                                disposer.and(registerExtension(clazz, (ExtensionFactory) supplier.get()));
                             }
 
                             // The user has registered a newly custom lifestyle, so we

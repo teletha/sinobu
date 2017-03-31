@@ -40,6 +40,33 @@ public class Ⅲ<Param1, Param2, Param3> {
 
     /**
      * <p>
+     * Method access to {@link #ⅰ}.
+     * </p>
+     */
+    public Param1 ⅰ() {
+        return ⅰ;
+    }
+
+    /**
+     * <p>
+     * Method access to {@link #ⅱ}.
+     * </p>
+     */
+    public Param2 ⅱ() {
+        return ⅱ;
+    }
+
+    /**
+     * <p>
+     * Method access to {@link #ⅲ}.
+     * </p>
+     */
+    public Param3 ⅲ() {
+        return ⅲ;
+    }
+
+    /**
+     * <p>
      * Create new scope with the human-readable named parameters and return a calculated value.
      * </p>
      * <p>
