@@ -9,8 +9,7 @@
  */
 package kiss;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -22,24 +21,37 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public interface Disposable {
 
-    void run();
+    /**
+     * <p>
+     * Functional interface method to implement actual dispose action, this operation should be
+     * idempotent.
+     * </p>
+     * <p>
+     * User SHOULD NOT call this method directly.
+     * </p>
+     */
+    void vandalize();
 
     /**
      * <p>
-     * The dispose operation is called at the end of a components lifecycle. Components use this
-     * method to release and destroy any resources that the Component owns.
+     * Dispose the resource, this operation should be idempotent.
      * </p>
      */
     default void dispose() {
-        run();
+        // dispose self
+        vandalize();
 
-        List<Disposable> children = I.associate(this, List.class);
+        // dispose children
+        Subscriber<Disposable> subscriber = I.associate(this, Subscriber.class);
 
-        for (Disposable child : children) {
-            child.dispose();
+        if (subscriber.list != null) {
+            for (Disposable child : subscriber.list) {
+                child.dispose();
+            }
         }
 
-        I.associate(this, AtomicBoolean.class).set(true);
+        // mark as disposed
+        subscriber.index++;
     }
 
     /**
@@ -50,7 +62,7 @@ public interface Disposable {
      * @return A result.
      */
     default boolean isDisposed() {
-        return I.associate(this, AtomicBoolean.class).get();
+        return I.associate(this, Subscriber.class).index != 0;
     }
 
     /**
@@ -61,19 +73,38 @@ public interface Disposable {
      * @param next An next {@link Disposable} to execute.
      * @return A composed {@link Disposable}.
      */
-    default Disposable and(Disposable next) {
+    default Disposable add(Disposable next) {
         if (next != null && next != this) {
-            I.associate(this, List.class).add(next);
+            Subscriber subscriber = I.associate(this, Subscriber.class);
+
+            if (subscriber.list == null) {
+                subscriber.list = new ArrayList();
+            }
+            subscriber.list.add(next);
         }
         return this;
     }
 
+    /**
+     * <p>
+     * Create child {@link Disposable} of this {@link Disposable}.
+     * </p>
+     * 
+     * @return A child {@link Disposable}.
+     */
     default Disposable sub() {
         Disposable sub = empty();
-        and(sub);
+        add(sub);
         return sub;
     }
 
+    /**
+     * <p>
+     * Create new empty {@link Disposable}.
+     * </p>
+     * 
+     * @return A created empty {@link Disposable}.
+     */
     static Disposable empty() {
         return new Subscriber();
     }

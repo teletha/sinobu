@@ -83,7 +83,7 @@ public class RegistrationOrderTest {
     private void register(Class<? extends ExtensionPoint>... e) {
         for (Class<? extends ExtensionPoint> extension : e) {
             Class type = (Class) Model.collectParameters(extension, ExtensionPoint.class)[0];
-            disposer.and(I.load(ExtensionPoint.class, type, () -> I.make(extension)));
+            disposer.add(I.load(ExtensionPoint.class, type, () -> I.make(extension)));
         }
     }
 

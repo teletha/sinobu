@@ -10,6 +10,7 @@
 package kiss;
 
 import java.nio.file.WatchEvent;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -19,8 +20,14 @@ import java.util.function.Consumer;
  */
 class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
 
-    /** For reuse. */
+    /** Generic object. */
     T object;
+
+    /** Generic counter. */
+    int index;
+
+    /** Generic list. */
+    List<T> list;
 
     /**
      * {@link Subscriber} must have this constructor only. Dont use instance field initialization to
@@ -29,17 +36,9 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
     Subscriber() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void run() {
-    }
-
     // ============================================================
     // For Observer
     // ============================================================
-
     /** The delegation. */
     Observer observer;
 
@@ -91,9 +90,18 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
     }
 
     // ============================================================
+    // For Disposable
+    // ============================================================
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void vandalize() {
+    }
+
+    // ============================================================
     // For WatchEvent
     // ============================================================
-
     /** The event holder. */
     WatchEvent watch;
 
@@ -120,7 +128,4 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
     public T context() {
         return object;
     }
-
-    /** The current location for deserialization process. */
-    int index;
 }

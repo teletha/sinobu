@@ -411,7 +411,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
      * {@inheritDoc}
      */
     @Override
-    public void dispose() {
+    public void vandalize() {
         I.quiet(service);
     }
 }

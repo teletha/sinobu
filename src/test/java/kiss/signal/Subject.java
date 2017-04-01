@@ -136,7 +136,7 @@ public class Subject<V, R> {
         return new Signal<>((observer, disposer) -> {
             if (observer != null) observers.add(observer);
 
-            return disposer.and(() -> {
+            return disposer.add(() -> {
                 disposed++;
                 if (observer != null) observers.remove(observer);
             });

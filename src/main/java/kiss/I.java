@@ -89,7 +89,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -402,8 +401,6 @@ public class I {
         lifestyles.set(List.class, ArrayList::new);
         lifestyles.set(Map.class, HashMap::new);
         lifestyles.set(Set.class, HashSet::new);
-        lifestyles.set(HashSet.class, HashSet::new);
-        lifestyles.set(AtomicBoolean.class, AtomicBoolean::new);
         lifestyles.set(Lifestyle.class, new Prototype(Prototype.class));
         lifestyles.set(Prototype.class, new Prototype(Prototype.class));
         lifestyles.set(ListProperty.class, () -> new SimpleListProperty(FXCollections.observableArrayList()));
@@ -1321,7 +1318,7 @@ public class I {
             if (!extensionArea.add(file + pattern)) {
                 return disposer;
             }
-            disposer.and(() -> extensionArea.remove(file + pattern));
+            disposer.add(() -> extensionArea.remove(file + pattern));
 
             int prefix = file.getPath().length() + 1;
 
@@ -1361,7 +1358,7 @@ public class I {
                     if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                         // register as new extension
                         findBy(extensionPoint).ⅰ.add(extension);
-                        disposer.and(() -> findBy(extensionPoint).ⅰ.remove(extension));
+                        disposer.add(() -> findBy(extensionPoint).ⅰ.remove(extension));
 
                         // register extension key
                         java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
@@ -1370,7 +1367,7 @@ public class I {
                             Class clazz = (Class) params[0];
 
                             // register extension by key
-                            disposer.and(load(extensionPoint, clazz, () -> (E) I.make(extension)));
+                            disposer.add(load(extensionPoint, clazz, () -> (E) I.make(extension)));
 
                             // The user has registered a newly custom lifestyle, so we
                             // should update lifestyle for this extension key class.
@@ -1385,7 +1382,7 @@ public class I {
                             // this extension key class.
                             if (extensionPoint == Lifestyle.class) {
                                 lifestyles.remove(clazz);
-                                disposer.and(() -> lifestyles.remove(clazz));
+                                disposer.add(() -> lifestyles.remove(clazz));
                             }
                         }
                     }

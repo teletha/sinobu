@@ -45,7 +45,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.WritableValue;
 
 /**
- * @version 2016/12/02 22:19:08
+ * @version 2017/04/01 16:42:15
  */
 public class Signal<V> {
 
@@ -550,7 +550,7 @@ public class Signal<V> {
                 } else {
                     observer.accept(function.apply(value, otherValue.pollFirst()));
                 }
-            }, disposer).and(other.to(value -> {
+            }, disposer).add(other.to(value -> {
                 if (baseValue.isEmpty()) {
                     otherValue.add(value);
                 } else {
@@ -656,7 +656,7 @@ public class Signal<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(value, joined));
                 }
-            }, disposer).and(other.to(value -> {
+            }, disposer).add(other.to(value -> {
                 otherValue.set(value);
 
                 V joined = baseValue.get();
@@ -858,7 +858,7 @@ public class Signal<V> {
      */
     public final Signal<V> errorResume(Signal<? extends V> resumer) {
         return error(false, (subscriber, e, disposer) -> {
-            subscriber.and(resumer.to(subscriber.observer, disposer));
+            subscriber.add(resumer.to(subscriber.observer, disposer));
         });
     }
 
@@ -888,7 +888,7 @@ public class Signal<V> {
      */
     public final Signal<V> errorEnd(Signal<? extends V> resumer) {
         return error(true, (subscriber, e, disposer) -> {
-            subscriber.and(resumer.to(subscriber.observer, disposer));
+            subscriber.add(resumer.to(subscriber.observer, disposer));
         });
     }
 
@@ -913,7 +913,7 @@ public class Signal<V> {
                     subscriber.dispose();
                 }
             };
-            return subscriber.and(to(subscriber, disposer));
+            return subscriber.add(to(subscriber, disposer));
         });
     }
 
@@ -1220,7 +1220,7 @@ public class Signal<V> {
 
             for (Signal<? extends V> other : others) {
                 if (other != null && disposer.isDisposed() == false) {
-                    disposer = disposer.and(other.to(observer, disposer));
+                    disposer = disposer.add(other.to(observer, disposer));
                 }
             }
             return disposer;
@@ -1284,9 +1284,9 @@ public class Signal<V> {
             subscriber.observer = observer;
             subscriber.complete = () -> {
                 observer.complete();
-                subscriber.and(to(subscriber));
+                subscriber.add(to(subscriber));
             };
-            return subscriber.and(to(subscriber, disposer));
+            return subscriber.add(to(subscriber, disposer));
         });
     }
 
@@ -1313,10 +1313,10 @@ public class Signal<V> {
                     observer.complete();
                 } else {
                     observer.complete();
-                    subscriber.and(to(subscriber));
+                    subscriber.add(to(subscriber));
                 }
             };
-            return subscriber.and(to(subscriber, disposer));
+            return subscriber.add(to(subscriber, disposer));
         });
     }
 
@@ -1339,7 +1339,7 @@ public class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<V> latest = new AtomicReference(UNDEFINED);
 
-            return to(latest::set, disposer).and(sampler.to(sample -> {
+            return to(latest::set, disposer).add(sampler.to(sample -> {
                 V value = latest.getAndSet((V) UNDEFINED);
 
                 if (value != UNDEFINED) {
@@ -1884,7 +1884,7 @@ public class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             Disposable disposable = Disposable.empty();
 
-            return disposable.and(to(observer, disposer).and(predicate.to(value -> {
+            return disposable.add(to(observer, disposer).add(predicate.to(value -> {
                 observer.complete();
                 disposable.dispose();
             })));
@@ -1910,7 +1910,7 @@ public class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicBoolean flag = new AtomicBoolean();
 
-            return condition.to(flag::set, disposer).and(to(v -> {
+            return condition.to(flag::set, disposer).add(to(v -> {
                 if (flag.get()) {
                     observer.accept(v);
                 }

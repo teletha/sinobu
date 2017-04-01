@@ -20,7 +20,7 @@ public class DisposableTest {
     public void and() throws Exception {
         Task task1 = new Task();
         Task task2 = new Task();
-        Disposable composed = task1.and(task2);
+        Disposable composed = task1.add(task2);
 
         assert task1.executed == false;
         assert task2.executed == false;
@@ -41,7 +41,7 @@ public class DisposableTest {
          * {@inheritDoc}
          */
         @Override
-        public void run() {
+        public void vandalize() {
             executed = true;
         }
     }
