@@ -10,8 +10,6 @@
 package kiss;
 
 import java.nio.file.WatchEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -33,47 +31,11 @@ class Agent<T> implements Observer<T>, WatchEvent, Disposable {
     Agent() {
     }
 
-    List<Disposable> disposables;
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public void dispose() {
-        if (disposables != null) {
-            for (Disposable disposable : disposables) {
-                disposable.dispose();
-            }
-            disposables = null;
-        }
-        disposed = true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Disposable and(Disposable next) {
-        if (next != null) {
-            if (disposables == null) {
-                disposables = new ArrayList();
-            }
-
-            if (next != this) {
-                disposables.add(next);
-            }
-        }
-        return this;
-    }
-
-    boolean disposed;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isDisposed() {
-        return disposed;
+    public void run() {
     }
 
     // ============================================================

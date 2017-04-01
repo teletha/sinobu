@@ -33,6 +33,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -52,6 +53,14 @@ public class Signal<V> {
      * For reuse.
      */
     public static final Signal NEVER = new Signal<>((observer, disposable) -> disposable);
+
+    /**
+     * For reuse.
+     */
+    public static final Signal EMPTY = new Signal<>((observer, disposable) -> {
+        observer.complete();
+        return disposable;
+    });
 
     /**
      * For reuse.
@@ -957,7 +966,7 @@ public class Signal<V> {
      */
     public final <R> Signal<R> flatMap(Function<V, Signal<R>> function) {
         return new Signal<>((observer, disposer) -> {
-            return to(value -> disposer.and(function.apply(value).to(observer)), disposer);
+            return to(value -> function.apply(value).to(observer, disposer.sub()), disposer);
         });
     }
 
@@ -1120,6 +1129,61 @@ public class Signal<V> {
      */
     public final <R> Signal<R> mapTo(R constant) {
         return map(v -> constant);
+    }
+
+    public final Signal<V> merge2(Function<V, Supplier<Signal<? extends V>>>... others) {
+        // ignore invalid parameters
+        if (others == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            List<Supplier<Signal<? extends V>>> list = new ArrayList();
+
+            Agent<V> agent = new Agent();
+            agent.observer = observer;
+            agent.next = v -> {
+                for (Function<V, Supplier<Signal<? extends V>>> other : others) {
+                    if (disposer.isDisposed()) {
+                        return;
+                    }
+                    list.add(other.apply(v));
+                }
+                observer.accept(v);
+            };
+            agent.complete = () -> {
+                for (Supplier<Signal<? extends V>> other : list) {
+                    if (disposer.isDisposed()) {
+                        break;
+                    }
+                    other.get().to(observer, disposer);
+                }
+                observer.complete();
+            };
+            return to(agent, disposer);
+        });
+    }
+
+    public final Signal<V> merge(Supplier<Signal<? extends V>>... others) {
+        // ignore invalid parameters
+        if (others == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            Agent agent = new Agent();
+            agent.observer = observer;
+            agent.complete = () -> {
+                for (Supplier<Signal<? extends V>> other : others) {
+                    if (disposer.isDisposed()) {
+                        break;
+                    }
+                    other.get().to(observer, disposer);
+                }
+                observer.complete();
+            };
+            return to(agent, disposer);
+        });
     }
 
     /**
@@ -2033,7 +2097,14 @@ public class Signal<V> {
      */
     @SafeVarargs
     public static <V> Signal<V> from(V... values) {
-        return NEVER.startWith(values);
+        return NEVER.complete().startWith(values);
+    }
+
+    private Signal<V> complete() {
+        return new Signal<>((observer, disposer) -> {
+            observer.complete();
+            return disposer;
+        });
     }
 
     /**
@@ -2045,7 +2116,7 @@ public class Signal<V> {
      * @return An {@link Signal} that emits values as a first sequence.
      */
     public static <V> Signal<V> from(Iterable<V> values) {
-        return NEVER.startWith(values);
+        return EMPTY.startWith(values);
     }
 
     /**
@@ -2057,7 +2128,7 @@ public class Signal<V> {
      * @return An {@link Signal} that emits values as a first sequence.
      */
     public static <V> Signal<V> from(Enumeration<V> values) {
-        return NEVER.startWith(values);
+        return EMPTY.startWith(values);
     }
 
     /**
@@ -2069,7 +2140,7 @@ public class Signal<V> {
      * @return An {@link Signal} that emits values as a first sequence.
      */
     public static <V> Signal<V> from(Variable<V> value) {
-        return NEVER.startWith(value);
+        return EMPTY.startWith(value);
     }
 
     /**

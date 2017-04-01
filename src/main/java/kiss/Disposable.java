@@ -9,6 +9,9 @@
  */
 package kiss;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * <p>
  * The {@link Disposable} interface is used when components need to deallocate and dispose resources
@@ -19,13 +22,25 @@ package kiss;
  */
 public interface Disposable {
 
+    void run();
+
     /**
      * <p>
      * The dispose operation is called at the end of a components lifecycle. Components use this
      * method to release and destroy any resources that the Component owns.
      * </p>
      */
-    void dispose();
+    default void dispose() {
+        run();
+
+        List<Disposable> children = I.associate(this, List.class);
+
+        for (Disposable child : children) {
+            child.dispose();
+        }
+
+        I.associate(this, AtomicBoolean.class).set(true);
+    }
 
     /**
      * <p>
@@ -35,7 +50,7 @@ public interface Disposable {
      * @return A result.
      */
     default boolean isDisposed() {
-        return false;
+        return I.associate(this, AtomicBoolean.class).get();
     }
 
     /**
@@ -47,14 +62,16 @@ public interface Disposable {
      * @return A composed {@link Disposable}.
      */
     default Disposable and(Disposable next) {
-        if (next == null) {
-            return this;
+        if (next != null && next != this) {
+            I.associate(this, List.class).add(next);
         }
+        return this;
+    }
 
-        return () -> {
-            dispose();
-            next.dispose();
-        };
+    default Disposable sub() {
+        Disposable sub = empty();
+        and(sub);
+        return sub;
     }
 
     static Disposable empty() {

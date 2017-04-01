@@ -89,6 +89,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -401,6 +402,8 @@ public class I {
         lifestyles.set(List.class, ArrayList::new);
         lifestyles.set(Map.class, HashMap::new);
         lifestyles.set(Set.class, HashSet::new);
+        lifestyles.set(HashSet.class, HashSet::new);
+        lifestyles.set(AtomicBoolean.class, AtomicBoolean::new);
         lifestyles.set(Lifestyle.class, new Prototype(Prototype.class));
         lifestyles.set(Prototype.class, new Prototype(Prototype.class));
         lifestyles.set(ListProperty.class, () -> new SimpleListProperty(FXCollections.observableArrayList()));
@@ -465,7 +468,7 @@ public class I {
         load(I.class, true);
 
         // built-in encoders
-        load(ExtensionFactory.class, Encoder.class, (ExtensionFactory<Encoder>) type -> {
+        load(ExtensionFactory.class, Encoder.class, () -> (ExtensionFactory<Encoder>) type -> {
             if (type.isEnum()) {
                 return value -> ((Enum) value).name();
             }
@@ -483,7 +486,7 @@ public class I {
         });
 
         // built-in decoders
-        load(ExtensionFactory.class, Decoder.class, (ExtensionFactory<Decoder>) type -> {
+        load(ExtensionFactory.class, Decoder.class, () -> (ExtensionFactory<Decoder>) type -> {
             if (type.isEnum()) {
                 return value -> Enum.valueOf((Class<Enum>) type, value);
             }
@@ -1134,11 +1137,13 @@ public class I {
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
         if (extensionPoint != null && key != null) {
-            Ⅱ<List<Class<E>>, List<Ⅱ<Class, E>>> extensions = findBy(extensionPoint);
+            Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> extensions = findBy(extensionPoint);
 
-            for (Ⅱ<Class, E> extension : extensions.ⅱ) {
-                if (extension.ⅰ.isAssignableFrom(key)) {
-                    return extension.ⅱ;
+            for (Class type : Model.collectTypes(key)) {
+                Supplier<E> supplier = extensions.ⅱ.get(type);
+
+                if (supplier != null) {
+                    return supplier.get();
                 }
             }
 
@@ -1183,8 +1188,8 @@ public class I {
      * @param extensionPoint A target extension point.
      * @return A extension definition.
      */
-    private static <E extends Extensible> Ⅱ<List<Class<E>>, List<Ⅱ<Class, E>>> findBy(Class<E> extensionPoint) {
-        return (Ⅱ) extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new ArrayList()));
+    private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
+        return (Ⅱ) extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
     }
 
     public static <P> Consumer<P> imitateConsumer(Runnable lambda) {
@@ -1365,7 +1370,7 @@ public class I {
                             Class clazz = (Class) params[0];
 
                             // register extension by key
-                            disposer.and(load(extensionPoint, clazz, (E) I.make(extension)));
+                            disposer.and(load(extensionPoint, clazz, () -> (E) I.make(extension)));
 
                             // The user has registered a newly custom lifestyle, so we
                             // should update lifestyle for this extension key class.
@@ -1403,9 +1408,9 @@ public class I {
      * @param extension A extension to register.
      * @return A disposer to unregister.
      */
-    private static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, E extension) {
-        findBy(extensionPoint).ⅱ.add(0, pair(extensionKey, extension));
-        return () -> findBy(extensionPoint).ⅱ.remove(pair(extensionKey, extension));
+    public static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Supplier<E> extension) {
+        findBy(extensionPoint).ⅱ.put(extensionKey, extension);
+        return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
     /**
@@ -2497,7 +2502,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {

@@ -1517,7 +1517,7 @@ public class SignalTest {
     @Test
     public void disposeFlatMap() {
         Store<Integer> store = new Store();
-        Signal.from(10, 20, 30, 40).flatMap(v -> Signal.from(v, v + 1)).effect(store::before).take(2).to(store::after);
+        Signal.from(10, 20, 30, 40).flatMap(v -> Signal.from(v, v + 1, v + 2)).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 10;
@@ -1539,7 +1539,7 @@ public class SignalTest {
     @Test
     public void disposeFlatArray() {
         Store<Integer> store = new Store();
-        Signal.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1}).effect(store::before).take(2).to(store::after);
+        Signal.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1, v + 2}).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 10;

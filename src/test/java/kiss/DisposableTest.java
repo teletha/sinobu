@@ -41,7 +41,7 @@ public class DisposableTest {
          * {@inheritDoc}
          */
         @Override
-        public void dispose() {
+        public void run() {
             executed = true;
         }
     }
