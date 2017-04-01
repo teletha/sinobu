@@ -33,7 +33,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -522,7 +521,7 @@ public class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -628,7 +627,7 @@ public class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -690,6 +689,31 @@ public class Signal<V> {
             }
         }
         return base;
+    }
+
+    /**
+     * <p>
+     * Flattens an array of {@link Signal} into one {@link Signal}, one after the other, without
+     * interleaving them.
+     * </p>
+     * 
+     * @param others
+     * @return
+     */
+    public final Signal<V> concat(Signal<? extends V>... others) {
+        // ignore invalid parameters
+        if (others == null || others.length == 0) {
+            return this;
+        }
+
+        return effectOnComplete((observer, disposer) -> {
+            for (Signal<? extends V> other : others) {
+                if (disposer.isDisposed()) {
+                    return;
+                }
+                other.to(observer, disposer);
+            }
+        });
     }
 
     /**
@@ -809,8 +833,24 @@ public class Signal<V> {
             return this;
         }
 
+        return effectOnComplete((observer, disposer) -> effect.run());
+    }
+
+    /**
+     * <p>
+     * Invokes an action for each value in the {@link Signal} sequence.
+     * </p>
+     *
+     * @param effect An action to invoke for each value in the {@link Signal} sequence.
+     * @return Chainable API.
+     */
+    public final Signal<V> effectOnComplete(BiConsumer<Observer<? super V>, Disposable> effect) {
+        if (effect == null) {
+            return this;
+        }
+
         return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, observer::error, I.bundle(effect, observer::complete), disposer);
+            return to(observer::accept, observer::error, I.bundle(() -> effect.accept(observer, disposer), observer::complete), disposer);
         });
     }
 
@@ -1129,61 +1169,6 @@ public class Signal<V> {
      */
     public final <R> Signal<R> mapTo(R constant) {
         return map(v -> constant);
-    }
-
-    public final Signal<V> merge2(Function<V, Supplier<Signal<? extends V>>>... others) {
-        // ignore invalid parameters
-        if (others == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            List<Supplier<Signal<? extends V>>> list = new ArrayList();
-
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.next = v -> {
-                for (Function<V, Supplier<Signal<? extends V>>> other : others) {
-                    if (disposer.isDisposed()) {
-                        return;
-                    }
-                    list.add(other.apply(v));
-                }
-                observer.accept(v);
-            };
-            subscriber.complete = () -> {
-                for (Supplier<Signal<? extends V>> other : list) {
-                    if (disposer.isDisposed()) {
-                        break;
-                    }
-                    other.get().to(observer, disposer);
-                }
-                observer.complete();
-            };
-            return to(subscriber, disposer);
-        });
-    }
-
-    public final Signal<V> merge(Supplier<Signal<? extends V>>... others) {
-        // ignore invalid parameters
-        if (others == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            Subscriber subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.complete = () -> {
-                for (Supplier<Signal<? extends V>> other : others) {
-                    if (disposer.isDisposed()) {
-                        break;
-                    }
-                    other.get().to(observer, disposer);
-                }
-                observer.complete();
-            };
-            return to(subscriber, disposer);
-        });
     }
 
     /**

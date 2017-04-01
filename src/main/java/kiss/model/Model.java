@@ -47,7 +47,6 @@ import kiss.ClassVariable;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
-import kiss.Signal;
 import kiss.Table;
 import kiss.Ⅲ;
 
@@ -584,16 +583,17 @@ public class Model<M> {
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] constructors = clazz.getDeclaredConstructors();
-        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(Constructor::getParameterCount));
+        Arrays.sort(constructors, Comparator.<Constructor>comparingInt(Constructor::getParameterCount));
         return constructors;
     }
 
-    public static Signal<Class> findTypes(Class... clazz) {
-        return Signal.from(clazz)
-                .skipNull()
-                .flatMap(c -> Signal.from(c).merge(() -> findTypes(c.getSuperclass())).merge(() -> findTypes(c.getInterfaces())))
-                .distinct();
-    }
+    // public static Signal<Class> findTypes(Class... clazz) {
+    // return Signal.from(clazz)
+    // .skipNull()
+    // .flatMap(c -> Signal.from(c).concat(() -> findTypes(c.getSuperclass())).concat(() ->
+    // findTypes(c.getInterfaces())))
+    // .distinct();
+    // }
 
     /**
      * <p>
