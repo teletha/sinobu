@@ -10,12 +10,16 @@
 package kiss.signal;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.junit.Before;
 
 import kiss.Disposable;
+import kiss.I;
 import kiss.Observer;
 import kiss.Signal;
 
@@ -47,12 +51,52 @@ public class SignalTestBase {
     }
 
     /**
+     * Shorthand method of {@link I#list(Object...)}.
+     * 
+     * @param values
+     * @return
+     */
+    protected <T> List<T> list(T... values) {
+        return I.list(values);
+    }
+
+    /**
+     * Shorthand method of {@link Collections#enumeration(java.util.Collection)}.
+     * 
+     * @param values
+     * @return
+     */
+    protected <T> Enumeration<T> enume(T... values) {
+        return Collections.enumeration(I.list(values));
+    }
+
+    /**
      * Shorthand method of {@link Signal#from}
      * 
      * @param values
      * @return
      */
     protected <T> Signal<T> signal(T... values) {
+        return Signal.from(values);
+    }
+
+    /**
+     * Shorthand method of {@link Signal#from}
+     * 
+     * @param values
+     * @return
+     */
+    protected <T> Signal<T> signal(Iterable values) {
+        return Signal.from(values);
+    }
+
+    /**
+     * Shorthand method of {@link Signal#from}
+     * 
+     * @param values
+     * @return
+     */
+    protected <T> Signal<T> signal(Enumeration values) {
         return Signal.from(values);
     }
 
@@ -146,7 +190,7 @@ public class SignalTestBase {
             assert values.size() == expected.length;
 
             for (int i = 0; i < expected.length; i++) {
-                assert values.get(i).equals(expected[i]);
+                assert Objects.equals(values.get(i), expected[i]);
             }
             return true;
         }

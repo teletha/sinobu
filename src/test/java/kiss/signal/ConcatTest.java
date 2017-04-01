@@ -11,6 +11,8 @@ package kiss.signal;
 
 import org.junit.Test;
 
+import kiss.Signal;
+
 /**
  * @version 2017/04/01 21:41:59
  */
@@ -33,12 +35,27 @@ public class ConcatTest extends SignalTestBase {
     }
 
     @Test
+    public void signalNull() throws Exception {
+        monitor(() -> signal(1, 2).concat((Signal) null));
+
+        assert result.value(1, 2);
+        assert result.completed();
+    }
+
+    @Test
+    public void signalArrayNull() throws Exception {
+        monitor(() -> signal(1, 2).concat((Signal[]) null));
+
+        assert result.value(1, 2);
+        assert result.completed();
+    }
+
+    @Test
     public void quitInTheMiddle() throws Exception {
         monitor(() -> signal(1, 2).concat(signal(3, 4)).effect(log1).take(2));
 
         assert log1.value(1, 2);
         assert result.value(1, 2);
-        assert result.completed() == true;
-        assert result.disposed() == true;
+        assert result.completedAndDisposed();
     }
 }

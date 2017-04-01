@@ -708,10 +708,12 @@ public class Signal<V> {
 
         return effectOnComplete((observer, disposer) -> {
             for (Signal<? extends V> other : others) {
-                if (disposer.isDisposed()) {
-                    return;
+                if (other != null) {
+                    if (disposer.isDisposed()) {
+                        return;
+                    }
+                    other.to(observer, disposer);
                 }
-                other.to(observer, disposer);
             }
         });
     }
@@ -1618,7 +1620,7 @@ public class Signal<V> {
      */
     @SafeVarargs
     public final Signal<V> startWith(V... values) {
-        return startWith(Arrays.asList(values));
+        return values == null || values.length == 0 ? this : startWith(Arrays.asList(values));
     }
 
     /**
@@ -1631,7 +1633,7 @@ public class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> startWith(Enumeration<V> values) {
-        return startWith(Collections.list(values));
+        return values == null ? this : startWith(Collections.list(values));
     }
 
     /**
