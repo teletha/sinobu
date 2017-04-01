@@ -2158,7 +2158,7 @@ public class Signal<V> {
      * @return a sequential {@code Events} for the range of {@code Integer} elements
      */
     public static Signal<Integer> range(int startInclusive, int endExclusive) {
-        return range(startInclusive, endExclusive, 1);
+        return range(startInclusive, 1, endExclusive);
     }
 
     /**
@@ -2170,12 +2170,16 @@ public class Signal<V> {
      *     for (int i = startInclusive; i < endExclusive ; i += step) { ... }
      * }</pre>
      * @param startInclusive A (inclusive) initial value.
-     * @param endExclusive An exclusive upper bound.
      * @param step A incremental step.
+     * @param endExclusive An exclusive upper bound.
      * @return a sequential {@code Events} for the range of {@code Integer} elements
      */
-    public static Signal<Integer> range(int startInclusive, int endExclusive, int step) {
-        return endExclusive <= startInclusive ? NEVER : from(() -> new Iterator<Integer>() {
+    public static Signal<Integer> range(int startInclusive, int step, int endExclusive) {
+        if (step == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        return (0 < step ? endExclusive <= startInclusive : startInclusive <= endExclusive) ? EMPTY : from(() -> new Iterator<Integer>() {
 
             private int now = startInclusive;
 
@@ -2184,7 +2188,7 @@ public class Signal<V> {
              */
             @Override
             public boolean hasNext() {
-                return now < endExclusive;
+                return 0 < step ? now < endExclusive : endExclusive < now;
             }
 
             /**

@@ -35,6 +35,14 @@ public class FromTest extends SignalTestBase {
     }
 
     @Test
+    public void empty() throws Exception {
+        monitor(() -> signal());
+
+        assert result.value();
+        assert result.completed();
+    }
+
+    @Test
     public void singleNull() throws Exception {
         monitor(() -> signal((String) null));
 

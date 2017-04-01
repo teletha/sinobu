@@ -13,7 +13,6 @@ import static java.util.concurrent.TimeUnit.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -1444,33 +1443,6 @@ public class SignalTest {
         Subject<Boolean, Boolean> base = new Subject(signal -> Signal.none());
         assert base.retrieve() == null;
         assert base.dispose();
-    }
-
-    @Test
-    public void from() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> Signal.from(1, 2, 3));
-
-        assert subject.retrieve() == 1;
-        assert subject.retrieve() == 2;
-        assert subject.retrieve() == 3;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void fromNoArg() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> Signal.from());
-        assert subject.retrieve() == null;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void fromIterable() {
-        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> Signal.from(Arrays.asList(1, 2, 3)));
-
-        assert subject.retrieve() == 1;
-        assert subject.retrieve() == 2;
-        assert subject.retrieve() == 3;
-        assert subject.dispose();
     }
 
     @Test
