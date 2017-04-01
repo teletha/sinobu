@@ -67,7 +67,7 @@ public interface Disposable {
 
     /**
      * <p>
-     * Returns a composed {@link Disposable}.
+     * Append child {@link Disposable}.
      * </p>
      * 
      * @param next An next {@link Disposable} to execute.
@@ -87,7 +87,26 @@ public interface Disposable {
 
     /**
      * <p>
-     * Create child {@link Disposable} of this {@link Disposable}.
+     * Create the composed {@link Disposable}.
+     * </p>
+     * 
+     * @param next A {@link Disposable} task.
+     * @return A new composed {@link Disposable}.
+     */
+    default Disposable and(Disposable next) {
+        if (next == null || next == this) {
+            return this;
+        }
+
+        Disposable parent = empty();
+        parent.add(this);
+        parent.add(next);
+        return parent;
+    }
+
+    /**
+     * <p>
+     * Create child {@link Disposable}.
      * </p>
      * 
      * @return A child {@link Disposable}.
