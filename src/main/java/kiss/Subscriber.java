@@ -13,22 +13,20 @@ import java.nio.file.WatchEvent;
 import java.util.function.Consumer;
 
 /**
- * <p>
- * Versatile wrapper or delegator.
- * </p>
+ * Internal subscription.
  * 
- * @version 2017/03/31 23:47:11
+ * @version 2017/04/01 15:42:33
  */
-class Agent<T> implements Observer<T>, WatchEvent, Disposable {
+class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
 
     /** For reuse. */
     T object;
 
     /**
-     * {@link Agent} must have this constructor only. Dont use instance field initialization to
+     * {@link Subscriber} must have this constructor only. Dont use instance field initialization to
      * reduce creation cost.
      */
-    Agent() {
+    Subscriber() {
     }
 
     /**

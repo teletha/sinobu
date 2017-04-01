@@ -179,12 +179,12 @@ public class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
-        Agent agent = new Agent();
-        agent.next = next;
-        agent.error = error;
-        agent.complete = complete;
+        Subscriber subscriber = new Subscriber();
+        subscriber.next = next;
+        subscriber.error = error;
+        subscriber.complete = complete;
 
-        return to(agent, disposer);
+        return to(subscriber, disposer);
     }
 
     /**
@@ -842,8 +842,8 @@ public class Signal<V> {
      * @return
      */
     public final Signal<V> errorResume(Function<? super Throwable, ? extends V> resumer) {
-        return error(false, (agent, e, disposer) -> {
-            agent.observer.accept(resumer.apply(e));
+        return error(false, (subscriber, e, disposer) -> {
+            subscriber.observer.accept(resumer.apply(e));
         });
     }
 
@@ -857,8 +857,8 @@ public class Signal<V> {
      * @return
      */
     public final Signal<V> errorResume(Signal<? extends V> resumer) {
-        return error(false, (agent, e, disposer) -> {
-            agent.and(resumer.to(agent.observer, disposer));
+        return error(false, (subscriber, e, disposer) -> {
+            subscriber.and(resumer.to(subscriber.observer, disposer));
         });
     }
 
@@ -872,8 +872,8 @@ public class Signal<V> {
      * @return
      */
     public final Signal<V> errorEnd(Function<? super Throwable, ? extends V> resumer) {
-        return error(true, (agent, e, disposer) -> {
-            agent.observer.accept(resumer.apply(e));
+        return error(true, (subscriber, e, disposer) -> {
+            subscriber.observer.accept(resumer.apply(e));
         });
     }
 
@@ -887,8 +887,8 @@ public class Signal<V> {
      * @return
      */
     public final Signal<V> errorEnd(Signal<? extends V> resumer) {
-        return error(true, (agent, e, disposer) -> {
-            agent.and(resumer.to(agent.observer, disposer));
+        return error(true, (subscriber, e, disposer) -> {
+            subscriber.and(resumer.to(subscriber.observer, disposer));
         });
     }
 
@@ -901,19 +901,19 @@ public class Signal<V> {
      * @param resumer
      * @return
      */
-    private Signal<V> error(boolean shouldComplete, UsefulTriConsumer<Agent<V>, ? super Throwable, Disposable> process) {
+    private Signal<V> error(boolean shouldComplete, UsefulTriConsumer<Subscriber<V>, ? super Throwable, Disposable> process) {
         return new Signal<>((observer, disposer) -> {
-            Agent<V> agent = new Agent();
-            agent.observer = observer;
-            agent.error = value -> {
-                process.accept(agent, value, disposer);
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.error = value -> {
+                process.accept(subscriber, value, disposer);
 
                 if (shouldComplete) {
                     observer.complete();
-                    agent.dispose();
+                    subscriber.dispose();
                 }
             };
-            return agent.and(to(agent, disposer));
+            return subscriber.and(to(subscriber, disposer));
         });
     }
 
@@ -1140,9 +1140,9 @@ public class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             List<Supplier<Signal<? extends V>>> list = new ArrayList();
 
-            Agent<V> agent = new Agent();
-            agent.observer = observer;
-            agent.next = v -> {
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.next = v -> {
                 for (Function<V, Supplier<Signal<? extends V>>> other : others) {
                     if (disposer.isDisposed()) {
                         return;
@@ -1151,7 +1151,7 @@ public class Signal<V> {
                 }
                 observer.accept(v);
             };
-            agent.complete = () -> {
+            subscriber.complete = () -> {
                 for (Supplier<Signal<? extends V>> other : list) {
                     if (disposer.isDisposed()) {
                         break;
@@ -1160,7 +1160,7 @@ public class Signal<V> {
                 }
                 observer.complete();
             };
-            return to(agent, disposer);
+            return to(subscriber, disposer);
         });
     }
 
@@ -1171,9 +1171,9 @@ public class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            Agent agent = new Agent();
-            agent.observer = observer;
-            agent.complete = () -> {
+            Subscriber subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.complete = () -> {
                 for (Supplier<Signal<? extends V>> other : others) {
                     if (disposer.isDisposed()) {
                         break;
@@ -1182,7 +1182,7 @@ public class Signal<V> {
                 }
                 observer.complete();
             };
-            return to(agent, disposer);
+            return to(subscriber, disposer);
         });
     }
 
@@ -1242,11 +1242,11 @@ public class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            Agent<V> agent = new Agent();
-            agent.observer = observer;
-            agent.next = value -> next.accept(observer, value);
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.next = value -> next.accept(observer, value);
 
-            return to(agent, disposer);
+            return to(subscriber, disposer);
         });
     }
 
@@ -1280,13 +1280,13 @@ public class Signal<V> {
      */
     public final Signal<V> repeat() {
         return new Signal<>((observer, disposer) -> {
-            Agent agent = new Agent();
-            agent.observer = observer;
-            agent.complete = () -> {
+            Subscriber subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.complete = () -> {
                 observer.complete();
-                agent.and(to(agent));
+                subscriber.and(to(subscriber));
             };
-            return agent.and(to(agent, disposer));
+            return subscriber.and(to(subscriber, disposer));
         });
     }
 
@@ -1306,17 +1306,17 @@ public class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             AtomicInteger counter = new AtomicInteger(count);
-            Agent agent = new Agent();
-            agent.observer = observer;
-            agent.complete = () -> {
+            Subscriber subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.complete = () -> {
                 if (counter.decrementAndGet() == 0) {
                     observer.complete();
                 } else {
                     observer.complete();
-                    agent.and(to(agent));
+                    subscriber.and(to(subscriber));
                 }
             };
-            return agent.and(to(agent, disposer));
+            return subscriber.and(to(subscriber, disposer));
         });
     }
 

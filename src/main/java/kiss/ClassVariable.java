@@ -24,7 +24,7 @@ public class ClassVariable<T> extends ClassValue {
      */
     @Override
     protected Object computeValue(Class type) {
-        return new Agent();
+        return new Subscriber();
     }
 
     /**
@@ -38,7 +38,7 @@ public class ClassVariable<T> extends ClassValue {
      * @return The current value.
      */
     public synchronized T set(Class type, T value) {
-        Agent<T> holder = (Agent<T>) super.get(type);
+        Subscriber<T> holder = (Subscriber<T>) super.get(type);
 
         if (value != null && holder.index == 0) {
             holder.object = value;
@@ -57,7 +57,7 @@ public class ClassVariable<T> extends ClassValue {
      * @return The current value.
      */
     public synchronized T let(Class type, T value) {
-        Agent<T> holder = (Agent<T>) super.get(type);
+        Subscriber<T> holder = (Subscriber<T>) super.get(type);
 
         if (value != null && holder.index++ == 0) {
             holder.object = value;
@@ -70,6 +70,6 @@ public class ClassVariable<T> extends ClassValue {
      */
     @Override
     public T get(Class type) {
-        return ((Agent<T>) super.get(type)).object;
+        return ((Subscriber<T>) super.get(type)).object;
     }
 }

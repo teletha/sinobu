@@ -75,6 +75,6 @@ public interface Disposable {
     }
 
     static Disposable empty() {
-        return new Agent();
+        return new Subscriber();
     }
 }

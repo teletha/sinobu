@@ -381,7 +381,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
 
                     // pattern matching
                     if (accept(from.relativize(path), null)) {
-                        Agent e = new Agent();
+                        Subscriber e = new Subscriber();
                         e.watch = event;
                         e.object = path;
 
