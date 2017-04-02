@@ -381,11 +381,6 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given model class is not found.
      */
     public static <M> Model<M> of(Class<? super M> modelClass) {
-        // check whether the specified model class is enhanced or not
-        if (modelClass.isSynthetic()) {
-            modelClass = modelClass.getSuperclass();
-        }
-
         // check cache
         Model model = models.get(modelClass);
 
@@ -583,7 +578,7 @@ public class Model<M> {
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] constructors = clazz.getDeclaredConstructors();
-        Arrays.sort(constructors, Comparator.<Constructor>comparingInt(Constructor::getParameterCount));
+        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(Constructor::getParameterCount));
         return constructors;
     }
 

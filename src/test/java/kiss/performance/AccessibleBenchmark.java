@@ -18,7 +18,6 @@ import java.lang.reflect.Method;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.junit.Test;
 
 import antibug.benchmark.Benchmark;
 import antibug.benchmark.Benchmark.Code;
@@ -26,7 +25,7 @@ import kiss.I;
 import kiss.sample.bean.Person;
 
 /**
- * @version 2012/01/31 16:13:18
+ * @version 2017/04/02 16:14:31
  */
 public class AccessibleBenchmark {
 
@@ -37,7 +36,6 @@ public class AccessibleBenchmark {
     /**
      * Normal access.
      */
-    @Test
     public void method() {
         benchmark.measure(new Code() {
 
@@ -56,7 +54,6 @@ public class AccessibleBenchmark {
     /**
      * Reflection access.
      */
-    @Test
     public void reflection() {
         benchmark.measure(new Code() {
 
@@ -88,7 +85,6 @@ public class AccessibleBenchmark {
     /**
      * MH access.
      */
-    @Test
     public void methodHandle() {
         benchmark.measure(new Code() {
 
@@ -118,7 +114,6 @@ public class AccessibleBenchmark {
     /**
      * MH access.
      */
-    @Test
     public void methodHandleExact() {
         benchmark.measure(new Code() {
 

@@ -11,7 +11,6 @@ package kiss.performance;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.junit.Test;
 
 import antibug.benchmark.Benchmark;
 import antibug.benchmark.Benchmark.Code;
@@ -19,9 +18,7 @@ import kiss.I;
 import kiss.sample.bean.Person;
 
 /**
- * DOCUMENT.
- * 
- * @version 2008/11/05 8:36:15
+ * @version 2017/04/02 16:14:24
  */
 public class InstantiationBenchmark {
 
@@ -29,7 +26,6 @@ public class InstantiationBenchmark {
     @ClassRule
     public static final Benchmark benchmark = new Benchmark();
 
-    @Test
     public void instantiate() {
         benchmark.measure(new Code() {
 

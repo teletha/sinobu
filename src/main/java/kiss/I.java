@@ -1621,9 +1621,6 @@ public class I {
     static <M> Lifestyle<M> makeLifestyle(Class<M> modelClass) {
         // Skip null check because this method can throw NullPointerException.
         // if (modelClass == null) throw new NullPointerException("NPE");
-        if (modelClass.isSynthetic()) {
-            modelClass = (Class<M>) modelClass.getSuperclass();
-        }
 
         // At first, we must confirm the cached lifestyle associated with the model class. If
         // there is no such cache, we will try to create newly lifestyle.
@@ -1639,24 +1636,9 @@ public class I {
             throw new UnsupportedOperationException(modelClass + " is  inner class.");
         }
 
-        // In the second place, we must find the actual model class which is associated with
-        // this model class. If the actual model class is a concreate, we can use it directly.
-        Class<M> actualClass = modelClass;
-
-        // If this model is non-private or final class, we can extend it for interceptor
-        // mechanism.
-        if (((Modifier.PRIVATE | Modifier.FINAL) & modelClass.getModifiers()) == 0) {
-            Map<Method, List<Annotation>> interceptables = Model.collectAnnotatedMethods(actualClass);
-
-            // Enhance the actual model class if needed.
-            if (!interceptables.isEmpty()) {
-                actualClass = define(actualClass, interceptables);
-            }
-        }
-
         // Construct dependency graph for the current thred.
         Deque<Class> dependency = dependencies.get();
-        dependency.add(actualClass);
+        dependency.add(modelClass);
 
         // Don't use 'contains' method check here to resolve singleton based
         // circular reference. So we must judge it from the size of context. If the
@@ -1676,7 +1658,7 @@ public class I {
             if (lifestyle == null) {
                 // If the actual model class doesn't provide its lifestyle explicitly, we use
                 // Prototype lifestyle which is default lifestyle in Sinobu.
-                Manageable manageable = actualClass.getAnnotation(Manageable.class);
+                Manageable manageable = modelClass.getAnnotation(Manageable.class);
 
                 // Create new lifestyle for the actual model class
                 lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
