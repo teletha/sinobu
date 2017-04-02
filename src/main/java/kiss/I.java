@@ -2251,28 +2251,6 @@ public class I {
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws ScriptException If the input data is empty or invalid format.
-     * @throws NoSuchFileException If the input path doesn't exist.
-     * @throws AccessDeniedException If the input is not regular file but directory.
-     */
-    public static <M> M read(Path input, M output) {
-        return json(input).to(output);
-    }
-
-    /**
-     * <p>
-     * Reads Java object tree from the given XML or JSON input.
-     * </p>
-     *
-     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
-     *            with Java object, this method ignores the input. <code>null</code> will throw
-     *            {@link NullPointerException}. The empty or invalid format data will throw
-     *            {@link ScriptException}.
-     * @param output A root Java object. All properties will be assigned from the given data deeply.
-     *            If the input is incompatible with Java object, this method ignores the input.
-     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
-     * @return A root Java object.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
      */
     public static <M> M read(CharSequence input, M output) {
         return json(input).to(output);

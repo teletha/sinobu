@@ -20,7 +20,7 @@ import java.io.OutputStreamWriter;
 import kiss.model.Model;
 
 /**
- * @version 2017/03/07 15:03:49
+ * @version 2017/04/02 21:44:44
  */
 public interface Configurable<Self> {
 

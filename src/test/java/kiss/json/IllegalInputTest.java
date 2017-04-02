@@ -10,9 +10,6 @@
 package kiss.json;
 
 import java.io.Reader;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 
 import javax.script.ScriptException;
 
@@ -35,27 +32,6 @@ public class IllegalInputTest {
 
     /** The normal bean. */
     private Person bean = I.make(Person.class);
-
-    @Test(expected = NoSuchFileException.class)
-    public void readAbsentPath() throws Exception {
-        I.read(room.locateAbsent("absent"), bean);
-    }
-
-    @Test(expected = NoSuchFileException.class)
-    public void readNest() throws Exception {
-        Path path = room.locateAbsent("dir/file");
-        I.read(path, bean);
-    }
-
-    @Test(expected = AccessDeniedException.class)
-    public void readDirectoryPath() throws Exception {
-        I.read(room.locateDirectory("directory"), bean);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void readNullPath() {
-        I.read((Path) null, bean);
-    }
 
     @Test(expected = NullPointerException.class)
     public void readNullCharSequence() {
