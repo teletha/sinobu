@@ -718,6 +718,26 @@ public class Signal<V> {
         });
     }
 
+    public final Signal<V> concat(Function<V, Signal<? extends V>> other) {
+        return new Signal<>((observer, disposer) -> {
+            Deque<V> items = new ArrayDeque();
+
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.next = v -> {
+                observer.accept(v);
+                items.add(v);
+            };
+            subscriber.complete = () -> {
+                for (V item : items) {
+                    other.apply(item).to(observer, disposer);
+                }
+                observer.complete();
+            };
+            return to(subscriber, disposer);
+        });
+    }
+
     /**
      * <p>
      * Drops values that are followed by newer values before a timeout. The timer resets on each
@@ -1663,6 +1683,24 @@ public class Signal<V> {
 
     /**
      * <p>
+     * Emit a specified sequence of items before beginning to emit the items from the source
+     * {@link Signal}.
+     * </p>
+     *
+     * @param values The initial values.
+     * @return Chainable API.
+     */
+    public final Signal<V> startWith(Signal<V> values) {
+        // ignore invalid parameter
+        if (values == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> values.to(observer, disposer).add(to(observer, disposer)));
+    }
+
+    /**
+     * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
      * , and then merging the latest resulting {@link Signal} and emitting the results of this
@@ -2199,5 +2237,13 @@ public class Signal<V> {
                 return (now += step) - step; // guilty?
             }
         });
+    }
+
+    public static <P, R> Function<P, Signal<R>> lift(Function<P, R> function) {
+        return p -> Signal.from(function.apply(p));
+    }
+
+    public static <P, R> Function<P, Signal<R>> liftIterable(Function<P, Iterable<R>> function) {
+        return p -> Signal.from(function.apply(p));
     }
 }

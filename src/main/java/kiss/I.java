@@ -36,7 +36,6 @@ import java.nio.CharBuffer;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkPermission;
@@ -2532,6 +2531,43 @@ public class I {
         } catch (ClassNotFoundException e) {
             throw quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Traverse the tree structure.
+     * </p>
+     * 
+     * @param root A root node to traverse.
+     * @param traverser A function to navigate from a node to its children.
+     * @return
+     */
+    public static <T> Signal<T> walk(T root, UnaryOperator<Signal<T>> traverser) {
+        return walkBFS(new ArrayDeque(), Signal.from(root), traverser);
+    }
+
+    private static <T> Signal<T> walkBFS(Deque<Signal<T>> queue, Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        if (root == null) {
+            return Signal.NEVER;
+        }
+
+        return root.concat(v -> {
+            queue.addLast(traverser.apply(Signal.from(v)));
+
+            return walkBFS(queue, queue.pollFirst(), traverser);
+        });
+    }
+
+    private static <T> Signal<T> walkDFSPPreOrder2(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        return root.merge(root.flatMap(e -> walkDFSPPreOrder2(traverser.apply(Signal.from(e)), traverser)));
+    }
+
+    private static <T> Signal<T> walkDFSPPreOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        return root.flatMap(e -> walkDFSPPreOrder(traverser.apply(Signal.from(e)), traverser)).startWith(root);
+    }
+
+    private static <T> Signal<T> walkDFSPostOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        return root.flatMap(e -> walkDFSPostOrder(traverser.apply(Signal.from(e)), traverser)).merge(root);
     }
 
     /**
