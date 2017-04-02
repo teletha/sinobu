@@ -697,6 +697,9 @@ public class XML implements Iterable<XML> {
             for (Node node : nodes) {
                 output.append(writer.writeToString(node));
             }
+
+            // flush and close if needed
+            I.quiet(output);
         } catch (Exception e) {
             throw I.quiet(e);
         }
