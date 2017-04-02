@@ -9,7 +9,13 @@
  */
 package kiss;
 
-import java.nio.file.Path;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import kiss.model.Model;
 
@@ -27,7 +33,7 @@ public interface Configurable<Self> {
      */
     default Self restore() {
         try {
-            I.read(locate(), this);
+            I.read(new BufferedReader(new InputStreamReader(new FileInputStream(new File(locate())), I.$encoding)), this);
         } catch (Throwable e) {
             // ignore error
         }
@@ -43,7 +49,12 @@ public interface Configurable<Self> {
      */
     default Self store() {
         try {
-            I.write(this, locate());
+            File file = new File(locate());
+
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+            }
+            I.write(this, new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(locate())), I.$encoding)));
         } catch (Throwable e) {
             // ignore error
         }
@@ -52,12 +63,12 @@ public interface Configurable<Self> {
 
     /**
      * <p>
-     * Specify the location of persistence file.
+     * Specify the identifier of persistence location.
      * </p>
      * 
-     * @return A location of persistence file.
+     * @return An identifier of persistence location.
      */
-    default Path locate() {
-        return I.locate("preferences").resolve(Model.of(this).type.getName() + ".json");
+    default String locate() {
+        return ".preferences/" + Model.of(this).type.getName() + ".json";
     }
 }

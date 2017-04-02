@@ -11,7 +11,6 @@ package kiss.json;
 
 import java.io.Reader;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
@@ -26,7 +25,7 @@ import kiss.I;
 import kiss.sample.bean.Person;
 
 /**
- * @version 2016/03/17 9:42:46
+ * @version 2017/04/02 21:35:11
  */
 public class IllegalInputTest {
 
@@ -97,40 +96,6 @@ public class IllegalInputTest {
     @Test(expected = NullPointerException.class)
     public void writeNullJavaObject() {
         I.write(null, new StringBuilder());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void writeNullPath() {
-        I.write(bean, (Path) null);
-    }
-
-    @Test
-    public void writeAbsentPath() {
-        Path file = room.locateAbsent("absent");
-        I.write(bean, file);
-
-        assert Files.exists(file);
-    }
-
-    @Test
-    public void writeFile() {
-        Path file = room.locateFile("file");
-        I.write(bean, file);
-
-        assert Files.exists(file);
-    }
-
-    @Test
-    public void writeNest() throws Exception {
-        Path path = room.locateAbsent("dir/file");
-        I.write(bean, path);
-
-        assert Files.exists(path);
-    }
-
-    @Test(expected = AccessDeniedException.class)
-    public void writeDirectory() {
-        I.write(bean, room.locateDirectory("directory"));
     }
 
 }

@@ -22,7 +22,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PushbackReader;
 import java.io.RandomAccessFile;
-import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -2136,7 +2135,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2299,7 +2298,7 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IOError If the input data is empty or invalid format.
      */
-    public static <M> M read(Reader input, M output) {
+    public static <M> M read(Readable input, M output) {
         return json(input).to(output);
     }
 
@@ -2652,39 +2651,6 @@ public class I {
 
         // the specified class is not primitive
         return type;
-    }
-
-    /**
-     * <p>
-     * Writes Java object tree to the given output as XML or JSON.
-     * </p>
-     * <p>
-     * The encoding of output data is equivalent to {@link #$encoding}.
-     * </p>
-     * <p>
-     * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
-     * will be invoked certainly.
-     * </p>
-     *
-     * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
-     *            throw {@link java.lang.NullPointerException}.
-     * @param output A serialized data output. <code>null</code> will throw
-     *            {@link NullPointerException}.
-     * @param json <code>true</code> will produce JSON expression, <code>false</code> will produce
-     *            XML expression.
-     * @throws NullPointerException If the input Java object or the output is <code>null</code> .
-     * @throws AccessDeniedException If the output is not regular file but directory.
-     */
-    public static void write(Object input, Path output) {
-        try {
-            if (Files.notExists(output)) {
-                Files.createDirectories(output.getParent());
-            }
-
-            I.write(input, Files.newBufferedWriter(output, $encoding));
-        } catch (Exception e) {
-            throw quiet(e);
-        }
     }
 
     /**

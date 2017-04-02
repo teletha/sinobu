@@ -11,11 +11,9 @@ package kiss;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Test;
-
-import kiss.Configurable;
-import kiss.I;
 
 /**
  * @version 2017/03/29 10:58:29
@@ -27,18 +25,19 @@ public class ConfigurableTest {
     @Test
     public void readFromNotExist() throws Exception {
         Some instance = new Some();
-        assert Files.notExists(instance.locate());
+        Path path = Paths.get(instance.locate());
+        assert Files.notExists(path);
 
         instance.restore();
         assert instance.value == null;
         assert instance.valueWithDefault == "default";
-        assert Files.notExists(instance.locate());
+        assert Files.notExists(path);
     }
 
     @Test
     public void readFromSizeZero() throws Exception {
         Some instance = new Some();
-        Path path = instance.locate();
+        Path path = Paths.get(instance.locate());
         Files.createDirectories(path.getParent());
         Files.createFile(path);
         assert Files.exists(path);
@@ -54,23 +53,24 @@ public class ConfigurableTest {
     @Test
     public void writeToNotExist() throws Exception {
         Some instance = new Some();
-        assert Files.notExists(instance.locate());
+        Path path = Paths.get(instance.locate());
+        assert Files.notExists(path);
 
         instance.store();
-        assert Files.exists(instance.locate());
+        assert Files.exists(path);
     }
 
     @Test
     public void writeToSizeZero() throws Exception {
         Some instance = new Some();
-        Path path = instance.locate();
+        Path path = Paths.get(instance.locate());
         Files.createDirectories(path.getParent());
         Files.createFile(path);
         assert Files.exists(path);
         assert Files.size(path) == 0;
 
         instance.store();
-        assert Files.exists(instance.locate());
+        assert Files.exists(path);
         assert Files.size(path) != 0;
     }
 
@@ -87,8 +87,8 @@ public class ConfigurableTest {
          * {@inheritDoc}
          */
         @Override
-        public Path locate() {
-            return temp.resolve(Some.class.getSimpleName());
+        public String locate() {
+            return temp.resolve(Some.class.getSimpleName()).toString();
         }
     }
 }
