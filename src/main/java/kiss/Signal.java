@@ -30,9 +30,11 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -521,7 +523,7 @@ public class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -627,7 +629,7 @@ public class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -836,10 +838,15 @@ public class Signal<V> {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> to(v -> {
-            effect.accept(v);
-            observer.accept(v);
-        }, disposer));
+        return new Signal<>((observer, disposer) -> {
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.next = v -> {
+                effect.accept(v);
+                observer.accept(v);
+            };
+            return to(subscriber, disposer);
+        });
     }
 
     /**
@@ -856,6 +863,22 @@ public class Signal<V> {
         }
 
         return effectOnComplete((observer, disposer) -> effect.run());
+    }
+
+    /**
+     * <p>
+     * Invokes an action for each value in the {@link Signal} sequence.
+     * </p>
+     *
+     * @param effect An action to invoke for each value in the {@link Signal} sequence.
+     * @return Chainable API.
+     */
+    public final Signal<V> effectOnComplete(Supplier<Signal<V>> effect) {
+        if (effect == null) {
+            return this;
+        }
+
+        return effectOnComplete((observer, disposer) -> effect.get().to(observer, disposer));
     }
 
     /**
@@ -1317,6 +1340,22 @@ public class Signal<V> {
             subscriber.observer = observer;
             subscriber.complete = () -> {
                 if (counter.decrementAndGet() == 0) {
+                    observer.complete();
+                } else {
+                    observer.complete();
+                    subscriber.add(to(subscriber));
+                }
+            };
+            return subscriber.add(to(subscriber, disposer));
+        });
+    }
+
+    public final Signal<V> repeatWhen(BooleanSupplier condition) {
+        return new Signal<>((observer, disposer) -> {
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.complete = () -> {
+                if (condition.getAsBoolean() == false) {
                     observer.complete();
                 } else {
                     observer.complete();
@@ -2123,6 +2162,14 @@ public class Signal<V> {
     @SafeVarargs
     public static <V> Signal<V> from(V... values) {
         return NEVER.complete().startWith(values);
+    }
+
+    public static <V> Signal<V> from(Supplier<V> values) {
+        return new Signal<V>((observer, disposer) -> {
+            observer.accept(values.get());
+            observer.complete();
+            return disposer;
+        });
     }
 
     private Signal<V> complete() {

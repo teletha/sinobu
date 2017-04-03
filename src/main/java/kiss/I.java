@@ -2134,7 +2134,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2543,19 +2543,22 @@ public class I {
      * @return
      */
     public static <T> Signal<T> walk(T root, UnaryOperator<Signal<T>> traverser) {
-        return walkBFS(new ArrayDeque(), Signal.from(root), traverser);
+        Deque<Signal<T>> queue = new ArrayDeque();
+        queue.add(Signal.from(root));
+
+        return Signal.from("").flatMap(v -> {
+            Signal<T> result = traverser.apply(queue.pollFirst());
+            queue.addLast(result);
+            return result;
+        }).repeatWhen(() -> !queue.isEmpty());
     }
 
     private static <T> Signal<T> walkBFS(Deque<Signal<T>> queue, Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        if (root == null) {
-            return Signal.NEVER;
+        if (queue.isEmpty()) {
+            return Signal.EMPTY;
         }
 
-        return root.concat(v -> {
-            queue.addLast(traverser.apply(Signal.from(v)));
-
-            return walkBFS(queue, queue.pollFirst(), traverser);
-        });
+        return null;
     }
 
     private static <T> Signal<T> walkDFSPPreOrder2(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
