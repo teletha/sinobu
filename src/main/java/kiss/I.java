@@ -2486,11 +2486,11 @@ public class I {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits the specified values.
+     * Signal the specified values.
      * </p>
      *
      * @param values A list of values to emit.
-     * @return An {@link Signal} that emits values as a first sequence.
+     * @return The {@link Signal} to emit sequencial values.
      */
     @SafeVarargs
     public static <V> Signal<V> signal(V... values) {
@@ -2499,11 +2499,11 @@ public class I {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits the specified values.
+     * Signal the specified values.
      * </p>
      *
      * @param values A list of values to emit.
-     * @return An {@link Signal} that emits values as a first sequence.
+     * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Iterable<V> values) {
         return Signal.EMPTY.startWith(values);
@@ -2511,11 +2511,11 @@ public class I {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits the specified values.
+     * Signal the specified values.
      * </p>
      *
      * @param values A list of values to emit.
-     * @return An {@link Signal} that emits values as a first sequence.
+     * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Enumeration<V> values) {
         return Signal.EMPTY.startWith(values);
@@ -2523,11 +2523,11 @@ public class I {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits the specified value.
+     * Signal the specified values.
      * </p>
      *
-     * @param value A value to emit.
-     * @return An {@link Signal} that emits values as a first sequence.
+     * @param values A list of values to emit.
+     * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Variable<V> value) {
         return Signal.EMPTY.startWith(value);
@@ -2543,7 +2543,7 @@ public class I {
     public static <V> Signal<V> signalInfinite(V value, long time, TimeUnit unit) {
         return new Signal<>((observer, disposer) -> {
             Future schedule = schedule(() -> observer.accept(value), time, unit);
-    
+
             return disposer.add(() -> schedule.cancel(true));
         });
     }
@@ -2581,12 +2581,12 @@ public class I {
         if (step == 0) {
             throw new IllegalArgumentException();
         }
-    
+
         return (0 < step ? endExclusive <= startInclusive : startInclusive <= endExclusive) ? Signal.EMPTY
                 : signal(() -> new Iterator<Integer>() {
-    
+
                     private int now = startInclusive;
-    
+
                     /**
                      * {@inheritDoc}
                      */
@@ -2594,7 +2594,7 @@ public class I {
                     public boolean hasNext() {
                         return 0 < step ? now < endExclusive : endExclusive < now;
                     }
-    
+
                     /**
                      * {@inheritDoc}
                      */

@@ -45,9 +45,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.WritableValue;
 
 /**
- * @version 2017/04/04 9:22:50
+ * @version 2017/04/04 11:25:38
  */
-public class Signal<V> {
+public final class Signal<V> {
 
     /**
      * For reuse.
