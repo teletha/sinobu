@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1084,7 +1085,7 @@ public class I {
      * @return All Extensions of the given Extension Point or empty list.
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
-        return Signal.from(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).map(I::make).toList();
+        return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).map(I::make).toList();
     }
 
     /**
@@ -1294,8 +1295,8 @@ public class I {
             // At first, we must scan the specified directory or archive. If the module file is
             // archive, Sinobu automatically try to switch to other file system (e.g.
             // ZipFileSystem).
-            Signal<String> names = file.isFile() ? Signal.from(new ZipFile(file).entries()).map(ZipEntry::getName)
-                    : Signal.from(scan(file, new ArrayList<>())).map(File::getPath).map(name -> name.substring(prefix));
+            Signal<String> names = file.isFile() ? I.signal(new ZipFile(file).entries()).map(ZipEntry::getName)
+                    : I.signal(scan(file, new ArrayList<>())).map(File::getPath).map(name -> name.substring(prefix));
 
             names.to(name -> {
                 // exclude non-class files
@@ -2485,6 +2486,127 @@ public class I {
 
     /**
      * <p>
+     * Returns an {@link Signal} that emits the specified values.
+     * </p>
+     *
+     * @param values A list of values to emit.
+     * @return An {@link Signal} that emits values as a first sequence.
+     */
+    @SafeVarargs
+    public static <V> Signal<V> signal(V... values) {
+        return Signal.EMPTY.startWith(values);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits the specified values.
+     * </p>
+     *
+     * @param values A list of values to emit.
+     * @return An {@link Signal} that emits values as a first sequence.
+     */
+    public static <V> Signal<V> signal(Iterable<V> values) {
+        return Signal.EMPTY.startWith(values);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits the specified values.
+     * </p>
+     *
+     * @param values A list of values to emit.
+     * @return An {@link Signal} that emits values as a first sequence.
+     */
+    public static <V> Signal<V> signal(Enumeration<V> values) {
+        return Signal.EMPTY.startWith(values);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits the specified value.
+     * </p>
+     *
+     * @param value A value to emit.
+     * @return An {@link Signal} that emits values as a first sequence.
+     */
+    public static <V> Signal<V> signal(Variable<V> value) {
+        return Signal.EMPTY.startWith(value);
+    }
+
+    /**
+     * @param value A initial value.
+     * @param time A time to interval.
+     * @param unit A time unit.
+     * @param <V> Value type.
+     * @return An {@link Signal} that emits values as a first sequence.
+     */
+    public static <V> Signal<V> signalInfinite(V value, long time, TimeUnit unit) {
+        return new Signal<>((observer, disposer) -> {
+            Future schedule = schedule(() -> observer.accept(value), time, unit);
+    
+            return disposer.add(() -> schedule.cancel(true));
+        });
+    }
+
+    /**
+     * Returns a sequential ordered {@code Events} from {@code startInclusive} (inclusive) to
+     * {@code endExclusive} (exclusive) by an incremental step of {@code 1}.
+     *
+     * @apiNote An equivalent sequence of increasing values can be produced sequentially using a
+     *          {@code for} loop as follows: <pre>{@code
+     *     for (int i = startInclusive; i < endExclusive ; i++) { ... }
+     * }</pre>
+     * @param startInclusive A (inclusive) initial value.
+     * @param endExclusive An exclusive upper bound.
+     * @return a sequential {@code Events} for the range of {@code Integer} elements
+     */
+    public static Signal<Integer> signalRange(int startInclusive, int endExclusive) {
+        return signalRange(startInclusive, 1, endExclusive);
+    }
+
+    /**
+     * Returns a sequential ordered {@code Events} from {@code startInclusive} (inclusive) to
+     * {@code endExclusive} (exclusive) by an incremental step of {@code 1}.
+     *
+     * @apiNote An equivalent sequence of increasing values can be produced sequentially using a
+     *          {@code for} loop as follows: <pre>{@code
+     *     for (int i = startInclusive; i < endExclusive ; i += step) { ... }
+     * }</pre>
+     * @param startInclusive A (inclusive) initial value.
+     * @param step A incremental step.
+     * @param endExclusive An exclusive upper bound.
+     * @return a sequential {@code Events} for the range of {@code Integer} elements
+     */
+    public static Signal<Integer> signalRange(int startInclusive, int step, int endExclusive) {
+        if (step == 0) {
+            throw new IllegalArgumentException();
+        }
+    
+        return (0 < step ? endExclusive <= startInclusive : startInclusive <= endExclusive) ? Signal.EMPTY
+                : signal(() -> new Iterator<Integer>() {
+    
+                    private int now = startInclusive;
+    
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public boolean hasNext() {
+                        return 0 < step ? now < endExclusive : endExclusive < now;
+                    }
+    
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Integer next() {
+                        return (now += step) - step; // guilty?
+                    }
+                });
+    }
+
+    /**
+     * <p>
      * Transform any type object into the specified type if possible.
      * </p>
      *
@@ -2543,19 +2665,19 @@ public class I {
      * @return
      */
     public static <T> Signal<T> walk(T root, UnaryOperator<Signal<T>> traverser) {
-        return walkDFSPPreOrder2(Signal.from(root), traverser);
+        return walkDFSPPreOrder2(I.signal(root), traverser);
     }
 
     private static <T> Signal<T> walkDFSPPreOrder2(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.merge(root.flatMap(e -> walkDFSPPreOrder2(traverser.apply(Signal.from(e)), traverser)));
+        return root.merge(root.flatMap(e -> walkDFSPPreOrder2(traverser.apply(I.signal(e)), traverser)));
     }
 
     private static <T> Signal<T> walkDFSPPreOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.flatMap(e -> walkDFSPPreOrder(traverser.apply(Signal.from(e)), traverser)).startWith(root);
+        return root.flatMap(e -> walkDFSPPreOrder(traverser.apply(I.signal(e)), traverser)).startWith(root);
     }
 
     private static <T> Signal<T> walkDFSPostOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.flatMap(e -> walkDFSPostOrder(traverser.apply(Signal.from(e)), traverser)).merge(root);
+        return root.flatMap(e -> walkDFSPostOrder(traverser.apply(I.signal(e)), traverser)).merge(root);
     }
 
     /**

@@ -11,7 +11,7 @@ package kiss.signal;
 
 import org.junit.Test;
 
-import kiss.Signal;
+import kiss.I;
 
 /**
  * @version 2017/04/02 3:06:33
@@ -20,7 +20,7 @@ public class RangeTest extends SignalTestBase {
 
     @Test
     public void range() throws Exception {
-        monitor(() -> Signal.range(1, 3));
+        monitor(() -> I.signalRange(1, 3));
 
         assert result.value(1, 2);
         assert result.completed();
@@ -28,7 +28,7 @@ public class RangeTest extends SignalTestBase {
 
     @Test
     public void rangeSame() throws Exception {
-        monitor(() -> Signal.range(1, 1));
+        monitor(() -> I.signalRange(1, 1));
 
         assert result.value();
         assert result.completed();
@@ -36,7 +36,7 @@ public class RangeTest extends SignalTestBase {
 
     @Test
     public void rangeDesccendingOrder() throws Exception {
-        monitor(() -> Signal.range(3, 1));
+        monitor(() -> I.signalRange(3, 1));
 
         assert result.value();
         assert result.completed();
@@ -44,7 +44,7 @@ public class RangeTest extends SignalTestBase {
 
     @Test
     public void step() throws Exception {
-        monitor(() -> Signal.range(1, 2, 5));
+        monitor(() -> I.signalRange(1, 2, 5));
 
         assert result.value(1, 3);
         assert result.completed();
@@ -52,7 +52,7 @@ public class RangeTest extends SignalTestBase {
 
     @Test
     public void stepSame() throws Exception {
-        monitor(() -> Signal.range(1, 2, 1));
+        monitor(() -> I.signalRange(1, 2, 1));
 
         assert result.value();
         assert result.completed();
@@ -60,7 +60,7 @@ public class RangeTest extends SignalTestBase {
 
     @Test
     public void stepDesccendingOrder() throws Exception {
-        monitor(() -> Signal.range(5, 2, 1));
+        monitor(() -> I.signalRange(5, 2, 1));
 
         assert result.value();
         assert result.completed();
@@ -68,7 +68,7 @@ public class RangeTest extends SignalTestBase {
 
     @Test
     public void stepNegative() throws Exception {
-        monitor(() -> Signal.range(5, -2, 1));
+        monitor(() -> I.signalRange(5, -2, 1));
 
         assert result.value(5, 3);
         assert result.completed();
@@ -76,6 +76,6 @@ public class RangeTest extends SignalTestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void stepZero() throws Exception {
-        monitor(() -> Signal.range(5, 0, 1));
+        monitor(() -> I.signalRange(5, 0, 1));
     }
 }

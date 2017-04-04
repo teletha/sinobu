@@ -71,33 +71,33 @@ public class SignalTestBase {
     }
 
     /**
-     * Shorthand method of {@link Signal#from}
+     * Shorthand method of {@link I#from}
      * 
      * @param values
      * @return
      */
     protected <T> Signal<T> signal(T... values) {
-        return Signal.from(values);
+        return I.signal(values);
     }
 
     /**
-     * Shorthand method of {@link Signal#from}
+     * Shorthand method of {@link I#from}
      * 
      * @param values
      * @return
      */
     protected <T> Signal<T> signal(Iterable values) {
-        return Signal.from(values);
+        return I.signal(values);
     }
 
     /**
-     * Shorthand method of {@link Signal#from}
+     * Shorthand method of {@link I#from}
      * 
      * @param values
      * @return
      */
     protected <T> Signal<T> signal(Enumeration values) {
-        return Signal.from(values);
+        return I.signal(values);
     }
 
     /**

@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -598,7 +597,7 @@ public class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O> Signal<Ⅱ<V, O>> combineLatest(O other) {
-        return combineLatest(from(other));
+        return combineLatest(I.signal(other));
     }
 
     /**
@@ -1016,7 +1015,7 @@ public class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatArray(Function<V, R[]> function) {
-        return flatMap(function.andThen(Signal::from));
+        return flatMap(function.andThen(I::signal));
     }
 
     /**
@@ -1033,7 +1032,7 @@ public class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatIterable(Function<V, Iterable<R>> function) {
-        return flatMap(function.andThen(Signal::from));
+        return flatMap(function.andThen(I::signal));
     }
 
     /**
@@ -1069,7 +1068,7 @@ public class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatVariable(Function<V, Variable<R>> function) {
-        return flatMap(function.andThen(Signal::from));
+        return flatMap(function.andThen(I::signal));
     }
 
     /**
@@ -2100,123 +2099,4 @@ public class Signal<V> {
     // now.e(sum.e.plus(now.e)));
     // }
 
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits the specified values.
-     * </p>
-     *
-     * @param values A list of values to emit.
-     * @return An {@link Signal} that emits values as a first sequence.
-     */
-    @SafeVarargs
-    public static <V> Signal<V> from(V... values) {
-        return EMPTY.startWith(values);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits the specified values.
-     * </p>
-     *
-     * @param values A list of values to emit.
-     * @return An {@link Signal} that emits values as a first sequence.
-     */
-    public static <V> Signal<V> from(Iterable<V> values) {
-        return EMPTY.startWith(values);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits the specified values.
-     * </p>
-     *
-     * @param values A list of values to emit.
-     * @return An {@link Signal} that emits values as a first sequence.
-     */
-    public static <V> Signal<V> from(Enumeration<V> values) {
-        return EMPTY.startWith(values);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits the specified value.
-     * </p>
-     *
-     * @param value A value to emit.
-     * @return An {@link Signal} that emits values as a first sequence.
-     */
-    public static <V> Signal<V> from(Variable<V> value) {
-        return EMPTY.startWith(value);
-    }
-
-    /**
-     * @param value A initial value.
-     * @param time A time to interval.
-     * @param unit A time unit.
-     * @param <V> Value type.
-     * @return An {@link Signal} that emits values as a first sequence.
-     */
-    public static <V> Signal<V> infinite(V value, long time, TimeUnit unit) {
-        return new Signal<>((observer, disposer) -> {
-            Future schedule = I.schedule(() -> observer.accept(value), time, unit);
-
-            return disposer.add(() -> schedule.cancel(true));
-        });
-    }
-
-    /**
-     * Returns a sequential ordered {@code Events} from {@code startInclusive} (inclusive) to
-     * {@code endExclusive} (exclusive) by an incremental step of {@code 1}.
-     *
-     * @apiNote An equivalent sequence of increasing values can be produced sequentially using a
-     *          {@code for} loop as follows: <pre>{@code
-     *     for (int i = startInclusive; i < endExclusive ; i++) { ... }
-     * }</pre>
-     * @param startInclusive A (inclusive) initial value.
-     * @param endExclusive An exclusive upper bound.
-     * @return a sequential {@code Events} for the range of {@code Integer} elements
-     */
-    public static Signal<Integer> range(int startInclusive, int endExclusive) {
-        return range(startInclusive, 1, endExclusive);
-    }
-
-    /**
-     * Returns a sequential ordered {@code Events} from {@code startInclusive} (inclusive) to
-     * {@code endExclusive} (exclusive) by an incremental step of {@code 1}.
-     *
-     * @apiNote An equivalent sequence of increasing values can be produced sequentially using a
-     *          {@code for} loop as follows: <pre>{@code
-     *     for (int i = startInclusive; i < endExclusive ; i += step) { ... }
-     * }</pre>
-     * @param startInclusive A (inclusive) initial value.
-     * @param step A incremental step.
-     * @param endExclusive An exclusive upper bound.
-     * @return a sequential {@code Events} for the range of {@code Integer} elements
-     */
-    public static Signal<Integer> range(int startInclusive, int step, int endExclusive) {
-        if (step == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        return (0 < step ? endExclusive <= startInclusive : startInclusive <= endExclusive) ? EMPTY : from(() -> new Iterator<Integer>() {
-
-            private int now = startInclusive;
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public boolean hasNext() {
-                return 0 < step ? now < endExclusive : endExclusive < now;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Integer next() {
-                return (now += step) - step; // guilty?
-            }
-        });
-    }
 }

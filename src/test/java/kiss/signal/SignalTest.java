@@ -511,7 +511,7 @@ public class SignalTest {
 
     @Test
     public void effectNull() {
-        Signal<Integer> from = Signal.from(0);
+        Signal<Integer> from = I.signal(0);
         Signal<Integer> effect = from.effect(null);
         assert from == effect;
     }
@@ -580,7 +580,7 @@ public class SignalTest {
             }
         };
 
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorResume(Signal.from(1, 2)));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorResume(I.signal(1, 2)));
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
         assert subject.isNotCompleted();
@@ -1360,7 +1360,7 @@ public class SignalTest {
 
     @Test
     public void infinite() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> Signal.infinite(1, 20, MILLISECONDS).take(2));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> I.signalInfinite(1, 20, MILLISECONDS).take(2));
 
         chronus.mark();
         chronus.freezeFromMark(10);
@@ -1376,7 +1376,7 @@ public class SignalTest {
 
     @Test
     public void range() {
-        Subject<Integer, Integer> subject = new Subject(e -> Signal.range(1, 4));
+        Subject<Integer, Integer> subject = new Subject(e -> I.signalRange(1, 4));
         assert subject.emitAndRetrieve(100, 1);
         assert subject.retrieve() == 2;
         assert subject.retrieve() == 3;
@@ -1386,7 +1386,7 @@ public class SignalTest {
     @Test
     public void rangeTake() {
         Store<Integer> store = new Store();
-        Signal.range(1, 10).effect(store::before).take(2).to(store::after);
+        I.signalRange(1, 10).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
     }
@@ -1394,7 +1394,7 @@ public class SignalTest {
     @Test
     public void disposeFrom() {
         Store<Integer> store = new Store();
-        Signal.from(1, 2, 3, 4).effect(store::before).take(1).to(store::after);
+        I.signal(1, 2, 3, 4).effect(store::before).take(1).to(store::after);
 
         assert store.size() == 1;
     }
@@ -1402,7 +1402,7 @@ public class SignalTest {
     @Test
     public void disposeFlatMap() {
         Store<Integer> store = new Store();
-        Signal.from(10, 20, 30, 40).flatMap(v -> Signal.from(v, v + 1, v + 2)).effect(store::before).take(2).to(store::after);
+        I.signal(10, 20, 30, 40).flatMap(v -> I.signal(v, v + 1, v + 2)).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 10;
@@ -1412,7 +1412,7 @@ public class SignalTest {
     @Test
     public void disposeInternalFlatMap() {
         Store<Integer> store = new Store();
-        Signal.from(10, 20).flatMap(v -> Signal.from(v, v + 1, v + 2).take(2)).to(store::before);
+        I.signal(10, 20).flatMap(v -> I.signal(v, v + 1, v + 2).take(2)).to(store::before);
 
         assert store.before.size() == 4;
         assert store.retrieve() == 10;
@@ -1424,7 +1424,7 @@ public class SignalTest {
     @Test
     public void disposeFlatArray() {
         Store<Integer> store = new Store();
-        Signal.from(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1, v + 2}).effect(store::before).take(2).to(store::after);
+        I.signal(10, 20, 30, 40).flatArray(v -> new Integer[] {v, v + 1, v + 2}).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 10;
@@ -1434,7 +1434,7 @@ public class SignalTest {
     @Test
     public void disposeMerge() {
         Store<Integer> store = new Store();
-        Signal.from(1).merge(Signal.from(10, 20)).effect(store::before).take(2).to(store::after);
+        I.signal(1).merge(I.signal(10, 20)).effect(store::before).take(2).to(store::after);
 
         assert store.size() == 2;
         assert store.retrieve() == 1;

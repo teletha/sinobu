@@ -43,7 +43,7 @@ public class JSON {
     }
 
     private Signal<JSON> select(String expression) {
-        Signal<Object> current = Signal.from(root);
+        Signal<Object> current = I.signal(root);
 
         for (String name : expression.split("\\.")) {
             current = current.flatMap(v -> {
@@ -57,12 +57,12 @@ public class JSON {
                         ScriptObjectMirror m = (ScriptObjectMirror) value;
 
                         if (sub != null) {
-                            return Signal.from(m.get(sub));
+                            return I.signal(m.get(sub));
                         } else if (m.isArray()) {
-                            return Signal.from(m.values());
+                            return I.signal(m.values());
                         }
                     }
-                    return Signal.from(value);
+                    return I.signal(value);
                 } else {
                     return Signal.NEVER;
                 }
