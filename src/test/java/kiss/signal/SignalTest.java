@@ -1356,23 +1356,6 @@ public class SignalTest {
     }
 
     @Test
-    public void range() {
-        Subject<Integer, Integer> subject = new Subject(e -> I.signalRange(1, 4));
-        assert subject.emitAndRetrieve(100, 1);
-        assert subject.retrieve() == 2;
-        assert subject.retrieve() == 3;
-        assert subject.retrieve() == null;
-    }
-
-    @Test
-    public void rangeTake() {
-        Store<Integer> store = new Store();
-        I.signalRange(1, 10).effect(store::before).take(2).to(store::after);
-
-        assert store.size() == 2;
-    }
-
-    @Test
     public void disposeFrom() {
         Store<Integer> store = new Store();
         I.signal(1, 2, 3, 4).effect(store::before).take(1).to(store::after);

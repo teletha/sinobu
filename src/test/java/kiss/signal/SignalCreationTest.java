@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 
 import org.junit.Test;
 
+import kiss.I;
+
 /**
  * @version 2017/04/02 1:53:26
  */

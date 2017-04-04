@@ -94,6 +94,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
+import java.util.stream.IntStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -2559,63 +2560,6 @@ public class I {
 
             return disposer.add(() -> schedule.cancel(true));
         });
-    }
-
-    /**
-     * Returns a sequential ordered {@code Events} from {@code startInclusive} (inclusive) to
-     * {@code endExclusive} (exclusive) by an incremental step of {@code 1}.
-     *
-     * @apiNote An equivalent sequence of increasing values can be produced sequentially using a
-     *          {@code for} loop as follows: <pre>{@code
-     *     for (int i = startInclusive; i < endExclusive ; i++) { ... }
-     * }</pre>
-     * @param startInclusive A (inclusive) initial value.
-     * @param endExclusive An exclusive upper bound.
-     * @return a sequential {@code Events} for the range of {@code Integer} elements
-     */
-    public static Signal<Integer> signalRange(int startInclusive, int endExclusive) {
-        return signalRange(startInclusive, 1, endExclusive);
-    }
-
-    /**
-     * Returns a sequential ordered {@code Events} from {@code startInclusive} (inclusive) to
-     * {@code endExclusive} (exclusive) by an incremental step of {@code 1}.
-     *
-     * @apiNote An equivalent sequence of increasing values can be produced sequentially using a
-     *          {@code for} loop as follows: <pre>{@code
-     *     for (int i = startInclusive; i < endExclusive ; i += step) { ... }
-     * }</pre>
-     * @param startInclusive A (inclusive) initial value.
-     * @param step A incremental step.
-     * @param endExclusive An exclusive upper bound.
-     * @return a sequential {@code Events} for the range of {@code Integer} elements
-     */
-    public static Signal<Integer> signalRange(int startInclusive, int step, int endExclusive) {
-        if (step == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        return (0 < step ? endExclusive <= startInclusive : startInclusive <= endExclusive) ? Signal.EMPTY
-                : signal(() -> new Iterator<Integer>() {
-
-                    private int now = startInclusive;
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public boolean hasNext() {
-                        return 0 < step ? now < endExclusive : endExclusive < now;
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Integer next() {
-                        return (now += step) - step; // guilty?
-                    }
-                });
     }
 
     /**
