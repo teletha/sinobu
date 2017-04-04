@@ -2157,10 +2157,10 @@ public class Signal<V> {
      * @return An {@link Signal} that emits values as a first sequence.
      */
     public static <V> Signal<V> infinite(V value, long time, TimeUnit unit) {
-        return new Signal<>((observer, disposable) -> {
+        return new Signal<>((observer, disposer) -> {
             Future schedule = I.schedule(() -> observer.accept(value), time, unit);
 
-            return () -> schedule.cancel(true);
+            return disposer.add(() -> schedule.cancel(true));
         });
     }
 
