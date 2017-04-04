@@ -22,13 +22,13 @@ import kiss.XML;
 public class TreeWalkerTest {
     @Test
     public void walk() throws Exception {
-        I.walk(new File("src/main"), e -> e.flatArray(File::listFiles)).to(e -> {
+        I.signal(new File("src/main"), e -> e.flatArray(File::listFiles)).to(e -> {
             System.out.println(e);
         });
     }
 
     public void xml() throws Exception {
-        I.walk(I.xml("<x><a><o/><p/></a><b/><c><q/><r/></c></x>"), e -> e.flatIterable(XML::children).skip(a -> a.name().equals("c")))
+        I.signal(I.xml("<x><a><o/><p/></a><b/><c><q/><r/></c></x>"), e -> e.flatIterable(XML::children).skip(a -> a.name().equals("c")))
                 .to(e -> {
                     System.out.println(e.name());
                 });

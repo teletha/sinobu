@@ -94,7 +94,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
-import java.util.stream.IntStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -2564,6 +2563,35 @@ public class I {
 
     /**
      * <p>
+     * Traverse the tree structure.
+     * </p>
+     * 
+     * @param root A root node to traverse.
+     * @param traverser A function to navigate from a node to its children.
+     * @return
+     */
+    public static <T> Signal<T> signal(T root, UnaryOperator<Signal<T>> traverser) {
+        return walk(signal(root), traverser);
+    }
+
+    private static <T> Signal<T> walk(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        return root.concatMap(e -> walk(traverser.apply(I.signal(e)), traverser));
+    }
+
+    private static <T> Signal<T> walkDFSPPreOrder2(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        return root.merge(root.flatMap(e -> walkDFSPPreOrder2(traverser.apply(I.signal(e)), traverser)));
+    }
+
+    private static <T> Signal<T> walkDFSPPreOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        return root.flatMap(e -> walkDFSPPreOrder(traverser.apply(I.signal(e)), traverser)).startWith(root);
+    }
+
+    private static <T> Signal<T> walkDFSPostOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        return root.flatMap(e -> walkDFSPostOrder(traverser.apply(I.signal(e)), traverser)).merge(root);
+    }
+
+    /**
+     * <p>
      * Transform any type object into the specified type if possible.
      * </p>
      *
@@ -2610,31 +2638,6 @@ public class I {
         } catch (ClassNotFoundException e) {
             throw quiet(e);
         }
-    }
-
-    /**
-     * <p>
-     * Traverse the tree structure.
-     * </p>
-     * 
-     * @param root A root node to traverse.
-     * @param traverser A function to navigate from a node to its children.
-     * @return
-     */
-    public static <T> Signal<T> walk(T root, UnaryOperator<Signal<T>> traverser) {
-        return walkDFSPPreOrder2(I.signal(root), traverser);
-    }
-
-    private static <T> Signal<T> walkDFSPPreOrder2(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.merge(root.flatMap(e -> walkDFSPPreOrder2(traverser.apply(I.signal(e)), traverser)));
-    }
-
-    private static <T> Signal<T> walkDFSPPreOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.flatMap(e -> walkDFSPPreOrder(traverser.apply(I.signal(e)), traverser)).startWith(root);
-    }
-
-    private static <T> Signal<T> walkDFSPostOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.flatMap(e -> walkDFSPostOrder(traverser.apply(I.signal(e)), traverser)).merge(root);
     }
 
     /**

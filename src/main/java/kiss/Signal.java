@@ -151,6 +151,18 @@ public final class Signal<V> {
      * items and notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
+    private final Disposable subscrive(Observer observer, Disposable disposer, Consumer<? super V> next) {
+        return to(next, null, null, disposer);
+    }
+
+    /**
+     * <p>
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
+     *
+     * @param next A delegator method of {@link Observer#accept(Object)}.
      * @param error A delegator method of {@link Observer#error(Throwable)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
@@ -723,24 +735,30 @@ public final class Signal<V> {
         });
     }
 
-    public final Signal<V> concat(Function<V, Signal<? extends V>> other) {
+    public final Signal<V> concatMap(Function<V, Signal<? extends V>> other) {
+        cue(new ArrayDeque(), (v, q, o) -> {
+
+        });
+
         return new Signal<>((observer, disposer) -> {
             Deque<V> items = new ArrayDeque();
 
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.next = v -> {
-                observer.accept(v);
                 items.add(v);
-            };
-            subscriber.complete = () -> {
-                for (V item : items) {
-                    other.apply(item).to(observer, disposer);
+
+                if (items.size() == 1) {
+                    flatMap(x -> other.apply(items.pollFirst())).repeatWhen(() -> !items.isEmpty()).to(observer, disposer);
                 }
-                observer.complete();
             };
+
             return to(subscriber, disposer);
         });
+    }
+
+    private final <C extends Collection<V>> Signal<V> cue(C collection, UsefulTriConsumer<V, C, Observer> next) {
+        return null;
     }
 
     /**
@@ -1054,7 +1072,7 @@ public final class Signal<V> {
      */
     public final <R> Signal<R> flatMap(Function<V, Signal<R>> function) {
         return new Signal<>((observer, disposer) -> {
-            return to(value -> function.apply(value).to(observer, disposer.sub()), disposer);
+            return subscrive(observer, disposer, value -> function.apply(value).to(observer, disposer.sub()));
         });
     }
 
@@ -1683,7 +1701,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concat(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -1705,7 +1723,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concat(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -1726,7 +1744,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concat(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -1747,7 +1765,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concat(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.

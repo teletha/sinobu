@@ -9,6 +9,8 @@
  */
 package kiss.signal;
 
+import static java.util.concurrent.TimeUnit.*;
+
 import org.junit.Test;
 
 import kiss.Signal;
@@ -58,5 +60,12 @@ public class ConcatTest extends SignalTestBase {
         assert result.value(1, 2);
         assert result.completed();
         assert disposer.isDisposed();
+    }
+
+    @Test
+    public void map() throws Exception {
+        monitor(() -> signal(10, 20).concatMap(v -> signal(v + 1, v + 2).interval(50, MILLISECONDS)));
+
+        assert result.value(11, 12, 21, 22);
     }
 }
