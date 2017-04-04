@@ -22,7 +22,7 @@ public class RepeatTest extends SignalTestBase {
     public void repeatWhen() throws Exception {
         AtomicInteger total = new AtomicInteger();
         // monitor(() -> signal(1).repeat(3));
-        monitor(() -> signal(1).effect(total::addAndGet).repeatWhen(() -> total.get() < 3));
+        monitor(1, () -> signal(1).effect(total::addAndGet).repeatWhen(() -> total.get() < 3));
 
         assert result.value(1, 1, 1);
     }

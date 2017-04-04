@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -34,6 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.BaseStream;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -1672,8 +1674,16 @@ public final class Signal<V> {
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
      * </p>
+     * <p>
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
+     * </p>
+     * <p>
+     * If, on the other hand, you want to append a sequence of items to the end of those normally
+     * emitted by an {@link Signal}, you want the {@link #concat(Function)} operator.
+     * </p>
      *
-     * @param values The initial values.
+     * @param values The values that contains the items you want to emit first.
      * @return Chainable API.
      */
     @SafeVarargs
@@ -1686,8 +1696,16 @@ public final class Signal<V> {
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
      * </p>
+     * <p>
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
+     * </p>
+     * <p>
+     * If, on the other hand, you want to append a sequence of items to the end of those normally
+     * emitted by an {@link Signal}, you want the {@link #concat(Function)} operator.
+     * </p>
      *
-     * @param values The initial values.
+     * @param values The values that contains the items you want to emit first.
      * @return Chainable API.
      */
     public final Signal<V> startWith(Enumeration<V> values) {
@@ -1699,8 +1717,37 @@ public final class Signal<V> {
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
      * </p>
+     * <p>
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
+     * </p>
+     * <p>
+     * If, on the other hand, you want to append a sequence of items to the end of those normally
+     * emitted by an {@link Signal}, you want the {@link #concat(Function)} operator.
+     * </p>
      *
-     * @param values The initial values.
+     * @param values The values that contains the items you want to emit first.
+     * @return Chainable API.
+     */
+    public final <S extends BaseStream<V, S>> Signal<V> startWith(S values) {
+        return values == null ? this : startWith(() -> values.iterator());
+    }
+
+    /**
+     * <p>
+     * Emit a specified sequence of items before beginning to emit the items from the source
+     * {@link Signal}.
+     * </p>
+     * <p>
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
+     * </p>
+     * <p>
+     * If, on the other hand, you want to append a sequence of items to the end of those normally
+     * emitted by an {@link Signal}, you want the {@link #concat(Function)} operator.
+     * </p>
+     *
+     * @param values The values that contains the items you want to emit first.
      * @return Chainable API.
      */
     public final Signal<V> startWith(Iterable<V> values) {
@@ -1710,10 +1757,10 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            for (V value : values) {
-                if (disposer.isDisposed() == false) {
-                    observer.accept(value);
-                }
+            Iterator<V> iterator = values.iterator();
+
+            while (iterator.hasNext() && !disposer.isDisposed()) {
+                observer.accept(iterator.next());
             }
             return to(observer, disposer);
         });
@@ -1734,7 +1781,9 @@ public final class Signal<V> {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> values.to(observer, disposer).add(to(observer, disposer)));
+        return new Signal<>((observer, disposer) -> {
+            return values.to(observer, disposer).add(to(observer, disposer));
+        });
     }
 
     /**

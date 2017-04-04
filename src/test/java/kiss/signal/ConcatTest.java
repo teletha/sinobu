@@ -56,6 +56,7 @@ public class ConcatTest extends SignalTestBase {
 
         assert log1.value(1, 2);
         assert result.value(1, 2);
-        assert result.completedAndDisposed();
+        assert result.completed();
+        assert disposer.isDisposed();
     }
 }

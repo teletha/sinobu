@@ -9,14 +9,15 @@
  */
 package kiss.signal;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
-
-import org.junit.Before;
+import java.util.stream.Stream;
 
 import kiss.Disposable;
 import kiss.I;
@@ -28,27 +29,29 @@ import kiss.Signal;
  */
 public class SignalTestBase {
 
-    protected final Log result = new Log();
+    /** default multiplicity */
+    private static final int multiplicity = 2;
 
-    protected final Log log1 = new Log();
+    /** READ ONLY : DON'T MODIFY in test case */
+    protected Log result = null;
 
-    protected final Log log2 = new Log();
+    /** READ ONLY : DON'T MODIFY in test case */
+    protected Log log1 = null;
 
-    protected final Log log3 = new Log();
+    /** READ ONLY : DON'T MODIFY in test case */
+    protected Log log2 = null;
 
-    protected final Log log4 = new Log();
+    /** READ ONLY : DON'T MODIFY in test case */
+    protected Log log3 = null;
 
-    protected final Log log5 = new Log();
+    /** READ ONLY : DON'T MODIFY in test case */
+    protected Log log4 = null;
 
-    @Before
-    public void setup() {
-        result.reset();
-        log1.reset();
-        log2.reset();
-        log3.reset();
-        log4.reset();
-        log5.reset();
-    }
+    /** READ ONLY : DON'T MODIFY in test case */
+    protected Log log5 = null;
+
+    /** READ ONLY : DON'T MODIFY in test case */
+    protected Disposable disposer = null;
 
     /**
      * Shorthand method of {@link I#list(Object...)}.
@@ -58,6 +61,16 @@ public class SignalTestBase {
      */
     protected <T> List<T> list(T... values) {
         return I.list(values);
+    }
+
+    /**
+     * Shorthand method of {@link Stream#of}.
+     * 
+     * @param values
+     * @return
+     */
+    protected <T> Stream<T> stream(T... values) {
+        return Stream.of(values);
     }
 
     /**
@@ -108,15 +121,66 @@ public class SignalTestBase {
      * @param signal
      */
     protected void monitor(Supplier<Signal> signal) {
-        result.disposable = signal.get().to(result);
+        monitor(multiplicity, signal);
+    }
+
+    /**
+     * <p>
+     * Monitor signal to test.
+     * </p>
+     * 
+     * @param signal
+     */
+    protected void monitor(int multiplicity, Supplier<Signal> signal) {
+        LogSet[] sets = new LogSet[multiplicity];
+
+        for (int i = 0; i < multiplicity; i++) {
+            sets[i] = new LogSet();
+            log1 = sets[i].log1;
+            log2 = sets[i].log2;
+            log3 = sets[i].log3;
+            log4 = sets[i].log4;
+            log5 = sets[i].log5;
+            result = sets[i].result;
+
+            sets[i].disposer = signal.get().to(result);
+        }
+
+        log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
+        log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
+        log3 = I.bundle(stream(sets).map(e -> e.log3).collect(toList()));
+        log4 = I.bundle(stream(sets).map(e -> e.log4).collect(toList()));
+        log5 = I.bundle(stream(sets).map(e -> e.log5).collect(toList()));
+        result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
+        disposer = I.bundle(Disposable.class, stream(sets).map(e -> e.disposer).collect(toList()));
+    }
+
+    /**
+     * @version 2017/04/04 12:59:48
+     */
+    protected static interface Log extends Observer {
+        /**
+         * Validate the result values.
+         * 
+         * @param expected
+         * @return
+         */
+        boolean value(Object... expected);
+
+        /**
+         * <p>
+         * Validate disposer.
+         * </p>
+         * 
+         * @return
+         */
+        boolean completed();
     }
 
     /**
      * @version 2017/04/02 1:14:02
      */
-    protected static class Log implements Observer {
-
-        private Disposable disposable;
+    private static class Logger implements Log {
 
         private List values = new ArrayList();
 
@@ -152,32 +216,10 @@ public class SignalTestBase {
          * 
          * @return
          */
-        protected final boolean completed() {
+        @Override
+        public boolean completed() {
             assert completed;
             return true;
-        }
-
-        /**
-         * <p>
-         * Validate disposer.
-         * </p>
-         * 
-         * @return
-         */
-        protected final boolean disposed() {
-            assert disposable.isDisposed();
-            return true;
-        }
-
-        /**
-         * <p>
-         * Validate disposer.
-         * </p>
-         * 
-         * @return
-         */
-        protected final boolean completedAndDisposed() {
-            return completed() && disposed();
         }
 
         /**
@@ -186,7 +228,8 @@ public class SignalTestBase {
          * @param expected
          * @return
          */
-        protected final boolean value(Object... expected) {
+        @Override
+        public boolean value(Object... expected) {
             assert values.size() == expected.length;
 
             for (int i = 0; i < expected.length; i++) {
@@ -194,11 +237,25 @@ public class SignalTestBase {
             }
             return true;
         }
+    }
 
-        private void reset() {
-            disposable = null;
-            values.clear();
-            completed = false;
-        }
+    /**
+     * @version 2017/04/04 12:52:06
+     */
+    private static class LogSet {
+
+        Log result = new Logger();
+
+        Log log1 = new Logger();
+
+        Log log2 = new Logger();
+
+        Log log3 = new Logger();
+
+        Log log4 = new Logger();
+
+        Log log5 = new Logger();
+
+        Disposable disposer;
     }
 }
