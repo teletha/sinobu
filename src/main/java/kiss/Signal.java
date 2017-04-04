@@ -538,7 +538,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -644,7 +644,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -736,10 +736,6 @@ public final class Signal<V> {
     }
 
     public final Signal<V> concatMap(Function<V, Signal<? extends V>> other) {
-        cue(new ArrayDeque(), (v, q, o) -> {
-
-        });
-
         return new Signal<>((observer, disposer) -> {
             Deque<V> items = new ArrayDeque();
 
@@ -749,7 +745,7 @@ public final class Signal<V> {
                 items.add(v);
 
                 if (items.size() == 1) {
-                    flatMap(x -> other.apply(items.pollFirst())).repeatWhen(() -> !items.isEmpty()).to(observer, disposer);
+                    flatMap(x -> other.apply(items.pollFirst())).repeatUntil(() -> !items.isEmpty()).to(observer, disposer);
                 }
             };
 
@@ -1371,7 +1367,16 @@ public final class Signal<V> {
         });
     }
 
-    public final Signal<V> repeatWhen(BooleanSupplier condition) {
+    /**
+     * <p>
+     * Rrepeats the sequence of items emitted by the source {@link Signal} until the provided stop
+     * function returns true.
+     * </p>
+     * 
+     * @param condition
+     * @return
+     */
+    public final Signal<V> repeatUntil(BooleanSupplier condition) {
         return new Signal<>((observer, disposer) -> {
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
@@ -1383,7 +1388,7 @@ public final class Signal<V> {
                     subscriber.add(to(subscriber));
                 }
             };
-            return subscriber.add(to(subscriber, disposer));
+            return to(subscriber, disposer);
         });
     }
 

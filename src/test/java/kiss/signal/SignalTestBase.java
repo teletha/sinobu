@@ -186,6 +186,15 @@ public class SignalTestBase {
          * @return
          */
         boolean completed();
+
+        /**
+         * <p>
+         * A number of message.
+         * </p>
+         * 
+         * @return
+         */
+        int size();
     }
 
     /**
@@ -247,6 +256,14 @@ public class SignalTestBase {
                 assert Objects.equals(values.get(i), expected[i]);
             }
             return true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int size() {
+            return values.size();
         }
     }
 

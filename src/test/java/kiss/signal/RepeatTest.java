@@ -9,8 +9,6 @@
  */
 package kiss.signal;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 
 /**
@@ -19,11 +17,8 @@ import org.junit.Test;
 public class RepeatTest extends SignalTestBase {
 
     @Test
-    public void repeatWhen() throws Exception {
-        AtomicInteger total = new AtomicInteger();
-        // monitor(() -> signal(1).repeat(3));
-        monitor(1, () -> signal(1).effect(total::addAndGet).repeatWhen(() -> total.get() < 3));
-
+    public void repeatUntil() throws Exception {
+        monitor(1, () -> signal(1).effect(log1).repeatUntil(() -> log1.size() < 3));
         assert result.value(1, 1, 1);
     }
 }
