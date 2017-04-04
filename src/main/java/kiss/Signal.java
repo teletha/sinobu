@@ -46,22 +46,22 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.WritableValue;
 
 /**
- * @version 2017/04/01 16:42:15
+ * @version 2017/04/04 9:22:50
  */
 public class Signal<V> {
 
     /**
      * For reuse.
      */
-    public static final Signal NEVER = new Signal<>((observer, disposable) -> disposable);
+    public static final Signal EMPTY = new Signal<>((observer, disposer) -> {
+        observer.complete();
+        return disposer;
+    });
 
     /**
      * For reuse.
      */
-    public static final Signal EMPTY = new Signal<>((observer, disposable) -> {
-        observer.complete();
-        return disposable;
-    });
+    public static final Signal NEVER = new Signal<>((observer, disposer) -> disposer);
 
     /**
      * For reuse.
@@ -2102,57 +2102,6 @@ public class Signal<V> {
 
     /**
      * <p>
-     * Create an {@link Signal} that emits true if all specified observables emit true as latest
-     * event.
-     * </p>
-     *
-     * @param observables A list of target {@link Signal} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static Signal<Boolean> all(Signal<Boolean>... observables) {
-        if (observables == null || observables.length == 0) {
-            return NEVER;
-        }
-        return from(Boolean.TRUE).combineLatest(observables, (base, other) -> base && other);
-    }
-
-    /**
-     * <p>
-     * Create an {@link Signal} that emits true if any specified observable emits true as latest
-     * event.
-     * </p>
-     *
-     * @param observables A list of target {@link Signal} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static Signal<Boolean> any(Signal<Boolean>... observables) {
-        if (observables == null || observables.length == 0) {
-            return NEVER;
-        }
-        return from(Boolean.FALSE).combineLatest(observables, (base, other) -> base || other);
-    }
-
-    /**
-     * <p>
-     * Create an {@link Signal} that emits true if all specified observables emit false as latest
-     * event.
-     * </p>
-     *
-     * @param observables A list of target {@link Signal} to test.
-     * @return Chainable API.
-     */
-    @SafeVarargs
-    public static Signal<Boolean> none(Signal<Boolean>... observables) {
-        if (observables == null || observables.length == 0) {
-            return NEVER;
-        }
-        return from(Boolean.TRUE).combineLatest(observables, (base, other) -> !base && !other);
-    }
-
-    /**
-     * <p>
      * Returns an {@link Signal} that emits the specified values.
      * </p>
      *
@@ -2161,22 +2110,7 @@ public class Signal<V> {
      */
     @SafeVarargs
     public static <V> Signal<V> from(V... values) {
-        return NEVER.complete().startWith(values);
-    }
-
-    public static <V> Signal<V> from(Supplier<V> values) {
-        return new Signal<V>((observer, disposer) -> {
-            observer.accept(values.get());
-            observer.complete();
-            return disposer;
-        });
-    }
-
-    private Signal<V> complete() {
-        return new Signal<>((observer, disposer) -> {
-            observer.complete();
-            return disposer;
-        });
+        return EMPTY.startWith(values);
     }
 
     /**
@@ -2284,13 +2218,5 @@ public class Signal<V> {
                 return (now += step) - step; // guilty?
             }
         });
-    }
-
-    public static <P, R> Function<P, Signal<R>> lift(Function<P, R> function) {
-        return p -> Signal.from(function.apply(p));
-    }
-
-    public static <P, R> Function<P, Signal<R>> liftIterable(Function<P, Iterable<R>> function) {
-        return p -> Signal.from(function.apply(p));
     }
 }

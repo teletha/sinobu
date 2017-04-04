@@ -2543,22 +2543,7 @@ public class I {
      * @return
      */
     public static <T> Signal<T> walk(T root, UnaryOperator<Signal<T>> traverser) {
-        Deque<Signal<T>> queue = new ArrayDeque();
-        queue.add(Signal.from(root));
-
-        return Signal.from("").flatMap(v -> {
-            Signal<T> result = traverser.apply(queue.pollFirst());
-            queue.addLast(result);
-            return result;
-        }).repeatWhen(() -> !queue.isEmpty());
-    }
-
-    private static <T> Signal<T> walkBFS(Deque<Signal<T>> queue, Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        if (queue.isEmpty()) {
-            return Signal.EMPTY;
-        }
-
-        return null;
+        return walkDFSPPreOrder2(Signal.from(root), traverser);
     }
 
     private static <T> Signal<T> walkDFSPPreOrder2(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
