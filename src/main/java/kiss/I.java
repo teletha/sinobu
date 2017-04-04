@@ -93,6 +93,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.BaseStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -2518,6 +2519,18 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Enumeration<V> values) {
+        return Signal.EMPTY.startWith(values);
+    }
+
+    /**
+     * <p>
+     * Signal the specified values.
+     * </p>
+     *
+     * @param values A list of values to emit.
+     * @return The {@link Signal} to emit sequencial values.
+     */
+    public static <V, S extends BaseStream<V, S>> Signal<V> signal(S values) {
         return Signal.EMPTY.startWith(values);
     }
 

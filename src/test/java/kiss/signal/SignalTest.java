@@ -1132,25 +1132,6 @@ public class SignalTest {
     }
 
     @Test
-    public void startWith() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.startWith(10));
-
-        assert subject.retrieve() == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void startWithTwice() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.startWith(0).startWith(10));
-
-        assert subject.retrieve() == 10;
-        assert subject.retrieve() == 0;
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.dispose();
-    }
-
-    @Test
     public void takeByCondition() {
         Subject<Integer, Integer> subject = new Subject<>(signal -> signal.take(value -> value % 3 == 0));
 

@@ -10,13 +10,14 @@
 package kiss.signal;
 
 import java.util.Enumeration;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 
 /**
  * @version 2017/04/02 1:53:26
  */
-public class FromTest extends SignalTestBase {
+public class SignalCreationTest extends SignalTestBase {
 
     @Test
     public void single() throws Exception {
@@ -93,6 +94,22 @@ public class FromTest extends SignalTestBase {
     @Test
     public void enumerationNull() throws Exception {
         monitor(() -> signal((Enumeration) null));
+
+        assert result.value();
+        assert result.completed();
+    }
+
+    @Test
+    public void stream() throws Exception {
+        monitor(() -> signal(stream(1, 2)));
+
+        assert result.value(1, 2);
+        assert result.completed();
+    }
+
+    @Test
+    public void streamNull() throws Exception {
+        monitor(() -> signal((Stream) null));
 
         assert result.value();
         assert result.completed();

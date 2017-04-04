@@ -17,6 +17,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 
 import kiss.Disposable;
@@ -110,6 +111,16 @@ public class SignalTestBase {
      * @return
      */
     protected <T> Signal<T> signal(Enumeration values) {
+        return I.signal(values);
+    }
+
+    /**
+     * Shorthand method of {@link I#from}
+     * 
+     * @param values
+     * @return
+     */
+    protected <T, S extends BaseStream<T, S>> Signal<T> signal(S values) {
         return I.signal(values);
     }
 

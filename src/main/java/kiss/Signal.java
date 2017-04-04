@@ -46,6 +46,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.WritableValue;
 
+import kiss.signal.StartWithTest;
+
 /**
  * @version 2017/04/04 11:25:38
  */
@@ -1664,6 +1666,7 @@ public final class Signal<V> {
      *
      * @param value The initial value.
      * @return Chainable API.
+     * @see StartWithTest#value()
      */
     public final Signal<V> startWith(V value) {
         return startWith(Arrays.asList(value));
