@@ -169,7 +169,7 @@ public class SignalTestBase {
     /**
      * @version 2017/04/04 12:59:48
      */
-    protected static interface Log extends Observer {
+    protected static interface Log<T> extends Observer<T> {
         /**
          * Validate the result values.
          * 

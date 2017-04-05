@@ -130,7 +130,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next) {
-        return to(v -> next.run(), null, null);
+        return to(v -> next.run(), null, (Runnable) null);
     }
 
     /**
@@ -475,7 +475,7 @@ public final class Signal<V> {
                 if (validSize) {
                     buffer.pollFirst();
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -506,7 +506,7 @@ public final class Signal<V> {
                 if (list.size() == 1) {
                     I.schedule(time, unit, false, () -> observer.accept(ref.getAndSet(new ArrayList())));
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -566,13 +566,13 @@ public final class Signal<V> {
                 } else {
                     observer.accept(function.apply(value, otherValue.pollFirst()));
                 }
-            }, disposer).add(other.to(value -> {
+            }, observer::error, observer::complete, disposer).add(other.to(value -> {
                 if (baseValue.isEmpty()) {
                     otherValue.add(value);
                 } else {
                     observer.accept(function.apply(baseValue.pollFirst(), value));
                 }
-            }, disposer));
+            }, observer::error, observer::complete, disposer));
         });
     }
 
@@ -672,7 +672,7 @@ public final class Signal<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(value, joined));
                 }
-            }, disposer).add(other.to(value -> {
+            }, observer::error, observer::complete, disposer).add(other.to(value -> {
                 otherValue.set(value);
 
                 V joined = baseValue.get();
@@ -680,7 +680,7 @@ public final class Signal<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(joined, value));
                 }
-            }, disposer));
+            }, observer::error, observer::complete, disposer));
         });
     }
 
@@ -838,7 +838,7 @@ public final class Signal<V> {
                 if (set.add(value)) {
                     observer.accept(value);
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1130,7 +1130,7 @@ public final class Signal<V> {
                 I.schedule(() -> interval(unit.toMillis(time), 0, buffer));
             }
             buffer.addLast(I.pair(value, observer));
-        }, disposer));
+        }, observer::error, observer::complete, disposer));
     }
 
     /**
@@ -1187,13 +1187,15 @@ public final class Signal<V> {
             return (Signal<R>) this;
         }
 
-        return new Signal<R>((observer, disposer) -> to(value -> {
-            try {
-                observer.accept(converter.apply(value));
-            } catch (Throwable e) {
-                observer.error(e);
-            }
-        }, disposer));
+        return new Signal<R>((observer, disposer) -> {
+            return to(value -> {
+                try {
+                    observer.accept(converter.apply(value));
+                } catch (Throwable e) {
+                    observer.error(e);
+                }
+            }, observer::error, observer::complete, disposer);
+        });
     }
 
     /**
@@ -1216,7 +1218,8 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<V> ref = new AtomicReference(init);
 
-            return to(value -> observer.accept(converter.apply(ref.getAndSet(value), value)), disposer);
+            return to(value -> observer
+                    .accept(converter.apply(ref.getAndSet(value), value)), observer::error, observer::complete, disposer);
         });
     }
 
@@ -1315,7 +1318,7 @@ public final class Signal<V> {
             scheduler.accept(() -> {
                 observer.accept(v);
             });
-        }, disposer));
+        }, observer::error, observer::complete, disposer));
     }
 
     /**
@@ -1411,7 +1414,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<V> latest = new AtomicReference(UNDEFINED);
 
-            return to(latest::set, disposer).add(sampler.to(sample -> {
+            return to(latest::set, observer::error, observer::complete, disposer).add(sampler.to(sample -> {
                 V value = latest.getAndSet((V) UNDEFINED);
 
                 if (value != UNDEFINED) {
@@ -1444,7 +1447,7 @@ public final class Signal<V> {
             return to(value -> {
                 ref.set(function.apply(ref.get(), value));
                 observer.accept(ref.get());
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1534,7 +1537,7 @@ public final class Signal<V> {
                 if (count < counter.incrementAndGet()) {
                     observer.accept(value);
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1562,7 +1565,7 @@ public final class Signal<V> {
                 if (timing < System.nanoTime()) {
                     observer.accept(value);
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1620,7 +1623,7 @@ public final class Signal<V> {
                     flag.set(true);
                     observer.accept(value);
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1648,7 +1651,7 @@ public final class Signal<V> {
                 if (take.get()) {
                     observer.accept(value);
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1833,7 +1836,7 @@ public final class Signal<V> {
             disposables[0] = to(value -> {
                 disposables[1].dispose();
                 disposables[1] = function.apply(value).to(observer);
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
             return () -> {
                 disposables[0].dispose();
                 disposables[1].dispose();
@@ -1889,7 +1892,7 @@ public final class Signal<V> {
                 if (condition.test(ref.getAndSet(value), value)) {
                     observer.accept(value);
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1921,7 +1924,7 @@ public final class Signal<V> {
                         disposer.dispose();
                     }
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1951,7 +1954,7 @@ public final class Signal<V> {
                     observer.complete();
                     disposer.dispose();
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1999,7 +2002,7 @@ public final class Signal<V> {
                 } else {
                     observer.accept(value);
                 }
-            }, disposer);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -2048,11 +2051,11 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicBoolean flag = new AtomicBoolean();
 
-            return condition.to(flag::set, disposer).add(to(v -> {
+            return condition.to(flag::set, observer::error, observer::complete, disposer).add(to(v -> {
                 if (flag.get()) {
                     observer.accept(v);
                 }
-            }, disposer));
+            }, observer::error, observer::complete, disposer));
         });
     }
 
