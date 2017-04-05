@@ -14,7 +14,7 @@ import java.util.stream.BaseStream;
 import org.junit.Test;
 
 /**
- * @version 2017/04/04 12:34:58
+ * @version 2017/04/06 8:47:03
  */
 public class StartWithTest extends SignalTestBase {
 
@@ -22,27 +22,40 @@ public class StartWithTest extends SignalTestBase {
     public void value() throws Exception {
         monitor(() -> signal(1, 2).startWith(0));
         assert result.value(0, 1, 2);
+        assert result.completed();
 
         monitor(() -> signal(1, 2).startWith(3, 4));
         assert result.value(3, 4, 1, 2);
+        assert result.completed();
 
         monitor(() -> signal(1, 2).startWith(3).startWith(4, 5));
         assert result.value(4, 5, 3, 1, 2);
+        assert result.completed();
     }
 
     @Test
     public void valueNull() throws Exception {
         monitor(() -> signal("1", "2").startWith((String) null));
         assert result.value(null, "1", "2");
+        assert result.completed();
 
         monitor(() -> signal("1", "2").startWith((String[]) null));
         assert result.value("1", "2");
+        assert result.completed();
     }
 
     @Test
     public void iterable() throws Exception {
         monitor(() -> signal(1, 2).startWith(list(-1, 0)));
         assert result.value(-1, 0, 1, 2);
+        assert result.completed();
+    }
+
+    @Test
+    public void iterableError() throws Exception {
+        monitor(() -> signal(1, 2).startWith(errorIterable));
+        assert result.value();
+        assert result.uncompletedWithError();
     }
 
     @Test

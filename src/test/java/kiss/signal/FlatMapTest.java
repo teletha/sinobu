@@ -14,19 +14,19 @@ import org.junit.Test;
 /**
  * @version 2017/04/06 2:37:23
  */
-public class MapTest extends SignalTestBase {
+public class FlatMapTest extends SignalTestBase {
 
     @Test
-    public void map() throws Exception {
-        monitor(() -> signal(1, 2).map(v -> v * 2));
+    public void flatMap() throws Exception {
+        monitor(() -> signal(10, 20).flatMap(v -> signal(v, v + 1)));
 
-        assert result.value(2, 4);
+        assert result.value(10, 11, 20, 21);
         assert result.completed();
     }
 
     @Test
-    public void mapNull() throws Exception {
-        monitor(() -> signal(1, 2).map(null));
+    public void flatMapNull() throws Exception {
+        monitor(() -> signal(1, 2).flatMap(null));
 
         assert result.value(1, 2);
         assert result.completed();
@@ -34,7 +34,7 @@ public class MapTest extends SignalTestBase {
 
     @Test
     public void throwError() throws Exception {
-        monitor(() -> signal(1, 2).map(errorFunction));
+        monitor(() -> signal(1, 2).flatMap(errorFunction));
 
         assert result.value();
         assert result.hasError();

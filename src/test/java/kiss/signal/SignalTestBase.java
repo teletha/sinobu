@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
 import java.util.stream.Stream;
@@ -53,6 +54,14 @@ public class SignalTestBase {
 
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
+
+    protected final Function errorFunction = e -> {
+        throw new Error();
+    };
+
+    protected final Iterable errorIterable = () -> {
+        throw new Error();
+    };
 
     /**
      * Shorthand method of {@link I#list(Object...)}.
@@ -195,6 +204,22 @@ public class SignalTestBase {
          * @return
          */
         int size();
+
+        /**
+         * <p>
+         * Validate error.
+         * </p>
+         * 
+         * @return
+         */
+        boolean hasError();
+
+        /**
+         * <p>
+         * Validate state.
+         * </p>
+         */
+        boolean uncompletedWithError();
     }
 
     /**
@@ -205,6 +230,8 @@ public class SignalTestBase {
         private List values = new ArrayList();
 
         private boolean completed;
+
+        private Throwable error;
 
         /**
          * {@inheritDoc}
@@ -227,6 +254,7 @@ public class SignalTestBase {
          */
         @Override
         public void error(Throwable error) {
+            this.error = error;
         }
 
         /**
@@ -264,6 +292,24 @@ public class SignalTestBase {
         @Override
         public int size() {
             return values.size();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean hasError() {
+            return error != null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean uncompletedWithError() {
+            assert completed == false;
+            assert error != null;
+            return true;
         }
     }
 

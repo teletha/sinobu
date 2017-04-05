@@ -36,15 +36,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
     Subscriber() {
     }
 
-    /**
-     * Shorthand to assign observer.
-     * 
-     * @param observer
-     */
-    Subscriber(Observer<T> observer) {
-        this.observer = observer;
-    }
-
     // ============================================================
     // For Observer
     // ============================================================

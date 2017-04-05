@@ -151,18 +151,6 @@ public final class Signal<V> {
      * items and notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
-     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
-     */
-    private final Disposable subscrive(Observer observer, Disposable disposer, Consumer<? super V> next) {
-        return to(next, null, null, disposer);
-    }
-
-    /**
-     * <p>
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
-     * items and notifications from the Observable.
-     *
-     * @param next A delegator method of {@link Observer#accept(Object)}.
      * @param error A delegator method of {@link Observer#error(Throwable)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
@@ -224,7 +212,16 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     private final Disposable to(Observer<? super V> observer, Disposable disposer) {
-        return subscriber.apply(observer, disposer != null ? disposer : Disposable.empty());
+        if (disposer == null) {
+            disposer = Disposable.empty();
+        }
+
+        try {
+            return subscriber.apply(observer, disposer);
+        } catch (Throwable e) {
+            observer.error(e);
+            return disposer;
+        }
     }
 
     /**
@@ -753,10 +750,6 @@ public final class Signal<V> {
         });
     }
 
-    private final <C extends Collection<V>> Signal<V> cue(C collection, UsefulTriConsumer<V, C, Observer> next) {
-        return null;
-    }
-
     /**
      * <p>
      * Drops values that are followed by newer values before a timeout. The timer resets on each
@@ -1067,8 +1060,19 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatMap(Function<V, Signal<R>> function) {
+        // ignore invalid parameter
+        if (function == null) {
+            return (Signal<R>) this;
+        }
+
         return new Signal<>((observer, disposer) -> {
-            return subscrive(observer, disposer, value -> function.apply(value).to(observer, disposer.sub()));
+            return to(value -> {
+                try {
+                    function.apply(value).to(observer, disposer.sub());
+                } catch (Throwable e) {
+                    observer.error(e);
+                }
+            }, observer::error, observer::complete, disposer);
         });
     }
 
