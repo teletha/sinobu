@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -100,10 +99,10 @@ public class SignalTestBase {
         awaits.add(await);
 
         return new Signal<>((observer, disposer) -> {
-            ScheduledFuture<?> future = service.scheduleWithFixedDelay(() -> {
+            I.schedule(time, unit, false, () -> {
                 observer.complete();
                 await.completed = true;
-            }, time, time, unit);
+            });
             return disposer;
         });
     }
@@ -113,6 +112,16 @@ public class SignalTestBase {
             for (Object value : values) {
                 observers.get(i).accept(value);
             }
+        }
+        return result;
+    }
+
+    protected final Log emitAndComplete(Object... values) {
+        for (int i = 0; i < observers.size(); i++) {
+            for (Object value : values) {
+                observers.get(i).accept(value);
+            }
+            observers.get(i).complete();
         }
         return result;
     }

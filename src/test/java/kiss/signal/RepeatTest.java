@@ -36,8 +36,9 @@ public class RepeatTest extends SignalTestBase {
 
     @Test
     public void repeatUntil() throws Exception {
-        monitor(() -> signal(1).delay(1000, ms).take(1));
+        monitor(signal -> signal.delay(10, ms).take(1).repeatUntil(completeAfter(1000, ms)));
 
-        assert result.value(1, 1);
+        assert emitAndComplete(10).value();
+        assert await().value(10, 10);
     }
 }
