@@ -18,7 +18,7 @@ public class RepeatTest extends SignalTestBase {
 
     @Test
     public void repeatUntil() throws Exception {
-        monitor(1, () -> signal(1).effect(log1).repeatUntil(() -> log1.size() < 3));
+        monitor(() -> signal(1).effect(log1).repeatUntil(() -> log1.size() < 3));
         assert result.value(1, 1, 1);
     }
 }

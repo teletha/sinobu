@@ -1725,8 +1725,10 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             Iterator<V> iterator = values.iterator();
 
-            while (iterator.hasNext() && !disposer.isDisposed()) {
-                observer.accept(iterator.next());
+            if (iterator != null) {
+                while (iterator.hasNext() && !disposer.isDisposed()) {
+                    observer.accept(iterator.next());
+                }
             }
             return to(observer, disposer);
         });

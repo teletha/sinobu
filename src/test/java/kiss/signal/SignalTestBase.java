@@ -274,6 +274,7 @@ public class SignalTestBase {
         @Override
         public boolean completed() {
             assert completed;
+            assert error == null;
             return true;
         }
 
