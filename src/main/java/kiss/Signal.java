@@ -535,7 +535,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -641,7 +641,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -936,25 +936,8 @@ public final class Signal<V> {
      * @param resumer
      * @return
      */
-    public final Signal<V> errorResume(Function<? super Throwable, ? extends V> resumer) {
-        return error(false, (subscriber, e, disposer) -> {
-            subscriber.observer.accept(resumer.apply(e));
-        });
-    }
-
-    /**
-     * <p>
-     * Instructs an Observable to emit an item (returned by a specified function) rather than
-     * invoking onError if it encounters an error.
-     * </p>
-     * 
-     * @param resumer
-     * @return
-     */
     public final Signal<V> errorResume(Signal<? extends V> resumer) {
-        return error(false, (subscriber, e, disposer) -> {
-            subscriber.add(resumer.to(subscriber.observer, disposer));
-        });
+        return errorResume(e -> resumer);
     }
 
     /**
@@ -966,49 +949,9 @@ public final class Signal<V> {
      * @param resumer
      * @return
      */
-    public final Signal<V> errorEnd(Function<? super Throwable, ? extends V> resumer) {
-        return error(true, (subscriber, e, disposer) -> {
-            subscriber.observer.accept(resumer.apply(e));
-        });
-    }
-
-    /**
-     * <p>
-     * Instructs an Observable to emit an item (returned by a specified function) rather than
-     * invoking onError if it encounters an error.
-     * </p>
-     * 
-     * @param resumer
-     * @return
-     */
-    public final Signal<V> errorEnd(Signal<? extends V> resumer) {
-        return error(true, (subscriber, e, disposer) -> {
-            subscriber.add(resumer.to(subscriber.observer, disposer));
-        });
-    }
-
-    /**
-     * <p>
-     * Instructs an Observable to emit an item (returned by a specified function) rather than
-     * invoking onError if it encounters an error.
-     * </p>
-     * 
-     * @param resumer
-     * @return
-     */
-    private Signal<V> error(boolean shouldComplete, UsefulTriConsumer<Subscriber<V>, ? super Throwable, Disposable> process) {
+    public final Signal<V> errorResume(Function<? super Throwable, Signal<? extends V>> resumer) {
         return new Signal<>((observer, disposer) -> {
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.error = value -> {
-                process.accept(subscriber, value, disposer);
-
-                if (shouldComplete) {
-                    observer.complete();
-                    subscriber.dispose();
-                }
-            };
-            return subscriber.add(to(subscriber, disposer));
+            return to(observer::accept, e -> resumer.apply(e).to(observer, disposer), observer::complete, disposer);
         });
     }
 
@@ -1067,11 +1010,7 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                try {
-                    function.apply(value).to(observer, disposer.sub());
-                } catch (Throwable e) {
-                    observer.error(e);
-                }
+                function.apply(value).to(observer, disposer.sub());
             }, observer::error, observer::complete, disposer);
         });
     }
@@ -1192,13 +1131,7 @@ public final class Signal<V> {
         }
 
         return new Signal<R>((observer, disposer) -> {
-            return to(value -> {
-                try {
-                    observer.accept(converter.apply(value));
-                } catch (Throwable e) {
-                    observer.error(e);
-                }
-            }, observer::error, observer::complete, disposer);
+            return to(value -> observer.accept(converter.apply(value)), observer::error, observer::complete, disposer);
         });
     }
 

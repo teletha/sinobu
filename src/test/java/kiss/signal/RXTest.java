@@ -20,7 +20,7 @@ public class RXTest extends SignalTestBase {
 
     @Test
     public void testname() throws Exception {
-        Observable.just(1, 2).startWith(errorIterable).subscribe(v -> {
+        Observable.just(1, 2).startWith(errorIterable()).onErrorResumeNext((Throwable e) -> Observable.just(10)).subscribe(v -> {
             System.out.println("value  " + v);
         }, e -> {
             System.out.println("erro " + e);

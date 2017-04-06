@@ -30,7 +30,6 @@ import org.junit.Test;
 import antibug.Chronus;
 import kiss.I;
 import kiss.Signal;
-import kiss.UsefulFunction;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
@@ -532,82 +531,6 @@ public class SignalTest {
         assert subject.recorder.hasError() == false;
         subject.error(Error.class);
         assert subject.recorder.hasError() == true;
-    }
-
-    @Test
-    public void errorResumeException() {
-        UsefulFunction<Integer, Integer> thrower = v -> {
-            if (v == 30) {
-                throw new Exception();
-            } else {
-                return v;
-            }
-        };
-
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorResume(e -> 300));
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.isNotCompleted();
-        assert subject.emitAndRetrieve(30) == 300;
-        assert subject.isNotCompleted();
-    }
-
-    @Test
-    public void errorResumeError() {
-        Function<Integer, Integer> thrower = v -> {
-            if (v == 30) {
-                throw new Error();
-            } else {
-                return v;
-            }
-        };
-
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorResume(e -> 300));
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.isNotCompleted();
-        assert subject.emitAndRetrieve(30) == 300;
-        assert subject.isNotCompleted();
-    }
-
-    @Test
-    public void errorResumesignal() {
-        Function<Integer, Integer> thrower = v -> {
-            if (v == 30) {
-                throw new Error();
-            } else {
-                return v;
-            }
-        };
-
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorResume(I.signal(1, 2)));
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.isNotCompleted();
-        assert subject.emitAndRetrieve(30) == 1;
-        assert subject.retrieve() == 2;
-        assert subject.isNotCompleted();
-        assert subject.emitAndRetrieve(40) == 40;
-        assert subject.emitAndRetrieve(30) == 1;
-        assert subject.retrieve() == 2;
-    }
-
-    @Test
-    public void errorEnd() {
-        Function<Integer, Integer> thrower = v -> {
-            if (v == 30) {
-                throw new Error();
-            } else {
-                return v;
-            }
-        };
-
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(thrower).errorEnd(e -> 300));
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.isNotCompleted();
-        assert subject.emitAndRetrieve(30) == 300;
-        assert subject.isCompleted();
     }
 
     @Test

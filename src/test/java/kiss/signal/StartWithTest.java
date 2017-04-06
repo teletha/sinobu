@@ -53,9 +53,9 @@ public class StartWithTest extends SignalTestBase {
 
     @Test
     public void iterableError() throws Exception {
-        monitor(() -> signal(1, 2).startWith(errorIterable));
+        monitor(() -> signal(1, 2).startWith(errorIterable()));
         assert result.value();
-        assert result.uncompletedWithError();
+        assert result.isError();
     }
 
     @Test

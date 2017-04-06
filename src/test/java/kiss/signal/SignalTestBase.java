@@ -55,13 +55,27 @@ public class SignalTestBase {
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
 
-    protected final Function errorFunction = e -> {
-        throw new Error();
+    /**
+     * Create generic error {@link Function}.
+     * 
+     * @return
+     */
+    protected final <P, R> Function<P, R> errorFunction() {
+        return e -> {
+            throw new Error();
+        };
     };
 
-    protected final Iterable errorIterable = () -> {
-        throw new Error();
-    };
+    /**
+     * Create generic error {@link Iterable}.
+     * 
+     * @return
+     */
+    protected final <T> Iterable<T> errorIterable() {
+        return () -> {
+            throw new Error();
+        };
+    }
 
     /**
      * Shorthand method of {@link I#list(Object...)}.
@@ -212,14 +226,7 @@ public class SignalTestBase {
          * 
          * @return
          */
-        boolean hasError();
-
-        /**
-         * <p>
-         * Validate state.
-         * </p>
-         */
-        boolean uncompletedWithError();
+        boolean isError();
     }
 
     /**
@@ -298,17 +305,9 @@ public class SignalTestBase {
          * {@inheritDoc}
          */
         @Override
-        public boolean hasError() {
-            return error != null;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean uncompletedWithError() {
-            assert completed == false;
+        public boolean isError() {
             assert error != null;
+            assert completed == false;
             return true;
         }
     }

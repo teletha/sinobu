@@ -34,10 +34,9 @@ public class MapTest extends SignalTestBase {
 
     @Test
     public void throwError() throws Exception {
-        monitor(() -> signal(1, 2).map(errorFunction));
+        monitor(() -> signal(1, 2).map(errorFunction()));
 
         assert result.value();
-        assert result.hasError();
-        assert result.completed();
+        assert result.isError();
     }
 }
