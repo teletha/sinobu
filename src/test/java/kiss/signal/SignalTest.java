@@ -24,7 +24,6 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SetProperty;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import antibug.Chronus;
@@ -38,7 +37,6 @@ import kiss.Ⅲ;
  */
 public class SignalTest {
 
-    @ClassRule
     public static final Chronus chronus = new Chronus(I.class);
 
     @Test
@@ -440,21 +438,6 @@ public class SignalTest {
         subject.emit(66);
         chronus.await();
         assert subject.retrieve() == 66;
-    }
-
-    @Test
-    public void delay() throws Exception {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.delay(10, MILLISECONDS));
-
-        assert subject.emitAndRetrieve(10) == null;
-        chronus.await();
-        assert subject.retrieve() == 10;
-
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == null;
-        chronus.await();
-        assert subject.retrieve() == 20;
-        assert subject.retrieve() == 30;
     }
 
     @Test

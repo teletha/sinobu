@@ -9,6 +9,8 @@
  */
 package kiss.signal;
 
+import java.util.function.BooleanSupplier;
+
 import org.junit.Test;
 
 /**
@@ -17,8 +19,25 @@ import org.junit.Test;
 public class RepeatTest extends SignalTestBase {
 
     @Test
-    public void repeatUntil() throws Exception {
-        monitor(() -> signal(1).effect(log1).repeatUntil(() -> log1.size() < 3));
+    public void repeatIf() throws Exception {
+        monitor(() -> signal(1).effect(log1).repeatIf(() -> log1.size() < 3));
+        assert log1.value(1, 1, 1);
         assert result.value(1, 1, 1);
+        assert result.completed();
+    }
+
+    @Test
+    public void repeatIfNull() throws Exception {
+        monitor(() -> signal(1).effect(log1).repeatIf((BooleanSupplier) null));
+        assert log1.value(1);
+        assert result.value(1);
+        assert result.completed();
+    }
+
+    @Test
+    public void repeatUntil() throws Exception {
+        monitor(() -> signal(1).delay(1000, ms).take(1));
+
+        assert result.value(1, 1);
     }
 }

@@ -742,7 +742,7 @@ public final class Signal<V> {
                 items.add(v);
 
                 if (items.size() == 1) {
-                    flatMap(x -> other.apply(items.pollFirst())).repeatUntil(() -> !items.isEmpty()).to(observer, disposer);
+                    flatMap(x -> other.apply(items.pollFirst())).repeatIf(() -> !items.isEmpty()).to(observer, disposer);
                 }
             };
 
@@ -800,7 +800,17 @@ public final class Signal<V> {
             return this;
         }
 
-        return on((observer, value) -> I.schedule(time, unit, false, () -> observer.accept(value)));
+        return new Signal<>((observer, disposer) -> {
+            return to(value -> {
+                Future<?> future = I.schedule(time, unit, false, () -> {
+                    if (disposer.isDisposed() == false) {
+                        observer.accept(value);
+                    }
+                });
+
+                disposer.add(() -> future.cancel(true));
+            }, observer::error, observer::complete, disposer);
+        });
     }
 
     /**
@@ -848,14 +858,11 @@ public final class Signal<V> {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> {
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.next = v -> {
-                effect.accept(v);
-                observer.accept(v);
-            };
-            return to(subscriber, disposer);
+        return new Signal<V>((observer, disposer) -> {
+            return to(value -> {
+                effect.accept(value);
+                observer.accept(value);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1316,16 +1323,39 @@ public final class Signal<V> {
      * @param condition
      * @return
      */
-    public final Signal<V> repeatUntil(BooleanSupplier condition) {
+    public final Signal<V> repeatIf(BooleanSupplier condition) {
+        if (condition == null) {
+            return this;
+        }
+
         return new Signal<>((observer, disposer) -> {
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.complete = () -> {
-                if (condition.getAsBoolean() == false) {
-                    observer.complete();
-                } else {
-                    observer.complete();
-                    subscriber.add(to(subscriber));
+                observer.complete();
+                if (condition.getAsBoolean()) to(subscriber, disposer);
+            };
+            return to(subscriber, disposer);
+        });
+    }
+
+    public final Signal<V> repeatUntil(Signal stopper) {
+        return new Signal<>((observer, disposer) -> {
+            AtomicBoolean stop = new AtomicBoolean();
+
+            stopper.to(null, null, () -> {
+                System.out.println("set true");
+                stop.set(true);
+            }, disposer.sub());
+
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.complete = () -> {
+                observer.complete();
+
+                if (!stop.get()) {
+                    System.out.println("repeat");
+                    to(subscriber, disposer);
                 }
             };
             return to(subscriber, disposer);

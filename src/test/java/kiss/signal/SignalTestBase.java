@@ -16,11 +16,16 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 
+import antibug.Chronus;
 import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
@@ -31,8 +36,15 @@ import kiss.Signal;
  */
 public class SignalTestBase {
 
+    private static final Chronus clock = new Chronus(I.class);
+
+    private static final ScheduledExecutorService service = Executors.newScheduledThreadPool(4);
+
     /** default multiplicity */
     private static final int multiplicity = 2;
+
+    /** Shorthand for {@link TimeUnit#MILLISECONDS}. */
+    protected static final TimeUnit ms = TimeUnit.MILLISECONDS;
 
     /** READ ONLY : DON'T MODIFY in test case */
     protected Log result = null;
@@ -55,6 +67,12 @@ public class SignalTestBase {
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
 
+    /** READ ONLY : DON'T MODIFY in test case */
+    private final List<Observer> observers = new ArrayList();
+
+    /** READ ONLY : DON'T MODIFY in test case */
+    private final List<Await> awaits = new ArrayList();
+
     /**
      * Create generic error {@link Function}.
      * 
@@ -75,6 +93,34 @@ public class SignalTestBase {
         return () -> {
             throw new Error();
         };
+    }
+
+    protected final Signal completeAfter(int time, TimeUnit unit) {
+        Await await = new Await();
+        awaits.add(await);
+
+        return new Signal<>((observer, disposer) -> {
+            ScheduledFuture<?> future = service.scheduleWithFixedDelay(() -> {
+                observer.complete();
+                await.completed = true;
+            }, time, time, unit);
+            return disposer;
+        });
+    }
+
+    protected final Log emit(Object... values) {
+        for (int i = 0; i < observers.size(); i++) {
+            for (Object value : values) {
+                observers.get(i).accept(value);
+            }
+        }
+        return result;
+    }
+
+    protected final Log await() {
+        clock.await();
+
+        return result;
     }
 
     /**
@@ -108,7 +154,7 @@ public class SignalTestBase {
     }
 
     /**
-     * Shorthand method of {@link I#from}
+     * Shorthand method of {@link I#signal(Object...)}
      * 
      * @param values
      * @return
@@ -118,7 +164,17 @@ public class SignalTestBase {
     }
 
     /**
-     * Shorthand method of {@link I#from}
+     * Shorthand method of {@link I#signalInfinite(Object, long, TimeUnit)}
+     * 
+     * @param values
+     * @return
+     */
+    protected <T> Signal<T> signal(T value, int time, TimeUnit unit) {
+        return I.signalInfinite(value, time, unit);
+    }
+
+    /**
+     * Shorthand method of {@link I#signal(Iterable)}
      * 
      * @param values
      * @return
@@ -128,7 +184,7 @@ public class SignalTestBase {
     }
 
     /**
-     * Shorthand method of {@link I#from}
+     * Shorthand method of {@link I#signal(Enumeration)}
      * 
      * @param values
      * @return
@@ -138,7 +194,7 @@ public class SignalTestBase {
     }
 
     /**
-     * Shorthand method of {@link I#from}
+     * Shorthand method of {@link I#signal(BaseStream)}
      * 
      * @param values
      * @return
@@ -180,6 +236,63 @@ public class SignalTestBase {
             sets[i].disposer = signal.get().to(result);
         }
 
+        // await all awaitable signal
+        for (Await awaiter : awaits) {
+            awaiter.await();
+        }
+
+        log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
+        log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
+        log3 = I.bundle(stream(sets).map(e -> e.log3).collect(toList()));
+        log4 = I.bundle(stream(sets).map(e -> e.log4).collect(toList()));
+        log5 = I.bundle(stream(sets).map(e -> e.log5).collect(toList()));
+        result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
+        disposer = I.bundle(Disposable.class, stream(sets).map(e -> e.disposer).collect(toList()));
+    }
+
+    /**
+     * <p>
+     * Monitor signal to test.
+     * </p>
+     * 
+     * @param signal
+     */
+    protected void monitor(Function<Signal, Signal> signal) {
+        monitor(multiplicity, signal);
+    }
+
+    /**
+     * <p>
+     * Monitor signal to test.
+     * </p>
+     * 
+     * @param signal
+     */
+    protected void monitor(int multiplicity, Function<Signal, Signal> signal) {
+        LogSet[] sets = new LogSet[multiplicity];
+
+        for (int i = 0; i < multiplicity; i++) {
+            sets[i] = new LogSet();
+            log1 = sets[i].log1;
+            log2 = sets[i].log2;
+            log3 = sets[i].log3;
+            log4 = sets[i].log4;
+            log5 = sets[i].log5;
+            result = sets[i].result;
+
+            Signal s = new Signal<>((observer, disposer) -> {
+                observers.add(observer);
+                return disposer.add(() -> observers.remove(observer));
+            });
+
+            sets[i].disposer = signal.apply(s).to(result);
+        }
+
+        // await all awaitable signal
+        for (Await awaiter : awaits) {
+            awaiter.await();
+        }
+
         log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
         log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
         log3 = I.bundle(stream(sets).map(e -> e.log3).collect(toList()));
@@ -193,6 +306,15 @@ public class SignalTestBase {
      * @version 2017/04/04 12:59:48
      */
     protected static interface Log<T> extends Observer<T> {
+        /**
+         * <p>
+         * Eject the head value.
+         * </p>
+         * 
+         * @return
+         */
+        Object retrieve();
+
         /**
          * Validate the result values.
          * 
@@ -279,7 +401,15 @@ public class SignalTestBase {
         }
 
         /**
-         * Validate the result values.
+         * {@inheritDoc}
+         */
+        @Override
+        public Object retrieve() {
+            return values.isEmpty() ? null : values.remove(0);
+        }
+
+        /**
+         * Validate the result values and clear them from log.
          * 
          * @param expected
          * @return
@@ -291,6 +421,7 @@ public class SignalTestBase {
             for (int i = 0; i < expected.length; i++) {
                 assert Objects.equals(values.get(i), expected[i]);
             }
+            values.clear();
             return true;
         }
 
@@ -311,12 +442,13 @@ public class SignalTestBase {
             assert completed == false;
             return true;
         }
+
     }
 
     /**
      * @version 2017/04/04 12:52:06
      */
-    private static class LogSet {
+    private class LogSet {
 
         Log result = new Logger();
 
@@ -331,5 +463,32 @@ public class SignalTestBase {
         Log log5 = new Logger();
 
         Disposable disposer;
+    }
+
+    /**
+     * @version 2017/04/06 12:38:00
+     */
+    private class Await {
+
+        boolean completed;
+
+        /**
+         * Await completed event.
+         */
+        private void await() {
+            int count = 0;
+
+            while (completed == false) {
+                try {
+                    Thread.sleep(10);
+
+                    if (100 < count) {
+                        throw new IllegalThreadStateException("Test must execute within 1 sec.");
+                    }
+                } catch (InterruptedException e) {
+                    throw I.quiet(e);
+                }
+            }
+        }
     }
 }
