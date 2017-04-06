@@ -18,6 +18,12 @@ import org.junit.Test;
  */
 public class RepeatTest extends SignalTestBase {
 
+    public void repeat() throws Exception {
+        monitor(() -> signal(1, 2).skip(1).take(1).repeat().take(6));
+
+        assert result.value(2, 2, 2, 2, 2, 2, 2);
+    }
+
     @Test
     public void repeatIf() throws Exception {
         monitor(() -> signal(1).effect(log1).repeatIf(() -> log1.size() < 3));
@@ -34,11 +40,10 @@ public class RepeatTest extends SignalTestBase {
         assert result.completed();
     }
 
-    @Test
     public void repeatUntil() throws Exception {
-        monitor(signal -> signal.delay(10, ms).take(1).repeatUntil(completeAfter(1000, ms)));
+        monitor(signal -> signal.delay(10, ms).take(1).repeat(2));
 
-        assert emitAndComplete(10).value();
+        assert emit(10, 20).value();
         assert await().value(10, 10);
     }
 }

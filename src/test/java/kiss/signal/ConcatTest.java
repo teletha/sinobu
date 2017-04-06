@@ -11,6 +11,7 @@ package kiss.signal;
 
 import static java.util.concurrent.TimeUnit.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import kiss.Signal;
@@ -63,6 +64,7 @@ public class ConcatTest extends SignalTestBase {
     }
 
     @Test
+    @Ignore
     public void map() throws Exception {
         monitor(() -> signal(10, 20).concatMap(v -> signal(v + 1, v + 2).interval(50, MILLISECONDS)));
 

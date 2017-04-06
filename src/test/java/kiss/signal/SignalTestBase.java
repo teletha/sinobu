@@ -16,8 +16,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -36,8 +34,6 @@ import kiss.Signal;
 public class SignalTestBase {
 
     private static final Chronus clock = new Chronus(I.class);
-
-    private static final ScheduledExecutorService service = Executors.newScheduledThreadPool(4);
 
     /** default multiplicity */
     private static final int multiplicity = 2;
@@ -110,18 +106,9 @@ public class SignalTestBase {
     protected final Log emit(Object... values) {
         for (int i = 0; i < observers.size(); i++) {
             for (Object value : values) {
+                System.out.println("emit " + value + " ont " + observers.get(i));
                 observers.get(i).accept(value);
             }
-        }
-        return result;
-    }
-
-    protected final Log emitAndComplete(Object... values) {
-        for (int i = 0; i < observers.size(); i++) {
-            for (Object value : values) {
-                observers.get(i).accept(value);
-            }
-            observers.get(i).complete();
         }
         return result;
     }

@@ -33,6 +33,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
@@ -535,7 +536,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -641,7 +642,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -1834,6 +1835,22 @@ public final class Signal<V> {
             if (condition.test(value)) {
                 observer.accept(value);
             }
+        });
+    }
+
+    public final Signal<V> takeAt(IntPredicate condition) {
+        if (condition == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            AtomicInteger index = new AtomicInteger();
+
+            return to(value -> {
+                if (condition.test(index.getAndIncrement())) {
+                    observer.accept(value);
+                }
+            }, observer::error, observer::complete, disposer);
         });
     }
 
