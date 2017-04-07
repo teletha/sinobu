@@ -9,6 +9,8 @@
  */
 package kiss.signal;
 
+import java.util.function.Predicate;
+
 import org.junit.Test;
 
 /**
@@ -17,15 +19,24 @@ import org.junit.Test;
 public class TakeTest extends SignalTestBase {
 
     @Test
-    public void takeByValueCondition() {
-        monitor(() -> signal(1, 2, 3, 4, 5, 6).take(value -> value % 3 == 0));
+    public void takeByValue() {
+        monitor(signal -> signal.take(value -> value % 2 == 0));
+        monitor(() -> signal(1, 2, 3, 4).take(value -> value % 2 == 0));
 
-        assert result.value(3, 6);
+        assert result.value(2, 4);
         assert result.completed();
     }
 
     @Test
-    public void takeByValueConditionWithPrevious() {
+    public void takeByValueNull() {
+        monitor(() -> signal(1, 2, 3, 4).take((Predicate) null));
+
+        assert result.value(1, 2, 3, 4);
+        assert result.completed();
+    }
+
+    @Test
+    public void takeByValueWithPrevious() {
         monitor(() -> signal(10, 11, 20, 21).take(0, (prev, now) -> now - prev > 5));
 
         assert result.value(10, 20);

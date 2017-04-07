@@ -999,30 +999,6 @@ public class SignalTest {
     }
 
     @Test
-    public void takeByCondition() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.take(value -> value % 3 == 0));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == 30;
-        assert subject.emitAndRetrieve(40) == null;
-        assert subject.emitAndRetrieve(50) == null;
-        assert subject.emitAndRetrieve(60) == 60;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void takeByConditionWithPreviousValue() {
-        Subject<Integer, Integer> subject = new Subject<>(e -> e.take(0, (prev, value) -> value - prev > 5));
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(11) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(22) == null;
-        assert subject.dispose();
-    }
-
-    @Test
     public void takeByConditionEvent() {
         Subject<Boolean, Boolean> condition = new Subject();
         Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeWhile(condition.signal()));

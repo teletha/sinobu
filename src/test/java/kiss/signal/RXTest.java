@@ -9,8 +9,6 @@
  */
 package kiss.signal;
 
-import org.junit.Test;
-
 import io.reactivex.Observable;
 
 /**
@@ -18,8 +16,11 @@ import io.reactivex.Observable;
  */
 public class RXTest extends SignalTestBase {
 
-    @Test
-    public void testname() throws Exception {
+    public static void main(String[] args) {
+        new RXTest().test();
+    }
+
+    private void test() {
         Observable.just(1, 2).startWith(errorIterable()).onErrorResumeNext((Throwable e) -> Observable.just(10)).subscribe(v -> {
             System.out.println("value  " + v);
         }, e -> {
