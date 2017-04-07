@@ -14,9 +14,7 @@ import static java.util.concurrent.TimeUnit.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import javafx.beans.property.BooleanProperty;
@@ -51,7 +49,7 @@ public class SignalTest {
     @Test
     public void toAlternate() {
         Subject<Integer, Integer> subject = new Subject<>();
-        SetProperty<Integer> set = subject.observe().toAlternate();
+        SetProperty<Integer> set = subject.signal().toAlternate();
 
         subject.emit(10);
         assert set.size() == 1;
@@ -77,7 +75,7 @@ public class SignalTest {
     @Test
     public void toBinary() {
         Subject<Integer, Integer> subject = new Subject<>();
-        BooleanProperty binary = subject.observe().toBinary();
+        BooleanProperty binary = subject.signal().toBinary();
 
         subject.emit(10);
         assert binary.get() == true;
@@ -95,7 +93,7 @@ public class SignalTest {
     @Test
     public void toList() {
         Subject<Integer, Integer> subject = new Subject<>();
-        ListProperty<Integer> list = subject.observe().toList();
+        ListProperty<Integer> list = subject.signal().toList();
 
         subject.emit(10);
         assert list.size() == 1;
@@ -118,7 +116,7 @@ public class SignalTest {
     @Test
     public void toMultiList() {
         Subject<Integer, Integer> subject = new Subject<>();
-        Signal<Integer> signal = subject.observe();
+        Signal<Integer> signal = subject.signal();
         ListProperty<Integer> list1 = signal.toList();
         ListProperty<Integer> list2 = signal.toList();
 
@@ -138,7 +136,7 @@ public class SignalTest {
     @Test
     public void toMap() {
         Subject<Integer, Integer> subject = new Subject<>();
-        MapProperty<String, Integer> map = subject.observe().toMap(v -> String.valueOf(v));
+        MapProperty<String, Integer> map = subject.signal().toMap(v -> String.valueOf(v));
 
         subject.emit(10);
         assert map.size() == 1;
@@ -157,7 +155,7 @@ public class SignalTest {
     @Test
     public void toSet() {
         Subject<Integer, Integer> subject = new Subject<>();
-        SetProperty<Integer> set = subject.observe().toSet();
+        SetProperty<Integer> set = subject.signal().toSet();
 
         subject.emit(10);
         assert set.size() == 1;
@@ -255,7 +253,7 @@ public class SignalTest {
     public void combine() {
         Subject<Integer, Integer> sub = new Subject<>();
         Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> signal
-                .combine(sub.observe(), (base, other) -> base + other));
+                .combine(sub.signal(), (base, other) -> base + other));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -281,7 +279,7 @@ public class SignalTest {
     @Test
     public void combineBinary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
-        Subject<String, Ⅱ<String, Integer>> main = new Subject<>(signal -> signal.combine(other.observe()));
+        Subject<String, Ⅱ<String, Integer>> main = new Subject<>(signal -> signal.combine(other.signal()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -307,7 +305,7 @@ public class SignalTest {
     public void combineTernary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
         Subject<Double, Double> another = new Subject<>();
-        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(signal -> signal.combine(other.observe(), another.observe()));
+        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(signal -> signal.combine(other.signal(), another.signal()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -328,7 +326,7 @@ public class SignalTest {
     public void combineLatest() {
         Subject<Integer, Integer> sub = new Subject<>();
         Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> signal
-                .combineLatest(sub.observe(), (base, other) -> base + other));
+                .combineLatest(sub.signal(), (base, other) -> base + other));
 
         assert subject.emitAndRetrieve(1) == null;
         assert subject.emitAndRetrieve(2) == null;
@@ -348,7 +346,7 @@ public class SignalTest {
     @Test
     public void combineLatestBinary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
-        Subject<String, Ⅱ<String, Integer>> main = new Subject<String, Ⅱ<String, Integer>>(signal -> signal.combineLatest(other.observe()));
+        Subject<String, Ⅱ<String, Integer>> main = new Subject<String, Ⅱ<String, Integer>>(signal -> signal.combineLatest(other.signal()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -374,8 +372,7 @@ public class SignalTest {
     public void combineLatestTernary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
         Subject<Double, Double> another = new Subject<>();
-        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(signal -> signal
-                .combineLatest(other.observe(), another.observe()));
+        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(signal -> signal.combineLatest(other.signal(), another.signal()));
 
         main.emit("1");
         assert main.retrieve() == null;
@@ -481,42 +478,6 @@ public class SignalTest {
     }
 
     @Test
-    public void effect() {
-        Set<Integer> list = new HashSet();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.effect(list::add));
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert list.contains(10);
-        assert subject.emitAndRetrieve(20) == 20;
-        assert list.contains(20);
-    }
-
-    @Test
-    public void effectNull() {
-        Signal<Integer> from = I.signal(0);
-        Signal<Integer> effect = from.effect(null);
-        assert from == effect;
-    }
-
-    @Test
-    public void effectOnComplete() throws Exception {
-        Subject<Integer, Integer> subject = Subject.recorde(r -> e -> e.effectOnComplete(r::complete));
-
-        assert subject.recorder.isNotCompleted();
-        subject.complete();
-        assert subject.recorder.isCompleted();
-    }
-
-    @Test
-    public void effectOnError() throws Exception {
-        Subject<Integer, Integer> subject = Subject.recorde(r -> e -> e.effectOnError(r::error));
-
-        assert subject.recorder.hasError() == false;
-        subject.error(Error.class);
-        assert subject.recorder.hasError() == true;
-    }
-
-    @Test
     public void flatArray() {
         Subject<String, String> subject = new Subject<>(signal -> signal.flatArray(v -> v.split("")));
 
@@ -553,7 +514,7 @@ public class SignalTest {
     public void flatMap() {
         Subject<String, String> emitA = new Subject();
         Subject<String, String> emitB = new Subject();
-        Subject<Integer, String> subject = new Subject<>(signal -> signal.flatMap(x -> x == 1 ? emitA.observe() : emitB.observe()));
+        Subject<Integer, String> subject = new Subject<>(signal -> signal.flatMap(x -> x == 1 ? emitA.signal() : emitB.signal()));
 
         subject.emit(1); // connect to emitA
         assert subject.retrieve() == null; // emitA doesn't emit value yet
@@ -581,7 +542,7 @@ public class SignalTest {
     public void switchMap() {
         Subject<String, String> emitA = new Subject();
         Subject<String, String> emitB = new Subject();
-        Subject<Integer, String> subject = new Subject<>(signal -> signal.switchMap(x -> x == 1 ? emitA.observe() : emitB.observe()));
+        Subject<Integer, String> subject = new Subject<>(signal -> signal.switchMap(x -> x == 1 ? emitA.signal() : emitB.signal()));
 
         subject.emit(1); // connect to emitA
         assert subject.retrieve() == null; // emitA doesn't emit value yet
@@ -643,7 +604,7 @@ public class SignalTest {
     @Test
     public void merge() {
         Subject<Integer, Integer> subject2 = new Subject<>();
-        Subject<Integer, Integer> subject1 = new Subject<>(signal -> signal.merge(subject2.observe()));
+        Subject<Integer, Integer> subject1 = new Subject<>(signal -> signal.merge(subject2.signal()));
 
         // from subject1
         assert subject1.emitAndRetrieve(10) == 10;
@@ -666,9 +627,9 @@ public class SignalTest {
         Subject<Integer, Integer> subject2 = new Subject<>();
 
         List<Signal<Integer>> list = new ArrayList();
-        list.add(subject2.observe());
-        list.add(subject3.observe());
-        list.add(subject4.observe());
+        list.add(subject2.signal());
+        list.add(subject3.signal());
+        list.add(subject4.signal());
 
         Subject<Integer, Integer> subject1 = new Subject<>(signal -> signal.merge(list));
 
@@ -760,7 +721,7 @@ public class SignalTest {
     @Test
     public void repeatTakeUntil() {
         Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat().takeUntil(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat().takeUntil(condition.signal()));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
@@ -779,7 +740,7 @@ public class SignalTest {
     @Test
     public void repeatThen() {
         Subject<Integer, Integer> sub = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(2).repeat().merge(sub.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(2).repeat().merge(sub.signal()));
 
         // from main subject
         assert subject.emitAndRetrieve(10) == null;
@@ -807,7 +768,7 @@ public class SignalTest {
     @Test
     public void sampleBySamplersignal() {
         Subject<String, String> sampler = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.sample(sampler.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.sample(sampler.signal()));
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
         assert subject.emitAndRetrieve(30) == null;
@@ -888,7 +849,7 @@ public class SignalTest {
     @Test
     public void skipByConditionEvent() {
         Subject<Boolean, Boolean> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipWhile(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipWhile(condition.signal()));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;
@@ -939,7 +900,7 @@ public class SignalTest {
     @Test
     public void skipUntil() {
         Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(condition.signal()));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -954,7 +915,7 @@ public class SignalTest {
     @Test
     public void skipUntilWithRepeat() throws Exception {
         Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(condition.observe()).take(1).repeat());
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(condition.signal()).take(1).repeat());
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1064,7 +1025,7 @@ public class SignalTest {
     @Test
     public void takeByConditionEvent() {
         Subject<Boolean, Boolean> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeWhile(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeWhile(condition.signal()));
 
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == null;
@@ -1104,7 +1065,7 @@ public class SignalTest {
     @Test
     public void takeUntil() {
         Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(condition.observe()));
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(condition.signal()));
 
         assert subject.emitAndRetrieve(10) == 10;
         assert subject.emitAndRetrieve(20) == 20;

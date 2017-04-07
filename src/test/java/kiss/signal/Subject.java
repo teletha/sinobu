@@ -19,9 +19,9 @@ import java.util.function.Function;
 import javafx.beans.property.Property;
 
 import kiss.Disposable;
-import kiss.Signal;
 import kiss.I;
 import kiss.Observer;
+import kiss.Signal;
 
 /**
  * @version 2017/03/21 23:11:40
@@ -66,7 +66,7 @@ public class Subject<V, R> {
             Listener<R> listener = new Listener<>();
             listeners.add(listener);
 
-            disposables.add(declaration.apply(observe()).to(listener));
+            disposables.add(declaration.apply(signal()).to(listener));
         }
     }
 
@@ -84,7 +84,7 @@ public class Subject<V, R> {
             Listener<R> listener = new Listener<>();
             listeners.add(listener);
 
-            disposables.add(declaration.apply(observe(), this).to(listener));
+            disposables.add(declaration.apply(signal(), this).to(listener));
         }
     }
 
@@ -105,7 +105,7 @@ public class Subject<V, R> {
             recordes[i] = new Recorder();
 
             subject.listeners.add(listener);
-            subject.disposables.add(declaration.apply(recordes[i]).apply(subject.observe()).to(listener));
+            subject.disposables.add(declaration.apply(recordes[i]).apply(subject.signal()).to(listener));
         }
         subject.recorder = I.bundle(recordes);
         return subject;
@@ -132,7 +132,7 @@ public class Subject<V, R> {
      * 
      * @return
      */
-    public Signal<V> observe() {
+    public Signal<V> signal() {
         return new Signal<>((observer, disposer) -> {
             if (observer != null) observers.add(observer);
 
@@ -151,12 +151,12 @@ public class Subject<V, R> {
      * @return
      */
     public Signal<V> observeWith(V... values) {
-        return observe().startWith(values);
+        return signal().startWith(values);
     }
 
     /**
      * <p>
-     * Helper method to emit the specified event.
+     * Helper method to emit the specified values to all monitored {@link Observer}.
      * </p>
      */
     public void emit(V... values) {
@@ -261,6 +261,14 @@ public class Subject<V, R> {
      */
     public boolean dispose() {
         return disposeWithCountAlreadyDisposed(0);
+    }
+
+    public boolean isDisposed() {
+        return disposed != 0;
+    }
+
+    public boolean isNotDisposed() {
+        return disposed == 0;
     }
 
     /**

@@ -29,9 +29,15 @@ import kiss.Observer;
 import kiss.Signal;
 
 /**
- * @version 2017/04/01 21:46:44
+ * @version 2017/04/07 16:52:37
  */
 public class SignalTestBase {
+
+    /** The complete state for {@link #emit(Object...)}. */
+    protected static final Object Complete = new Object();
+
+    /** The error state for {@link #emit(Object...)}. */
+    protected static final Class Error = Error.class;
 
     private static final Chronus clock = new Chronus(I.class);
 
@@ -61,6 +67,8 @@ public class SignalTestBase {
 
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
+
+    protected Subject<Boolean, Boolean> condition = new Subject();
 
     /** READ ONLY : DON'T MODIFY in test case */
     private final List<Observer> observers = new ArrayList();
@@ -103,14 +111,28 @@ public class SignalTestBase {
         });
     }
 
+    /**
+     * <p>
+     * Helper method to emit the specified values to all monitored {@link Observer}.
+     * </p>
+     */
     protected final Log emit(Object... values) {
         for (int i = 0; i < observers.size(); i++) {
             for (Object value : values) {
-                System.out.println("emit " + value + " ont " + observers.get(i));
-                observers.get(i).accept(value);
+                if (value == Complete) {
+                    observers.get(i).complete();
+                } else if (value instanceof Class && Throwable.class.isAssignableFrom((Class) value)) {
+                    observers.get(i).error(I.make((Class<Throwable>) value));
+                } else {
+                    observers.get(i).accept(value);
+                }
             }
         }
         return result;
+    }
+
+    protected final void dispose() {
+        disposer.dispose();
     }
 
     protected final Log await() {
@@ -253,7 +275,7 @@ public class SignalTestBase {
      * 
      * @param signal
      */
-    protected void monitor(Function<Signal, Signal> signal) {
+    protected <T> void monitor(Function<Signal<T>, Signal<T>> signal) {
         monitor(multiplicity, signal);
     }
 
@@ -262,9 +284,9 @@ public class SignalTestBase {
      * Monitor signal to test.
      * </p>
      * 
-     * @param signal
+     * @param builder
      */
-    protected void monitor(int multiplicity, Function<Signal, Signal> signal) {
+    protected <T> void monitor(int multiplicity, Function<Signal<T>, Signal<T>> builder) {
         LogSet[] sets = new LogSet[multiplicity];
 
         for (int i = 0; i < multiplicity; i++) {
@@ -276,12 +298,12 @@ public class SignalTestBase {
             log5 = sets[i].log5;
             result = sets[i].result;
 
-            Signal s = new Signal<>((observer, disposer) -> {
+            Signal signal = new Signal<>((observer, disposer) -> {
                 observers.add(observer);
                 return disposer.add(() -> observers.remove(observer));
             });
 
-            sets[i].disposer = signal.apply(s).to(result);
+            sets[i].disposer = builder.apply(signal).to(result);
         }
 
         // await all awaitable signal
@@ -330,6 +352,24 @@ public class SignalTestBase {
 
         /**
          * <p>
+         * Cehck this subscription is completed or not.
+         * </p>
+         * 
+         * @return A result.
+         */
+        boolean isCompleted();
+
+        /**
+         * <p>
+         * Cehck this subscription is completed or not.
+         * </p>
+         * 
+         * @return A result.
+         */
+        boolean isNotCompleted();
+
+        /**
+         * <p>
          * A number of message.
          * </p>
          * 
@@ -339,12 +379,21 @@ public class SignalTestBase {
 
         /**
          * <p>
-         * Validate error.
+         * Cehck this subscription has error or not.
          * </p>
          * 
-         * @return
+         * @return A result.
          */
         boolean isError();
+
+        /**
+         * <p>
+         * Cehck this subscription has error or not.
+         * </p>
+         * 
+         * @return A result.
+         */
+        boolean isNotError();
     }
 
     /**
@@ -372,6 +421,22 @@ public class SignalTestBase {
         @Override
         public void complete() {
             completed = true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isCompleted() {
+            return completed == true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isNotCompleted() {
+            return completed == false;
         }
 
         /**
@@ -439,6 +504,15 @@ public class SignalTestBase {
             return true;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isNotError() {
+            assert error == null;
+            assert completed == false;
+            return true;
+        }
     }
 
     /**
