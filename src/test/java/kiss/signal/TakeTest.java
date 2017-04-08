@@ -9,6 +9,7 @@
  */
 package kiss.signal;
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import org.junit.Test;
@@ -19,8 +20,7 @@ import org.junit.Test;
 public class TakeTest extends SignalTestBase {
 
     @Test
-    public void takeByValue() {
-        monitor(signal -> signal.take(value -> value % 2 == 0));
+    public void take() {
         monitor(() -> signal(1, 2, 3, 4).take(value -> value % 2 == 0));
 
         assert result.value(2, 4);
@@ -28,7 +28,7 @@ public class TakeTest extends SignalTestBase {
     }
 
     @Test
-    public void takeByValueNull() {
+    public void takeNull() {
         monitor(() -> signal(1, 2, 3, 4).take((Predicate) null));
 
         assert result.value(1, 2, 3, 4);
@@ -36,10 +36,18 @@ public class TakeTest extends SignalTestBase {
     }
 
     @Test
-    public void takeByValueWithPrevious() {
+    public void takeWithPrevious() {
         monitor(() -> signal(10, 11, 20, 21).take(0, (prev, now) -> now - prev > 5));
 
         assert result.value(10, 20);
+        assert result.completed();
+    }
+
+    @Test
+    public void takeWithPreviousNull() {
+        monitor(() -> signal(10, 11, 20, 21).take(0, (BiPredicate) null));
+
+        assert result.value(10, 11, 20, 21);
         assert result.completed();
     }
 
