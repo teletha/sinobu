@@ -72,6 +72,8 @@ public class SignalTestBase {
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
 
+    protected Subject<String, String> other = new Subject();
+
     protected Subject<Boolean, Boolean> condition = new Subject();
 
     /** READ ONLY : DON'T MODIFY in test case */

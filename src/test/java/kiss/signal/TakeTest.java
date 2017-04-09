@@ -61,7 +61,7 @@ public class TakeTest extends SignalTestBase {
 
     @Test
     public void takeByTime() {
-        monitor(signal -> signal.take(30, ms));
+        monitor(signal -> signal.takeUntil(30, ms));
 
         assert emit(1, 2).value(1, 2);
         assert result.isNotCompleted();
@@ -95,15 +95,27 @@ public class TakeTest extends SignalTestBase {
     }
 
     @Test
-    public void takeUntil() {
-        Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(condition.signal()));
+    public void takeUntilValueCondition() {
+        monitor(() -> signal(1, 2, 3, 4).takeUntil(value -> value == 3));
 
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
+        assert emit(1, 2).value(1, 2);
+        assert result.isNotCompleted();
 
-        condition.emit("start");
-        assert subject.isCompleted();
-        assert condition.isCompleted();
+        assert emit(3, 4).value(3);
+        assert result.isCompleted();
+    }
+
+    @Test
+    public void takeUntilSignal() {
+        monitor(signal -> signal.takeUntil(other.signal()));
+
+        assert emit(1, 2).value(1, 2);
+        assert result.isNotCompleted();
+        assert other.isNotCompleted();
+
+        other.emit("start");
+        assert emit(1, 2).value();
+        assert result.isCompleted();
+        assert other.isCompleted();
     }
 }

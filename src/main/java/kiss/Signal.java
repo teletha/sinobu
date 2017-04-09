@@ -963,6 +963,17 @@ public final class Signal<V> {
         });
     }
 
+    public final Signal<V> first() {
+        return new Signal<>((observer, disposer) -> {
+
+            return to(value -> {
+                observer.accept(value);
+                observer.complete();
+                disposer.dispose();
+            }, observer::error, observer::complete, disposer);
+        });
+    }
+
     /**
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
@@ -1231,11 +1242,6 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     private Signal<V> on(BiConsumer<Observer<? super V>, V> next) {
-        // ignore invalid parameters
-        if (next == null) {
-            return this;
-        }
-
         return new Signal<>((observer, disposer) -> {
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
@@ -1814,10 +1820,6 @@ public final class Signal<V> {
         });
     }
 
-    public final Signal<V> take(BooleanSupplier condition) {
-        return take(v -> condition.getAsBoolean());
-    }
-
     /**
      * <p>
      * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
@@ -1839,22 +1841,6 @@ public final class Signal<V> {
             if (condition.test(value)) {
                 observer.accept(value);
             }
-        });
-    }
-
-    public final Signal<V> takeAt(IntPredicate condition) {
-        if (condition == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            AtomicInteger index = new AtomicInteger();
-
-            return to(value -> {
-                if (condition.test(index.getAndIncrement())) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1880,6 +1866,53 @@ public final class Signal<V> {
 
             return to(value -> {
                 if (condition.test(ref.getAndSet(value), value)) {
+                    observer.accept(value);
+                }
+            }, observer::error, observer::complete, disposer);
+        });
+    }
+
+    public final Signal<V> take(BooleanSupplier condition) {
+        return take(v -> condition.getAsBoolean());
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
+     * </p>
+     *
+     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> take(Signal<Boolean> condition) {
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            AtomicBoolean flag = new AtomicBoolean();
+
+            return condition.to(flag::set, observer::error, observer::complete, disposer).add(to(v -> {
+                if (flag.get()) {
+                    observer.accept(v);
+                }
+            }, observer::error, observer::complete, disposer));
+        });
+    }
+
+    public final Signal<V> takeAt(IntPredicate condition) {
+        if (condition == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            AtomicInteger index = new AtomicInteger();
+
+            return to(value -> {
+                if (condition.test(index.getAndIncrement())) {
                     observer.accept(value);
                 }
             }, observer::error, observer::complete, disposer);
@@ -1928,7 +1961,7 @@ public final class Signal<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> take(long time, TimeUnit unit) {
+    public final Signal<V> takeUntil(long time, TimeUnit unit) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -1945,33 +1978,6 @@ public final class Signal<V> {
                     disposer.dispose();
                 }
             }, observer::error, observer::complete, disposer);
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
-     * given predicate.
-     * </p>
-     *
-     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Signal<V> take(Signal<Boolean> condition) {
-        // ignore invalid parameter
-        if (condition == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            AtomicBoolean flag = new AtomicBoolean();
-
-            return condition.to(flag::set, observer::error, observer::complete, disposer).add(to(v -> {
-                if (flag.get()) {
-                    observer.accept(v);
-                }
-            }, observer::error, observer::complete, disposer));
         });
     }
 
@@ -1998,29 +2004,35 @@ public final class Signal<V> {
      * specified predicate for each item, and then completes if the condition is satisfied.
      * </p>
      *
-     * @param predicate A function that evaluates an item emitted by the source {@link Signal} and
+     * @param condition A function that evaluates an item emitted by the source {@link Signal} and
      *            returns a Boolean.
      * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks
      *         the specified condition after each item, and then completes if the condition is
      *         satisfied.
      */
-    public final Signal<V> takeUntil(Predicate<V> predicate) {
+    public final Signal<V> takeUntil(Predicate<V> condition) {
         // ignore invalid parameter
-        if (predicate == null) {
+        if (condition == null) {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> {
-            return to(value -> {
-                if (predicate.test(value)) {
-                    observer.accept(value);
-                    observer.complete();
-                    disposer.dispose();
-                } else {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+        return takeUntil(take(condition));
+
+        // return new Signal<>((observer, disposer) -> {
+        // AtomicBoolean flag = new AtomicBoolean();
+        //
+        // return to(value -> {
+        // if (flag.get() == false) {
+        // observer.accept(value);
+        //
+        // if (condition.test(value)) {
+        // flag.set(true);
+        // observer.complete();
+        // disposer.dispose();
+        // }
+        // }
+        // }, observer::error, observer::complete, disposer);
+        // });
     }
 
     /**
@@ -2029,23 +2041,28 @@ public final class Signal<V> {
      * sequence produces a value.
      * </p>
      *
-     * @param predicate An {@link Signal} sequence that terminates propagation of values of the
+     * @param condition An {@link Signal} sequence that terminates propagation of values of the
      *            source sequence. <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final Signal<V> takeUntil(Signal predicate) {
+    public final Signal<V> takeUntil(Signal condition) {
         // ignore invalid parameter
-        if (predicate == null) {
+        if (condition == null) {
             return this;
         }
 
         return new Signal<>((observer, disposer) -> {
-            Disposable disposable = Disposable.empty();
-
-            return disposable.add(to(observer, disposer).add(predicate.to(value -> {
+            Disposable disposable = condition.to(value -> {
                 observer.complete();
-                disposable.dispose();
-            })));
+                System.out.println("EDN " + value);
+                disposer.dispose();
+            });
+
+            condition.to();
+
+            return to(v -> {
+                observer.accept(v);
+            }, observer::error, observer::complete, disposer).add(disposable);
         });
     }
 
