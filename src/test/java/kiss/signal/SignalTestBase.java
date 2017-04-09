@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -47,6 +48,9 @@ public class SignalTestBase {
     /** Shorthand for {@link TimeUnit#MILLISECONDS}. */
     protected static final TimeUnit ms = TimeUnit.MILLISECONDS;
 
+    /** The alias of 'this' for DSL. */
+    protected final SignalTestBase Type = this;
+
     /** READ ONLY : DON'T MODIFY in test case */
     protected Log result = null;
 
@@ -71,10 +75,10 @@ public class SignalTestBase {
     protected Subject<Boolean, Boolean> condition = new Subject();
 
     /** READ ONLY : DON'T MODIFY in test case */
-    private final List<Observer> observers = new ArrayList();
+    private final List<Observer> observers = new CopyOnWriteArrayList();
 
     /** READ ONLY : DON'T MODIFY in test case */
-    private final List<Await> awaits = new ArrayList();
+    private final List<Await> awaits = new CopyOnWriteArrayList();
 
     /**
      * Create generic error {@link Function}.
@@ -117,14 +121,14 @@ public class SignalTestBase {
      * </p>
      */
     protected final Log emit(Object... values) {
-        for (int i = 0; i < observers.size(); i++) {
+        for (Observer observer : observers) {
             for (Object value : values) {
                 if (value == Complete) {
-                    observers.get(i).complete();
+                    observer.complete();
                 } else if (value instanceof Class && Throwable.class.isAssignableFrom((Class) value)) {
-                    observers.get(i).error(I.make((Class<Throwable>) value));
+                    observer.error(I.make((Class<Throwable>) value));
                 } else {
-                    observers.get(i).accept(value);
+                    observer.accept(value);
                 }
             }
         }
@@ -137,6 +141,12 @@ public class SignalTestBase {
 
     protected final Log await() {
         clock.await();
+
+        return result;
+    }
+
+    protected final Log await(int ms) {
+        clock.freeze(ms);
 
         return result;
     }
@@ -276,6 +286,17 @@ public class SignalTestBase {
      * @param signal
      */
     protected <T> void monitor(Function<Signal<T>, Signal<T>> signal) {
+        monitor(multiplicity, signal);
+    }
+
+    /**
+     * <p>
+     * Monitor signal to test.
+     * </p>
+     * 
+     * @param signal
+     */
+    protected <T> void monitor(Class<T> type, Function<Signal<T>, Signal<T>> signal) {
         monitor(multiplicity, signal);
     }
 

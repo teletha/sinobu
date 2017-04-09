@@ -21,18 +21,18 @@ public class TakeTest extends SignalTestBase {
 
     @Test
     public void take() {
-        monitor(() -> signal(1, 2, 3, 4).take(value -> value % 2 == 0));
+        monitor(int.class, signal -> signal.take(value -> value % 2 == 0));
 
-        assert result.value(2, 4);
-        assert result.completed();
+        assert emit(1, 2, 3, 4).value(2, 4);
+        assert result.isNotCompleted();
     }
 
     @Test
     public void takeNull() {
-        monitor(() -> signal(1, 2, 3, 4).take((Predicate) null));
+        monitor(int.class, signal -> signal.take((Predicate) null));
 
-        assert result.value(1, 2, 3, 4);
-        assert result.completed();
+        assert emit(1, 2, 3, 4).value(1, 2, 3, 4);
+        assert result.isNotCompleted();
     }
 
     @Test
@@ -52,17 +52,27 @@ public class TakeTest extends SignalTestBase {
     }
 
     @Test
-    public void takeAt() throws Exception {
-        monitor(() -> signal(1, 2, 3, 4, 5, 6).takeAt(index -> 3 < index));
-        assert result.value(5, 6);
+    public void takeByCount() throws Exception {
+        monitor(int.class, signal -> signal.take(2));
 
-        monitor(() -> signal(1, 2, 3, 4, 5, 6).takeAt(index -> index % 2 == 0));
-        assert result.value(1, 3, 5);
+        assert emit(1, 2, 3, 4).value(1, 2);
+        assert result.isCompleted();
     }
 
     @Test
-    public void takeWhile() {
-        monitor(signal -> signal.takeWhile(condition.signal()));
+    public void takeByTime() {
+        monitor(signal -> signal.take(30, ms));
+
+        assert emit(1, 2).value(1, 2);
+        assert result.isNotCompleted();
+        await(30);
+        assert emit(1, 2).value();
+        assert result.isCompleted();
+    }
+
+    @Test
+    public void takeBySignal() {
+        monitor(signal -> signal.take(condition.signal()));
 
         assert emit(1, 2).value();
         condition.emit(true);
@@ -73,5 +83,27 @@ public class TakeTest extends SignalTestBase {
         assert condition.isNotDisposed();
         dispose();
         assert condition.isDisposed();
+    }
+
+    @Test
+    public void takeAt() throws Exception {
+        monitor(() -> signal(1, 2, 3, 4, 5, 6).takeAt(index -> 3 < index));
+        assert result.value(5, 6);
+
+        monitor(() -> signal(1, 2, 3, 4, 5, 6).takeAt(index -> index % 2 == 0));
+        assert result.value(1, 3, 5);
+    }
+
+    @Test
+    public void takeUntil() {
+        Subject<String, String> condition = new Subject();
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(condition.signal()));
+
+        assert subject.emitAndRetrieve(10) == 10;
+        assert subject.emitAndRetrieve(20) == 20;
+
+        condition.emit("start");
+        assert subject.isCompleted();
+        assert condition.isCompleted();
     }
 }

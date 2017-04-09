@@ -999,59 +999,6 @@ public class SignalTest {
     }
 
     @Test
-    public void takeByConditionEvent() {
-        Subject<Boolean, Boolean> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeWhile(condition.signal()));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-
-        condition.emit(true);
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-
-        condition.emit(false);
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.dispose();
-        assert condition.isCompleted();
-    }
-
-    @Test
-    public void takeByCount() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.take(1));
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.isCompleted();
-    }
-
-    @Test
-    public void takeByTime() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.take(30, MILLISECONDS));
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        chronus.freeze(30);
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.isCompleted();
-    }
-
-    @Test
-    public void takeUntil() {
-        Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(condition.signal()));
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-
-        condition.emit("start");
-        assert subject.isCompleted();
-        assert condition.isCompleted();
-    }
-
-    @Test
     public void takeUntilValue() {
         Subject<Integer, Integer> subject = new Subject<>(signal -> signal.takeUntil(30));
 

@@ -536,7 +536,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -642,7 +642,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -1636,7 +1636,7 @@ public final class Signal<V> {
         if (condition == null) {
             return this;
         }
-        return takeWhile(condition.startWith(false).map(value -> !value));
+        return take(condition.startWith(false).map(value -> !value));
     }
 
     /**
@@ -1814,6 +1814,10 @@ public final class Signal<V> {
         });
     }
 
+    public final Signal<V> take(BooleanSupplier condition) {
+        return take(v -> condition.getAsBoolean());
+    }
+
     /**
      * <p>
      * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
@@ -1946,6 +1950,33 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
+     * </p>
+     *
+     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> take(Signal<Boolean> condition) {
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            AtomicBoolean flag = new AtomicBoolean();
+
+            return condition.to(flag::set, observer::error, observer::complete, disposer).add(to(v -> {
+                if (flag.get()) {
+                    observer.accept(v);
+                }
+            }, observer::error, observer::complete, disposer));
+        });
+    }
+
+    /**
+     * <p>
      * This method is equivalent to the following code.
      * </p>
      * <pre>
@@ -2015,33 +2046,6 @@ public final class Signal<V> {
                 observer.complete();
                 disposable.dispose();
             })));
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
-     * given predicate.
-     * </p>
-     *
-     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Signal<V> takeWhile(Signal<Boolean> condition) {
-        // ignore invalid parameter
-        if (condition == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            AtomicBoolean flag = new AtomicBoolean();
-
-            return condition.to(flag::set, observer::error, observer::complete, disposer).add(to(v -> {
-                if (flag.get()) {
-                    observer.accept(v);
-                }
-            }, observer::error, observer::complete, disposer));
         });
     }
 
