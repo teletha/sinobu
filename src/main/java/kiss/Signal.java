@@ -536,7 +536,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -642,7 +642,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -2016,23 +2016,21 @@ public final class Signal<V> {
             return this;
         }
 
-        return takeUntil(take(condition));
+        return new Signal<>((observer, disposer) -> {
+            AtomicBoolean flag = new AtomicBoolean();
 
-        // return new Signal<>((observer, disposer) -> {
-        // AtomicBoolean flag = new AtomicBoolean();
-        //
-        // return to(value -> {
-        // if (flag.get() == false) {
-        // observer.accept(value);
-        //
-        // if (condition.test(value)) {
-        // flag.set(true);
-        // observer.complete();
-        // disposer.dispose();
-        // }
-        // }
-        // }, observer::error, observer::complete, disposer);
-        // });
+            return to(value -> {
+                if (flag.get() == false) {
+                    observer.accept(value);
+
+                    if (condition.test(value)) {
+                        flag.set(true);
+                        observer.complete();
+                        disposer.dispose();
+                    }
+                }
+            }, observer::error, observer::complete, disposer);
+        });
     }
 
     /**
@@ -2052,17 +2050,14 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            Disposable disposable = condition.to(value -> {
-                observer.complete();
-                System.out.println("EDN " + value);
-                disposer.dispose();
-            });
-
-            condition.to();
 
             return to(v -> {
                 observer.accept(v);
-            }, observer::error, observer::complete, disposer).add(disposable);
+            }, observer::error, observer::complete, disposer).add(condition.to(value -> {
+                observer.complete();
+                System.out.println("EDN " + value);
+                disposer.dispose();
+            }));
         });
     }
 

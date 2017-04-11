@@ -96,7 +96,7 @@ public class TakeTest extends SignalTestBase {
 
     @Test
     public void takeUntilValueCondition() {
-        monitor(() -> signal(1, 2, 3, 4).takeUntil(value -> value == 3));
+        monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
 
         assert emit(1, 2).value(1, 2);
         assert result.isNotCompleted();
