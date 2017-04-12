@@ -536,7 +536,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -642,7 +642,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -1029,7 +1029,7 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                function.apply(value).to(observer, disposer.sub());
+                function.apply(value).to(observer, disposer.child());
             }, observer::error, observer::complete, disposer);
         });
     }
@@ -1353,7 +1353,7 @@ public final class Signal<V> {
             stopper.to(null, null, () -> {
                 System.out.println("set true");
                 stop.set(true);
-            }, disposer.sub());
+            }, disposer.child());
 
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
@@ -2050,14 +2050,18 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-
-            return to(v -> {
-                observer.accept(v);
-            }, observer::error, observer::complete, disposer).add(condition.to(value -> {
+            Disposable disposable = Disposable.empty();
+            return disposable.add(to(observer, disposer).add(condition.to(value -> {
                 observer.complete();
-                System.out.println("EDN " + value);
-                disposer.dispose();
-            }));
+                disposable.dispose();
+            })));
+            // return to(v -> {
+            // observer.accept(v);
+            // }, observer::error, observer::complete, disposer).add(condition.to(value -> {
+            // observer.complete();
+            // System.out.println("EDN " + value);
+            // disposer.dispose();
+            // }, disposer));
         });
     }
 
