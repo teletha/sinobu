@@ -1029,7 +1029,7 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                function.apply(value).to(observer, disposer.child());
+                function.apply(value).to(observer, disposer.sub());
             }, observer::error, observer::complete, disposer);
         });
     }
@@ -1353,7 +1353,7 @@ public final class Signal<V> {
             stopper.to(null, null, () -> {
                 System.out.println("set true");
                 stop.set(true);
-            }, disposer.child());
+            }, disposer.sub());
 
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;

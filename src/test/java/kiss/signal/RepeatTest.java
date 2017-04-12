@@ -18,10 +18,11 @@ import org.junit.Test;
  */
 public class RepeatTest extends SignalTestBase {
 
+    @Test
     public void repeat() throws Exception {
-        monitor(() -> signal(1, 2).skip(1).take(1).repeat().take(6));
+        monitor(signal -> signal.skip(1).take(1).repeat(6));
 
-        assert result.value(2, 2, 2, 2, 2, 2, 2);
+        assert emit(1, 2, 3, 4, 5, 6).value(2, 4, 6);
     }
 
     @Test

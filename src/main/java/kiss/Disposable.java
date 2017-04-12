@@ -111,23 +111,10 @@ public interface Disposable {
      * 
      * @return A child {@link Disposable}.
      */
-    default Disposable child() {
+    default Disposable sub() {
         Disposable sub = empty();
         add(sub);
         return sub;
-    }
-
-    /**
-     * <p>
-     * Create parent {@link Disposable}.
-     * </p>
-     * 
-     * @return A parent {@link Disposable}.
-     */
-    default Disposable parent() {
-        Disposable parent = empty();
-        parent.add(this);
-        return parent;
     }
 
     /**
