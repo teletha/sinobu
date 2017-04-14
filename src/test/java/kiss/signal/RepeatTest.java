@@ -20,10 +20,19 @@ public class RepeatTest extends SignalTestBase {
 
     @Test
     public void repeat() throws Exception {
-        monitor(signal -> signal.skip(1).take(1).repeat(6));
+        monitor(signal -> signal.repeat(1));
 
-        assert emit(1, 2, 3, 4, 5, 6).value(2, 4, 6);
+        assert emit(1, Complete).value(1);
+        assert emit(1, Complete).value(1);
+        assert emit(1, Complete).value();
     }
+
+    // @Test
+    // public void repeat() throws Exception {
+    // monitor(signal -> signal.skip(1).take(1).repeat(6));
+    //
+    // assert emit(1, 2, 3, 4, 5, 6).value(2, 4, 6);
+    // }
 
     @Test
     public void repeatIf() throws Exception {

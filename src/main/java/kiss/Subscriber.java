@@ -56,6 +56,8 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
      */
     @Override
     public void complete() {
+        index++;
+
         if (complete != null) {
             complete.run();
         } else if (observer != null) {
@@ -68,12 +70,14 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
      */
     @Override
     public void error(Throwable e) {
-        if (error != null) {
-            error.accept(e);
-        } else if (observer != null) {
-            observer.error(e);
-        } else {
-            Thread.currentThread().getThreadGroup().uncaughtException(Thread.currentThread(), e);
+        if (index == 0) {
+            if (error != null) {
+                error.accept(e);
+            } else if (observer != null) {
+                observer.error(e);
+            } else {
+                Thread.currentThread().getThreadGroup().uncaughtException(Thread.currentThread(), e);
+            }
         }
     }
 
@@ -82,10 +86,12 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
      */
     @Override
     public void accept(T value) {
-        if (next != null) {
-            next.accept(value);
-        } else if (observer != null) {
-            observer.accept(value);
+        if (index == 0) {
+            if (next != null) {
+                next.accept(value);
+            } else if (observer != null) {
+                observer.accept(value);
+            }
         }
     }
 

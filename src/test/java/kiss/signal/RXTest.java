@@ -9,7 +9,8 @@
  */
 package kiss.signal;
 
-import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * @version 2017/04/06 8:43:46
@@ -21,12 +22,22 @@ public class RXTest extends SignalTestBase {
     }
 
     private void test() {
-        Observable.just(1, 2).startWith(errorIterable()).onErrorResumeNext((Throwable e) -> Observable.just(10)).subscribe(v -> {
-            System.out.println("value  " + v);
+        PublishSubject other = PublishSubject.create();
+        PublishSubject s = PublishSubject.create();
+        Disposable subscribe = s.mergeWith(other).subscribe(v -> {
+            System.out.println(v);
         }, e -> {
-            System.out.println("erro " + e);
+
         }, () -> {
             System.out.println("complete");
         });
+
+        other.onNext("one");
+        s.onNext(1);
+        s.onNext(2);
+        s.onComplete();
+        other.onNext("two");
+        s.onNext(3);
+
     }
 }

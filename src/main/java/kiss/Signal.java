@@ -1285,6 +1285,7 @@ public final class Signal<V> {
             subscriber.observer = observer;
             subscriber.complete = () -> {
                 observer.complete();
+                subscriber.index = 0;
                 subscriber.add(to(subscriber));
             };
             return subscriber.add(to(subscriber, disposer));
@@ -1314,6 +1315,7 @@ public final class Signal<V> {
                     observer.complete();
                 } else {
                     observer.complete();
+                    subscriber.index = 0;
                     subscriber.add(to(subscriber));
                 }
             };
@@ -1340,7 +1342,10 @@ public final class Signal<V> {
             subscriber.observer = observer;
             subscriber.complete = () -> {
                 observer.complete();
-                if (condition.getAsBoolean()) to(subscriber, disposer);
+                if (condition.getAsBoolean()) {
+                    subscriber.index = 0;
+                    to(subscriber, disposer);
+                }
             };
             return to(subscriber, disposer);
         });
@@ -1362,6 +1367,7 @@ public final class Signal<V> {
 
                 if (!stop.get()) {
                     System.out.println("repeat");
+                    subscriber.index = 0;
                     to(subscriber, disposer);
                 }
             };
