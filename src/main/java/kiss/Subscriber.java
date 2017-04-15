@@ -99,7 +99,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
     private List<Subscriber> children;
 
     boolean isCompleted() {
-        if (index == 0) {
+        if (index <= 0) {
             return false;
         }
 

@@ -69,4 +69,13 @@ public class MergeTest extends SignalTestBase {
         assert result.value();
         assert result.isCompleted();
     }
+
+    @Test
+    public void disposeByTake() throws Exception {
+        monitor(() -> signal(1).merge(signal(10, 20)).effect(log1).take(2));
+
+        assert log1.value(1, 10);
+        assert result.value(1, 10);
+        assert result.isCompleted();
+    }
 }

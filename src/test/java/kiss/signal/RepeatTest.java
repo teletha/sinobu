@@ -20,11 +20,13 @@ public class RepeatTest extends SignalTestBase {
 
     @Test
     public void repeat() throws Exception {
-        monitor(signal -> signal.repeat(1));
+        monitor(signal -> signal.repeat(2));
 
-        assert emit(1, Complete).value(1);
-        assert emit(1, Complete).value(1);
-        assert emit(1, Complete).value();
+        assert emit("ok", Complete).value("ok");
+        assert result.isNotCompleted();
+        assert emit("success to repeat", Complete).value("success to repeat");
+        assert result.isCompleted();
+        assert emit("fail to repeat", Complete).value();
     }
 
     // @Test

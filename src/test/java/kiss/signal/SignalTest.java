@@ -1185,16 +1185,6 @@ public class SignalTest {
         assert store.retrieve() == 11;
     }
 
-    @Test
-    public void disposeMerge() {
-        Store<Integer> store = new Store();
-        I.signal(1).merge(I.signal(10, 20)).effect(store::before).take(2).to(store::after);
-
-        assert store.size() == 2;
-        assert store.retrieve() == 1;
-        assert store.retrieve() == 10;
-    }
-
     /**
      * @version 2017/03/18 21:00:47
      */

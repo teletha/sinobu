@@ -1324,15 +1324,13 @@ public final class Signal<V> {
             Subscriber subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.complete = () -> {
-                if (counter.decrementAndGet() == 0) {
+                if (counter.decrementAndGet() <= 0) {
                     observer.complete();
                 } else {
-                    observer.complete();
-                    subscriber.index = 0;
-                    subscriber.add(to(subscriber));
+                    subscriber.add(to(subscriber.child()));
                 }
             };
-            return subscriber.add(to(subscriber, disposer));
+            return subscriber.add(to(subscriber.child(), disposer));
         });
     }
 
