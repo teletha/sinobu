@@ -11,10 +11,12 @@ package kiss.signal;
 
 import org.junit.Test;
 
+import kiss.SignalTester;
+
 /**
  * @version 2017/04/06 2:37:23
  */
-public class FlatMapTest extends SignalTestBase {
+public class FlatMapTest extends SignalTester {
 
     @Test
     public void flatMap() throws Exception {

@@ -9,22 +9,23 @@
  */
 package kiss.signal;
 
-import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
+import kiss.SignalTester;
 
 /**
  * @version 2017/04/06 8:43:46
  */
-public class RXTest extends SignalTestBase {
+public class RXTest extends SignalTester {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new RXTest().test();
     }
 
-    private void test() {
+    private void test() throws Exception {
         PublishSubject s = PublishSubject.create();
-        Disposable subscribe = Observable.just(1, 2, 3).skip(1).take(2).repeat(1).subscribe(v -> {
+        PublishSubject main = PublishSubject.create();
+        Disposable subscribe = main.mergeWith(s).subscribe(v -> {
             System.out.println(v);
         }, e -> {
 
@@ -32,12 +33,10 @@ public class RXTest extends SignalTestBase {
             System.out.println("complete");
         });
 
-        s.onNext(1);
-        s.onComplete();
-        s.onNext(2);
-        s.onComplete();
-        s.onNext(3);
-        s.onComplete();
-        s.onNext(4);
+        main.onNext("1");
+        s.onNext("2");
+        subscribe.dispose();
+        main.onNext("1");
+        s.onNext("2");
     }
 }

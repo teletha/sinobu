@@ -14,10 +14,12 @@ import java.util.function.Predicate;
 
 import org.junit.Test;
 
+import kiss.SignalTester;
+
 /**
  * @version 2017/04/07 1:57:35
  */
-public class TakeTest extends SignalTestBase {
+public class TakeTest extends SignalTester {
 
     @Test
     public void take() {

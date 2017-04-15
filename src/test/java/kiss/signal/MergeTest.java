@@ -11,10 +11,12 @@ package kiss.signal;
 
 import org.junit.Test;
 
+import kiss.SignalTester;
+
 /**
  * @version 2017/04/15 10:24:35
  */
-public class MergeTest extends SignalTestBase {
+public class MergeTest extends SignalTester {
 
     @Test
     public void completeFromOther() throws Exception {

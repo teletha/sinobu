@@ -14,11 +14,12 @@ import java.util.function.Function;
 import org.junit.Test;
 
 import kiss.Signal;
+import kiss.SignalTester;
 
 /**
  * @version 2017/04/06 11:46:22
  */
-public class ErrorResumeTest extends SignalTestBase {
+public class ErrorResumeTest extends SignalTester {
 
     @Test
     public void resumeSignal() throws Exception {

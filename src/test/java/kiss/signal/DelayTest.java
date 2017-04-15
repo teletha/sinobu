@@ -11,10 +11,12 @@ package kiss.signal;
 
 import org.junit.Test;
 
+import kiss.SignalTester;
+
 /**
  * @version 2017/04/06 15:12:36
  */
-public class DelayTest extends SignalTestBase {
+public class DelayTest extends SignalTester {
 
     @Test
     public void delay() throws Exception {

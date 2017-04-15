@@ -536,7 +536,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -642,7 +642,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -1297,11 +1297,9 @@ public final class Signal<V> {
             Subscriber subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.complete = () -> {
-                observer.complete();
-                subscriber.index = 0;
-                subscriber.add(to(subscriber));
+                subscriber.add(to(subscriber.child()));
             };
-            return subscriber.add(to(subscriber, disposer));
+            return subscriber.add(to(subscriber.child(), disposer));
         });
     }
 

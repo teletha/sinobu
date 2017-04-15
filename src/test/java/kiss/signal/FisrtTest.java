@@ -11,10 +11,12 @@ package kiss.signal;
 
 import org.junit.Test;
 
+import kiss.SignalTester;
+
 /**
  * @version 2017/04/09 16:18:57
  */
-public class FisrtTest extends SignalTestBase {
+public class FisrtTest extends SignalTester {
 
     @Test
     public void first() throws Exception {

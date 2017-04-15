@@ -15,11 +15,12 @@ import java.util.stream.Stream;
 import org.junit.Test;
 
 import kiss.I;
+import kiss.SignalTester;
 
 /**
  * @version 2017/04/02 1:53:26
  */
-public class SignalCreationTest extends SignalTestBase {
+public class SignalCreationTest extends SignalTester {
 
     @Test
     public void single() throws Exception {

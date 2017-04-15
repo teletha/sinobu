@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.signal;
+package kiss;
 
 import static java.util.stream.Collectors.*;
 
@@ -24,15 +24,12 @@ import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 
 import antibug.Chronus;
-import kiss.Disposable;
-import kiss.I;
-import kiss.Observer;
-import kiss.Signal;
+import kiss.signal.Subject;
 
 /**
  * @version 2017/04/07 16:52:37
  */
-public class SignalTestBase {
+public class SignalTester {
 
     /** The complete state for {@link #emit(Object...)}. */
     protected static final Object Complete = new Object();
@@ -49,7 +46,7 @@ public class SignalTestBase {
     protected static final TimeUnit ms = TimeUnit.MILLISECONDS;
 
     /** The alias of 'this' for DSL. */
-    protected final SignalTestBase Type = this;
+    protected final SignalTester Type = this;
 
     /** READ ONLY : DON'T MODIFY in test case */
     protected Log result = null;
@@ -71,6 +68,8 @@ public class SignalTestBase {
 
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
+
+    protected Publisher otherP = new PublisherImplementation();
 
     protected Subject<String, String> other = new Subject();
 
@@ -582,6 +581,28 @@ public class SignalTestBase {
                     throw I.quiet(e);
                 }
             }
+        }
+    }
+
+    /**
+     * @version 2017/04/16 1:45:49
+     */
+    protected interface Publisher {
+
+        SignalTester emit(Object... values);
+    }
+
+    /**
+     * @version 2017/04/16 1:45:47
+     */
+    private class PublisherImplementation implements Publisher {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SignalTester emit(Object... values) {
+            return null;
         }
     }
 }

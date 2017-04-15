@@ -13,10 +13,12 @@ import java.util.stream.BaseStream;
 
 import org.junit.Test;
 
+import kiss.SignalTester;
+
 /**
  * @version 2017/04/06 8:47:03
  */
-public class StartWithTest extends SignalTestBase {
+public class StartWithTest extends SignalTester {
 
     @Test
     public void value() throws Exception {

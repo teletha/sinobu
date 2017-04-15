@@ -13,11 +13,12 @@ import org.junit.Test;
 
 import kiss.I;
 import kiss.Signal;
+import kiss.SignalTester;
 
 /**
  * @version 2017/04/07 15:46:56
  */
-public class EffectTest extends SignalTestBase {
+public class EffectTest extends SignalTester {
 
     @Test
     public void effect() {

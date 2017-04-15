@@ -13,10 +13,12 @@ import java.util.function.BooleanSupplier;
 
 import org.junit.Test;
 
+import kiss.SignalTester;
+
 /**
  * @version 2017/04/03 11:04:09
  */
-public class RepeatTest extends SignalTestBase {
+public class RepeatTest extends SignalTester {
 
     @Test
     public void repeat() throws Exception {
@@ -29,12 +31,31 @@ public class RepeatTest extends SignalTestBase {
         assert emit("fail to repeat", Complete).value();
     }
 
-    // @Test
-    // public void repeat() throws Exception {
-    // monitor(signal -> signal.skip(1).take(1).repeat(6));
-    //
-    // assert emit(1, 2, 3, 4, 5, 6).value(2, 4, 6);
-    // }
+    @Test
+    public void repeatThenMerge() {
+        monitor(signal -> signal.repeat().merge(other.signal()));
+
+        // from main
+        assert emit("skip", "take", Complete).value("skip", "take");
+        assert emit("skip", "take", Complete).value("skip", "take");
+
+        // from other
+        other.emit("external");
+        assert result.value("external");
+        assert other.emit("external value").result.value("external value");
+
+        assert result.isNotCompleted();
+        assert other.isNotCompleted();
+
+        // dispose
+        dispose();
+        assert emit("main is disposed so this value will be ignored").value();
+        other.emit("other is disposed so this value will be ignored");
+        assert result.value();
+
+        assert result.isNotCompleted();
+        assert other.isNotCompleted();
+    }
 
     @Test
     public void repeatIf() throws Exception {
