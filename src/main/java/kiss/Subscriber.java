@@ -10,6 +10,7 @@
 package kiss;
 
 import java.nio.file.WatchEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -93,6 +94,38 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
                 observer.accept(value);
             }
         }
+    }
+
+    private List<Subscriber> children;
+
+    boolean isCompleted() {
+        if (index == 0) {
+            return false;
+        }
+
+        if (children != null) {
+            for (Subscriber child : children) {
+                if (child.isCompleted() == false) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    Subscriber<T> child() {
+        Subscriber sub = new Subscriber();
+        sub.observer = observer;
+        sub.next = next;
+        sub.error = error;
+        sub.complete = complete;
+
+        if (children == null) {
+            children = new ArrayList();
+        }
+        children.add(sub);
+
+        return sub;
     }
 
     // ============================================================

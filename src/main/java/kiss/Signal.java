@@ -1222,13 +1222,26 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            disposer = to(observer, disposer);
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.index--;
+            subscriber.observer = observer;
+            subscriber.complete = () -> {
+                if (subscriber.isCompleted()) {
+                    observer.complete();
+                }
+            };
+
+            disposer = to(subscriber.child(), disposer);
 
             for (Signal<? extends V> other : others) {
                 if (other != null && disposer.isDisposed() == false) {
-                    disposer = disposer.add(other.to(observer, disposer));
+                    disposer = disposer.add(other.to(subscriber.child(), disposer));
                 }
             }
+
+            subscriber.index++;
+            subscriber.complete();
+
             return disposer;
         });
     }
