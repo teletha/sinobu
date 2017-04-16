@@ -587,9 +587,13 @@ public class SignalTester {
     /**
      * @version 2017/04/16 1:45:49
      */
-    protected interface Publisher {
+    public interface Publisher {
 
-        SignalTester emit(Object... values);
+        Log emit(Object... values);
+
+        Signal signal();
+
+        boolean isNotCompleted();
     }
 
     /**
@@ -597,12 +601,41 @@ public class SignalTester {
      */
     private class PublisherImplementation implements Publisher {
 
+        private List<Observer> observers = new CopyOnWriteArrayList();
+
         /**
          * {@inheritDoc}
          */
         @Override
-        public SignalTester emit(Object... values) {
-            return null;
+        public Log emit(Object... values) {
+            for (Object value : values) {
+                for (Observer observer : observers) {
+                    observer.accept(value);
+                }
+            }
+            return result;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Signal signal() {
+            Signal signal = new Signal<>((observer, disposer) -> {
+                observers.add(observer);
+                return disposer.add(() -> {
+                    observers.remove(observer);
+                });
+            });
+            return signal;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isNotCompleted() {
+            return false;
         }
     }
 }

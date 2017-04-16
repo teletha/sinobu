@@ -33,28 +33,23 @@ public class RepeatTest extends SignalTester {
 
     @Test
     public void repeatThenMerge() {
-        monitor(signal -> signal.repeat().merge(other.signal()));
+        monitor(signal -> signal.repeat().merge(otherP.signal()));
 
         // from main
         assert emit("skip", "take", Complete).value("skip", "take");
         assert emit("skip", "take", Complete).value("skip", "take");
 
         // from other
-        other.emit("external");
-        assert result.value("external");
-        assert other.emit("external value").result.value("external value");
+        assert otherP.emit("external").value("external");
 
         assert result.isNotCompleted();
-        assert other.isNotCompleted();
 
         // dispose
         dispose();
         assert emit("main is disposed so this value will be ignored").value();
-        other.emit("other is disposed so this value will be ignored");
-        assert result.value();
+        assert otherP.emit("other is disposed so this value will be ignored").value();
 
         assert result.isNotCompleted();
-        assert other.isNotCompleted();
     }
 
     @Test
