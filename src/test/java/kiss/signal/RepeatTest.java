@@ -35,6 +35,18 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
+    public void disposeRepeat() throws Exception {
+        monitor(signal -> signal.repeat(3));
+
+        assert emit("success to repeat", Complete).value("success to repeat");
+        assert result.isNotCompleted();
+
+        dispose();
+        assert emit("fail to repeat", Complete).value();
+        assert result.isNotCompleted();
+    }
+
+    @Test
     public void repeatThenMerge() {
         monitor(signal -> signal.repeat().merge(other.signal()));
 
