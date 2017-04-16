@@ -9,6 +9,7 @@
  */
 package kiss.signal;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
 import org.junit.Test;
@@ -22,11 +23,13 @@ public class RepeatTest extends SignalTester {
 
     @Test
     public void repeat() throws Exception {
-        monitor(signal -> signal.repeat(2));
+        monitor(signal -> signal.repeat(3));
 
-        assert emit("ok", Complete).value("ok");
+        assert emit("success to repeat 1", Complete).value("success to repeat 1");
         assert result.isNotCompleted();
-        assert emit("success to repeat", Complete).value("success to repeat");
+        assert emit("success to repeat 2", Complete).value("success to repeat 2");
+        assert result.isNotCompleted();
+        assert emit("success to repeat 3", Complete).value("success to repeat 3");
         assert result.isCompleted();
         assert emit("fail to repeat", Complete).value();
     }
@@ -54,9 +57,18 @@ public class RepeatTest extends SignalTester {
 
     @Test
     public void repeatIf() throws Exception {
-        monitor(() -> signal(1).effect(log1).repeatIf(() -> log1.size() < 3));
-        assert log1.value(1, 1, 1);
-        assert result.value(1, 1, 1);
+        AtomicBoolean canRepeat = new AtomicBoolean(true);
+        monitor(signal -> signal.repeatIf(canRepeat::get));
+
+        assert emit(1, Complete).value(1);
+        assert emit(2, Complete).value(2);
+        assert emit(3, Complete).value(3);
+        assert result.isNotCompleted();
+
+        canRepeat.set(false);
+        assert emit(1, Complete).value(1);
+        assert emit(2, Complete).value();
+        assert emit(3, Complete).value();
         assert result.isCompleted();
     }
 

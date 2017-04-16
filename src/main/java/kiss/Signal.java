@@ -1325,10 +1325,11 @@ public final class Signal<V> {
                 if (counter.decrementAndGet() <= 0) {
                     observer.complete();
                 } else {
+                    subscriber.dispose();
                     subscriber.add(to(subscriber.child()));
                 }
             };
-            return subscriber.add(to(subscriber.child(), disposer));
+            return subscriber.add(to(subscriber.child()));
         });
     }
 
@@ -1347,16 +1348,17 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            Subscriber<V> subscriber = new Subscriber();
+            Subscriber subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.complete = () -> {
-                observer.complete();
-                if (condition.getAsBoolean()) {
-                    subscriber.index = 0;
-                    to(subscriber, disposer);
+                if (condition.getAsBoolean() == false) {
+                    observer.complete();
+                } else {
+                    subscriber.dispose();
+                    subscriber.add(to(subscriber.child()));
                 }
             };
-            return to(subscriber, disposer);
+            return subscriber.add(to(subscriber.child()));
         });
     }
 

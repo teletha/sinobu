@@ -25,7 +25,7 @@ public class RXTest extends SignalTester {
     private void test() throws Exception {
         PublishSubject s = PublishSubject.create();
         PublishSubject main = PublishSubject.create();
-        Disposable subscribe = main.mergeWith(s).subscribe(v -> {
+        Disposable subscribe = main.skip(1).take(1).repeat(2).subscribe(v -> {
             System.out.println(v);
         }, e -> {
 
@@ -34,9 +34,10 @@ public class RXTest extends SignalTester {
         });
 
         main.onNext("1");
-        s.onNext("2");
-        subscribe.dispose();
-        main.onNext("1");
-        s.onNext("2");
+        main.onNext("2");
+        main.onNext("3");
+        main.onNext("4");
+        main.onNext("5");
+        main.onNext("6");
     }
 }

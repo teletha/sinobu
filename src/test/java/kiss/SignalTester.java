@@ -340,22 +340,10 @@ public class SignalTester {
         disposer = I.bundle(Disposable.class, stream(sets).map(e -> e.disposer).collect(toList()));
     }
 
-    protected Publisher newPublisher() {
-        return new PublisherImplementation();
-    }
-
     /**
      * @version 2017/04/04 12:59:48
      */
     protected static interface Log<T> extends Observer<T> {
-        /**
-         * Validate the result values.
-         * 
-         * @param expected
-         * @return
-         */
-        boolean value(Object... expected);
-
         /**
          * <p>
          * Cehck this subscription is completed or not.
@@ -393,13 +381,12 @@ public class SignalTester {
         boolean isNotError();
 
         /**
-         * <p>
-         * A number of message.
-         * </p>
+         * Validate the result values.
          * 
+         * @param expected
          * @return
          */
-        int size();
+        boolean value(Object... expected);
     }
 
     /**
@@ -433,6 +420,14 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
+        public void error(Throwable error) {
+            this.error = error;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean isCompleted() {
             return completed == true && error == null;
         }
@@ -443,39 +438,6 @@ public class SignalTester {
         @Override
         public boolean isNotCompleted() {
             return completed == false;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void error(Throwable error) {
-            this.error = error;
-        }
-
-        /**
-         * Validate the result values and clear them from log.
-         * 
-         * @param expected
-         * @return
-         */
-        @Override
-        public boolean value(Object... expected) {
-            assert values.size() == expected.length;
-
-            for (int i = 0; i < expected.length; i++) {
-                assert Objects.equals(values.get(i), expected[i]);
-            }
-            values.clear();
-            return true;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int size() {
-            return values.size();
         }
 
         /**
@@ -495,6 +457,23 @@ public class SignalTester {
         public boolean isNotError() {
             assert error == null;
             assert completed == false;
+            return true;
+        }
+
+        /**
+         * Validate the result values and clear them from log.
+         * 
+         * @param expected
+         * @return
+         */
+        @Override
+        public boolean value(Object... expected) {
+            assert values.size() == expected.length;
+        
+            for (int i = 0; i < expected.length; i++) {
+                assert Objects.equals(values.get(i), expected[i]);
+            }
+            values.clear();
             return true;
         }
     }
