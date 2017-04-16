@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 import org.junit.Test;
 
-import kiss.I;
 import kiss.SignalTester;
 
 /**
@@ -27,7 +26,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal(1));
 
         assert result.value(1);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -35,7 +34,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal(1, 2, 3));
 
         assert result.value(1, 2, 3);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -43,7 +42,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal());
 
         assert result.value();
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -51,7 +50,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal((String) null));
 
         assert result.value((String) null);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -59,7 +58,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal(null, null, null));
 
         assert result.value(null, null, null);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -67,7 +66,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal((String[]) null));
 
         assert result.value();
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -75,7 +74,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal(list(1, 2)));
 
         assert result.value(1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -83,7 +82,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal((Iterable) null));
 
         assert result.value();
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -91,7 +90,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal(enume(1, 2)));
 
         assert result.value(1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -99,7 +98,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal((Enumeration) null));
 
         assert result.value();
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -107,7 +106,7 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal(stream(1, 2)));
 
         assert result.value(1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -115,6 +114,6 @@ public class SignalCreationTest extends SignalTester {
         monitor(() -> signal((Stream) null));
 
         assert result.value();
-        assert result.completed();
+        assert result.isCompleted();
     }
 }

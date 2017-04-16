@@ -69,9 +69,7 @@ public class SignalTester {
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
 
-    protected Publisher otherP = new PublisherImplementation();
-
-    protected Subject<String, String> other = new Subject();
+    protected Publisher other = new PublisherImplementation();
 
     protected Subject<Boolean, Boolean> condition = new Subject();
 
@@ -342,19 +340,14 @@ public class SignalTester {
         disposer = I.bundle(Disposable.class, stream(sets).map(e -> e.disposer).collect(toList()));
     }
 
+    protected Publisher newPublisher() {
+        return new PublisherImplementation();
+    }
+
     /**
      * @version 2017/04/04 12:59:48
      */
     protected static interface Log<T> extends Observer<T> {
-        /**
-         * <p>
-         * Eject the head value.
-         * </p>
-         * 
-         * @return
-         */
-        Object retrieve();
-
         /**
          * Validate the result values.
          * 
@@ -362,15 +355,6 @@ public class SignalTester {
          * @return
          */
         boolean value(Object... expected);
-
-        /**
-         * <p>
-         * Validate disposer.
-         * </p>
-         * 
-         * @return
-         */
-        boolean completed();
 
         /**
          * <p>
@@ -392,15 +376,6 @@ public class SignalTester {
 
         /**
          * <p>
-         * A number of message.
-         * </p>
-         * 
-         * @return
-         */
-        int size();
-
-        /**
-         * <p>
          * Cehck this subscription has error or not.
          * </p>
          * 
@@ -416,6 +391,15 @@ public class SignalTester {
          * @return A result.
          */
         boolean isNotError();
+
+        /**
+         * <p>
+         * A number of message.
+         * </p>
+         * 
+         * @return
+         */
+        int size();
     }
 
     /**
@@ -450,7 +434,7 @@ public class SignalTester {
          */
         @Override
         public boolean isCompleted() {
-            return completed == true;
+            return completed == true && error == null;
         }
 
         /**
@@ -467,28 +451,6 @@ public class SignalTester {
         @Override
         public void error(Throwable error) {
             this.error = error;
-        }
-
-        /**
-         * <p>
-         * Validate disposer.
-         * </p>
-         * 
-         * @return
-         */
-        @Override
-        public boolean completed() {
-            assert completed;
-            assert error == null;
-            return true;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Object retrieve() {
-            return values.isEmpty() ? null : values.remove(0);
         }
 
         /**
@@ -593,6 +555,8 @@ public class SignalTester {
 
         Signal signal();
 
+        boolean isCompleted();
+
         boolean isNotCompleted();
     }
 
@@ -608,9 +572,15 @@ public class SignalTester {
          */
         @Override
         public Log emit(Object... values) {
-            for (Object value : values) {
-                for (Observer observer : observers) {
-                    observer.accept(value);
+            for (Observer observer : observers) {
+                for (Object value : values) {
+                    if (value == Complete) {
+                        observer.complete();
+                    } else if (value instanceof Class && Throwable.class.isAssignableFrom((Class) value)) {
+                        observer.error(I.make((Class<Throwable>) value));
+                    } else {
+                        observer.accept(value);
+                    }
                 }
             }
             return result;
@@ -635,7 +605,15 @@ public class SignalTester {
          */
         @Override
         public boolean isNotCompleted() {
-            return false;
+            return !observers.isEmpty();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isCompleted() {
+            return observers.isEmpty();
         }
     }
 }

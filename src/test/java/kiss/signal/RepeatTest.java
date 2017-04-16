@@ -33,21 +33,21 @@ public class RepeatTest extends SignalTester {
 
     @Test
     public void repeatThenMerge() {
-        monitor(signal -> signal.repeat().merge(otherP.signal()));
+        monitor(signal -> signal.repeat().merge(other.signal()));
 
         // from main
         assert emit("skip", "take", Complete).value("skip", "take");
         assert emit("skip", "take", Complete).value("skip", "take");
 
         // from other
-        assert otherP.emit("external").value("external");
+        assert other.emit("external").value("external");
 
         assert result.isNotCompleted();
 
         // dispose
         dispose();
         assert emit("main is disposed so this value will be ignored").value();
-        assert otherP.emit("other is disposed so this value will be ignored").value();
+        assert other.emit("other is disposed so this value will be ignored").value();
 
         assert result.isNotCompleted();
     }
@@ -57,7 +57,7 @@ public class RepeatTest extends SignalTester {
         monitor(() -> signal(1).effect(log1).repeatIf(() -> log1.size() < 3));
         assert log1.value(1, 1, 1);
         assert result.value(1, 1, 1);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -65,7 +65,7 @@ public class RepeatTest extends SignalTester {
         monitor(() -> signal(1).effect(log1).repeatIf((BooleanSupplier) null));
         assert log1.value(1);
         assert result.value(1);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     public void repeatUntil() throws Exception {

@@ -31,8 +31,7 @@ public class MergeTest extends SignalTester {
         assert result.isNotCompleted();
 
         // complete other
-        other.complete();
-        other.emit("Other is completed so this value will be ignored.");
+        other.emit(Complete, "Other is completed so this value will be ignored.");
         assert result.value();
         assert result.isNotCompleted();
 
@@ -66,8 +65,7 @@ public class MergeTest extends SignalTester {
         assert result.value("Other is not completed.");
 
         // complete other
-        other.complete();
-        other.emit("Other is completed so this value will be ignored.");
+        other.emit(Complete, "Other is completed so this value will be ignored.");
         assert result.value();
         assert result.isCompleted();
     }

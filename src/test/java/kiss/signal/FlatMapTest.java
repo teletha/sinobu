@@ -23,7 +23,7 @@ public class FlatMapTest extends SignalTester {
         monitor(() -> signal(10, 20).flatMap(v -> signal(v, v + 1)));
 
         assert result.value(10, 11, 20, 21);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -31,7 +31,7 @@ public class FlatMapTest extends SignalTester {
         monitor(() -> signal(1, 2).flatMap(null));
 
         assert result.value(1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test

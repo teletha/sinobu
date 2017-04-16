@@ -27,7 +27,7 @@ public class ConcatTest extends SignalTester {
         monitor(() -> signal(1, 2).concat(signal(3, 4)));
 
         assert result.value(1, 2, 3, 4);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -35,7 +35,7 @@ public class ConcatTest extends SignalTester {
         monitor(() -> signal(1, 2).concat(signal(3, 4), signal(5, 6)));
 
         assert result.value(1, 2, 3, 4, 5, 6);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -43,7 +43,7 @@ public class ConcatTest extends SignalTester {
         monitor(() -> signal(1, 2).concat((Signal) null));
 
         assert result.value(1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -51,7 +51,7 @@ public class ConcatTest extends SignalTester {
         monitor(() -> signal(1, 2).concat((Signal[]) null));
 
         assert result.value(1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ConcatTest extends SignalTester {
 
         assert log1.value(1, 2);
         assert result.value(1, 2);
-        assert result.completed();
+        assert result.isCompleted();
         assert disposer.isDisposed();
     }
 

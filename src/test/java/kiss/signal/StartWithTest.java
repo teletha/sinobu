@@ -24,33 +24,33 @@ public class StartWithTest extends SignalTester {
     public void value() throws Exception {
         monitor(() -> signal(1, 2).startWith(0));
         assert result.value(0, 1, 2);
-        assert result.completed();
+        assert result.isCompleted();
 
         monitor(() -> signal(1, 2).startWith(3, 4));
         assert result.value(3, 4, 1, 2);
-        assert result.completed();
+        assert result.isCompleted();
 
         monitor(() -> signal(1, 2).startWith(3).startWith(4, 5));
         assert result.value(4, 5, 3, 1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
     public void valueNull() throws Exception {
         monitor(() -> signal("1", "2").startWith((String) null));
         assert result.value(null, "1", "2");
-        assert result.completed();
+        assert result.isCompleted();
 
         monitor(() -> signal("1", "2").startWith((String[]) null));
         assert result.value("1", "2");
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
     public void iterable() throws Exception {
         monitor(() -> signal(1, 2).startWith(list(-1, 0)));
         assert result.value(-1, 0, 1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test

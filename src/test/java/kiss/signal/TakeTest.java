@@ -42,7 +42,7 @@ public class TakeTest extends SignalTester {
         monitor(() -> signal(10, 11, 20, 21).take(0, (prev, now) -> now - prev > 5));
 
         assert result.value(10, 20);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -50,7 +50,7 @@ public class TakeTest extends SignalTester {
         monitor(() -> signal(10, 11, 20, 21).take(0, (BiPredicate) null));
 
         assert result.value(10, 11, 20, 21);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test

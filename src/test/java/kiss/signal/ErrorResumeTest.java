@@ -26,7 +26,7 @@ public class ErrorResumeTest extends SignalTester {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume(signal(10, 11)));
 
         assert result.value(10, 11);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -42,7 +42,7 @@ public class ErrorResumeTest extends SignalTester {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume(e -> signal(10, 11)));
 
         assert result.value(10, 11);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test

@@ -23,7 +23,7 @@ public class MapTest extends SignalTester {
         monitor(() -> signal(1, 2).map(v -> v * 2));
 
         assert result.value(2, 4);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
@@ -31,7 +31,7 @@ public class MapTest extends SignalTester {
         monitor(() -> signal(1, 2).map(null));
 
         assert result.value(1, 2);
-        assert result.completed();
+        assert result.isCompleted();
     }
 
     @Test
