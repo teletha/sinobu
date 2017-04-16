@@ -1029,7 +1029,7 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                function.apply(value).to(observer, disposer.sub());
+                function.apply(value).to(observer::accept, observer::error, null, disposer.sub());
             }, observer::error, observer::complete, disposer);
         });
     }

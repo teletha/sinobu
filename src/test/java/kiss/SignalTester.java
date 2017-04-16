@@ -48,6 +48,9 @@ public class SignalTester {
     /** The alias of 'this' for DSL. */
     protected final SignalTester Type = this;
 
+    /** The alias of 'Function.identity()' for DSL. */
+    protected final Function Same = Function.identity();
+
     /** READ ONLY : DON'T MODIFY in test case */
     protected Log result = null;
 
@@ -469,7 +472,7 @@ public class SignalTester {
         @Override
         public boolean value(Object... expected) {
             assert values.size() == expected.length;
-        
+
             for (int i = 0; i < expected.length; i++) {
                 assert Objects.equals(values.get(i), expected[i]);
             }
