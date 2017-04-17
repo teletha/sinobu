@@ -68,7 +68,7 @@ public class SignalTester {
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
 
-    protected Publisher other = new PublisherImplementation();
+    protected SignalSource other = new PublisherImplementation();
 
     /** READ ONLY : DON'T MODIFY in test case */
     private final List<Observer> observers = new CopyOnWriteArrayList();
@@ -525,20 +525,11 @@ public class SignalTester {
     /**
      * @version 2017/04/17 9:32:56
      */
-    public interface Publisher {
+    public static abstract class SignalSource {
 
-        Log emit(Object... values);
+        public abstract Log emit(Object... values);
 
-        Signal signal();
-
-        /**
-         * <p>
-         * Check whether this {@link Signal} source is completed or not.
-         * </p>
-         * 
-         * @return A result.
-         */
-        boolean isCompleted();
+        public abstract Signal signal();
 
         /**
          * <p>
@@ -547,7 +538,16 @@ public class SignalTester {
          * 
          * @return A result.
          */
-        default boolean isNotCompleted() {
+        public abstract boolean isCompleted();
+
+        /**
+         * <p>
+         * Check whether this {@link Signal} source is completed or not.
+         * </p>
+         * 
+         * @return A result.
+         */
+        public boolean isNotCompleted() {
             return !isCompleted();
         }
 
@@ -558,7 +558,7 @@ public class SignalTester {
          * 
          * @return A result.
          */
-        boolean isDisposed();
+        public abstract boolean isDisposed();
 
         /**
          * <p>
@@ -567,7 +567,7 @@ public class SignalTester {
          * 
          * @return A result.
          */
-        default boolean isNotDisposed() {
+        public boolean isNotDisposed() {
             return !isDisposed();
         }
     }
@@ -575,7 +575,7 @@ public class SignalTester {
     /**
      * @version 2017/04/16 1:45:47
      */
-    private class PublisherImplementation implements Publisher {
+    private class PublisherImplementation extends SignalSource {
 
         private List<Observer> observers = new CopyOnWriteArrayList();
 
