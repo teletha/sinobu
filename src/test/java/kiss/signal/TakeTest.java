@@ -74,17 +74,18 @@ public class TakeTest extends SignalTester {
 
     @Test
     public void takeBySignal() {
-        monitor(signal -> signal.take(condition.signal()));
+        monitor(signal -> signal.take(other.signal()));
 
         assert emit(1, 2).value();
-        condition.emit(true);
+        other.emit(true);
         assert emit(1, 2).value(1, 2);
-        condition.emit(false);
+        other.emit(false);
         assert emit(1, 2).value();
 
-        assert condition.isNotDisposed();
+        assert other.isNotDisposed();
         dispose();
-        assert condition.isDisposed();
+        assert result.isNotCompleted();
+        assert other.isDisposed();
     }
 
     @Test

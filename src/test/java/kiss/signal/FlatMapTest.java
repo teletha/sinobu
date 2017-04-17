@@ -28,7 +28,7 @@ public class FlatMapTest extends SignalTester {
 
     @Test
     public void withAfterOperation() throws Exception {
-        monitor(() -> signal(10, 20).flatMap(v -> signal(v, v + 1)).map(Same));
+        monitor(() -> signal(10, 20).flatMap(v -> signal(v, v + 1)).map(v -> v));
 
         assert result.value(10, 11, 20, 21);
         assert result.isCompleted();

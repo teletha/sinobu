@@ -24,7 +24,6 @@ import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 
 import antibug.Chronus;
-import kiss.signal.Subject;
 
 /**
  * @version 2017/04/07 16:52:37
@@ -48,9 +47,6 @@ public class SignalTester {
     /** The alias of 'this' for DSL. */
     protected final SignalTester Type = this;
 
-    /** The alias of 'Function.identity()' for DSL. */
-    protected final Function Same = Function.identity();
-
     /** READ ONLY : DON'T MODIFY in test case */
     protected Log result = null;
 
@@ -73,8 +69,6 @@ public class SignalTester {
     protected Disposable disposer = null;
 
     protected Publisher other = new PublisherImplementation();
-
-    protected Subject<Boolean, Boolean> condition = new Subject();
 
     /** READ ONLY : DON'T MODIFY in test case */
     private final List<Observer> observers = new CopyOnWriteArrayList();
@@ -529,7 +523,7 @@ public class SignalTester {
     }
 
     /**
-     * @version 2017/04/16 1:45:49
+     * @version 2017/04/17 9:32:56
      */
     public interface Publisher {
 
@@ -537,9 +531,45 @@ public class SignalTester {
 
         Signal signal();
 
+        /**
+         * <p>
+         * Check whether this {@link Signal} source is completed or not.
+         * </p>
+         * 
+         * @return A result.
+         */
         boolean isCompleted();
 
-        boolean isNotCompleted();
+        /**
+         * <p>
+         * Check whether this {@link Signal} source is completed or not.
+         * </p>
+         * 
+         * @return A result.
+         */
+        default boolean isNotCompleted() {
+            return !isCompleted();
+        }
+
+        /**
+         * <p>
+         * Check whether this {@link Signal} source is disposed or not.
+         * </p>
+         * 
+         * @return A result.
+         */
+        boolean isDisposed();
+
+        /**
+         * <p>
+         * Check whether this {@link Signal} source is disposed or not.
+         * </p>
+         * 
+         * @return A result.
+         */
+        default boolean isNotDisposed() {
+            return !isDisposed();
+        }
     }
 
     /**
@@ -548,6 +578,8 @@ public class SignalTester {
     private class PublisherImplementation implements Publisher {
 
         private List<Observer> observers = new CopyOnWriteArrayList();
+
+        private List<Disposable> disposers = new CopyOnWriteArrayList();
 
         /**
          * {@inheritDoc}
@@ -575,9 +607,13 @@ public class SignalTester {
         public Signal signal() {
             Signal signal = new Signal<>((observer, disposer) -> {
                 observers.add(observer);
-                return disposer.add(() -> {
+                disposer.add(() -> {
                     observers.remove(observer);
                 });
+
+                disposers.add(disposer);
+
+                return disposer;
             });
             return signal;
         }
@@ -586,16 +622,21 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
-        public boolean isNotCompleted() {
-            return !observers.isEmpty();
+        public boolean isCompleted() {
+            return observers.isEmpty();
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public boolean isCompleted() {
-            return observers.isEmpty();
+        public boolean isDisposed() {
+            for (Disposable disposable : disposers) {
+                if (disposable.isDisposed() == false) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
