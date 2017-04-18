@@ -536,7 +536,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -642,7 +642,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -740,24 +740,6 @@ public final class Signal<V> {
             };
 
             return to(subscriber.child(), disposer);
-        });
-    }
-
-    public final Signal<V> concatMap(Function<V, Signal<? extends V>> other) {
-        return new Signal<>((observer, disposer) -> {
-            Deque<V> items = new ArrayDeque();
-
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.next = v -> {
-                items.add(v);
-
-                if (items.size() == 1) {
-                    flatMap(x -> other.apply(items.pollFirst())).repeatIf(() -> !items.isEmpty()).to(observer, disposer);
-                }
-            };
-
-            return to(subscriber, disposer);
         });
     }
 

@@ -20,6 +20,7 @@ import kiss.XML;
  * @version 2017/04/02 21:59:13
  */
 public class TreeWalkerTest {
+
     @Test
     public void walk() throws Exception {
         I.signal(new File("src/main"), e -> e.flatArray(File::listFiles)).to(e -> {
@@ -27,6 +28,7 @@ public class TreeWalkerTest {
         });
     }
 
+    @Test
     public void xml() throws Exception {
         I.signal(I.xml("<x><a><o/><p/></a><b/><c><q/><r/></c></x>"), e -> e.flatIterable(XML::children).skip(a -> a.name().equals("c")))
                 .to(e -> {

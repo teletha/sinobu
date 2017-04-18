@@ -2574,20 +2574,17 @@ public class I {
         return walk(signal(root), traverser);
     }
 
+    /**
+     * <p>
+     * Traverse the tree structure.
+     * </p>
+     * 
+     * @param root A root node to traverse.
+     * @param traverser A function to navigate from a node to its children.
+     * @return
+     */
     private static <T> Signal<T> walk(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.concatMap(e -> walk(traverser.apply(I.signal(e)), traverser));
-    }
-
-    private static <T> Signal<T> walkDFSPPreOrder2(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.merge(root.flatMap(e -> walkDFSPPreOrder2(traverser.apply(I.signal(e)), traverser)));
-    }
-
-    private static <T> Signal<T> walkDFSPPreOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.flatMap(e -> walkDFSPPreOrder(traverser.apply(I.signal(e)), traverser)).startWith(root);
-    }
-
-    private static <T> Signal<T> walkDFSPostOrder(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.flatMap(e -> walkDFSPostOrder(traverser.apply(I.signal(e)), traverser)).merge(root);
+        return root.merge(root.flatMap(e -> walk(traverser.apply(I.signal(e)), traverser)));
     }
 
     /**
