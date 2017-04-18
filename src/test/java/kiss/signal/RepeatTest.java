@@ -41,7 +41,7 @@ public class RepeatTest extends SignalTester {
         assert main.emit("success to repeat", Complete).value("success to repeat");
         assert result.isNotCompleted();
 
-        dispose();
+        main.dispose();
         assert main.emit("fail to repeat", Complete).value();
         assert result.isNotCompleted();
     }
@@ -60,7 +60,7 @@ public class RepeatTest extends SignalTester {
         assert result.isNotCompleted();
 
         // dispose
-        dispose();
+        main.dispose();
         assert main.emit("main is disposed so this value will be ignored").value();
         assert other.emit("other is disposed so this value will be ignored").value();
 

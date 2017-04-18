@@ -65,12 +65,11 @@ public class SignalTester {
     /** READ ONLY : DON'T MODIFY in test case */
     protected Log log5 = null;
 
-    /** READ ONLY : DON'T MODIFY in test case */
-    protected Disposable disposer = null;
+    /** READ ONLY */
+    protected final SignalSource main = new SignalSource();
 
-    protected SignalSource main = new SignalSource();
-
-    protected SignalSource other = new SignalSource();
+    /** READ ONLY */
+    protected final SignalSource other = new SignalSource();
 
     /** READ ONLY : DON'T MODIFY in test case */
     private final List<Await> awaits = new CopyOnWriteArrayList();
@@ -108,10 +107,6 @@ public class SignalTester {
             });
             return disposer;
         });
-    }
-
-    protected final void dispose() {
-        disposer.dispose();
     }
 
     protected final Log await() {
@@ -250,7 +245,7 @@ public class SignalTester {
         log4 = I.bundle(stream(sets).map(e -> e.log4).collect(toList()));
         log5 = I.bundle(stream(sets).map(e -> e.log5).collect(toList()));
         result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
-        disposer = I.bundle(Disposable.class, stream(sets).map(e -> e.disposer).collect(toList()));
+        main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
     }
 
     /**
@@ -313,7 +308,7 @@ public class SignalTester {
         log4 = I.bundle(stream(sets).map(e -> e.log4).collect(toList()));
         log5 = I.bundle(stream(sets).map(e -> e.log5).collect(toList()));
         result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
-        disposer = I.bundle(Disposable.class, stream(sets).map(e -> e.disposer).collect(toList()));
+        main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
     }
 
     /**
@@ -502,14 +497,24 @@ public class SignalTester {
     }
 
     /**
-     * @version 2017/04/17 9:32:56
+     * @version 2017/04/18 16:04:43
      */
     public class SignalSource {
 
+        /** {@link Observer} manager. */
         private List<Observer> observers = new CopyOnWriteArrayList();
 
+        /** {@link Disposable} manager. */
         private List<Disposable> disposers = new CopyOnWriteArrayList();
 
+        /**
+         * <p>
+         * Emit the specified values to the managed {@link Signal}.
+         * </p>
+         * 
+         * @param values The values to emit.
+         * @return A correspoding {@link Signal} log.
+         */
         public Log emit(Object... values) {
             for (Observer observer : observers) {
                 for (Object value : values) {
@@ -525,6 +530,13 @@ public class SignalTester {
             return result;
         }
 
+        /**
+         * <p>
+         * Create new managed {@link Signal}.
+         * </p>
+         * 
+         * @return
+         */
         public Signal signal() {
             Signal signal = new Signal<>((observer, disposer) -> {
                 observers.add(observer);
@@ -586,6 +598,17 @@ public class SignalTester {
          */
         public boolean isNotDisposed() {
             return !isDisposed();
+        }
+
+        /**
+         * <p>
+         * Dispose all managed {@link Signal}.
+         * </p>
+         */
+        public void dispose() {
+            for (Disposable disposable : disposers) {
+                disposable.dispose();
+            }
         }
     }
 }

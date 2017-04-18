@@ -83,7 +83,7 @@ public class TakeTest extends SignalTester {
         assert main.emit(1, 2).value();
 
         assert other.isNotDisposed();
-        dispose();
+        main.dispose();
         assert result.isNotCompleted();
         assert other.isDisposed();
     }
