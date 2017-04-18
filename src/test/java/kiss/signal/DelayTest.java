@@ -22,10 +22,10 @@ public class DelayTest extends SignalTester {
     public void delay() throws Exception {
         monitor(signal -> signal.delay(10, ms));
 
-        assert emit("delay").value();
+        assert main.emit("delay").value();
         assert await().value("delay");
 
-        assert emit("one", "more").value();
+        assert main.emit("one", "more").value();
         assert await().value("one", "more");
     }
 
@@ -33,6 +33,6 @@ public class DelayTest extends SignalTester {
     public void delayNegative() throws Exception {
         monitor(signal -> signal.delay(-10, ms));
 
-        assert emit("delay").value("delay");
+        assert main.emit("delay").value("delay");
     }
 }

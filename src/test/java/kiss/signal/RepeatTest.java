@@ -25,24 +25,24 @@ public class RepeatTest extends SignalTester {
     public void repeat() throws Exception {
         monitor(signal -> signal.repeat(3));
 
-        assert emit("success to repeat 1", Complete).value("success to repeat 1");
+        assert main.emit("success to repeat 1", Complete).value("success to repeat 1");
         assert result.isNotCompleted();
-        assert emit("success to repeat 2", Complete).value("success to repeat 2");
+        assert main.emit("success to repeat 2", Complete).value("success to repeat 2");
         assert result.isNotCompleted();
-        assert emit("success to repeat 3", Complete).value("success to repeat 3");
+        assert main.emit("success to repeat 3", Complete).value("success to repeat 3");
         assert result.isCompleted();
-        assert emit("fail to repeat", Complete).value();
+        assert main.emit("fail to repeat", Complete).value();
     }
 
     @Test
     public void disposeRepeat() throws Exception {
         monitor(signal -> signal.repeat(3));
 
-        assert emit("success to repeat", Complete).value("success to repeat");
+        assert main.emit("success to repeat", Complete).value("success to repeat");
         assert result.isNotCompleted();
 
         dispose();
-        assert emit("fail to repeat", Complete).value();
+        assert main.emit("fail to repeat", Complete).value();
         assert result.isNotCompleted();
     }
 
@@ -51,8 +51,8 @@ public class RepeatTest extends SignalTester {
         monitor(signal -> signal.repeat().merge(other.signal()));
 
         // from main
-        assert emit("skip", "take", Complete).value("skip", "take");
-        assert emit("skip", "take", Complete).value("skip", "take");
+        assert main.emit("skip", "take", Complete).value("skip", "take");
+        assert main.emit("skip", "take", Complete).value("skip", "take");
 
         // from other
         assert other.emit("external").value("external");
@@ -61,7 +61,7 @@ public class RepeatTest extends SignalTester {
 
         // dispose
         dispose();
-        assert emit("main is disposed so this value will be ignored").value();
+        assert main.emit("main is disposed so this value will be ignored").value();
         assert other.emit("other is disposed so this value will be ignored").value();
 
         assert result.isNotCompleted();
@@ -72,15 +72,15 @@ public class RepeatTest extends SignalTester {
         AtomicBoolean canRepeat = new AtomicBoolean(true);
         monitor(signal -> signal.repeatIf(canRepeat::get));
 
-        assert emit(1, Complete).value(1);
-        assert emit(2, Complete).value(2);
-        assert emit(3, Complete).value(3);
+        assert main.emit(1, Complete).value(1);
+        assert main.emit(2, Complete).value(2);
+        assert main.emit(3, Complete).value(3);
         assert result.isNotCompleted();
 
         canRepeat.set(false);
-        assert emit(1, Complete).value(1);
-        assert emit(2, Complete).value();
-        assert emit(3, Complete).value();
+        assert main.emit(1, Complete).value(1);
+        assert main.emit(2, Complete).value();
+        assert main.emit(3, Complete).value();
         assert result.isCompleted();
     }
 
@@ -95,7 +95,7 @@ public class RepeatTest extends SignalTester {
     public void repeatUntil() throws Exception {
         monitor(signal -> signal.delay(10, ms).take(1).repeat(2));
 
-        assert emit(10, 20).value();
+        assert main.emit(10, 20).value();
         assert await().value(10, 10);
     }
 }

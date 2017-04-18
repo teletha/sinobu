@@ -25,7 +25,7 @@ public class TakeTest extends SignalTester {
     public void take() {
         monitor(int.class, signal -> signal.take(value -> value % 2 == 0));
 
-        assert emit(1, 2, 3, 4).value(2, 4);
+        assert main.emit(1, 2, 3, 4).value(2, 4);
         assert result.isNotCompleted();
     }
 
@@ -33,7 +33,7 @@ public class TakeTest extends SignalTester {
     public void takeNull() {
         monitor(int.class, signal -> signal.take((Predicate) null));
 
-        assert emit(1, 2, 3, 4).value(1, 2, 3, 4);
+        assert main.emit(1, 2, 3, 4).value(1, 2, 3, 4);
         assert result.isNotCompleted();
     }
 
@@ -57,7 +57,7 @@ public class TakeTest extends SignalTester {
     public void takeByCount() throws Exception {
         monitor(int.class, signal -> signal.take(2));
 
-        assert emit(1, 2, 3, 4).value(1, 2);
+        assert main.emit(1, 2, 3, 4).value(1, 2);
         assert result.isCompleted();
     }
 
@@ -65,10 +65,10 @@ public class TakeTest extends SignalTester {
     public void takeByTime() {
         monitor(signal -> signal.takeUntil(30, ms));
 
-        assert emit(1, 2).value(1, 2);
+        assert main.emit(1, 2).value(1, 2);
         assert result.isNotCompleted();
         await(30);
-        assert emit(1, 2).value();
+        assert main.emit(1, 2).value();
         assert result.isCompleted();
     }
 
@@ -76,11 +76,11 @@ public class TakeTest extends SignalTester {
     public void takeBySignal() {
         monitor(signal -> signal.take(other.signal()));
 
-        assert emit(1, 2).value();
+        assert main.emit(1, 2).value();
         other.emit(true);
-        assert emit(1, 2).value(1, 2);
+        assert main.emit(1, 2).value(1, 2);
         other.emit(false);
-        assert emit(1, 2).value();
+        assert main.emit(1, 2).value();
 
         assert other.isNotDisposed();
         dispose();
@@ -101,10 +101,10 @@ public class TakeTest extends SignalTester {
     public void takeUntilValueCondition() {
         monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
 
-        assert emit(1, 2).value(1, 2);
+        assert main.emit(1, 2).value(1, 2);
         assert result.isNotCompleted();
 
-        assert emit(3, 4).value(3);
+        assert main.emit(3, 4).value(3);
         assert result.isCompleted();
     }
 
@@ -112,12 +112,12 @@ public class TakeTest extends SignalTester {
     public void takeUntilSignal() {
         monitor(signal -> signal.takeUntil(other.signal()));
 
-        assert emit(1, 2).value(1, 2);
+        assert main.emit(1, 2).value(1, 2);
         assert result.isNotCompleted();
         assert other.isNotCompleted();
 
         other.emit("start");
-        assert emit(1, 2).value();
+        assert main.emit(1, 2).value();
         assert result.isCompleted();
         assert other.isCompleted();
     }

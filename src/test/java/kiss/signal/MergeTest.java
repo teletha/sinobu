@@ -22,7 +22,7 @@ public class MergeTest extends SignalTester {
     public void completeFromOther() throws Exception {
         monitor(signal -> signal.merge(other.signal()));
 
-        emit("Main");
+        main.emit("Main");
         assert result.value("Main");
         other.emit("Other");
         assert result.value("Other");
@@ -35,11 +35,11 @@ public class MergeTest extends SignalTester {
         assert result.value();
         assert result.isNotCompleted();
 
-        emit("Main is not completed.");
+        main.emit("Main is not completed.");
         assert result.value("Main is not completed.");
 
         // complete main
-        emit(Complete, "Main is completed so this value will be ignored.");
+        main.emit(Complete, "Main is completed so this value will be ignored.");
         assert result.value();
         assert result.isCompleted();
     }
@@ -48,7 +48,7 @@ public class MergeTest extends SignalTester {
     public void completeFromMain() throws Exception {
         monitor(signal -> signal.merge(other.signal()));
 
-        emit("Main");
+        main.emit("Main");
         assert result.value("Main");
         other.emit("Other");
         assert result.value("Other");
@@ -57,7 +57,7 @@ public class MergeTest extends SignalTester {
         assert result.isNotCompleted();
 
         // complete main
-        emit(Complete, "Main is completed so this value will be ignored.");
+        main.emit(Complete, "Main is completed so this value will be ignored.");
         assert result.value();
         assert result.isNotCompleted();
 

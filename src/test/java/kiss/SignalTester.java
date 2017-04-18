@@ -68,10 +68,9 @@ public class SignalTester {
     /** READ ONLY : DON'T MODIFY in test case */
     protected Disposable disposer = null;
 
-    protected SignalSource other = new PublisherImplementation();
+    protected SignalSource main = new SignalSource();
 
-    /** READ ONLY : DON'T MODIFY in test case */
-    private final List<Observer> observers = new CopyOnWriteArrayList();
+    protected SignalSource other = new SignalSource();
 
     /** READ ONLY : DON'T MODIFY in test case */
     private final List<Await> awaits = new CopyOnWriteArrayList();
@@ -109,26 +108,6 @@ public class SignalTester {
             });
             return disposer;
         });
-    }
-
-    /**
-     * <p>
-     * Helper method to emit the specified values to all monitored {@link Observer}.
-     * </p>
-     */
-    protected final Log emit(Object... values) {
-        for (Observer observer : observers) {
-            for (Object value : values) {
-                if (value == Complete) {
-                    observer.complete();
-                } else if (value instanceof Class && Throwable.class.isAssignableFrom((Class) value)) {
-                    observer.error(I.make((Class<Throwable>) value));
-                } else {
-                    observer.accept(value);
-                }
-            }
-        }
-        return result;
     }
 
     protected final void dispose() {
@@ -316,8 +295,8 @@ public class SignalTester {
             result = sets[i].result;
 
             Signal signal = new Signal<>((observer, disposer) -> {
-                observers.add(observer);
-                return disposer.add(() -> observers.remove(observer));
+                main.observers.add(observer);
+                return disposer.add(() -> main.observers.remove(observer));
             });
 
             sets[i].disposer = builder.apply(signal).map(v -> v).to(result);
@@ -525,11 +504,40 @@ public class SignalTester {
     /**
      * @version 2017/04/17 9:32:56
      */
-    public static abstract class SignalSource {
+    public class SignalSource {
 
-        public abstract Log emit(Object... values);
+        private List<Observer> observers = new CopyOnWriteArrayList();
 
-        public abstract Signal signal();
+        private List<Disposable> disposers = new CopyOnWriteArrayList();
+
+        public Log emit(Object... values) {
+            for (Observer observer : observers) {
+                for (Object value : values) {
+                    if (value == Complete) {
+                        observer.complete();
+                    } else if (value instanceof Class && Throwable.class.isAssignableFrom((Class) value)) {
+                        observer.error(I.make((Class<Throwable>) value));
+                    } else {
+                        observer.accept(value);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public Signal signal() {
+            Signal signal = new Signal<>((observer, disposer) -> {
+                observers.add(observer);
+                disposer.add(() -> {
+                    observers.remove(observer);
+                });
+
+                disposers.add(disposer);
+
+                return disposer;
+            });
+            return signal;
+        }
 
         /**
          * <p>
@@ -538,7 +546,9 @@ public class SignalTester {
          * 
          * @return A result.
          */
-        public abstract boolean isCompleted();
+        public boolean isCompleted() {
+            return observers.isEmpty();
+        }
 
         /**
          * <p>
@@ -558,7 +568,14 @@ public class SignalTester {
          * 
          * @return A result.
          */
-        public abstract boolean isDisposed();
+        public boolean isDisposed() {
+            for (Disposable disposable : disposers) {
+                if (disposable.isDisposed() == false) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         /**
          * <p>
@@ -569,74 +586,6 @@ public class SignalTester {
          */
         public boolean isNotDisposed() {
             return !isDisposed();
-        }
-    }
-
-    /**
-     * @version 2017/04/16 1:45:47
-     */
-    private class PublisherImplementation extends SignalSource {
-
-        private List<Observer> observers = new CopyOnWriteArrayList();
-
-        private List<Disposable> disposers = new CopyOnWriteArrayList();
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Log emit(Object... values) {
-            for (Observer observer : observers) {
-                for (Object value : values) {
-                    if (value == Complete) {
-                        observer.complete();
-                    } else if (value instanceof Class && Throwable.class.isAssignableFrom((Class) value)) {
-                        observer.error(I.make((Class<Throwable>) value));
-                    } else {
-                        observer.accept(value);
-                    }
-                }
-            }
-            return result;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Signal signal() {
-            Signal signal = new Signal<>((observer, disposer) -> {
-                observers.add(observer);
-                disposer.add(() -> {
-                    observers.remove(observer);
-                });
-
-                disposers.add(disposer);
-
-                return disposer;
-            });
-            return signal;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean isCompleted() {
-            return observers.isEmpty();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean isDisposed() {
-            for (Disposable disposable : disposers) {
-                if (disposable.isDisposed() == false) {
-                    return false;
-                }
-            }
-            return true;
         }
     }
 }

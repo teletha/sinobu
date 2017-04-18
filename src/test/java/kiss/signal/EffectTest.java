@@ -24,9 +24,9 @@ public class EffectTest extends SignalTester {
     public void effect() {
         monitor(signal -> signal.effect(log1));
 
-        assert emit(1).value(1);
+        assert main.emit(1).value(1);
         assert log1.value(1);
-        assert emit(2, 3).value(2, 3);
+        assert main.emit(2, 3).value(2, 3);
         assert log1.value(2, 3);
     }
 
@@ -43,7 +43,7 @@ public class EffectTest extends SignalTester {
         monitor(signal -> signal.effectOnComplete(log1::complete));
 
         assert log1.isNotCompleted();
-        emit(Complete);
+        main.emit(Complete);
         assert log1.isCompleted();
     }
 
@@ -52,7 +52,7 @@ public class EffectTest extends SignalTester {
         monitor(signal -> signal.effectOnError(log1::error));
 
         assert log1.isNotError();
-        emit(Error);
+        main.emit(Error);
         assert log1.isError();
     }
 }
