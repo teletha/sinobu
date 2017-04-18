@@ -207,7 +207,7 @@ public class SignalTest {
         assert subject.emitAndRetrieve(60) == null;
         subject.emit(70);
         assert subject.emitAndRetrieveAsList(80, 70, 80);
-        assert subject.disposeWithCountAlreadyDisposed(2);
+        assert subject.disposeWithCountAlreadyDisposed(4);
     }
 
     @Test
@@ -474,7 +474,7 @@ public class SignalTest {
         assert subject.emitAndRetrieve(10) == null;
         assert subject.emitAndRetrieve(20) == 20;
 
-        assert subject.disposeWithCountAlreadyDisposed(2);
+        assert subject.disposeWithCountAlreadyDisposed(4);
     }
 
     @Test
@@ -699,7 +699,7 @@ public class SignalTest {
         assert subject.emitAndRetrieve(50) == null;
         assert subject.emitAndRetrieve(60) == 60;
 
-        assert subject.disposeWithCountAlreadyDisposed(3);
+        assert subject.disposeWithCountAlreadyDisposed(6);
     }
 
     @Test
@@ -757,7 +757,7 @@ public class SignalTest {
         sub.emit(200);
         assert subject.retrieve() == 200;
 
-        assert subject.disposeWithCountAlreadyDisposed(2);
+        assert subject.disposeWithCountAlreadyDisposed(4);
         assert sub.isCompleted();
 
         // from sub subject
@@ -930,7 +930,7 @@ public class SignalTest {
         assert subject.emitAndRetrieve(20) == null;
         assert subject.emitAndRetrieve(30) == null;
 
-        assert subject.disposeWithCountAlreadyDisposed(2);
+        assert subject.disposeWithCountAlreadyDisposed(4);
     }
 
     @Test
@@ -968,7 +968,7 @@ public class SignalTest {
         assert subject.emitAndRetrieve(30) == 30;
         assert subject.emitAndRetrieve(40) == 40;
         assert subject.emitAndRetrieve(50) == null;
-        assert subject.disposeWithCountAlreadyDisposed(2);
+        assert subject.disposeWithCountAlreadyDisposed(4);
     }
 
     @Test
@@ -995,7 +995,7 @@ public class SignalTest {
         assert subject.emitAndRetrieve(60) == 60;
         assert subject.emitAndRetrieve(70) == 70;
         assert subject.emitAndRetrieve(80) == null;
-        assert subject.disposeWithCountAlreadyDisposed(2);
+        assert subject.disposeWithCountAlreadyDisposed(4);
     }
 
     @Test
@@ -1032,7 +1032,7 @@ public class SignalTest {
         assert subject.emitAndRetrieve(20) == 20;
         assert subject.emitAndRetrieve(30) == 30;
 
-        assert subject.disposeWithCountAlreadyDisposed(2);
+        assert subject.disposeWithCountAlreadyDisposed(4);
     }
 
     @Test
@@ -1061,7 +1061,7 @@ public class SignalTest {
         assert subject.emitAndRetrieve(80) == 80;
         assert subject.emitAndRetrieve(100) == 100;
 
-        assert subject.disposeWithCountAlreadyDisposed(2);
+        assert subject.disposeWithCountAlreadyDisposed(4);
     }
 
     @Test

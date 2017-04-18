@@ -17,7 +17,7 @@ import org.junit.Test;
 import kiss.SignalTester;
 
 /**
- * @version 2017/04/03 11:04:09
+ * @version 2017/04/18 20:12:05
  */
 public class RepeatTest extends SignalTester {
 
@@ -51,6 +51,7 @@ public class RepeatTest extends SignalTester {
         monitor(signal -> signal.repeat().merge(other.signal()));
 
         // from main
+        assert main.emit("skip", "take", Complete).value("skip", "take");
         assert main.emit("skip", "take", Complete).value("skip", "take");
         assert main.emit("skip", "take", Complete).value("skip", "take");
 
@@ -92,10 +93,15 @@ public class RepeatTest extends SignalTester {
         assert main.isCompleted();
     }
 
+    @Test
     public void repeatUntil() throws Exception {
-        monitor(signal -> signal.delay(10, ms).take(1).repeat(2));
+        monitor(signal -> signal.repeatUntil(other.signal()));
 
-        assert main.emit(10, 20).value();
-        assert await().value(10, 10);
+        assert main.emit("success to repeat", Complete).value("success to repeat");
+        assert main.emit("success to repeat", Complete).value("success to repeat");
+
+        other.emit("never repeat");
+        assert main.emit("last message", Complete).value("last message");
+        assert main.emit("failt to repeat", Complete).value();
     }
 }

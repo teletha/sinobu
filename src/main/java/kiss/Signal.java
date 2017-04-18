@@ -536,7 +536,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -642,7 +642,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -1285,14 +1285,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> repeat() {
-        return new Signal<>((observer, disposer) -> {
-            Subscriber subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.complete = () -> {
-                subscriber.add(to(subscriber.child()));
-            };
-            return subscriber.add(to(subscriber.child(), disposer));
-        });
+        return repeatUntil(NEVER);
     }
 
     /**
@@ -1308,73 +1301,63 @@ public final class Signal<V> {
         if (count < 1) {
             return this;
         }
-
-        return new Signal<>((observer, disposer) -> {
-            AtomicInteger counter = new AtomicInteger(count);
-            Subscriber subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.complete = () -> {
-                if (counter.decrementAndGet() <= 0) {
-                    observer.complete();
-                } else {
-                    subscriber.dispose();
-                    subscriber.add(to(subscriber.child()));
-                }
-            };
-            return subscriber.add(to(subscriber.child()));
-        });
+        return repeatUntil(new AtomicInteger(count), v -> v.decrementAndGet() > 0);
     }
 
     /**
      * <p>
-     * Rrepeats the sequence of items emitted by the source {@link Signal} until the provided stop
-     * function returns true.
+     * Returns an {@link Signal} that repeats the sequence of items emitted by the source
+     * {@link Signal} until the provided condition function returns false.
      * </p>
      * 
-     * @param condition
-     * @return
+     * @param condition A condition supplier that is called when the current {@link Signal}
+     *            completes and unless it returns false, the current {@link Signal} is resubscribed.
+     * @return Chainable API.
      */
     public final Signal<V> repeatIf(BooleanSupplier condition) {
         if (condition == null) {
             return this;
         }
+        return repeatUntil(condition, BooleanSupplier::getAsBoolean);
+    }
 
+    /**
+     * <p>
+     * Returns an {@link Signal} that repeats the sequence of items emitted by the source
+     * {@link Signal} until a stopper {@link Signal} emits an item.
+     * </p>
+     * 
+     * @param stopper A {@link Signal} whose first emitted item will stop repeating.
+     * @return Chainable API.
+     */
+    public final Signal<V> repeatUntil(Signal stopper) {
+        return repeatUntil(stopper.take(1).to(), Variable::isAbsent);
+    }
+
+    /**
+     * <p>
+     * </p>
+     * 
+     * @param init
+     * @param condition
+     * @return
+     */
+    private <T> Signal<V> repeatUntil(T init, Predicate<T> condition) {
         return new Signal<>((observer, disposer) -> {
+            Disposable[] latest = new Disposable[1];
+
             Subscriber subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.complete = () -> {
-                if (condition.getAsBoolean() == false) {
-                    observer.complete();
+                latest[0].dispose();
+
+                if (condition.test(init)) {
+                    subscriber.add(latest[0] = to(subscriber.child()));
                 } else {
-                    subscriber.dispose();
-                    subscriber.add(to(subscriber.child()));
+                    observer.complete();
                 }
             };
-            return subscriber.add(to(subscriber.child()));
-        });
-    }
-
-    public final Signal<V> repeatUntil(Signal stopper) {
-        return new Signal<>((observer, disposer) -> {
-            AtomicBoolean stop = new AtomicBoolean();
-
-            stopper.to(null, null, () -> {
-                System.out.println("set true");
-                stop.set(true);
-            }, disposer.sub());
-
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.complete = () -> {
-                observer.complete();
-
-                if (!stop.get()) {
-                    System.out.println("repeat");
-                    subscriber.index = 0;
-                    to(subscriber, disposer);
-                }
-            };
-            return to(subscriber, disposer);
+            return subscriber.add(latest[0] = to(subscriber.child(), disposer));
         });
     }
 
