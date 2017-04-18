@@ -22,23 +22,23 @@ public class FlatMapTest extends SignalTester {
     public void flatMap() throws Exception {
         monitor(() -> signal(10, 20).flatMap(v -> signal(v, v + 1)));
 
-        assert result.value(10, 11, 20, 21);
-        assert result.isCompleted();
+        assert main.value(10, 11, 20, 21);
+        assert main.isCompleted();
     }
 
     @Test
     public void flatMapNull() throws Exception {
         monitor(() -> signal(1, 2).flatMap(null));
 
-        assert result.value(1, 2);
-        assert result.isCompleted();
+        assert main.value(1, 2);
+        assert main.isCompleted();
     }
 
     @Test
     public void throwError() throws Exception {
         monitor(() -> signal(1, 2).flatMap(errorFunction()));
 
-        assert result.value();
-        assert result.isError();
+        assert main.value();
+        assert main.isError();
     }
 }

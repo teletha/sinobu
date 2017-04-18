@@ -23,7 +23,7 @@ public class DisposeTest extends SignalTester {
         monitor(() -> signal(1).merge(signal(10, 20)).effect(log1).take(2));
 
         assert log1.value(1, 10);
-        assert result.value(1, 10);
-        assert result.isCompleted();
+        assert main.value(1, 10);
+        assert main.isCompleted();
     }
 }

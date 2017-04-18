@@ -22,7 +22,7 @@ public class FisrtTest extends SignalTester {
     public void first() throws Exception {
         monitor(() -> signal(1, 2, 3).first());
 
-        assert result.value(1);
-        assert result.isCompleted();
+        assert main.value(1);
+        assert main.isCompleted();
     }
 }

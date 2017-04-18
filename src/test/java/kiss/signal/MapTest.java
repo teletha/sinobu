@@ -22,23 +22,23 @@ public class MapTest extends SignalTester {
     public void map() throws Exception {
         monitor(() -> signal(1, 2).map(v -> v * 2));
 
-        assert result.value(2, 4);
-        assert result.isCompleted();
+        assert main.value(2, 4);
+        assert main.isCompleted();
     }
 
     @Test
     public void mapNull() throws Exception {
         monitor(() -> signal(1, 2).map(null));
 
-        assert result.value(1, 2);
-        assert result.isCompleted();
+        assert main.value(1, 2);
+        assert main.isCompleted();
     }
 
     @Test
     public void throwError() throws Exception {
         monitor(() -> signal(1, 2).map(errorFunction()));
 
-        assert result.value();
-        assert result.isError();
+        assert main.value();
+        assert main.isError();
     }
 }

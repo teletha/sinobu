@@ -25,95 +25,95 @@ public class SignalCreationTest extends SignalTester {
     public void single() throws Exception {
         monitor(() -> signal(1));
 
-        assert result.value(1);
-        assert result.isCompleted();
+        assert main.value(1);
+        assert main.isCompleted();
     }
 
     @Test
     public void multi() throws Exception {
         monitor(() -> signal(1, 2, 3));
 
-        assert result.value(1, 2, 3);
-        assert result.isCompleted();
+        assert main.value(1, 2, 3);
+        assert main.isCompleted();
     }
 
     @Test
     public void empty() throws Exception {
         monitor(() -> signal());
 
-        assert result.value();
-        assert result.isCompleted();
+        assert main.value();
+        assert main.isCompleted();
     }
 
     @Test
     public void singleNull() throws Exception {
         monitor(() -> signal((String) null));
 
-        assert result.value((String) null);
-        assert result.isCompleted();
+        assert main.value((String) null);
+        assert main.isCompleted();
     }
 
     @Test
     public void multiNull() throws Exception {
         monitor(() -> signal(null, null, null));
 
-        assert result.value(null, null, null);
-        assert result.isCompleted();
+        assert main.value(null, null, null);
+        assert main.isCompleted();
     }
 
     @Test
     public void arrayNull() throws Exception {
         monitor(() -> signal((String[]) null));
 
-        assert result.value();
-        assert result.isCompleted();
+        assert main.value();
+        assert main.isCompleted();
     }
 
     @Test
     public void iterable() throws Exception {
         monitor(() -> signal(list(1, 2)));
 
-        assert result.value(1, 2);
-        assert result.isCompleted();
+        assert main.value(1, 2);
+        assert main.isCompleted();
     }
 
     @Test
     public void iterableNull() throws Exception {
         monitor(() -> signal((Iterable) null));
 
-        assert result.value();
-        assert result.isCompleted();
+        assert main.value();
+        assert main.isCompleted();
     }
 
     @Test
     public void enumeration() throws Exception {
         monitor(() -> signal(enume(1, 2)));
 
-        assert result.value(1, 2);
-        assert result.isCompleted();
+        assert main.value(1, 2);
+        assert main.isCompleted();
     }
 
     @Test
     public void enumerationNull() throws Exception {
         monitor(() -> signal((Enumeration) null));
 
-        assert result.value();
-        assert result.isCompleted();
+        assert main.value();
+        assert main.isCompleted();
     }
 
     @Test
     public void stream() throws Exception {
         monitor(() -> signal(stream(1, 2)));
 
-        assert result.value(1, 2);
-        assert result.isCompleted();
+        assert main.value(1, 2);
+        assert main.isCompleted();
     }
 
     @Test
     public void streamNull() throws Exception {
         monitor(() -> signal((Stream) null));
 
-        assert result.value();
-        assert result.isCompleted();
+        assert main.value();
+        assert main.isCompleted();
     }
 }

@@ -23,25 +23,25 @@ public class MergeTest extends SignalTester {
         monitor(signal -> signal.merge(other.signal()));
 
         main.emit("Main");
-        assert result.value("Main");
+        assert main.value("Main");
         other.emit("Other");
-        assert result.value("Other");
+        assert main.value("Other");
 
         // test complete
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
 
         // complete other
         other.emit(Complete, "Other is completed so this value will be ignored.");
-        assert result.value();
-        assert result.isNotCompleted();
+        assert main.value();
+        assert main.isNotCompleted();
 
         main.emit("Main is not completed.");
-        assert result.value("Main is not completed.");
+        assert main.value("Main is not completed.");
 
         // complete main
         main.emit(Complete, "Main is completed so this value will be ignored.");
-        assert result.value();
-        assert result.isCompleted();
+        assert main.value();
+        assert main.isCompleted();
     }
 
     @Test
@@ -49,25 +49,25 @@ public class MergeTest extends SignalTester {
         monitor(signal -> signal.merge(other.signal()));
 
         main.emit("Main");
-        assert result.value("Main");
+        assert main.value("Main");
         other.emit("Other");
-        assert result.value("Other");
+        assert main.value("Other");
 
         // test complete
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
 
         // complete main
         main.emit(Complete, "Main is completed so this value will be ignored.");
-        assert result.value();
-        assert result.isNotCompleted();
+        assert main.value();
+        assert main.isNotCompleted();
 
         other.emit("Other is not completed.");
-        assert result.value("Other is not completed.");
+        assert main.value("Other is not completed.");
 
         // complete other
         other.emit(Complete, "Other is completed so this value will be ignored.");
-        assert result.value();
-        assert result.isCompleted();
+        assert main.value();
+        assert main.isCompleted();
     }
 
     @Test
@@ -75,7 +75,7 @@ public class MergeTest extends SignalTester {
         monitor(() -> signal(1).merge(signal(10, 20)).effect(log1).take(2));
 
         assert log1.value(1, 10);
-        assert result.value(1, 10);
-        assert result.isCompleted();
+        assert main.value(1, 10);
+        assert main.isCompleted();
     }
 }

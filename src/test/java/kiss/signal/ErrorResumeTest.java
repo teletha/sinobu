@@ -25,31 +25,31 @@ public class ErrorResumeTest extends SignalTester {
     public void resumeSignal() throws Exception {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume(signal(10, 11)));
 
-        assert result.value(10, 11);
-        assert result.isCompleted();
+        assert main.value(10, 11);
+        assert main.isCompleted();
     }
 
     @Test
     public void resumeNullSignal() throws Exception {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume((Signal) null));
 
-        assert result.value();
-        assert result.isError();
+        assert main.value();
+        assert main.isError();
     }
 
     @Test
     public void resumeFunction() throws Exception {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume(e -> signal(10, 11)));
 
-        assert result.value(10, 11);
-        assert result.isCompleted();
+        assert main.value(10, 11);
+        assert main.isCompleted();
     }
 
     @Test
     public void resumeNullFunction() throws Exception {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume((Function) null));
 
-        assert result.value();
-        assert result.isError();
+        assert main.value();
+        assert main.isError();
     }
 }

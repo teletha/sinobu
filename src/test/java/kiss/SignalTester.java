@@ -48,9 +48,6 @@ public class SignalTester {
     protected final SignalTester Type = this;
 
     /** READ ONLY : DON'T MODIFY in test case */
-    protected Log result = null;
-
-    /** READ ONLY : DON'T MODIFY in test case */
     protected Log log1 = null;
 
     /** READ ONLY : DON'T MODIFY in test case */
@@ -103,13 +100,13 @@ public class SignalTester {
     protected final Log await() {
         clock.await();
 
-        return result;
+        return main.result;
     }
 
     protected final Log await(int ms) {
         clock.freeze(ms);
 
-        return result;
+        return main.result;
     }
 
     /**
@@ -217,9 +214,8 @@ public class SignalTester {
             sets[i] = new LogSet();
             log1 = sets[i].log1;
             log2 = sets[i].log2;
-            result = sets[i].result;
 
-            sets[i].disposer = signal.get().map(v -> v).to(result);
+            sets[i].disposer = signal.get().map(v -> v).to(sets[i].result);
         }
 
         // await all awaitable signal
@@ -229,7 +225,7 @@ public class SignalTester {
 
         log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
         log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
-        result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
+        main.result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
         main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
     }
 
@@ -269,14 +265,8 @@ public class SignalTester {
             sets[i] = new LogSet();
             log1 = sets[i].log1;
             log2 = sets[i].log2;
-            result = sets[i].result;
 
-            Signal signal = new Signal<>((observer, disposer) -> {
-                main.observers.add(observer);
-                return disposer.add(() -> main.observers.remove(observer));
-            });
-
-            sets[i].disposer = builder.apply(signal).map(v -> v).to(result);
+            sets[i].disposer = builder.apply(main.signal()).map(v -> v).to(sets[i].result);
         }
 
         // await all awaitable signal
@@ -286,7 +276,7 @@ public class SignalTester {
 
         log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
         log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
-        result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
+        main.result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
         main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
     }
 
@@ -439,12 +429,6 @@ public class SignalTester {
 
         Log log2 = new Logger();
 
-        Log log3 = new Logger();
-
-        Log log4 = new Logger();
-
-        Log log5 = new Logger();
-
         Disposable disposer;
     }
 
@@ -486,6 +470,8 @@ public class SignalTester {
         /** {@link Disposable} manager. */
         private List<Disposable> disposers = new CopyOnWriteArrayList();
 
+        private Log result;
+
         /**
          * <p>
          * Emit the specified values to the managed {@link Signal}.
@@ -506,7 +492,17 @@ public class SignalTester {
                     }
                 }
             }
-            return result;
+            return main.result;
+        }
+
+        /**
+         * Validate the result values and clear them from log.
+         * 
+         * @param expected
+         * @return
+         */
+        public boolean value(Object... expected) {
+            return result.value(expected);
         }
 
         /**
@@ -538,7 +534,7 @@ public class SignalTester {
          * @return A result.
          */
         public boolean isCompleted() {
-            return observers.isEmpty();
+            return result == null ? observers.isEmpty() : result.isCompleted();
         }
 
         /**
@@ -550,6 +546,20 @@ public class SignalTester {
          */
         public boolean isNotCompleted() {
             return !isCompleted();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public boolean isError() {
+            return result.isError();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public boolean isNotError() {
+            return result.isNotError();
         }
 
         /**

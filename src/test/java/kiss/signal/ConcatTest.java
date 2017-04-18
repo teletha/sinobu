@@ -26,32 +26,32 @@ public class ConcatTest extends SignalTester {
     public void signal() throws Exception {
         monitor(() -> signal(1, 2).concat(signal(3, 4)));
 
-        assert result.value(1, 2, 3, 4);
-        assert result.isCompleted();
+        assert main.value(1, 2, 3, 4);
+        assert main.isCompleted();
     }
 
     @Test
     public void signalArray() throws Exception {
         monitor(() -> signal(1, 2).concat(signal(3, 4), signal(5, 6)));
 
-        assert result.value(1, 2, 3, 4, 5, 6);
-        assert result.isCompleted();
+        assert main.value(1, 2, 3, 4, 5, 6);
+        assert main.isCompleted();
     }
 
     @Test
     public void signalNull() throws Exception {
         monitor(() -> signal(1, 2).concat((Signal) null));
 
-        assert result.value(1, 2);
-        assert result.isCompleted();
+        assert main.value(1, 2);
+        assert main.isCompleted();
     }
 
     @Test
     public void signalArrayNull() throws Exception {
         monitor(() -> signal(1, 2).concat((Signal[]) null));
 
-        assert result.value(1, 2);
-        assert result.isCompleted();
+        assert main.value(1, 2);
+        assert main.isCompleted();
     }
 
     @Test
@@ -59,8 +59,8 @@ public class ConcatTest extends SignalTester {
         monitor(() -> signal(1, 2).concat(signal(3, 4)).effect(log1).take(2));
 
         assert log1.value(1, 2);
-        assert result.value(1, 2);
-        assert result.isCompleted();
+        assert main.value(1, 2);
+        assert main.isCompleted();
         assert main.isDisposed();
     }
 
@@ -69,6 +69,6 @@ public class ConcatTest extends SignalTester {
     public void map() throws Exception {
         monitor(() -> signal(10, 20).concatMap(v -> signal(v + 1, v + 2).interval(50, MILLISECONDS)));
 
-        assert result.value(11, 12, 21, 22);
+        assert main.value(11, 12, 21, 22);
     }
 }

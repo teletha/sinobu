@@ -26,11 +26,11 @@ public class RepeatTest extends SignalTester {
         monitor(signal -> signal.repeat(3));
 
         assert main.emit("success to repeat 1", Complete).value("success to repeat 1");
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
         assert main.emit("success to repeat 2", Complete).value("success to repeat 2");
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
         assert main.emit("success to repeat 3", Complete).value("success to repeat 3");
-        assert result.isCompleted();
+        assert main.isCompleted();
         assert main.emit("fail to repeat", Complete).value();
     }
 
@@ -39,11 +39,11 @@ public class RepeatTest extends SignalTester {
         monitor(signal -> signal.repeat(3));
 
         assert main.emit("success to repeat", Complete).value("success to repeat");
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
 
         main.dispose();
         assert main.emit("fail to repeat", Complete).value();
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
     }
 
     @Test
@@ -57,14 +57,14 @@ public class RepeatTest extends SignalTester {
         // from other
         assert other.emit("external").value("external");
 
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
 
         // dispose
         main.dispose();
         assert main.emit("main is disposed so this value will be ignored").value();
         assert other.emit("other is disposed so this value will be ignored").value();
 
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
     }
 
     @Test
@@ -75,21 +75,21 @@ public class RepeatTest extends SignalTester {
         assert main.emit(1, Complete).value(1);
         assert main.emit(2, Complete).value(2);
         assert main.emit(3, Complete).value(3);
-        assert result.isNotCompleted();
+        assert main.isNotCompleted();
 
         canRepeat.set(false);
         assert main.emit(1, Complete).value(1);
         assert main.emit(2, Complete).value();
         assert main.emit(3, Complete).value();
-        assert result.isCompleted();
+        assert main.isCompleted();
     }
 
     @Test
     public void repeatIfNull() throws Exception {
         monitor(() -> signal(1).effect(log1).repeatIf((BooleanSupplier) null));
         assert log1.value(1);
-        assert result.value(1);
-        assert result.isCompleted();
+        assert main.value(1);
+        assert main.isCompleted();
     }
 
     public void repeatUntil() throws Exception {
