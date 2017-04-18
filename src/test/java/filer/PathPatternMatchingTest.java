@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import antibug.CleanRoom;
 import antibug.CleanRoom.FileSystemDSL;
-import kiss.I;
 
 /**
  * @version 2015/07/11 21:39:57
@@ -238,7 +237,7 @@ public class PathPatternMatchingTest {
     private void assertCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
         room.with(pattern);
 
-        assert expected == I.walk(room.root, patterns).size();
+        assert expected == Filer.walk(room.root, patterns).size();
     }
 
     /**
@@ -247,6 +246,6 @@ public class PathPatternMatchingTest {
     private void assertDirectoryCount(int expected, Consumer<FileSystemDSL> pattern, String... patterns) {
         room.with(pattern);
 
-        assert I.walkDirectory(room.root, patterns).size() == expected;
+        assert Filer.walkDirectory(room.root, patterns).size() == expected;
     }
 }

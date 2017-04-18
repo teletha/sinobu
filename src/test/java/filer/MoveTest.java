@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-import kiss.I;
 
 /**
  * @version 2015/06/24 10:04:35
@@ -38,7 +37,7 @@ public class MoveTest extends PathOperationTestHelper {
      * @param other
      */
     private void operate(Path one, Path other, String... patterns) {
-        I.move(one, other, patterns);
+        Filer.move(one, other, patterns);
     }
 
     /**
@@ -50,7 +49,7 @@ public class MoveTest extends PathOperationTestHelper {
      * @param other
      */
     private void operate(Path one, Path other, BiPredicate<Path, BasicFileAttributes> filter) {
-        I.move(one, other, filter);
+        Filer.move(one, other, filter);
     }
 
     @Test(expected = NullPointerException.class)

@@ -39,7 +39,7 @@ public class PathObservationTest {
 
     @Rule
     @ClassRule
-    public static final CleanRoom room = new CleanRoom(I.locateTemporary());
+    public static final CleanRoom room = new CleanRoom(Filer.locateTemporary());
 
     /** The event type. */
     private static final String Created = "ENTRY_CREATE";
@@ -486,7 +486,7 @@ public class PathObservationTest {
      * </p>
      */
     private Disposable observe(Path path) {
-        Disposable disposable = I.observe(path).to(queue);
+        Disposable disposable = Filer.observe(path).to(queue);
 
         disposables.add(disposable);
 
@@ -499,7 +499,7 @@ public class PathObservationTest {
      * </p>
      */
     private Disposable observe(Path path, String pattern) {
-        Disposable disposable = I.observe(path, pattern).to(queue);
+        Disposable disposable = Filer.observe(path, pattern).to(queue);
 
         disposables.add(disposable);
 
@@ -554,7 +554,7 @@ public class PathObservationTest {
      * </p>
      */
     private void delete(Path path) {
-        I.delete(path);
+        Filer.delete(path);
     }
 
     /**
@@ -570,8 +570,7 @@ public class PathObservationTest {
                 if (retrieved == null) {
                     throw new AssertionError(event + " event doesn't rise in '" + path + "'.");
                 } else {
-                    assert Files
-                            .isSameFile(path, retrieved.path) : "Expected is " + path + "   but retrieved is " + retrieved.path;
+                    assert Files.isSameFile(path, retrieved.path) : "Expected is " + path + "   but retrieved is " + retrieved.path;
                 }
             } catch (InterruptedException e) {
                 throw I.quiet(e);
@@ -613,7 +612,7 @@ public class PathObservationTest {
      * @version 2011/04/03 14:14:01
      */
     @SuppressWarnings("serial")
-    private static class EventQueue extends SynchronousQueue<Event>implements Observer<WatchEvent<Path>> {
+    private static class EventQueue extends SynchronousQueue<Event> implements Observer<WatchEvent<Path>> {
 
         private EventQueue() {
             super(true);

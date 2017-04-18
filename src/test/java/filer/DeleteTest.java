@@ -17,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-import kiss.I;
 
 /**
  * @version 2015/07/02 13:39:45
@@ -35,7 +34,7 @@ public class DeleteTest extends PathOperationTestHelper {
      * @param path
      */
     private void operate(Path path, String... patterns) {
-        I.delete(path, patterns);
+        Filer.delete(path, patterns);
     }
 
     /**
@@ -46,7 +45,7 @@ public class DeleteTest extends PathOperationTestHelper {
      * @param path
      */
     private void operate(Path path, BiPredicate<Path, BasicFileAttributes> filter) {
-        I.delete(path, filter);
+        Filer.delete(path, filter);
     }
 
     @Test
@@ -118,7 +117,7 @@ public class DeleteTest extends PathOperationTestHelper {
 
     @Test
     public void inputNull() {
-        I.delete(null);
+        Filer.delete(null);
     }
 
     @Test

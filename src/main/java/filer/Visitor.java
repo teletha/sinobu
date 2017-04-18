@@ -361,7 +361,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
             if (patterns.length == 1 && patterns[0].equals("*")) {
                 path.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
             } else {
-                for (Path dir : I.walkDirectory(path)) {
+                for (Path dir : Filer.walkDirectory(path)) {
                     dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                 }
             }
@@ -389,7 +389,7 @@ class Visitor extends ArrayList<Path> implements FileVisitor<Path>, Runnable, Di
 
                         if (event.kind() == ENTRY_CREATE) {
                             if (Files.isDirectory(path) && preVisitDirectory(path, null) == CONTINUE) {
-                                for (Path dir : I.walkDirectory(path)) {
+                                for (Path dir : Filer.walkDirectory(path)) {
                                     dir.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                                 }
                             }

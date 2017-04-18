@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import antibug.CleanRoom;
-import kiss.I;
 
 /**
  * @version 2015/07/14 2:39:52
@@ -42,9 +41,9 @@ public class WalkTest {
             });
         });
 
-        assert I.walk(root).size() == 6;
-        assert I.walk(root, "*").size() == 2;
-        assert I.walk(root, "!dir1/**").size() == 4;
-        assert I.walkDirectory(root).size() == 2;
+        assert Filer.walk(root).size() == 6;
+        assert Filer.walk(root, "*").size() == 2;
+        assert Filer.walk(root, "!dir1/**").size() == 4;
+        assert Filer.walkDirectory(root).size() == 2;
     }
 }

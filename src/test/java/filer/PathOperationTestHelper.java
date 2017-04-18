@@ -196,9 +196,9 @@ class PathOperationTestHelper {
      */
     protected static Path snapshot(Path path) {
         try {
-            Path temp = I.locateTemporary();
+            Path temp = Filer.locateTemporary();
             Files.createDirectories(temp);
-            I.copy(path, temp);
+            Filer.copy(path, temp);
             return temp.resolve(path.getFileName());
         } catch (IOException e) {
             throw I.quiet(e);

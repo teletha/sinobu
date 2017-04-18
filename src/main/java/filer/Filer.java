@@ -62,7 +62,7 @@ public class Filer {
                 // delete the all contents in the temporary directory since we could acquire a
                 // exclusive lock
                 if (lock != null) {
-                    Files.delete(path);
+                    delete(path);
                 }
             }
 

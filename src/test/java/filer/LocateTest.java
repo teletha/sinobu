@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import antibug.AntiBug;
 import antibug.CleanRoom;
-import kiss.I;
 
 /**
  * @version 2016/10/18 15:46:47
@@ -34,25 +33,25 @@ public class LocateTest {
 
     @Test
     public void locateRelative() {
-        Path path = I.locate("context");
+        Path path = Filer.locate("context");
         assert !path.isAbsolute();
     }
 
     @Test
     public void locateAbsolute() {
-        Path path = I.locate(room.root.toAbsolutePath().toString());
+        Path path = Filer.locate(room.root.toAbsolutePath().toString());
         assert path.isAbsolute();
     }
 
     @Test
     public void locateWhitespace() throws MalformedURLException {
-        Path path = I.locate(new URL("file://white space"));
+        Path path = Filer.locate(new URL("file://white space"));
         assert !path.isAbsolute();
     }
 
     @Test
     public void locateTemporary() {
-        Path path = I.locateTemporary();
+        Path path = Filer.locateTemporary();
         assert !Files.exists(path);
         assert !Files.isDirectory(path);
         assert !Files.isRegularFile(path);
@@ -60,9 +59,9 @@ public class LocateTest {
 
     @Test
     public void locateTemporaries() {
-        Path path1 = I.locateTemporary();
-        Path path2 = I.locateTemporary();
-        Path path3 = I.locateTemporary();
+        Path path1 = Filer.locateTemporary();
+        Path path2 = Filer.locateTemporary();
+        Path path3 = Filer.locateTemporary();
         assert !Files.exists(path1);
         assert !Files.exists(path2);
         assert !Files.exists(path3);
@@ -73,7 +72,7 @@ public class LocateTest {
 
     @Test
     public void locateArchive() {
-        Path archive = I.locate(LocateTest.class);
+        Path archive = Filer.locate(LocateTest.class);
         assert archive != null;
         assert Files.exists(archive);
         assert Files.isDirectory(archive);
@@ -81,7 +80,7 @@ public class LocateTest {
 
     @Test
     public void locateResource() {
-        Path resource = I.locate(LocateTest.class, LocateTest.class.getSimpleName() + ".class");
+        Path resource = Filer.locate(LocateTest.class, LocateTest.class.getSimpleName() + ".class");
         assert resource != null;
         assert Files.exists(resource);
         assert Files.isRegularFile(resource);
@@ -89,7 +88,7 @@ public class LocateTest {
 
     @Test
     public void locateResourceInJar() {
-        Path resource = I.locate(AntiBug.class, AntiBug.class.getSimpleName() + ".class");
+        Path resource = Filer.locate(AntiBug.class, AntiBug.class.getSimpleName() + ".class");
         assert resource != null;
         assert Files.exists(resource);
         assert Files.isRegularFile(resource);
@@ -97,7 +96,7 @@ public class LocateTest {
 
     @Test
     public void locateArchiveByJDKClass() {
-        Path archive = I.locate(Map.class);
+        Path archive = Filer.locate(Map.class);
         assert archive == null;
     }
 }
