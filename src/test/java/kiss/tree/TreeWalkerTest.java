@@ -9,30 +9,51 @@
  */
 package kiss.tree;
 
-import java.io.File;
+import java.util.List;
 
 import org.junit.Test;
 
 import kiss.I;
+import kiss.Signal;
 import kiss.XML;
 
 /**
- * @version 2017/04/02 21:59:13
+ * @version 2017/04/18 21:05:51
  */
 public class TreeWalkerTest {
 
     @Test
     public void walk() throws Exception {
-        I.signal(new File("src/main"), e -> e.flatArray(File::listFiles)).to(e -> {
-            System.out.println(e);
-        });
+        HTML html = new HTML() {
+            {
+                $("html", () -> {
+                    $("body", () -> {
+                        $("h1", () -> {
+                            $("span");
+                            $("span");
+                        });
+                        $("h2", () -> {
+                            $("div");
+                        });
+                        $("h3");
+                    });
+                });
+            }
+        };
+
+        List<String> elements = parse(html).map(XML::name).toList();
+        assert elements.size() == 8;
+        assert elements.get(0) == "html";
+        assert elements.get(1) == "body";
+        assert elements.get(2) == "h1";
+        assert elements.get(3) == "h2";
+        assert elements.get(4) == "h3";
+        assert elements.get(5) == "span";
+        assert elements.get(6) == "span";
+        assert elements.get(7) == "div";
     }
 
-    @Test
-    public void xml() throws Exception {
-        I.signal(I.xml("<x><a><o/><p/></a><b/><c><q/><r/></c></x>"), e -> e.flatIterable(XML::children).skip(a -> a.name().equals("c")))
-                .to(e -> {
-                    System.out.println(e.name());
-                });
+    private Signal<XML> parse(HTML html) {
+        return I.signal(I.xml(html.toString()), e -> e.flatIterable(XML::children));
     }
 }

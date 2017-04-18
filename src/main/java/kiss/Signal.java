@@ -1462,7 +1462,7 @@ public final class Signal<V> {
         if (excludes == null) {
             return this;
         }
-        return skip(v -> excludes.contains(v));
+        return skip(excludes::contains);
     }
 
     /**
