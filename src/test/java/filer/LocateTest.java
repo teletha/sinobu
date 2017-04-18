@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.file;
+package filer;
 
 import java.net.MalformedURLException;
 import java.net.URL;

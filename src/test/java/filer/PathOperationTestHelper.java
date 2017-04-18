@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.file;
+package filer;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
