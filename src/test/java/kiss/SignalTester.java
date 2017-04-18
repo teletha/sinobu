@@ -56,15 +56,6 @@ public class SignalTester {
     /** READ ONLY : DON'T MODIFY in test case */
     protected Log log2 = null;
 
-    /** READ ONLY : DON'T MODIFY in test case */
-    protected Log log3 = null;
-
-    /** READ ONLY : DON'T MODIFY in test case */
-    protected Log log4 = null;
-
-    /** READ ONLY : DON'T MODIFY in test case */
-    protected Log log5 = null;
-
     /** READ ONLY */
     protected final SignalSource main = new SignalSource();
 
@@ -226,9 +217,6 @@ public class SignalTester {
             sets[i] = new LogSet();
             log1 = sets[i].log1;
             log2 = sets[i].log2;
-            log3 = sets[i].log3;
-            log4 = sets[i].log4;
-            log5 = sets[i].log5;
             result = sets[i].result;
 
             sets[i].disposer = signal.get().map(v -> v).to(result);
@@ -241,9 +229,6 @@ public class SignalTester {
 
         log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
         log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
-        log3 = I.bundle(stream(sets).map(e -> e.log3).collect(toList()));
-        log4 = I.bundle(stream(sets).map(e -> e.log4).collect(toList()));
-        log5 = I.bundle(stream(sets).map(e -> e.log5).collect(toList()));
         result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
         main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
     }
@@ -284,9 +269,6 @@ public class SignalTester {
             sets[i] = new LogSet();
             log1 = sets[i].log1;
             log2 = sets[i].log2;
-            log3 = sets[i].log3;
-            log4 = sets[i].log4;
-            log5 = sets[i].log5;
             result = sets[i].result;
 
             Signal signal = new Signal<>((observer, disposer) -> {
@@ -304,9 +286,6 @@ public class SignalTester {
 
         log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
         log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
-        log3 = I.bundle(stream(sets).map(e -> e.log3).collect(toList()));
-        log4 = I.bundle(stream(sets).map(e -> e.log4).collect(toList()));
-        log5 = I.bundle(stream(sets).map(e -> e.log5).collect(toList()));
         result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
         main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
     }
