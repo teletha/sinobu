@@ -721,15 +721,25 @@ public final class Signal<V> {
             return this;
         }
 
-        return effectOnComplete((observer, disposer) -> {
-            for (Signal<? extends V> other : others) {
-                if (other != null) {
-                    if (disposer.isDisposed()) {
-                        return;
+        return new Signal<V>((observer, disposer) -> {
+            Iterator<Signal<? extends V>> iterator = I.list(others).iterator();
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.complete = () -> {
+                if (iterator.hasNext()) {
+                    Signal<? extends V> next = iterator.next();
+
+                    if (next != null) {
+                        next.to(subscriber.child(), disposer);
+                    } else {
+                        subscriber.complete();
                     }
-                    other.to(observer, disposer);
+                } else {
+                    observer.complete();
                 }
-            }
+            };
+
+            return to(subscriber.child(), disposer);
         });
     }
 

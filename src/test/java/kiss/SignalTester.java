@@ -257,7 +257,7 @@ public class SignalTester {
             log5 = sets[i].log5;
             result = sets[i].result;
 
-            sets[i].disposer = signal.get().to(result);
+            sets[i].disposer = signal.get().map(v -> v).to(result);
         }
 
         // await all awaitable signal
@@ -320,7 +320,7 @@ public class SignalTester {
                 return disposer.add(() -> observers.remove(observer));
             });
 
-            sets[i].disposer = builder.apply(signal).to(result);
+            sets[i].disposer = builder.apply(signal).map(v -> v).to(result);
         }
 
         // await all awaitable signal
