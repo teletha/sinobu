@@ -48,7 +48,7 @@ public class JsonReadWithPathTest {
 
         List<String> values = json.find("name").toList();
         assert values.size() == 1;
-        assert values.get(0) == "Jill";
+        assert values.get(0).equals("Jill");
     }
 
     @Test
@@ -78,7 +78,7 @@ public class JsonReadWithPathTest {
 
         List<String> values = json.find("city.id").toList();
         assert values.size() == 1;
-        assert values.get(0) == "NY";
+        assert values.get(0).equals("NY");
     }
 
     @Test
@@ -94,7 +94,7 @@ public class JsonReadWithPathTest {
 
         List<String> values = json.find("city.id").toList();
         assert values.size() == 1;
-        assert values.get(0) == "NY";
+        assert values.get(0).equals("NY");
     }
 
     @Test

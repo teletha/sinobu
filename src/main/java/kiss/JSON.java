@@ -10,10 +10,10 @@
 package kiss;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import kiss.model.Model;
 import kiss.model.Property;
 
@@ -53,15 +53,12 @@ public class JSON {
                     String sub = i == -1 ? null : name.substring(i + 1, name.length() - 1);
                     Object value = ((Map) v).get(main);
 
-                    if (value instanceof ScriptObjectMirror) {
-                        ScriptObjectMirror m = (ScriptObjectMirror) value;
-
-                        if (sub != null) {
-                            return I.signal(m.get(sub));
-                        } else if (m.isArray()) {
-                            return I.signal(m.values());
-                        }
+                    if (sub != null) {
+                        return I.signal(((Map) value).get(sub));
+                    } else if (value instanceof LinkedHashMap) {
+                        return I.signal(((Map) value).values());
                     }
+
                     return I.signal(value);
                 } else {
                     return Signal.NEVER;

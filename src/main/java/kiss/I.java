@@ -1011,9 +1011,7 @@ public class I {
             lock.readLock().lock();
 
             // Parse as JSON
-            reader = new PushbackReader(new InputStreamReader(new ByteArrayInputStream(read(input)), $encoding), 2);
-            reader.unread(new char[] {'a', '='});
-            return new JSON(script.eval(reader));
+            return new JSON(new JSONParser(new InputStreamReader(new ByteArrayInputStream(read(input)), $encoding)).parse());
         } catch (Exception e) {
             throw quiet(e);
         } finally {

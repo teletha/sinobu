@@ -99,13 +99,10 @@ public class CuncurrentTest {
     private static class Reader implements Callable<StringListProperty> {
 
         /**
-         * @see java.util.concurrent.Callable#call()
+         * {@inheritDoc}
          */
         @Override
         public StringListProperty call() throws Exception {
-            if (Files.notExists(testFile)) {
-
-            }
             return I.read(Files.newBufferedReader(testFile, I.$encoding), I.make(StringListProperty.class));
         }
     }
@@ -125,7 +122,7 @@ public class CuncurrentTest {
         }
 
         /**
-         * @see java.lang.Runnable#run()
+         * {@inheritDoc}
          */
         @Override
         public void run() {
