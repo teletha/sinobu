@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import kiss.I;
+import org.junit.Test;
+
+import filer.Filer;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
-
-import org.junit.Test;
 
 /**
  * @version 2011/03/22 16:56:52
@@ -27,7 +27,7 @@ public class PropertyComparatorTest {
     static {
         // When we activates only this test, it throws initialization error, so we have to load I
         // class at first.
-        I.locate("");
+        Filer.locate("");
     }
 
     /**

@@ -15,12 +15,14 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import filer.Filer;
+
 /**
  * @version 2017/03/29 10:58:29
  */
 public class ConfigurableTest {
 
-    private Path temp = I.locateTemporary();
+    private Path temp = Filer.locateTemporary();
 
     @Test
     public void readFromNotExist() throws Exception {

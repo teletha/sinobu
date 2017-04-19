@@ -14,6 +14,7 @@ import java.nio.file.Path;
 
 import org.junit.Test;
 
+import filer.Filer;
 import kiss.I;
 
 /**
@@ -23,7 +24,7 @@ public class WriteTest {
 
     @Test
     public void xml() throws Exception {
-        Path file = I.locateTemporary();
+        Path file = Filer.locateTemporary();
         I.xml("root").to(Files.newBufferedWriter(file));
 
         assert Files.exists(file);
