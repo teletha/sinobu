@@ -11,8 +11,6 @@ package kiss.json;
 
 import java.io.Reader;
 
-import javax.script.ScriptException;
-
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,12 +52,12 @@ public class IllegalInputTest {
         assert clazz == Class.class;
     }
 
-    @Test(expected = ScriptException.class)
+    @Test(expected = IllegalStateException.class)
     public void readEmpty() {
         assert I.read("", bean) != null;
     }
 
-    @Test(expected = ScriptException.class)
+    @Test(expected = IllegalStateException.class)
     public void readInvalid() {
         assert I.read("@", bean) != null;
     }

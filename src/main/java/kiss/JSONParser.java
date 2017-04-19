@@ -15,11 +15,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.script.ScriptException;
-
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonValue;
-
 /**
  * @version 2017/04/19 22:48:59
  */
@@ -29,15 +24,9 @@ class JSONParser {
 
     private final char[] buffer;
 
-    private int bufferOffset;
-
     private int index;
 
     private int fill;
-
-    private int line;
-
-    private int lineOffset;
 
     private int current;
 
@@ -45,15 +34,9 @@ class JSONParser {
 
     private int captureStart;
 
-    /*
-     * | bufferOffset v [a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t] < input [l|m|n|o|p|q|r|s|t|?|?] <
-     * buffer ^ ^ | index fill
-     */
-
     JSONParser(Reader reader) {
         this.reader = reader;
         buffer = new char[1024];
-        line = 1;
         captureStart = -1;
     }
 
@@ -62,8 +45,9 @@ class JSONParser {
         space();
         Object result = readValue();
         space();
-        if (!isEndOfText()) {
-            throw error("Unexpected character");
+
+        if (current != -1) {
+            throw new IllegalStateException("Unexpected character");
         }
         return result;
     }
@@ -76,16 +60,72 @@ class JSONParser {
             readRequiredChar('l');
             readRequiredChar('l');
             return null;
+
         case 't':
-            return readTrue();
+            read();
+            readRequiredChar('r');
+            readRequiredChar('u');
+            readRequiredChar('e');
+            return true;
+
         case 'f':
-            return readFalse();
+            read();
+            readRequiredChar('a');
+            readRequiredChar('l');
+            readRequiredChar('s');
+            readRequiredChar('e');
+            return false;
+
         case '"':
             return readString();
+
         case '[':
-            return readArray();
+            read();
+            Map array = new LinkedHashMap();
+            space();
+            if (readChar(']')) {
+                return array;
+            }
+
+            int count = 0;
+            do {
+                space();
+                array.put(String.valueOf(count++), readValue());
+                space();
+            } while (readChar(','));
+
+            if (!readChar(']')) {
+                throw expected("',' or ']'");
+            }
+            return array;
+
         case '{':
-            return readObject();
+            read();
+            Map object = new HashMap();
+            space();
+            if (readChar('}')) {
+                return object;
+            }
+            do {
+                space();
+
+                if (current != '"') {
+                    throw expected("name");
+                }
+                String name = readString();
+                space();
+                if (!readChar(':')) {
+                    throw expected("':'");
+                }
+                space();
+                object.put(name, readValue());
+                space();
+            } while (readChar(','));
+            if (!readChar('}')) {
+                throw expected("',' or '}'");
+            }
+            return object;
+
         case '-':
         case '0':
         case '1':
@@ -97,79 +137,42 @@ class JSONParser {
         case '7':
         case '8':
         case '9':
-            return readNumber();
+            startCapture();
+            readChar('-');
+            int firstDigit = current;
+            if (!readDigit()) {
+                throw expected("digit");
+            }
+            if (firstDigit != '0') {
+                while (readDigit()) {
+                }
+            }
+
+            // fraction
+            if (readChar('.')) {
+                if (!readDigit()) {
+                    throw expected("digit");
+                }
+                while (readDigit()) {
+                }
+            }
+
+            // exponet
+            if (readChar('e') || readChar('E')) {
+                if (!readChar('+')) {
+                    readChar('-');
+                }
+                if (!readDigit()) {
+                    throw expected("digit");
+                }
+                while (readDigit()) {
+                }
+            }
+            return endCapture();
+
         default:
             throw expected("value");
         }
-    }
-
-    private Map readArray() throws IOException {
-        read();
-        Map array = new LinkedHashMap();
-        space();
-        if (readChar(']')) {
-            return array;
-        }
-
-        int count = 0;
-
-        do {
-            space();
-            array.put(String.valueOf(count++), readValue());
-            space();
-        } while (readChar(','));
-        if (!readChar(']')) {
-            throw expected("',' or ']'");
-        }
-        return array;
-    }
-
-    private Map readObject() throws IOException {
-        read();
-        Map object = new HashMap();
-        space();
-        if (readChar('}')) {
-            return object;
-        }
-        do {
-            space();
-            String name = readName();
-            space();
-            if (!readChar(':')) {
-                throw expected("':'");
-            }
-            space();
-            object.put(name, readValue());
-            space();
-        } while (readChar(','));
-        if (!readChar('}')) {
-            throw expected("',' or '}'");
-        }
-        return object;
-    }
-
-    private String readName() throws IOException {
-        if (current != '"') {
-            throw expected("name");
-        }
-        return readString();
-    }
-
-    private JsonValue readTrue() throws IOException {
-        read();
-        readRequiredChar('r');
-        readRequiredChar('u');
-        readRequiredChar('e');
-        return Json.TRUE;
-    }
-
-    private JsonValue readFalse() throws IOException {
-        read();
-        readRequiredChar('a');
-        readRequiredChar('l');
-        readRequiredChar('s');
-        readRequiredChar('e');
-        return Json.FALSE;
     }
 
     private void readRequiredChar(char ch) throws IOException {
@@ -224,10 +227,11 @@ class JSONParser {
             char[] hexChars = new char[4];
             for (int i = 0; i < 4; i++) {
                 read();
-                if (!isHexDigit()) {
+                if (current >= '0' && current <= '9' || current >= 'a' && current <= 'f' || current >= 'A' && current <= 'F') {
+                    hexChars[i] = (char) current;
+                } else {
                     throw expected("hexadecimal digit");
                 }
-                hexChars[i] = (char) current;
             }
             captureBuffer.append((char) Integer.parseInt(new String(hexChars), 16));
             break;
@@ -235,49 +239,6 @@ class JSONParser {
             throw expected("valid escape sequence");
         }
         read();
-    }
-
-    private String readNumber() throws IOException {
-        startCapture();
-        readChar('-');
-        int firstDigit = current;
-        if (!readDigit()) {
-            throw expected("digit");
-        }
-        if (firstDigit != '0') {
-            while (readDigit()) {
-            }
-        }
-        readFraction();
-        readExponent();
-        return endCapture();
-    }
-
-    private boolean readFraction() throws IOException {
-        if (!readChar('.')) {
-            return false;
-        }
-        if (!readDigit()) {
-            throw expected("digit");
-        }
-        while (readDigit()) {
-        }
-        return true;
-    }
-
-    private boolean readExponent() throws IOException {
-        if (!readChar('e') && !readChar('E')) {
-            return false;
-        }
-        if (!readChar('+')) {
-            readChar('-');
-        }
-        if (!readDigit()) {
-            throw expected("digit");
-        }
-        while (readDigit()) {
-        }
-        return true;
     }
 
     private boolean readChar(char ch) throws IOException {
@@ -289,15 +250,16 @@ class JSONParser {
     }
 
     private boolean readDigit() throws IOException {
-        if (!isDigit()) {
+        if ('0' <= current && current <= '9') {
+            read();
+            return true;
+        } else {
             return false;
         }
-        read();
-        return true;
     }
 
     private void space() throws IOException {
-        while (isWhiteSpace()) {
+        while (current == ' ' || current == '\t' || current == '\n' || current == '\r') {
             read();
         }
     }
@@ -308,17 +270,12 @@ class JSONParser {
                 captureBuffer.append(buffer, captureStart, fill - captureStart);
                 captureStart = 0;
             }
-            bufferOffset += fill;
             fill = reader.read(buffer, 0, buffer.length);
             index = 0;
             if (fill == -1) {
                 current = -1;
                 return;
             }
-        }
-        if (current == '\n') {
-            line++;
-            lineOffset = bufferOffset + index;
         }
         current = buffer[index++];
     }
@@ -350,34 +307,11 @@ class JSONParser {
         return captured;
     }
 
-    private Error expected(String expected) {
-        if (isEndOfText()) {
-            return error("Unexpected end of input");
+    private IllegalStateException expected(String expected) {
+        if (current == -1) {
+            return new IllegalStateException("Unexpected end of input");
         } else {
-            return error("Expected " + expected);
+            return new IllegalStateException("Expected " + expected);
         }
-    }
-
-    private Error error(String message) {
-        int absIndex = bufferOffset + index;
-        int column = absIndex - lineOffset;
-        int offset = isEndOfText() ? absIndex : absIndex - 1;
-        throw I.quiet(new ScriptException(message));
-    }
-
-    private boolean isWhiteSpace() {
-        return current == ' ' || current == '\t' || current == '\n' || current == '\r';
-    }
-
-    private boolean isDigit() {
-        return current >= '0' && current <= '9';
-    }
-
-    private boolean isHexDigit() {
-        return current >= '0' && current <= '9' || current >= 'a' && current <= 'f' || current >= 'A' && current <= 'F';
-    }
-
-    private boolean isEndOfText() {
-        return current == -1;
     }
 }
