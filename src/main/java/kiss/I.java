@@ -34,18 +34,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.MonthDay;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Period;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -460,33 +448,32 @@ public class I {
                         throw I.quiet(e);
                     }
                 };
-            case -1246033885: // java.time.LocalTime
-                return LocalTime::parse;
-            case -1246518012: // java.time.LocalDate
-                return LocalDate::parse;
-            case -1179039247: // java.time.LocalDateTime
-                return LocalDateTime::parse;
-            case -682591005: // java.time.OffsetDateTime
-                return OffsetDateTime::parse;
-            case -1917484011: // java.time.OffsetTime
-                return OffsetTime::parse;
-            case 1505337278: // java.time.ZonedDateTime
-                return ZonedDateTime::parse;
-            case 649475153: // java.time.MonthDay
-                return MonthDay::parse;
-            case -537503858: // java.time.YearMonth
-                return YearMonth::parse;
-            case -1062742510: // java.time.Year
-                return Year::parse;
-            case -1023498007: // java.time.Duration
-                return Duration::parse;
-            case 649503318: // java.time.Period
-                return Period::parse;
-            case 1296075756: // java.time.Instant
-                return Instant::parse;
             case -1165211622: // java.util.Locale
                 return Locale::forLanguageTag;
-
+            // case -1246033885: // java.time.LocalTime
+            // return LocalTime::parse;
+            // case -1246518012: // java.time.LocalDate
+            // return LocalDate::parse;
+            // case -1179039247: // java.time.LocalDateTime
+            // return LocalDateTime::parse;
+            // case -682591005: // java.time.OffsetDateTime
+            // return OffsetDateTime::parse;
+            // case -1917484011: // java.time.OffsetTime
+            // return OffsetTime::parse;
+            // case 1505337278: // java.time.ZonedDateTime
+            // return ZonedDateTime::parse;
+            // case 649475153: // java.time.MonthDay
+            // return MonthDay::parse;
+            // case -537503858: // java.time.YearMonth
+            // return YearMonth::parse;
+            // case -1062742510: // java.time.Year
+            // return Year::parse;
+            // case -1023498007: // java.time.Duration
+            // return Duration::parse;
+            // case 649503318: // java.time.Period
+            // return Period::parse;
+            // case 1296075756: // java.time.Instant
+            // return Instant::parse;
             // case 1464606545: // java.nio.file.Path
             // case -2015077501: // sun.nio.fs.WindowsPath
             // return Paths::get;
