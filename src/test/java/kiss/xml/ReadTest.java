@@ -61,14 +61,6 @@ public class ReadTest {
     }
 
     @Test
-    public void path() throws Exception {
-        Path memo = AntiBug.memo("<html/>");
-        XML xml = I.xml(memo);
-        assert xml.size() == 1;
-        assert xml.name() == "html";
-    }
-
-    @Test
     public void file() throws Exception {
         Path memo = AntiBug.memo("<html/>");
         XML xml = I.xml(memo.toFile());

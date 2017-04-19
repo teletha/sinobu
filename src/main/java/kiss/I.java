@@ -33,9 +33,6 @@ import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -278,14 +275,6 @@ public class I {
     /** The configuration of root logger in Sinobu. */
     public static Logger $logger = Logger.getLogger("");
 
-    /**
-     * <p>
-     * The configuration of working directory in Sinobu, default value is <em>current directory</em>
-     * of JVM .
-     * </p>
-     */
-    public static Path $working = Paths.get(""); // Poplar Taneshima
-
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
@@ -497,10 +486,10 @@ public class I {
                 return Instant::parse;
             case -1165211622: // java.util.Locale
                 return Locale::forLanguageTag;
-            case 1464606545: // java.nio.file.Path
-            case -2015077501: // sun.nio.fs.WindowsPath
-                return Paths::get;
 
+            // case 1464606545: // java.nio.file.Path
+            // case -2015077501: // sun.nio.fs.WindowsPath
+            // return Paths::get;
             // case -89228377: // java.nio.file.attribute.FileTime
             // decoder = value -> FileTime.fromMillis(Long.valueOf(value));
             // encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
@@ -2310,8 +2299,6 @@ public class I {
             }
             if (input instanceof URL) {
                 input = ((URL) input).openStream();
-            } else if (input instanceof Path) {
-                input = Files.newInputStream((Path) input);
             } else if (input instanceof File) {
                 input = new FileInputStream((File) input);
             }

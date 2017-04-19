@@ -12,11 +12,10 @@ package kiss.sample.bean;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.file.Path;
 import java.util.Date;
 
 /**
- * @version 2011/03/09 22:25:46
+ * @version 2017/04/19 10:34:38
  */
 public class BuiltinBean {
 
@@ -25,8 +24,6 @@ public class BuiltinBean {
     private Date date;
 
     private File file;
-
-    private Path path;
 
     private Class someClass;
 
@@ -108,24 +105,6 @@ public class BuiltinBean {
      */
     public void setFile(File file) {
         this.file = file;
-    }
-
-    /**
-     * Get the path property of this {@link BuiltinBean}.
-     * 
-     * @return The path property.
-     */
-    public Path getPath() {
-        return path;
-    }
-
-    /**
-     * Set the path property of this {@link BuiltinBean}.
-     * 
-     * @param path The path value to set.
-     */
-    public void setPath(Path path) {
-        this.path = path;
     }
 
     /**
