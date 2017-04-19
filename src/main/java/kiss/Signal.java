@@ -19,7 +19,9 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,15 +39,6 @@ import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SetProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.WritableValue;
 
 import kiss.signal.StartWithTest;
 
@@ -109,17 +102,6 @@ public final class Signal<V> {
      */
     public Signal(BiFunction<Observer<? super V>, Disposable, Disposable> subscriber) {
         this.subscriber = subscriber;
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Variable} from this {@link Signal}.
-     * </p>
-     *
-     * @return A {@link Variable} as value receiver.
-     */
-    public final Disposable to(WritableValue<? super V> value) {
-        return value == null ? Disposable.empty() : to(value::setValue);
     }
 
     /**
@@ -240,13 +222,13 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link SetProperty} from this {@link Signal}. Each value alternates between
-     * In and Out.
+     * Receive values as {@link Set} from this {@link Signal}. Each value alternates between In and
+     * Out.
      * </p>
      *
-     * @return A {@link SetProperty} as value receiver.
+     * @return A {@link Set} as value receiver.
      */
-    public final SetProperty<V> toAlternate() {
+    public final Set<V> toAlternate() {
         return toSet((set, value) -> {
             if (!set.add(value)) {
                 set.remove(value);
@@ -256,15 +238,15 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link BooleanProperty} from this {@link Signal}. Each value alternates
+     * Receive values as boolean {@link Variable} from this {@link Signal}. Each value alternates
      * between true and false.
      * </p>
      *
-     * @return A {@link BooleanProperty} as value receiver.
+     * @return A boolean {@link Variable} as value receiver.
      */
-    public final BooleanProperty toBinary() {
+    public final Variable<Boolean> toBinary() {
         // value receiver
-        BooleanProperty property = new SimpleBooleanProperty();
+        Variable<Boolean> property = Variable.of(false);
 
         // start receiving values
         to(v -> property.set(!property.get()));
@@ -275,14 +257,14 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link SetProperty} from this {@link Signal}.
+     * Receive values as {@link Set} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link SetProperty} as value receiver.
+     * @return A {@link Set} as value receiver.
      */
-    public final ListProperty<V> toList() {
+    public final List<V> toList() {
         // value receiver
-        ListProperty<V> property = I.make(ListProperty.class);
+        List<V> property = I.make(List.class);
 
         // start receiving values
         to(property::add);
@@ -293,25 +275,25 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link MapProperty} from this {@link Signal}.
+     * Receive values as {@link Map} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link MapProperty} as value receiver.
+     * @return A {@link Map} as value receiver.
      */
-    public final <Key> MapProperty<Key, V> toMap(Function<V, Key> keyGenerator) {
+    public final <Key> Map<Key, V> toMap(Function<V, Key> keyGenerator) {
         return toMap(keyGenerator, Function.identity());
     }
 
     /**
      * <p>
-     * Receive values as {@link MapProperty} from this {@link Signal}.
+     * Receive values as {@link Map} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link MapProperty} as value receiver.
+     * @return A {@link Map} as value receiver.
      */
-    public final <Key, Value> MapProperty<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
+    public final <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
         // value receiver
-        MapProperty<Key, Value> property = I.make(MapProperty.class);
+        Map<Key, Value> property = I.make(Map.class);
 
         // start receiving values
         to(v -> property.put(keyGenerator.apply(v), valueGenerator.apply(v)));
@@ -322,25 +304,25 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link SetProperty} from this {@link Signal}.
+     * Receive values as {@link Set} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link SetProperty} as value receiver.
+     * @return A {@link Set} as value receiver.
      */
-    public final SetProperty<V> toSet() {
-        return toSet(SetProperty::add);
+    public final Set<V> toSet() {
+        return toSet(Set::add);
     }
 
     /**
      * <p>
-     * Receive values as {@link SetProperty} from this {@link Signal}.
+     * Receive values as {@link Set} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link SetProperty} as value receiver.
+     * @return A {@link Set} as value receiver.
      */
-    private SetProperty<V> toSet(BiConsumer<SetProperty<V>, V> collector) {
+    private Set<V> toSet(BiConsumer<Set<V>, V> collector) {
         // value receiver
-        SetProperty<V> property = I.make(SetProperty.class);
+        Set<V> property = I.make(Set.class);
 
         // start receiving values
         to(v -> collector.accept(property, v));
@@ -351,23 +333,10 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link Property} from this {@link Signal}.
+     * Receive values as {@link Table} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link Property} as value receiver.
-     */
-    public final Property<V> toProperty() {
-        SimpleObjectProperty<V> property = new SimpleObjectProperty();
-        to(property::set);
-        return property;
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link MapProperty} from this {@link Signal}.
-     * </p>
-     *
-     * @return A {@link MapProperty} as value receiver.
+     * @return A {@link Table} as value receiver.
      */
     public final <Key> Table<Key, V> toTable(Function<V, Key> keyGenerator) {
         return toTable(new Table(), keyGenerator);
@@ -375,10 +344,10 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link MapProperty} from this {@link Signal}.
+     * Receive values as {@link Table} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link MapProperty} as value receiver.
+     * @return A {@link Table} as value receiver.
      */
     public final <Key> Table<Key, V> toTable(Table<Key, V> table, Function<V, Key> keyGenerator) {
         return toTable(table, keyGenerator, Function.identity());
@@ -386,10 +355,10 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link MapProperty} from this {@link Signal}.
+     * Receive values as {@link Table} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link MapProperty} as value receiver.
+     * @return A {@link Table} as value receiver.
      */
     public final <Key, Value> Table<Key, Value> toTable(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
         return toTable(new Table(), keyGenerator, valueGenerator);
@@ -397,10 +366,10 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link MapProperty} from this {@link Signal}.
+     * Receive values as {@link Table} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link MapProperty} as value receiver.
+     * @return A {@link Table} as value receiver.
      */
     public final <Key, Value> Table<Key, Value> toTable(Table<Key, Value> table, Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
         // start receiving values
@@ -536,7 +505,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -642,7 +611,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -1611,7 +1580,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            BooleanProperty take = timing.take(1).toBinary();
+            Variable<Boolean> take = timing.take(1).toBinary();
 
             return to(value -> {
                 if (take.get()) {

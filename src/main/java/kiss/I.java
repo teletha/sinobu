@@ -1525,37 +1525,6 @@ public class I {
      * @param observable A target to observe.
      * @return A observable event stream.
      */
-    public static <E extends Observable> Signal<E> observe(E observable) {
-        if (observable == null) {
-            return Signal.NEVER;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            // create actual listener
-            InvalidationListener listener = value -> observer.accept((E) value);
-
-            // INITIALIZING STAGE : register listener and notify the current value
-            observable.addListener(listener);
-            observer.accept(observable);
-
-            // DISPOSING STAGE : unregister listener
-            return () -> observable.removeListener(listener);
-        });
-    }
-
-    /**
-     * <p>
-     * Observe the specified {@link ObservableValue}.
-     * </p>
-     * <p>
-     * An implementation of {@link ObservableValue} may support lazy evaluation, which means that
-     * the value is not immediately recomputed after changes, but lazily the next time the value is
-     * requested.
-     * </p>
-     *
-     * @param observable A target to observe.
-     * @return A observable event stream.
-     */
     public static <E> Signal<E> observe(ObservableValue<E> observable) {
         if (observable == null) {
             return Signal.NEVER;

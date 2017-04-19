@@ -15,18 +15,16 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SetProperty;
 
 import org.junit.Test;
 
 import antibug.Chronus;
 import kiss.I;
 import kiss.Signal;
+import kiss.Variable;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
@@ -49,7 +47,7 @@ public class SignalTest {
     @Test
     public void toAlternate() {
         Subject<Integer, Integer> subject = new Subject<>();
-        SetProperty<Integer> set = subject.signal().toAlternate();
+        Set<Integer> set = subject.signal().toAlternate();
 
         subject.emit(10);
         assert set.size() == 1;
@@ -75,7 +73,7 @@ public class SignalTest {
     @Test
     public void toBinary() {
         Subject<Integer, Integer> subject = new Subject<>();
-        BooleanProperty binary = subject.signal().toBinary();
+        Variable<Boolean> binary = subject.signal().toBinary();
 
         subject.emit(10);
         assert binary.get() == true;
@@ -93,7 +91,7 @@ public class SignalTest {
     @Test
     public void toList() {
         Subject<Integer, Integer> subject = new Subject<>();
-        ListProperty<Integer> list = subject.signal().toList();
+        List<Integer> list = subject.signal().toList();
 
         subject.emit(10);
         assert list.size() == 1;
@@ -117,8 +115,8 @@ public class SignalTest {
     public void toMultiList() {
         Subject<Integer, Integer> subject = new Subject<>();
         Signal<Integer> signal = subject.signal();
-        ListProperty<Integer> list1 = signal.toList();
-        ListProperty<Integer> list2 = signal.toList();
+        List<Integer> list1 = signal.toList();
+        List<Integer> list2 = signal.toList();
 
         subject.emit(10);
         assert list1.size() == 1;
@@ -136,7 +134,7 @@ public class SignalTest {
     @Test
     public void toMap() {
         Subject<Integer, Integer> subject = new Subject<>();
-        MapProperty<String, Integer> map = subject.signal().toMap(v -> String.valueOf(v));
+        Map<String, Integer> map = subject.signal().toMap(v -> String.valueOf(v));
 
         subject.emit(10);
         assert map.size() == 1;
@@ -155,7 +153,7 @@ public class SignalTest {
     @Test
     public void toSet() {
         Subject<Integer, Integer> subject = new Subject<>();
-        SetProperty<Integer> set = subject.signal().toSet();
+        Set<Integer> set = subject.signal().toSet();
 
         subject.emit(10);
         assert set.size() == 1;
