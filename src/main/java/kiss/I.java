@@ -1011,7 +1011,7 @@ public class I {
             lock.readLock().lock();
 
             // Parse as JSON
-            return new JSON(new JSONParser(new InputStreamReader(new ByteArrayInputStream(read(input)), $encoding)).parse());
+            return new JSON(new InputStreamReader(new ByteArrayInputStream(read(input)), $encoding));
         } catch (Exception e) {
             throw quiet(e);
         } finally {
