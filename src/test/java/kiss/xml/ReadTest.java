@@ -10,6 +10,7 @@
 package kiss.xml;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.StringReader;
 import java.nio.file.Path;
 
@@ -86,7 +87,7 @@ public class ReadTest {
 
     @Test(expected = NullPointerException.class)
     public void inputNull() throws Exception {
-        I.xml(null);
+        I.xml((File) null);
     }
 
     @Test(expected = SAXParseException.class)

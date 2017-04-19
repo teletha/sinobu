@@ -983,9 +983,98 @@ public class I {
      * <p>
      * Parse the specified JSON format text.
      * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link ScriptException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
+    public static JSON json(File input) {
+        return parseJSON(input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link ScriptException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
+    public static JSON json(InputStream input) {
+        return parseJSON(input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link ScriptException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
+    public static JSON json(Readable input) {
+        return parseJSON(input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link ScriptException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
+    public static JSON json(URL input) {
+        return parseJSON(input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link ScriptException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
+    public static JSON json(URI input) {
+        return parseJSON(input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link ScriptException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws ScriptException If the input data is empty or invalid format.
+     */
+    public static JSON json(CharSequence input) {
+        return parseJSON(input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
      * <ul>
      * <li>{@link JSON}</li>
-     * <li>{@link Path}</li>
      * <li>{@link File}</li>
      * <li>{@link InputStream}</li>
      * <li>{@link Readable}</li>
@@ -1000,7 +1089,7 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws ScriptException If the input data is empty or invalid format.
      */
-    public static JSON json(Object input) {
+    private static JSON parseJSON(Object input) {
         PushbackReader reader = null;
 
         try {
@@ -2200,27 +2289,84 @@ public class I {
      * <p>
      * Parse as xml fragment.
      * </p>
-     * <ul>
-     * <li>{@link XML}</li>
-     * <li>{@link Path}</li>
-     * <li>{@link File}</li>
-     * <li>{@link InputStream}</li>
-     * <li>{@link Readable}</li>
-     * <li>{@link URL}</li>
-     * <li>{@link URI}</li>
-     * <li>{@link Node}</li>
-     * <li>{@link CharSequence}</li>
-     * </ul>
-     * <ul>
-     * <li>XML Literal</li>
-     * <li>HTML Literal</li>
-     * </ul>
      *
-     * @param xml A xml expression.
+     * @param source A xml expression.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(Object xml) {
-        return xml(null, xml);
+    public static XML xml(File source) {
+        return I.xml(null, source);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     *
+     * @param source A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(InputStream source) {
+        return I.xml(null, source);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     *
+     * @param source A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(Readable source) {
+        return I.xml(null, source);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     *
+     * @param source A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(URL source) {
+        return I.xml(null, source);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     *
+     * @param source A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(URI source) {
+        return I.xml(null, source);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     *
+     * @param source A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(Node source) {
+        return I.xml(null, source);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     *
+     * @param source A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(CharSequence source) {
+        return I.xml(null, source);
     }
 
     /** XML literal pattern. */
@@ -2232,7 +2378,6 @@ public class I {
      * </p>
      * <ul>
      * <li>{@link XML}</li>
-     * <li>{@link Path}</li>
      * <li>{@link File}</li>
      * <li>{@link InputStream}</li>
      * <li>{@link Readable}</li>
