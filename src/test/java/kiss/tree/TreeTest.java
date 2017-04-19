@@ -14,11 +14,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-
 import org.junit.Test;
 
 import kiss.tree.HTML.ElementNode;
@@ -176,21 +171,6 @@ public class TreeTest {
         Supplier<Boolean> fail = () -> false;
         Supplier<Boolean> nul = null;
         Supplier<Boolean> empty = () -> null;
-
-        HTML html = new HTML() {
-            {
-                $("num", iｆ(ok, attr(1)), iｆ(fail, attr(2)), iｆ(nul, attr(3)), iｆ(empty, attr(4)));
-            }
-        };
-        assert html.toString().equals("<num 1/>");
-    }
-
-    @Test
-    public void ifProperty() {
-        BooleanProperty ok = new SimpleBooleanProperty(true);
-        BooleanProperty fail = new SimpleBooleanProperty(false);
-        BooleanProperty nul = null;
-        Property<Boolean> empty = new SimpleObjectProperty(null);
 
         HTML html = new HTML() {
             {

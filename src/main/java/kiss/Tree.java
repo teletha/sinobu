@@ -21,8 +21,6 @@ import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-import javafx.beans.property.ReadOnlyProperty;
-
 import sun.misc.SharedSecrets;
 
 /**
@@ -431,19 +429,6 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param nodes A list of successible nodes.
      * @return A declaration of contents.
      */
-    protected final Consumer<Node> iｆ(ReadOnlyProperty<Boolean> condition, Consumer<Node>... success) {
-        return either(condition, I.bundle(success), null);
-    }
-
-    /**
-     * <p>
-     * Conditional writer.
-     * </p>
-     * 
-     * @param condition A condition.
-     * @param nodes A list of successible nodes.
-     * @return A declaration of contents.
-     */
     protected final Consumer<Node> iｆ(Supplier<Boolean> condition, Consumer<Node>... success) {
         return either(condition, I.bundle(success), null);
     }
@@ -459,20 +444,6 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      */
     protected final Consumer<Node> iｆ(boolean condition, Consumer<Node>... success) {
         return either(condition, success, null);
-    }
-
-    /**
-     * <p>
-     * Conditional writer.
-     * </p>
-     * 
-     * @param condition A condition.
-     * @param success A success node.
-     * @param failure A failure node.
-     * @return A declaration of contents.
-     */
-    protected final Consumer<Node> either(ReadOnlyProperty<Boolean> condition, Consumer<Node> success, Consumer<Node> failure) {
-        return either(condition != null && Boolean.TRUE.equals(condition.getValue()), success, failure);
     }
 
     /**
