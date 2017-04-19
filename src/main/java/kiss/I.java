@@ -80,21 +80,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SetProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.beans.property.SimpleSetProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-import javafx.collections.ObservableSet;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -340,12 +325,6 @@ public class I {
         lifestyles.set(Set.class, HashSet::new);
         lifestyles.set(Lifestyle.class, new Prototype(Prototype.class));
         lifestyles.set(Prototype.class, new Prototype(Prototype.class));
-        lifestyles.set(ListProperty.class, () -> new SimpleListProperty(FXCollections.observableArrayList()));
-        lifestyles.set(ObservableList.class, FXCollections::observableArrayList);
-        lifestyles.set(MapProperty.class, () -> new SimpleMapProperty(FXCollections.observableHashMap()));
-        lifestyles.set(ObservableMap.class, FXCollections::observableHashMap);
-        lifestyles.set(SetProperty.class, () -> new SimpleSetProperty(FXCollections.observableSet()));
-        lifestyles.set(ObservableSet.class, FXCollections::observableSet);
 
         try {
             // configure dom builder
@@ -1511,37 +1490,6 @@ public class I {
     // throw quiet(e);
     // }
     // }
-
-    /**
-     * <p>
-     * Observe the specified {@link ObservableValue}.
-     * </p>
-     * <p>
-     * An implementation of {@link ObservableValue} may support lazy evaluation, which means that
-     * the value is not immediately recomputed after changes, but lazily the next time the value is
-     * requested.
-     * </p>
-     *
-     * @param observable A target to observe.
-     * @return A observable event stream.
-     */
-    public static <E> Signal<E> observe(ObservableValue<E> observable) {
-        if (observable == null) {
-            return Signal.NEVER;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            // create actual listener
-            ChangeListener<E> listener = (o, oldValue, newValue) -> observer.accept(newValue);
-
-            // INITIALIZING STAGE : register listener and notify the current value
-            observable.addListener(listener);
-            observer.accept(observable.getValue());
-
-            // DISPOSING STAGE : unregister listener
-            return () -> observable.removeListener(listener);
-        });
-    }
 
     /**
      * <p>

@@ -41,13 +41,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javafx.beans.value.WritableValue;
-
 import kiss.ClassVariable;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
 import kiss.Table;
+import kiss.Variable;
 import kiss.Ⅲ;
 
 /**
@@ -181,10 +180,10 @@ public class Model<M> {
                 if (((STATIC | PRIVATE | NATIVE) & modifier) == 0) {
                     Model fieldModel = of(field.getGenericType(), type);
 
-                    if (WritableValue.class.isAssignableFrom(fieldModel.type)) {
+                    if (fieldModel.type == Variable.class) {
                         // property
-                        Property property = new Property(of(fieldModel.type.getMethod("getValue").getGenericReturnType(), field
-                                .getGenericType()), field.getName());
+                        Property property = new Property(of(collectParameters(field
+                                .getGenericType(), Variable.class)[0], Variable.class), field.getName());
                         property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
                         property.type = 2;
 
@@ -283,7 +282,7 @@ public class Model<M> {
         try {
             if (property.type == 2) {
                 // property access
-                return ((WritableValue) property.accessors[0].invoke(object)).getValue();
+                return ((Variable) property.accessors[0].invoke(object)).get();
             } else {
                 // field or method access
                 return property.accessors[0].invoke(object);
@@ -306,7 +305,7 @@ public class Model<M> {
             try {
                 if (property.type == 2) {
                     // property access
-                    ((WritableValue) property.accessors[0].invoke(object)).setValue(value);
+                    ((Variable) property.accessors[0].invoke(object)).set(value);
                 } else {
                     // field or method access
                     Class type = property.model.type;

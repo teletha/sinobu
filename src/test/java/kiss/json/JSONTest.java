@@ -27,7 +27,6 @@ import kiss.model.Property;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.ChainBean;
 import kiss.sample.bean.DefaultValue;
-import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.NestingList;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
@@ -36,9 +35,10 @@ import kiss.sample.bean.StringListProperty;
 import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
+import kiss.sample.bean.VariablePropertyAtField;
 
 /**
- * @version 2017/01/16 13:09:02
+ * @version 2017/04/19 11:58:32
  */
 public class JSONTest {
 
@@ -108,24 +108,24 @@ public class JSONTest {
     }
 
     @Test
-    public void javaFXProperty() {
-        FxPropertyAtField bean = I.make(FxPropertyAtField.class);
+    public void variableProperty() {
+        VariablePropertyAtField bean = I.make(VariablePropertyAtField.class);
         bean.string.set("value");
         bean.integer.set(10);
-        bean.list.add("first");
-        bean.list.add("second");
-        bean.map.put("one", 11L);
-        bean.map.put("two", 222L);
+        bean.list.get().add("first");
+        bean.list.get().add("second");
+        bean.map.get().put("one", 11L);
+        bean.map.get().put("two", 222L);
 
         // @formatter:off
         validate(bean,
         "{",
         "  'integer': '10',",
         "  'string': 'value',",
-        "  'list': {",
-        "    '0': 'first',",
-        "    '1': 'second'",
-        "  },",
+        "  'list': [",
+        "    'first',",
+        "    'second'",
+        "  ],",
         "  'map': {",
         "    'one': '11',",
         "    'two': '222'",

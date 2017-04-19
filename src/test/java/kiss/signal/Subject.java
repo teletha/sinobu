@@ -16,8 +16,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import javafx.beans.property.Property;
-
 import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
@@ -109,20 +107,6 @@ public class Subject<V, R> {
         }
         subject.recorder = I.bundle(recordes);
         return subject;
-    }
-
-    /**
-     * @param property
-     */
-    public Subject(Property<R> property) {
-        this();
-
-        for (int i = 0; i < multiplier; i++) {
-            Listener<R> listener = new Listener<>();
-            listeners.add(listener);
-
-            disposables.add(I.observe(property).to(listener));
-        }
     }
 
     /**

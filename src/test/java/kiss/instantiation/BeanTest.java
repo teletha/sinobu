@@ -12,14 +12,10 @@ package kiss.instantiation;
 import java.io.File;
 import java.util.Date;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleMapProperty;
-
 import org.junit.Test;
 
 import kiss.I;
 import kiss.sample.bean.BuiltinBean;
-import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
 import kiss.sample.bean.SchoolEnum;
@@ -128,16 +124,5 @@ public class BeanTest {
         assert null == bean.getSomeClass();
         bean.setSomeClass(BeanTest.class);
         assert BeanTest.class == bean.getSomeClass();
-    }
-
-    /**
-     * Bean with {@link Property}.
-     */
-    @Test
-    public void property() throws Exception {
-        FxPropertyAtField bean = I.make(FxPropertyAtField.class);
-        assert bean != null;
-        assert bean.list instanceof SimpleListProperty;
-        assert bean.map instanceof SimpleMapProperty;
     }
 }

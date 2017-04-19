@@ -13,15 +13,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-
 import org.junit.Test;
 
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
-import kiss.sample.bean.FxPropertyAtField;
 import kiss.sample.bean.GenericBean;
 import kiss.sample.bean.GenericBoundedTypedBean;
 import kiss.sample.bean.GenericFieldProperty;
@@ -35,6 +31,7 @@ import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
+import kiss.sample.bean.VariablePropertyAtField;
 import kiss.sample.bean.WildcardBean;
 import kiss.sample.bean.WildcardTypeSetter;
 import kiss.sample.bean.invalid.FinalAccessor;
@@ -172,8 +169,8 @@ public class ModelTest {
     }
 
     @Test
-    public void fxPropertyAtFieldProperty() {
-        Model<FxPropertyAtField> model = Model.of(FxPropertyAtField.class);
+    public void variableAtFieldProperty() {
+        Model<VariablePropertyAtField> model = Model.of(VariablePropertyAtField.class);
         assert model.properties().size() == 4;
 
         Property integer = model.properties().get(0);
@@ -182,10 +179,10 @@ public class ModelTest {
         Property map = model.properties().get(3);
         assert integer.model.type == Integer.class;
         assert string.model.type == String.class;
-        assert list.model.type == ObservableList.class;
-        assert map.model.type == ObservableMap.class;
+        assert list.model.type == List.class;
+        assert map.model.type == Map.class;
 
-        FxPropertyAtField bean = I.make(FxPropertyAtField.class);
+        VariablePropertyAtField bean = I.make(VariablePropertyAtField.class);
         assert bean.integer.get() == 0;
         assert bean.string.get() == null;
 
