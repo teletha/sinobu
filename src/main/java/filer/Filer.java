@@ -32,6 +32,58 @@ import kiss.Observer;
 import kiss.Signal;
 
 /**
+ * <h2 id="Patterns">Include/Exclude Patterns</h2>
+ * <p>
+ * Sinobu adopts "glob" pattern matching instead of "regex". * The case-insensitivity is platform
+ * dependent and therefore not specified. Example is the following that:
+ * </p>
+ * <dl>
+ * <dt>*</dt>
+ * <dd>Matches zero or more characters of a name component without crossing directory boundaries.
+ * </dd>
+ * <dt>**</dt>
+ * <dd>Matches zero or more characters of a name component with crossing directory boundaries.</dd>
+ * <dt>?</dt>
+ * <dd>Matches exactly one character of a name component.</dd>
+ * <dt>*.java</dt>
+ * <dd>Matches a path that represents a file name ending with ".java" in the current directory.</dd>
+ * <dt>**.java</dt>
+ * <dd>Matches a path that represents a file name ending with ".java" in all directories.</dd>
+ * <dt>!**.java</dt>
+ * <dd>Matches file names <em>not</em> ending with ".java" in all directories.</dd>
+ * <dt>**.*</dt>
+ * <dd>Matches file names containing a dot.</dd>
+ * <dt>**.{java,class}</dt>
+ * <dd>Matches file names ending with ".java" or ".class".</dd>
+ * <dt>**&#47;foo.?</dt>
+ * <dd>Matches file names starting with "foo." and a single character extension.</dd>
+ * </dl>
+ * <p>
+ * The backslash character (\) is used to escape characters that would otherwise be interpreted as
+ * special characters. The expression \\ matches a single backslash and "\{" matches a left brace
+ * for example.
+ * </p>
+ * <p>
+ * The frequently used patterns are the followings:
+ * </p>
+ * <dl>
+ * <dt>*</dt>
+ * <dd>All children paths which are under the user specified path are matched. (descendant paths
+ * will not match, root path will not match)</dd>
+ * <dt>**</dt>
+ * <dd>All descendant paths which are under the user specified path are matched. (root path will not
+ * match)</dd>
+ * <dt>*.txt</dt>
+ * <dd>All children paths which are under the user specified path and have ".txt" suffix are
+ * matched. (descendant paths will not match, root path will not match)</dd>
+ * <dt>image*</dt>
+ * <dd>All children paths which are under the user specified path and have "image" prefix are
+ * matched. (descendant paths will not match, root path will not match)</dd>
+ * <dt>**.html</dt>
+ * <dd>All descendant paths which are under the user specified path and have ".html" suffix are
+ * matched. (root path will not match)</dd>
+ * </dl>
+ * 
  * @version 2017/04/18 21:44:29
  */
 public class Filer {
