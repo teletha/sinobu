@@ -24,6 +24,7 @@ import java.io.PushbackReader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
@@ -72,8 +73,6 @@ import java.util.stream.BaseStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -211,9 +210,6 @@ public class I {
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    /** The javascript engine for reuse. */
-    private static final ScriptEngine script;
-
     // /** The locale name resolver. */
     // private static final Control control = Control.getControl(Control.FORMAT_CLASS);
 
@@ -254,6 +250,9 @@ public class I {
      */
     private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
+    /** The submarine {@link Encoder} / {@link Decoder} support for java.nio.file.Path. */
+    private static Method path;
+
     // initialization
     static {
         // remove all built-in log handlers
@@ -287,8 +286,11 @@ public class I {
             throw I.quiet(e);
         }
 
-        // configure javascript engine
-        script = new ScriptEngineManager().getEngineByName("js");
+        try {
+            path = Class.forName("java.nio.file.Paths").getMethod("get", String.class, String[].class);
+        } catch (Exception e) {
+            // ignore
+        }
 
         // Load myself as module. All built-in classload listeners and extension points will be
         // loaded and activated.
@@ -377,6 +379,15 @@ public class I {
                 };
             case -1165211622: // java.util.Locale
                 return Locale::forLanguageTag;
+            case 1464606545: // java.nio.file.Path
+            case -2015077501: // sun.nio.fs.WindowsPath
+                return value -> {
+                    try {
+                        return path.invoke(null, value, new String[0]);
+                    } catch (Exception e) {
+                        throw I.quiet(e);
+                    }
+                };
             // case -1246033885: // java.time.LocalTime
             // return LocalTime::parse;
             // case -1246518012: // java.time.LocalDate
@@ -401,9 +412,6 @@ public class I {
             // return Period::parse;
             // case 1296075756: // java.time.Instant
             // return Instant::parse;
-            // case 1464606545: // java.nio.file.Path
-            // case -2015077501: // sun.nio.fs.WindowsPath
-            // return Paths::get;
             // case -89228377: // java.nio.file.attribute.FileTime
             // decoder = value -> FileTime.fromMillis(Long.valueOf(value));
             // encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
@@ -1551,7 +1559,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -2024,7 +2032,6 @@ public class I {
         if (output == String.class) {
             return (Out) encoded;
         }
-
         return ((Decoder<Out>) find(Decoder.class, output)).decode(encoded);
     }
 
@@ -2046,7 +2053,7 @@ public class I {
         }
 
         try {
-            return Class.forName(fqcn);
+            return Class.forName(fqcn, false, Thread.currentThread().getContextClassLoader());
         } catch (ClassNotFoundException e) {
             throw quiet(e);
         }
