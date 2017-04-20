@@ -399,6 +399,13 @@ public class JSON {
         }
     }
 
+    /**
+     * <p>
+     * Read the current character if it is white space.
+     * </p>
+     * 
+     * @throws IOException
+     */
     private void space() throws IOException {
         while (current == ' ' || current == '\t' || current == '\n' || current == '\r') {
             read();

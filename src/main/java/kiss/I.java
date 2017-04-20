@@ -1559,7 +1559,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
