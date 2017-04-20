@@ -207,6 +207,15 @@ public class ParserTest {
     }
 
     @Test(expected = IllegalStateException.class)
+    public void invalidNoQuotedName() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  invalid: 'name'",
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = IllegalStateException.class)
     public void invalidNaN() throws Exception {
         // @formatter:off
         parse("{",

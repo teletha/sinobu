@@ -146,21 +146,21 @@ public class JSON {
 
     private int current;
 
-    private StringBuilder captureBuffer;
+    private StringBuilder capture;
 
     private int captureStart;
 
     JSON(Reader reader) throws IOException {
         this.reader = reader;
-        buffer = new char[1024];
-        captureStart = -1;
+        this.buffer = new char[1024];
+        this.captureStart = -1;
 
         read();
-        space();
-        root = readValue();
+        root = value();
     }
 
-    private Object readValue() throws IOException {
+    private Object value() throws IOException {
+        space();
         switch (current) {
         // keyword
         case 'n':
@@ -174,9 +174,10 @@ public class JSON {
         case '"':
             return string();
 
+        // array
         case '[':
-            read();
             Map array = new LinkedHashMap();
+            read();
             space();
             if (read(']')) {
                 return array;
@@ -184,14 +185,10 @@ public class JSON {
 
             int count = 0;
             do {
-                space();
-                array.put(String.valueOf(count++), readValue());
+                array.put(String.valueOf(count++), value());
                 space();
             } while (read(','));
-
-            if (!read(']')) {
-                throw expected("',' or ']'");
-            }
+            token(']');
             return array;
 
         // object
@@ -204,22 +201,13 @@ public class JSON {
             }
             do {
                 space();
-
-                if (current != '"') {
-                    throw expected("name");
-                }
                 String name = string();
                 space();
-                if (!read(':')) {
-                    throw expected("':'");
-                }
-                space();
-                object.put(name, readValue());
+                token(':');
+                object.put(name, value());
                 space();
             } while (read(','));
-            if (!read('}')) {
-                throw expected("',' or '}'");
-            }
+            token('}');
             return object;
 
         // number
@@ -309,9 +297,7 @@ public class JSON {
         String value = String.valueOf(keyword);
 
         for (int i = 1; i < value.length(); i++) {
-            if (!read(value.charAt(i))) {
-                throw expected("'" + value.charAt(i) + "'");
-            }
+            token(value.charAt(i));
         }
         return keyword;
     }
@@ -325,7 +311,7 @@ public class JSON {
      * @throws IOException
      */
     private String string() throws IOException {
-        read();
+        token('"');
         startCapture();
         while (current != '"') {
             if (current == '\\') {
@@ -336,22 +322,22 @@ public class JSON {
                 case '"':
                 case '/':
                 case '\\':
-                    captureBuffer.append((char) current);
+                    capture.append((char) current);
                     break;
                 case 'b':
-                    captureBuffer.append('\b');
+                    capture.append('\b');
                     break;
                 case 'f':
-                    captureBuffer.append('\f');
+                    capture.append('\f');
                     break;
                 case 'n':
-                    captureBuffer.append('\n');
+                    capture.append('\n');
                     break;
                 case 'r':
-                    captureBuffer.append('\r');
+                    capture.append('\r');
                     break;
                 case 't':
-                    captureBuffer.append('\t');
+                    capture.append('\t');
                     break;
                 case 'u':
                     char[] chars = new char[4];
@@ -359,7 +345,7 @@ public class JSON {
                         read();
                         chars[i] = (char) current;
                     }
-                    captureBuffer.append((char) Integer.parseInt(new String(chars), 16));
+                    capture.append((char) Integer.parseInt(new String(chars), 16));
                     break;
                 default:
                     throw expected("valid escape sequence");
@@ -387,7 +373,7 @@ public class JSON {
     private void read() throws IOException {
         if (index == fill) {
             if (captureStart != -1) {
-                captureBuffer.append(buffer, captureStart, fill - captureStart);
+                capture.append(buffer, captureStart, fill - captureStart);
                 captureStart = 0;
             }
             fill = reader.read(buffer, 0, buffer.length);
@@ -418,26 +404,43 @@ public class JSON {
         }
     }
 
+    /**
+     * <p>
+     * Read the specified character surely.
+     * </p>
+     * 
+     * @param c The character to be red.
+     * @return A result.
+     * @throws IOException
+     */
+    private void token(char c) throws IOException {
+        if (current == c) {
+            read();
+        } else {
+            throw expected("not found : " + c);
+        }
+    }
+
     private void startCapture() {
-        if (captureBuffer == null) {
-            captureBuffer = new StringBuilder();
+        if (capture == null) {
+            capture = new StringBuilder();
         }
         captureStart = index - 1;
     }
 
     private void pauseCapture() {
         int end = current == -1 ? index : index - 1;
-        captureBuffer.append(buffer, captureStart, end - captureStart);
+        capture.append(buffer, captureStart, end - captureStart);
         captureStart = -1;
     }
 
     private String endCapture() {
         int end = current == -1 ? index : index - 1;
         String captured;
-        if (captureBuffer.length() > 0) {
-            captureBuffer.append(buffer, captureStart, end - captureStart);
-            captured = captureBuffer.toString();
-            captureBuffer.setLength(0);
+        if (capture.length() > 0) {
+            capture.append(buffer, captureStart, end - captureStart);
+            captured = capture.toString();
+            capture.setLength(0);
         } else {
             captured = new String(buffer, captureStart, end - captureStart);
         }
