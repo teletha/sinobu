@@ -128,6 +128,60 @@ public class ParserTest {
     }
 
     @Test
+    public void escapedQuote1() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'valid': '\\\"'", // \"
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void escapedQuote2() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'invalid': '\\\\\"'", // \\"
+        "}");
+        // @formatter:on
+    }
+
+    @Test
+    public void escapedQuote3() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'valid': '\\\\\\\"'", // \\\"
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void escapedQuote4() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'invalid': '\\\\\\\\\"'", // \\\\"
+        "}");
+        // @formatter:on
+    }
+
+    @Test
+    public void escapedQuote5() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'valid': '\\\\\\\\\\\"'", // \\\\\"
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void escapedQuote6() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'invalid': '\\\\\\\\\\\\\"'", // \\\\\\"
+        "}");
+        // @formatter:on
+    }
+
+    @Test
     public void number() throws Exception {
         // @formatter:off
         parse("{",
@@ -142,10 +196,12 @@ public class ParserTest {
         "  '8': 8,",
         "  '9': 9,",
         "  'minus': -12345,",
+        "  'minusZero': -0,",
         "  'fraction': 0.12345,",
         "  'exponetSmall': 1.2e+3,",
         "  'exponetLarge': 1.2E+3,",
-        "  'exponetMinus': 1.2e-3",
+        "  'exponetMinus': 1.2e-3,",
+        "  'exponetNone': 1.2e3",
         "}");
         // @formatter:on
     }
@@ -178,6 +234,15 @@ public class ParserTest {
     }
 
     @Test(expected = IllegalStateException.class)
+    public void invalidMinusZeroPrefix() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'zeroPrefix': -012",
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = IllegalStateException.class)
     public void invalidFraction() throws Exception {
         // @formatter:off
         parse("{",
@@ -187,10 +252,55 @@ public class ParserTest {
     }
 
     @Test(expected = IllegalStateException.class)
+    public void invalidExponent() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'invalid': 1e*1",
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = IllegalStateException.class)
     public void invalidMinusOnly() throws Exception {
         // @formatter:off
         parse("{",
         "  'minus': -",
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void invalidMinus() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'minus': -a",
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void invalidUnicode1() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'invalid': '\\u000'",
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void invalidUnicode2() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'invalid': '\\u000G'",
+        "}");
+        // @formatter:on
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void invalidUnicode3() throws Exception {
+        // @formatter:off
+        parse("{",
+        "  'invalid': '\\u000-'",
         "}");
         // @formatter:on
     }

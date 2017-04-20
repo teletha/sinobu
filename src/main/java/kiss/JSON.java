@@ -162,30 +162,17 @@ public class JSON {
 
     private Object readValue() throws IOException {
         switch (current) {
+        // keyword
         case 'n':
-            read();
-            readRequiredChar('u');
-            readRequiredChar('l');
-            readRequiredChar('l');
-            return null;
-
+            return keyword(null);
         case 't':
-            read();
-            readRequiredChar('r');
-            readRequiredChar('u');
-            readRequiredChar('e');
-            return true;
-
+            return keyword(Boolean.TRUE);
         case 'f':
-            read();
-            readRequiredChar('a');
-            readRequiredChar('l');
-            readRequiredChar('s');
-            readRequiredChar('e');
-            return false;
+            return keyword(Boolean.FALSE);
 
+        // string
         case '"':
-            return readString();
+            return string();
 
         case '[':
             read();
@@ -207,9 +194,10 @@ public class JSON {
             }
             return array;
 
+        // object
         case '{':
-            read();
             Map object = new HashMap();
+            read();
             space();
             if (read('}')) {
                 return object;
@@ -220,7 +208,7 @@ public class JSON {
                 if (current != '"') {
                     throw expected("name");
                 }
-                String name = readString();
+                String name = string();
                 space();
                 if (!read(':')) {
                     throw expected("':'");
@@ -234,6 +222,7 @@ public class JSON {
             }
             return object;
 
+        // number
         case '-':
         case '0':
         case '1':
@@ -247,34 +236,23 @@ public class JSON {
         case '9':
             startCapture();
             read('-');
-            int firstDigit = current;
-            if (!readDigit()) {
-                throw expected("digit");
-            }
-            if (firstDigit != '0') {
-                while (readDigit()) {
-                }
+            if (current == '0') {
+                read();
+            } else {
+                digit();
             }
 
             // fraction
             if (read('.')) {
-                if (!readDigit()) {
-                    throw expected("digit");
-                }
-                while (readDigit()) {
-                }
+                digit();
             }
 
-            // exponet
+            // exponent
             if (read('e') || read('E')) {
                 if (!read('+')) {
                     read('-');
                 }
-                if (!readDigit()) {
-                    throw expected("digit");
-                }
-                while (readDigit()) {
-                }
+                digit();
             }
             return endCapture();
 
@@ -283,19 +261,110 @@ public class JSON {
         }
     }
 
-    private void readRequiredChar(char ch) throws IOException {
-        if (!read(ch)) {
-            throw expected("'" + ch + "'");
+    /**
+     * <p>
+     * Read the sequence of white spaces
+     * </p>
+     * 
+     * @throws IOException
+     */
+    private void space() throws IOException {
+        while (current == ' ' || current == '\t' || current == '\n' || current == '\r') {
+            read();
         }
     }
 
-    private String readString() throws IOException {
+    /**
+     * <p>
+     * Read the sequence of digit.
+     * </p>
+     * 
+     * @throws IOException
+     */
+    private void digit() throws IOException {
+        int count = 0;
+
+        while ('0' <= current && current <= '9') {
+            read();
+            count++;
+        }
+
+        if (count == 0) {
+            throw expected("digit");
+        }
+    }
+
+    /**
+     * <p>
+     * Read the sequence of keyword.
+     * </p>
+     * 
+     * @param keyword A target value.
+     * @return A target value.
+     * @throws IOException
+     */
+    private Object keyword(Object keyword) throws IOException {
+        read();
+
+        String value = String.valueOf(keyword);
+
+        for (int i = 1; i < value.length(); i++) {
+            if (!read(value.charAt(i))) {
+                throw expected("'" + value.charAt(i) + "'");
+            }
+        }
+        return keyword;
+    }
+
+    /**
+     * <p>
+     * Read the sequence of String.
+     * </p>
+     * 
+     * @return A parsed string.
+     * @throws IOException
+     */
+    private String string() throws IOException {
         read();
         startCapture();
         while (current != '"') {
             if (current == '\\') {
                 pauseCapture();
-                readEscape();
+                // escape
+                read();
+                switch (current) {
+                case '"':
+                case '/':
+                case '\\':
+                    captureBuffer.append((char) current);
+                    break;
+                case 'b':
+                    captureBuffer.append('\b');
+                    break;
+                case 'f':
+                    captureBuffer.append('\f');
+                    break;
+                case 'n':
+                    captureBuffer.append('\n');
+                    break;
+                case 'r':
+                    captureBuffer.append('\r');
+                    break;
+                case 't':
+                    captureBuffer.append('\t');
+                    break;
+                case 'u':
+                    char[] chars = new char[4];
+                    for (int i = 0; i < 4; i++) {
+                        read();
+                        chars[i] = (char) current;
+                    }
+                    captureBuffer.append((char) Integer.parseInt(new String(chars), 16));
+                    break;
+                default:
+                    throw expected("valid escape sequence");
+                }
+                read();
                 startCapture();
             } else if (current < 0x20) {
                 throw expected("valid string character");
@@ -306,47 +375,6 @@ public class JSON {
         String string = endCapture();
         read();
         return string;
-    }
-
-    private void readEscape() throws IOException {
-        read();
-        switch (current) {
-        case '"':
-        case '/':
-        case '\\':
-            captureBuffer.append((char) current);
-            break;
-        case 'b':
-            captureBuffer.append('\b');
-            break;
-        case 'f':
-            captureBuffer.append('\f');
-            break;
-        case 'n':
-            captureBuffer.append('\n');
-            break;
-        case 'r':
-            captureBuffer.append('\r');
-            break;
-        case 't':
-            captureBuffer.append('\t');
-            break;
-        case 'u':
-            char[] hexChars = new char[4];
-            for (int i = 0; i < 4; i++) {
-                read();
-                if (current >= '0' && current <= '9' || current >= 'a' && current <= 'f' || current >= 'A' && current <= 'F') {
-                    hexChars[i] = (char) current;
-                } else {
-                    throw expected("hexadecimal digit");
-                }
-            }
-            captureBuffer.append((char) Integer.parseInt(new String(hexChars), 16));
-            break;
-        default:
-            throw expected("valid escape sequence");
-        }
-        read();
     }
 
     /**
@@ -387,28 +415,6 @@ public class JSON {
         } else {
             read();
             return true;
-        }
-    }
-
-    private boolean readDigit() throws IOException {
-        if ('0' <= current && current <= '9') {
-            read();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * <p>
-     * Read the current character if it is white space.
-     * </p>
-     * 
-     * @throws IOException
-     */
-    private void space() throws IOException {
-        while (current == ' ' || current == '\t' || current == '\n' || current == '\r') {
-            read();
         }
     }
 
