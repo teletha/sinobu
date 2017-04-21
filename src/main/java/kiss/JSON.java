@@ -21,7 +21,7 @@ import kiss.model.Model;
 import kiss.model.Property;
 
 /**
- * @version 2017/03/26 12:53:30
+ * @version 2017/04/21 10:16:23
  */
 public class JSON {
 
@@ -136,31 +136,51 @@ public class JSON {
     // ===========================================================
     // Parser API
     // ===========================================================
+    /** The input source. */
     private Reader reader;
 
+    /** The input buffer. */
     private char[] buffer;
 
+    /** The index of input buffer. */
     private int index;
 
+    /** The limit of input buffer. */
     private int fill;
 
+    /** The current character data. */
     private int current;
 
+    /** The capturing text. */
     private StringBuilder capture;
 
+    /** The capture index in input buffer. */
     private int captureStart;
 
+    /**
+     * Initialize parser.
+     * 
+     * @param reader
+     * @throws IOException
+     */
     JSON(Reader reader) throws IOException {
         this.reader = reader;
         this.buffer = new char[1024];
         this.captureStart = -1;
 
         read();
+        space();
         root = value();
     }
 
+    /**
+     * <p>
+     * Read value.
+     * </p>
+     * 
+     * @throws IOException
+     */
     private Object value() throws IOException {
-        space();
         switch (current) {
         // keyword
         case 'n':
@@ -185,6 +205,7 @@ public class JSON {
 
             int count = 0;
             do {
+                space();
                 array.put(String.valueOf(count++), value());
                 space();
             } while (read(','));
@@ -204,6 +225,7 @@ public class JSON {
                 String name = string();
                 space();
                 token(':');
+                space();
                 object.put(name, value());
                 space();
             } while (read(','));
@@ -244,8 +266,9 @@ public class JSON {
             }
             return endCapture();
 
+        // invalid token
         default:
-            throw expected("value");
+            return expected("value");
         }
     }
 
@@ -278,7 +301,7 @@ public class JSON {
         }
 
         if (count == 0) {
-            throw expected("digit");
+            expected("digit");
         }
     }
 
@@ -348,12 +371,12 @@ public class JSON {
                     capture.append((char) Integer.parseInt(new String(chars), 16));
                     break;
                 default:
-                    throw expected("valid escape sequence");
+                    expected("escape sequence");
                 }
                 read();
                 startCapture();
             } else if (current < 0x20) {
-                throw expected("valid string character");
+                expected("string character");
             } else {
                 read();
             }
@@ -396,11 +419,11 @@ public class JSON {
      * @throws IOException
      */
     private boolean read(char c) throws IOException {
-        if (current != c) {
-            return false;
-        } else {
+        if (current == c) {
             read();
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -417,10 +440,13 @@ public class JSON {
         if (current == c) {
             read();
         } else {
-            throw expected("not found : " + c);
+            expected(c);
         }
     }
 
+    /**
+     * Start text capturing.
+     */
     private void startCapture() {
         if (capture == null) {
             capture = new StringBuilder();
@@ -428,12 +454,18 @@ public class JSON {
         captureStart = index - 1;
     }
 
+    /**
+     * Pause text capturing.
+     */
     private void pauseCapture() {
         int end = current == -1 ? index : index - 1;
         capture.append(buffer, captureStart, end - captureStart);
         captureStart = -1;
     }
 
+    /**
+     * Stop text capturing.
+     */
     private String endCapture() {
         int end = current == -1 ? index : index - 1;
         String captured;
@@ -448,11 +480,15 @@ public class JSON {
         return captured;
     }
 
-    private IllegalStateException expected(String expected) {
-        if (current == -1) {
-            return new IllegalStateException("Unexpected end of input");
-        } else {
-            return new IllegalStateException("Expected " + expected);
-        }
+    /**
+     * <p>
+     * Throw parsing error.
+     * </p>
+     * 
+     * @param expected A reason.
+     * @return This method NEVER return value.
+     */
+    private Object expected(Object expected) {
+        throw new IllegalStateException("Expected : ".concat(String.valueOf(expected)));
     }
 }

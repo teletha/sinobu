@@ -73,7 +73,6 @@ import java.util.stream.BaseStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.script.ScriptException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -907,10 +906,10 @@ public class I {
      * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link ScriptException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(File input) {
         return parseJSON(input);
@@ -922,10 +921,10 @@ public class I {
      * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link ScriptException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(InputStream input) {
         return parseJSON(input);
@@ -937,10 +936,10 @@ public class I {
      * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link ScriptException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(Readable input) {
         return parseJSON(input);
@@ -952,10 +951,10 @@ public class I {
      * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link ScriptException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(URL input) {
         return parseJSON(input);
@@ -967,10 +966,10 @@ public class I {
      * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link ScriptException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(URI input) {
         return parseJSON(input);
@@ -982,10 +981,10 @@ public class I {
      * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link ScriptException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(CharSequence input) {
         return parseJSON(input);
@@ -1006,10 +1005,10 @@ public class I {
      * </ul>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link ScriptException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     private static JSON parseJSON(Object input) {
         PushbackReader reader = null;
@@ -1559,7 +1558,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1668,13 +1667,13 @@ public class I {
      * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
      *            with Java object, this method ignores the input. <code>null</code> will throw
      *            {@link NullPointerException}. The empty or invalid format data will throw
-     *            {@link ScriptException}.
+     *            {@link IllegalStateException}.
      * @param output A root Java object. All properties will be assigned from the given data deeply.
      *            If the input is incompatible with Java object, this method ignores the input.
      *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws ScriptException If the input data is empty or invalid format.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static <M> M read(CharSequence input, M output) {
         return json(input).to(output);
@@ -1692,7 +1691,7 @@ public class I {
      * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
      *            with Java object, this method ignores the input. <code>null</code> will throw
      *            {@link NullPointerException}. The empty or invalid format data will throw
-     *            {@link ScriptException}.
+     *            {@link IllegalStateException}.
      * @param output A root Java object. All properties will be assigned from the given data deeply.
      *            If the input is incompatible with Java object, this method ignores the input.
      *            <code>null</code> will throw {@link java.lang.NullPointerException}.
