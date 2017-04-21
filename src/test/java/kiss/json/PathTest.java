@@ -21,7 +21,7 @@ import kiss.sample.bean.Person;
 /**
  * @version 2017/03/26 9:51:00
  */
-public class JsonReadWithPathTest {
+public class PathTest {
 
     @Test
     public void integer() throws Exception {
@@ -63,22 +63,6 @@ public class JsonReadWithPathTest {
         List<String> values = json.find("name").toList();
         assert values.size() == 1;
         assert values.get(0) == null;
-    }
-
-    @Test
-    public void nest() throws Exception {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'city': {",
-        "    'id': 'NY'",
-        "  }",
-        "}");
-        // @formatter:on
-
-        List<String> values = json.find("city.id").toList();
-        assert values.size() == 1;
-        assert values.get(0).equals("NY");
     }
 
     @Test

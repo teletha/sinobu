@@ -37,27 +37,50 @@ public class JSON {
         this.root = root;
     }
 
-    public Signal<String> find(String expression) {
-        return find(expression, String.class);
+    /**
+     * <p>
+     * Find values by the specified name path.
+     * </p>
+     * 
+     * @param path A name path.
+     * @return
+     */
+    public Signal<String> find(String path) {
+        return find(path, String.class);
     }
 
-    public <M> Signal<M> find(String expression, Class<M> type) {
-        return select(expression).map(v -> v.to(type));
+    /**
+     * <p>
+     * Find values by the specified name path.
+     * </p>
+     * 
+     * @param path A name path.
+     * @return
+     */
+    public <M> Signal<M> find(String path, Class<M> type) {
+        return select(path).map(v -> v.to(type));
     }
 
-    private Signal<JSON> select(String expression) {
+    /**
+     * <p>
+     * Find values by the specified name path.
+     * </p>
+     * 
+     * @param path A name path.
+     * @return
+     */
+    private Signal<JSON> select(String path) {
         Signal<Object> current = I.signal(root);
 
-        for (String name : expression.split("\\.")) {
+        for (String name : path.split("\\.")) {
             current = current.flatMap(v -> {
                 if (v instanceof Map) {
                     int i = name.lastIndexOf('[');
                     String main = i == -1 ? name : name.substring(0, i);
-                    String sub = i == -1 ? null : name.substring(i + 1, name.length() - 1);
                     Object value = ((Map) v).get(main);
 
-                    if (sub != null) {
-                        return I.signal(((Map) value).get(sub));
+                    if (i != -1) {
+                        return I.signal(((Map) value).get(name.substring(i + 1, name.length() - 1)));
                     } else if (value instanceof LinkedHashMap) {
                         return I.signal(((Map) value).values());
                     }
@@ -71,11 +94,27 @@ public class JSON {
         return current.map(JSON::new);
     }
 
+    /**
+     * <p>
+     * Data mapping to the specified model.
+     * </p>
+     * 
+     * @param type A model type.
+     * @return A created model.
+     */
     public <M> M to(Class<M> type) {
         Model<M> model = Model.of(type);
         return model.attribute ? I.transform(root, type) : to(model, I.make(type), root);
     }
 
+    /**
+     * <p>
+     * Data mapping to the specified model.
+     * </p>
+     * 
+     * @param value A model.
+     * @return A specified model.
+     */
     public <M> M to(M value) {
         return to(Model.of(value), value, root);
     }

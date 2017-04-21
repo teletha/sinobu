@@ -11,22 +11,15 @@ package kiss.json;
 
 import java.io.Reader;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
-import antibug.CleanRoom;
 import kiss.I;
 import kiss.sample.bean.Person;
 
 /**
- * @version 2017/04/02 21:35:11
+ * @version 2017/04/21 11:17:27
  */
 public class IllegalInputTest {
-
-    @Rule
-    @ClassRule
-    public static final CleanRoom room = new CleanRoom();
 
     /** The normal bean. */
     private Person bean = I.make(Person.class);
