@@ -9,7 +9,6 @@
  */
 package kiss.signal;
 
-import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
 import kiss.SignalTester;
 
@@ -23,9 +22,8 @@ public class RXTest extends SignalTester {
     }
 
     private void test() throws Exception {
-        PublishSubject s = PublishSubject.create();
         PublishSubject main = PublishSubject.create();
-        Disposable subscribe = main.skip(1).take(1).repeat(2).subscribe(v -> {
+        main.skip(1).take(1).repeat(2).subscribe(v -> {
             System.out.println(v);
         }, e -> {
 
