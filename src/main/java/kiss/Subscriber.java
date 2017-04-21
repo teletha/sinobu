@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,9 +16,9 @@ import java.util.function.Consumer;
 /**
  * Internal subscription.
  * 
- * @version 2017/04/01 15:42:33
+ * @version 2017/04/21 11:20:19
  */
-class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
+class Subscriber<T> implements Observer<T>, Disposable {
 
     /** Generic object. */
     T object;
@@ -37,9 +36,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
     Subscriber() {
     }
 
-    // ============================================================
-    // For Observer
-    // ============================================================
     /** The delegation. */
     Observer observer;
 
@@ -128,43 +124,10 @@ class Subscriber<T> implements Observer<T>, Disposable, WatchEvent {
         return sub;
     }
 
-    // ============================================================
-    // For Disposable
-    // ============================================================
     /**
      * {@inheritDoc}
      */
     @Override
     public void vandalize() {
-    }
-
-    // ============================================================
-    // For WatchEvent
-    // ============================================================
-    /** The event holder. */
-    WatchEvent watch;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Kind kind() {
-        return watch.kind();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int count() {
-        return watch.count();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public T context() {
-        return object;
     }
 }
