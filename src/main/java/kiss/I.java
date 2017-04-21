@@ -44,7 +44,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -247,7 +246,7 @@ public class I {
      * separate format instances for each thread. If multiple threads access a format concurrently,
      * it must be synchronized externally.
      */
-    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    static final ThreadSpecific<SimpleDateFormat> format = new ThreadSpecific(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
 
     /** The submarine {@link Encoder} / {@link Decoder} support for java.nio.file.Path. */
     private static Method path;
@@ -271,6 +270,7 @@ public class I {
         lifestyles.set(Set.class, HashSet::new);
         lifestyles.set(Lifestyle.class, new Prototype(Prototype.class));
         lifestyles.set(Prototype.class, new Prototype(Prototype.class));
+        lifestyles.set(SimpleDateFormat.class, format);
 
         try {
             // configure dom builder
@@ -306,7 +306,7 @@ public class I {
                 return value -> ((Class) value).getName();
             case 65575278: // java.util.Date
                 // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
-                return format::format;
+                return format.get()::format;
 
             default:
                 return String::valueOf;
@@ -371,7 +371,7 @@ public class I {
                 // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
                 return value -> {
                     try {
-                        return format.parse(value);
+                        return format.get().parse(value);
                     } catch (Exception e) {
                         throw I.quiet(e);
                     }
@@ -426,7 +426,7 @@ public class I {
      * Initialize environment.
      * </p>
      */
-    protected I() {
+    private I() {
     }
 
     /**
@@ -1284,16 +1284,6 @@ public class I {
         Deque<Class> dependency = dependencies.get();
         dependency.add(modelClass);
 
-        // Don't use 'contains' method check here to resolve singleton based
-        // circular reference. So we must judge it from the size of context. If the
-        // context contains too many classes, it has a circular reference
-        // independencies.
-        if (16 < dependency.size()) {
-            // Deque will be contain repeated Classes so we must shrink it with
-            // maintaining its class order.
-            throw new ClassCircularityError(new LinkedHashSet(dependency).toString());
-        }
-
         try {
             // At first, we should search the associated lifestyle from extension points.
             lifestyle = find(Lifestyle.class, modelClass);
@@ -1306,15 +1296,6 @@ public class I {
 
                 // Create new lifestyle for the actual model class
                 lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
-            }
-
-            // Trace dependency graph to detect circular dependencies.
-            if (lifestyle instanceof Prototype) {
-                for (Class param : ((Prototype) lifestyle).instantiator.getParameterTypes()) {
-                    if (param != Class.class) {
-                        makeLifestyle(param);
-                    }
-                }
             }
 
             // This lifestyle is safe and has no circular dependencies.
@@ -1558,7 +1539,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {

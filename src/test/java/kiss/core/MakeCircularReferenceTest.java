@@ -16,7 +16,7 @@ import kiss.Manageable;
 import kiss.Singleton;
 
 /**
- * @version 2016/10/13 9:41:51
+ * @version 2017/04/21 21:09:35
  */
 public class MakeCircularReferenceTest {
 
@@ -51,34 +51,5 @@ public class MakeCircularReferenceTest {
     private static class SingletonSelfCircularReference {
 
         static SingletonSelfCircularReference instance = I.make(SingletonSelfCircularReference.class);
-    }
-
-    @Test(expected = ClassCircularityError.class)
-    public void selfCircularReferenceInConstructor() {
-        I.make(SelfCircularReferenceInConstructor.class);
-    }
-
-    /**
-     * @version 2016/10/13 9:43:24
-     */
-    private static class SelfCircularReferenceInConstructor {
-
-        private SelfCircularReferenceInConstructor(SelfCircularReferenceInConstructor self) {
-        }
-    }
-
-    @Test(expected = ClassCircularityError.class)
-    public void singletonSelfCircularReferenceInConstructor() {
-        I.make(SingletonSelfCircularReferenceInConstructor.class);
-    }
-
-    /**
-     * @version 2016/10/13 9:43:47
-     */
-    @Manageable(lifestyle = Singleton.class)
-    private static class SingletonSelfCircularReferenceInConstructor {
-
-        private SingletonSelfCircularReferenceInConstructor(SingletonSelfCircularReferenceInConstructor self) {
-        }
     }
 }

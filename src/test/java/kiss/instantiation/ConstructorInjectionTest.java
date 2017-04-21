@@ -9,15 +9,15 @@
  */
 package kiss.instantiation;
 
+import org.junit.Test;
+
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.Manageable;
 import kiss.Singleton;
 
-import org.junit.Test;
-
 /**
- * @version 2011/03/22 16:54:08
+ * @version 2017/04/21 21:09:43
  */
 public class ConstructorInjectionTest {
 
@@ -128,22 +128,6 @@ public class ConstructorInjectionTest {
     /**
      * Circular dependency.
      */
-    @Test(expected = ClassCircularityError.class)
-    public void circularDependenciesFromA() {
-        I.make(CircularA.class);
-    }
-
-    /**
-     * Circular dependency.
-     */
-    @Test(expected = ClassCircularityError.class)
-    public void circularDependenciesFromB() {
-        I.make(CircularB.class);
-    }
-
-    /**
-     * Circular dependency.
-     */
     @Test
     public void circularDependenciesWithProvider() {
         CircularLifestyleA circularA = I.make(CircularLifestyleA.class);
@@ -163,24 +147,6 @@ public class ConstructorInjectionTest {
 
         CircularMixB circularB = I.make(CircularMixB.class);
         assert circularB.other != null;
-    }
-
-    /**
-     * @version 2010/02/17 15:55:29
-     */
-    private static class CircularA {
-
-        private CircularA(CircularB circularB) {
-        }
-    }
-
-    /**
-     * @version 2010/02/17 15:55:17
-     */
-    private static class CircularB {
-
-        private CircularB(CircularA circularA) {
-        }
     }
 
     /**

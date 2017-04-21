@@ -11,9 +11,7 @@ package kiss;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
@@ -21,9 +19,6 @@ import java.util.logging.LogRecord;
  * @version 2017/03/31 13:45:33
  */
 class Log extends Formatter {
-
-    /** The date time format. */
-    private static final DateTimeFormatter time = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
      * {@inheritDoc}
@@ -35,7 +30,7 @@ class Log extends Formatter {
         String message = record.getMessage();
         Object[] params = record.getParameters();
 
-        builder.append(time.format(LocalDateTime.now(ZoneId.systemDefault())))
+        builder.append(I.format.get().format(new Date()))
                 .append("   ")
                 .append(params == null ? message : String.format(message, params))
                 .append(System.lineSeparator());
