@@ -426,7 +426,7 @@ public class I {
      * Initialize environment.
      * </p>
      */
-    private I() {
+    protected I() {
     }
 
     /**
