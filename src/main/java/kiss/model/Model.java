@@ -39,9 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-import kiss.ClassVariable;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
@@ -59,7 +59,7 @@ import kiss.Ⅲ;
 public class Model<M> {
 
     /** The model repository. */
-    static final ClassVariable<Model> models = new ClassVariable();
+    static final Map<Class, Model> models = new ConcurrentHashMap();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class<M> type;
@@ -90,7 +90,7 @@ public class Model<M> {
     void init() {
         // To avoid StackOverFlowException caused by circular reference of Model, you must define
         // this model in here.
-        models.set(type, this);
+        models.put(type, this);
 
         try {
             // examine all methods without private, final, static or native
@@ -577,7 +577,7 @@ public class Model<M> {
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] constructors = clazz.getDeclaredConstructors();
-        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(Constructor::getParameterCount));
+        Arrays.sort(constructors, Comparator.<Constructor>comparingInt(Constructor::getParameterCount));
         return constructors;
     }
 

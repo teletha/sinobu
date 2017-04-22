@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -197,7 +198,7 @@ public class I {
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
     /** The cache for {@link Lifestyle}. */
-    private static final ClassVariable<Lifestyle> lifestyles = new ClassVariable<>();
+    private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
     /** The extension file cache to check duplication. */
     private static final Set<String> extensionArea = new HashSet<>();
@@ -265,12 +266,12 @@ public class I {
         System.setErr(error);
 
         // built-in lifestyles
-        lifestyles.set(List.class, ArrayList::new);
-        lifestyles.set(Map.class, HashMap::new);
-        lifestyles.set(Set.class, HashSet::new);
-        lifestyles.set(Lifestyle.class, new Prototype(Prototype.class));
-        lifestyles.set(Prototype.class, new Prototype(Prototype.class));
-        lifestyles.set(SimpleDateFormat.class, format);
+        lifestyles.put(List.class, ArrayList::new);
+        lifestyles.put(Map.class, HashMap::new);
+        lifestyles.put(Set.class, HashSet::new);
+        lifestyles.put(Lifestyle.class, new Prototype(Prototype.class));
+        lifestyles.put(Prototype.class, new Prototype(Prototype.class));
+        lifestyles.put(SimpleDateFormat.class, format);
 
         try {
             // configure dom builder
@@ -1298,8 +1299,12 @@ public class I {
                 lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.lifestyle()));
             }
 
-            // This lifestyle is safe and has no circular dependencies.
-            return lifestyles.let(modelClass, lifestyle);
+            if (lifestyles.containsKey(modelClass)) {
+                return lifestyles.get(modelClass);
+            } else {
+                lifestyles.put(modelClass, lifestyle);
+                return lifestyle;
+            }
         } finally {
             dependency.pollLast();
         }

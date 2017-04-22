@@ -20,9 +20,6 @@ import java.util.function.Consumer;
  */
 class Subscriber<T> implements Observer<T>, Disposable {
 
-    /** Generic object. */
-    T object;
-
     /** Generic counter. */
     int index;
 
