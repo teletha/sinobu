@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import classcan.IndexSubclasses;
+
 /**
  * <p>
  * This is a marker interface for Extension Point of your application.
@@ -26,7 +28,6 @@ package kiss;
  * <li>It implements {@link Extensible} interface.</li>
  * <li>It has {@link Extensible} interface in not ancestor but parent.</li>
  * </ul>
- * 
  * <pre>
  * interface ThisIsExtensionPoint extends Extensible {
  * }
@@ -38,7 +39,6 @@ package kiss;
  *     // At once Extension Point and Extension.
  * }
  * </pre>
- * 
  * <h2 id="Extension">What is Extension?</h2>
  * <p>
  * We give a definition of <em>Extension</em> like the following.
@@ -48,7 +48,6 @@ package kiss;
  * <li>It must be concrete class and has a suitable constructor for Sinobu (see also
  * {@link I#make(Class)} method).</li>
  * </ul>
- * 
  * <pre>
  * class ThisIsExtension implements Extensible {
  *     // At once Extension Point and Extension.
@@ -65,13 +64,11 @@ package kiss;
  *     }
  * }
  * </pre>
- * 
  * <h2 id="ExtensionKey">What is Extension Key?</h2>
  * <p>
  * You can provide <em>Extension Key</em> for each Extensions by using parameter. The key makes easy
  * finding an Extension you need (see also {@link I#find(Class, Class)}).
  * </p>
- * 
  * <pre>
  * interface ExtensionPointWithKey&lt;K&gt; extends Extensible {
  * }
@@ -89,5 +86,6 @@ package kiss;
  * @see I#find(Class, Class)
  * @version 2009/12/31 3:08:59
  */
+@IndexSubclasses
 public interface Extensible {
 }
