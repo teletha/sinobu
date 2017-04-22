@@ -277,7 +277,6 @@ public class I {
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
-            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
             dom = factory.newDocumentBuilder();
             dom.setErrorHandler(new DefaultHandler());

@@ -553,7 +553,9 @@ public class Model<M> {
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] constructors = clazz.getDeclaredConstructors();
-        Arrays.sort(constructors, Comparator.<Constructor>comparingInt(Constructor::getParameterCount));
+        // Constructor#getParameters is not supported in lower version than Android O.
+        // So we must use Class#getParameterType#length instead.
+        Arrays.sort(constructors, Comparator.<Constructor>comparingInt(v -> v.getParameterTypes().length));
         return constructors;
     }
 
