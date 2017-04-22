@@ -62,8 +62,8 @@ public class ModelTest {
         Property property = model.property(propertyName);
         assert property != null;
         assert propertyType == property.model.type;
-        assert property.accessors[0] != null;
-        assert property.accessors[1] != null;
+        assert property.getter != null;
+        assert property.setter != null;
     }
 
     @Test

@@ -13,11 +13,15 @@ import static java.lang.reflect.Modifier.*;
 
 import java.beans.Transient;
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import kiss.UsefulBiConsumer;
+import kiss.UsefulFunction;
 
 /**
  * <p>
@@ -47,7 +51,9 @@ public class Property implements Comparable<Property> {
     private final Map annotations = new HashMap(2);
 
     /** The actual accessor methods. */
-    MethodHandle[] accessors;
+    UsefulFunction getter;
+
+    UsefulBiConsumer setter;
 
     /** The {@link Property} type. */
     int type;

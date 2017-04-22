@@ -14,9 +14,6 @@ import static java.lang.reflect.Modifier.*;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -143,8 +140,6 @@ public class Model<M> {
                 }
             }
 
-            Lookup look = MethodHandles.lookup();
-
             // build valid properties
             ArrayList properties = new ArrayList(); // don't use type parameter to reduce footprint
 
@@ -161,7 +156,8 @@ public class Model<M> {
 
                             // this property is valid
                             Property property = new Property(model, entry.getKey(), methods);
-                            property.accessors = new MethodHandle[] {look.unreflect(methods[0]), look.unreflect(methods[1])};
+                            property.getter = m -> methods[0].invoke(m);
+                            property.setter = (m, v) -> methods[1].invoke(m, v);
 
                             // register it
                             properties.add(property);
@@ -181,11 +177,11 @@ public class Model<M> {
                     Model fieldModel = of(field.getGenericType(), type);
 
                     if (fieldModel.type == Variable.class) {
-                        // property
+                        // variable
                         Property property = new Property(of(collectParameters(field
                                 .getGenericType(), Variable.class)[0], Variable.class), field.getName());
-                        property.accessors = new MethodHandle[] {look.unreflectGetter(field), null};
-                        property.type = 2;
+                        property.getter = m -> ((Variable) field.get(m)).v;
+                        property.setter = (m, v) -> ((Variable) field.get(m)).set(v);
 
                         // register it
                         properties.add(property);
@@ -194,8 +190,8 @@ public class Model<M> {
                         field.setAccessible(true);
 
                         Property property = new Property(fieldModel, field.getName(), field);
-                        property.accessors = new MethodHandle[] {look.unreflectGetter(field), look.unreflectSetter(field)};
-                        property.type = 1;
+                        property.getter = m -> field.get(m);
+                        property.setter = (m, v) -> field.set(m, v);
 
                         // register it
                         properties.add(property);
@@ -278,18 +274,7 @@ public class Model<M> {
         if (object == null || property == null) {
             return null;
         }
-
-        try {
-            if (property.type == 2) {
-                // property access
-                return ((Variable) property.accessors[0].invoke(object)).get();
-            } else {
-                // field or method access
-                return property.accessors[0].invoke(object);
-            }
-        } catch (Throwable e) {
-            throw I.quiet(e);
-        }
+        return property.getter.apply(object);
     }
 
     /**
@@ -302,20 +287,11 @@ public class Model<M> {
      */
     public void set(M object, Property property, Object value) {
         if (object != null && property != null) {
-            try {
-                if (property.type == 2) {
-                    // property access
-                    ((Variable) property.accessors[0].invoke(object)).set(value);
-                } else {
-                    // field or method access
-                    Class type = property.model.type;
+            // field or method access
+            Class type = property.model.type;
 
-                    if ((!type.isPrimitive() && !type.isEnum()) || value != null) {
-                        property.accessors[1].invoke(object, value);
-                    }
-                }
-            } catch (Throwable e) {
-                throw I.quiet(e);
+            if ((!type.isPrimitive() && !type.isEnum()) || value != null) {
+                property.setter.accept(object, value);
             }
         }
     }
