@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import classcan.IndexSubclasses;
+import classcan.Indexable;
 
 /**
  * <p>
@@ -86,6 +86,6 @@ import classcan.IndexSubclasses;
  * @see I#find(Class, Class)
  * @version 2009/12/31 3:08:59
  */
-@IndexSubclasses
+@Indexable
 public interface Extensible {
 }
