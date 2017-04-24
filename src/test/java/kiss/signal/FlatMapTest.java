@@ -14,7 +14,7 @@ import org.junit.Test;
 import kiss.SignalTester;
 
 /**
- * @version 2017/04/06 2:37:23
+ * @version 2017/04/24 12:22:18
  */
 public class FlatMapTest extends SignalTester {
 
@@ -26,12 +26,22 @@ public class FlatMapTest extends SignalTester {
         assert main.isCompleted();
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void flatMapNull() throws Exception {
         monitor(() -> signal(1, 2).flatMap(null));
+    }
 
-        assert main.value(1, 2);
+    @Test
+    public void enumeration() throws Exception {
+        monitor(() -> signal(10, 20).flatEnum(v -> enume(v, v + 1)));
+
+        assert main.value(10, 11, 20, 21);
         assert main.isCompleted();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void enumerationNull() throws Exception {
+        monitor(() -> signal(1, 2).flatEnum(null));
     }
 
     @Test

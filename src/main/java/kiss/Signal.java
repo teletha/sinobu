@@ -505,7 +505,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -611,7 +611,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -965,6 +965,23 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
+    public final <R> Signal<R> flatEnum(Function<V, Enumeration<R>> function) {
+        return flatMap(function.andThen(I::signal));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
     public final <R> Signal<R> flatIterable(Function<V, Iterable<R>> function) {
         return flatMap(function.andThen(I::signal));
     }
@@ -983,10 +1000,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatMap(Function<V, Signal<R>> function) {
-        // ignore invalid parameter
-        if (function == null) {
-            return (Signal<R>) this;
-        }
+        Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
