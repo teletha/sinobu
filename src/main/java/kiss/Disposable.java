@@ -42,7 +42,7 @@ public interface Disposable {
         vandalize();
 
         // dispose children
-        Subscriber<Disposable> subscriber = I.associate(this, Subscriber.class);
+        Subscriber<Disposable> subscriber = Subscriber.of(this);
 
         if (subscriber.list != null) {
             for (Disposable child : subscriber.list) {
@@ -62,7 +62,7 @@ public interface Disposable {
      * @return A result.
      */
     default boolean isDisposed() {
-        return I.associate(this, Subscriber.class).index != 0;
+        return Subscriber.of(this).index != 0;
     }
 
     /**
@@ -75,7 +75,7 @@ public interface Disposable {
      */
     default Disposable add(Disposable next) {
         if (next != null && next != this) {
-            Subscriber subscriber = I.associate(this, Subscriber.class);
+            Subscriber subscriber = Subscriber.of(this);
 
             if (subscriber.list == null) {
                 subscriber.list = new ArrayList();

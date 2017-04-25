@@ -224,9 +224,6 @@ public class I {
     /** The serial task manager. */
     private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(factory);
 
-    /** The associatable object holder. */
-    private static final Map<Object, Map> associatables = new ConcurrentHashMap();
-
     /** The document builder. */
     static final DocumentBuilder dom;
 
@@ -461,20 +458,6 @@ public class I {
      */
     public static void alert(String message, Object... params) {
         $logger.logp(Level.SEVERE, "", "", message, params);
-    }
-
-    /**
-     * <p>
-     * Retrieve the associated value with the specified object by the specified type.
-     * </p>
-     *
-     * @param host A host object.
-     * @param type An association type.
-     * @return An associated value.
-     */
-    public static <V> V associate(Object host, Class<V> type) {
-        Map<Class<V>, V> association = associatables.computeIfAbsent(host, key -> new HashMap<>());
-        return association.computeIfAbsent(type, I::make);
     }
 
     /**
@@ -1542,7 +1525,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {

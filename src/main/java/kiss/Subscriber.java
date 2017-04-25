@@ -11,6 +11,8 @@ package kiss;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -126,5 +128,15 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void vandalize() {
+    }
+
+    private static Map<Disposable, Subscriber> cache = new ConcurrentHashMap();
+
+    static Subscriber of(Disposable disposable) {
+        if (disposable instanceof Subscriber) {
+            return (Subscriber) disposable;
+        } else {
+            return cache.computeIfAbsent(disposable, k -> new Subscriber());
+        }
     }
 }
