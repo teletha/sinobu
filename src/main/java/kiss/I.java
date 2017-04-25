@@ -49,7 +49,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -226,7 +225,7 @@ public class I {
     private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(factory);
 
     /** The associatable object holder. */
-    private static final WeakHashMap<Object, WeakHashMap> associatables = new WeakHashMap();
+    private static final Map<Object, Map> associatables = new ConcurrentHashMap();
 
     /** The document builder. */
     static final DocumentBuilder dom;
@@ -474,7 +473,7 @@ public class I {
      * @return An associated value.
      */
     public static <V> V associate(Object host, Class<V> type) {
-        WeakHashMap<Class<V>, V> association = associatables.computeIfAbsent(host, key -> new WeakHashMap());
+        Map<Class<V>, V> association = associatables.computeIfAbsent(host, key -> new HashMap<>());
         return association.computeIfAbsent(type, I::make);
     }
 
@@ -1543,7 +1542,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
