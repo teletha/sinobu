@@ -199,6 +199,16 @@ public final class Signal<V> {
             disposer = Disposable.empty();
         }
 
+        if (observer instanceof Subscriber == false) {
+            Subscriber subscriber = new Subscriber();
+            subscriber.observer = observer;
+            observer = subscriber;
+        }
+
+        if (disposer instanceof Subscriber == false) {
+            throw new Error(disposer.getClass().getName());
+        }
+
         try {
             return subscriber.apply(observer, disposer);
         } catch (Throwable e) {
@@ -505,7 +515,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -611,7 +621,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
