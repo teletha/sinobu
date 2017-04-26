@@ -31,13 +31,13 @@ public class LogTest {
     public static void store() {
         buffer.setFormatter(new Log());
 
-        handlers = I.$logger.getHandlers();
+        handlers = I.logger.getHandlers();
 
         for (int i = 0; i < handlers.length; i++) {
-            I.$logger.removeHandler(handlers[i]);
+            I.logger.removeHandler(handlers[i]);
         }
-        I.$logger.addHandler(buffer);
-        I.$logger.setLevel(Level.ALL);
+        I.logger.addHandler(buffer);
+        I.logger.setLevel(Level.ALL);
     }
 
     @AfterClass

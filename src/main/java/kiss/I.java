@@ -128,29 +128,16 @@ import kiss.model.Property;
  * </ul>
  * </dd>
  * </dl>
- * <h1 id="ConfigurableEnvironment">Configurable Environment</h1>
- * <p>
- * Sinobu provides some enviroment variables that you can configure.
- * </p>
- * <ul>
- * <li><a href="#encoding">Character Encoding</a></li>
- * <li><a href="#logger">Global Logger</a></li>
- * </ul>
- * <p>
- * When you want to initialize these enviroment variables and your application environment related
- * to Sinobu, you have to manipulate these variables at static initialization phase of your
- * application class.
- * </p>
  * 
- * @version 2017/04/19 12:39:44
+ * @version 2017/04/27 3:02:53
  */
 public class I {
 
     // Candidates of Method Name
     //
-    // annotate
-    // bind
-    // create class copy
+    // annotate accept alert
+    // bind bundle
+    // create class copy collect config
     // delete define
     // edit error
     // find
@@ -166,22 +153,21 @@ public class I {
     // parse
     // quiet
     // read
-    // save staple
-    // transform
+    // save staple schedule set signal
+    // transform type
     // unload use
     // v
-    // write weave warn walk watch
-    // xml xerox
+    // write warn walk watch
+    // xml
     // yield
     // zip
 
     /** No Operation */
     public static final Runnable NoOP = () -> {
-        // no operation
     };
 
     /** The configuration of root logger in Sinobu. */
-    public static Logger $logger = Logger.getLogger("");
+    static Logger logger = Logger.getLogger("");
 
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
@@ -238,8 +224,8 @@ public class I {
     // initialization
     static {
         // remove all built-in log handlers
-        for (Handler h : $logger.getHandlers()) {
-            $logger.removeHandler(h);
+        for (Handler h : logger.getHandlers()) {
+            logger.removeHandler(h);
         }
 
         // switch err temporaly to create console handler with System.out stream
@@ -423,7 +409,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void alert(String message) {
-        $logger.logp(Level.SEVERE, "", "", message);
+        logger.logp(Level.SEVERE, "", "", message);
     }
 
     /**
@@ -435,7 +421,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void alert(String message, Object... params) {
-        $logger.logp(Level.SEVERE, "", "", message, params);
+        logger.logp(Level.SEVERE, "", "", message, params);
     }
 
     /**
@@ -623,7 +609,7 @@ public class I {
      */
     public static void config(Handler handler) {
         handler.setFormatter(new Log());
-        $logger.addHandler(handler);
+        logger.addHandler(handler);
     }
 
     /**
@@ -703,7 +689,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void debug(String message) {
-        $logger.logp(Level.FINEST, "", "", message);
+        logger.logp(Level.FINEST, "", "", message);
     }
 
     /**
@@ -715,7 +701,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void debug(String message, Object... params) {
-        $logger.logp(Level.FINEST, "", "", message, params);
+        logger.logp(Level.FINEST, "", "", message, params);
     }
 
     /**
@@ -1147,7 +1133,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void log(String message) {
-        $logger.logp(Level.INFO, "", "", message);
+        logger.logp(Level.INFO, "", "", message);
     }
 
     /**
@@ -1159,7 +1145,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void log(String message, Object... params) {
-        $logger.logp(Level.INFO, "", "", message, params);
+        logger.logp(Level.INFO, "", "", message, params);
     }
 
     /**
@@ -2012,7 +1998,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void warn(String message) {
-        $logger.logp(Level.WARNING, "", "", message);
+        logger.logp(Level.WARNING, "", "", message);
     }
 
     /**
@@ -2024,7 +2010,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void warn(String message, Object... params) {
-        $logger.logp(Level.WARNING, "", "", message, params);
+        logger.logp(Level.WARNING, "", "", message, params);
     }
 
     /**
