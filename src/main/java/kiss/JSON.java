@@ -541,10 +541,7 @@ public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
     // Writer API
     // ===========================================================
     /** The charcter sequence for output as JSON. */
-    Appendable out;
-
-    /** The size of indent. */
-    int indent;
+    private Appendable out;
 
     /**
      * 
@@ -564,7 +561,7 @@ public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
                 if (index++ != 0) out.append(',');
 
                 // all properties need the properly indents
-                if (0 < indent) {
+                if (0 < current) {
                     indent();
 
                     // property key (List node doesn't need key)
@@ -578,12 +575,12 @@ public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
                 if (context.ⅱ.isAttribute()) {
                     write(I.transform(context.ⅲ, String.class), context.ⅱ.model.type);
                 } else {
-                    if (64 < indent) {
+                    if (64 < current) {
                         throw new ClassCircularityError();
                     }
 
                     JSON walker = new JSON(out);
-                    walker.indent = indent + 1;
+                    walker.current = current + 1;
                     walker.out.append(context.ⅱ.model.type == List.class ? '[' : '{');
                     context.ⅱ.model.walk(context.ⅲ, walker);
                     if (walker.index != 0) indent();
@@ -662,7 +659,7 @@ public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
     private void indent() throws IOException {
         out.append("\r\n");
 
-        for (int i = 0; i < indent; i++) {
+        for (int i = 0; i < current; i++) {
             out.append('\t');
         }
     }
