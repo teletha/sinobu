@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import classcan.Indexable;
-
 /**
  * <p>
  * This is a marker interface for Extension Point of your application.
@@ -86,6 +84,5 @@ import classcan.Indexable;
  * @see I#find(Class, Class)
  * @version 2009/12/31 3:08:59
  */
-@Indexable
 public interface Extensible {
 }
