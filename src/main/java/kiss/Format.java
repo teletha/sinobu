@@ -11,28 +11,20 @@ package kiss;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import kiss.model.Model;
 import kiss.model.Property;
 
 /**
  * <p>
- * Multi purpose implementation.
- * </p>
- * <p>
  * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor nodes,
  * but same object in sibling nodes will be acceptable.
  * </p>
- * <p>
- * Log formatter for {@link Logger}.
- * </p>
  * 
- * @version 2017/03/29 10:47:02
+ * @version 2017/04/26 11:35:52
  */
-class Format implements Consumer<Ⅲ<Model, Property, Object>>, Lifestyle<Locale> {
+class Format implements Consumer<Ⅲ<Model, Property, Object>> {
 
     /** The charcter sequence for output as JSON. */
     Appendable out;
@@ -156,13 +148,5 @@ class Format implements Consumer<Ⅲ<Model, Property, Object>>, Lifestyle<Locale
         for (int i = 0; i < indent; i++) {
             out.append('\t');
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Locale get() {
-        return Locale.getDefault();
     }
 }

@@ -287,10 +287,6 @@ public class I {
             // ignore
         }
 
-        // Load myself as module. All built-in classload listeners and extension points will be
-        // loaded and activated.
-        load(I.class, true);
-
         // built-in encoders
         load(ExtensionFactory.class, Encoder.class, () -> (ExtensionFactory<Encoder>) type -> {
             if (type.isEnum()) {
@@ -1525,7 +1521,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
