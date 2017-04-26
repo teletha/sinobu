@@ -376,30 +376,25 @@ public class I {
                         throw I.quiet(e);
                     }
                 };
-            // case -1246033885: // java.time.LocalTime
-            // return LocalTime::parse;
-            // case -1246518012: // java.time.LocalDate
-            // return LocalDate::parse;
-            // case -1179039247: // java.time.LocalDateTime
-            // return LocalDateTime::parse;
-            // case -682591005: // java.time.OffsetDateTime
-            // return OffsetDateTime::parse;
-            // case -1917484011: // java.time.OffsetTime
-            // return OffsetTime::parse;
-            // case 1505337278: // java.time.ZonedDateTime
-            // return ZonedDateTime::parse;
-            // case 649475153: // java.time.MonthDay
-            // return MonthDay::parse;
-            // case -537503858: // java.time.YearMonth
-            // return YearMonth::parse;
-            // case -1062742510: // java.time.Year
-            // return Year::parse;
-            // case -1023498007: // java.time.Duration
-            // return Duration::parse;
-            // case 649503318: // java.time.Period
-            // return Period::parse;
-            // case 1296075756: // java.time.Instant
-            // return Instant::parse;
+            case -1023498007: // java.time.Duration
+            case 1296075756: // java.time.Instant
+            case -1246518012: // java.time.LocalDate
+            case -1179039247: // java.time.LocalDateTime
+            case -1246033885: // java.time.LocalTime
+            case 649475153: // java.time.MonthDay
+            case -682591005: // java.time.OffsetDateTime
+            case -1917484011: // java.time.OffsetTime
+            case 649503318: // java.time.Period
+            case -1062742510: // java.time.Year
+            case -537503858: // java.time.YearMonth
+            case 1505337278: // java.time.ZonedDateTime
+                return value -> {
+                    try {
+                        return type.getMethod("parse", CharSequence.class).invoke(null, value);
+                    } catch (Exception e) {
+                        throw I.quiet(e);
+                    }
+                };
             // case -89228377: // java.nio.file.attribute.FileTime
             // decoder = value -> FileTime.fromMillis(Long.valueOf(value));
             // encoder = (Encoder<FileTime>) value -> String.valueOf(value.toMillis());
@@ -1518,7 +1513,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
