@@ -208,9 +208,6 @@ public class I {
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    // /** The locale name resolver. */
-    // private static final Control control = Control.getControl(Control.FORMAT_CLASS);
-
     /** The daemon thread factory. */
     private static final ThreadFactory factory = run -> {
         Thread thread = new Thread(run);
