@@ -16,17 +16,23 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import kiss.model.Model;
 import kiss.model.Property;
 
 /**
- * @version 2017/04/21 10:16:23
+ * <p>
+ * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor nodes,
+ * but same object in sibling nodes will be acceptable.
+ * </p>
+ * 
+ * @version 2017/04/26 11:45:46
  */
-public class JSON {
+public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
 
     /** The root object. */
-    private final Object root;
+    private Object root;
 
     /**
      * Hide constructor.
@@ -529,5 +535,135 @@ public class JSON {
      */
     private Object expected(Object expected) {
         throw new IllegalStateException("Expected : ".concat(String.valueOf(expected)));
+    }
+
+    // ===========================================================
+    // Writer API
+    // ===========================================================
+    /** The charcter sequence for output as JSON. */
+    Appendable out;
+
+    /** The size of indent. */
+    int indent;
+
+    /**
+     * 
+     */
+    JSON(Appendable out) {
+        this.out = out;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void accept(Ⅲ<Model, Property, Object> context) {
+        if (!context.ⅱ.isTransient && context.ⅱ.name != null) {
+            try {
+                // non-first properties requires separator
+                if (index++ != 0) out.append(',');
+
+                // all properties need the properly indents
+                if (0 < indent) {
+                    indent();
+
+                    // property key (List node doesn't need key)
+                    if (context.ⅰ.type != List.class) {
+                        write(context.ⅱ.name, String.class);
+                        out.append(": ");
+                    }
+                }
+
+                // property value
+                if (context.ⅱ.isAttribute()) {
+                    write(I.transform(context.ⅲ, String.class), context.ⅱ.model.type);
+                } else {
+                    if (64 < indent) {
+                        throw new ClassCircularityError();
+                    }
+
+                    JSON walker = new JSON(out);
+                    walker.indent = indent + 1;
+                    walker.out.append(context.ⅱ.model.type == List.class ? '[' : '{');
+                    context.ⅱ.model.walk(context.ⅲ, walker);
+                    if (walker.index != 0) indent();
+                    out.append(context.ⅱ.model.type == List.class ? ']' : '}');
+                }
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Write JSON literal with quote.
+     * </p>
+     * 
+     * @param value A value.
+     * @param type A value type.
+     * @throws IOException
+     */
+    private void write(String value, Class type) throws IOException {
+        if (value == null) {
+            out.append("null");
+        } else {
+            boolean primitive = type.isPrimitive() && type != char.class;
+
+            if (!primitive) out.append('"');
+
+            for (int i = 0; i < value.length(); i++) {
+                char c = value.charAt(i);
+
+                switch (c) {
+                case '"':
+                    out.append("\\\"");
+                    break;
+
+                case '\\':
+                    out.append("\\\\");
+                    break;
+
+                case '\b':
+                    out.append("\\b");
+                    break;
+
+                case '\f':
+                    out.append("\\f");
+                    break;
+
+                case '\n':
+                    out.append("\\n");
+                    break;
+
+                case '\r':
+                    out.append("\\r");
+                    break;
+
+                case '\t':
+                    out.append("\\t");
+                    break;
+
+                default:
+                    out.append(c);
+                }
+            }
+            if (!primitive) out.append('"');
+        }
+    }
+
+    /**
+     * <p>
+     * Helper method to write line and indent.
+     * </p>
+     * 
+     * @throws IOException
+     */
+    private void indent() throws IOException {
+        out.append("\r\n");
+
+        for (int i = 0; i < indent; i++) {
+            out.append('\t');
+        }
     }
 }
