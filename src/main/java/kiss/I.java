@@ -32,7 +32,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
@@ -180,15 +179,6 @@ public class I {
     public static final Runnable NoOP = () -> {
         // no operation
     };
-
-    /**
-     * <p>
-     * The configuration of charcter encoding in Sinobu, default value is <em>UTF-8</em>. It is
-     * encouraged to use this encoding instead of platform default encoding when file I/O under the
-     * Sinobu environment.
-     * </p>
-     */
-    public static Charset $encoding = StandardCharsets.UTF_8;
 
     /** The configuration of root logger in Sinobu. */
     public static Logger $logger = Logger.getLogger("");
@@ -988,7 +978,7 @@ public class I {
             lock.readLock().lock();
 
             // Parse as JSON
-            return new JSON(new InputStreamReader(new ByteArrayInputStream(read(input)), $encoding));
+            return new JSON(new InputStreamReader(new ByteArrayInputStream(read(input)), StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw quiet(e);
         } finally {
@@ -2219,11 +2209,11 @@ public class I {
                 // doctype declaration (starts with <! )
                 // root element is html (starts with <html> )
                 if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>')) {
-                    return new XML(null, null).parse(bytes, $encoding);
+                    return new XML(null, null).parse(bytes, StandardCharsets.UTF_8);
                 }
             }
 
-            String value = new String(bytes, $encoding);
+            String value = new String(bytes, StandardCharsets.UTF_8);
 
             if (XMLiteral.matcher(value).matches()) {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
@@ -2264,7 +2254,7 @@ public class I {
                 input = out.toByteArray();
             } else if (input instanceof Readable) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                copy((Readable) input, new OutputStreamWriter(out, $encoding), true);
+                copy((Readable) input, new OutputStreamWriter(out, StandardCharsets.UTF_8), true);
                 input = out.toByteArray();
             }
         }

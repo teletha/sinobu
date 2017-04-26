@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 import kiss.model.Model;
 
@@ -33,7 +34,7 @@ public interface Configurable<Self> {
      */
     default Self restore() {
         try {
-            I.read(new BufferedReader(new InputStreamReader(new FileInputStream(new File(locate())), I.$encoding)), this);
+            I.read(new BufferedReader(new InputStreamReader(new FileInputStream(new File(locate())), StandardCharsets.UTF_8)), this);
         } catch (Throwable e) {
             // ignore error
         }
@@ -54,7 +55,7 @@ public interface Configurable<Self> {
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
             }
-            I.write(this, new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(locate())), I.$encoding)));
+            I.write(this, new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(locate())), StandardCharsets.UTF_8)));
         } catch (Throwable e) {
             // ignore error
         }

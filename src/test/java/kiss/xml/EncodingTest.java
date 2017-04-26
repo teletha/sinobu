@@ -10,6 +10,7 @@
 package kiss.xml;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ import kiss.XML;
 public class EncodingTest {
     @Test
     public void xmlEncoding() throws Exception {
-        XML xml = parse("<m><text>てすと</text></m>", I.$encoding.displayName());
+        XML xml = parse("<m><text>てすと</text></m>", StandardCharsets.UTF_8.displayName());
 
         assert xml.find("text").text().equals("てすと");
     }

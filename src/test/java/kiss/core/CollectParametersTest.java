@@ -37,7 +37,7 @@ public class CollectParametersTest {
 
     static {
         // dirty code to load I class at first
-        assert I.$encoding != null;
+        assert I.NoOP != null;
     }
 
     @Test

@@ -1,7 +1,0 @@
-#
-#Wed Apr 26 12:18:40 JST 2017
-org.eclipse.jdt.apt.aptEnabled=false
-org.eclipse.jdt.apt.genSrcDir=src/main/auto
-org.eclipse.jdt.apt.processorOptions/bee.task.AnnotationProcessor$ProjectInfo={\r\n\t"root"\: "F\:\\\\Development\\\\Sinobu",\r\n\t"sources"\: [\r\n\t\t"F\:\\\\Development\\\\Sinobu\\\\src\\\\main\\\\auto",\r\n\t\t"F\:\\\\Development\\\\Sinobu\\\\src\\\\main\\\\java",\r\n\t\t"F\:\\\\Development\\\\Sinobu\\\\src\\\\main\\\\resources"\r\n\t],\r\n\t"tests"\: [\r\n\t\t"F\:\\\\Development\\\\Sinobu\\\\src\\\\test\\\\java"\r\n\t]\r\n}
-eclipse.preferences.version=1
-org.eclipse.jdt.apt.reconcileEnabled=false

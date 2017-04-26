@@ -10,6 +10,7 @@
 package kiss.json;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class CuncurrentTest {
          */
         @Override
         public StringListProperty call() throws Exception {
-            return I.read(Files.newBufferedReader(testFile, I.$encoding), I.make(StringListProperty.class));
+            return I.read(Files.newBufferedReader(testFile, StandardCharsets.UTF_8), I.make(StringListProperty.class));
         }
     }
 
@@ -127,7 +128,7 @@ public class CuncurrentTest {
         @Override
         public void run() {
             try {
-                I.write(bean, Files.newBufferedWriter(testFile, I.$encoding));
+                I.write(bean, Files.newBufferedWriter(testFile, StandardCharsets.UTF_8));
             } catch (IOException e) {
                 throw I.quiet(e);
             }
