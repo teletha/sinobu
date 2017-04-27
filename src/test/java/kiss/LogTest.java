@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -29,20 +28,22 @@ public class LogTest {
 
     @BeforeClass
     public static void store() {
-        buffer.setFormatter(new Log());
+        buffer.setFormatter(new LogFormat());
 
-        handlers = I.logger.getHandlers();
+        handlers = I.log.getHandlers();
 
         for (int i = 0; i < handlers.length; i++) {
-            I.logger.removeHandler(handlers[i]);
+            I.log.removeHandler(handlers[i]);
         }
-        I.logger.addHandler(buffer);
-        I.logger.setLevel(Level.ALL);
+        I.log.addHandler(buffer);
+        I.log.setLevel(Level.ALL);
     }
 
     @AfterClass
     public static void restore() {
-        I.config(new ConsoleHandler());
+        for (Handler handler : handlers) {
+            I.log.addHandler(handler);
+        }
     }
 
     @Test
@@ -55,11 +56,11 @@ public class LogTest {
     }
 
     @Test
-    public void alert() throws Exception {
-        I.alert("message");
+    public void error() throws Exception {
+        I.error("message");
         assert buffer.is("message");
 
-        I.alert("param %s %s %s", 1, 2, 3);
+        I.error("param %s %s %s", 1, 2, 3);
         assert buffer.is("param 1 2 3");
     }
 

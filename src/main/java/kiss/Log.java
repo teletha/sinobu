@@ -9,47 +9,27 @@
  */
 package kiss;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
 
 /**
- * @version 2017/03/31 13:45:33
+ * @version 2017/04/27 18:28:48
  */
-class Log extends Formatter {
+class Log extends Logger {
+
+    /**
+     *
+     */
+    Log() {
+        super("", null);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String format(LogRecord record) {
-        StringBuilder builder = new StringBuilder();
-
-        String message = record.getMessage();
-        Object[] params = record.getParameters();
-
-        builder.append(I.format.get().format(new Date()))
-                .append("   ")
-                .append(params == null ? message : String.format(message, params))
-                .append(System.lineSeparator());
-
-        // detail error
-        if (params != null) {
-            int size = params.length;
-
-            if (size != 0) {
-                Object e = params[size - 1];
-
-                if (e instanceof Throwable) {
-                    StringWriter w = new StringWriter();
-                    ((Throwable) e).printStackTrace(new PrintWriter(w));
-                    builder.append(w.toString());
-                }
-            }
-        }
-        return builder.toString();
+    public void addHandler(Handler handler) throws SecurityException {
+        handler.setFormatter(new LogFormat());
+        super.addHandler(handler);
     }
-
 }

@@ -63,7 +63,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -167,7 +166,7 @@ public class I {
     };
 
     /** The configuration of root logger in Sinobu. */
-    static Logger logger = Logger.getLogger("");
+    public static final Logger log = new Log();
 
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
@@ -223,15 +222,10 @@ public class I {
 
     // initialization
     static {
-        // remove all built-in log handlers
-        for (Handler h : logger.getHandlers()) {
-            logger.removeHandler(h);
-        }
-
         // switch err temporaly to create console handler with System.out stream
         PrintStream error = System.err;
         System.setErr(System.out);
-        config(new ConsoleHandler());
+        log.addHandler(new ConsoleHandler());
         System.setErr(error);
 
         // built-in lifestyles
@@ -402,30 +396,6 @@ public class I {
 
     /**
      * <p>
-     * Write {@link Level#SEVERE} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void alert(String message) {
-        logger.logp(Level.SEVERE, "", "", message);
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#SEVERE} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void alert(String message, Object... params) {
-        logger.logp(Level.SEVERE, "", "", message, params);
-    }
-
-    /**
-     * <p>
      * Bundle all given funcitons into single function.
      * </p>
      * 
@@ -445,48 +415,18 @@ public class I {
      * @return A bundled function.
      */
     public static <F> F bundle(Collection<F> functions) {
-        return bundle(findNCA(functions, Class::isInterface), functions);
-    }
-
-    // /**
-    // * <p>
-    // * Find the nearest common ancestor class of the given classes.
-    // * </p>
-    // *
-    // * @param <X> A type.
-    // * @param classes A list of classes.
-    // * @return A nearest common ancestor class.
-    // */
-    // private static <X> Class findNCA(X... classes) {
-    // return classes.getClass().getComponentType();
-    // }
-
-    /**
-     * <p>
-     * Find the nearest common ancestor class of the given classes.
-     * </p>
-     * 
-     * @param <X> A type.
-     * @param items A list of items.
-     * @return A nearest common ancestor class.
-     */
-    private static <X> Class<X> findNCA(Collection<X> items, Predicate<Class> filter) {
-        if (filter == null) {
-            filter = accept();
-        }
-
         Set<Class> types = null;
-        Iterator<X> iterator = items.iterator();
+        Iterator<F> iterator = functions.iterator();
 
         if (iterator.hasNext()) {
             types = Model.collectTypes(iterator.next().getClass());
-            types.removeIf(filter.negate());
+            types.removeIf(v -> !v.isInterface());
 
             while (iterator.hasNext()) {
                 types.retainAll(Model.collectTypes(iterator.next().getClass()));
             }
         }
-        return types == null || types.isEmpty() ? null : types.iterator().next();
+        return bundle((Class<F>) (types == null || types.isEmpty() ? null : types.iterator().next()), functions);
     }
 
     /**
@@ -544,18 +484,6 @@ public class I {
             }
         }
         return collection;
-    }
-
-    /**
-     * <p>
-     * Rgister the specified log handler.
-     * </p>
-     * 
-     * @param handler
-     */
-    public static void config(Handler handler) {
-        handler.setFormatter(new Log());
-        logger.addHandler(handler);
     }
 
     /**
@@ -635,7 +563,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void debug(String message) {
-        logger.logp(Level.FINEST, "", "", message);
+        log.logp(Level.FINEST, "", "", message);
     }
 
     /**
@@ -647,7 +575,31 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void debug(String message, Object... params) {
-        logger.logp(Level.FINEST, "", "", message, params);
+        log.logp(Level.FINEST, "", "", message, params);
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#SEVERE} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void error(String message) {
+        log.logp(Level.SEVERE, "", "", message);
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#SEVERE} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void error(String message, Object... params) {
+        log.logp(Level.SEVERE, "", "", message, params);
     }
 
     /**
@@ -742,21 +694,45 @@ public class I {
         return (Ⅱ) extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
     }
 
+    /**
+     * <p>
+     * Convert {@link Runnable} to {@link Consumer}.
+     * </p>
+     * 
+     * @param lambda
+     * @return
+     */
     public static <P> Consumer<P> imitateConsumer(Runnable lambda) {
         return p -> {
             if (lambda != null) lambda.run();
         };
     }
 
-    public static <P, R> Function<P, R> imitateFunction(Consumer<P> function) {
+    /**
+     * <p>
+     * Convert {@link Consumer} to {@link Function}.
+     * </p>
+     * 
+     * @param lambda
+     * @return
+     */
+    public static <P, R> Function<P, R> imitateFunction(Consumer<P> lambda) {
         return p -> {
-            function.accept(p);
+            lambda.accept(p);
             return null;
         };
     }
 
-    public static <P, R> Function<P, R> imitateFunction(Supplier<R> function) {
-        return p -> function.get();
+    /**
+     * <p>
+     * Convert {@link Supplier} to {@link Function}.
+     * </p>
+     * 
+     * @param lambda
+     * @return
+     */
+    public static <P, R> Function<P, R> imitateFunction(Supplier<R> lambda) {
+        return p -> lambda.get();
     }
 
     /**
@@ -1079,7 +1055,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void log(String message) {
-        logger.logp(Level.INFO, "", "", message);
+        log.logp(Level.INFO, "", "", message);
     }
 
     /**
@@ -1091,7 +1067,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void log(String message, Object... params) {
-        logger.logp(Level.INFO, "", "", message, params);
+        log.logp(Level.INFO, "", "", message, params);
     }
 
     /**
@@ -1944,7 +1920,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void warn(String message) {
-        logger.logp(Level.WARNING, "", "", message);
+        log.logp(Level.WARNING, "", "", message);
     }
 
     /**
@@ -1956,7 +1932,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void warn(String message, Object... params) {
-        logger.logp(Level.WARNING, "", "", message, params);
+        log.logp(Level.WARNING, "", "", message, params);
     }
 
     /**
