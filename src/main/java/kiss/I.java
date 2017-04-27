@@ -426,60 +426,6 @@ public class I {
 
     /**
      * <p>
-     * Create the partial applied {@link Consumer}.
-     * </p>
-     *
-     * @param function A target function.
-     * @param param A parameter to apply.
-     * @return A partial applied function.
-     */
-    public static <Param> Runnable bind(Consumer<Param> function, Param param) {
-        return function == null ? NoOP : () -> function.accept(param);
-    }
-
-    /**
-     * <p>
-     * Create the partial applied {@link Consumer}.
-     * </p>
-     *
-     * @param function A target function.
-     * @param param A parameter to apply.
-     * @return A partial applied function.
-     */
-    public static <Param1, Param2> Runnable bind(BiConsumer<Param1, Param2> function, Param1 param1, Param2 param2) {
-        return function == null ? NoOP : () -> function.accept(param1, param2);
-    }
-
-    /**
-     * <p>
-     * Create the partial applied {@link Function}.
-     * </p>
-     *
-     * @param function A target function.
-     * @param param A parameter to apply.
-     * @return A partial applied function.
-     */
-    public static <Param, Return> Supplier<Return> bind(Function<Param, Return> function, Param param) {
-        Objects.requireNonNull(function);
-        return () -> function.apply(param);
-    }
-
-    /**
-     * <p>
-     * Create the partial applied {@link Function}.
-     * </p>
-     *
-     * @param function A target function.
-     * @param param A parameter to apply.
-     * @return A partial applied function.
-     */
-    public static <Param1, Param2, Return> Supplier<Return> bind(BiFunction<Param1, Param2, Return> function, Param1 param1, Param2 param2) {
-        Objects.requireNonNull(function);
-        return () -> function.apply(param1, param2);
-    }
-
-    /**
-     * <p>
      * Bundle all given funcitons into single function.
      * </p>
      * 
