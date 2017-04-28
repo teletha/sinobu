@@ -377,7 +377,7 @@ public class I {
      * Initialize environment.
      * </p>
      */
-    public I() {
+    private I() {
     }
 
     /**
