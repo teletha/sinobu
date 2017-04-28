@@ -127,7 +127,7 @@ import kiss.model.Property;
  * </dd>
  * </dl>
  * 
- * @version 2017/04/27 3:02:53
+ * @version 2017/04/29 8:38:39
  */
 public class I {
 
@@ -170,6 +170,19 @@ public class I {
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
+    /**
+     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
+     * separate format instances for each thread. If multiple threads access a format concurrently,
+     * it must be synchronized externally.
+     */
+    static final ThreadSpecific<SimpleDateFormat> format = new ThreadSpecific(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+
+    /** The document builder. */
+    static final DocumentBuilder dom;
+
+    /** The xpath evaluator. */
+    static final XPath xpath;
+
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
@@ -195,12 +208,6 @@ public class I {
     /** The serial task manager. */
     private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(factory);
 
-    /** The document builder. */
-    static final DocumentBuilder dom;
-
-    /** The xpath evaluator. */
-    static final XPath xpath;
-
     /** The list of primitive classes. (except for void type) */
     private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
             char.class, void.class};
@@ -209,15 +216,8 @@ public class I {
     private static final Class[] wrappers = {Boolean.class, Integer.class, Long.class, Float.class, Double.class, Byte.class, Short.class,
             Character.class, Void.class};
 
-    /**
-     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
-     * separate format instances for each thread. If multiple threads access a format concurrently,
-     * it must be synchronized externally.
-     */
-    static final ThreadSpecific<SimpleDateFormat> format = new ThreadSpecific(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-
     /** XML literal pattern. */
-    private static final Pattern XMLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
+    private static final Pattern xmlLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
 
     /** The submarine {@link Encoder} / {@link Decoder} support for java.nio.file.Path. */
     private static Method path;
@@ -776,7 +776,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(File input) {
-        return parseJSON(input);
+        return json((Object) input);
     }
 
     /**
@@ -791,7 +791,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(InputStream input) {
-        return parseJSON(input);
+        return json((Object) input);
     }
 
     /**
@@ -806,7 +806,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(Readable input) {
-        return parseJSON(input);
+        return json((Object) input);
     }
 
     /**
@@ -821,7 +821,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(URL input) {
-        return parseJSON(input);
+        return json((Object) input);
     }
 
     /**
@@ -836,7 +836,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(URI input) {
-        return parseJSON(input);
+        return json((Object) input);
     }
 
     /**
@@ -851,7 +851,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(CharSequence input) {
-        return parseJSON(input);
+        return json((Object) input);
     }
 
     /**
@@ -874,7 +874,7 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
-    private static JSON parseJSON(Object input) {
+    private static JSON json(Object input) {
         PushbackReader reader = null;
 
         try {
@@ -938,7 +938,7 @@ public class I {
             // archive, Sinobu automatically try to switch to other file system (e.g.
             // ZipFileSystem).
             Signal<String> names = file.isFile() ? I.signal(new ZipFile(file).entries()).map(ZipEntry::getName)
-                    : I.signal(scan(file, new ArrayList<>())).map(File::getPath).map(name -> name.substring(prefix));
+                    : I.signal(file, v -> v.flatArray(File::listFiles)).map(File::getPath).map(name -> name.substring(prefix));
 
             names.to(name -> {
                 // exclude non-class files
@@ -1020,26 +1020,6 @@ public class I {
     public static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Supplier<E> extension) {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
-    }
-
-    /**
-     * <p>
-     * Dig class files in directory.
-     * </p>
-     *
-     * @param file A current location.
-     * @param files A list of collected files.
-     * @return A list of collected files.
-     */
-    private static List<File> scan(File file, List<File> files) {
-        if (file.isDirectory()) {
-            for (File sub : file.listFiles()) {
-                scan(sub, files);
-            }
-        } else {
-            files.add(file);
-        }
-        return files;
     }
 
     /**
@@ -1722,7 +1702,7 @@ public class I {
      * @return
      */
     public static <T> Signal<T> signal(T root, UnaryOperator<Signal<T>> traverser) {
-        return walk(signal(root), traverser);
+        return signal(signal(root), traverser);
     }
 
     /**
@@ -1734,8 +1714,8 @@ public class I {
      * @param traverser A function to navigate from a node to its children.
      * @return
      */
-    private static <T> Signal<T> walk(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.merge(root.flatMap(e -> walk(traverser.apply(I.signal(e)), traverser)));
+    private static <T> Signal<T> signal(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
+        return root.merge(root.flatMap(e -> signal(traverser.apply(I.signal(e)), traverser)));
     }
 
     /**
@@ -1996,7 +1976,7 @@ public class I {
 
             String value = new String(bytes, StandardCharsets.UTF_8);
 
-            if (XMLiteral.matcher(value).matches()) {
+            if (xmlLiteral.matcher(value).matches()) {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
             } else {
