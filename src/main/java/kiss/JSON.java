@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -29,7 +28,7 @@ import kiss.model.Property;
  * 
  * @version 2017/04/26 11:45:46
  */
-public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
+public class JSON implements UsefulTriConsumer<Model, Property, Object> {
 
     /** The root object. */
     private Object root;
@@ -554,8 +553,8 @@ public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
      * {@inheritDoc}
      */
     @Override
-    public void accept(Ⅲ<Model, Property, Object> context) {
-        if (!context.ⅱ.isTransient && context.ⅱ.name != null) {
+    public void accept(Model model, Property property, Object value) {
+        if (!property.isTransient && property.name != null) {
             try {
                 // non-first properties requires separator
                 if (index++ != 0) out.append(',');
@@ -565,15 +564,15 @@ public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
                     indent();
 
                     // property key (List node doesn't need key)
-                    if (context.ⅰ.type != List.class) {
-                        write(context.ⅱ.name, String.class);
+                    if (model.type != List.class) {
+                        write(property.name, String.class);
                         out.append(": ");
                     }
                 }
 
                 // property value
-                if (context.ⅱ.isAttribute()) {
-                    write(I.transform(context.ⅲ, String.class), context.ⅱ.model.type);
+                if (property.isAttribute()) {
+                    write(I.transform(value, String.class), property.model.type);
                 } else {
                     if (64 < current) {
                         throw new ClassCircularityError();
@@ -581,10 +580,10 @@ public class JSON implements Consumer<Ⅲ<Model, Property, Object>> {
 
                     JSON walker = new JSON(out);
                     walker.current = current + 1;
-                    walker.out.append(context.ⅱ.model.type == List.class ? '[' : '{');
-                    context.ⅱ.model.walk(context.ⅲ, walker);
+                    walker.out.append(property.model.type == List.class ? '[' : '{');
+                    property.model.walk(value, walker);
                     if (walker.index != 0) indent();
-                    out.append(context.ⅱ.model.type == List.class ? ']' : '}');
+                    out.append(property.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
                 throw I.quiet(e);

@@ -37,14 +37,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
 import kiss.Table;
+import kiss.UsefulTriConsumer;
 import kiss.Variable;
-import kiss.Ⅲ;
 
 /**
  * <p>
@@ -304,11 +303,11 @@ public class Model<M> {
      * @param walker A property iterator. This value accepts <code>null</code>.
      * @see PropertyWalker#walk(Model, Property, Object)
      */
-    public void walk(M object, Consumer<Ⅲ<Model<M>, Property, Object>> walker) {
+    public void walk(M object, UsefulTriConsumer<Model<M>, Property, Object> walker) {
         // check whether this model is attribute or not.
         if (walker != null) {
             for (Property property : properties) {
-                walker.accept(I.pair(this, property, get(object, property)));
+                walker.accept(this, property, get(object, property));
             }
         }
     }

@@ -11,10 +11,8 @@ package kiss.model;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.function.Consumer;
 
-import kiss.I;
-import kiss.Ⅲ;
+import kiss.UsefulTriConsumer;
 
 /**
  * @version 2016/05/01 9:50:22
@@ -78,14 +76,14 @@ class ListModel<V> extends Model<List<V>> {
      * {@inheritDoc}
      */
     @Override
-    public void walk(List<V> object, Consumer<Ⅲ<Model<List<V>>, Property, Object>> walker) {
+    public void walk(List<V> object, UsefulTriConsumer<Model<List<V>>, Property, Object> walker) {
         if (object != null && walker != null) {
             // We must use extended for loop because the sequential access is not efficient for some
             // List implementation.
             int counter = 0;
 
             for (V value : object) {
-                walker.accept(I.pair(this, new Property(itemModel, String.valueOf(counter++)), value));
+                walker.accept(this, new Property(itemModel, String.valueOf(counter++)), value);
             }
         }
     }

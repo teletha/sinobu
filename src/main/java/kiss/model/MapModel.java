@@ -12,10 +12,9 @@ package kiss.model;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 import kiss.I;
-import kiss.Ⅲ;
+import kiss.UsefulTriConsumer;
 
 /**
  * @version 2016/09/09 16:51:16
@@ -81,13 +80,13 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      * {@inheritDoc}
      */
     @Override
-    public void walk(Map<K, V> object, Consumer<Ⅲ<Model<Map<K, V>>, Property, Object>> walker) {
+    public void walk(Map<K, V> object, UsefulTriConsumer<Model<Map<K, V>>, Property, Object> walker) {
         if (!key.attribute) {
             super.walk(object, walker);
         } else {
             if (object != null) {
                 for (Entry<K, V> entry : object.entrySet()) {
-                    walker.accept(I.pair(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue()));
+                    walker.accept(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue());
                 }
             }
         }
