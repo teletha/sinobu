@@ -231,7 +231,7 @@ public class I {
 
         try {
             LogManager.getLogManager()
-                    .readConfiguration(new ByteArrayInputStream("java.util.logging.ConsoleHandler.formatter=kiss.Log\njava.util.logging.FileHandler.formatter=kiss.Log"
+                    .readConfiguration(new ByteArrayInputStream("handlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=kiss.Log\njava.util.logging.FileHandler.formatter=kiss.Log"
                             .getBytes()));
 
             // configure dom builder
@@ -256,14 +256,11 @@ public class I {
             if (type.isEnum()) {
                 return value -> ((Enum) value).name();
             }
-
             switch (type.getName().hashCode()) {
             case -530663260: // java.lang.Class
                 return value -> ((Class) value).getName();
             case 65575278: // java.util.Date
-                // return LocalDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC).toString();
                 return format.get()::format;
-
             default:
                 return String::valueOf;
             }
@@ -324,7 +321,6 @@ public class I {
             case -1405464277: // java.math.BigDecimal
                 return BigDecimal::new;
             case 65575278: // java.util.Date
-                // return Date.from(LocalDateTime.parse(value).toInstant(ZoneOffset.UTC));
                 return value -> {
                     try {
                         return format.get().parse(value);
@@ -1408,7 +1404,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quietly(throwable);
+            return I.<RuntimeException>quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1482,6 +1478,9 @@ public class I {
     public static <P, R> Function<P, R> quiet(UsefulFunction<P, R> lambda) {
         return lambda;
     }
+
+    /** XML literal pattern. */
+    private static final Pattern XMLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
 
     /**
      * <p>
@@ -2072,9 +2071,6 @@ public class I {
     public static XML xml(CharSequence source) {
         return I.xml(null, source);
     }
-
-    /** XML literal pattern. */
-    private static final Pattern XMLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
 
     /**
      * <p>
