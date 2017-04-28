@@ -216,6 +216,9 @@ public class I {
      */
     static final ThreadSpecific<SimpleDateFormat> format = new ThreadSpecific(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
 
+    /** XML literal pattern. */
+    private static final Pattern XMLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
+
     /** The submarine {@link Encoder} / {@link Decoder} support for java.nio.file.Path. */
     private static Method path;
 
@@ -1343,6 +1346,78 @@ public class I {
 
     /**
      * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static Runnable quiet(UsefulRunnable lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <P> Consumer<P> quiet(UsefulConsumer<P> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <P1, P2> BiConsumer<P1, P2> quiet(UsefulBiConsumer<P1, P2> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <R> Supplier<R> quiet(UsefulSupplier<R> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <P, R> Function<P, R> quiet(UsefulFunction<P, R> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
+     * Ease the checked exception on lambda.
+     * </p>
+     * 
+     * @param lambda A checked lambda.
+     * @return A unchecked lambda.
+     */
+    public static <P1, P2, R> BiFunction<P1, P2, R> quiet(UsefulBiFunction<P1, P2, R> lambda) {
+        return lambda;
+    }
+
+    /**
+     * <p>
      * Close the specified object quietly if it is {@link AutoCloseable}. Equivalent to
      * {@link AutoCloseable#close()}, except any exceptions will be ignored. This is typically used
      * in finally block like the following.
@@ -1404,7 +1479,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException>quiet(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1421,81 +1496,6 @@ public class I {
 
     /**
      * <p>
-     * Ease the checked exception on lambda.
-     * </p>
-     * 
-     * @param lambda A checked lambda.
-     * @return A unchecked lambda.
-     */
-    public static Runnable quiet(UsefulRunnable lambda) {
-        return lambda;
-    }
-
-    /**
-     * <p>
-     * Ease the checked exception on lambda.
-     * </p>
-     * 
-     * @param lambda A checked lambda.
-     * @return A unchecked lambda.
-     */
-    public static <P> Consumer<P> quiet(UsefulConsumer<P> lambda) {
-        return lambda;
-    }
-
-    /**
-     * <p>
-     * Ease the checked exception on lambda.
-     * </p>
-     * 
-     * @param lambda A checked lambda.
-     * @return A unchecked lambda.
-     */
-    public static <P1, P2> BiConsumer<P1, P2> quiet(UsefulBiConsumer<P1, P2> lambda) {
-        return lambda;
-    }
-
-    /**
-     * <p>
-     * Ease the checked exception on lambda.
-     * </p>
-     * 
-     * @param lambda A checked lambda.
-     * @return A unchecked lambda.
-     */
-    public static <R> Supplier<R> quiet(UsefulSupplier<R> lambda) {
-        return lambda;
-    }
-
-    /**
-     * <p>
-     * Ease the checked exception on lambda.
-     * </p>
-     * 
-     * @param lambda A checked lambda.
-     * @return A unchecked lambda.
-     */
-    public static <P, R> Function<P, R> quiet(UsefulFunction<P, R> lambda) {
-        return lambda;
-    }
-
-    /** XML literal pattern. */
-    private static final Pattern XMLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
-
-    /**
-     * <p>
-     * Ease the checked exception on lambda.
-     * </p>
-     * 
-     * @param lambda A checked lambda.
-     * @return A unchecked lambda.
-     */
-    public static <P1, P2, R> BiFunction<P1, P2, R> quiet(UsefulBiFunction<P1, P2, R> lambda) {
-        return lambda;
-    }
-
-    /**
-     * <p>
      * Deceive complier that the specified checked exception is unchecked exception.
      * </p>
      *
@@ -1504,7 +1504,7 @@ public class I {
      * @return A runtime error.
      * @throws T Dummy error to deceive compiler.
      */
-    private static <T extends Throwable> T quietly(Throwable throwable) throws T {
+    private static <T extends Throwable> T quiet(Throwable throwable) throws T {
         throw (T) throwable;
     }
 

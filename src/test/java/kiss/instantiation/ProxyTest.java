@@ -14,7 +14,7 @@ import org.junit.Test;
 import kiss.I;
 
 /**
- * @version 2017/03/04 17:53:23
+ * @version 2017/04/28 23:59:32
  */
 public class ProxyTest {
 
@@ -30,13 +30,21 @@ public class ProxyTest {
         assert proxy.text().equals("OK");
     }
 
+    @Test
     public void proxyPackagePrivate() {
-        PackagePrivate proxy = I.make(PackagePrivate.class, (instance, method, args) -> "ERROR");
+        PackagePrivate proxy = I.make(PackagePrivate.class, (instance, method, args) -> "OK");
         assert proxy.text().equals("OK");
     }
 
+    @Test
     public void proxyPrivate() {
         Private proxy = I.make(Private.class, (instance, method, args) -> "OK");
+        assert proxy.text().equals("OK");
+    }
+
+    @Test
+    public void proxyDefault() {
+        Default proxy = I.make(Default.class, (instance, method, args) -> "OK");
         assert proxy.text().equals("OK");
     }
 
@@ -66,5 +74,14 @@ public class ProxyTest {
      */
     private static interface Private {
         String text();
+    }
+
+    /**
+     * @version 2017/04/28 23:59:39
+     */
+    public static interface Default {
+        default String text() {
+            return "default";
+        }
     }
 }
