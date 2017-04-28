@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.io.PushbackReader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationHandler;
@@ -62,8 +61,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
@@ -166,7 +165,7 @@ public class I {
     };
 
     /** The configuration of root logger in Sinobu. */
-    public static final Logger log = new Log();
+    public static final Logger log = Logger.getLogger("");
 
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
@@ -222,12 +221,6 @@ public class I {
 
     // initialization
     static {
-        // switch err temporaly to create console handler with System.out stream
-        PrintStream error = System.err;
-        System.setErr(System.out);
-        log.addHandler(new ConsoleHandler());
-        System.setErr(error);
-
         // built-in lifestyles
         lifestyles.put(List.class, ArrayList::new);
         lifestyles.put(Map.class, HashMap::new);
@@ -237,6 +230,10 @@ public class I {
         lifestyles.put(SimpleDateFormat.class, format);
 
         try {
+            LogManager.getLogManager()
+                    .readConfiguration(new ByteArrayInputStream("java.util.logging.ConsoleHandler.formatter=kiss.Log\njava.util.logging.FileHandler.formatter=kiss.Log"
+                            .getBytes()));
+
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -380,7 +377,7 @@ public class I {
      * Initialize environment.
      * </p>
      */
-    private I() {
+    public I() {
     }
 
     /**
@@ -1411,7 +1408,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quietly(throwable);
+            return I.<RuntimeException> quietly(throwable);
         }
 
         if (object instanceof AutoCloseable) {

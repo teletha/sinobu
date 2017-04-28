@@ -28,7 +28,7 @@ public class LogTest {
 
     @BeforeClass
     public static void store() {
-        buffer.setFormatter(new LogFormat());
+        buffer.setFormatter(new Log());
 
         handlers = I.log.getHandlers();
 
