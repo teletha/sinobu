@@ -16,16 +16,9 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
 /**
- * @version 2017/03/31 13:45:33
+ * @version 2017/04/28 15:50:22
  */
 public class Log extends Formatter {
-
-    /**
-     * 
-     */
-    public Log() {
-        super();
-    }
 
     /**
      * {@inheritDoc}
