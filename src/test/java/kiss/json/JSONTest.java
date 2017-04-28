@@ -38,7 +38,7 @@ import kiss.sample.bean.TransientBean;
 import kiss.sample.bean.VariablePropertyAtField;
 
 /**
- * @version 2017/04/19 11:58:32
+ * @version 2017/04/28 21:22:40
  */
 public class JSONTest {
 
@@ -310,7 +310,7 @@ public class JSONTest {
         "{",
         "  'bigDecimal': null,",
         "  'bigInteger': '1234567890987654321',",
-        "  'date': '1970-01-01T09:00:00',",
+        "  'date': '1970-01-01T09:00:00.000',",
         "  'file': null,",
         "  'schoolEnum': null,",
         "  'someClass': 'java.lang.String',",

@@ -214,7 +214,7 @@ public class I {
      * separate format instances for each thread. If multiple threads access a format concurrently,
      * it must be synchronized externally.
      */
-    static final ThreadSpecific<SimpleDateFormat> format = new ThreadSpecific(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
+    static final ThreadSpecific<SimpleDateFormat> format = new ThreadSpecific(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
 
     /** The submarine {@link Encoder} / {@link Decoder} support for java.nio.file.Path. */
     private static Method path;

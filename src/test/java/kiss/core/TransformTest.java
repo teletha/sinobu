@@ -36,7 +36,7 @@ import org.junit.Test;
 import kiss.I;
 
 /**
- * @version 2016/05/04 1:17:02
+ * @version 2017/04/28 21:22:33
  */
 public class TransformTest {
 
@@ -89,8 +89,8 @@ public class TransformTest {
 
     @Test
     public void date() throws Exception {
-        assert I.transform(new Date(0), String.class).equals("1970-01-01T09:00:00");
-        assert I.transform("1970-01-01T09:00:00", Date.class).equals(new Date(0));
+        assert I.transform(new Date(0), String.class).equals("1970-01-01T09:00:00.000");
+        assert I.transform("1970-01-01T09:00:00.000", Date.class).equals(new Date(0));
     }
 
     @Test
