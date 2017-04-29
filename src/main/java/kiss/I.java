@@ -61,9 +61,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
 import java.util.zip.ZipEntry;
@@ -164,9 +161,6 @@ public class I {
     public static final Runnable NoOP = () -> {
     };
 
-    /** The configuration of root logger in Sinobu. */
-    public static final Logger log = Logger.getLogger("");
-
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
@@ -233,10 +227,6 @@ public class I {
         lifestyles.put(SimpleDateFormat.class, format);
 
         try {
-            LogManager.getLogManager()
-                    .readConfiguration(new ByteArrayInputStream("handlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=kiss.Log\njava.util.logging.FileHandler.formatter=kiss.Log"
-                            .getBytes()));
-
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -548,54 +538,6 @@ public class I {
                 quiet(output);
             }
         }
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#FINEST} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void debug(String message) {
-        log.logp(Level.FINEST, "", "", message);
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#FINEST} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void debug(String message, Object... params) {
-        log.logp(Level.FINEST, "", "", message, params);
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#SEVERE} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void error(String message) {
-        log.logp(Level.SEVERE, "", "", message);
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#SEVERE} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void error(String message, Object... params) {
-        log.logp(Level.SEVERE, "", "", message, params);
     }
 
     /**
@@ -1024,30 +966,6 @@ public class I {
 
     /**
      * <p>
-     * Write {@link Level#INFO} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void log(String message) {
-        log.logp(Level.INFO, "", "", message);
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#INFO} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void log(String message, Object... params) {
-        log.logp(Level.INFO, "", "", message, params);
-    }
-
-    /**
-     * <p>
      * Returns a new or cached instance of the model class.
      * </p>
      * <p>
@@ -1339,7 +1257,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quiet(throwable);
+            return I.<RuntimeException> quiet(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1765,30 +1683,6 @@ public class I {
         } catch (ClassNotFoundException e) {
             throw quiet(e);
         }
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#WARNING} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void warn(String message) {
-        log.logp(Level.WARNING, "", "", message);
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#WARNING} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void warn(String message, Object... params) {
-        log.logp(Level.WARNING, "", "", message, params);
     }
 
     /**
