@@ -848,6 +848,10 @@ public class I {
         return collect(ArrayList.class, items);
     }
 
+    public static <E extends Extensible> Disposable loadAll(Class<E> path) {
+        return load(path, false);
+    }
+
     /**
      * <p>
      * Load {@link Extensible} typs from the path that the specified class indicates to. If same
@@ -861,7 +865,7 @@ public class I {
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    public static <E extends Extensible> Disposable load(Class path, boolean filter) {
+    public static <E extends Extensible> Disposable load(Class<E> path, boolean filter) {
         Disposable disposer = Disposable.empty();
         String pattern = filter ? path.getPackage().getName() : "";
 
@@ -1257,7 +1261,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quiet(throwable);
+            return I.<RuntimeException>quiet(throwable);
         }
 
         if (object instanceof AutoCloseable) {

@@ -29,7 +29,7 @@ public class ExtensibleTest {
 
     @BeforeClass
     public static void init() {
-        I.load(ExtensibleTest.class, true);
+        I.load(EPInterface.class, true);
     }
 
     @Test

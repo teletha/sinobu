@@ -24,7 +24,7 @@ public class CodecUpdateTest {
 
     @Test
     public void loadAndUnload() throws Exception {
-        Disposable unloader = I.load(CodecUpdateTest.class, true);
+        Disposable unloader = I.load(UserDefinedCodec.class, true);
 
         Model<Integer> model = Model.of(Integer.class);
         assert model.encode(10).equals("UserDefinedCodec");
@@ -39,7 +39,6 @@ public class CodecUpdateTest {
     /**
      * @version 2016/06/01 17:12:10
      */
-    @SuppressWarnings("unused")
     private static class UserDefinedCodec implements Encoder<Integer>, Decoder<Integer> {
 
         /**
