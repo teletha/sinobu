@@ -37,6 +37,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -63,7 +64,6 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -179,9 +179,6 @@ public class I {
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
-
-    /** The extension file cache to check duplication. */
-    private static final Set<String> extensionArea = new HashSet<>();
 
     /** The definitions for extensions. */
     private static final Map extensions = new HashMap();
@@ -848,109 +845,117 @@ public class I {
         return collect(ArrayList.class, items);
     }
 
-    public static <E extends Extensible> Disposable loadAll(Class<E> path) {
-        return load(path, false);
-    }
-
     /**
      * <p>
      * Load {@link Extensible} typs from the path that the specified class indicates to. If same
      * path and patten is already called , that will do nothing at all.
      * </p>
      *
-     * @param path A path to load.
+     * @param loader A loading class to indicate source.
      * @return The unloader.
      * @see {@link Extensible}
      * @see #find(Class)
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    public static <E extends Extensible> Disposable load(Class<E> path, boolean filter) {
-        Disposable disposer = Disposable.empty();
-        String pattern = filter ? path.getPackage().getName() : "";
+    public static <E extends Extensible> Disposable load(Class<E> loader, boolean filter) {
+        List<String> classes = Collections.EMPTY_LIST;
 
         try {
-            File file = new File(path.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsoluteFile();
+            // read from pre-scanned index
+            List<List<String>> list = I.make((Class<List>) Class.forName("kiss.Index"));
+            String name = loader.getName();
 
-            // exclude registered file or directory
-            if (!extensionArea.add(file + pattern)) {
-                return disposer;
+            for (List<String> names : list) {
+                if (names.contains(name)) {
+                    classes = names;
+                    break;
+                }
             }
-            disposer.add(() -> extensionArea.remove(file + pattern));
+        } catch (ClassNotFoundException n) {
+            // scan at runtime
+            try {
+                Signal<String> names;
+                File file = new File(loader.getProtectionDomain().getCodeSource().getLocation().toURI());
 
-            int prefix = file.getPath().length() + 1;
-
-            // At first, we must scan the specified directory or archive. If the module file is
-            // archive, Sinobu automatically try to switch to other file system (e.g.
-            // ZipFileSystem).
-            Signal<String> names = file.isFile() ? I.signal(new ZipFile(file).entries()).map(ZipEntry::getName)
-                    : I.signal(file, v -> v.flatArray(File::listFiles)).map(File::getPath).map(name -> name.substring(prefix));
-
-            names.to(name -> {
-                // exclude non-class files
-                if (!name.endsWith(".class")) {
-                    return;
+                if (file.isFile()) {
+                    // jar file
+                    names = I.signal(new ZipFile(file).entries()).map(entry -> entry.getName().replace('/', '.'));
+                } else {
+                    int prefix = file.getPath().length() + 1;
+                    names = I.signal(file, v -> v.flatArray(File::listFiles))
+                            .map(File::getPath)
+                            .map(name -> name.substring(prefix).replace(File.separatorChar, '.'));
                 }
+                classes = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6)).toList();
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }
 
-                name = name.substring(0, name.length() - 6).replace('/', '.').replace(File.separatorChar, '.');
+        Disposable disposer = Disposable.empty();
+        String pattern = filter ? loader.getPackage().getName() : "";
 
-                // exclude out of the specified package
-                if (!name.startsWith(pattern)) {
-                    return;
-                }
+        for (String name : classes) {
+            // exclude out of the specified package
+            if (!name.startsWith(pattern)) {
+                continue;
+            }
 
-                Class extension = I.type(name);
+            Class extension = I.type(name);
 
-                // fast check : exclude non-initializable class
-                if (extension.isEnum() || extension.isAnonymousClass() || Modifier.isAbstract(extension.getModifiers())) {
-                    return;
-                }
+            // fast check : exclude non-initializable class
+            if (extension.isEnum() || extension.isAnonymousClass() || Modifier.isAbstract(extension.getModifiers())) {
+                continue;
+            }
 
-                // slow check : exclude non-extensible class
-                if (!Extensible.class.isAssignableFrom(extension)) {
-                    return;
-                }
+            // slow check : exclude non-extensible class
+            if (!Extensible.class.isAssignableFrom(extension)) {
+                continue;
+            }
 
-                // search and collect information for all extension points
-                for (Class<E> extensionPoint : Model.collectTypes(extension)) {
-                    if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
-                        // register as new extension
-                        findBy(extensionPoint).ⅰ.add(extension);
-                        disposer.add(() -> findBy(extensionPoint).ⅰ.remove(extension));
+            // search and collect information for all extension points
+            for (Class<E> extensionPoint : Model.collectTypes(extension)) {
+                if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
+                    // register as new extension
+                    Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> found = findBy(extensionPoint);
 
-                        // register extension key
-                        java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
+                    if (found.ⅰ.contains(extension)) {
+                        continue;
+                    }
 
-                        if (params.length != 0 && params[0] != Object.class) {
-                            Class clazz = (Class) params[0];
+                    found.ⅰ.add(extension);
+                    disposer.add(() -> found.ⅰ.remove(extension));
 
-                            // register extension by key
-                            disposer.add(load(extensionPoint, clazz, () -> (E) I.make(extension)));
+                    // register extension key
+                    java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
 
-                            // The user has registered a newly custom lifestyle, so we
-                            // should update lifestyle for this extension key class.
-                            // Normally, when we update some data, it is desirable to store
-                            // the previous data to be able to restore it later.
-                            // But, in this case, the contextual sensitive instance that
-                            // the lifestyle emits changes twice on "load" and "unload"
-                            // event from the point of view of the user.
-                            // So the previous data becomes all but meaningless for a
-                            // cacheable lifestyles (e.g. Singleton and ThreadSpecifiec).
-                            // Therefore we we completely refresh lifestyles associated with
-                            // this extension key class.
-                            if (extensionPoint == Lifestyle.class) {
-                                lifestyles.remove(clazz);
-                                disposer.add(() -> lifestyles.remove(clazz));
-                            }
+                    if (params.length != 0 && params[0] != Object.class) {
+                        Class clazz = (Class) params[0];
+
+                        // register extension by key
+                        disposer.add(load(extensionPoint, clazz, () -> (E) I.make(extension)));
+
+                        // The user has registered a newly custom lifestyle, so we
+                        // should update lifestyle for this extension key class.
+                        // Normally, when we update some data, it is desirable to store
+                        // the previous data to be able to restore it later.
+                        // But, in this case, the contextual sensitive instance that
+                        // the lifestyle emits changes twice on "load" and "unload"
+                        // event from the point of view of the user.
+                        // So the previous data becomes all but meaningless for a
+                        // cacheable lifestyles (e.g. Singleton and ThreadSpecifiec).
+                        // Therefore we we completely refresh lifestyles associated with
+                        // this extension key class.
+                        if (extensionPoint == Lifestyle.class) {
+                            lifestyles.remove(clazz);
+                            disposer.add(() -> lifestyles.remove(clazz));
                         }
                     }
                 }
-            });
-
-            return disposer;
-        } catch (Exception e) {
-            throw I.quiet(e);
+            }
         }
+        return disposer;
     }
 
     /**
