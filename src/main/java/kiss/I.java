@@ -124,7 +124,7 @@ import kiss.model.Property;
  * </dd>
  * </dl>
  * 
- * @version 2017/04/29 8:38:39
+ * @version 2017/05/01 1:56:11
  */
 public class I {
 
@@ -180,8 +180,8 @@ public class I {
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
-    /** The definitions for extensions. */
-    private static final Map extensions = new HashMap();
+    /** The definitions of extensions. */
+    private static final Map<Class, Ⅱ> extensions = new HashMap<>();
 
     /** The lock for configurations. */
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -626,7 +626,7 @@ public class I {
      * @return A extension definition.
      */
     private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
-        return (Ⅱ) extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
+        return extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
     }
 
     /**
@@ -847,28 +847,34 @@ public class I {
 
     /**
      * <p>
-     * Load {@link Extensible} typs from the path that the specified class indicates to. If same
-     * path and patten is already called , that will do nothing at all.
+     * Load all {@link Extensible} typs from the specified source.
+     * </p>
+     * <p>
+     * You can define the special class "kiss.Index" which defines pre-scanned class names.
+     * "kiss.Index" must implement List<List<String>>.
      * </p>
      *
-     * @param loader A loading class to indicate source.
+     * @param source A source class to indicate the class set which are loaded.
      * @return The unloader.
      * @see {@link Extensible}
      * @see #find(Class)
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    public static <E extends Extensible> Disposable load(Class<E> loader, boolean filter) {
-        List<String> classes = Collections.EMPTY_LIST;
+    public static <E extends Extensible> Disposable load(Class<E> source, boolean filter) {
+        // =======================================
+        // List up class names
+        // =======================================
+        List<String> classNames = Collections.EMPTY_LIST;
 
         try {
-            // read from pre-scanned index
+            // read from pre-scanned index class
             List<List<String>> list = I.make((Class<List>) Class.forName("kiss.Index"));
-            String name = loader.getName();
+            String name = source.getName();
 
             for (List<String> names : list) {
                 if (names.contains(name)) {
-                    classes = names;
+                    classNames = names;
                     break;
                 }
             }
@@ -876,27 +882,31 @@ public class I {
             // scan at runtime
             try {
                 Signal<String> names;
-                File file = new File(loader.getProtectionDomain().getCodeSource().getLocation().toURI());
+                File file = new File(source.getProtectionDomain().getCodeSource().getLocation().toURI());
 
                 if (file.isFile()) {
                     // jar file
                     names = I.signal(new ZipFile(file).entries()).map(entry -> entry.getName().replace('/', '.'));
                 } else {
+                    // class directory
                     int prefix = file.getPath().length() + 1;
                     names = I.signal(file, v -> v.flatArray(File::listFiles))
                             .map(File::getPath)
                             .map(name -> name.substring(prefix).replace(File.separatorChar, '.'));
                 }
-                classes = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6)).toList();
+                classNames = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6)).toList();
             } catch (Exception e) {
                 throw I.quiet(e);
             }
         }
 
+        // =======================================
+        // Register class as extension
+        // =======================================
         Disposable disposer = Disposable.empty();
-        String pattern = filter ? loader.getPackage().getName() : "";
+        String pattern = filter ? source.getPackage().getName() : "";
 
-        for (String name : classes) {
+        for (String name : classNames) {
             // exclude out of the specified package
             if (!name.startsWith(pattern)) {
                 continue;
