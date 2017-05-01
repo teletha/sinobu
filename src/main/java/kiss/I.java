@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -133,22 +134,23 @@ public class I {
     // annotate accept alert allow approve associate avoid attend affect agree acquire add afford
     // bind bundle
     // create class copy collect config convert
-    // delete define deny describe detach dispatch drive drop dub depend die disrupt draw
-    // edit error ensure examine exclude exist embed enhance enter evolve exchange expect
-    // find
-    // get gain give go grant glance gaze
+    // delete define deny describe detach dispatch drive drop dub depend die disrupt draw decline
+    // edit error ensure examine exclude exist embed enhance enter evolve exchange expect extend
+    // enregister
+    // find fetch
+    // get gain give go grant glance gaze grab
     // hash have handle hold halt hang hasten
-    // i18n include infer improve indicate inspire integrate introduce invite identify
+    // i18n include infer improve indicate inspire integrate introduce invite identify interpret
     // json join
     // kick know knock keep knot knit
     // locate load log launch lead leave live look list
     // make mock map
     // name note near notice narrow neglect
-    // observe opt organize overcome offer order
-    // parse pair
+    // observe opt organize overcome offer order open obtain
+    // parse pair plug
     // quiet
-    // read refer reject recover retry run
-    // save staple schedule set signal
+    // read refer reject recover retry run register
+    // save staple schedule set signal scrape scan
     // transform type take tap task talk transport turn traverse transmit trigger think
     // unload use unite undo
     // vanish view value vouch vary vindicate
@@ -851,7 +853,7 @@ public class I {
      * </p>
      * <p>
      * You can define the special class "kiss.Index" which defines pre-scanned class names.
-     * "kiss.Index" must implement List<List<String>>.
+     * "kiss.Index" must implement List<Set<String>>.
      * </p>
      *
      * @param source A source class to indicate the class set which are loaded.
@@ -863,40 +865,37 @@ public class I {
      */
     public static <E extends Extensible> Disposable load(Class<E> source, boolean filter) {
         // =======================================
-        // List up class names
+        // List up extension class names
         // =======================================
-        List<String> classNames = Collections.EMPTY_LIST;
+        Set<String> candidates = Collections.EMPTY_SET;
 
         try {
-            // read from pre-scanned index class
-            List<List<String>> list = I.make((Class<List>) Class.forName("kiss.Index"));
+            // Scan at runtime
+            Signal<String> names;
+            File file = new File(source.getProtectionDomain().getCodeSource().getLocation().toURI());
+
+            if (file.isFile()) {
+                // from jar file
+                names = I.signal(new ZipFile(file).entries()).map(entry -> entry.getName().replace('/', '.'));
+            } else {
+                // from class directory
+                int prefix = file.getPath().length() + 1;
+                names = I.signal(file, entry -> entry.flatArray(File::listFiles))
+                        .map(entry -> entry.getPath().substring(prefix).replace(File.separatorChar, '.'));
+            }
+            candidates = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6)).toSet();
+        } catch (Throwable e) {
+            // Fallback for Android or Booton.
+            // Try to read from pre-scanned index class.
+            // If there is no "kiss.Index" class, Sinobu will throw ClassNotFoundException.
+            List<Set<String>> list = (List) I.make(type("kiss.Index"));
             String name = source.getName();
 
-            for (List<String> names : list) {
+            for (Set<String> names : list) {
                 if (names.contains(name)) {
-                    classNames = names;
+                    candidates = names;
                     break;
                 }
-            }
-        } catch (ClassNotFoundException n) {
-            // scan at runtime
-            try {
-                Signal<String> names;
-                File file = new File(source.getProtectionDomain().getCodeSource().getLocation().toURI());
-
-                if (file.isFile()) {
-                    // jar file
-                    names = I.signal(new ZipFile(file).entries()).map(entry -> entry.getName().replace('/', '.'));
-                } else {
-                    // class directory
-                    int prefix = file.getPath().length() + 1;
-                    names = I.signal(file, v -> v.flatArray(File::listFiles))
-                            .map(File::getPath)
-                            .map(name -> name.substring(prefix).replace(File.separatorChar, '.'));
-                }
-                classNames = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6)).toList();
-            } catch (Exception e) {
-                throw I.quiet(e);
             }
         }
 
@@ -906,7 +905,7 @@ public class I {
         Disposable disposer = Disposable.empty();
         String pattern = filter ? source.getPackage().getName() : "";
 
-        for (String name : classNames) {
+        root: for (String name : candidates) {
             // exclude out of the specified package
             if (!name.startsWith(pattern)) {
                 continue;
@@ -928,17 +927,19 @@ public class I {
             for (Class<E> extensionPoint : Model.collectTypes(extension)) {
                 if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                     // register as new extension
-                    Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> found = findBy(extensionPoint);
+                    Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> extensions = findBy(extensionPoint);
 
-                    if (found.ⅰ.contains(extension)) {
-                        continue;
+                    // exclude duplication
+                    if (extensions.ⅰ.contains(extension)) {
+                        continue root;
                     }
 
-                    found.ⅰ.add(extension);
-                    disposer.add(() -> found.ⅰ.remove(extension));
+                    // register extension
+                    extensions.ⅰ.add(extension);
+                    disposer.add(() -> extensions.ⅰ.remove(extension));
 
                     // register extension key
-                    java.lang.reflect.Type[] params = Model.collectParameters(extension, extensionPoint);
+                    Type[] params = Model.collectParameters(extension, extensionPoint);
 
                     if (params.length != 0 && params[0] != Object.class) {
                         Class clazz = (Class) params[0];
