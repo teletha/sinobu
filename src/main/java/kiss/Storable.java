@@ -23,7 +23,7 @@ import kiss.model.Model;
 /**
  * @version 2017/04/02 21:44:44
  */
-public interface Configurable<Self> {
+public interface Storable<Self> {
 
     /**
      * <p>

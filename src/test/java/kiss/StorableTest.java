@@ -18,9 +18,9 @@ import org.junit.Test;
 import filer.Filer;
 
 /**
- * @version 2017/03/29 10:58:29
+ * @version 2017/05/02 18:25:05
  */
-public class ConfigurableTest {
+public class StorableTest {
 
     private Path temp = Filer.locateTemporary();
 
@@ -79,7 +79,7 @@ public class ConfigurableTest {
     /**
      * @version 2017/03/29 10:49:49
      */
-    private class Some implements Configurable<Some> {
+    private class Some implements Storable<Some> {
 
         public String value;
 
