@@ -12,7 +12,7 @@ package kiss;
 /**
  * @version 2017/05/02 14:33:13
  */
-public interface UsefulRunnable extends Runnable {
+public interface WiseRunnable extends Runnable {
 
     /**
      * <p>
@@ -37,12 +37,12 @@ public interface UsefulRunnable extends Runnable {
 
     /**
      * <p>
-     * Convert to {@link UsefulConsumer}.
+     * Convert to {@link WiseConsumer}.
      * </p>
      * 
-     * @return A converted {@link UsefulConsumer}.
+     * @return A converted {@link WiseConsumer}.
      */
-    default <P> UsefulConsumer<P> asConsumer() {
+    default <P> WiseConsumer<P> asConsumer() {
         return p -> RUN();
     }
 }

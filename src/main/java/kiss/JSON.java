@@ -28,7 +28,7 @@ import kiss.model.Property;
  * 
  * @version 2017/04/26 11:45:46
  */
-public class JSON implements UsefulTriConsumer<Model, Property, Object> {
+public class JSON implements WiseTriConsumer<Model, Property, Object> {
 
     /** The root object. */
     private Object root;

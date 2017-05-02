@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import kiss.UsefulBiConsumer;
-import kiss.UsefulFunction;
+import kiss.WiseBiConsumer;
+import kiss.WiseFunction;
 
 /**
  * <p>
@@ -51,9 +51,9 @@ public class Property implements Comparable<Property> {
     private final Map annotations = new HashMap(2);
 
     /** The actual accessor methods. */
-    UsefulFunction getter;
+    WiseFunction getter;
 
-    UsefulBiConsumer setter;
+    WiseBiConsumer setter;
 
     /** The {@link Property} type. */
     int type;

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import kiss.I;
-import kiss.UsefulTriConsumer;
+import kiss.WiseTriConsumer;
 
 /**
  * @version 2016/09/09 16:51:16
@@ -80,7 +80,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      * {@inheritDoc}
      */
     @Override
-    public void walk(Map<K, V> object, UsefulTriConsumer<Model<Map<K, V>>, Property, Object> walker) {
+    public void walk(Map<K, V> object, WiseTriConsumer<Model<Map<K, V>>, Property, Object> walker) {
         if (!key.attribute) {
             super.walk(object, walker);
         } else {

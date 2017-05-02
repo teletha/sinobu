@@ -18,12 +18,12 @@ import java.util.function.Supplier;
 import org.junit.Test;
 
 import kiss.I;
-import kiss.UsefulBiConsumer;
-import kiss.UsefulBiFunction;
-import kiss.UsefulConsumer;
-import kiss.UsefulFunction;
-import kiss.UsefulRunnable;
-import kiss.UsefulSupplier;
+import kiss.WiseBiConsumer;
+import kiss.WiseBiFunction;
+import kiss.WiseConsumer;
+import kiss.WiseFunction;
+import kiss.WiseRunnable;
+import kiss.WiseSupplier;
 
 /**
  * @version 2017/05/02 14:36:31
@@ -34,10 +34,10 @@ public class DressTest {
     public void runnable() throws Exception {
         Runnable lambda = () -> {
         };
-        UsefulRunnable dressed = I.dress(lambda);
+        WiseRunnable dressed = I.dress(lambda);
         assert dressed != lambda;
 
-        lambda = (UsefulRunnable) () -> {
+        lambda = (WiseRunnable) () -> {
         };
         dressed = I.dress(lambda);
         assert dressed == lambda;
@@ -47,10 +47,10 @@ public class DressTest {
     public void consumer() throws Exception {
         Consumer lambda = v -> {
         };
-        UsefulConsumer dressed = I.dress(lambda);
+        WiseConsumer dressed = I.dress(lambda);
         assert dressed != lambda;
 
-        lambda = (UsefulConsumer) v -> {
+        lambda = (WiseConsumer) v -> {
         };
         dressed = I.dress(lambda);
         assert dressed == lambda;
@@ -60,10 +60,10 @@ public class DressTest {
     public void biconsumer() throws Exception {
         BiConsumer lambda = (p1, p2) -> {
         };
-        UsefulBiConsumer dressed = I.dress(lambda);
+        WiseBiConsumer dressed = I.dress(lambda);
         assert dressed != lambda;
 
-        lambda = (UsefulBiConsumer) (p1, p2) -> {
+        lambda = (WiseBiConsumer) (p1, p2) -> {
         };
         dressed = I.dress(lambda);
         assert dressed == lambda;
@@ -72,10 +72,10 @@ public class DressTest {
     @Test
     public void supplier() throws Exception {
         Supplier lambda = () -> "";
-        UsefulSupplier dressed = I.dress(lambda);
+        WiseSupplier dressed = I.dress(lambda);
         assert dressed != lambda;
 
-        lambda = (UsefulSupplier) () -> "";
+        lambda = (WiseSupplier) () -> "";
         dressed = I.dress(lambda);
         assert dressed == lambda;
     }
@@ -83,10 +83,10 @@ public class DressTest {
     @Test
     public void function() throws Exception {
         Function lambda = p -> "";
-        UsefulFunction dressed = I.dress(lambda);
+        WiseFunction dressed = I.dress(lambda);
         assert dressed != lambda;
 
-        lambda = (UsefulFunction) p -> "";
+        lambda = (WiseFunction) p -> "";
         dressed = I.dress(lambda);
         assert dressed == lambda;
     }
@@ -94,10 +94,10 @@ public class DressTest {
     @Test
     public void bifunction() throws Exception {
         BiFunction lambda = (p1, p2) -> "";
-        UsefulBiFunction dressed = I.dress(lambda);
+        WiseBiFunction dressed = I.dress(lambda);
         assert dressed != lambda;
 
-        lambda = (UsefulBiFunction) (p1, p2) -> "";
+        lambda = (WiseBiFunction) (p1, p2) -> "";
         dressed = I.dress(lambda);
         assert dressed == lambda;
     }

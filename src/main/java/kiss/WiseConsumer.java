@@ -9,30 +9,30 @@
  */
 package kiss;
 
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 /**
- * @version 2017/03/13 10:20:57
+ * @version 2017/05/02 14:33:18
  */
-public interface UsefulSupplier<Return> extends Supplier<Return> {
+public interface WiseConsumer<P> extends Consumer<P> {
 
     /**
      * <p>
      * Internal API.
      * </p>
      * 
-     * @return A proxy result.
+     * @param param A proxy parameter.
      * @throws Throwable A sneaky exception for lambda.
      */
-    Return GET() throws Throwable;
+    void ACCEPT(P param) throws Throwable;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default Return get() {
+    default void accept(P param) {
         try {
-            return GET();
+            ACCEPT(param);
         } catch (Throwable e) {
             throw I.quiet(e);
         }
@@ -40,12 +40,14 @@ public interface UsefulSupplier<Return> extends Supplier<Return> {
 
     /**
      * <p>
-     * Convert to {@link UsefulFunction}.
+     * Apply parameter partialy.
      * </p>
      * 
-     * @return A converted {@link UsefulFunction}.
+     * @param function A target function to apply parameter.
+     * @param param A fixed parameter.
+     * @return A partial applied function.
      */
-    default UsefulFunction asFunction() {
-        return p -> GET();
+    default WiseRunnable with(P param) {
+        return () -> ACCEPT(param);
     }
 }

@@ -12,9 +12,9 @@ package kiss;
 import java.util.function.Function;
 
 /**
- * @version 2017/03/13 9:36:18
+ * @version 2017/05/02 15:27:31
  */
-public interface UsefulFunction<Param, Return> extends Function<Param, Return> {
+public interface WiseFunction<Param, Return> extends Function<Param, Return> {
 
     /**
      * <p>
@@ -37,5 +37,18 @@ public interface UsefulFunction<Param, Return> extends Function<Param, Return> {
         } catch (Throwable e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Apply parameter partialy.
+     * </p>
+     * 
+     * @param function A target function to apply parameter.
+     * @param param A fixed parameter.
+     * @return A partial applied function.
+     */
+    default WiseSupplier<Return> with(Param param) {
+        return () -> APPLY(param);
     }
 }

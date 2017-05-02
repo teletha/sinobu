@@ -19,11 +19,11 @@ import javax.crypto.IllegalBlockSizeException;
 import org.junit.Test;
 
 import kiss.I;
-import kiss.UsefulBiConsumer;
-import kiss.UsefulBiFunction;
-import kiss.UsefulConsumer;
-import kiss.UsefulFunction;
-import kiss.UsefulRunnable;
+import kiss.WiseBiConsumer;
+import kiss.WiseBiFunction;
+import kiss.WiseConsumer;
+import kiss.WiseFunction;
+import kiss.WiseRunnable;
 
 /**
  * @version 2017/03/13 10:33:07
@@ -34,7 +34,7 @@ public class ExceptionTest {
     public void runnable() {
         Runnable lambda = I.quiet(this::runnableThrow);
         assert lambda != null;
-        assert lambda instanceof UsefulRunnable;
+        assert lambda instanceof WiseRunnable;
         lambda.run();
     }
 
@@ -46,7 +46,7 @@ public class ExceptionTest {
     public void consumer() {
         Consumer<Object> lambda = I.quiet(this::consumerThrow);
         assert lambda != null;
-        assert lambda instanceof UsefulConsumer;
+        assert lambda instanceof WiseConsumer;
         lambda.accept(null);
     }
 
@@ -58,7 +58,7 @@ public class ExceptionTest {
     public void biconsumer() {
         BiConsumer<Object, Object> lambda = I.quiet(this::biconsumerThrow);
         assert lambda != null;
-        assert lambda instanceof UsefulBiConsumer;
+        assert lambda instanceof WiseBiConsumer;
         lambda.accept(null, null);
     }
 
@@ -70,7 +70,7 @@ public class ExceptionTest {
     public void function() {
         Function<Object, Object> lambda = I.quiet(this::functionThrow);
         assert lambda != null;
-        assert lambda instanceof UsefulFunction;
+        assert lambda instanceof WiseFunction;
         lambda.apply(null);
     }
 
@@ -82,7 +82,7 @@ public class ExceptionTest {
     public void bifunction() {
         BiFunction<Object, Object, Object> lambda = I.quiet(this::bifunctionThrow);
         assert lambda != null;
-        assert lambda instanceof UsefulBiFunction;
+        assert lambda instanceof WiseBiFunction;
         lambda.apply(null, null);
     }
 

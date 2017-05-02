@@ -12,7 +12,7 @@ package kiss;
 /**
  * @version 2017/03/13 9:34:23
  */
-public interface UsefulTriConsumer<Param1, Param2, Param3> {
+public interface WiseTriConsumer<Param1, Param2, Param3> {
 
     /**
      * Performs this operation on the given argument.

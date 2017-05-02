@@ -541,80 +541,80 @@ public class I {
 
     /**
      * <p>
-     * Down cast from {@link Runnable} to {@link UsefulRunnable}.
+     * Down cast from {@link Runnable} to {@link WiseRunnable}.
      * </p>
      * 
      * @param lambda A target function.
      * @return A casted function.
-     * @see #quiet(UsefulRunnable)
+     * @see #quiet(WiseRunnable)
      */
-    public static UsefulRunnable dress(Runnable lambda) {
-        return lambda instanceof UsefulRunnable ? (UsefulRunnable) lambda : () -> lambda.run();
+    public static WiseRunnable dress(Runnable lambda) {
+        return lambda instanceof WiseRunnable ? (WiseRunnable) lambda : () -> lambda.run();
     }
 
     /**
      * <p>
-     * Down cast from {@link Consumer} to {@link UsefulConsumer}.
+     * Down cast from {@link Consumer} to {@link WiseConsumer}.
      * </p>
      * 
      * @param lambda A target function.
      * @return A casted function.
-     * @see #quiet(UsefulConsumer)
+     * @see #quiet(WiseConsumer)
      */
-    public static <P> UsefulConsumer<P> dress(Consumer<P> lambda) {
-        return lambda instanceof UsefulConsumer ? (UsefulConsumer) lambda : v -> lambda.accept(v);
+    public static <P> WiseConsumer<P> dress(Consumer<P> lambda) {
+        return lambda instanceof WiseConsumer ? (WiseConsumer) lambda : v -> lambda.accept(v);
     }
 
     /**
      * <p>
-     * Down cast from {@link BiConsumer} to {@link UsefulBiConsumer}.
+     * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
      * </p>
      * 
      * @param lambda A target function.
      * @return A casted function.
-     * @see #quiet(UsefulBiConsumer)
+     * @see #quiet(WiseBiConsumer)
      */
-    public static <P1, P2> UsefulBiConsumer<P1, P2> dress(BiConsumer<P1, P2> lambda) {
-        return lambda instanceof UsefulBiConsumer ? (UsefulBiConsumer) lambda : (p1, p2) -> lambda.accept(p1, p2);
+    public static <P1, P2> WiseBiConsumer<P1, P2> dress(BiConsumer<P1, P2> lambda) {
+        return lambda instanceof WiseBiConsumer ? (WiseBiConsumer) lambda : (p1, p2) -> lambda.accept(p1, p2);
     }
 
     /**
      * <p>
-     * Down cast from {@link Supplier} to {@link UsefulSupplier}.
+     * Down cast from {@link Supplier} to {@link WiseSupplier}.
      * </p>
      * 
      * @param lambda A target function.
      * @return A casted function.
-     * @see #quiet(UsefulSupplier)
+     * @see #quiet(WiseSupplier)
      */
-    public static <R> UsefulSupplier<R> dress(Supplier<R> lambda) {
-        return lambda instanceof UsefulSupplier ? (UsefulSupplier) lambda : () -> lambda.get();
+    public static <R> WiseSupplier<R> dress(Supplier<R> lambda) {
+        return lambda instanceof WiseSupplier ? (WiseSupplier) lambda : () -> lambda.get();
     }
 
     /**
      * <p>
-     * Down cast from {@link Function} to {@link UsefulFunction}.
+     * Down cast from {@link Function} to {@link WiseFunction}.
      * </p>
      * 
      * @param lambda A target function.
      * @return A casted function.
-     * @see #quiet(UsefulFunction)
+     * @see #quiet(WiseFunction)
      */
-    public static <P, R> UsefulFunction<P, R> dress(Function<P, R> lambda) {
-        return lambda instanceof UsefulFunction ? (UsefulFunction) lambda : p -> lambda.apply(p);
+    public static <P, R> WiseFunction<P, R> dress(Function<P, R> lambda) {
+        return lambda instanceof WiseFunction ? (WiseFunction) lambda : p -> lambda.apply(p);
     }
 
     /**
      * <p>
-     * Down cast from {@link BiFunction} to {@link UsefulBiFunction}.
+     * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
      * </p>
      * 
      * @param lambda A target function.
      * @return A casted function.
-     * @see #quiet(UsefulBiFunction)
+     * @see #quiet(WiseBiFunction)
      */
-    public static <P1, P2, R> UsefulBiFunction<P1, P2, R> dress(BiFunction<P1, P2, R> lambda) {
-        return lambda instanceof UsefulBiFunction ? (UsefulBiFunction) lambda : (p1, p2) -> lambda.apply(p1, p2);
+    public static <P1, P2, R> WiseBiFunction<P1, P2, R> dress(BiFunction<P1, P2, R> lambda) {
+        return lambda instanceof WiseBiFunction ? (WiseBiFunction) lambda : (p1, p2) -> lambda.apply(p1, p2);
     }
 
     /**
@@ -1187,7 +1187,7 @@ public class I {
      * @param lambda A checked lambda.
      * @return A unchecked lambda.
      */
-    public static Runnable quiet(UsefulRunnable lambda) {
+    public static Runnable quiet(WiseRunnable lambda) {
         return lambda;
     }
 
@@ -1199,7 +1199,7 @@ public class I {
      * @param lambda A checked lambda.
      * @return A unchecked lambda.
      */
-    public static <P> Consumer<P> quiet(UsefulConsumer<P> lambda) {
+    public static <P> Consumer<P> quiet(WiseConsumer<P> lambda) {
         return lambda;
     }
 
@@ -1211,7 +1211,7 @@ public class I {
      * @param lambda A checked lambda.
      * @return A unchecked lambda.
      */
-    public static <P1, P2> BiConsumer<P1, P2> quiet(UsefulBiConsumer<P1, P2> lambda) {
+    public static <P1, P2> BiConsumer<P1, P2> quiet(WiseBiConsumer<P1, P2> lambda) {
         return lambda;
     }
 
@@ -1223,7 +1223,7 @@ public class I {
      * @param lambda A checked lambda.
      * @return A unchecked lambda.
      */
-    public static <R> Supplier<R> quiet(UsefulSupplier<R> lambda) {
+    public static <R> Supplier<R> quiet(WiseSupplier<R> lambda) {
         return lambda;
     }
 
@@ -1235,7 +1235,7 @@ public class I {
      * @param lambda A checked lambda.
      * @return A unchecked lambda.
      */
-    public static <P, R> Function<P, R> quiet(UsefulFunction<P, R> lambda) {
+    public static <P, R> Function<P, R> quiet(WiseFunction<P, R> lambda) {
         return lambda;
     }
 
@@ -1247,7 +1247,7 @@ public class I {
      * @param lambda A checked lambda.
      * @return A unchecked lambda.
      */
-    public static <P1, P2, R> BiFunction<P1, P2, R> quiet(UsefulBiFunction<P1, P2, R> lambda) {
+    public static <P1, P2, R> BiFunction<P1, P2, R> quiet(WiseBiFunction<P1, P2, R> lambda) {
         return lambda;
     }
 
@@ -1409,10 +1409,10 @@ public class I {
      * @param type A target error type.
      * @param recovery A recovery operation builder.
      * @return A recovery operation.
-     * @see #run(UsefulRunnable, UsefulTriFunction...)
-     * @see #run(UsefulSupplier, UsefulTriFunction...)
+     * @see #run(WiseRunnable, WiseTriFunction...)
+     * @see #run(WiseSupplier, WiseTriFunction...)
      */
-    public static <O> UsefulTriFunction<O, Throwable, Integer, O> recoverWhen(Class<? extends Throwable> type, UnaryOperator<O> recovery) {
+    public static <O> WiseTriFunction<O, Throwable, Integer, O> recoverWhen(Class<? extends Throwable> type, UnaryOperator<O> recovery) {
         return recoverWhen(type, Integer.MAX_VALUE, recovery);
     }
 
@@ -1428,10 +1428,10 @@ public class I {
      * @param limit A limit number of trials.
      * @param recovery A recovery operation builder.
      * @return A recovery operation.
-     * @see #run(UsefulRunnable, UsefulTriFunction...)
-     * @see #run(UsefulSupplier, UsefulTriFunction...)
+     * @see #run(WiseRunnable, WiseTriFunction...)
+     * @see #run(WiseSupplier, WiseTriFunction...)
      */
-    public static <O> UsefulTriFunction<O, Throwable, Integer, O> recoverWhen(Class<? extends Throwable> type, int limit, UnaryOperator<O> recovery) {
+    public static <O> WiseTriFunction<O, Throwable, Integer, O> recoverWhen(Class<? extends Throwable> type, int limit, UnaryOperator<O> recovery) {
         return (o, e, i) -> type.isInstance(e) && i < limit ? recovery.apply(o) : null;
     }
 
@@ -1445,10 +1445,10 @@ public class I {
      * 
      * @param type A target error type.
      * @return A recovery operation.
-     * @see #run(UsefulRunnable, UsefulTriFunction...)
-     * @see #run(UsefulSupplier, UsefulTriFunction...)
+     * @see #run(WiseRunnable, WiseTriFunction...)
+     * @see #run(WiseSupplier, WiseTriFunction...)
      */
-    public static <O> UsefulTriFunction<O, Throwable, Integer, O> retryWhen(Class<? extends Throwable> type) {
+    public static <O> WiseTriFunction<O, Throwable, Integer, O> retryWhen(Class<? extends Throwable> type) {
         return retryWhen(type, Integer.MAX_VALUE);
     }
 
@@ -1463,10 +1463,10 @@ public class I {
      * @param type A target error type.
      * @param limit A limit number of trials.
      * @return A recovery operation.
-     * @see #run(UsefulRunnable, UsefulTriFunction...)
-     * @see #run(UsefulSupplier, UsefulTriFunction...)
+     * @see #run(WiseRunnable, WiseTriFunction...)
+     * @see #run(WiseSupplier, WiseTriFunction...)
      */
-    public static <O> UsefulTriFunction<O, Throwable, Integer, O> retryWhen(Class<? extends Throwable> type, int limit) {
+    public static <O> WiseTriFunction<O, Throwable, Integer, O> retryWhen(Class<? extends Throwable> type, int limit) {
         return (o, e, i) -> type.isInstance(e) && i < limit ? o : null;
     }
 
@@ -1483,7 +1483,7 @@ public class I {
      * @see #recoverWhen(Class, UnaryOperator)
      * @see #recoverWhen(Class, int, UnaryOperator)
      */
-    public static void run(UsefulRunnable operation, UsefulTriFunction<Runnable, Throwable, Integer, Runnable>... recoveries) {
+    public static void run(WiseRunnable operation, WiseTriFunction<Runnable, Throwable, Integer, Runnable>... recoveries) {
         run(operation, operation, o -> {
             o.run();
             return null;
@@ -1504,7 +1504,7 @@ public class I {
      * @see #recoverWhen(Class, UnaryOperator)
      * @see #recoverWhen(Class, int, UnaryOperator)
      */
-    public static <R> R run(UsefulSupplier<R> operation, UsefulTriFunction<Supplier<R>, Throwable, Integer, Supplier<R>>... recoveries) {
+    public static <R> R run(WiseSupplier<R> operation, WiseTriFunction<Supplier<R>, Throwable, Integer, Supplier<R>>... recoveries) {
         return run(operation, operation, Supplier<R>::get, recoveries, new int[recoveries.length]);
     }
 
@@ -1521,7 +1521,7 @@ public class I {
      * @param counts A current number of trials.
      * @return A operation result.
      */
-    private static <O, R> R run(O original, O recover, Function<O, R> invoker, UsefulTriFunction<O, Throwable, Integer, O>[] recoveries, int[] counts) {
+    private static <O, R> R run(O original, O recover, Function<O, R> invoker, WiseTriFunction<O, Throwable, Integer, O>[] recoveries, int[] counts) {
         try {
             return invoker.apply(recover);
         } catch (Throwable e) {

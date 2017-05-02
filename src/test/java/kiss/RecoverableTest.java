@@ -95,7 +95,7 @@ public class RecoverableTest {
      * @param errorType
      * @return
      */
-    private UsefulRunnable unstableOperation(Runnable op, Class<? extends Throwable>... errors) {
+    private WiseRunnable unstableOperation(Runnable op, Class<? extends Throwable>... errors) {
         AtomicInteger count = new AtomicInteger();
 
         return () -> {
@@ -115,7 +115,7 @@ public class RecoverableTest {
      * @param errorType
      * @return
      */
-    private <R> UsefulSupplier<R> unstableOperation(Supplier<R> op, Class<? extends Throwable>... errors) {
+    private <R> WiseSupplier<R> unstableOperation(Supplier<R> op, Class<? extends Throwable>... errors) {
         AtomicInteger count = new AtomicInteger();
 
         return () -> {

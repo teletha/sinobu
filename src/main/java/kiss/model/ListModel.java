@@ -12,7 +12,7 @@ package kiss.model;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import kiss.UsefulTriConsumer;
+import kiss.WiseTriConsumer;
 
 /**
  * @version 2016/05/01 9:50:22
@@ -76,7 +76,7 @@ class ListModel<V> extends Model<List<V>> {
      * {@inheritDoc}
      */
     @Override
-    public void walk(List<V> object, UsefulTriConsumer<Model<List<V>>, Property, Object> walker) {
+    public void walk(List<V> object, WiseTriConsumer<Model<List<V>>, Property, Object> walker) {
         if (object != null && walker != null) {
             // We must use extended for loop because the sequential access is not efficient for some
             // List implementation.
