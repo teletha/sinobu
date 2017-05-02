@@ -21,14 +21,9 @@ import kiss.model.Model;
 import kiss.model.Property;
 
 /**
- * <p>
- * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor nodes,
- * but same object in sibling nodes will be acceptable.
- * </p>
- * 
- * @version 2017/04/26 11:45:46
+ * @version 2017/05/02 16:58:50
  */
-public class JSON implements WiseTriConsumer<Model, Property, Object> {
+public class JSON {
 
     /** The root object. */
     private Object root;
@@ -543,17 +538,25 @@ public class JSON implements WiseTriConsumer<Model, Property, Object> {
     private Appendable out;
 
     /**
-     * 
+     * <p>
+     * JSON serializer for Java object graph.
+     * </p>
      */
     JSON(Appendable out) {
         this.out = out;
     }
 
     /**
-     * {@inheritDoc}
+     * <p>
+     * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor
+     * nodes, but same object in sibling nodes will be acceptable.
+     * </p>
+     * 
+     * @param model
+     * @param property
+     * @param value
      */
-    @Override
-    public void accept(Model model, Property property, Object value) {
+    void write(Model model, Property property, Object value) {
         if (!property.isTransient && property.name != null) {
             try {
                 // non-first properties requires separator
@@ -580,8 +583,8 @@ public class JSON implements WiseTriConsumer<Model, Property, Object> {
 
                     JSON walker = new JSON(out);
                     walker.current = current + 1;
-                    walker.out.append(property.model.type == List.class ? '[' : '{');
-                    property.model.walk(value, walker);
+                    out.append(property.model.type == List.class ? '[' : '{');
+                    ((Model<Object>) property.model).walk(value, walker::write);
                     if (walker.index != 0) indent();
                     out.append(property.model.type == List.class ? ']' : '}');
                 }

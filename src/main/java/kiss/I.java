@@ -1789,7 +1789,7 @@ public class I {
 
             // traverse object as json
             Model model = Model.of(input);
-            new JSON(out).accept(model, new Property(model, ""), input);
+            new JSON(out).write(model, new Property(model, ""), input);
         } finally {
             // relese lock
             lock.writeLock().unlock();

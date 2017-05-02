@@ -34,7 +34,7 @@ import kiss.WiseFunction;
  * {@link java.util.SortedSet} for more information.
  * </p>
  * 
- * @version 2009/07/17 15:03:16
+ * @version 2017/05/02 16:57:51
  */
 public class Property implements Comparable<Property> {
 
@@ -50,9 +50,10 @@ public class Property implements Comparable<Property> {
     /** The annotated element. */
     private final Map annotations = new HashMap(2);
 
-    /** The actual accessor methods. */
+    /** The property accessor. */
     WiseFunction getter;
 
+    /** The property accessor. */
     WiseBiConsumer setter;
 
     /** The {@link Property} type. */
