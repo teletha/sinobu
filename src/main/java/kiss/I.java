@@ -675,6 +675,21 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
+    public static JSON json(CharSequence input) {
+        return json((Object) input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
+     */
     public static JSON json(File input) {
         return json((Object) input);
     }
@@ -691,21 +706,6 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(InputStream input) {
-        return json((Object) input);
-    }
-
-    /**
-     * <p>
-     * Parse the specified JSON format text.
-     * </p>
-     * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
-     * @return A parsed {@link JSON}.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
-     */
-    public static JSON json(Readable input) {
         return json((Object) input);
     }
 
@@ -750,7 +750,7 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
-    public static JSON json(CharSequence input) {
+    public static JSON json(Readable input) {
         return json((Object) input);
     }
 
@@ -1236,7 +1236,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quiet(throwable);
+            return I.<RuntimeException>quiet(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1267,10 +1267,10 @@ public class I {
 
     /**
      * <p>
-     * Reads Java object tree from the given XML or JSON input.
+     * Reads Java object from the JSON input.
      * </p>
      *
-     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
+     * @param input A serialized JSON representation of Java object. If the input is incompatible
      *            with Java object, this method ignores the input. <code>null</code> will throw
      *            {@link NullPointerException}. The empty or invalid format data will throw
      *            {@link IllegalStateException}.
@@ -1280,6 +1280,7 @@ public class I {
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
+     * @see #write(Object, Appendable)
      */
     public static <M> M read(CharSequence input, M output) {
         return json(input).to(output);
@@ -1287,14 +1288,14 @@ public class I {
 
     /**
      * <p>
-     * Reads Java object tree from the given XML or JSON input.
+     * Reads Java object from the JSON input.
      * </p>
      * <p>
      * If the input object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
      * will be invoked certainly.
      * </p>
      *
-     * @param input A serialized Java object tree data as XML or JSON. If the input is incompatible
+     * @param input A serialized JSON representation of Java object. If the input is incompatible
      *            with Java object, this method ignores the input. <code>null</code> will throw
      *            {@link NullPointerException}. The empty or invalid format data will throw
      *            {@link IllegalStateException}.
@@ -1304,6 +1305,7 @@ public class I {
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IOError If the input data is empty or invalid format.
+     * @see #write(Object, Appendable)
      */
     public static <M> M read(Readable input, M output) {
         return json(input).to(output);
@@ -1765,7 +1767,25 @@ public class I {
 
     /**
      * <p>
-     * Writes Java object tree to the given output as XML or JSON.
+     * Write JSON representation of Java object.
+     * </p>
+     *
+     * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
+     *            throw {@link java.lang.NullPointerException}.
+     * @return A JSON representation of Java object.
+     * @throws NullPointerException If the input Java object or the output is <code>null</code> .
+     * @see #read(Readable, Object)
+     * @see #read(CharSequence, Object)
+     */
+    public static String write(Object input) {
+        StringBuilder output = new StringBuilder();
+        I.write(input, output);
+        return output.toString();
+    }
+
+    /**
+     * <p>
+     * Write JSON representation of Java object to the specified output.
      * </p>
      * <p>
      * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
@@ -1776,9 +1796,9 @@ public class I {
      *            throw {@link java.lang.NullPointerException}.
      * @param out A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
-     * @param format <code>true</code> will produce JSON expression, <code>false</code> will produce
-     *            XML expression.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
+     * @see #read(Readable, Object)
+     * @see #read(CharSequence, Object)
      */
     public static void write(Object input, Appendable out) {
         Objects.nonNull(out);

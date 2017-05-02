@@ -21,13 +21,13 @@ import java.nio.charset.StandardCharsets;
 import kiss.model.Model;
 
 /**
- * @version 2017/04/02 21:44:44
+ * @version 2017/05/02 22:21:49
  */
 public interface Storable<Self> {
 
     /**
      * <p>
-     * Restore all settings from persistence domain.
+     * Restore all properties from persistence domain.
      * </p>
      * 
      * @return Chainable API.
@@ -43,7 +43,7 @@ public interface Storable<Self> {
 
     /**
      * <p>
-     * Store all settings to persistence domain.
+     * Store all properties to persistence domain.
      * </p>
      * 
      * @return Chainable API.
