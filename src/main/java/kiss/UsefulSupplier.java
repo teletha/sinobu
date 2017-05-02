@@ -37,4 +37,15 @@ public interface UsefulSupplier<Return> extends Supplier<Return> {
             throw I.quiet(e);
         }
     }
+
+    /**
+     * <p>
+     * Convert to {@link UsefulFunction}.
+     * </p>
+     * 
+     * @return A converted {@link UsefulFunction}.
+     */
+    default UsefulFunction asFunction() {
+        return p -> GET();
+    }
 }

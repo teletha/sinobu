@@ -138,7 +138,7 @@ public class I {
     // edit error ensure examine exclude exist embed enhance enter evolve exchange expect extend
     // enregister
     // find fetch
-    // get gain give go grant glance gaze grab
+    // get gain give go grant glance gaze grab garnish
     // hash have handle hold halt hang hasten
     // i18n include infer improve indicate inspire integrate introduce invite identify interpret
     // json join
@@ -541,6 +541,84 @@ public class I {
 
     /**
      * <p>
+     * Down cast from {@link Runnable} to {@link UsefulRunnable}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(UsefulRunnable)
+     */
+    public static UsefulRunnable dress(Runnable lambda) {
+        return lambda instanceof UsefulRunnable ? (UsefulRunnable) lambda : () -> lambda.run();
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link Consumer} to {@link UsefulConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(UsefulConsumer)
+     */
+    public static <P> UsefulConsumer<P> dress(Consumer<P> lambda) {
+        return lambda instanceof UsefulConsumer ? (UsefulConsumer) lambda : v -> lambda.accept(v);
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiConsumer} to {@link UsefulBiConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(UsefulBiConsumer)
+     */
+    public static <P1, P2> UsefulBiConsumer<P1, P2> dress(BiConsumer<P1, P2> lambda) {
+        return lambda instanceof UsefulBiConsumer ? (UsefulBiConsumer) lambda : (p1, p2) -> lambda.accept(p1, p2);
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link Supplier} to {@link UsefulSupplier}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(UsefulSupplier)
+     */
+    public static <R> UsefulSupplier<R> dress(Supplier<R> lambda) {
+        return lambda instanceof UsefulSupplier ? (UsefulSupplier) lambda : () -> lambda.get();
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link Function} to {@link UsefulFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(UsefulFunction)
+     */
+    public static <P, R> UsefulFunction<P, R> dress(Function<P, R> lambda) {
+        return lambda instanceof UsefulFunction ? (UsefulFunction) lambda : p -> lambda.apply(p);
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiFunction} to {@link UsefulBiFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(UsefulBiFunction)
+     */
+    public static <P1, P2, R> UsefulBiFunction<P1, P2, R> dress(BiFunction<P1, P2, R> lambda) {
+        return lambda instanceof UsefulBiFunction ? (UsefulBiFunction) lambda : (p1, p2) -> lambda.apply(p1, p2);
+    }
+
+    /**
+     * <p>
      * Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
      * <a href="Extensible#ExtensionPoint">Extension Point</a>.
      * </p>
@@ -629,47 +707,6 @@ public class I {
      */
     private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
-    }
-
-    /**
-     * <p>
-     * Convert {@link Runnable} to {@link Consumer}.
-     * </p>
-     * 
-     * @param lambda
-     * @return
-     */
-    public static <P> Consumer<P> imitateConsumer(Runnable lambda) {
-        return p -> {
-            if (lambda != null) lambda.run();
-        };
-    }
-
-    /**
-     * <p>
-     * Convert {@link Consumer} to {@link Function}.
-     * </p>
-     * 
-     * @param lambda
-     * @return
-     */
-    public static <P, R> Function<P, R> imitateFunction(Consumer<P> lambda) {
-        return p -> {
-            lambda.accept(p);
-            return null;
-        };
-    }
-
-    /**
-     * <p>
-     * Convert {@link Supplier} to {@link Function}.
-     * </p>
-     * 
-     * @param lambda
-     * @return
-     */
-    public static <P, R> Function<P, R> imitateFunction(Supplier<R> lambda) {
-        return p -> lambda.get();
     }
 
     /**
@@ -1277,7 +1314,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quiet(throwable);
+            return I.<RuntimeException> quiet(throwable);
         }
 
         if (object instanceof AutoCloseable) {

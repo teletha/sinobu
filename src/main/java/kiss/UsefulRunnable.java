@@ -10,7 +10,7 @@
 package kiss;
 
 /**
- * @version 2017/03/13 9:27:11
+ * @version 2017/05/02 14:33:13
  */
 public interface UsefulRunnable extends Runnable {
 
@@ -33,5 +33,16 @@ public interface UsefulRunnable extends Runnable {
         } catch (Throwable e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Convert to {@link UsefulConsumer}.
+     * </p>
+     * 
+     * @return A converted {@link UsefulConsumer}.
+     */
+    default <P> UsefulConsumer<P> asConsumer() {
+        return p -> RUN();
     }
 }

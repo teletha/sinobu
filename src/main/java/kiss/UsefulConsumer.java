@@ -12,7 +12,7 @@ package kiss;
 import java.util.function.Consumer;
 
 /**
- * @version 2017/03/13 9:34:23
+ * @version 2017/05/02 14:33:18
  */
 public interface UsefulConsumer<P> extends Consumer<P> {
 
