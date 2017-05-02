@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kiss.Extensible;
 import kiss.I;
+import kiss.LoadableTestBase;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
 import kiss.sample.bean.Student;
@@ -25,12 +25,7 @@ import kiss.sample.bean.Student;
 /**
  * @version 2016/03/29 17:12:21
  */
-public class ExtensibleTest {
-
-    @BeforeClass
-    public static void init() {
-        I.load(EPInterface.class, true);
-    }
+public class ExtensibleTest extends LoadableTestBase {
 
     @Test
     public void listByClass() {

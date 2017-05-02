@@ -13,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 
 /**
- * @version 2017/04/01 1:17:35
+ * @version 2017/05/02 16:18:04
  */
 public abstract class LoadableTestBase {
 
@@ -37,7 +37,10 @@ public abstract class LoadableTestBase {
 
     @Before
     public final void loadClasses() {
-        loaded = I.load(base, true);
+        if (loaded == null) {
+            loaded = Disposable.empty();
+        }
+        loaded.add(I.load(base, true));
     }
 
     /**

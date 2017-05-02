@@ -15,20 +15,21 @@ import org.junit.Test;
 
 import kiss.Extensible;
 import kiss.I;
+import kiss.LoadableTestBase;
 
 /**
- * @version 2017/03/29 9:43:20
+ * @version 2017/05/02 16:18:14
  */
-public class LoadTest {
+public class LoadTest extends LoadableTestBase {
 
     @Test
     public void twice() throws Exception {
-        I.load(Ex.class, true);
+        loadClasses();
 
         List<Ex> find = I.find(Ex.class);
         assert find.size() == 1;
 
-        I.load(Ex.class, true);
+        loadClasses();
 
         find = I.find(Ex.class);
         assert find.size() == 1;

@@ -12,7 +12,6 @@ package kiss.extension;
 import java.io.Serializable;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import kiss.Disposable;
@@ -21,7 +20,7 @@ import kiss.I;
 import kiss.model.Model;
 
 /**
- * @version 2017/04/01 9:32:27
+ * @version 2017/05/02 16:18:23
  */
 public class RegistrationOrderTest {
 
@@ -60,7 +59,6 @@ public class RegistrationOrderTest {
     }
 
     @Test
-    @Ignore
     public void parent() throws Exception {
         register(Parent.class);
 
