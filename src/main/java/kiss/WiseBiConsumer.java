@@ -14,26 +14,26 @@ import java.util.function.BiConsumer;
 /**
  * @version 2017/05/02 15:27:50
  */
-public interface WiseBiConsumer<P1, P2> extends BiConsumer<P1, P2> {
+public interface WiseBiConsumer<Param1, Param2> extends BiConsumer<Param1, Param2> {
 
     /**
      * <p>
      * Internal API.
      * </p>
      * 
-     * @param p1 A proxy parameter.
-     * @param p2 A proxy parameter.
+     * @param param1 A proxy parameter.
+     * @param param2 A proxy parameter.
      * @throws Throwable A sneaky exception for lambda.
      */
-    void ACCEPT(P1 p1, P2 p2) throws Throwable;
+    void ACCEPT(Param1 param1, Param2 param2) throws Throwable;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default void accept(P1 p1, P2 p2) {
+    default void accept(Param1 param1, Param2 param2) {
         try {
-            ACCEPT(p1, p2);
+            ACCEPT(param1, param2);
         } catch (Throwable e) {
             throw I.quiet(e);
         }
@@ -45,10 +45,10 @@ public interface WiseBiConsumer<P1, P2> extends BiConsumer<P1, P2> {
      * </p>
      * 
      * @param function A target function to apply parameter.
-     * @param p1 A fixed parameter.
+     * @param param1 A fixed parameter.
      * @return A partial applied function.
      */
-    default WiseConsumer<P2> with(P1 p1) {
-        return p2 -> ACCEPT(p1, p2);
+    default WiseConsumer<Param2> with(Param1 param1) {
+        return param2 -> ACCEPT(param1, param2);
     }
 }

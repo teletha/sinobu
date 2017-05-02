@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 /**
  * @version 2017/05/02 14:33:18
  */
-public interface WiseConsumer<P> extends Consumer<P> {
+public interface WiseConsumer<Param> extends Consumer<Param> {
 
     /**
      * <p>
@@ -24,13 +24,13 @@ public interface WiseConsumer<P> extends Consumer<P> {
      * @param param A proxy parameter.
      * @throws Throwable A sneaky exception for lambda.
      */
-    void ACCEPT(P param) throws Throwable;
+    void ACCEPT(Param param) throws Throwable;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default void accept(P param) {
+    default void accept(Param param) {
         try {
             ACCEPT(param);
         } catch (Throwable e) {
@@ -47,7 +47,7 @@ public interface WiseConsumer<P> extends Consumer<P> {
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default WiseRunnable with(P param) {
+    default WiseRunnable with(Param param) {
         return () -> ACCEPT(param);
     }
 }

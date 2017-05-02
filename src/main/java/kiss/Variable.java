@@ -578,7 +578,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return Chainable API.
      */
     private Variable<V> effect(boolean condition, Runnable valid, Runnable invalid) {
-        return effect(condition, I.dress(valid).asConsumer(), I.dress(invalid).asConsumer());
+        return effect(condition, I.wise(valid).asConsumer(), I.wise(invalid).asConsumer());
     }
 
     /**
@@ -590,7 +590,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return Chainable API.
      */
     private Variable<V> effect(boolean condition, Runnable valid, Consumer<V> invalid) {
-        return effect(condition, I.dress(valid).asConsumer(), invalid);
+        return effect(condition, I.wise(valid).asConsumer(), invalid);
     }
 
     /**
@@ -602,7 +602,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return Chainable API.
      */
     private Variable<V> effect(boolean condition, Consumer<V> valid, Runnable invalid) {
-        return effect(condition, valid, I.dress(invalid).asConsumer());
+        return effect(condition, valid, I.wise(invalid).asConsumer());
     }
 
     /**
@@ -1051,7 +1051,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return The returned value or empty.
      */
     private <R> Variable<R> map(boolean condition, Supplier<R> valid, Supplier<R> invalid) {
-        return map(condition, I.dress(valid).asFunction(), I.dress(invalid).asFunction());
+        return map(condition, I.wise(valid).asFunction(), I.wise(invalid).asFunction());
     }
 
     /**
@@ -1063,7 +1063,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return The returned value or empty.
      */
     private <R> Variable<R> map(boolean condition, Supplier<R> valid, Function<V, R> invalid) {
-        return map(condition, I.dress(valid).asFunction(), invalid);
+        return map(condition, I.wise(valid).asFunction(), invalid);
     }
 
     /**
@@ -1075,7 +1075,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return The returned value or empty.
      */
     private <R> Variable<R> map(boolean condition, Function<V, R> valid, Supplier<R> invalid) {
-        return map(condition, valid, I.dress(invalid).asFunction());
+        return map(condition, valid, I.wise(invalid).asFunction());
     }
 
     /**

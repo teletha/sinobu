@@ -34,12 +34,12 @@ public class DressTest {
     public void runnable() throws Exception {
         Runnable lambda = () -> {
         };
-        WiseRunnable dressed = I.dress(lambda);
+        WiseRunnable dressed = I.wise(lambda);
         assert dressed != lambda;
 
         lambda = (WiseRunnable) () -> {
         };
-        dressed = I.dress(lambda);
+        dressed = I.wise(lambda);
         assert dressed == lambda;
     }
 
@@ -47,12 +47,12 @@ public class DressTest {
     public void consumer() throws Exception {
         Consumer lambda = v -> {
         };
-        WiseConsumer dressed = I.dress(lambda);
+        WiseConsumer dressed = I.wise(lambda);
         assert dressed != lambda;
 
         lambda = (WiseConsumer) v -> {
         };
-        dressed = I.dress(lambda);
+        dressed = I.wise(lambda);
         assert dressed == lambda;
     }
 
@@ -60,45 +60,45 @@ public class DressTest {
     public void biconsumer() throws Exception {
         BiConsumer lambda = (p1, p2) -> {
         };
-        WiseBiConsumer dressed = I.dress(lambda);
+        WiseBiConsumer dressed = I.wise(lambda);
         assert dressed != lambda;
 
         lambda = (WiseBiConsumer) (p1, p2) -> {
         };
-        dressed = I.dress(lambda);
+        dressed = I.wise(lambda);
         assert dressed == lambda;
     }
 
     @Test
     public void supplier() throws Exception {
         Supplier lambda = () -> "";
-        WiseSupplier dressed = I.dress(lambda);
+        WiseSupplier dressed = I.wise(lambda);
         assert dressed != lambda;
 
         lambda = (WiseSupplier) () -> "";
-        dressed = I.dress(lambda);
+        dressed = I.wise(lambda);
         assert dressed == lambda;
     }
 
     @Test
     public void function() throws Exception {
         Function lambda = p -> "";
-        WiseFunction dressed = I.dress(lambda);
+        WiseFunction dressed = I.wise(lambda);
         assert dressed != lambda;
 
         lambda = (WiseFunction) p -> "";
-        dressed = I.dress(lambda);
+        dressed = I.wise(lambda);
         assert dressed == lambda;
     }
 
     @Test
     public void bifunction() throws Exception {
         BiFunction lambda = (p1, p2) -> "";
-        WiseBiFunction dressed = I.dress(lambda);
+        WiseBiFunction dressed = I.wise(lambda);
         assert dressed != lambda;
 
         lambda = (WiseBiFunction) (p1, p2) -> "";
-        dressed = I.dress(lambda);
+        dressed = I.wise(lambda);
         assert dressed == lambda;
     }
 }

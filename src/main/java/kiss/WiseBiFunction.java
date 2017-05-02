@@ -14,27 +14,27 @@ import java.util.function.BiFunction;
 /**
  * @version 2017/05/02 15:27:26
  */
-public interface WiseBiFunction<P1, P2, Return> extends BiFunction<P1, P2, Return> {
+public interface WiseBiFunction<Param1, Param2, Return> extends BiFunction<Param1, Param2, Return> {
 
     /**
      * <p>
      * Internal API.
      * </p>
      * 
-     * @param p1 A proxy parameter.
-     * @param p2 A proxy parameter.
+     * @param param1 A proxy parameter.
+     * @param param2 A proxy parameter.
      * @return A proxy result.
      * @throws Throwable A sneaky exception for lambda.
      */
-    Return APPLY(P1 p1, P2 p2) throws Throwable;
+    Return APPLY(Param1 param1, Param2 param2) throws Throwable;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default Return apply(P1 p1, P2 p2) {
+    default Return apply(Param1 param1, Param2 param2) {
         try {
-            return APPLY(p1, p2);
+            return APPLY(param1, param2);
         } catch (Throwable e) {
             throw I.quiet(e);
         }
@@ -46,10 +46,10 @@ public interface WiseBiFunction<P1, P2, Return> extends BiFunction<P1, P2, Retur
      * </p>
      * 
      * @param function A target function to apply parameter.
-     * @param p1 A fixed parameter.
+     * @param param1 A fixed parameter.
      * @return A partial applied function.
      */
-    default WiseFunction<P2, Return> with(P1 p1) {
-        return p2 -> APPLY(p1, p2);
+    default WiseFunction<Param2, Return> with(Param1 param1) {
+        return param2 -> APPLY(param1, param2);
     }
 }

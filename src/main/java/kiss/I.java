@@ -154,7 +154,7 @@ public class I {
     // transform type take tap task talk transport turn traverse transmit trigger think
     // unload use unite undo
     // vanish view value vouch vary vindicate
-    // write warn walk watch wrap
+    // write warn walk watch wrap wise
     // xml
     // yield
     // zip zoom zone
@@ -537,84 +537,6 @@ public class I {
                 quiet(output);
             }
         }
-    }
-
-    /**
-     * <p>
-     * Down cast from {@link Runnable} to {@link WiseRunnable}.
-     * </p>
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     * @see #quiet(WiseRunnable)
-     */
-    public static WiseRunnable dress(Runnable lambda) {
-        return lambda instanceof WiseRunnable ? (WiseRunnable) lambda : () -> lambda.run();
-    }
-
-    /**
-     * <p>
-     * Down cast from {@link Consumer} to {@link WiseConsumer}.
-     * </p>
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     * @see #quiet(WiseConsumer)
-     */
-    public static <P> WiseConsumer<P> dress(Consumer<P> lambda) {
-        return lambda instanceof WiseConsumer ? (WiseConsumer) lambda : v -> lambda.accept(v);
-    }
-
-    /**
-     * <p>
-     * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
-     * </p>
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     * @see #quiet(WiseBiConsumer)
-     */
-    public static <P1, P2> WiseBiConsumer<P1, P2> dress(BiConsumer<P1, P2> lambda) {
-        return lambda instanceof WiseBiConsumer ? (WiseBiConsumer) lambda : (p1, p2) -> lambda.accept(p1, p2);
-    }
-
-    /**
-     * <p>
-     * Down cast from {@link Supplier} to {@link WiseSupplier}.
-     * </p>
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     * @see #quiet(WiseSupplier)
-     */
-    public static <R> WiseSupplier<R> dress(Supplier<R> lambda) {
-        return lambda instanceof WiseSupplier ? (WiseSupplier) lambda : () -> lambda.get();
-    }
-
-    /**
-     * <p>
-     * Down cast from {@link Function} to {@link WiseFunction}.
-     * </p>
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     * @see #quiet(WiseFunction)
-     */
-    public static <P, R> WiseFunction<P, R> dress(Function<P, R> lambda) {
-        return lambda instanceof WiseFunction ? (WiseFunction) lambda : p -> lambda.apply(p);
-    }
-
-    /**
-     * <p>
-     * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
-     * </p>
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     * @see #quiet(WiseBiFunction)
-     */
-    public static <P1, P2, R> WiseBiFunction<P1, P2, R> dress(BiFunction<P1, P2, R> lambda) {
-        return lambda instanceof WiseBiFunction ? (WiseBiFunction) lambda : (p1, p2) -> lambda.apply(p1, p2);
     }
 
     /**
@@ -1740,6 +1662,84 @@ public class I {
         } catch (ClassNotFoundException e) {
             throw quiet(e);
         }
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link Runnable} to {@link WiseRunnable}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseRunnable)
+     */
+    public static WiseRunnable wise(Runnable lambda) {
+        return lambda instanceof WiseRunnable ? (WiseRunnable) lambda : () -> lambda.run();
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link Consumer} to {@link WiseConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseConsumer)
+     */
+    public static <P> WiseConsumer<P> wise(Consumer<P> lambda) {
+        return lambda instanceof WiseConsumer ? (WiseConsumer) lambda : v -> lambda.accept(v);
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiConsumer)
+     */
+    public static <P1, P2> WiseBiConsumer<P1, P2> wise(BiConsumer<P1, P2> lambda) {
+        return lambda instanceof WiseBiConsumer ? (WiseBiConsumer) lambda : (p1, p2) -> lambda.accept(p1, p2);
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link Supplier} to {@link WiseSupplier}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseSupplier)
+     */
+    public static <R> WiseSupplier<R> wise(Supplier<R> lambda) {
+        return lambda instanceof WiseSupplier ? (WiseSupplier) lambda : () -> lambda.get();
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link Function} to {@link WiseFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseFunction)
+     */
+    public static <P, R> WiseFunction<P, R> wise(Function<P, R> lambda) {
+        return lambda instanceof WiseFunction ? (WiseFunction) lambda : p -> lambda.apply(p);
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiFunction)
+     */
+    public static <P1, P2, R> WiseBiFunction<P1, P2, R> wise(BiFunction<P1, P2, R> lambda) {
+        return lambda instanceof WiseBiFunction ? (WiseBiFunction) lambda : (p1, p2) -> lambda.apply(p1, p2);
     }
 
     /**
