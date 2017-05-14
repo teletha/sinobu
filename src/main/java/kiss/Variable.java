@@ -22,12 +22,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-import kiss.lambda.For.Sugar;
-
 /**
  * @version 2016/10/23 13:23:45
  */
-public class Variable<V> implements Consumer<V>, Supplier<V>, Sugar<V> {
+public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The modifier. */
     private static final Field modify;
@@ -1401,22 +1399,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V>, Sugar<V> {
      */
     public <R> Variable<R> flatMap(Function<V, Variable<R>> converter) {
         return v == null || converter == null ? new Variable(null) : converter.apply(v);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <R> Sugar<R> convert(Function<V, R> mapper) {
-        return map(mapper);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <R> Sugar<R> convertFlat(Function<V, Sugar<R>> mapper) {
-        return flatMap(v -> (Variable<R>) mapper.apply(v));
     }
 
     /**
