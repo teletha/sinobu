@@ -232,6 +232,37 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Receive values as {@link Collection} type from this {@link Signal}.
+     * </p>
+     *
+     * @return A {@link Collection} as value receiver.
+     */
+    public final <C extends Collection<V>> C to(Class<C> type) {
+        return to(type, Collection::add);
+    }
+
+    /**
+     * <p>
+     * Receive values from this {@link Signal}.
+     * </p>
+     *
+     * @param type A value receiver type.
+     * @param assigner A value assigner.
+     * @return A value receiver.
+     */
+    public final <R> R to(Class<R> type, BiConsumer<R, V> assigner) {
+        // value receiver
+        R receiver = I.make(type);
+
+        // start receiving values
+        to(v -> assigner.accept(receiver, v));
+
+        // API definition
+        return receiver;
+    }
+
+    /**
+     * <p>
      * Receive values as {@link Set} from this {@link Signal}. Each value alternates between In and
      * Out.
      * </p>
@@ -239,7 +270,7 @@ public final class Signal<V> {
      * @return A {@link Set} as value receiver.
      */
     public final Set<V> toAlternate() {
-        return toSet((set, value) -> {
+        return to(Set.class, (set, value) -> {
             if (!set.add(value)) {
                 set.remove(value);
             }
@@ -256,38 +287,32 @@ public final class Signal<V> {
      */
     public final Variable<Boolean> toBinary() {
         // value receiver
-        Variable<Boolean> property = Variable.of(false);
+        Variable<Boolean> receiver = Variable.of(false);
 
         // start receiving values
-        to(v -> property.set(!property.get()));
+        to(v -> receiver.set(!receiver.get()));
 
         // API definition
-        return property;
+        return receiver;
     }
 
     /**
      * <p>
-     * Receive values as {@link Set} from this {@link Signal}.
+     * Receive values as {@link List} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link Set} as value receiver.
+     * @return A {@link List} as value receiver.
      */
     public final List<V> toList() {
-        // value receiver
-        List<V> property = I.make(List.class);
-
-        // start receiving values
-        to(property::add);
-
-        // API definition
-        return property;
+        return to(List.class);
     }
 
     /**
      * <p>
      * Receive values as {@link Map} from this {@link Signal}.
      * </p>
-     *
+     * 
+     * @param keyGenerator A {@link Map} key generator.
      * @return A {@link Map} as value receiver.
      */
     public final <Key> Map<Key, V> toMap(Function<V, Key> keyGenerator) {
@@ -298,18 +323,13 @@ public final class Signal<V> {
      * <p>
      * Receive values as {@link Map} from this {@link Signal}.
      * </p>
-     *
+     * 
+     * @param keyGenerator A {@link Map} key generator.
+     * @param valueGenerator A {@link Map} value generator.
      * @return A {@link Map} as value receiver.
      */
     public final <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        // value receiver
-        Map<Key, Value> property = I.make(Map.class);
-
-        // start receiving values
-        to(v -> property.put(keyGenerator.apply(v), valueGenerator.apply(v)));
-
-        // API definition
-        return property;
+        return to(Map.class, (map, v) -> map.put(keyGenerator.apply(v), valueGenerator.apply(v)));
     }
 
     /**
@@ -320,36 +340,19 @@ public final class Signal<V> {
      * @return A {@link Set} as value receiver.
      */
     public final Set<V> toSet() {
-        return toSet(Set::add);
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Set} from this {@link Signal}.
-     * </p>
-     *
-     * @return A {@link Set} as value receiver.
-     */
-    private Set<V> toSet(BiConsumer<Set<V>, V> collector) {
-        // value receiver
-        Set<V> property = I.make(Set.class);
-
-        // start receiving values
-        to(v -> collector.accept(property, v));
-
-        // API definition
-        return property;
+        return to(Set.class);
     }
 
     /**
      * <p>
      * Receive values as {@link Table} from this {@link Signal}.
      * </p>
-     *
+     * 
+     * @param keyGenerator A {@link Table} key generator.
      * @return A {@link Table} as value receiver.
      */
     public final <Key> Table<Key, V> toTable(Function<V, Key> keyGenerator) {
-        return toTable(new Table(), keyGenerator);
+        return toTable(keyGenerator, Function.identity());
     }
 
     /**
@@ -357,36 +360,12 @@ public final class Signal<V> {
      * Receive values as {@link Table} from this {@link Signal}.
      * </p>
      *
-     * @return A {@link Table} as value receiver.
-     */
-    public final <Key> Table<Key, V> toTable(Table<Key, V> table, Function<V, Key> keyGenerator) {
-        return toTable(table, keyGenerator, Function.identity());
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Table} from this {@link Signal}.
-     * </p>
-     *
+     * @param keyGenerator A {@link Table} key generator.
+     * @param valueGenerator A {@link Table} value generator.
      * @return A {@link Table} as value receiver.
      */
     public final <Key, Value> Table<Key, Value> toTable(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        return toTable(new Table(), keyGenerator, valueGenerator);
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Table} from this {@link Signal}.
-     * </p>
-     *
-     * @return A {@link Table} as value receiver.
-     */
-    public final <Key, Value> Table<Key, Value> toTable(Table<Key, Value> table, Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        // start receiving values
-        to(v -> table.push(keyGenerator.apply(v), valueGenerator.apply(v)));
-
-        // API definition
-        return table;
+        return to(Table.class, (table, v) -> table.push(keyGenerator.apply(v), valueGenerator.apply(v)));
     }
 
     /**
@@ -515,7 +494,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
+        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
@@ -621,7 +600,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
+        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
     }
 
     /**
