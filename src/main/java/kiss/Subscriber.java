@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 /**
  * Internal subscription.
  * 
- * @version 2017/04/21 11:20:19
+ * @version 2017/05/26 21:43:07
  */
 class Subscriber<T> implements Observer<T>, Disposable {
 
@@ -72,7 +72,7 @@ class Subscriber<T> implements Observer<T>, Disposable {
             } else if (observer != null) {
                 observer.error(e);
             } else {
-                Thread.currentThread().getThreadGroup().uncaughtException(Thread.currentThread(), e);
+                Observer.super.error(e);
             }
         }
     }

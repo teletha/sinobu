@@ -23,6 +23,7 @@ import java.util.function.Consumer;
  * </p>
  * 
  * @param <V> The object that provides notification information.
+ * @version 2017/05/26 21:42:55
  */
 public interface Observer<V> extends Consumer<V> {
 
@@ -50,6 +51,6 @@ public interface Observer<V> extends Consumer<V> {
      * @param error An object that provides additional information about the error.
      */
     public default void error(Throwable error) {
-        // do nothing
+        Thread.currentThread().getThreadGroup().uncaughtException(Thread.currentThread(), error);
     }
 }
