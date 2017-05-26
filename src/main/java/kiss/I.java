@@ -840,6 +840,7 @@ public class I {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
                 names = I.signal(file, entry -> entry.flatArray(File::listFiles))
+                        .take(File::isFile)
                         .map(entry -> entry.getPath().substring(prefix).replace(File.separatorChar, '.'));
             }
             candidates = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6)).toSet();
