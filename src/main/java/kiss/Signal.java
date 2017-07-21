@@ -954,7 +954,24 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> flatEnum(Function<V, Enumeration<R>> function) {
+    public final <R> Signal<R> flatArray(WiseFunction<V, R[]> function) {
+        return flatArray(I.quiet(function));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<R> flatEnum(Function<V, ? extends Enumeration<R>> function) {
         return flatMap(function.andThen(I::signal));
     }
 
@@ -971,8 +988,42 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> flatIterable(Function<V, Iterable<R>> function) {
+    public final <R> Signal<R> flatEnum(WiseFunction<V, ? extends Enumeration<R>> function) {
+        return flatEnum(I.quiet(function));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<R> flatIterable(Function<V, ? extends Iterable<R>> function) {
         return flatMap(function.andThen(I::signal));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<R> flatIterable(WiseFunction<V, ? extends Iterable<R>> function) {
+        return flatIterable(I.quiet(function));
     }
 
     /**
@@ -1011,8 +1062,42 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
+    public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
+        return flatMap(I.quiet(function));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
     public final <R> Signal<R> flatVariable(Function<V, Variable<R>> function) {
         return flatMap(function.andThen(I::signal));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
+        return flatVariable(I.quiet(function));
     }
 
     /**
@@ -1060,6 +1145,20 @@ public final class Signal<V> {
      * {@link Signal} and emits the result.
      * </p>
      *
+     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <R> Signal<R> map(WiseFunction<? super V, R> converter) {
+        return map(I.quiet(converter));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that applies the given function to each value emitted by an
+     * {@link Signal} and emits the result.
+     * </p>
+     *
      * @param init A initial value.
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
      *            <code>null</code> will ignore this instruction.
@@ -1077,6 +1176,21 @@ public final class Signal<V> {
             return to(value -> observer
                     .accept(converter.apply(ref.getAndSet(value), value)), observer::error, observer::complete, disposer);
         });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that applies the given function to each value emitted by an
+     * {@link Signal} and emits the result.
+     * </p>
+     *
+     * @param init A initial value.
+     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <R> Signal<R> map(V init, WiseBiFunction<V, V, R> converter) {
+        return map(init, I.quiet(converter));
     }
 
     /**
