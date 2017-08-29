@@ -1494,11 +1494,9 @@ public class I {
      * Execute the specified task in background {@link Thread} with the specified delay.
      * </p>
      *
-     * @param delay A initial delay time.
-     * @param unit A delay time unit.
-     * @param parallelExecution The <code>true</code> will execute task in parallel,
-     *            <code>false</code> will execute task in serial.
      * @param task A task to execute.
+     * @param interval A initial delay time.
+     * @param unit A delay time unit.
      */
     public static Future<?> schedule(Runnable task, long interval, TimeUnit unit) {
         return parallel.scheduleWithFixedDelay(task, 0, interval, unit);
