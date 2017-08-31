@@ -288,6 +288,20 @@ public class Subject<V, R> {
      * Helper method to check whether the related event observers are disposed completely or not.
      * </p>
      */
+    public boolean isCompleteEventReceieved() {
+        for (Listener listener : listeners) {
+            if (listener.completed == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * <p>
+     * Helper method to check whether the related event observers are disposed completely or not.
+     * </p>
+     */
     public boolean isCompleted() {
         assert observers.isEmpty();
         return true;
@@ -321,12 +335,15 @@ public class Subject<V, R> {
     }
 
     /**
-     * @version 2015/05/23 9:24:51
+     * @version 2017/09/01 0:18:53
      */
     private static class Listener<V> implements Observer<V> {
 
         /** The value holder. */
         private final List<V> values = new ArrayList();
+
+        /** The complete flag. */
+        private boolean completed = false;
 
         /**
          * {@inheritDoc}
@@ -334,6 +351,14 @@ public class Subject<V, R> {
         @Override
         public void accept(V value) {
             values.add(value);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void complete() {
+            completed = true;
         }
     }
 

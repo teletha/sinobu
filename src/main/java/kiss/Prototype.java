@@ -38,7 +38,13 @@ public class Prototype<M> implements Lifestyle<M> {
      */
     protected Prototype(Class<M> modelClass) {
         // find default constructor as instantiator
-        Constructor<M> constructor = Model.collectConstructors(modelClass)[0];
+        Constructor<M>[] constructors = Model.collectConstructors(modelClass);
+
+        if (constructors.length == 0) {
+            throw new Error(modelClass + " is invalid model.");
+        }
+        Constructor<M> constructor = constructors[0];
+
         Class[] types = constructor.getParameterTypes();
 
         // We can safely call the method 'newInstance()' because the generated class has

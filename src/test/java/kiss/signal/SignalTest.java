@@ -138,6 +138,23 @@ public class SignalTest {
     }
 
     @Test
+    public void combineComplete() throws Exception {
+        Subject<Integer, Integer> other = new Subject<>(signal -> signal);
+        Subject<String, Ⅱ<String, Integer>> main = new Subject<>(signal -> signal.combine(other.signal()));
+
+        assert main.isCompleteEventReceieved() == false;
+        assert other.isCompleteEventReceieved() == false;
+
+        main.complete();
+        assert main.isCompleteEventReceieved() == false;
+        assert other.isCompleteEventReceieved() == false;
+
+        other.complete();
+        assert main.isCompleteEventReceieved();
+        assert other.isCompleteEventReceieved();
+    }
+
+    @Test
     public void combineBinary() throws Exception {
         Subject<Integer, Integer> other = new Subject<>();
         Subject<String, Ⅱ<String, Integer>> main = new Subject<>(signal -> signal.combine(other.signal()));
@@ -202,6 +219,23 @@ public class SignalTest {
 
         assert subject.dispose();
         assert sub.isCompleted();
+    }
+
+    @Test
+    public void combineLatestComplete() throws Exception {
+        Subject<Integer, Integer> other = new Subject<>(signal -> signal);
+        Subject<String, Ⅱ<String, Integer>> main = new Subject<>(signal -> signal.combineLatest(other.signal()));
+
+        assert main.isCompleteEventReceieved() == false;
+        assert other.isCompleteEventReceieved() == false;
+
+        main.complete();
+        assert main.isCompleteEventReceieved() == false;
+        assert other.isCompleteEventReceieved() == false;
+
+        other.complete();
+        assert main.isCompleteEventReceieved();
+        assert other.isCompleteEventReceieved();
     }
 
     @Test

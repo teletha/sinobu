@@ -494,7 +494,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O>pair).combine(another, Ⅱ<V, O>::<A>append);
+        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -515,6 +515,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             ArrayDeque<V> baseValue = new ArrayDeque();
             ArrayDeque<O> otherValue = new ArrayDeque();
+            Runnable complete = countable(observer::complete, 2);
 
             return to(value -> {
                 if (otherValue.isEmpty()) {
@@ -522,13 +523,13 @@ public final class Signal<V> {
                 } else {
                     observer.accept(function.apply(value, otherValue.pollFirst()));
                 }
-            }, observer::error, observer::complete, disposer).add(other.to(value -> {
+            }, observer::error, complete, disposer).add(other.to(value -> {
                 if (baseValue.isEmpty()) {
                     otherValue.add(value);
                 } else {
                     observer.accept(function.apply(baseValue.pollFirst(), value));
                 }
-            }, observer::error, observer::complete, disposer));
+            }, observer::error, complete, disposer));
         });
     }
 
@@ -600,7 +601,7 @@ public final class Signal<V> {
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O>pair).combineLatest(another, Ⅱ<V, O>::<A>append);
+        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
     }
 
     /**
@@ -620,6 +621,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<V> baseValue = new AtomicReference(UNDEFINED);
             AtomicReference<O> otherValue = new AtomicReference(UNDEFINED);
+            Runnable complete = countable(observer::complete, 2);
 
             return to(value -> {
                 baseValue.set(value);
@@ -628,7 +630,7 @@ public final class Signal<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(value, joined));
                 }
-            }, observer::error, observer::complete, disposer).add(other.to(value -> {
+            }, observer::error, complete, disposer).add(other.to(value -> {
                 otherValue.set(value);
 
                 V joined = baseValue.get();
@@ -636,7 +638,7 @@ public final class Signal<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(joined, value));
                 }
-            }, observer::error, observer::complete, disposer));
+            }, observer::error, complete, disposer));
         });
     }
 
@@ -2160,6 +2162,23 @@ public final class Signal<V> {
             }
             return false;
         });
+    }
+
+    /**
+     * Create event delegater with counter.
+     * 
+     * @param delgator
+     * @param count
+     * @return
+     */
+    private Runnable countable(Runnable delgator, int count) {
+        AtomicInteger counter = new AtomicInteger();
+
+        return () -> {
+            if (counter.incrementAndGet() == count) {
+                delgator.run();
+            }
+        };
     }
 
     // /**
