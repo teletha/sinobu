@@ -75,17 +75,20 @@ public class JSON {
         for (String name : path.split("\\.")) {
             current = current.flatMap(v -> {
                 if (v instanceof Map) {
-                    int i = name.lastIndexOf('[');
-                    String main = i == -1 ? name : name.substring(0, i);
-                    Object value = ((Map) v).get(main);
+                    if (name.equals("*")) {
+                        return I.signal(((Map) v).values());
+                    } else {
+                        int i = name.lastIndexOf('[');
+                        String main = i == -1 ? name : name.substring(0, i);
+                        Object value = ((Map) v).get(main);
 
-                    if (i != -1) {
-                        return I.signal(((Map) value).get(name.substring(i + 1, name.length() - 1)));
-                    } else if (value instanceof LinkedHashMap) {
-                        return I.signal(((Map) value).values());
+                        if (i != -1) {
+                            return I.signal(((Map) value).get(name.substring(i + 1, name.length() - 1)));
+                        } else if (value instanceof LinkedHashMap) {
+                            return I.signal(((Map) value).values());
+                        }
+                        return I.signal(value);
                     }
-
-                    return I.signal(value);
                 } else {
                     return Signal.NEVER;
                 }

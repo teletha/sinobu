@@ -177,6 +177,24 @@ public class PathTest {
         assert values.get(2).getFirstName().equals("Alice");
     }
 
+    @Test
+    public void arrayRoot() throws Exception {
+        // @formatter:off
+        JSON json = json(
+        "[",
+        "    {'firstName': 'Jill'},",
+        "    {'firstName': 'Bell'},",
+        "    {'firstName': 'Alice'}",
+        "]");
+        // @formatter:on
+
+        List<Person> values = json.find("*", Person.class).toList();
+        assert values.size() == 3;
+        assert values.get(0).getFirstName().equals("Jill");
+        assert values.get(1).getFirstName().equals("Bell");
+        assert values.get(2).getFirstName().equals("Alice");
+    }
+
     /**
      * <p>
      * Write JSON.
