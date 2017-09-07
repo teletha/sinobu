@@ -35,4 +35,23 @@ public class DelayTest extends SignalTester {
 
         assert main.emit("delay").value("delay");
     }
+
+    @Test
+    public void delayByCount1() throws Exception {
+        monitor(signal -> signal.delay(1));
+
+        assert main.emit("1").value();
+        assert main.emit("2").value("1");
+        assert main.emit("3").value("2");
+    }
+
+    @Test
+    public void delayByCount2() throws Exception {
+        monitor(signal -> signal.delay(2));
+
+        assert main.emit("1").value();
+        assert main.emit("2").value();
+        assert main.emit("3").value("1");
+        assert main.emit("4").value("2");
+    }
 }

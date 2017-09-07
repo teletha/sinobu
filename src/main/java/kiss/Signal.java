@@ -738,6 +738,32 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Indicates the {@link Signal} sequence by item count with the specified source and time.
+     * </p>
+     *
+     * @param count The positive time used to shift the {@link Signal} sequence. Zero or negative
+     *            number will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> delay(long count) {
+        // ignore invalid parameters
+        if (count <= 0) {
+            return this;
+        }
+        return new Signal<>((observer, disposer) -> {
+            Deque<V> queue = new ArrayDeque<>();
+
+            return disposer.add(to(value -> {
+                if (count <= queue.size()) {
+                    observer.accept(queue.pollFirst());
+                }
+                queue.addLast(value);
+            }));
+        });
+    }
+
+    /**
+     * <p>
      * Indicates the {@link Signal} sequence by due time with the specified source and time.
      * </p>
      *
