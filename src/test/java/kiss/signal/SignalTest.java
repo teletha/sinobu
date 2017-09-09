@@ -867,18 +867,6 @@ public class SignalTest {
     }
 
     @Test
-    public void skipUntilCondition() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(value -> value % 3 == 0));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == 30;
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
-    }
-
-    @Test
     public void skipUntilConditionWithRepeat() {
         Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(value -> value % 3 == 0).take(2).repeat());
 

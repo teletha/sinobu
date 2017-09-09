@@ -1587,6 +1587,32 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
+     * </p>
+     *
+     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> skip(Signal<Boolean> condition) {
+        return take(condition.map(v -> !v), true);
+    }
+
+    /**
+     * <p>
+     * Returns a specified index values from the start of an {@link Signal} sequence.
+     * </p>
+     * 
+     * @param condition A index condition of values to emit.
+     * @return Chainable API.
+     */
+    public final Signal<V> skipAt(IntPredicate condition) {
+        return takeAt(condition.negate());
+    }
+
+    /**
+     * <p>
      * Alias for skip(Objects::isNull).
      * </p>
      *
@@ -1594,6 +1620,33 @@ public final class Signal<V> {
      */
     public final Signal<V> skipNull() {
         return skip(Objects::isNull);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} sequence while the specified duration.
+     * </p>
+     *
+     * @param time Time to skip values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> skipUntil(long time, TimeUnit unit) {
+        // ignore invalid parameters
+        if (time <= 0 || unit == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            long timing = System.nanoTime() + unit.toNanos(time);
+
+            return to(value -> {
+                if (System.nanoTime() > timing) {
+                    observer.accept(value);
+                }
+            }, observer::error, observer::complete, disposer);
+        });
     }
 
     /**
@@ -1685,6 +1738,21 @@ public final class Signal<V> {
             return this;
         }
         return take(condition.startWith(false).map(value -> !value));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long
+     * as a specified condition holds true, but emits all further source items as soon as the
+     * condition becomes false.
+     * </p>
+     *
+     * @param predicate A function to test each item emitted from the source {@link Signal}.
+     * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal}
+     *         when the specified predicate becomes false.
+     */
+    public final Signal<V> skipWhile(Predicate<? super V> predicate) {
+        return skipUntil(predicate.negate());
     }
 
     /**
@@ -1929,13 +1997,27 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> take(Signal<Boolean> condition) {
+        return take(condition, false);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
+     * </p>
+     *
+     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    private final Signal<V> take(Signal<Boolean> condition, boolean init) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
         }
 
         return new Signal<>((observer, disposer) -> {
-            AtomicBoolean flag = new AtomicBoolean();
+            AtomicBoolean flag = new AtomicBoolean(init);
 
             return condition.to(flag::set, observer::error, observer::complete, disposer).add(to(v -> {
                 if (flag.get()) {
@@ -1945,6 +2027,14 @@ public final class Signal<V> {
         });
     }
 
+    /**
+     * <p>
+     * Returns a specified index values from the start of an {@link Signal} sequence.
+     * </p>
+     * 
+     * @param condition A index condition of values to emit.
+     * @return Chainable API.
+     */
     public final Signal<V> takeAt(IntPredicate condition) {
         if (condition == null) {
             return this;
@@ -2105,6 +2195,22 @@ public final class Signal<V> {
             // disposer.dispose();
             // }, disposer));
         });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items emitted by the source {@link Signal}, checks the
+     * specified predicate for each item, and then completes if the condition is satisfied.
+     * </p>
+     *
+     * @param condition A function that evaluates an item emitted by the source {@link Signal} and
+     *            returns a Boolean.
+     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks
+     *         the specified condition after each item, and then completes if the condition is
+     *         satisfied.
+     */
+    public final Signal<V> takeWhile(Predicate<V> condition) {
+        return takeUntil(condition.negate());
     }
 
     /**

@@ -98,17 +98,6 @@ public class TakeTest extends SignalTester {
     }
 
     @Test
-    public void takeUntilValueCondition() {
-        monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
-
-        assert main.emit(1, 2).value(1, 2);
-        assert main.isNotCompleted();
-
-        assert main.emit(3, 4).value(3);
-        assert main.isCompleted();
-    }
-
-    @Test
     public void takeUntilSignal() {
         monitor(signal -> signal.takeUntil(other.signal()));
 
@@ -120,5 +109,27 @@ public class TakeTest extends SignalTester {
         assert main.emit(1, 2).value();
         assert main.isCompleted();
         assert other.isCompleted();
+    }
+
+    @Test
+    public void takeUntilValueCondition() {
+        monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
+
+        assert main.emit(1, 2).value(1, 2);
+        assert main.isNotCompleted();
+
+        assert main.emit(3, 4).value(3);
+        assert main.isCompleted();
+    }
+
+    @Test
+    public void takeWhileValueCondition() {
+        monitor(int.class, signal -> signal.takeWhile(value -> value != 3));
+
+        assert main.emit(1, 2).value(1, 2);
+        assert main.isNotCompleted();
+
+        assert main.emit(3, 4).value(3);
+        assert main.isCompleted();
     }
 }
