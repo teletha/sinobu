@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -1237,7 +1238,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException>quiet(throwable);
+            return I.<RuntimeException> quiet(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1973,7 +1974,10 @@ public class I {
                 input = ((URI) input).toURL();
             }
             if (input instanceof URL) {
-                input = ((URL) input).openStream();
+                URL url = (URL) input;
+                URLConnection connection = url.openConnection();
+                connection.setRequestProperty("User-Agent", "");
+                input = connection.getInputStream();
             } else if (input instanceof File) {
                 input = new FileInputStream((File) input);
             }
