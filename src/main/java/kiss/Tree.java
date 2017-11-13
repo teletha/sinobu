@@ -21,8 +21,6 @@ import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-import sun.misc.SharedSecrets;
-
 /**
  * <p>
  * The skeleton of DSL for tree structure.
@@ -66,9 +64,10 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
         this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder : id -> {
             Exception e = new Exception();
+            StackTraceElement[] elements = e.getStackTrace();
 
             for (int i = 2; i < 7; i++) {
-                StackTraceElement element = SharedSecrets.getJavaLangAccess().getStackTraceElement(e, i);
+                StackTraceElement element = elements[i];
 
                 if (!element.getClassName().equals(THIS)) {
                     return hash(element.getLineNumber() ^ id);
