@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -1126,6 +1127,42 @@ public final class Signal<V> {
      */
     public final <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
         return flatVariable(I.quiet(function));
+    }
+
+    /**
+     * @return
+     */
+    public final Signal<V> fork() {
+        Disposable[] source = new Disposable[1];
+        List<Observer<? super V>> observers = new CopyOnWriteArrayList<>();
+
+        return new Signal<>((observer, disposer) -> {
+            if (observers.isEmpty()) {
+                source[0] = to(v -> {
+                    for (Observer<? super V> o : observers) {
+                        o.accept(v);
+                    }
+                }, e -> {
+                    for (Observer<? super V> o : observers) {
+                        o.error(e);
+                    }
+                }, () -> {
+                    for (Observer<? super V> o : observers) {
+                        o.complete();
+                    }
+                });
+            }
+            observers.add(observer);
+
+            return () -> {
+                observers.remove(observer);
+
+                if (observers.isEmpty() && source[0] != null) {
+                    source[0].dispose();
+                    source[0] = null;
+                }
+            };
+        });
     }
 
     /**
