@@ -1506,6 +1506,47 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Returns a new {@link Signal} that multicasts (shares) the original {@link Signal}. As long as
+     * there is at least one {@link Observer} this {@link Signal} will be subscribed and emitting
+     * data. When all observers have disposed it will disposes from the source {@link Signal}.
+     * </p>
+     * 
+     * @return Chainable API.
+     */
+    public final Signal<V> share() {
+        Disposable root = Disposable.empty();
+        List<Observer<? super V>> observers = new CopyOnWriteArrayList();
+
+        return new Signal<>((observer, dispoer) -> {
+            if (observers.isEmpty()) {
+                root.add(to(v -> {
+                    for (Observer<? super V> o : observers) {
+                        o.accept(v);
+                    }
+                }, e -> {
+                    for (Observer<? super V> o : observers) {
+                        o.error(e);
+                    }
+                }, () -> {
+                    for (Observer<? super V> o : observers) {
+                        o.complete();
+                    }
+                }));
+            }
+            observers.add(observer);
+
+            return () -> {
+                observers.remove(observer);
+
+                if (observers.isEmpty()) {
+                    root.dispose();
+                }
+            };
+        });
+    }
+
+    /**
+     * <p>
      * Alias for take(condition.negate()).
      * </p>
      *
