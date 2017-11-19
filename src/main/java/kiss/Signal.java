@@ -1482,7 +1482,9 @@ public final class Signal<V> {
         List<Observer<? super V>> observers = new CopyOnWriteArrayList();
 
         return new Signal<>((observer, dispoer) -> {
-            if (observers.isEmpty()) {
+            observers.add(observer);
+
+            if (observers.size() == 1) {
                 root.add(to(v -> {
                     for (Observer<? super V> o : observers) {
                         o.accept(v);
@@ -1497,7 +1499,6 @@ public final class Signal<V> {
                     }
                 }));
             }
-            observers.add(observer);
 
             return () -> {
                 observers.remove(observer);
