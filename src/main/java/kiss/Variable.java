@@ -1427,6 +1427,17 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /**
      * <p>
+     * Observe this {@link Variable} with the current value.
+     * </p>
+     *
+     * @return
+     */
+    public Signal<V> observeNow() {
+        return observe().startWith(v);
+    }
+
+    /**
+     * <p>
      * If the value is present, return this {@link Variable}. If the value is absent, return other
      * {@link Variable}.
      * </p>
