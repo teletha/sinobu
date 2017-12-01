@@ -789,7 +789,7 @@ public final class Signal<V> {
                 });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, observer::complete, disposer);
+            }, observer::error, () -> I.schedule(time, unit, false, observer::complete), disposer);
         });
     }
 
