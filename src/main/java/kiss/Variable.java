@@ -1496,7 +1496,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> set(V value) {
+    public V set(V value) {
         return setIf(I.accept(), value);
     }
 
@@ -1508,7 +1508,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> set(Optional<V> value) {
+    public V set(Optional<V> value) {
         return setIf(I.accept(), value);
     }
 
@@ -1520,7 +1520,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> set(Variable<V> value) {
+    public V set(Variable<V> value) {
         return setIf(I.accept(), value);
     }
 
@@ -1532,7 +1532,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value generator.
      * @return A previous value.
      */
-    public Variable<V> set(Supplier<V> value) {
+    public V set(Supplier<V> value) {
         return setIf(I.accept(), value);
     }
 
@@ -1544,7 +1544,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value generator.
      * @return A previous value.
      */
-    public Variable<V> set(UnaryOperator<V> value) {
+    public V set(UnaryOperator<V> value) {
         return setIf(I.accept(), value);
     }
 
@@ -1557,7 +1557,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> setIf(Predicate<V> condition, V value) {
+    public V setIf(Predicate<V> condition, V value) {
         return setIf(condition, of(value));
     }
 
@@ -1570,7 +1570,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> setIf(Predicate<V> condition, Optional<V> value) {
+    public V setIf(Predicate<V> condition, Optional<V> value) {
         return setIf(condition, of(value));
     }
 
@@ -1583,7 +1583,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> setIf(Predicate<V> condition, Variable<V> value) {
+    public V setIf(Predicate<V> condition, Variable<V> value) {
         return assign(condition, value, false);
     }
 
@@ -1596,7 +1596,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> setIf(Predicate<V> condition, Supplier<V> value) {
+    public V setIf(Predicate<V> condition, Supplier<V> value) {
         return setIf(condition, of(value));
     }
 
@@ -1609,7 +1609,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> setIf(Predicate<V> condition, UnaryOperator<V> value) {
+    public V setIf(Predicate<V> condition, UnaryOperator<V> value) {
         return setIf(condition, value == null ? null : value.apply(v));
     }
 
@@ -1621,7 +1621,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> let(V value) {
+    public V let(V value) {
         return letIf(I.accept(), value);
     }
 
@@ -1633,7 +1633,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> let(Optional<V> value) {
+    public V let(Optional<V> value) {
         return letIf(I.accept(), value);
     }
 
@@ -1645,7 +1645,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> let(Variable<V> value) {
+    public V let(Variable<V> value) {
         return letIf(I.accept(), value);
     }
 
@@ -1657,7 +1657,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value generator.
      * @return A previous value.
      */
-    public Variable<V> let(Supplier<V> value) {
+    public V let(Supplier<V> value) {
         return letIf(I.accept(), value);
     }
 
@@ -1669,7 +1669,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value generator.
      * @return A previous value.
      */
-    public Variable<V> let(UnaryOperator<V> value) {
+    public V let(UnaryOperator<V> value) {
         return letIf(I.accept(), value);
     }
 
@@ -1682,7 +1682,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> letIf(Predicate<V> condition, V value) {
+    public V letIf(Predicate<V> condition, V value) {
         return letIf(condition, of(value));
     }
 
@@ -1695,7 +1695,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> letIf(Predicate<V> condition, Optional<V> value) {
+    public V letIf(Predicate<V> condition, Optional<V> value) {
         return letIf(condition, of(value));
     }
 
@@ -1708,7 +1708,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> letIf(Predicate<V> condition, Variable<V> value) {
+    public V letIf(Predicate<V> condition, Variable<V> value) {
         return assign(condition, value, true);
     }
 
@@ -1721,7 +1721,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> letIf(Predicate<V> condition, Supplier<V> value) {
+    public V letIf(Predicate<V> condition, Supplier<V> value) {
         return letIf(condition, of(value));
     }
 
@@ -1734,7 +1734,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public Variable<V> letIf(Predicate<V> condition, UnaryOperator<V> value) {
+    public V letIf(Predicate<V> condition, UnaryOperator<V> value) {
         return letIf(condition, value == null ? null : value.apply(v));
     }
 
@@ -1748,7 +1748,9 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param let A state of let or set.
      * @return A previous value.
      */
-    private Variable<V> assign(Predicate<V> condition, Variable<V> value, boolean let) {
+    private V assign(Predicate<V> condition, Variable<V> value, boolean let) {
+        V prev = v;
+
         if (fix.get() == false) {
             if (is(condition)) {
                 if (fix.compareAndSet(false, let)) {
@@ -1766,7 +1768,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
                 }
             }
         }
-        return this;
+        return prev;
     }
 
     /**

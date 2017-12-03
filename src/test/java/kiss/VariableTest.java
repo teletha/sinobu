@@ -134,109 +134,118 @@ public class VariableTest {
 
     @Test
     public void set() {
-        assert string.set("change").is("change");
-        assert string.set(() -> "supply").is("supply");
-        assert string.set(current -> current + " update").is("supply update");
-        assert string.set(Optional.of("optional")).is("optional");
-        assert string.set(Variable.of("variable")).is("variable");
+        assert string.set("change").equals("value");
+        assert string.set(() -> "supply").equals("change");
+        assert string.set(current -> current + " update").equals("supply");
+        assert string.set(Optional.of("optional")).equals("supply update");
+        assert string.set(Variable.of("variable")).equals("optional");
+        assert string.is("variable");
     }
 
     @Test
     public void setNull() {
-        assert string.set((String) null).isAbsent();
+        assert string.set((String) null).equals("value");
+        assert string.isAbsent();
     }
 
     @Test
     public void setNullSupplier() {
-        assert string.set((Supplier<String>) null).isAbsent();
+        assert string.set((Supplier<String>) null).equals("value");
+        assert string.isAbsent();
     }
 
     @Test
     public void setNullOperator() {
-        assert string.set((UnaryOperator<String>) null).isAbsent();
+        assert string.set((UnaryOperator<String>) null).equals("value");
+        assert string.isAbsent();
     }
 
     @Test
     public void setNullOptional() {
-        assert string.set((Optional) null).isAbsent();
+        assert string.set((Optional) null).equals("value");
+        assert string.isAbsent();
     }
 
     @Test
     public void setNullVariable() {
-        assert string.set((Variable) null).isAbsent();
+        assert string.set((Variable) null).equals("value");
+        assert string.isAbsent();
     }
 
     @Test
     public void setIf() {
-        assert string.setIf(I.reject(), "change").is("value");
-        assert string.setIf(I.reject(), () -> "supply").is("value");
-        assert string.setIf(I.reject(), current -> current + " update").is("value");
-        assert string.setIf(I.reject(), Optional.of("optional")).is("value");
-        assert string.setIf(I.reject(), Variable.of("variable")).is("value");
+        assert string.setIf(I.reject(), "change").equals("value");
+        assert string.setIf(I.reject(), () -> "supply").equals("value");
+        assert string.setIf(I.reject(), current -> current + " update").equals("value");
+        assert string.setIf(I.reject(), Optional.of("optional")).equals("value");
+        assert string.setIf(I.reject(), Variable.of("variable")).equals("value");
+        assert string.is("value");
 
-        assert string.setIf(I.accept(), "change").is("change");
-        assert string.setIf(I.accept(), () -> "supply").is("supply");
-        assert string.setIf(I.accept(), current -> current + " update").is("supply update");
-        assert string.setIf(I.accept(), Optional.of("optional")).is("optional");
-        assert string.setIf(I.accept(), Variable.of("variable")).is("variable");
+        assert string.setIf(I.accept(), "change").equals("value");
+        assert string.setIf(I.accept(), () -> "supply").equals("change");
+        assert string.setIf(I.accept(), current -> current + " update").equals("supply");
+        assert string.setIf(I.accept(), Optional.of("optional")).equals("supply update");
+        assert string.setIf(I.accept(), Variable.of("variable")).equals("optional");
+        assert string.is("variable");
     }
 
     @Test
     public void setIfNullCondition() {
-        assert string.setIf(null, "change").is("value");
-        assert string.setIf(null, () -> "supply").is("value");
-        assert string.setIf(null, current -> current + " update").is("value");
-        assert string.setIf(null, Optional.of("optional")).is("value");
-        assert string.setIf(null, Variable.of("variable")).is("value");
+        assert string.setIf(null, "change").equals("value");
+        assert string.setIf(null, () -> "supply").equals("value");
+        assert string.setIf(null, current -> current + " update").equals("value");
+        assert string.setIf(null, Optional.of("optional")).equals("value");
+        assert string.setIf(null, Variable.of("variable")).equals("value");
+        assert string.is("value");
     }
 
     @Test
     public void let() {
-        assert string.let("immutable").is("immutable");
-        assert string.set("failed").is("immutable");
-        assert string.let("failed").is("immutable");
+        assert string.let("immutable").equals("value");
+        assert string.set("failed").equals("immutable");
+        assert string.let("failed").equals("immutable");
     }
 
     @Test
     public void letNull() {
-        assert string.let((String) null).isAbsent();
-        assert string.set("failed").isAbsent();
-        assert string.let("failed").isAbsent();
+        assert string.let((String) null).equals("value");
+        assert string.set("failed") == null;
+        assert string.let("failed") == null;
     }
 
     @Test
     public void letIf() {
-        assert string.letIf(I.reject(), "rejected").is("value");
+        assert string.letIf(I.reject(), "rejected").equals("value");
 
-        assert string.letIf(I.accept(), "accepted").is("accepted");
-        assert string.letIf(I.accept(), "failed").is("accepted");
-        assert string.letIf(I.accept(), "failed").is("accepted");
+        assert string.letIf(I.accept(), "accepted").equals("value");
+        assert string.letIf(I.accept(), "failed").equals("accepted");
+        assert string.letIf(I.accept(), "failed").equals("accepted");
     }
 
     @Test
     public void letIfNull() {
-        assert string.letIf(I.reject(), (String) null).is("value");
-        assert string.setIf(I.reject(), "rejected").is("value");
-        assert string.letIf(I.reject(), "rejected").is("value");
+        assert string.letIf(I.reject(), (String) null).equals("value");
+        assert string.setIf(I.reject(), "rejected").equals("value");
+        assert string.letIf(I.reject(), "rejected").equals("value");
 
-        assert string.letIf(I.accept(), (String) null).isAbsent();
-        assert string.setIf(I.accept(), "failed").isAbsent();
-        assert string.letIf(I.accept(), "failed").isAbsent();
+        assert string.letIf(I.accept(), (String) null).equals("value");
+        assert string.setIf(I.accept(), "failed") == null;
+        assert string.letIf(I.accept(), "failed") == null;
     }
 
     @Test
     public void letSupplier() {
         Supplier<String> updater = () -> "supplied";
-        assert string.let(updater).is("supplied");
-        assert string.let(updater).is("supplied");
+        assert string.let(updater).equals("value");
+        assert string.let(updater).equals("supplied");
     }
 
     @Test
     public void letNullSupplier() {
         Supplier<String> updater = null;
-        assert string.let(updater).isAbsent();
-        assert string.let(() -> "failed").isAbsent();
-        assert string.let(() -> "failed").isAbsent();
+        assert string.let(updater).equals("value");
+        assert string.let(() -> "failed") == null;
+        assert string.let(() -> "failed") == null;
     }
 
     @Test
