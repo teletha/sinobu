@@ -1415,13 +1415,13 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
             }
             observers.add(observer);
 
-            return () -> {
+            return disposer.add(() -> {
                 observers.remove(observer);
 
                 if (observers.isEmpty()) {
                     observers = null;
                 }
-            };
+            });
         });
     }
 

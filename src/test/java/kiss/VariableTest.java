@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -326,5 +328,38 @@ public class VariableTest {
         assert one.hashCode() == other.hashCode();
         assert one.equals(other);
         assert other.equals(one);
+    }
+
+    @Test
+    public void observeDispose() throws Exception {
+        Variable<String> start = Variable.of("test");
+        Variable<String> end = start.observe().take(1).to();
+        assert end.isAbsent();
+        assert checkObserverSize(start) == 1;
+
+        start.set("first");
+        assert end.is("first");
+        assert checkObserverSize(start) == 0;
+
+        start.set("second");
+        assert end.is("first");
+    }
+
+    /**
+     * Helper method to private field data.
+     * 
+     * @param variable
+     * @return
+     */
+    private int checkObserverSize(Variable variable) {
+        try {
+            Field field = Variable.class.getDeclaredField("observers");
+            field.setAccessible(true);
+
+            List list = (List) field.get(variable);
+            return list == null ? 0 : list.size();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 }
