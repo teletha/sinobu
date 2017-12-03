@@ -1999,6 +1999,38 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Alias for take(I.set(includes)).
+     * </p>
+     *
+     * @param includes A collection of take items.
+     * @return Chainable API.
+     */
+    public final Signal<V> take(V... includes) {
+        // ignore invalid parameter
+        if (includes == null) {
+            return this;
+        }
+        return take(I.set(includes));
+    }
+
+    /**
+     * <p>
+     * Alias for take(v -> includes.contains(v)).
+     * </p>
+     *
+     * @param includes A collection of take items.
+     * @return Chainable API.
+     */
+    public final Signal<V> take(Collection<V> includes) {
+        // ignore invalid parameter
+        if (includes == null) {
+            return this;
+        }
+        return take(includes::contains);
+    }
+
+    /**
+     * <p>
      * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
      * given predicate.
      * </p>

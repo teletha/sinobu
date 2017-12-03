@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 
 import org.junit.Test;
 
+import kiss.I;
 import kiss.SignalTester;
 
 /**
@@ -26,6 +27,22 @@ public class TakeTest extends SignalTester {
         monitor(int.class, signal -> signal.take(value -> value % 2 == 0));
 
         assert main.emit(1, 2, 3, 4).value(2, 4);
+        assert main.isNotCompleted();
+    }
+
+    @Test
+    public void takeValues() {
+        monitor(int.class, signal -> signal.take(2, 3));
+
+        assert main.emit(1, 2, 3, 4).value(2, 3);
+        assert main.isNotCompleted();
+    }
+
+    @Test
+    public void takeCollection() {
+        monitor(int.class, signal -> signal.take(I.set(2, 3)));
+
+        assert main.emit(1, 2, 3, 4).value(2, 3);
         assert main.isNotCompleted();
     }
 
