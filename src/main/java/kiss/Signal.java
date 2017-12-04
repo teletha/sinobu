@@ -1325,7 +1325,13 @@ public final class Signal<V> {
             scheduler.accept(() -> {
                 observer.accept(v);
             });
-        }, observer::error, observer::complete, disposer));
+        }, e -> {
+            scheduler.accept(() -> {
+                observer.error(e);
+            });
+        }, () -> {
+            scheduler.accept(observer::complete);
+        }, disposer));
     }
 
     /**
