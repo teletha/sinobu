@@ -44,9 +44,9 @@ import java.util.stream.BaseStream;
 import kiss.signal.StartWithTest;
 
 /**
- * @version 2017/12/13 9:16:19
+ * @version 2017/04/04 11:25:38
  */
-public class Signal<V> {
+public final class Signal<V> {
 
     /**
      * For reuse.
