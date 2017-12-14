@@ -1503,7 +1503,7 @@ public final class Signal<V> {
                     for (Observer<? super V> o : observers) {
                         o.complete();
                     }
-                }));
+                }, dispoer));
             }
 
             return () -> {
