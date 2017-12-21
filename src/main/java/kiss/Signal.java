@@ -1420,6 +1420,90 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Generates an {@link Signal} sequence that retry the given value infinitely.
+     * </p>
+     *
+     * @return Chainable API.
+     */
+    public final Signal<V> retry() {
+        return retryUntil(NEVER);
+    }
+
+    /**
+     * <p>
+     * Generates an {@link Signal} sequence that retry the given value finitely.
+     * </p>
+     *
+     * @param count A number of retry. Zero or negative number will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> retry(int count) {
+        // ignore invalid parameter
+        if (count < 1) {
+            return this;
+        }
+        return retryUntil(new AtomicInteger(count + 1), v -> v.decrementAndGet() > 0);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that retry the sequence of items emitted by the source
+     * {@link Signal} until the provided condition function returns false.
+     * </p>
+     * 
+     * @param condition A condition supplier that is called when the current {@link Signal}
+     *            completes and unless it returns false, the current {@link Signal} is resubscribed.
+     * @return Chainable API.
+     */
+    public final Signal<V> retryIf(BooleanSupplier condition) {
+        if (condition == null) {
+            return this;
+        }
+        return retryUntil(condition, BooleanSupplier::getAsBoolean);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that retry the sequence of items emitted by the source
+     * {@link Signal} until a stopper {@link Signal} emits an item.
+     * </p>
+     * 
+     * @param stopper A {@link Signal} whose first emitted item will stop repeating.
+     * @return Chainable API.
+     */
+    public final Signal<V> retryUntil(Signal stopper) {
+        return retryUntil(stopper.take(1).to(), Variable::isAbsent);
+    }
+
+    /**
+     * <p>
+     * </p>
+     * 
+     * @param init
+     * @param condition
+     * @return
+     */
+    private <T> Signal<V> retryUntil(T init, Predicate<T> condition) {
+        return new Signal<>((observer, disposer) -> {
+            Disposable[] latest = new Disposable[1];
+
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.error = e -> {
+                latest[0].dispose();
+
+                if (condition.test(init)) {
+                    subscriber.add(latest[0] = to(subscriber.child()));
+                } else {
+                    observer.error(e);
+                }
+            };
+            return subscriber.add(latest[0] = to(subscriber.child(), disposer));
+        });
+    }
+
+    /**
+     * <p>
      * Returns an {@link Signal} that, when the specified sampler {@link Signal} emits an item,
      * emits the most recently emitted item (if any) emitted by the source {@link Signal} since the
      * previous emission from the sampler {@link Signal}.
