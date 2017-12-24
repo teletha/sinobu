@@ -1401,7 +1401,7 @@ public final class Signal<V> {
      */
     private <T> Signal<V> repeatUntil(T init, Predicate<T> condition) {
         return new Signal<>((observer, disposer) -> {
-            Disposable[] latest = new Disposable[1];
+            Disposable[] latest = new Disposable[] {Disposable.empty()};
 
             Subscriber subscriber = new Subscriber();
             subscriber.observer = observer;
@@ -1442,7 +1442,7 @@ public final class Signal<V> {
         if (count < 1) {
             return this;
         }
-        return retryUntil(new AtomicInteger(count + 1), v -> v.decrementAndGet() > 0);
+        return retryWhen(fail -> fail.take(count));
     }
 
     /**
@@ -1459,7 +1459,7 @@ public final class Signal<V> {
         if (condition == null) {
             return this;
         }
-        return retryUntil(condition, BooleanSupplier::getAsBoolean);
+        return retryWhen(fail -> fail.flatMap(v -> condition.getAsBoolean() ? I.signal(v) : I.signalError(v)));
     }
 
     /**
@@ -1472,33 +1472,45 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> retryUntil(Signal stopper) {
-        return retryUntil(stopper.take(1).to(), Variable::isAbsent);
+        return retryWhen(fail -> fail.takeUntil(stopper));
     }
 
     /**
-     * <p>
-     * </p>
+     * Returns an {@link Signal} that emits the same values as the source signal with the exception
+     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
+     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
+     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
+     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
+     * will resubscribe to the source {@link Signal}.
      * 
-     * @param init
-     * @param condition
-     * @return
+     * @param notificationHandler A receives an {@link Signal} of notifications with which a user
+     *            can complete or error, aborting the retry.
+     * @return Chainable API
      */
-    private <T> Signal<V> retryUntil(T init, Predicate<T> condition) {
+    public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> notificationHandler) {
         return new Signal<>((observer, disposer) -> {
-            Disposable[] latest = new Disposable[1];
+            Disposable[] latest = new Disposable[] {Disposable.empty()};
+            List<Observer<? super Throwable>> observers = new ArrayList();
 
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.error = e -> {
-                latest[0].dispose();
-
-                if (condition.test(init)) {
-                    subscriber.add(latest[0] = to(subscriber.child()));
-                } else {
-                    observer.error(e);
+                for (Observer<? super Throwable> o : observers) {
+                    o.accept(e);
                 }
             };
-            return subscriber.add(latest[0] = to(subscriber.child(), disposer));
+
+            notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
+                latest[0].dispose();
+                subscriber.add(latest[0] = to(subscriber));
+            }, e -> {
+                observer.error(e);
+            }, () -> {
+                subscriber.error = null;
+            });
+
+            return subscriber.add(latest[0] = to(subscriber, disposer));
         });
     }
 

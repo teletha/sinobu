@@ -1577,6 +1577,22 @@ public class I {
     }
 
     /**
+     * <p>
+     * Returns an {@link Signal} that invokes an {@link Observer#error(Throwable)} method when the
+     * {@link Observer} subscribes to it.
+     * </p>
+     *
+     * @param error An error to emit.
+     * @return The {@link Signal} to emit error.
+     */
+    public static <V, E extends Throwable> Signal<V> signalError(E error) {
+        return new Signal<V>((observer, disposer) -> {
+            observer.error(error);
+            return disposer;
+        });
+    }
+
+    /**
      * @param value A initial value.
      * @param time A time to interval.
      * @param unit A time unit.

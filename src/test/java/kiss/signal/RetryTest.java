@@ -14,6 +14,7 @@ import java.util.function.BooleanSupplier;
 
 import org.junit.Test;
 
+import kiss.I;
 import kiss.SignalTester;
 
 /**
@@ -23,43 +24,81 @@ public class RetryTest extends SignalTester {
 
     @Test
     public void retry() throws Exception {
-        monitor(signal -> signal.retry(3));
+        monitor(signal -> signal.startWith("retry").retry(3));
 
-        assert main.emit("error to retry 1", Error).value("error to retry 1");
+        assert main.value("retry");
+        assert main.emit(Error).value("retry");
         assert main.isNotError();
-        assert main.emit("error to retry 2", Error).value("error to retry 2");
+        assert main.emit(Error).value("retry");
         assert main.isNotError();
-        assert main.emit("error to retry 3", Error).value("error to retry 3");
+        assert main.emit(Error).value("retry");
         assert main.isNotError();
-        assert main.emit("fail", Error).value("fail");
+        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isError();
+        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isError();
+    }
+
+    @Test
+    public void retryWhenWithError() throws Exception {
+        monitor(signal -> signal.startWith("retry")
+                .retryWhen(fail -> fail.flatMap(e -> e instanceof Error ? I.signal(e) : I.signalError(e))));
+
+        assert main.value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+        assert main.emit("next will fail", IllegalStateException.class).value("next will fail");
+        assert main.isError();
+        assert main.emit("next will fail", IllegalStateException.class).value("next will fail");
+        assert main.isError();
+    }
+
+    @Test
+    public void retryWhenWithComplete() throws Exception {
+        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.take(2)));
+
+        assert main.value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isError();
+        assert main.emit("next will fail", Error).value("next will fail");
         assert main.isError();
     }
 
     @Test
     public void disposeRetry() throws Exception {
-        monitor(signal -> signal.retry(3));
+        monitor(signal -> signal.startWith("retry").retry(3));
 
-        assert main.emit("success to retry", Error).value("success to retry");
+        assert main.value("retry");
+        assert main.emit(Error).value("retry");
         assert main.isNotError();
 
         main.dispose();
-        assert main.emit("fail to repeat", Error).value();
+        assert main.emit("next will be ignored", Error).value();
         assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
     public void retryThenMerge() {
-        monitor(signal -> signal.retry(3).merge(other.signal()));
+        monitor(signal -> signal.startWith("retry").retry(3).merge(other.signal()));
 
         // from main
-        assert main.emit("skip", "take", Error).value("skip", "take");
-        assert main.emit("skip", "take", Error).value("skip", "take");
-        assert main.emit("skip", "take", Error).value("skip", "take");
+        assert main.value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.emit(Error).value("retry");
 
         // from other
         assert other.emit("external").value("external");
 
         assert main.isNotError();
+        assert main.isNotDisposed();
 
         // dispose
         main.dispose();
@@ -67,22 +106,25 @@ public class RetryTest extends SignalTester {
         assert other.emit("other is disposed so this value will be ignored").value();
 
         assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isDisposed();
     }
 
     @Test
     public void retryIf() throws Exception {
-        AtomicBoolean canRepeat = new AtomicBoolean(true);
-        monitor(signal -> signal.retryIf(canRepeat::get));
+        AtomicBoolean canRetry = new AtomicBoolean(true);
+        monitor(signal -> signal.startWith("retry").retryIf(canRetry::get));
 
-        assert main.emit(1, Error).value(1);
-        assert main.emit(2, Error).value(2);
-        assert main.emit(3, Error).value(3);
+        assert main.value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.emit(Error).value("retry");
         assert main.isNotError();
 
-        canRepeat.set(false);
-        assert main.emit(1, Error).value(1);
-        assert main.emit(2, Error).value();
-        assert main.emit(3, Error).value();
+        canRetry.set(false);
+        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isError();
+        assert main.emit("next will fail", Error).value("next will fail");
         assert main.isError();
     }
 
@@ -96,13 +138,17 @@ public class RetryTest extends SignalTester {
 
     @Test
     public void retryUntil() throws Exception {
-        monitor(signal -> signal.retryUntil(other.signal()));
+        monitor(signal -> signal.startWith("retry").retryUntil(other.signal()));
 
-        assert main.emit("success to retry", Error).value("success to retry");
-        assert main.emit("success to retry", Error).value("success to retry");
+        assert main.value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
 
         other.emit("never retry");
-        assert main.emit("last message", Error).value("last message");
-        assert main.emit("failt to retry", Error).value();
+        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isError();
+        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isError();
     }
 }
