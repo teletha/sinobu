@@ -54,8 +54,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -1577,33 +1579,41 @@ public class I {
     }
 
     /**
-     * <p>
-     * Returns an {@link Signal} that invokes an {@link Observer#error(Throwable)} method when the
-     * {@link Observer} subscribes to it.
-     * </p>
+     * Returns an {@link Signal} that emits {@code 0L} after a specified delay, and then completes.
      *
-     * @param error An error to emit.
-     * @return The {@link Signal} to emit error.
+     * @param delayTime The initial delay before emitting a single {@code 0L}.
+     * @param timeUnit Time units to use for {@code delay}.
+     * @return {@link Signal} that {@code 0L} after a specified delay, and then completes.
      */
-    public static <V, E extends Throwable> Signal<V> signalError(E error) {
-        return new Signal<V>((observer, disposer) -> {
-            observer.error(error);
-            return disposer;
+    public static Signal<Long> signal(long delayTime, TimeUnit timeUnit) {
+        return new Signal<>((observer, disposer) -> {
+            ScheduledFuture<?> future = parallel.schedule(() -> {
+                observer.accept(0L);
+                observer.complete();
+            }, delayTime, timeUnit);
+
+            return disposer.add(() -> future.cancel(true));
         });
     }
 
     /**
-     * @param value A initial value.
-     * @param time A time to interval.
-     * @param unit A time unit.
-     * @param <V> Value type.
-     * @return An {@link Signal} that emits values as a first sequence.
+     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
+     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * 
+     * @param delayTime The initial delay time to wait before emitting the first value of 0L
+     * @param intervalTime The period of time between emissions of the subsequent numbers
+     * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
+     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
+     *         numbers after each {@code intervalTime} of time thereafter
      */
-    public static <V> Signal<V> signalInfinite(V value, long time, TimeUnit unit) {
+    public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit) {
         return new Signal<>((observer, disposer) -> {
-            Future schedule = schedule(() -> observer.accept(value), time, unit);
+            AtomicLong count = new AtomicLong();
+            ScheduledFuture<?> future = parallel.scheduleAtFixedRate(() -> {
+                observer.accept(count.getAndIncrement());
+            }, delayTime, intervalTime, timeUnit);
 
-            return disposer.add(() -> schedule.cancel(true));
+            return disposer.add(() -> future.cancel(true));
         });
     }
 
@@ -1631,6 +1641,22 @@ public class I {
      */
     private static <T> Signal<T> signal(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
         return root.merge(root.flatMap(e -> signal(traverser.apply(I.signal(e)), traverser)));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that invokes an {@link Observer#error(Throwable)} method when the
+     * {@link Observer} subscribes to it.
+     * </p>
+     *
+     * @param error An error to emit.
+     * @return The {@link Signal} to emit error.
+     */
+    public static <V, E extends Throwable> Signal<V> signalError(E error) {
+        return new Signal<V>((observer, disposer) -> {
+            observer.error(error);
+            return disposer;
+        });
     }
 
     /**

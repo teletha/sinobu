@@ -150,13 +150,15 @@ public class SignalTester {
     }
 
     /**
-     * Shorthand method of {@link I#signalInfinite(Object, long, TimeUnit)}
+     * Shorthand method of {@link I#signal(long, long, TimeUnit)}
      * 
-     * @param values
+     * @param initial
+     * @param interval
+     * @param unit
      * @return
      */
-    protected <T> Signal<T> signal(T value, int time, TimeUnit unit) {
-        return I.signalInfinite(value, time, unit);
+    protected Signal<Long> signal(long initial, int interval, TimeUnit unit) {
+        return I.signal(initial, interval, unit);
     }
 
     /**

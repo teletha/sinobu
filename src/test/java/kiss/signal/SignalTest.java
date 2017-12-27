@@ -1014,11 +1014,11 @@ public class SignalTest {
 
     @Test
     public void infinite() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> I.signalInfinite(1, 20, MILLISECONDS).take(2));
+        Subject<Integer, Long> subject = new Subject<>(signal -> I.signal(0, 20, MILLISECONDS).take(2));
 
         chronus.mark();
         chronus.freezeFromMark(10);
-        assert subject.retrieve() == 1;
+        assert subject.retrieve() == 0;
         assert subject.retrieve() == null;
         chronus.freezeFromMark(30);
         assert subject.retrieve() == 1;
