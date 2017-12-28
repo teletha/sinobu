@@ -161,7 +161,9 @@ public class JSON {
                         if (property.isAttribute()) {
                             value = I.transform(value, type);
                         } else {
-                            value = to(property.model, I.make(type), value);
+                            Object nest = model.get(java, property);
+
+                            value = to(property.model, nest == null ? I.make(type) : nest, value);
                         }
 
                         // assign value

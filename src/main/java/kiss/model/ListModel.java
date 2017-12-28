@@ -52,7 +52,9 @@ class ListModel<V> extends Model<List<V>> {
      */
     @Override
     public Object get(List object, Property property) {
-        return object.get(Integer.valueOf(property.name));
+        int index = Integer.valueOf(property.name);
+
+        return object.size() <= index ? null : object.get(index);
     }
 
     /**
