@@ -18,6 +18,7 @@ import org.junit.Test;
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
+import kiss.sample.bean.FinalFieldProperty;
 import kiss.sample.bean.GenericBean;
 import kiss.sample.bean.GenericBoundedTypedBean;
 import kiss.sample.bean.GenericFieldProperty;
@@ -193,6 +194,25 @@ public class ModelTest {
         model.set(bean, string, "value");
         assert bean.string.get().equals("value");
         assert model.get(bean, string).equals("value");
+    }
+
+    @Test
+    public void noneAttributeFinalFieldProperty() {
+        Model<FinalFieldProperty> model = Model.of(FinalFieldProperty.class);
+        assert model.properties().size() == 1;
+
+        Property person = model.properties().get(0);
+        assert person.model.type == Person.class;
+
+        FinalFieldProperty instance = I.make(FinalFieldProperty.class);
+        assert instance.noneAttribute.getAge() == 10;
+        Person other = new Person();
+
+        model.set(instance, person, other);
+        assert instance.noneAttribute.getAge() == 10;
+
+        Person retrieved = (Person) model.get(instance, person);
+        assert retrieved.getAge() == 10;
     }
 
     @Test

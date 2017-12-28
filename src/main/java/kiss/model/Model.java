@@ -42,8 +42,8 @@ import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
 import kiss.Table;
-import kiss.WiseTriConsumer;
 import kiss.Variable;
+import kiss.WiseTriConsumer;
 
 /**
  * <p>
@@ -171,6 +171,7 @@ public class Model<M> {
             for (Field field : type.getFields()) {
                 // exclude the field which modifier is static, private or native
                 int modifier = field.getModifiers();
+                boolean notFinal = (FINAL & modifier) == 0;
 
                 if (((STATIC | PRIVATE | NATIVE) & modifier) == 0) {
                     Model fieldModel = of(field.getGenericType(), type);
@@ -184,13 +185,14 @@ public class Model<M> {
 
                         // register it
                         properties.add(property);
-                    } else if ((FINAL & modifier) == 0) {
+                    } else if ((fieldModel.attribute && notFinal) || !fieldModel.attribute) {
                         // field
                         field.setAccessible(true);
 
                         Property property = new Property(fieldModel, field.getName(), field);
                         property.getter = m -> field.get(m);
-                        property.setter = (m, v) -> field.set(m, v);
+                        property.setter = notFinal ? (m, v) -> field.set(m, v) : (m, v) -> {
+                        };
 
                         // register it
                         properties.add(property);
@@ -554,7 +556,7 @@ public class Model<M> {
         Constructor[] constructors = clazz.getDeclaredConstructors();
         // Constructor#getParameters is not supported in lower version than Android O.
         // So we must use Class#getParameterType#length instead.
-        Arrays.sort(constructors, Comparator.<Constructor>comparingInt(v -> v.getParameterTypes().length));
+        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(v -> v.getParameterTypes().length));
         return constructors;
     }
 
