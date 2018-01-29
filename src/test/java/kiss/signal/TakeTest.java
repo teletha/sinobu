@@ -141,12 +141,12 @@ public class TakeTest extends SignalTester {
 
     @Test
     public void takeWhileValueCondition() {
-        monitor(int.class, signal -> signal.takeWhile(value -> value != 3));
+        monitor(int.class, signal -> signal.takeWhile(value -> value != 4));
 
         assert main.emit(1, 2).value(1, 2);
         assert main.isNotCompleted();
 
-        assert main.emit(3, 4).value(3);
+        assert main.emit(3, 4, 5).value(3);
         assert main.isCompleted();
     }
 }

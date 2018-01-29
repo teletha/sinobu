@@ -2326,17 +2326,12 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            AtomicBoolean flag = new AtomicBoolean();
-
             return to(value -> {
-                if (flag.get() == false) {
-                    observer.accept(value);
+                observer.accept(value);
 
-                    if (condition.test(value)) {
-                        flag.set(true);
-                        observer.complete();
-                        disposer.dispose();
-                    }
+                if (condition.test(value)) {
+                    observer.complete();
+                    disposer.dispose();
                 }
             }, observer::error, observer::complete, disposer);
         });
@@ -2364,13 +2359,6 @@ public final class Signal<V> {
                 observer.complete();
                 disposable.dispose();
             })));
-            // return to(v -> {
-            // observer.accept(v);
-            // }, observer::error, observer::complete, disposer).add(condition.to(value -> {
-            // observer.complete();
-            // System.out.println("EDN " + value);
-            // disposer.dispose();
-            // }, disposer));
         });
     }
 
@@ -2387,7 +2375,21 @@ public final class Signal<V> {
      *         satisfied.
      */
     public final Signal<V> takeWhile(Predicate<V> condition) {
-        return takeUntil(condition.negate());
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            return to(value -> {
+                if (condition.test(value)) {
+                    observer.accept(value);
+                } else {
+                    observer.complete();
+                    disposer.dispose();
+                }
+            }, observer::error, observer::complete, disposer);
+        });
     }
 
     /**
