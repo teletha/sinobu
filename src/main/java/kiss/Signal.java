@@ -44,7 +44,7 @@ import java.util.stream.BaseStream;
 import kiss.signal.StartWithTest;
 
 /**
- * @version 2017/04/04 11:25:38
+ * @version 2018/02/25 19:29:09
  */
 public final class Signal<V> {
 
@@ -83,10 +83,10 @@ public final class Signal<V> {
      * @see #to(Consumer, Consumer, Runnable)
      */
     public Signal(Collection<Observer<? super V>> observers) {
-        this((observer, disposable) -> {
+        this((observer, disposer) -> {
             observers.add(observer);
 
-            return () -> observers.remove(observer);
+            return disposer.add(() -> observers.remove(observer));
         });
     }
 
@@ -1491,7 +1491,7 @@ public final class Signal<V> {
     public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> notificationHandler) {
         return new Signal<>((observer, disposer) -> {
             Disposable[] latest = new Disposable[] {Disposable.empty()};
-            List<Observer<? super Throwable>> observers = new ArrayList();
+            List<Observer<? super Throwable>> observers = new CopyOnWriteArrayList();
 
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
@@ -1583,7 +1583,7 @@ public final class Signal<V> {
         Disposable root = Disposable.empty();
         List<Observer<? super V>> observers = new CopyOnWriteArrayList();
 
-        return new Signal<>((observer, dispoer) -> {
+        return new Signal<>((observer, disposer) -> {
             observers.add(observer);
 
             if (observers.size() == 1) {
@@ -1599,7 +1599,7 @@ public final class Signal<V> {
                     for (Observer<? super V> o : observers) {
                         o.complete();
                     }
-                }, dispoer));
+                }, disposer));
             }
 
             return () -> {
