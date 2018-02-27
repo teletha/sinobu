@@ -302,6 +302,20 @@ public class Subject<V, R> {
      * Helper method to check whether the related event observers are disposed completely or not.
      * </p>
      */
+    public boolean isErrored() {
+        for (Listener listener : listeners) {
+            if (listener.error == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * <p>
+     * Helper method to check whether the related event observers are disposed completely or not.
+     * </p>
+     */
     public boolean isCompleted() {
         assert observers.isEmpty();
         return true;
@@ -345,12 +359,23 @@ public class Subject<V, R> {
         /** The complete flag. */
         private boolean completed = false;
 
+        /** The error. */
+        private Throwable error;
+
         /**
          * {@inheritDoc}
          */
         @Override
         public void accept(V value) {
             values.add(value);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void error(Throwable error) {
+            this.error = error;
         }
 
         /**

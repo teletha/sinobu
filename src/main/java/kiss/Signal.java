@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -2389,6 +2390,47 @@ public final class Signal<V> {
                     disposer.dispose();
                 }
             }, observer::error, observer::complete, disposer);
+        });
+    }
+
+    /**
+     * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
+     * emitted item. If the next item isn't emitted within the specified timeout duration starting
+     * from its predecessor, the resulting Signal terminates and notifies observers of a
+     * {@link TimeoutException}.
+     * 
+     * @param time Time to take values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> timeout(long time, TimeUnit unit) {
+        // ignore invalid parameters
+        if (time <= 0 || unit == null) {
+            return this;
+        }
+
+        AtomicReference<Future> future = new AtomicReference();
+
+        return new Signal<>((observer, disposer) -> {
+            future.set(I.schedule(time, unit, true, () -> {
+                observer.error(new TimeoutException());
+                disposer.dispose();
+            }));
+
+            return to(v -> {
+                future.getAndSet(I.schedule(time, unit, true, () -> {
+                    observer.error(new TimeoutException());
+                    disposer.dispose();
+                })).cancel(true);
+                observer.accept(v);
+            }, e -> {
+                future.get().cancel(true);
+                observer.error(e);
+            }, () -> {
+                future.get().cancel(true);
+                observer.complete();
+            }, disposer);
         });
     }
 

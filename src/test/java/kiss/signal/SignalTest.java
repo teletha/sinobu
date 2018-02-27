@@ -1013,6 +1013,21 @@ public class SignalTest {
     }
 
     @Test
+    public void timeout() {
+        Subject<String, String> subject = new Subject<>(signal -> signal.timeout(30, MILLISECONDS));
+
+        chronus.mark();
+        assert subject.emitAndRetrieve("OK").equals("OK");
+
+        chronus.freezeFromMark(10);
+        assert subject.emitAndRetrieve("10ms will not timeout").equals("10ms will not timeout");
+
+        chronus.freezeFromMark(100);
+        assert subject.emitAndRetrieve("90ms will timeout") == null;
+        assert subject.isErrored();
+    }
+
+    @Test
     public void infinite() {
         Subject<Integer, Long> subject = new Subject<>(signal -> I.signal(0, 20, MILLISECONDS).take(2));
 
