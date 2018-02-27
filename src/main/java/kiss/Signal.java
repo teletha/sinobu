@@ -2410,25 +2410,22 @@ public final class Signal<V> {
             return this;
         }
 
-        AtomicReference<Future> future = new AtomicReference();
-
         return new Signal<>((observer, disposer) -> {
-            future.set(I.schedule(time, unit, true, () -> {
+            Runnable timeout = () -> {
                 observer.error(new TimeoutException());
                 disposer.dispose();
-            }));
+            };
+
+            AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(time, unit, true, timeout));
 
             return to(v -> {
-                future.getAndSet(I.schedule(time, unit, true, () -> {
-                    observer.error(new TimeoutException());
-                    disposer.dispose();
-                })).cancel(true);
+                future.getAndSet(I.schedule(time, unit, true, timeout)).cancel(false);
                 observer.accept(v);
             }, e -> {
-                future.get().cancel(true);
+                future.get().cancel(false);
                 observer.error(e);
             }, () -> {
-                future.get().cancel(true);
+                future.get().cancel(false);
                 observer.complete();
             }, disposer);
         });
