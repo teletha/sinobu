@@ -17,7 +17,7 @@ import org.junit.Test;
 import kiss.SignalTester;
 
 /**
- * @version 2017/09/09 10:54:17
+ * @version 2018/02/28 8:26:41
  */
 public class SkipTest extends SignalTester {
 
@@ -103,12 +103,14 @@ public class SkipTest extends SignalTester {
 
         assert main.emit(1, 2).value();
         assert main.isNotCompleted();
-        assert other.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotDisposed();
 
         other.emit("start");
         assert main.emit(1, 2).value(1, 2);
         assert main.isNotCompleted();
-        assert other.isCompleted();
+        assert main.isNotDisposed();
+        assert other.isDisposed();
     }
 
     @Test

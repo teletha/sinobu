@@ -18,6 +18,7 @@ import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -515,8 +516,8 @@ public final class Signal<V> {
      */
     public final <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> function) {
         return new Signal<>((observer, disposer) -> {
-            ArrayDeque<V> baseValue = new ArrayDeque();
-            ArrayDeque<O> otherValue = new ArrayDeque();
+            LinkedList<V> baseValue = new LinkedList();
+            LinkedList<O> otherValue = new LinkedList();
             Runnable complete = countable(observer::complete, 2);
 
             return to(value -> {

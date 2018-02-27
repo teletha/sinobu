@@ -120,12 +120,14 @@ public class TakeTest extends SignalTester {
 
         assert main.emit(1, 2).value(1, 2);
         assert main.isNotCompleted();
-        assert other.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotDisposed();
 
         other.emit("start");
         assert main.emit(1, 2).value();
         assert main.isCompleted();
-        assert other.isCompleted();
+        assert main.isDisposed();
+        assert other.isDisposed();
     }
 
     @Test

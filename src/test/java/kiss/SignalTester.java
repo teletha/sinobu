@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import antibug.Chronus;
 
 /**
- * @version 2017/04/07 16:52:37
+ * @version 2018/02/28 8:27:16
  */
 public class SignalTester {
 
@@ -474,6 +474,8 @@ public class SignalTester {
 
         private Log result;
 
+        private boolean completed;
+
         /**
          * <p>
          * Emit the specified values to the managed {@link Signal}.
@@ -487,6 +489,7 @@ public class SignalTester {
                 for (Object value : values) {
                     if (value == Complete) {
                         observer.complete();
+                        completed = true;
                     } else if (value instanceof Class && Throwable.class.isAssignableFrom((Class) value)) {
                         observer.error(I.make((Class<Throwable>) value));
                     } else {
@@ -515,7 +518,7 @@ public class SignalTester {
          * @return
          */
         public Signal signal() {
-            Signal signal = new Signal<>((observer, disposer) -> {
+            return new Signal<>((observer, disposer) -> {
                 observers.add(observer);
                 disposer.add(() -> {
                     observers.remove(observer);
@@ -525,7 +528,6 @@ public class SignalTester {
 
                 return disposer;
             });
-            return signal;
         }
 
         /**
@@ -536,7 +538,7 @@ public class SignalTester {
          * @return A result.
          */
         public boolean isCompleted() {
-            return result == null ? observers.isEmpty() : result.isCompleted();
+            return result == null ? completed : result.isCompleted();
         }
 
         /**
