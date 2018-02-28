@@ -68,6 +68,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
+import java.util.stream.LongStream;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -128,7 +129,7 @@ import kiss.model.Property;
  * </dd>
  * </dl>
  * 
- * @version 2017/05/01 1:56:11
+ * @version 2018/02/28 17:10:55
  */
 public class I {
 
@@ -1568,7 +1569,7 @@ public class I {
 
     /**
      * <p>
-     * Signal the specified values.
+     * {@link Signal} the specified values.
      * </p>
      *
      * @param values A list of values to emit.
@@ -1657,6 +1658,29 @@ public class I {
             observer.error(error);
             return disposer;
         });
+    }
+
+    /**
+     * Signal a sequence of logns within a specified range.
+     * 
+     * @param start A value of the first long in the sequence.
+     * @param count A number of sequential longs to generate.
+     * @return A {@link Signal} that emits a range of sequential longs
+     */
+    public static Signal<Long> signalRange(long start, long count) {
+        return signalRange(start, count, 1L);
+    }
+
+    /**
+     * Signal a sequence of logns within a specified range.
+     * 
+     * @param start A value of the first long in the sequence.
+     * @param count A number of sequential longs to generate.
+     * @param step A step value for each sequential longs to generate.
+     * @return A {@link Signal} that emits a range of sequential longs
+     */
+    public static Signal<Long> signalRange(long start, long count, long step) {
+        return signal(LongStream.range(0, count).map(v -> start + v * step));
     }
 
     /**
