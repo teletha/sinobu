@@ -15,7 +15,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.function.Function;
 
 import org.junit.Test;
 
@@ -29,90 +28,6 @@ import kiss.Signal;
 public class SignalTest {
 
     public static final Chronus chronus = new Chronus(I.class);
-
-    @Test
-    public void as() {
-        Subject<Number, Integer> subject = new Subject<>(signal -> signal.as(Integer.class));
-
-        assert subject.emitAndRetrieve(10).intValue() == 10;
-        assert subject.emitAndRetrieve(2.1F) == null;
-        assert subject.emitAndRetrieve(-1.1D) == null;
-        assert subject.emitAndRetrieve(20L) == null;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void diff() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.diff());
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void distinct() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.distinct());
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == 30;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void distinctRepeat() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.distinct().take(2).repeat());
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-
-        assert subject.disposeWithCountAlreadyDisposed(4);
-    }
-
-    @Test
-    public void flatArray() {
-        Subject<String, String> subject = new Subject<>(signal -> signal.flatArray(v -> v.split("")));
-
-        subject.emit("test");
-        assert subject.retrieve().equals("t");
-        assert subject.retrieve().equals("e");
-        assert subject.retrieve().equals("s");
-        assert subject.retrieve().equals("t");
-        assert subject.retrieve() == null;
-    }
-
-    @Test
-    public void flatIterable() {
-        Function<String, Iterable<String>> chars = value -> {
-            List<String> values = new ArrayList();
-
-            for (int i = 0; i < value.length(); i++) {
-                values.add(String.valueOf(value.charAt(i)));
-            }
-            return values;
-        };
-
-        Subject<String, String> subject = new Subject<>(signal -> signal.flatIterable(chars));
-
-        subject.emit("test");
-        assert subject.retrieve().equals("t");
-        assert subject.retrieve().equals("e");
-        assert subject.retrieve().equals("s");
-        assert subject.retrieve().equals("t");
-        assert subject.retrieve() == null;
-    }
 
     @Test
     public void flatMap() {
@@ -173,36 +88,6 @@ public class SignalTest {
         subject.dispose();
         emitA.emit("Disposed");
         assert subject.retrieve() == null;
-    }
-
-    @Test
-    public void map() throws Exception {
-        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> signal.map(value -> value * 2));
-
-        assert subject.emitAndRetrieve(10) == 20;
-        assert subject.emitAndRetrieve(20) == 40;
-        assert subject.emitAndRetrieve(30) == 60;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void mapTo() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.mapTo(100));
-
-        assert subject.emitAndRetrieve(1) == 100;
-        assert subject.emitAndRetrieve(2) == 100;
-        assert subject.emitAndRetrieve(3) == 100;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void mapWithPreviousValue() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.map(1, (prev, now) -> prev + now));
-
-        assert subject.emitAndRetrieve(1) == 2;
-        assert subject.emitAndRetrieve(2) == 3;
-        assert subject.emitAndRetrieve(3) == 5;
-        assert subject.dispose();
     }
 
     @Test

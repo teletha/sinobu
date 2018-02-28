@@ -9,17 +9,19 @@
  */
 package kiss.signal;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import kiss.SignalTester;
 
 /**
- * @version 2017/04/24 12:22:18
+ * @version 2018/02/28 19:59:37
  */
 public class FlatMapTest extends SignalTester {
 
     @Test
-    public void flatMap() throws Exception {
+    public void flatMap() {
         monitor(() -> signal(10, 20).flatMap(v -> signal(v, v + 1)));
 
         assert main.value(10, 11, 20, 21);
@@ -27,12 +29,12 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test(expected = NullPointerException.class)
-    public void flatMapNull() throws Exception {
+    public void flatMapNull() {
         monitor(() -> signal(1, 2).flatMap(null));
     }
 
     @Test
-    public void enumeration() throws Exception {
+    public void enumeration() {
         monitor(() -> signal(10, 20).flatEnum(v -> enume(v, v + 1)));
 
         assert main.value(10, 11, 20, 21);
@@ -40,12 +42,36 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test(expected = NullPointerException.class)
-    public void enumerationNull() throws Exception {
+    public void enumerationNull() {
         monitor(() -> signal(1, 2).flatEnum(null));
     }
 
     @Test
-    public void throwError() throws Exception {
+    public void array() {
+        monitor(String.class, signal -> signal.flatArray(v -> v.split("")));
+
+        assert main.emit("TEST").value("T", "E", "S", "T");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void arrayNull() {
+        monitor(String.class, signal -> signal.flatArray(null));
+    }
+
+    @Test
+    public void iterable() {
+        monitor(String.class, signal -> signal.flatIterable(v -> Arrays.asList(v.split(""))));
+
+        assert main.emit("TEST").value("T", "E", "S", "T");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void iterableNull() {
+        monitor(String.class, signal -> signal.flatIterable(null));
+    }
+
+    @Test
+    public void throwError() {
         monitor(() -> signal(1, 2).flatMap(errorFunction()));
 
         assert main.value();
