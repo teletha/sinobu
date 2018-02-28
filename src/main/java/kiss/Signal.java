@@ -46,7 +46,7 @@ import java.util.stream.BaseStream;
 import kiss.signal.StartWithTest;
 
 /**
- * @version 2018/02/25 19:29:09
+ * @version 2018/02/28 14:33:28
  */
 public final class Signal<V> {
 
@@ -450,22 +450,47 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<List<V>> buffer(long time, TimeUnit unit) {
-        // ignore invalid parameters
-        if (time <= 0 || unit == null) {
-            return NEVER;
-        }
+        return buffer(I.signal(time, time, unit));
+    }
 
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits non-overlapping buffered items from the source
+     * {@link Signal} each time the specified boundary {@link Signal} emits an item.
+     * </p>
+     * 
+     * @param boundary A boundary {@link Signal}.
+     * @return Chainable API.
+     */
+    public final Signal<List<V>> buffer(Signal<?> boundary) {
+        return buffer(boundary, ArrayList::new);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits non-overlapping buffered items from the source
+     * {@link Signal} each time the specified boundary {@link Signal} emits an item.
+     * </p>
+     * 
+     * @param boundary A boundary {@link Signal}.
+     * @param bufferSupplier A factory function that returns an instance of the collection subclass
+     *            to be used and returned as the buffer.
+     * @return Chainable API.
+     */
+    public final <B extends Collection<V>> Signal<B> buffer(Signal<?> boundary, Supplier<B> bufferSupplier) {
         return new Signal<>((observer, disposer) -> {
-            AtomicReference<List<V>> ref = new AtomicReference<>(new ArrayList<>());
+            List<V> list = new ArrayList();
 
-            return to(value -> {
-                List<V> list = ref.get();
-                list.add(value);
-
-                if (list.size() == 1) {
-                    I.schedule(time, unit, false, () -> observer.accept(ref.getAndSet(new ArrayList())));
+            disposer.add(to(list::add));
+            disposer.add(boundary.to(v -> {
+                if (!list.isEmpty()) {
+                    B buffer = bufferSupplier.get();
+                    buffer.addAll(list);
+                    observer.accept(buffer);
+                    list.clear();
                 }
-            }, observer::error, observer::complete, disposer);
+            }, observer::error, observer::complete));
+            return disposer;
         });
     }
 
