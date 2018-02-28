@@ -533,13 +533,12 @@ public final class Signal<V> {
      * </p>
      *
      * @param other An other {@link Signal} to combine.
-     * @param function A function that, when applied to an item emitted by each of the source
-     *            {@link Signal}, results in an item that will be emitted by the resulting
+     * @param combiner An aggregation function used to combine the items emitted by the source
      *            {@link Signal}.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
      *         by source {@link Signal} by means of the given aggregation function.
      */
-    public final <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> function) {
+    public final <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> combiner) {
         return new Signal<>((observer, disposer) -> {
             LinkedList<V> baseValue = new LinkedList();
             LinkedList<O> otherValue = new LinkedList();
@@ -549,13 +548,13 @@ public final class Signal<V> {
                 if (otherValue.isEmpty()) {
                     baseValue.add(value);
                 } else {
-                    observer.accept(function.apply(value, otherValue.pollFirst()));
+                    observer.accept(combiner.apply(value, otherValue.pollFirst()));
                 }
             }, observer::error, complete, disposer).add(other.to(value -> {
                 if (baseValue.isEmpty()) {
                     otherValue.add(value);
                 } else {
-                    observer.accept(function.apply(baseValue.pollFirst(), value));
+                    observer.accept(combiner.apply(baseValue.pollFirst(), value));
                 }
             }, observer::error, complete, disposer));
         });

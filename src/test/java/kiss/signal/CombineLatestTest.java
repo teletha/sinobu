@@ -18,17 +18,17 @@ import kiss.Ⅱ;
 import kiss.Ⅲ;
 
 /**
- * @version 2018/02/28 18:59:54
+ * @version 2018/02/28 19:23:27
  */
-public class CombineTest extends SignalTester {
+public class CombineLatestTest extends SignalTester {
 
     private final Function<Ⅱ<String, String>, String> composer2 = v -> v.ⅰ + v.ⅱ;
 
     private final Function<Ⅲ<String, Integer, String>, String> composer3 = v -> v.ⅰ + v.ⅱ + v.ⅲ;
 
     @Test
-    public void combine() {
-        monitor(signal -> signal.combine(other.signal()).map(composer2));
+    public void combineLatest() {
+        monitor(signal -> signal.combineLatest(other.signal()).map(composer2));
 
         // from main
         assert main.emit("A").value();
@@ -39,29 +39,29 @@ public class CombineTest extends SignalTester {
 
         // from other
         other.emit("b");
-        assert main.value();
+        assert main.value("Ab");
         assert main.emit("B").value("Bb");
         assert main.isNotCompleted();
         assert other.isNotCompleted();
 
         // from main multiple
-        assert main.emit("C", "D", "E").value();
+        assert main.emit("C", "D", "E").value("Cb", "Db", "Eb");
         other.emit("c", "d", "e");
-        assert main.value("Cc", "Dd", "Ee");
+        assert main.value("Ec", "Ed", "Ee");
         assert main.isNotCompleted();
         assert other.isNotCompleted();
 
         // from other multiple
         other.emit("f", "g", "h");
-        assert main.value();
-        assert main.emit("F", "G", "H").value("Ff", "Gg", "Hh");
+        assert main.value("Ef", "Eg", "Eh");
+        assert main.emit("F", "G", "H").value("Fh", "Gh", "Hh");
         assert main.isNotCompleted();
         assert other.isNotCompleted();
     }
 
     @Test
     public void disposeByMain() {
-        monitor(signal -> signal.combine(other.signal()));
+        monitor(signal -> signal.combineLatest(other.signal()));
 
         // from main
         main.dispose();
@@ -72,7 +72,7 @@ public class CombineTest extends SignalTester {
 
     @Test
     public void disposeByOther() {
-        monitor(signal -> signal.combine(other.signal()));
+        monitor(signal -> signal.combineLatest(other.signal()));
 
         // from other
         other.dispose();
@@ -83,7 +83,7 @@ public class CombineTest extends SignalTester {
 
     @Test
     public void completeByMain() {
-        monitor(signal -> signal.combine(other.signal()));
+        monitor(signal -> signal.combineLatest(other.signal()));
 
         // from main
         main.emit(Complete);
@@ -98,7 +98,7 @@ public class CombineTest extends SignalTester {
 
     @Test
     public void completeByOther() {
-        monitor(signal -> signal.combine(other.signal()));
+        monitor(signal -> signal.combineLatest(other.signal()));
 
         // from other
         other.emit(Complete);
@@ -113,7 +113,7 @@ public class CombineTest extends SignalTester {
 
     @Test
     public void acceptNull() {
-        monitor(signal -> signal.combine(other.signal()).map(composer2));
+        monitor(signal -> signal.combineLatest(other.signal()).map(composer2));
 
         // from main
         assert main.emit((String) null).value();
@@ -124,7 +124,7 @@ public class CombineTest extends SignalTester {
 
         // from other
         other.emit((String) null);
-        assert main.value();
+        assert main.value("nullnull");
         assert main.emit("B").value("Bnull");
         assert main.isNotCompleted();
         assert other.isNotCompleted();
@@ -132,7 +132,7 @@ public class CombineTest extends SignalTester {
 
     @Test
     public void ternary() throws Exception {
-        monitor(signal -> signal.combine(other.signal(), another.signal()).map(composer3));
+        monitor(signal -> signal.combineLatest(other.signal(), another.signal()).map(composer3));
 
         // from main
         assert main.emit("A").value();
@@ -145,9 +145,9 @@ public class CombineTest extends SignalTester {
         assert another.isNotCompleted();
 
         // from other
-        other.emit(2).value();
+        other.emit(2).value("A2a");
         main.emit("B");
-        assert main.value();
+        assert main.value("B2a");
         another.emit("b");
         assert main.value("B2b");
         assert main.isNotCompleted();
@@ -155,9 +155,9 @@ public class CombineTest extends SignalTester {
         assert another.isNotCompleted();
 
         // from another
-        another.emit("c").value();
+        another.emit("c").value("B2c");
         other.emit(3);
-        assert main.value();
+        assert main.value("B3c");
         main.emit("C");
         assert main.value("C3c");
         assert main.isNotCompleted();

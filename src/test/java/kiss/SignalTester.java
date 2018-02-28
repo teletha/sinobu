@@ -59,6 +59,9 @@ public class SignalTester {
     /** READ ONLY */
     protected final SignalSource other = new SignalSource();
 
+    /** READ ONLY */
+    protected final SignalSource another = new SignalSource();
+
     /** READ ONLY : DON'T MODIFY in test case */
     private final List<Await> awaits = new CopyOnWriteArrayList();
 

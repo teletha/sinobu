@@ -22,11 +22,9 @@ import org.junit.Test;
 import antibug.Chronus;
 import kiss.I;
 import kiss.Signal;
-import kiss.Ⅱ;
-import kiss.Ⅲ;
 
 /**
- * @version 2017/05/14 12:12:40
+ * @version 2018/02/28 19:24:35
  */
 public class SignalTest {
 
@@ -41,138 +39,6 @@ public class SignalTest {
         assert subject.emitAndRetrieve(-1.1D) == null;
         assert subject.emitAndRetrieve(20L) == null;
         assert subject.dispose();
-    }
-
-    @Test
-    public void combineLatest() {
-        Subject<Integer, Integer> sub = new Subject<>();
-        Subject<Integer, Integer> subject = new Subject<Integer, Integer>(signal -> signal
-                .combineLatest(sub.signal(), (base, other) -> base + other));
-
-        assert subject.emitAndRetrieve(1) == null;
-        assert subject.emitAndRetrieve(2) == null;
-
-        sub.emit(10);
-        assert subject.retrieve() == 12; // 10 + 2
-        assert subject.emitAndRetrieve(3) == 13; // 10 + 3
-
-        sub.emit(20);
-        assert subject.retrieve() == 23; // 20 + 3
-        assert subject.emitAndRetrieve(4) == 24; // 20 + 4
-
-        assert subject.dispose();
-        assert sub.isCompleted();
-    }
-
-    @Test
-    public void combineLatestComplete() throws Exception {
-        Subject<Integer, Integer> other = new Subject<>(signal -> signal);
-        Subject<String, Ⅱ<String, Integer>> main = new Subject<>(signal -> signal.combineLatest(other.signal()));
-
-        assert main.isCompleteEventReceieved() == false;
-        assert other.isCompleteEventReceieved() == false;
-
-        main.complete();
-        assert main.isCompleteEventReceieved() == false;
-        assert other.isCompleteEventReceieved() == false;
-
-        other.complete();
-        assert main.isCompleteEventReceieved();
-        assert other.isCompleteEventReceieved();
-    }
-
-    @Test
-    public void combineLatestBinary() throws Exception {
-        Subject<Integer, Integer> other = new Subject<>();
-        Subject<String, Ⅱ<String, Integer>> main = new Subject<String, Ⅱ<String, Integer>>(signal -> signal.combineLatest(other.signal()));
-
-        main.emit("1");
-        assert main.retrieve() == null;
-        other.emit(10);
-        assert main.retrieve().equals(I.pair("1", 10));
-
-        main.emit("2");
-        assert main.retrieve().equals(I.pair("2", 10));
-        other.emit(20);
-        assert main.retrieve().equals(I.pair("2", 20));
-
-        other.emit(30);
-        assert main.retrieve().equals(I.pair("2", 30));
-        other.emit(40);
-        assert main.retrieve().equals(I.pair("2", 40));
-        main.emit("3");
-        assert main.retrieve().equals(I.pair("3", 40));
-        main.emit("4");
-        assert main.retrieve().equals(I.pair("4", 40));
-    }
-
-    @Test
-    public void combineLatestTernary() throws Exception {
-        Subject<Integer, Integer> other = new Subject<>();
-        Subject<Double, Double> another = new Subject<>();
-        Subject<String, Ⅲ<String, Integer, Double>> main = new Subject<>(signal -> signal.combineLatest(other.signal(), another.signal()));
-
-        main.emit("1");
-        assert main.retrieve() == null;
-        other.emit(10);
-        assert main.retrieve() == null;
-        another.emit(0.1);
-        assert main.retrieve().equals(I.pair("1", 10, 0.1));
-
-        main.emit("2");
-        assert main.retrieve().equals(I.pair("2", 10, 0.1));
-        other.emit(20);
-        assert main.retrieve().equals(I.pair("2", 20, 0.1));
-        another.emit(0.2);
-        assert main.retrieve().equals(I.pair("2", 20, 0.2));
-    }
-
-    @Test
-    public void debounce() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.debounce(30, MILLISECONDS));
-
-        chronus.mark();
-        assert subject.emitAndRetrieve(10) == null;
-        chronus.freezeFromMark(10);
-        assert subject.emitAndRetrieve(20) == null;
-        chronus.freezeFromMark(20);
-        assert subject.emitAndRetrieve(30) == null;
-        chronus.mark();
-        assert subject.retrieve() == null;
-        chronus.freezeFromMark(10);
-        assert subject.retrieve() == null;
-        chronus.freezeFromMark(35);
-        assert subject.retrieve() != null;
-
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(10) == null;
-
-        chronus.await();
-        assert subject.retrieve() == 10;
-    }
-
-    @Test
-    public void debounceRepeat() throws Exception {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.debounce(10, MILLISECONDS).skip(1).take(1).repeat());
-
-        assert subject.emitAndRetrieve(11) == null;
-        assert subject.emitAndRetrieve(22) == null;
-        assert subject.emitAndRetrieve(33) == null;
-
-        chronus.await();
-        assert subject.retrieve() == null;
-
-        subject.emit(44);
-        chronus.await();
-        assert subject.retrieve() == 44;
-
-        subject.emit(55);
-        chronus.await();
-        assert subject.retrieve() == null;
-        subject.emit(66);
-        chronus.await();
-        assert subject.retrieve() == 66;
     }
 
     @Test
@@ -869,6 +735,26 @@ public class SignalTest {
 
         assert subject.isCompleted();
         assert subject.retrieve() == null;
+    }
+
+    @Test
+    public void range() throws Exception {
+        List<Long> list = I.signalRange(0, 5).toList();
+        assert list.get(0) == 0;
+        assert list.get(1) == 1;
+        assert list.get(2) == 2;
+        assert list.get(3) == 3;
+        assert list.get(4) == 4;
+    }
+
+    @Test
+    public void rangeWithStep() throws Exception {
+        List<Long> list = I.signalRange(2, 5, 2).toList();
+        assert list.get(0) == 2;
+        assert list.get(1) == 4;
+        assert list.get(2) == 6;
+        assert list.get(3) == 8;
+        assert list.get(4) == 10;
     }
 
     @Test
