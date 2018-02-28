@@ -1582,14 +1582,14 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> share() {
-        Disposable root = Disposable.empty();
+        Disposable[] root = new Disposable[1];
         List<Observer<? super V>> observers = new CopyOnWriteArrayList();
 
         return new Signal<>((observer, disposer) -> {
             observers.add(observer);
 
             if (observers.size() == 1) {
-                root.add(to(v -> {
+                root[0] = to(v -> {
                     for (Observer<? super V> o : observers) {
                         o.accept(v);
                     }
@@ -1601,16 +1601,17 @@ public final class Signal<V> {
                     for (Observer<? super V> o : observers) {
                         o.complete();
                     }
-                }, disposer));
+                });
             }
 
-            return () -> {
+            return disposer.add(() -> {
                 observers.remove(observer);
 
-                if (observers.isEmpty()) {
-                    root.dispose();
+                if (observers.isEmpty() && root[0] != null) {
+                    root[0].dispose();
+                    root[0] = null;
                 }
-            };
+            });
         });
     }
 
