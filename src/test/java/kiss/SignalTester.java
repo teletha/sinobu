@@ -12,6 +12,7 @@ package kiss;
 import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -350,6 +351,7 @@ public class SignalTester {
          */
         @Override
         public void accept(Object value) {
+            System.out.println("Accept " + value);
             values.add(value);
         }
 
@@ -413,7 +415,7 @@ public class SignalTester {
          */
         @Override
         public boolean value(Object... expected) {
-            assert values.size() == expected.length;
+            assert values.size() == expected.length : new AssertionError(values + "  " + Arrays.toString(expected));
 
             for (int i = 0; i < expected.length; i++) {
                 assert Objects.equals(values.get(i), expected[i]);

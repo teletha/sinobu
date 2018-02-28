@@ -695,21 +695,29 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Flattens an array of {@link Signal} into one {@link Signal}, one after the other, without
-     * interleaving them.
+     * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
+     * other, without interleaving them.
      * </p>
      * 
-     * @param others
-     * @return
+     * @param others A sequence of {@link Signal}s to concat.
+     * @return Chainable API.
      */
     public final Signal<V> concat(Signal<? extends V>... others) {
         // ignore invalid parameters
         if (others == null || others.length == 0) {
             return this;
         }
+        return concat(I.list(others));
+    }
+
+    public final Signal<V> concat(Iterable<Signal<? extends V>> others) {
+        // ignore invalid parameters
+        if (others == null) {
+            return this;
+        }
 
         return new Signal<V>((observer, disposer) -> {
-            Iterator<Signal<? extends V>> iterator = I.list(others).iterator();
+            Iterator<Signal<? extends V>> iterator = others.iterator();
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.complete = () -> {
@@ -808,14 +816,14 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                Future<?> future = I.schedule(time, unit, false, () -> {
+                Future<?> future = I.schedule(time, unit, true, () -> {
                     if (disposer.isDisposed() == false) {
                         observer.accept(value);
                     }
                 });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(time, unit, false, observer::complete), disposer);
+            }, observer::error, () -> I.schedule(time, unit, true, observer::complete), disposer);
         });
     }
 
