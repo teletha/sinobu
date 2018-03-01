@@ -13,11 +13,10 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.SignalTester;
 
 /**
- * @version 2018/02/28 19:59:37
+ * @version 2018/03/01 12:03:07
  */
 public class FlatMapTest extends SignalTester {
 
@@ -32,6 +31,14 @@ public class FlatMapTest extends SignalTester {
     @Test(expected = NullPointerException.class)
     public void flatMapNull() {
         monitor(() -> signal(1, 2).flatMap(null));
+    }
+
+    @Test
+    public void delayAndInterval() {
+        monitor(Integer.class, signal -> signal.flatMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
+    
+        main.emit(60, 40, 20);
+        assert await().value(20, 40, 60, 21, 41, 61);
     }
 
     @Test
@@ -77,17 +84,5 @@ public class FlatMapTest extends SignalTester {
 
         assert main.value();
         assert main.isError();
-    }
-
-    @PowerAssertOff
-    @Test
-    public void flatMapParallel() {
-        monitor(() -> signal(60, 40, 20).flatMap(time -> signal(time).effect(v -> {
-            System.out.println(v);
-        }).delay(time, ms).effect(v -> {
-            System.out.println(v + "  " + time);
-        })));
-
-        assert await().value(20, 40, 60);
     }
 }

@@ -220,7 +220,6 @@ public class SignalTester {
             sets[i] = new LogSet();
             log1 = sets[i].log1;
             log2 = sets[i].log2;
-
             sets[i].disposer = signal.get().map(v -> v).to(sets[i].result);
         }
 
@@ -351,7 +350,6 @@ public class SignalTester {
          */
         @Override
         public void accept(Object value) {
-            System.out.println("Accept " + value);
             values.add(value);
         }
 
@@ -418,7 +416,7 @@ public class SignalTester {
             assert values.size() == expected.length : new AssertionError(values + "  " + Arrays.toString(expected));
 
             for (int i = 0; i < expected.length; i++) {
-                assert Objects.equals(values.get(i), expected[i]);
+                assert Objects.equals(values.get(i), expected[i]) : values + " " + Arrays.toString(expected);
             }
             values.clear();
             return true;

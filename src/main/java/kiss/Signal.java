@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import static java.util.concurrent.TimeUnit.*;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -816,14 +818,14 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                Future<?> future = I.schedule(time, unit, true, () -> {
+                Future<?> future = I.schedule(time, unit, false, () -> {
                     if (disposer.isDisposed() == false) {
                         observer.accept(value);
                     }
                 });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(time, unit, true, observer::complete), disposer);
+            }, observer::error, () -> I.schedule(time, unit, false, observer::complete), disposer);
         });
     }
 
@@ -1161,6 +1163,45 @@ public final class Signal<V> {
      */
     public final <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
         return flatVariable(I.quiet(function));
+    }
+
+    public final Signal<V> interval(long interval, TimeUnit unit) {
+        return interval(0, interval, unit);
+    }
+
+    public final Signal<V> interval(long initialDelay, long interval, TimeUnit unit) {
+        if (interval <= 0) {
+            return delay(initialDelay, unit);
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            long time = unit.toNanos(interval);
+            LinkedList queue = new LinkedList();
+            AtomicLong next = new AtomicLong();
+
+            Runnable sender = I.recurRunnable(self -> () -> {
+                next.set(System.nanoTime() + time);
+                Object item = queue.pollFirst();
+
+                if (item == UNDEFINED) {
+                    observer.complete();
+                } else {
+                    observer.accept((V) item);
+                }
+
+                if (!queue.isEmpty()) {
+                    I.schedule(time, NANOSECONDS, false, self);
+                }
+            });
+
+            return to(value -> {
+                queue.add(value);
+                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, false, sender);
+            }, observer::error, () -> {
+                queue.add(UNDEFINED);
+                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, false, sender);
+            }, disposer);
+        });
     }
 
     /**
@@ -2096,12 +2137,14 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> switchMap(Function<V, Signal<R>> function) {
+        Objects.requireNonNull(function);
+
         return new Signal<>((observer, disposer) -> {
             Disposable[] disposables = {null, Disposable.empty()};
 
             disposables[0] = to(value -> {
                 disposables[1].dispose();
-                disposables[1] = function.apply(value).to(observer);
+                disposables[1] = function.apply(value).to(observer::accept, observer::error, null, disposer.sub());
             }, observer::error, observer::complete, disposer);
             return () -> {
                 disposables[0].dispose();

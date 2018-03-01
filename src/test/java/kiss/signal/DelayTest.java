@@ -14,13 +14,13 @@ import org.junit.Test;
 import kiss.SignalTester;
 
 /**
- * @version 2017/04/06 15:12:36
+ * @version 2018/03/01 12:02:57
  */
 public class DelayTest extends SignalTester {
 
     @Test
     public void delay() throws Exception {
-        monitor(signal -> signal.delay(10, ms));
+        monitor(signal -> signal.delay(30, ms));
 
         assert main.emit("delay").value();
         assert await().value("delay");

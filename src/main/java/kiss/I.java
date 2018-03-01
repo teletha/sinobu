@@ -50,6 +50,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -1318,6 +1319,39 @@ public class I {
 
     /**
      * <p>
+     * Create recursive function.
+     * </p>
+     * 
+     * @param function A target function to convert.
+     * @return A converted recursive function.
+     */
+    public static <Param, Return> Function<Param, Return> recurFunction(Function<Function<Param, Return>, Function<Param, Return>> function) {
+        Map<Param, Return> memo = new HashMap<>();
+
+        Recursive<Function<Param, Return>> recursive = recursiveFunction -> function.apply(param -> {
+            return memo.computeIfAbsent(param, value -> recursiveFunction.apply(recursiveFunction).apply(param));
+        });
+
+        return recursive.apply(recursive);
+    }
+
+    /**
+     * <p>
+     * Create recursive function.
+     * </p>
+     * 
+     * @param function A target function to convert.
+     * @return A converted recursive function.
+     */
+    public static Runnable recurRunnable(Function<Runnable, Runnable> function) {
+        Recursive<Runnable> recursive = recursiveFunction -> function.apply(() -> {
+            recursiveFunction.apply(recursiveFunction).run();
+        });
+        return recursive.apply(recursive);
+    }
+
+    /**
+     * <p>
      * Create {@link Predicate} which rejects any item.
      * </p>
      * 
@@ -1489,6 +1523,10 @@ public class I {
      * @param task A task to execute.
      */
     public static Future<?> schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
+        if (delay <= 0) {
+            task.run();
+            return CompletableFuture.completedFuture(null);
+        }
         return (parallelExecution ? parallel : serial).schedule(task, delay, unit);
 
     }
