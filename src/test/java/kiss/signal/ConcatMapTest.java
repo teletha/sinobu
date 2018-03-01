@@ -11,17 +11,17 @@ package kiss.signal;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
+import kiss.I;
 import kiss.SignalTester;
 
 /**
  * @version 2018/03/01 12:03:07
  */
-public class ConcatMap extends SignalTester {
+public class ConcatMapTest extends SignalTester {
 
     @Test
     public void concatMap() {
-        monitor(() -> signal(10, 20).concatMap(v -> signal(v, v + 1)));
+        monitor(() -> signal(10, 20).concatMap(v -> I.signal(v, v + 1)));
 
         assert main.value(10, 11, 20, 21);
         assert main.isCompleted();
@@ -33,7 +33,6 @@ public class ConcatMap extends SignalTester {
     }
 
     @Test
-    @PowerAssertOff
     public void delayAndInterval() {
         monitor(Integer.class, signal -> signal.concatMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
 

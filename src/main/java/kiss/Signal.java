@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -741,35 +742,54 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a new {@link Signal} that emits items resulting from applying a function that you
-     * supply to each item emitted by the source {@link Signal}, where that function returns an
-     * {@link Signal}, and then emitting the items that result from concatenating those resulting
-     * {@link Signal}.
+     * Maps a sequence of values into {@link Signal} and concatenates these {@link Signal} eagerly
+     * into a single {@link Signal}. Eager concatenation means that once a subscriber subscribes,
+     * this operator subscribes to all of the source {@link Signal}. The operator buffers the values
+     * emitted by these {@link Signal} and then drains them in order, each one after the previous
+     * one completes.
      * 
-     * @param function A function that, when applied to an item emitted by the source
-     *            {@link Signal}, returns an {@link Signal}
+     * @param function A function that maps a sequence of values into a sequence of {@link Signal}
+     *            that will be eagerly concatenated.
      * @return Chainable API.
      */
     public final Signal<V> concatMap(Function<V, Signal<V>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
-            LinkedList<LinkedList<V>> lists = new LinkedList();
+            AtomicLong processing = new AtomicLong();
+            Map<Long, Ⅱ<AtomicBoolean, LinkedList<V>>> buffer = new ConcurrentHashMap();
 
-            return index().to(value -> {
-                LinkedList<V> list = new LinkedList();
-                lists.add(list);
+            Consumer<Long> complete = I.recurC(self -> index -> {
+                if (processing.get() == index) {
+                    Ⅱ<AtomicBoolean, LinkedList<V>> next = buffer.remove(processing.incrementAndGet());
 
-                function.apply(value.ⅰ).to(v -> {
-                    list.add(v);
+                    // emit stored items
+                    for (V value : next.ⅱ) {
+                        observer.accept(value);
+                    }
+
+                    // this indexed buffer has been completed already, step into next buffer
+                    if (next.ⅰ.get() == true) {
+                        self.accept(processing.get());
+                    }
+                }
+            });
+
+            return index().to(indexed -> {
+                AtomicBoolean completed = new AtomicBoolean();
+                LinkedList<V> items = new LinkedList();
+                buffer.put(indexed.ⅱ, I.pair(completed, items));
+
+                function.apply(indexed.ⅰ).to(v -> {
+                    if (processing.get() == indexed.ⅱ) {
+                        observer.accept(v);
+                    } else {
+                        items.add(v);
+                    }
                 }, observer::error, () -> {
-
+                    completed.set(true);
+                    complete.accept(indexed.ⅱ);
                 });
-
-                LinkedList<V> values = new LinkedList();
-                function.apply(value).to(v -> {
-                    values.add(v);
-                }, observer::error, null, disposer.sub());
             }, observer::error, observer::complete, disposer);
         });
     }
@@ -1234,7 +1254,7 @@ public final class Signal<V> {
             LinkedList queue = new LinkedList();
             AtomicLong next = new AtomicLong();
 
-            Runnable sender = I.recurRunnable(self -> () -> {
+            Runnable sender = I.recurR(self -> () -> {
                 next.set(System.nanoTime() + time);
                 Object item = queue.pollFirst();
 

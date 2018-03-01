@@ -1319,17 +1319,82 @@ public class I {
 
     /**
      * <p>
-     * Create recursive function.
+     * Define recursive {@link BiConsumer}.
      * </p>
+     * <pre>
+     * I.recurBC(self -> (param1, param2) -> {
+     *   // your function code
+     * });
+     * </pre>
      * 
+     * @param function A recursive function.
+     * @return A created function.
+     */
+    public static <Param1, Param2> BiConsumer<Param1, Param2> recurBC(Function<BiConsumer<Param1, Param2>, BiConsumer<Param1, Param2>> function) {
+        Recursive<BiConsumer<Param1, Param2>> recursive = recursiveFunction -> function.apply((param1, param2) -> {
+            recursiveFunction.apply(recursiveFunction).accept(param1, param2);
+        });
+        return recursive.apply(recursive);
+    }
+
+    /**
+     * <p>
+     * Define recursive {@link BiFunction}.
+     * </p>
+     * <pre>
+     * I.recurBF(self -> (param1, param2) -> {
+     *   // your function code
+     * });
+     * </pre>
+     * 
+     * @param function A recursive function.
+     * @return A created function.
+     */
+    public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurBF(Function<BiFunction<Param1, Param2, Return>, BiFunction<Param1, Param2, Return>> function) {
+        Recursive<BiFunction<Param1, Param2, Return>> recursive = recursiveFunction -> function.apply((param1, param2) -> {
+            return recursiveFunction.apply(recursiveFunction).apply(param1, param2);
+        });
+        return recursive.apply(recursive);
+    }
+
+    /**
+     * <p>
+     * Define recursive {@link Consumer}.
+     * </p>
+     * <pre>
+     * I.recurC(self -> param1 -> {
+     *   // your function code
+     * });
+     * </pre>
+     * 
+     * @param function A recursive function.
+     * @return A created function.
      * @param function A target function to convert.
      * @return A converted recursive function.
      */
-    public static <Param, Return> Function<Param, Return> recurFunction(Function<Function<Param, Return>, Function<Param, Return>> function) {
-        Map<Param, Return> memo = new HashMap<>();
+    public static <Param> Consumer<Param> recurC(Function<Consumer<Param>, Consumer<Param>> function) {
+        Recursive<Consumer<Param>> recursive = recursiveFunction -> function.apply(param -> {
+            recursiveFunction.apply(recursiveFunction).accept(param);
+        });
+        return recursive.apply(recursive);
+    }
 
+    /**
+     * <p>
+     * Define recursive {@link Function}.
+     * </p>
+     * <pre>
+     * I.recurF(self -> param -> {
+     *   // your function code
+     * });
+     * </pre>
+     * 
+     * @param function A recursive function.
+     * @return A created function.
+     */
+    public static <Param, Return> Function<Param, Return> recurF(Function<Function<Param, Return>, Function<Param, Return>> function) {
         Recursive<Function<Param, Return>> recursive = recursiveFunction -> function.apply(param -> {
-            return memo.computeIfAbsent(param, value -> recursiveFunction.apply(recursiveFunction).apply(param));
+            return recursiveFunction.apply(recursiveFunction).apply(param);
         });
 
         return recursive.apply(recursive);
@@ -1337,16 +1402,82 @@ public class I {
 
     /**
      * <p>
-     * Create recursive function.
+     * Define recursive {@link Runnable}.
      * </p>
+     * <pre>
+     * I.recurR(self -> () -> {
+     *   // your function code
+     * });
+     * </pre>
      * 
-     * @param function A target function to convert.
-     * @return A converted recursive function.
+     * @param function A recursive function.
+     * @return A created function.
      */
-    public static Runnable recurRunnable(Function<Runnable, Runnable> function) {
+    public static Runnable recurR(Function<Runnable, Runnable> function) {
         Recursive<Runnable> recursive = recursiveFunction -> function.apply(() -> {
             recursiveFunction.apply(recursiveFunction).run();
         });
+        return recursive.apply(recursive);
+    }
+
+    /**
+     * <p>
+     * Define recursive {@link Supplier}.
+     * </p>
+     * <pre>
+     * I.recurS(self -> () -> {
+     *   // your function code
+     * });
+     * </pre>
+     * 
+     * @param function A recursive function.
+     * @return A created function.
+     */
+    public static <Result> Supplier<Result> recurS(Function<Supplier<Result>, Supplier<Result>> function) {
+        Recursive<Supplier<Result>> recursive = recursiveFunction -> function.apply(() -> {
+            return recursiveFunction.apply(recursiveFunction).get();
+        });
+        return recursive.apply(recursive);
+    }
+
+    /**
+     * <p>
+     * Define recursive {@link WiseTriConsumer}.
+     * </p>
+     * <pre>
+     * I.recurTC(self -> (param1, param2, param3) -> {
+     *   // your function code
+     * });
+     * </pre>
+     * 
+     * @param function A recursive function.
+     * @return A created function.
+     */
+    public static <Param1, Param2, Param3> WiseTriConsumer<Param1, Param2, Param3> recurTC(Function<WiseTriConsumer<Param1, Param2, Param3>, WiseTriConsumer<Param1, Param2, Param3>> function) {
+        Recursive<WiseTriConsumer<Param1, Param2, Param3>> recursive = recursiveFunction -> function.apply((param1, param2, param3) -> {
+            recursiveFunction.apply(recursiveFunction).accept(param1, param2, param3);
+        });
+        return recursive.apply(recursive);
+    }
+
+    /**
+     * <p>
+     * Define recursive {@link WiseTriFunction}.
+     * </p>
+     * <pre>
+     * I.recurTF(self -> (param1, param2, param3) -> {
+     *   // your function code
+     * });
+     * </pre>
+     * 
+     * @param function A recursive function.
+     * @return A created function.
+     */
+    public static <Param1, Param2, Param3, Return> WiseTriFunction<Param1, Param2, Param3, Return> recurTF(Function<WiseTriFunction<Param1, Param2, Param3, Return>, WiseTriFunction<Param1, Param2, Param3, Return>> function) {
+        Recursive<WiseTriFunction<Param1, Param2, Param3, Return>> recursive = recursiveFunction -> function
+                .apply((param1, param2, param3) -> {
+                    return recursiveFunction.apply(recursiveFunction).apply(param1, param2, param3);
+                });
         return recursive.apply(recursive);
     }
 
