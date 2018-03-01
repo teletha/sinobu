@@ -759,7 +759,7 @@ public final class Signal<V> {
             AtomicLong processing = new AtomicLong();
             Map<Long, Ⅱ<AtomicBoolean, LinkedList<V>>> buffer = new ConcurrentHashMap();
 
-            Consumer<Long> complete = I.recurC(self -> index -> {
+            Consumer<Long> complete = I.recurseC(self -> index -> {
                 if (processing.get() == index) {
                     Ⅱ<AtomicBoolean, LinkedList<V>> next = buffer.remove(processing.incrementAndGet());
 
@@ -1254,7 +1254,7 @@ public final class Signal<V> {
             LinkedList queue = new LinkedList();
             AtomicLong next = new AtomicLong();
 
-            Runnable sender = I.recurR(self -> () -> {
+            Runnable sender = I.recurseR(self -> () -> {
                 next.set(System.nanoTime() + time);
                 Object item = queue.pollFirst();
 

@@ -46,7 +46,7 @@ public class LambdaTest {
     @Test
     public void recursiveRunnable() {
         AtomicInteger value = new AtomicInteger();
-        Runnable function = I.recurR(self -> () -> {
+        Runnable function = I.recurseR(self -> () -> {
             if (value.get() < 10) {
                 value.incrementAndGet();
                 self.run();
@@ -60,7 +60,7 @@ public class LambdaTest {
     @Test
     public void recursiveConsumer() {
         AtomicInteger value = new AtomicInteger();
-        Consumer<Integer> function = I.recurC(self -> p -> {
+        Consumer<Integer> function = I.recurseC(self -> p -> {
             value.set(p);
 
             if (p < 10) {
@@ -75,7 +75,7 @@ public class LambdaTest {
     @Test
     public void recursiveSupplier() {
         AtomicInteger value = new AtomicInteger();
-        Supplier<Integer> function = I.recurS(self -> () -> {
+        Supplier<Integer> function = I.recurseS(self -> () -> {
             if (value.get() < 10) {
                 value.incrementAndGet();
                 return self.get();
@@ -89,7 +89,7 @@ public class LambdaTest {
 
     @Test
     public void recursiveFunction() {
-        Function<Integer, Integer> function = I.recurF(self -> param -> {
+        Function<Integer, Integer> function = I.recurseF(self -> param -> {
             if (param < 10) {
                 return self.apply(param + 1);
             } else {
@@ -102,7 +102,7 @@ public class LambdaTest {
 
     @Test
     public void recursiveBiFunction() {
-        BiFunction<Integer, Integer, Integer> function = I.recurBF(self -> (param1, param2) -> {
+        BiFunction<Integer, Integer, Integer> function = I.recurseBF(self -> (param1, param2) -> {
             if (param1 < 10) {
                 return self.apply(param1 + 1, param2 + 2);
             } else {

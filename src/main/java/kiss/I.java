@@ -1330,7 +1330,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2> BiConsumer<Param1, Param2> recurBC(Function<BiConsumer<Param1, Param2>, BiConsumer<Param1, Param2>> function) {
+    public static <Param1, Param2> BiConsumer<Param1, Param2> recurseBC(Function<BiConsumer<Param1, Param2>, BiConsumer<Param1, Param2>> function) {
         Recursive<BiConsumer<Param1, Param2>> recursive = recursiveFunction -> function.apply((param1, param2) -> {
             recursiveFunction.apply(recursiveFunction).accept(param1, param2);
         });
@@ -1350,7 +1350,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurBF(Function<BiFunction<Param1, Param2, Return>, BiFunction<Param1, Param2, Return>> function) {
+    public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurseBF(Function<BiFunction<Param1, Param2, Return>, BiFunction<Param1, Param2, Return>> function) {
         Recursive<BiFunction<Param1, Param2, Return>> recursive = recursiveFunction -> function.apply((param1, param2) -> {
             return recursiveFunction.apply(recursiveFunction).apply(param1, param2);
         });
@@ -1372,7 +1372,7 @@ public class I {
      * @param function A target function to convert.
      * @return A converted recursive function.
      */
-    public static <Param> Consumer<Param> recurC(Function<Consumer<Param>, Consumer<Param>> function) {
+    public static <Param> Consumer<Param> recurseC(Function<Consumer<Param>, Consumer<Param>> function) {
         Recursive<Consumer<Param>> recursive = recursiveFunction -> function.apply(param -> {
             recursiveFunction.apply(recursiveFunction).accept(param);
         });
@@ -1392,7 +1392,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param, Return> Function<Param, Return> recurF(Function<Function<Param, Return>, Function<Param, Return>> function) {
+    public static <Param, Return> Function<Param, Return> recurseF(Function<Function<Param, Return>, Function<Param, Return>> function) {
         Recursive<Function<Param, Return>> recursive = recursiveFunction -> function.apply(param -> {
             return recursiveFunction.apply(recursiveFunction).apply(param);
         });
@@ -1413,7 +1413,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static Runnable recurR(Function<Runnable, Runnable> function) {
+    public static Runnable recurseR(Function<Runnable, Runnable> function) {
         Recursive<Runnable> recursive = recursiveFunction -> function.apply(() -> {
             recursiveFunction.apply(recursiveFunction).run();
         });
@@ -1433,7 +1433,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Result> Supplier<Result> recurS(Function<Supplier<Result>, Supplier<Result>> function) {
+    public static <Result> Supplier<Result> recurseS(Function<Supplier<Result>, Supplier<Result>> function) {
         Recursive<Supplier<Result>> recursive = recursiveFunction -> function.apply(() -> {
             return recursiveFunction.apply(recursiveFunction).get();
         });
@@ -1453,7 +1453,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2, Param3> WiseTriConsumer<Param1, Param2, Param3> recurTC(Function<WiseTriConsumer<Param1, Param2, Param3>, WiseTriConsumer<Param1, Param2, Param3>> function) {
+    public static <Param1, Param2, Param3> WiseTriConsumer<Param1, Param2, Param3> recurseTC(Function<WiseTriConsumer<Param1, Param2, Param3>, WiseTriConsumer<Param1, Param2, Param3>> function) {
         Recursive<WiseTriConsumer<Param1, Param2, Param3>> recursive = recursiveFunction -> function.apply((param1, param2, param3) -> {
             recursiveFunction.apply(recursiveFunction).accept(param1, param2, param3);
         });
@@ -1473,7 +1473,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2, Param3, Return> WiseTriFunction<Param1, Param2, Param3, Return> recurTF(Function<WiseTriFunction<Param1, Param2, Param3, Return>, WiseTriFunction<Param1, Param2, Param3, Return>> function) {
+    public static <Param1, Param2, Param3, Return> WiseTriFunction<Param1, Param2, Param3, Return> recurseTF(Function<WiseTriFunction<Param1, Param2, Param3, Return>, WiseTriFunction<Param1, Param2, Param3, Return>> function) {
         Recursive<WiseTriFunction<Param1, Param2, Param3, Return>> recursive = recursiveFunction -> function
                 .apply((param1, param2, param3) -> {
                     return recursiveFunction.apply(recursiveFunction).apply(param1, param2, param3);
