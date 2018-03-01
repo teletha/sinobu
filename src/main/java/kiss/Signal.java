@@ -789,7 +789,7 @@ public final class Signal<V> {
                 }, observer::error, () -> {
                     completed.set(true);
                     complete.accept(indexed.ⅱ);
-                });
+                }, disposer.sub());
             }, observer::error, observer::complete, disposer);
         });
     }
