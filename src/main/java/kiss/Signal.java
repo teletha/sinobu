@@ -713,6 +713,15 @@ public final class Signal<V> {
         return concat(I.list(others));
     }
 
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
+     * other, without interleaving them.
+     * </p>
+     * 
+     * @param others A sequence of {@link Signal}s to concat.
+     * @return Chainable API.
+     */
     public final Signal<V> concat(Iterable<Signal<? extends V>> others) {
         // ignore invalid parameters
         if (others == null) {
@@ -752,19 +761,19 @@ public final class Signal<V> {
      *            that will be eagerly concatenated.
      * @return Chainable API.
      */
-    public final Signal<V> concatMap(Function<V, Signal<V>> function) {
+    public final <R> Signal<R> concatMap(Function<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
             AtomicLong processing = new AtomicLong();
-            Map<Long, Ⅱ<AtomicBoolean, LinkedList<V>>> buffer = new ConcurrentHashMap();
+            Map<Long, Ⅱ<AtomicBoolean, LinkedList<R>>> buffer = new ConcurrentHashMap();
 
             Consumer<Long> complete = I.recurseC(self -> index -> {
                 if (processing.get() == index) {
-                    Ⅱ<AtomicBoolean, LinkedList<V>> next = buffer.remove(processing.incrementAndGet());
+                    Ⅱ<AtomicBoolean, LinkedList<R>> next = buffer.remove(processing.incrementAndGet());
 
                     // emit stored items
-                    for (V value : next.ⅱ) {
+                    for (R value : next.ⅱ) {
                         observer.accept(value);
                     }
 
@@ -777,7 +786,7 @@ public final class Signal<V> {
 
             return index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
-                LinkedList<V> items = new LinkedList();
+                LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
 
                 function.apply(indexed.ⅰ).to(v -> {
@@ -2664,6 +2673,18 @@ public final class Signal<V> {
             }
             return false;
         });
+    }
+
+    public final <ADD> Signal<Ⅱ<V, ADD>> with(ADD addition) {
+        return with(v -> addition);
+    }
+
+    public final <ADD> Signal<Ⅱ<V, ADD>> with(Supplier<ADD> addition) {
+        return with(v -> addition.get());
+    }
+
+    public final <ADD> Signal<Ⅱ<V, ADD>> with(Function<V, ADD> addition) {
+        return map(v -> I.pair(v, addition.apply(v)));
     }
 
     /**

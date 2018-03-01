@@ -16,7 +16,7 @@ import kiss.Signal;
 import kiss.SignalTester;
 
 /**
- * @version 2017/04/07 15:46:56
+ * @version 2018/03/01 23:49:49
  */
 public class EffectTest extends SignalTester {
 
