@@ -741,6 +741,40 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns a new {@link Signal} that emits items resulting from applying a function that you
+     * supply to each item emitted by the source {@link Signal}, where that function returns an
+     * {@link Signal}, and then emitting the items that result from concatenating those resulting
+     * {@link Signal}.
+     * 
+     * @param function A function that, when applied to an item emitted by the source
+     *            {@link Signal}, returns an {@link Signal}
+     * @return Chainable API.
+     */
+    public final Signal<V> concatMap(Function<V, Signal<V>> function) {
+        Objects.requireNonNull(function);
+
+        return new Signal<>((observer, disposer) -> {
+            LinkedList<LinkedList<V>> lists = new LinkedList();
+
+            return index().to(value -> {
+                LinkedList<V> list = new LinkedList();
+                lists.add(list);
+
+                function.apply(value.ⅰ).to(v -> {
+                    list.add(v);
+                }, observer::error, () -> {
+
+                });
+
+                LinkedList<V> values = new LinkedList();
+                function.apply(value).to(v -> {
+                    values.add(v);
+                }, observer::error, null, disposer.sub());
+            }, observer::error, observer::complete, disposer);
+        });
+    }
+
+    /**
      * <p>
      * Drops values that are followed by newer values before a timeout. The timer resets on each
      * value emission.
@@ -1165,13 +1199,34 @@ public final class Signal<V> {
         return flatVariable(I.quiet(function));
     }
 
-    public final Signal<V> interval(long interval, TimeUnit unit) {
-        return interval(0, interval, unit);
+    /**
+     * Append index (starting from 0).
+     * 
+     * @return Chainable API.
+     */
+    public final Signal<Ⅱ<V, Long>> index() {
+        return new Signal<>((observer, disposer) -> {
+            AtomicLong index = new AtomicLong();
+            return to(v -> {
+                observer.accept(I.pair(v, index.getAndIncrement()));
+            }, observer::error, observer::complete, disposer);
+        });
     }
 
-    public final Signal<V> interval(long initialDelay, long interval, TimeUnit unit) {
-        if (interval <= 0) {
-            return delay(initialDelay, unit);
+    /**
+     * <p>
+     * Ensure the interval time for each values in {@link Signal} sequence.
+     * </p>
+     *
+     * @param interval Time to emit values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified interval. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> interval(long interval, TimeUnit unit) {
+        // ignore invalid parameters
+        if (interval <= 0 || unit == null) {
+            return this;
         }
 
         return new Signal<>((observer, disposer) -> {
@@ -2615,7 +2670,7 @@ public final class Signal<V> {
     // *
     // * @return
     // */
-    // public final Events<Binary<V, Instant>> timeStamp() {
+    // public final Signal<Ⅱ<V, Instant>> timeStamp() {
     // return map(value -> I.pair(value, Instant.now()));
     // }
     //
@@ -2626,9 +2681,10 @@ public final class Signal<V> {
     // *
     // * @return
     // */
-    // public final Events<Binary<V, Duration>> timeInterval() {
-    // return timeStamp().map(null, (prev, current) -> current
-    // .e(prev == null ? Duration.ZERO : Duration.between(prev.e, current.e)));
+    // public final Signal<Ⅱ<V, Duration>> timeInterval() {
+    // return timeStamp().map(null, (prev, current) -> {
+    // return I.pair(current.ⅰ, Duration.between(prev == null ? current.ⅱ : prev.ⅱ, current.ⅱ));
+    // });
     // }
     //
     // /**
@@ -2638,9 +2694,16 @@ public final class Signal<V> {
     // *
     // * @return
     // */
-    // public final Events<Binary<V, Duration>> timeElapsed() {
-    // return timeInterval().scan(I.pair((V) null, Duration.ZERO), (sum, now) ->
-    // now.e(sum.e.plus(now.e)));
+    // public final Signal<Ⅱ<V, Duration>> timeElapsed() {
+    // AtomicReference<Instant> start = new AtomicReference();
+    // return timeStamp().map(v -> {
+    // Instant init = start.get();
+    // if (init == null) {
+    // start.set(Instant.now());
+    // return I.pair(v.ⅰ, Duration.ZERO);
+    // } else {
+    // return I.pair(v.ⅰ, Duration.between(init, v.ⅱ));
     // }
-
+    // });
+    // }
 }

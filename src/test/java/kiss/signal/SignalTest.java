@@ -30,67 +30,6 @@ public class SignalTest {
     public static final Chronus chronus = new Chronus(I.class);
 
     @Test
-    public void flatMap() {
-        Subject<String, String> emitA = new Subject();
-        Subject<String, String> emitB = new Subject();
-        Subject<Integer, String> subject = new Subject<>(signal -> signal.flatMap(x -> x == 1 ? emitA.signal() : emitB.signal()));
-
-        subject.emit(1); // connect to emitA
-        assert subject.retrieve() == null; // emitA doesn't emit value yet
-        emitA.emit("1A");
-        assert subject.retrieve() == "1A";
-        emitB.emit("1B"); // emitB has no relation yet
-        assert subject.retrieve() == null;
-
-        subject.emit(2); // connect to emitB
-        assert subject.retrieve() == null; // emitB doesn't emit value yet
-        emitB.emit("2B");
-        assert subject.retrieve() == "2B";
-        emitA.emit("2A");
-        assert subject.retrieve() == "2A";
-
-        // test disposing
-        subject.dispose();
-        emitA.emit("Disposed");
-        assert subject.retrieve() == null;
-        emitB.emit("Disposed");
-        assert subject.retrieve() == null;
-    }
-
-    @Test
-    public void switchMap() {
-        Subject<String, String> emitA = new Subject();
-        Subject<String, String> emitB = new Subject();
-        Subject<Integer, String> subject = new Subject<>(signal -> signal.switchMap(x -> x == 1 ? emitA.signal() : emitB.signal()));
-
-        subject.emit(1); // connect to emitA
-        assert subject.retrieve() == null; // emitA doesn't emit value yet
-        emitA.emit("1A");
-        assert subject.retrieve() == "1A";
-        emitB.emit("1B"); // emitB has no relation yet
-        assert subject.retrieve() == null;
-
-        subject.emit(2); // connect to emitB and disconnect from emitA
-        assert subject.retrieve() == null; // emitB doesn't emit value yet
-        emitB.emit("2B");
-        assert subject.retrieve() == "2B";
-        emitA.emit("2A");
-        assert subject.retrieve() == null;
-
-        subject.emit(1); // reconnect to emitA and disconnect from emitB
-        assert subject.retrieve() == null; // emitA doesn't emit value yet
-        emitA.emit("3A");
-        assert subject.retrieve() == "3A";
-        emitB.emit("3B");
-        assert subject.retrieve() == null;
-
-        // test disposing
-        subject.dispose();
-        emitA.emit("Disposed");
-        assert subject.retrieve() == null;
-    }
-
-    @Test
     public void merge() {
         Subject<Integer, Integer> subject2 = new Subject<>();
         Subject<Integer, Integer> subject1 = new Subject<>(signal -> signal.merge(subject2.signal()));
