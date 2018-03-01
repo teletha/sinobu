@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
@@ -49,10 +50,10 @@ public class SignalTester {
     protected final SignalTester Type = this;
 
     /** READ ONLY : DON'T MODIFY in test case */
-    protected Log log1 = null;
+    protected Log log1;
 
     /** READ ONLY : DON'T MODIFY in test case */
-    protected Log log2 = null;
+    protected Log log2;
 
     /** READ ONLY */
     protected final SignalSource main = new SignalSource();
@@ -215,12 +216,17 @@ public class SignalTester {
      */
     protected void monitor(int multiplicity, Supplier<Signal> signal) {
         LogSet[] sets = new LogSet[multiplicity];
+        LogDelegator delegator1, delegator2;
+        log1 = delegator1 = new LogDelegator();
+        log2 = delegator2 = new LogDelegator();
+
+        Signal base = signal.get();
 
         for (int i = 0; i < multiplicity; i++) {
             sets[i] = new LogSet();
-            log1 = sets[i].log1;
-            log2 = sets[i].log2;
-            sets[i].disposer = signal.get().map(v -> v).to(sets[i].result);
+            delegator1.log = sets[i].log1;
+            delegator2.log = sets[i].log2;
+            sets[i].disposer = base.map(v -> v).to(sets[i].result);
         }
 
         // await all awaitable signal
@@ -420,6 +426,86 @@ public class SignalTester {
             }
             values.clear();
             return true;
+        }
+    }
+
+    /**
+     * @version 2018/03/02 8:40:33
+     */
+    private static class LogDelegator implements Log {
+
+        private Log log;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void accept(Object t) {
+            log.accept(t);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Consumer andThen(Consumer after) {
+            return log.andThen(after);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void complete() {
+            log.complete();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void error(Throwable error) {
+            log.error(error);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isCompleted() {
+            return log.isCompleted();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isNotCompleted() {
+            return log.isNotCompleted();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isError() {
+            return log.isError();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isNotError() {
+            return log.isNotError();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean value(Object... expected) {
+            return log.value(expected);
         }
     }
 
