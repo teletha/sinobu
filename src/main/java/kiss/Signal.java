@@ -200,7 +200,7 @@ public final class Signal<V> {
      * @param observer A value observer of this {@link Signal}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    private final Disposable to(Observer<? super V> observer, Disposable disposer) {
+    private Disposable to(Observer<? super V> observer, Disposable disposer) {
         if (disposer == null) {
             disposer = Disposable.empty();
         }
@@ -801,6 +801,17 @@ public final class Signal<V> {
                 }, disposer.sub());
             }, observer::error, observer::complete, disposer);
         });
+    }
+
+    /**
+     * Returns a {@link Signal} that counts the total number of items emitted by the source
+     * {@link Signal} and emits this count as a 64-bit Long.
+     * 
+     * @return {@link Signal} that emits a single item: the number of items emitted by the source
+     *         {@link Signal} as a 64-bit Long item
+     */
+    public final Signal<Long> count() {
+        return map(AtomicLong::new, (context, value) -> context.incrementAndGet());
     }
 
     /**
@@ -1488,13 +1499,9 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> to(v -> {
-            scheduler.accept(() -> {
-                observer.accept(v);
-            });
+            scheduler.accept(() -> observer.accept(v));
         }, e -> {
-            scheduler.accept(() -> {
-                observer.error(e);
-            });
+            scheduler.accept(() -> observer.error(e));
         }, () -> {
             scheduler.accept(observer::complete);
         }, disposer));
