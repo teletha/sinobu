@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 import antibug.Chronus;
 
 /**
- * @version 2018/02/28 8:27:16
+ * @version 2018/03/02 10:07:09
  */
 public class SignalTester {
 

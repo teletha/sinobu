@@ -11,7 +11,6 @@ package kiss.signal;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 import kiss.Signal;
 import kiss.SignalTester;
@@ -22,9 +21,8 @@ import kiss.SignalTester;
 public class EffectTest extends SignalTester {
 
     @Test
-    @PowerAssertOff
     public void effect() {
-        monitor(signal -> signal.effect(log1));
+        monitor(1, signal -> signal.effect(log1));
 
         assert main.emit(1).value(1);
         assert log1.value(1);
@@ -51,7 +49,7 @@ public class EffectTest extends SignalTester {
 
     @Test
     public void effectOnError() throws Exception {
-        monitor(signal -> signal.effectOnError(log1::error));
+        monitor(1, signal -> signal.effectOnError(log1::error));
 
         assert log1.isNotError();
         main.emit(Error);

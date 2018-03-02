@@ -49,7 +49,7 @@ import java.util.stream.BaseStream;
 import kiss.signal.StartWithTest;
 
 /**
- * @version 2018/02/28 14:33:28
+ * @version 2018/03/02 10:07:01
  */
 public final class Signal<V> {
 
