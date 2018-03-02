@@ -383,19 +383,20 @@ public final class Signal<V> {
      *         satisfy the predicate; otherwise, false.
      */
     public final Signal<Boolean> all(Predicate<? super V> condition) {
-        if (condition == null) {
-            return mapTo(true);
-        }
+        Objects.requireNonNull(condition);
 
-        return map(AtomicBoolean::new, (context, value) -> {
-            if (context.get() == true) {
-                return false;
-            } else if (condition.test(value)) {
-                return true;
-            } else {
-                context.set(true);
-                return false;
-            }
+        return new Signal<Boolean>((observer, disposer) -> {
+            return to(v -> {
+                if (!condition.test(v)) {
+                    observer.accept(false);
+                    observer.complete();
+                    disposer.dispose();
+                }
+            }, observer::error, () -> {
+                observer.accept(true);
+                observer.complete();
+                disposer.dispose();
+            }, disposer);
         });
     }
 
@@ -409,19 +410,20 @@ public final class Signal<V> {
      *         source {@link Signal} satisfies the predicate.
      */
     public final Signal<Boolean> any(Predicate<? super V> condition) {
-        if (condition == null) {
-            return mapTo(true);
-        }
+        Objects.requireNonNull(condition);
 
-        return map(AtomicBoolean::new, (context, value) -> {
-            if (context.get() == true) {
-                return true;
-            } else if (condition.test(value)) {
-                context.set(true);
-                return true;
-            } else {
-                return false;
-            }
+        return new Signal<Boolean>((observer, disposer) -> {
+            return to(v -> {
+                if (condition.test(v)) {
+                    observer.accept(true);
+                    observer.complete();
+                    disposer.dispose();
+                }
+            }, observer::error, () -> {
+                observer.accept(false);
+                observer.complete();
+                disposer.dispose();
+            }, disposer);
         });
     }
 
@@ -1595,10 +1597,21 @@ public final class Signal<V> {
      *         satisfy the predicate; otherwise, true.
      */
     public final Signal<Boolean> none(Predicate<? super V> condition) {
-        if (condition == null) {
-            return mapTo(true);
-        }
-        return all(condition.negate());
+        Objects.requireNonNull(condition);
+
+        return new Signal<Boolean>((observer, disposer) -> {
+            return to(v -> {
+                if (condition.test(v)) {
+                    observer.accept(false);
+                    observer.complete();
+                    disposer.dispose();
+                }
+            }, observer::error, () -> {
+                observer.accept(true);
+                observer.complete();
+                disposer.dispose();
+            }, disposer);
+        });
     }
 
     /**

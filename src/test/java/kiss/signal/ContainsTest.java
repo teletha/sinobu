@@ -19,11 +19,20 @@ import kiss.SignalTester;
 public class ContainsTest extends SignalTester {
 
     @Test
-    public void contains() {
+    public void OK() {
         monitor(String.class, Boolean.class, signal -> signal.contains("OK"));
 
-        assert main.emit("A", "B", "C").value(false, false, false);
-        assert main.emit("OK", "NG", "WOW").value(true, true, true);
-        assert main.isNotCompleted();
+        assert main.emit("A", "B", "OK", "C").value(true);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void NG() {
+        monitor(String.class, Boolean.class, signal -> signal.contains("OK"));
+
+        assert main.emit("A", "B", "C", Complete).value(false);
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 }

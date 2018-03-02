@@ -19,19 +19,25 @@ import kiss.SignalTester;
 public class NoneTest extends SignalTester {
 
     @Test
-    public void none() {
+    public void OK() {
         monitor(Integer.class, Boolean.class, signal -> signal.none(v -> v % 2 == 0));
 
-        assert main.emit(1, 3, 5).value(true, true, true);
-        assert main.emit(2, 4, 6).value(false, false, false);
-        assert main.emit(1, 3, 5).value(false, false, false);
-        assert main.isNotCompleted();
+        assert main.emit(1, 3, 5, 7, Complete).value(true);
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
+    public void NG() {
+        monitor(Integer.class, Boolean.class, signal -> signal.none(v -> v % 2 == 0));
+
+        assert main.emit(1, 3, 4, 5).value(false);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test(expected = NullPointerException.class)
     public void acceptNull() {
         monitor(Integer.class, Boolean.class, signal -> signal.none(null));
-        assert main.emit(1, 3, 5).value(true, true, true);
-        assert main.isNotCompleted();
     }
 }
