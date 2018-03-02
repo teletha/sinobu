@@ -819,20 +819,22 @@ public final class Signal<V> {
             return this;
         }
 
-        AtomicReference<Future> latest = new AtomicReference();
+        return new Signal<V>((observer, disposer) -> {
+            AtomicReference<Future> latest = new AtomicReference();
 
-        return on((observer, value) -> {
-            Future future = latest.get();
+            return to(value -> {
+                Future future = latest.get();
 
-            if (future != null) {
-                future.cancel(true);
-            }
+                if (future != null) {
+                    future.cancel(true);
+                }
 
-            Runnable task = () -> {
-                latest.set(null);
-                observer.accept(value);
-            };
-            latest.set(I.schedule(time, unit, true, task));
+                Runnable task = () -> {
+                    latest.set(null);
+                    observer.accept(value);
+                };
+                latest.set(I.schedule(time, unit, true, task));
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1450,24 +1452,6 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Invokes an action for each value in the {@link Signal} sequence.
-     * </p>
-     *
-     * @param next An action to invoke for each value in the {@link Signal} sequence.
-     * @return Chainable API.
-     */
-    private Signal<V> on(BiConsumer<Observer<? super V>, V> next) {
-        return new Signal<>((observer, disposer) -> {
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.next = value -> next.accept(observer, value);
-
-            return to(subscriber, disposer);
-        });
-    }
-
-    /**
-     * <p>
      * Switch event stream context.
      * </p>
      * 
@@ -1517,7 +1501,7 @@ public final class Signal<V> {
         if (count < 1) {
             return this;
         }
-        return repeatUntil(new AtomicInteger(count), v -> v.decrementAndGet() > 0);
+        return repeatUntil(AtomicInteger::new, v -> v.incrementAndGet() < count);
     }
 
     /**
@@ -1534,7 +1518,7 @@ public final class Signal<V> {
         if (condition == null) {
             return this;
         }
-        return repeatUntil(condition, BooleanSupplier::getAsBoolean);
+        return repeatUntil(() -> condition, BooleanSupplier::getAsBoolean);
     }
 
     /**
@@ -1547,19 +1531,19 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> repeatUntil(Signal stopper) {
-        return repeatUntil(stopper.take(1).to(), Variable::isAbsent);
+        return repeatUntil(stopper.take(1)::to, Variable::isAbsent);
     }
 
     /**
-     * <p>
-     * </p>
+     * Helper to repeat.
      * 
-     * @param init
+     * @param contextSupplier
      * @param condition
      * @return
      */
-    private <T> Signal<V> repeatUntil(T init, Predicate<T> condition) {
+    private <T> Signal<V> repeatUntil(Supplier<T> contextSupplier, Predicate<T> condition) {
         return new Signal<>((observer, disposer) -> {
+            T context = contextSupplier.get();
             Disposable[] latest = new Disposable[] {Disposable.empty()};
 
             Subscriber subscriber = new Subscriber();
@@ -1567,7 +1551,7 @@ public final class Signal<V> {
             subscriber.complete = () -> {
                 latest[0].dispose();
 
-                if (condition.test(init)) {
+                if (condition.test(context)) {
                     subscriber.add(latest[0] = to(subscriber.child()));
                 } else {
                     observer.complete();
@@ -2254,10 +2238,12 @@ public final class Signal<V> {
             return this;
         }
 
-        return on((observer, value) -> {
-            if (condition.test(value)) {
-                observer.accept(value);
-            }
+        return new Signal<>((observer, disposer) -> {
+            return to(value -> {
+                if (condition.test(value)) {
+                    observer.accept(value);
+                }
+            }, observer::error, observer::complete, disposer);
         });
     }
 

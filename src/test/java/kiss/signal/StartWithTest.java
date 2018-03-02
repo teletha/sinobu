@@ -68,7 +68,7 @@ public class StartWithTest extends SignalTester {
 
     @Test
     public void stream() throws Exception {
-        monitor(() -> signal(1, 2).startWith(stream(-1, 0)));
+        monitor(1, () -> signal(1, 2).startWith(stream(-1, 0)));
         assert main.value(-1, 0, 1, 2);
     }
 

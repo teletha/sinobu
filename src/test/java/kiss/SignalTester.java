@@ -271,13 +271,18 @@ public class SignalTester {
      */
     protected <T> void monitor(int multiplicity, Function<Signal<T>, Signal<T>> builder) {
         LogSet[] sets = new LogSet[multiplicity];
+        LogDelegator delegator1, delegator2;
+        log1 = delegator1 = new LogDelegator();
+        log2 = delegator2 = new LogDelegator();
+
+        Signal base = builder.apply(main.signal());
 
         for (int i = 0; i < multiplicity; i++) {
             sets[i] = new LogSet();
-            log1 = sets[i].log1;
-            log2 = sets[i].log2;
+            delegator1.log = sets[i].log1;
+            delegator2.log = sets[i].log2;
 
-            sets[i].disposer = builder.apply(main.signal()).map(v -> v).to(sets[i].result);
+            sets[i].disposer = base.map(v -> v).to(sets[i].result);
         }
 
         // await all awaitable signal

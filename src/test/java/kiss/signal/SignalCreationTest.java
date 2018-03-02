@@ -103,7 +103,7 @@ public class SignalCreationTest extends SignalTester {
 
     @Test
     public void stream() throws Exception {
-        monitor(() -> signal(stream(1, 2)));
+        monitor(1, () -> signal(stream(1, 2)));
 
         assert main.value(1, 2);
         assert main.isCompleted();

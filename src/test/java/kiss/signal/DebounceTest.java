@@ -16,7 +16,7 @@ import org.junit.Test;
 import kiss.SignalTester;
 
 /**
- * @version 2018/02/28 19:25:20
+ * @version 2018/03/02 9:47:18
  */
 public class DebounceTest extends SignalTester {
 
@@ -33,15 +33,15 @@ public class DebounceTest extends SignalTester {
         assert main.emit("D").value();
         await(10);
         assert main.emit("E").value();
-        await(13); // 13ms elapsed
+        await(10); // 10ms elapsed
         assert main.value();
-        await(13); // 26ms elapsed
+        await(10); // 20ms elapsed
         assert main.value();
-        await(13); // 39ms elapsed
+        await(15); // 35ms elapsed
         assert main.value("E");
 
         assert main.emit("F", "G", "H").value();
-        await(40);
+        await(50);
         assert main.value("H");
     }
 
