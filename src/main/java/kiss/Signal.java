@@ -383,7 +383,9 @@ public final class Signal<V> {
      *         satisfy the predicate; otherwise, false.
      */
     public final Signal<Boolean> all(Predicate<? super V> condition) {
-        return conditional(condition, false, false);
+        Objects.requireNonNull(condition);
+
+        return conditional(condition.negate(), false, false, false, true, true);
     }
 
     /**
@@ -396,7 +398,9 @@ public final class Signal<V> {
      *         source {@link Signal} satisfies the predicate.
      */
     public final Signal<Boolean> any(Predicate<? super V> condition) {
-        return conditional(condition, true, true);
+        Objects.requireNonNull(condition);
+
+        return conditional(condition, true, false, false, true, false);
     }
 
     /**
@@ -1071,7 +1075,7 @@ public final class Signal<V> {
      * </p>
      * 
      * @param resumer
-     * @return
+     * @return Chainable API.
      */
     public final Signal<V> errorResume(Signal<? extends V> resumer) {
         return errorResume(e -> resumer);
@@ -1084,7 +1088,7 @@ public final class Signal<V> {
      * </p>
      * 
      * @param resumer
-     * @return
+     * @return Chainable API.
      */
     public final Signal<V> errorResume(Function<? super Throwable, Signal<? extends V>> resumer) {
         return new Signal<>((observer, disposer) -> {
@@ -1092,15 +1096,24 @@ public final class Signal<V> {
         });
     }
 
+    /**
+     * Returns {@link Signal} that emits only the very first item emitted by the source
+     * {@link Signal}, or completes if the source {@link Signal} is empty.
+     * 
+     * @return Chainable API.
+     */
     public final Signal<V> first() {
-        return new Signal<>((observer, disposer) -> {
+        return first(null);
+    }
 
-            return to(value -> {
-                observer.accept(value);
-                observer.complete();
-                disposer.dispose();
-            }, observer::error, observer::complete, disposer);
-        });
+    /**
+     * Returns {@link Signal} that emits only the very first item emitted by the source
+     * {@link Signal}, or completes if the source {@link Signal} is empty.
+     * 
+     * @return Chainable API.
+     */
+    public final Signal<V> first(V defaultValue) {
+        return conditional(I.accept(), null, false, null, true, defaultValue);
     }
 
     /**
@@ -1370,15 +1383,7 @@ public final class Signal<V> {
      *         completed.
      */
     public final Signal<Boolean> isComplete() {
-        return new Signal<>((observer, disposer) -> {
-            return to(v -> {
-                // ignore
-            }, observer::error, () -> {
-                observer.accept(true);
-                observer.complete();
-                disposer.dispose();
-            }, disposer);
-        });
+        return conditional(null, false, false, false, true, true);
     }
 
     /**
@@ -1389,15 +1394,7 @@ public final class Signal<V> {
      *         errored.
      */
     public final Signal<Boolean> isError() {
-        return new Signal<>((observer, disposer) -> {
-            return to(v -> {
-                // ignore
-            }, e -> {
-                observer.accept(true);
-                observer.complete();
-                disposer.dispose();
-            }, observer::complete, disposer);
-        });
+        return conditional(null, false, true, true, true, false);
     }
 
     /**
@@ -1569,7 +1566,9 @@ public final class Signal<V> {
      *         satisfy the predicate; otherwise, true.
      */
     public final Signal<Boolean> none(Predicate<? super V> condition) {
-        return conditional(condition, true, false);
+        Objects.requireNonNull(condition);
+
+        return conditional(condition, false, false, false, true, true);
     }
 
     /**
@@ -2783,24 +2782,38 @@ public final class Signal<V> {
      * Conditional operator helper.
      * 
      * @param condition A value condition.
-     * @param result A desired condition result.
-     * @param output A required condition output.
+     * @param conditionOutput A required condition output.
+     * @param acceptError
+     * @param errorOutput
+     * @param acceptComplete
+     * @param completeOuput
      * @return Chainable API.
      */
-    private Signal<Boolean> conditional(Predicate<? super V> condition, boolean result, boolean output) {
-        Objects.requireNonNull(condition);
-
-        return new Signal<Boolean>((observer, disposer) -> {
+    private <T> Signal<T> conditional(Predicate<? super V> condition, T conditionOutput, boolean acceptError, T errorOutput, boolean acceptComplete, T completeOuput) {
+        return new Signal<>((observer, disposer) -> {
             return to(v -> {
-                if (condition.test(v) == result) {
-                    observer.accept(output);
+                if (condition != null && condition.test(v)) {
+                    observer.accept(conditionOutput == null ? (T) v : conditionOutput);
                     observer.complete();
                     disposer.dispose();
                 }
-            }, observer::error, () -> {
-                observer.accept(!output);
-                observer.complete();
-                disposer.dispose();
+            }, e -> {
+                if (acceptError) {
+                    if (errorOutput != null) observer.accept(errorOutput);
+                    observer.complete();
+                    disposer.dispose();
+                } else {
+                    observer.error(e);
+                }
+            }, () -> {
+                if (acceptComplete) {
+                    if (completeOuput != null) observer.accept(completeOuput);
+                    observer.complete();
+                    disposer.dispose();
+                } else {
+                    observer.complete();
+                    disposer.dispose();
+                }
             }, disposer);
         });
     }
