@@ -41,7 +41,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.IntPredicate;
+import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
@@ -956,7 +956,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> diff() {
-        return take(null, ((BiPredicate) Objects::equals).negate());
+        return take((V) null, ((BiPredicate) Objects::equals).negate());
     }
 
     /**
@@ -1967,6 +1967,22 @@ public final class Signal<V> {
     }
 
     /**
+     * {@link #skip(Predicate)} with context.
+     * 
+     * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
+     * @param condition A condition function to apply to each value emitted by this {@link Signal} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <C> Signal<V> skip(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
+        // ignore invalid parameters
+        if (condition == null) {
+            return this;
+        }
+        return take(contextSupplier, condition.negate());
+    }
+
+    /**
      * <p>
      * Bypasses a specified number of values in an {@link Signal} sequence and then returns the
      * remaining values.
@@ -2042,7 +2058,7 @@ public final class Signal<V> {
      * @param condition A index condition of values to emit.
      * @return Chainable API.
      */
-    public final Signal<V> skipAt(IntPredicate condition) {
+    public final Signal<V> skipAt(LongPredicate condition) {
         return takeAt(condition.negate());
     }
 
@@ -2383,14 +2399,7 @@ public final class Signal<V> {
         if (condition == null) {
             return this;
         }
-
-        return new Signal<>((observer, disposer) -> {
-            return to(value -> {
-                if (condition.test(value)) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+        return take((Supplier) null, (context, value) -> condition.test(value));
     }
 
     /**
@@ -2441,12 +2450,28 @@ public final class Signal<V> {
         if (condition == null) {
             return this;
         }
+        return take(() -> new AtomicReference<>(init), (context, value) -> condition.test(context.getAndSet(value), value));
+    }
+
+    /**
+     * {@link #take(Predicate)} with context.
+     * 
+     * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
+     * @param condition A condition function to apply to each value emitted by this {@link Signal} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
+        // ignore invalid parameters
+        if (condition == null) {
+            return this;
+        }
 
         return new Signal<>((observer, disposer) -> {
-            AtomicReference<V> ref = new AtomicReference(init);
+            C context = contextSupplier == null ? null : contextSupplier.get();
 
             return to(value -> {
-                if (condition.test(ref.getAndSet(value), value)) {
+                if (condition.test(context, value)) {
                     observer.accept(value);
                 }
             }, observer::error, observer::complete, disposer);
@@ -2506,20 +2531,28 @@ public final class Signal<V> {
      * @param condition A index condition of values to emit.
      * @return Chainable API.
      */
-    public final Signal<V> takeAt(IntPredicate condition) {
+    public final Signal<V> takeAt(LongPredicate condition) {
         if (condition == null) {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> {
-            AtomicInteger index = new AtomicInteger();
+        return map(AtomicLong::new, (context, v) -> {
+            if (condition.test(context.getAndIncrement())) {
+                return v;
+            } else {
+                return (V) UNDEFINED;
+            }
+        }).skip(v -> v == UNDEFINED);
 
-            return to(value -> {
-                if (condition.test(index.getAndIncrement())) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+        // return new Signal<>((observer, disposer) -> {
+        // AtomicInteger index = new AtomicInteger();
+        //
+        // return to(value -> {
+        // if (condition.test(index.getAndIncrement())) {
+        // observer.accept(value);
+        // }
+        // }, observer::error, observer::complete, disposer);
+        // });
     }
 
     /**
