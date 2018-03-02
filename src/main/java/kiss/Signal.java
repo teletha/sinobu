@@ -375,6 +375,57 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
+     * by the source {@link Signal} satisfy a condition.
+     * 
+     * @param condition A condition that evaluates an item and returns a Boolean.
+     * @return A {@link Signal} that emits true if all items emitted by the source {@link Signal}
+     *         satisfy the predicate; otherwise, false.
+     */
+    public final Signal<Boolean> all(Predicate<? super V> condition) {
+        if (condition == null) {
+            return mapTo(true);
+        }
+
+        return map(AtomicBoolean::new, (context, value) -> {
+            if (context.get() == true) {
+                return false;
+            } else if (condition.test(value)) {
+                return true;
+            } else {
+                context.set(true);
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Returns a {@link Signal} that emits true if any item emitted by the source {@link Signal}
+     * satisfies a specified condition, otherwise false. Note: this always emits false if the source
+     * {@link Signal} is empty.
+     * 
+     * @param condition A condition to test items emitted by the source {@link Signal}.
+     * @return A {@link Signal} that emits a Boolean that indicates whether any item emitted by the
+     *         source {@link Signal} satisfies the predicate.
+     */
+    public final Signal<Boolean> any(Predicate<? super V> condition) {
+        if (condition == null) {
+            return mapTo(true);
+        }
+
+        return map(AtomicBoolean::new, (context, value) -> {
+            if (context.get() == true) {
+                return true;
+            } else if (condition.test(value)) {
+                context.set(true);
+                return true;
+            } else {
+                return false;
+            }
+        });
+    }
+
+    /**
      * <p>
      * Filters the values of an {@link Signal} sequence based on the specified type.
      * </p>
@@ -801,6 +852,19 @@ public final class Signal<V> {
                 }, disposer.sub());
             }, observer::error, observer::complete, disposer);
         });
+    }
+
+    /**
+     * Returns a {@link Signal} that emits a Boolean that indicates whether the source
+     * {@link Signal} emitted a specified item.
+     * 
+     * @param value An item to search for in the emissions from the source {@link Signal}.
+     * @return A {@link Signal} that emits true if the specified item is emitted by the source
+     *         {@link Signal}, or false if the source {@link Signal} completes without emitting that
+     *         item.
+     */
+    public final Signal<Boolean> contains(Object value) {
+        return null;
     }
 
     /**
@@ -1485,6 +1549,21 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
+     * by the source {@link Signal} unsatisfy a condition.
+     * 
+     * @param condition A condition that evaluates an item and returns a Boolean.
+     * @return A {@link Signal} that emits false if all items emitted by the source {@link Signal}
+     *         satisfy the predicate; otherwise, true.
+     */
+    public final Signal<Boolean> none(Predicate<? super V> condition) {
+        if (condition == null) {
+            return mapTo(true);
+        }
+        return all(condition.negate());
+    }
+
+    /**
      * <p>
      * Switch event stream context.
      * </p>
@@ -1794,7 +1873,7 @@ public final class Signal<V> {
      * @param condition A skip condition.
      * @return Chainable API.
      */
-    public final Signal<V> skip(Predicate<V> condition) {
+    public final Signal<V> skip(Predicate<? super V> condition) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
@@ -1842,7 +1921,7 @@ public final class Signal<V> {
      * @param condition A skip condition.
      * @return Chainable API.
      */
-    public final Signal<V> skip(V init, BiPredicate<V, V> condition) {
+    public final Signal<V> skip(V init, BiPredicate<? super V, ? super V> condition) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
@@ -2262,7 +2341,7 @@ public final class Signal<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> take(Predicate<V> condition) {
+    public final Signal<V> take(Predicate<? super V> condition) {
         // ignore invalid parameters
         if (condition == null) {
             return this;
@@ -2320,7 +2399,7 @@ public final class Signal<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> take(V init, BiPredicate<V, V> condition) {
+    public final Signal<V> take(V init, BiPredicate<? super V, ? super V> condition) {
         // ignore invalid parameters
         if (condition == null) {
             return this;

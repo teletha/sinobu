@@ -267,9 +267,20 @@ public class SignalTester {
      * Monitor signal to test.
      * </p>
      * 
+     * @param signal
+     */
+    protected <In, Out> void monitor(Class<In> in, Class<Out> out, Function<Signal<In>, Signal<Out>> signal) {
+        monitor(multiplicity, signal);
+    }
+
+    /**
+     * <p>
+     * Monitor signal to test.
+     * </p>
+     * 
      * @param builder
      */
-    protected <T> void monitor(int multiplicity, Function<Signal<T>, Signal<T>> builder) {
+    protected <In, Out> void monitor(int multiplicity, Function<Signal<In>, Signal<Out>> builder) {
         LogSet[] sets = new LogSet[multiplicity];
         LogDelegator delegator1, delegator2;
         log1 = delegator1 = new LogDelegator();
