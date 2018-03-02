@@ -1398,6 +1398,35 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns a {@link Signal} that emits the last item emitted by this {@link Signal} or completes
+     * if this {@link Signal} is empty.
+     * 
+     * @return Chainable API.
+     */
+    public final Signal<V> last() {
+        return last(null);
+    }
+
+    /**
+     * Returns a {@link Signal} that emits only the last item emitted by this {@link Signal}, or a
+     * default item if this {@link Signal} completes without emitting any items.
+     * 
+     * @return Chainable API.
+     */
+    public final Signal<V> last(V defaultValue) {
+        return new Signal<>((observer, disposer) -> {
+            AtomicReference<V> latest = new AtomicReference(defaultValue);
+
+            return to(latest::set, observer::error, () -> {
+                V value = latest.get();
+                if (value != null) observer.accept(value);
+                observer.complete();
+                disposer.dispose();
+            }, disposer);
+        });
+    }
+
+    /**
      * <p>
      * Returns an {@link Signal} that applies the given function to each value emitted by an
      * {@link Signal} and emits the result.
