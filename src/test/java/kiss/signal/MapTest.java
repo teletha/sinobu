@@ -9,6 +9,8 @@
  */
 package kiss.signal;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 
 import kiss.SignalTester;
@@ -57,6 +59,15 @@ public class MapTest extends SignalTester {
         monitor(signal -> signal.map(1, (prev, now) -> prev + now));
 
         assert main.emit(1).value(2);
+        assert main.emit(2).value(3);
+        assert main.emit(3).value(5);
+    }
+
+    @Test
+    public void mapWithContext() {
+        monitor(Integer.class, signal -> signal.map(AtomicInteger::new, (context, value) -> context.getAndIncrement() + value));
+
+        assert main.emit(1).value(1);
         assert main.emit(2).value(3);
         assert main.emit(3).value(5);
     }

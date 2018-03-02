@@ -1236,12 +1236,17 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<Ⅱ<V, Long>> index() {
-        return new Signal<>((observer, disposer) -> {
-            AtomicLong index = new AtomicLong();
-            return to(v -> {
-                observer.accept(I.pair(v, index.getAndIncrement()));
-            }, observer::error, observer::complete, disposer);
-        });
+        return index(0);
+    }
+
+    /**
+     * Append index (starting from the specified value).
+     * 
+     * @param start A starting index number.
+     * @return Chainable API.
+     */
+    public final Signal<Ⅱ<V, Long>> index(long start) {
+        return map(() -> new AtomicLong(start), (context, value) -> I.pair(value, context.getAndIncrement()));
     }
 
     /**
@@ -1323,10 +1328,7 @@ public final class Signal<V> {
         if (converter == null) {
             return (Signal<R>) this;
         }
-
-        return new Signal<R>((observer, disposer) -> {
-            return to(value -> observer.accept(converter.apply(value)), observer::error, observer::complete, disposer);
-        });
+        return map((Supplier) null, (context, value) -> converter.apply(value));
     }
 
     /**
@@ -1344,43 +1346,64 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Returns an {@link Signal} that applies the given function to each value emitted by an
-     * {@link Signal} and emits the result.
-     * </p>
+     * {@link #map(Function)} with previuos value.
      *
-     * @param init A initial value.
+     * @param init A initial previous value.
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
      *            <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <R> Signal<R> map(V init, BiFunction<V, V, R> converter) {
+    public final <R> Signal<R> map(V init, BiFunction<? super V, ? super V, R> converter) {
+        // ignore invalid parameters
+        if (converter == null) {
+            return (Signal<R>) this;
+        }
+        return map(() -> new AtomicReference<>(init), (context, value) -> converter.apply(context.getAndSet(value), value));
+    }
+
+    /**
+     * {@link #map(Function)} with previuos value.
+     *
+     * @param init A initial previous value.
+     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <R> Signal<R> map(V init, WiseBiFunction<? super V, ? super V, R> converter) {
+        return map(init, I.quiet(converter));
+    }
+
+    /**
+     * {@link #map(Function)} with context.
+     * 
+     * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
+     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <C, R> Signal<R> map(Supplier<C> contextSupplier, BiFunction<C, ? super V, R> converter) {
         // ignore invalid parameters
         if (converter == null) {
             return (Signal<R>) this;
         }
 
         return new Signal<>((observer, disposer) -> {
-            AtomicReference<V> ref = new AtomicReference(init);
+            C context = contextSupplier == null ? null : contextSupplier.get();
 
-            return to(value -> observer
-                    .accept(converter.apply(ref.getAndSet(value), value)), observer::error, observer::complete, disposer);
+            return to(value -> observer.accept(converter.apply(context, value)), observer::error, observer::complete, disposer);
         });
     }
 
     /**
-     * <p>
-     * Returns an {@link Signal} that applies the given function to each value emitted by an
-     * {@link Signal} and emits the result.
-     * </p>
-     *
-     * @param init A initial value.
+     * {@link #map(Function)} with context.
+     * 
+     * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
      *            <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <R> Signal<R> map(V init, WiseBiFunction<V, V, R> converter) {
-        return map(init, I.quiet(converter));
+    public final <C, R> Signal<R> map(Supplier<C> contextSupplier, WiseBiFunction<C, ? super V, R> converter) {
+        return map(contextSupplier, I.quiet(converter));
     }
 
     /**
@@ -2661,18 +2684,6 @@ public final class Signal<V> {
         });
     }
 
-    public final <ADD> Signal<Ⅱ<V, ADD>> with(ADD addition) {
-        return with(v -> addition);
-    }
-
-    public final <ADD> Signal<Ⅱ<V, ADD>> with(Supplier<ADD> addition) {
-        return with(v -> addition.get());
-    }
-
-    public final <ADD> Signal<Ⅱ<V, ADD>> with(Function<V, ADD> addition) {
-        return map(v -> I.pair(v, addition.apply(v)));
-    }
-
     /**
      * Create event delegater with counter.
      * 
@@ -2695,7 +2706,7 @@ public final class Signal<V> {
     // * Append the current time to each events.
     // * </p>
     // *
-    // * @return
+    // * @return Chainable API.
     // */
     // public final Signal<Ⅱ<V, Instant>> timeStamp() {
     // return map(value -> I.pair(value, Instant.now()));
@@ -2706,12 +2717,11 @@ public final class Signal<V> {
     // * Append {@link Duration} between the current value and the previous value.
     // * </p>
     // *
-    // * @return
+    // * @return Chainable API.
     // */
     // public final Signal<Ⅱ<V, Duration>> timeInterval() {
-    // return timeStamp().map(null, (prev, current) -> {
-    // return I.pair(current.ⅰ, Duration.between(prev == null ? current.ⅱ : prev.ⅱ, current.ⅱ));
-    // });
+    // return timeStamp().map((Ⅱ) null, (prev, now) -> I.pair(now.ⅰ, Duration.between(prev == null ?
+    // now.ⅱ : prev.ⅱ, now.ⅱ)));
     // }
     //
     // /**
@@ -2719,18 +2729,13 @@ public final class Signal<V> {
     // * Append {@link Duration} between the current value and the first value.
     // * </p>
     // *
-    // * @return
+    // * @return Chainable API.
     // */
     // public final Signal<Ⅱ<V, Duration>> timeElapsed() {
-    // AtomicReference<Instant> start = new AtomicReference();
-    // return timeStamp().map(v -> {
-    // Instant init = start.get();
-    // if (init == null) {
-    // start.set(Instant.now());
-    // return I.pair(v.ⅰ, Duration.ZERO);
-    // } else {
-    // return I.pair(v.ⅰ, Duration.between(init, v.ⅱ));
-    // }
+    // return map(Variable::<Instant> empty, (context, value) -> {
+    // Instant prev = context.let(Instant::now);
+    //
+    // return I.pair(value, prev == null ? Duration.ZERO : Duration.between(prev, Instant.now()));
     // });
     // }
 }

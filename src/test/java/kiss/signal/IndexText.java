@@ -27,4 +27,14 @@ public class IndexText extends SignalTester {
         assert main.emit("C").value("C2");
         assert main.emit(Complete).isCompleted();
     }
+
+    @Test
+    public void start() {
+        monitor(String.class, signal -> signal.index(10).map(v -> v.ⅰ + v.ⅱ));
+
+        assert main.emit("A").value("A10");
+        assert main.emit("B").value("B11");
+        assert main.emit("C").value("C12");
+        assert main.emit(Complete).isCompleted();
+    }
 }
