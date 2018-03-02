@@ -383,21 +383,7 @@ public final class Signal<V> {
      *         satisfy the predicate; otherwise, false.
      */
     public final Signal<Boolean> all(Predicate<? super V> condition) {
-        Objects.requireNonNull(condition);
-
-        return new Signal<Boolean>((observer, disposer) -> {
-            return to(v -> {
-                if (!condition.test(v)) {
-                    observer.accept(false);
-                    observer.complete();
-                    disposer.dispose();
-                }
-            }, observer::error, () -> {
-                observer.accept(true);
-                observer.complete();
-                disposer.dispose();
-            }, disposer);
-        });
+        return conditional(condition, false, false);
     }
 
     /**
@@ -410,21 +396,7 @@ public final class Signal<V> {
      *         source {@link Signal} satisfies the predicate.
      */
     public final Signal<Boolean> any(Predicate<? super V> condition) {
-        Objects.requireNonNull(condition);
-
-        return new Signal<Boolean>((observer, disposer) -> {
-            return to(v -> {
-                if (condition.test(v)) {
-                    observer.accept(true);
-                    observer.complete();
-                    disposer.dispose();
-                }
-            }, observer::error, () -> {
-                observer.accept(false);
-                observer.complete();
-                disposer.dispose();
-            }, disposer);
-        });
+        return conditional(condition, true, true);
     }
 
     /**
@@ -1597,21 +1569,7 @@ public final class Signal<V> {
      *         satisfy the predicate; otherwise, true.
      */
     public final Signal<Boolean> none(Predicate<? super V> condition) {
-        Objects.requireNonNull(condition);
-
-        return new Signal<Boolean>((observer, disposer) -> {
-            return to(v -> {
-                if (condition.test(v)) {
-                    observer.accept(false);
-                    observer.complete();
-                    disposer.dispose();
-                }
-            }, observer::error, () -> {
-                observer.accept(true);
-                observer.complete();
-                disposer.dispose();
-            }, disposer);
-        });
+        return conditional(condition, true, false);
     }
 
     /**
@@ -2822,11 +2780,37 @@ public final class Signal<V> {
     }
 
     /**
+     * Conditional operator helper.
+     * 
+     * @param condition A value condition.
+     * @param result A desired condition result.
+     * @param output A required condition output.
+     * @return Chainable API.
+     */
+    private Signal<Boolean> conditional(Predicate<? super V> condition, boolean result, boolean output) {
+        Objects.requireNonNull(condition);
+
+        return new Signal<Boolean>((observer, disposer) -> {
+            return to(v -> {
+                if (condition.test(v) == result) {
+                    observer.accept(output);
+                    observer.complete();
+                    disposer.dispose();
+                }
+            }, observer::error, () -> {
+                observer.accept(!output);
+                observer.complete();
+                disposer.dispose();
+            }, disposer);
+        });
+    }
+
+    /**
      * Create event delegater with counter.
      * 
      * @param delgator
      * @param count
-     * @return
+     * @return Chainable API.
      */
     private Runnable countable(Runnable delgator, int count) {
         AtomicInteger counter = new AtomicInteger();
