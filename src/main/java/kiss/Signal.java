@@ -1389,6 +1389,44 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
+     * {@link Signal} is completed.
+     * 
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         completed.
+     */
+    public final Signal<Boolean> isComplete() {
+        return new Signal<>((observer, disposer) -> {
+            return to(v -> {
+                // ignore
+            }, observer::error, () -> {
+                observer.accept(true);
+                observer.complete();
+                disposer.dispose();
+            }, disposer);
+        });
+    }
+
+    /**
+     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
+     * {@link Signal} is errored.
+     * 
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         errored.
+     */
+    public final Signal<Boolean> isError() {
+        return new Signal<>((observer, disposer) -> {
+            return to(v -> {
+                // ignore
+            }, e -> {
+                observer.accept(true);
+                observer.complete();
+                disposer.dispose();
+            }, observer::complete, disposer);
+        });
+    }
+
+    /**
      * <p>
      * Returns an {@link Signal} that applies the given function to each value emitted by an
      * {@link Signal} and emits the result.
