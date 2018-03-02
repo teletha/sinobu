@@ -864,7 +864,7 @@ public final class Signal<V> {
      *         item.
      */
     public final Signal<Boolean> contains(Object value) {
-        return null;
+        return any(v -> Objects.equals(v, value));
     }
 
     /**

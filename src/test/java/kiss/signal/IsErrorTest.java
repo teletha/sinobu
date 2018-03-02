@@ -16,7 +16,7 @@ import kiss.SignalTester;
 /**
  * @version 2018/03/02 13:36:05
  */
-public class isErrorTest extends SignalTester {
+public class IsErrorTest extends SignalTester {
 
     @Test
     public void isError() {
