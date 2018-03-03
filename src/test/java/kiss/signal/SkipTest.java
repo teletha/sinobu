@@ -14,10 +14,8 @@ import java.util.function.Predicate;
 
 import org.junit.Test;
 
-import kiss.SignalTester;
-
 /**
- * @version 2018/02/28 8:26:41
+ * @version 2018/03/03 19:54:42
  */
 public class SkipTest extends SignalTester {
 
@@ -54,7 +52,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipByCount() throws Exception {
+    public void skipByCount() {
         monitor(int.class, signal -> signal.skip(2));
 
         assert main.emit(1, 2, 3, 4).value(3, 4);
@@ -89,7 +87,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipAt() throws Exception {
+    public void skipAt() {
         monitor(() -> signal(0, 1, 2, 3, 4, 5).skipAt(index -> 3 < index));
         assert main.value(0, 1, 2, 3);
 
@@ -98,7 +96,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilSignal() {
+    public void skipUntilOtherSignal() {
         monitor(signal -> signal.skipUntil(other.signal()));
 
         assert main.emit(1, 2).value();
@@ -106,11 +104,58 @@ public class SkipTest extends SignalTester {
         assert main.isNotDisposed();
         assert other.isNotDisposed();
 
-        other.emit("start");
-        assert main.emit(1, 2).value(1, 2);
+        other.emit("START");
+        assert main.emit(1, 2, 3).value(1, 2, 3);
         assert main.isNotCompleted();
         assert main.isNotDisposed();
         assert other.isDisposed();
+    }
+
+    @Test
+    public void skipUntilOtherSignalIsErrored() {
+        monitor(signal -> signal.skipUntil(other.signal()));
+
+        assert main.emit(1, 2).value();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotDisposed();
+
+        other.emit(Error.class);
+        assert main.emit(1, 2, 3).value(1, 2, 3);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void skipUntilOtherSignalIsCompleted() {
+        monitor(signal -> signal.skipUntil(other.signal()));
+
+        assert main.emit(1, 2).value();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotDisposed();
+
+        other.emit(Complete);
+        assert main.emit(1, 2, 3).value(1, 2, 3);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void skipUntilOtherSignalWithRepeat() {
+        monitor(signal -> signal.skipUntil(other.signal()).take(1).repeat());
+
+        assert main.emit(1, 2).value();
+        other.emit("START");
+        assert main.emit(1, 2, 3).value(1);
+        other.emit("START");
+        assert main.emit(1, 2, 3).value(1);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotDisposed();
     }
 
     @Test

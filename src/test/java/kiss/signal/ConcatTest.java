@@ -12,7 +12,6 @@ package kiss.signal;
 import org.junit.Test;
 
 import kiss.Signal;
-import kiss.SignalTester;
 
 /**
  * @version 2017/04/01 21:41:59

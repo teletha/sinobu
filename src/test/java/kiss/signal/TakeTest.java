@@ -15,7 +15,6 @@ import java.util.function.Predicate;
 import org.junit.Test;
 
 import kiss.I;
-import kiss.SignalTester;
 
 /**
  * @version 2018/03/03 7:05:51
@@ -98,10 +97,13 @@ public class TakeTest extends SignalTester {
         assert main.emit(1, 2).value(1, 2);
         other.emit(false);
         assert main.emit(1, 2).value();
+        other.emit(true);
+        assert main.emit(1, 2).value(1, 2);
 
+        assert main.isNotDisposed();
         assert other.isNotDisposed();
         main.dispose();
-        assert main.isNotCompleted();
+        assert main.isDisposed();
         assert other.isDisposed();
     }
 

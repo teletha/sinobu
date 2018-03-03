@@ -307,42 +307,6 @@ public class SignalTest {
     }
 
     @Test
-    public void skipUntil() {
-        Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(condition.signal()));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-
-        condition.emit("start");
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
-        assert condition.isCompleted();
-    }
-
-    @Test
-    public void skipUntilWithRepeat() throws Exception {
-        Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(condition.signal()).take(1).repeat());
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-
-        condition.emit("start");
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == null;
-
-        condition.emit("start");
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == null;
-
-        assert subject.disposeWithCountAlreadyDisposed(4);
-    }
-
-    @Test
     public void skipUntilValue() {
         Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(30));
 

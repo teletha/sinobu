@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import kiss.SignalTester;
-
 /**
  * @version 2018/02/28 14:34:31
  */

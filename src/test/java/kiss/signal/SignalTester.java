@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss;
+package kiss.signal;
 
 import static java.util.stream.Collectors.*;
 
@@ -26,6 +26,10 @@ import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 
 import antibug.Chronus;
+import kiss.Disposable;
+import kiss.I;
+import kiss.Observer;
+import kiss.Signal;
 
 /**
  * @version 2018/03/02 10:07:09

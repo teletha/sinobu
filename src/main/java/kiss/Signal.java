@@ -2208,16 +2208,7 @@ public final class Signal<V> {
         if (timing == null) {
             return this;
         }
-
-        return new Signal<>((observer, disposer) -> {
-            Variable<Boolean> take = timing.take(1).toBinary();
-
-            return to(value -> {
-                if (take.get()) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+        return take(timing.isSignaled());
     }
 
     /**
@@ -2560,11 +2551,11 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicBoolean flag = new AtomicBoolean(init);
 
-            return condition.to(flag::set, observer::error, observer::complete, disposer).add(to(v -> {
+            return to(v -> {
                 if (flag.get()) {
                     observer.accept(v);
                 }
-            }, observer::error, observer::complete, disposer));
+            }, observer::error, observer::complete, disposer).add(condition.to(flag::set));
         });
     }
 
@@ -2713,30 +2704,21 @@ public final class Signal<V> {
      * Returns {@link Signal} that emits the items emitted by the source {@link Signal} until a
      * second {@link Signal} emits an item.
      *
-     * @param condition A {@link Signal} whose first emitted item will cause takeUntil to stop
-     *            emitting items from the source {@link Signal}. <code>null</code> will ignore this
+     * @param timing A {@link Signal} whose first emitted item will cause takeUntil to stop emitting
+     *            items from the source {@link Signal}. <code>null</code> will ignore this
      *            instruction.
      * @return A {@link Signal} that emits the items emitted by the source {@link Signal} until such
      *         time as other emits its first item.
      */
-    public final Signal<V> takeUntil(Signal condition) {
+    public final Signal<V> takeUntil(Signal timing) {
         // ignore invalid parameter
-        if (condition == null) {
+        if (timing == null) {
             return this;
         }
 
         return new Signal<>((observer, disposer) -> {
-
-            Disposable disposeCondition = condition.isEmitAny().to(() -> {
-                observer.complete();
-            });
-
-            return disposeCondition.add(to(observer, disposer));
+            return timing.isSignaled().to(observer::complete).add(to(observer, disposer));
         });
-    }
-
-    public final Signal<Boolean> isEmitAny() {
-        return signal(I.accept(), true, true, true, true, true);
     }
 
     /**

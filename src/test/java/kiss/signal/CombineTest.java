@@ -13,7 +13,6 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
-import kiss.SignalTester;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 

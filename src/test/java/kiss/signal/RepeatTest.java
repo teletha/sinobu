@@ -14,8 +14,6 @@ import java.util.function.BooleanSupplier;
 
 import org.junit.Test;
 
-import kiss.SignalTester;
-
 /**
  * @version 2017/04/18 20:12:05
  */

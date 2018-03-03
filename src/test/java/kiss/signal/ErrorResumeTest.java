@@ -14,7 +14,6 @@ import java.util.function.Function;
 import org.junit.Test;
 
 import kiss.Signal;
-import kiss.SignalTester;
 
 /**
  * @version 2017/04/06 11:46:22

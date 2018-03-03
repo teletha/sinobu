@@ -13,8 +13,6 @@ import static java.util.concurrent.TimeUnit.*;
 
 import org.junit.Test;
 
-import kiss.SignalTester;
-
 /**
  * @version 2018/03/02 9:47:18
  */

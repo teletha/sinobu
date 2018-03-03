@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import kiss.I;
 import kiss.Signal;
-import kiss.SignalTester;
 
 /**
  * @version 2018/03/01 23:49:49

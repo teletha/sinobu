@@ -13,8 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import kiss.SignalTester;
-
 /**
  * @version 2018/02/28 20:03:32
  */
