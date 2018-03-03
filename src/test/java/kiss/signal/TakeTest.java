@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 
 import org.junit.Test;
 
+import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 
 /**
@@ -78,17 +79,6 @@ public class TakeTest extends SignalTester {
     }
 
     @Test
-    public void takeByTime() {
-        monitor(signal -> signal.takeUntil(30, ms));
-
-        assert main.emit(1, 2).value(1, 2);
-        assert main.isNotCompleted();
-        await(30);
-        assert main.emit(1, 2).value();
-        assert main.isCompleted();
-    }
-
-    @Test
     public void takeBySignal() {
         monitor(signal -> signal.take(other.signal()));
 
@@ -114,6 +104,19 @@ public class TakeTest extends SignalTester {
 
         monitor(() -> signal(1, 2, 3, 4, 5, 6).takeAt(index -> index % 2 == 0));
         assert main.value(1, 3, 5);
+    }
+
+    @Test
+    @PowerAssertOff
+    public void takeUntilByTime() {
+        monitor(signal -> signal.takeUntil(30, ms));
+
+        assert main.emit(1, 2).value(1, 2);
+        assert main.isNotCompleted();
+        await(30);
+        assert main.emit(1, 2).value();
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
@@ -180,22 +183,40 @@ public class TakeTest extends SignalTester {
     @Test
     public void takeUntilValueCondition() {
         monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
-
-        assert main.emit(1, 2).value(1, 2);
-        assert main.isNotCompleted();
-
-        assert main.emit(3, 4).value(3);
+        assert main.emit(1, 2, 3, 4, 5).value(1, 2, 3);
         assert main.isCompleted();
+        assert main.isDisposed();
+
+        // error
+        monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
+        assert main.emit(Error.class, 1, 2).value(1, 2);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        // complete
+        monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
+        assert main.emit(Complete, 1, 2).value();
+        assert main.isCompleted();
+        assert main.isNotDisposed();
     }
 
     @Test
     public void takeWhileValueCondition() {
-        monitor(int.class, signal -> signal.takeWhile(value -> value != 4));
-
-        assert main.emit(1, 2).value(1, 2);
-        assert main.isNotCompleted();
-
-        assert main.emit(3, 4, 5).value(3);
+        monitor(int.class, signal -> signal.takeWhile(value -> value != 3));
+        assert main.emit(1, 2, 3, 4, 5).value(1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
+
+        // error
+        monitor(int.class, signal -> signal.takeWhile(value -> value != 3));
+        assert main.emit(Error.class, 1, 2).value(1, 2);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        // complete
+        monitor(int.class, signal -> signal.takeWhile(value -> value != 3));
+        assert main.emit(Complete, 1, 2).value();
+        assert main.isCompleted();
+        assert main.isNotDisposed();
     }
 }

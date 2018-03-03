@@ -814,7 +814,9 @@ public final class Signal<V> {
                 }
             });
 
-            return index().to(indexed -> {
+            return
+
+            index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
@@ -831,6 +833,7 @@ public final class Signal<V> {
                 }, disposer.sub());
             }, observer::error, observer::complete, disposer);
         });
+
     }
 
     /**
@@ -2498,24 +2501,15 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
-        // ignore invalid parameters
-        if (condition == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            C context = contextSupplier == null ? null : contextSupplier.get();
-
-            return to(value -> {
-                if (condition.test(context, value)) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+        return take(contextSupplier, condition, true, false, false);
     }
 
     public final Signal<V> take(BooleanSupplier condition) {
         return take(v -> condition.getAsBoolean());
+    }
+
+    public final Signal<V> take(Supplier<Boolean> condition) {
+        return take(v -> condition.get());
     }
 
     /**
@@ -2605,22 +2599,7 @@ public final class Signal<V> {
         if (count <= 0) {
             return this;
         }
-
-        return new Signal<>((observer, disposer) -> {
-            AtomicInteger counter = new AtomicInteger(count);
-            return to(value -> {
-                int current = counter.decrementAndGet();
-
-                if (0 <= current) {
-                    observer.accept(value);
-
-                    if (0 == current) {
-                        observer.complete();
-                        disposer.dispose();
-                    }
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+        return take(AtomicInteger::new, (context, value) -> context.incrementAndGet() < count, true, true, true);
     }
 
     /**
@@ -2638,19 +2617,7 @@ public final class Signal<V> {
         if (time <= 0 || unit == null) {
             return this;
         }
-
-        return new Signal<>((observer, disposer) -> {
-            long timing = System.nanoTime() + unit.toNanos(time);
-
-            return to(value -> {
-                if (System.nanoTime() < timing) {
-                    observer.accept(value);
-                } else {
-                    observer.complete();
-                    disposer.dispose();
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+        return take(() -> System.nanoTime() + unit.toNanos(time), (limit, value) -> System.nanoTime() < limit, true, true, false);
     }
 
     /**
@@ -2667,7 +2634,7 @@ public final class Signal<V> {
      *         satisfied.
      */
     public final Signal<V> takeUntil(V value) {
-        return takeUntil(v -> Objects.equals(v, value));
+        return take(() -> value, Objects::equals, false, true, true);
     }
 
     /**
@@ -2682,22 +2649,8 @@ public final class Signal<V> {
      *         the specified condition after each item, and then completes if the condition is
      *         satisfied.
      */
-    public final Signal<V> takeUntil(Predicate<V> condition) {
-        // ignore invalid parameter
-        if (condition == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            return to(value -> {
-                observer.accept(value);
-
-                if (condition.test(value)) {
-                    observer.complete();
-                    disposer.dispose();
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+    public final Signal<V> takeUntil(Predicate<? super V> condition) {
+        return take(null, (context, value) -> condition.test(value), false, true, true);
     }
 
     /**
@@ -2733,19 +2686,37 @@ public final class Signal<V> {
      *         the specified condition after each item, and then completes if the condition is
      *         satisfied.
      */
-    public final Signal<V> takeWhile(Predicate<V> condition) {
+    public final Signal<V> takeWhile(Predicate<? super V> condition) {
+        return take(null, (context, value) -> condition.test(value), true, true, false);
+    }
+
+    /**
+     * Take operator helper.
+     * 
+     * @param contextSupplier
+     * @param condition
+     * @param stopOnFail
+     * @param includeOnFail
+     * @return
+     */
+    private <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition, boolean expected, boolean stopOnFail, boolean includeOnFail) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
         }
 
         return new Signal<>((observer, disposer) -> {
+            C context = contextSupplier == null ? null : contextSupplier.get();
+
             return to(value -> {
-                if (condition.test(value)) {
+                if (condition.test(context, value) == expected) {
                     observer.accept(value);
                 } else {
-                    observer.complete();
-                    disposer.dispose();
+                    if (stopOnFail) {
+                        if (includeOnFail) observer.accept(value);
+                        observer.complete();
+                        disposer.dispose();
+                    }
                 }
             }, observer::error, observer::complete, disposer);
         });
@@ -2890,7 +2861,7 @@ public final class Signal<V> {
     }
 
     /**
-     * Signale detection operator helper.
+     * Signal detection operator helper.
      * 
      * @param emitCondition A value condition.
      * @param emitOutput A required condition output.
