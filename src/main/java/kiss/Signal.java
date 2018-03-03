@@ -2696,10 +2696,10 @@ public final class Signal<V> {
      * @param contextSupplier
      * @param condition
      * @param stopOnFail
-     * @param includeOnFail
+     * @param includeOnStop
      * @return
      */
-    private <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition, boolean expected, boolean stopOnFail, boolean includeOnFail) {
+    private <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition, boolean expected, boolean stopOnFail, boolean includeOnStop) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
@@ -2713,7 +2713,7 @@ public final class Signal<V> {
                     observer.accept(value);
                 } else {
                     if (stopOnFail) {
-                        if (includeOnFail) observer.accept(value);
+                        if (includeOnStop) observer.accept(value);
                         observer.complete();
                         disposer.dispose();
                     }

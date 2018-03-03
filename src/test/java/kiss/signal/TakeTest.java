@@ -14,7 +14,6 @@ import java.util.function.Predicate;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 
 /**
@@ -107,7 +106,6 @@ public class TakeTest extends SignalTester {
     }
 
     @Test
-    @PowerAssertOff
     public void takeUntilByTime() {
         monitor(signal -> signal.takeUntil(30, ms));
 
