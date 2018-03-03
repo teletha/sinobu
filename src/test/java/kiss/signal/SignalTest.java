@@ -147,25 +147,6 @@ public class SignalTest {
     }
 
     @Test
-    public void repeatTakeUntil() {
-        Subject<String, String> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat().takeUntil(condition.signal()));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(40) == 40;
-
-        condition.emit("END");
-        assert subject.emitAndRetrieve(50) == null;
-        assert subject.emitAndRetrieve(60) == null;
-
-        assert subject.isCompleted();
-        assert condition.isCompleted();
-    }
-
-    @Test
     public void repeatThen() {
         Subject<Integer, Integer> sub = new Subject();
         Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(2).repeat().merge(sub.signal()));

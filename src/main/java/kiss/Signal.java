@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import static java.lang.Boolean.*;
 import static java.util.concurrent.TimeUnit.*;
 
 import java.util.ArrayDeque;
@@ -385,7 +386,7 @@ public final class Signal<V> {
     public final Signal<Boolean> all(Predicate<? super V> condition) {
         Objects.requireNonNull(condition);
 
-        return conditional(condition.negate(), false, false, false, true, true);
+        return signal(condition.negate(), FALSE, false, FALSE, true, TRUE);
     }
 
     /**
@@ -400,7 +401,7 @@ public final class Signal<V> {
     public final Signal<Boolean> any(Predicate<? super V> condition) {
         Objects.requireNonNull(condition);
 
-        return conditional(condition, true, false, false, true, false);
+        return signal(condition, TRUE, false, FALSE, true, FALSE);
     }
 
     /**
@@ -1113,7 +1114,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> first(V defaultValue) {
-        return conditional(I.accept(), null, false, null, true, defaultValue);
+        return signal(I.accept(), null, FALSE, null, TRUE, defaultValue);
     }
 
     /**
@@ -1382,8 +1383,30 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         completed.
      */
-    public final Signal<Boolean> isComplete() {
-        return conditional(null, false, false, false, true, true);
+    public final Signal<Boolean> isCompleted() {
+        return signal(null, FALSE, false, FALSE, true, TRUE);
+    }
+
+    /**
+     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
+     * {@link Signal} emits any value.
+     * 
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} emits
+     *         any value.
+     */
+    public final Signal<Boolean> isEmitted() {
+        return signal(I.accept(), TRUE, true, FALSE, true, FALSE);
+    }
+
+    /**
+     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
+     * {@link Signal} is completed without any value emitted.
+     * 
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         completed without any value emitted.
+     */
+    public final Signal<Boolean> isEmpty() {
+        return signal(I.accept(), FALSE, true, FALSE, true, TRUE);
     }
 
     /**
@@ -1393,8 +1416,30 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         errored.
      */
-    public final Signal<Boolean> isError() {
-        return conditional(null, false, true, true, true, false);
+    public final Signal<Boolean> isErrored() {
+        return signal(null, FALSE, true, TRUE, true, FALSE);
+    }
+
+    /**
+     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
+     * {@link Signal} is emitted, errored or completed.
+     * 
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         emitted, errored or completed.
+     */
+    public final Signal<Boolean> isSignaled() {
+        return signal(I.accept(), TRUE, true, TRUE, true, TRUE);
+    }
+
+    /**
+     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
+     * {@link Signal} is errored or completed.
+     * 
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         errored or completed.
+     */
+    public final Signal<Boolean> isTerminated() {
+        return signal(null, FALSE, true, TRUE, true, TRUE);
     }
 
     /**
@@ -1597,7 +1642,7 @@ public final class Signal<V> {
     public final Signal<Boolean> none(Predicate<? super V> condition) {
         Objects.requireNonNull(condition);
 
-        return conditional(condition, false, false, false, true, true);
+        return signal(condition, FALSE, false, FALSE, true, TRUE);
     }
 
     /**
@@ -2385,25 +2430,6 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
-     * given predicate.
-     * </p>
-     *
-     * @param condition A function that evaluates the values emitted by the source {@link Signal},
-     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Signal<V> take(Predicate<? super V> condition) {
-        // ignore invalid parameters
-        if (condition == null) {
-            return this;
-        }
-        return take((Supplier) null, (context, value) -> condition.test(value));
-    }
-
-    /**
-     * <p>
      * Alias for take(I.set(includes)).
      * </p>
      *
@@ -2432,6 +2458,25 @@ public final class Signal<V> {
             return this;
         }
         return take(includes::contains);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
+     * </p>
+     *
+     * @param condition A function that evaluates the values emitted by the source {@link Signal},
+     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> take(Predicate<? super V> condition) {
+        // ignore invalid parameters
+        if (condition == null) {
+            return this;
+        }
+        return take((Supplier) null, (context, value) -> condition.test(value));
     }
 
     /**
@@ -2665,14 +2710,14 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Returns the values from the source {@link Signal} sequence until the other {@link Signal}
-     * sequence produces a value.
-     * </p>
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} until a
+     * second {@link Signal} emits an item.
      *
-     * @param condition An {@link Signal} sequence that terminates propagation of values of the
-     *            source sequence. <code>null</code> will ignore this instruction.
-     * @return Chainable API.
+     * @param condition A {@link Signal} whose first emitted item will cause takeUntil to stop
+     *            emitting items from the source {@link Signal}. <code>null</code> will ignore this
+     *            instruction.
+     * @return A {@link Signal} that emits the items emitted by the source {@link Signal} until such
+     *         time as other emits its first item.
      */
     public final Signal<V> takeUntil(Signal condition) {
         // ignore invalid parameter
@@ -2681,12 +2726,17 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            Disposable disposable = Disposable.empty();
-            return disposable.add(to(observer, disposer).add(condition.to(value -> {
+
+            Disposable disposeCondition = condition.isEmitAny().to(() -> {
                 observer.complete();
-                disposable.dispose();
-            })));
+            });
+
+            return disposeCondition.add(to(observer, disposer));
         });
+    }
+
+    public final Signal<Boolean> isEmitAny() {
+        return signal(I.accept(), true, true, true, true, true);
     }
 
     /**
@@ -2841,46 +2891,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Conditional operator helper.
-     * 
-     * @param condition A value condition.
-     * @param conditionOutput A required condition output.
-     * @param acceptError
-     * @param errorOutput
-     * @param acceptComplete
-     * @param completeOuput
-     * @return Chainable API.
-     */
-    private <T> Signal<T> conditional(Predicate<? super V> condition, T conditionOutput, boolean acceptError, T errorOutput, boolean acceptComplete, T completeOuput) {
-        return new Signal<>((observer, disposer) -> {
-            return to(v -> {
-                if (condition != null && condition.test(v)) {
-                    observer.accept(conditionOutput == null ? (T) v : conditionOutput);
-                    observer.complete();
-                    disposer.dispose();
-                }
-            }, e -> {
-                if (acceptError) {
-                    if (errorOutput != null) observer.accept(errorOutput);
-                    observer.complete();
-                    disposer.dispose();
-                } else {
-                    observer.error(e);
-                }
-            }, () -> {
-                if (acceptComplete) {
-                    if (completeOuput != null) observer.accept(completeOuput);
-                    observer.complete();
-                    disposer.dispose();
-                } else {
-                    observer.complete();
-                    disposer.dispose();
-                }
-            }, disposer);
-        });
-    }
-
-    /**
      * Create event delegater with counter.
      * 
      * @param delgator
@@ -2895,6 +2905,41 @@ public final class Signal<V> {
                 delgator.run();
             }
         };
+    }
+
+    /**
+     * Signale detection operator helper.
+     * 
+     * @param emitCondition A value condition.
+     * @param emitOutput A required condition output.
+     * @param acceptError
+     * @param errorOutput
+     * @param acceptComplete
+     * @param completeOuput
+     * @return Chainable API.
+     */
+    private <T> Signal<T> signal(Predicate<? super V> emitCondition, T emitOutput, boolean acceptError, T errorOutput, boolean acceptComplete, T completeOuput) {
+        return new Signal<>((observer, disposer) -> {
+            return to(v -> {
+                if (emitCondition != null && emitCondition.test(v)) {
+                    observer.accept(emitOutput == null ? (T) v : emitOutput);
+                    observer.complete();
+                    disposer.dispose();
+                }
+            }, e -> {
+                if (acceptError) {
+                    if (errorOutput != null) observer.accept(errorOutput);
+                    observer.complete();
+                    disposer.dispose();
+                } else {
+                    observer.error(e);
+                }
+            }, () -> {
+                if (acceptComplete && completeOuput != null) observer.accept(completeOuput);
+                observer.complete();
+                disposer.dispose();
+            }, disposer);
+        });
     }
 
     // /**

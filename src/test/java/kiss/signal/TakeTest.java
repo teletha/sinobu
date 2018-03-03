@@ -18,7 +18,7 @@ import kiss.I;
 import kiss.SignalTester;
 
 /**
- * @version 2017/04/07 1:57:35
+ * @version 2018/03/03 7:05:51
  */
 public class TakeTest extends SignalTester {
 
@@ -115,7 +115,7 @@ public class TakeTest extends SignalTester {
     }
 
     @Test
-    public void takeUntilSignal() {
+    public void takeUntilOtherSignal() {
         monitor(signal -> signal.takeUntil(other.signal()));
 
         assert main.emit(1, 2).value(1, 2);
@@ -123,8 +123,53 @@ public class TakeTest extends SignalTester {
         assert main.isNotDisposed();
         assert other.isNotDisposed();
 
-        other.emit("start");
+        other.emit("STOP");
         assert main.emit(1, 2).value();
+        assert main.isCompleted();
+        assert main.isDisposed();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void takeUntilOtherSignalIsComplete() {
+        monitor(signal -> signal.takeUntil(other.signal()));
+
+        assert main.emit(1, 2).value(1, 2);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotDisposed();
+
+        other.emit(Complete);
+        assert main.emit(1, 2).value();
+        assert main.isCompleted();
+        assert main.isDisposed();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void takeUntilOtherSignalIsError() {
+        monitor(signal -> signal.takeUntil(other.signal()));
+
+        assert main.emit(1, 2).value(1, 2);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotDisposed();
+
+        other.emit(Error.class);
+        assert main.emit(1, 2).value();
+        assert main.isCompleted();
+        assert main.isDisposed();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void takeUntilOtherSignalWithRepeat() {
+        monitor(signal -> signal.skip(1).take(1).repeat().takeUntil(other.signal()));
+
+        assert main.emit(1, 2).value(2);
+        assert main.emit(3, 4).value(4);
+        other.emit("STOP");
+        assert main.emit(5, 6).value();
         assert main.isCompleted();
         assert main.isDisposed();
         assert other.isDisposed();
