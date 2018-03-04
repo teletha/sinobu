@@ -1584,7 +1584,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     @SafeVarargs
-    public final Signal<V> merge(Signal<V>... others) {
+    public final Signal<V> merge(Signal<? extends V>... others) {
         return merge(I.list(others));
     }
 
@@ -1597,44 +1597,21 @@ public final class Signal<V> {
      * @param others A target {@link Signal} set to merge. <code>null</code> will be ignored.
      * @return Chainable API.
      */
-    public final Signal<V> merge(Iterable<Signal<V>> others) {
+    public final Signal<V> merge(Iterable<Signal<? extends V>> others) {
         // ignore invalid parameters
         if (others == null) {
             return this;
         }
 
-        List<Signal<V>> list = new ArrayList();
-        list.add(this);
+        return new Signal<>((observer, disposer) -> {
+            List<Signal<? extends V>> signals = I.signal(others).skipNull().startWith(this).toList();
+            Runnable complete = countable(observer::complete, signals.size());
 
-        for (Signal<V> signal : others) {
-            list.add(signal);
-        }
-
-        return I.signalRange(0, list.size()).flatMap(i -> list.get(i));
-
-        // return new Signal<>((observer, disposer) -> {
-        // Subscriber<V> subscriber = new Subscriber();
-        // subscriber.index--;
-        // subscriber.observer = observer;
-        // subscriber.complete = () -> {
-        // if (subscriber.isCompleted()) {
-        // observer.complete();
-        // }
-        // };
-        //
-        // disposer = to(subscriber.child(), disposer);
-        //
-        // for (Signal<? extends V> other : others) {
-        // if (other != null && disposer.isDisposed() == false) {
-        // disposer = disposer.add(other.to(subscriber.child(), disposer));
-        // }
-        // }
-        //
-        // subscriber.index++;
-        // subscriber.complete();
-        //
-        // return disposer;
-        // });
+            for (Signal<? extends V> signal : signals) {
+                disposer = disposer.add(signal.to(observer::accept, observer::error, complete, disposer.sub()));
+            }
+            return disposer;
+        });
     }
 
     /**
