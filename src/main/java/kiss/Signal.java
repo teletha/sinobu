@@ -966,15 +966,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> distinct() {
-        return new Signal<>((observer, disposer) -> {
-            HashSet set = new HashSet();
-
-            return to(value -> {
-                if (set.add(value)) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+        return take(HashSet::new, (context, value) -> context.add(value), true, false, false);
     }
 
     /**
@@ -2403,6 +2395,23 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Returns a specified number of contiguous values from the start of an {@link Signal} sequence.
+     * </p>
+     *
+     * @param count A number of values to emit. Zero or negative number will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> take(long count) {
+        // ignore invalid parameter
+        if (count <= 0) {
+            return this;
+        }
+        return take(AtomicLong::new, (context, value) -> context.incrementAndGet() < count, true, true, true);
+    }
+
+    /**
+     * <p>
      * Alias for take(I.set(includes)).
      * </p>
      *
@@ -2541,44 +2550,11 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> takeAt(LongPredicate condition) {
+        // ignore invalid parameter
         if (condition == null) {
             return this;
         }
-
-        return map(AtomicLong::new, (context, v) -> {
-            if (condition.test(context.getAndIncrement())) {
-                return v;
-            } else {
-                return (V) UNDEFINED;
-            }
-        }).skip(v -> v == UNDEFINED);
-
-        // return new Signal<>((observer, disposer) -> {
-        // AtomicInteger index = new AtomicInteger();
-        //
-        // return to(value -> {
-        // if (condition.test(index.getAndIncrement())) {
-        // observer.accept(value);
-        // }
-        // }, observer::error, observer::complete, disposer);
-        // });
-    }
-
-    /**
-     * <p>
-     * Returns a specified number of contiguous values from the start of an {@link Signal} sequence.
-     * </p>
-     *
-     * @param count A number of values to emit. Zero or negative number will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Signal<V> take(int count) {
-        // ignore invalid parameter
-        if (count <= 0) {
-            return this;
-        }
-        return take(AtomicInteger::new, (context, value) -> context.incrementAndGet() < count, true, true, true);
+        return take(AtomicLong::new, (context, value) -> condition.test(context.getAndIncrement()), true, false, false);
     }
 
     /**

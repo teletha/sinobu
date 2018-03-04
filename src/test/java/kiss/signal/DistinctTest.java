@@ -12,7 +12,7 @@ package kiss.signal;
 import org.junit.Test;
 
 /**
- * @version 2018/02/28 19:25:20
+ * @version 2018/03/04 14:08:29
  */
 public class DistinctTest extends SignalTester {
 

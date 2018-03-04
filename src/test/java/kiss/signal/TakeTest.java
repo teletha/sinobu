@@ -70,7 +70,7 @@ public class TakeTest extends SignalTester {
     }
 
     @Test
-    public void takeByCount() throws Exception {
+    public void takeByCount() {
         monitor(int.class, signal -> signal.take(2));
 
         assert main.emit(1, 2, 3, 4).value(1, 2);
@@ -97,12 +97,12 @@ public class TakeTest extends SignalTester {
     }
 
     @Test
-    public void takeAt() throws Exception {
-        monitor(() -> signal(1, 2, 3, 4, 5, 6).takeAt(index -> 3 < index));
-        assert main.value(5, 6);
+    public void takeAt() {
+        monitor(() -> signal(0, 1, 2, 3, 4, 5, 6).takeAt(index -> 3 < index));
+        assert main.value(4, 5, 6);
 
-        monitor(() -> signal(1, 2, 3, 4, 5, 6).takeAt(index -> index % 2 == 0));
-        assert main.value(1, 3, 5);
+        monitor(() -> signal(0, 1, 2, 3, 4, 5, 6).takeAt(index -> index % 2 == 0));
+        assert main.value(0, 2, 4, 6);
     }
 
     @Test
