@@ -966,7 +966,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> distinct() {
-        return take(HashSet::new, (context, value) -> context.add(value), true, false, false);
+        return take(HashSet::new, Set::add, true, false, false);
     }
 
     /**

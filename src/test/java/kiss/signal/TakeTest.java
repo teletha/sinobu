@@ -106,6 +106,34 @@ public class TakeTest extends SignalTester {
     }
 
     @Test
+    public void takeUntilByValue() {
+        monitor(signal -> signal.takeUntil(30));
+
+        assert main.emit(10, 20, 30, 40).value(10, 20, 30);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void takeUntilByNullValue() {
+        monitor(signal -> signal.takeUntil((Integer) null));
+
+        assert main.emit(10, 20, null, 40).value(10, 20, null);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void takeUntilByValueWithRepeat() {
+        monitor(signal -> signal.skip(1).takeUntil(30).repeat());
+
+        assert main.emit(10, 20, 30).value(20, 30);
+        assert main.emit(40, 50, 60).value(50, 60);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
     public void takeUntilByTime() {
         monitor(signal -> signal.takeUntil(30, ms));
 
@@ -195,6 +223,16 @@ public class TakeTest extends SignalTester {
         monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
         assert main.emit(Complete, 1, 2).value();
         assert main.isCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void takeUntilValueConditionWithRepeat() {
+        monitor(int.class, signal -> signal.skip(1).takeUntil(value -> value % 3 == 0).repeat());
+
+        assert main.emit(10, 20, 30).value(20, 30);
+        assert main.emit(40, 50, 60).value(50, 60);
+        assert main.isNotCompleted();
         assert main.isNotDisposed();
     }
 
