@@ -11,13 +11,51 @@ package kiss.signal;
 
 import org.junit.Test;
 
+import kiss.Signal;
+
 /**
- * @version 2017/04/15 10:24:35
+ * @version 2018/03/04 9:47:15
  */
 public class MergeTest extends SignalTester {
 
     @Test
-    public void completeFromOther() throws Exception {
+    public void merge() {
+        monitor(signal -> signal.merge(other.signal(), another.signal()));
+
+        assert main.emit(1, 2).value(1, 2);
+        assert other.emit(10, 20).value(10, 20);
+        assert another.emit(100, 200).value(100, 200);
+        assert main.emit(3, 4).value(3, 4);
+        assert other.emit(30, 40).value(30, 40);
+        assert another.emit(300, 400).value(300, 400);
+
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotDisposed();
+        assert another.isNotCompleted();
+        assert another.isNotDisposed();
+
+        // dispose
+        main.dispose();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isDisposed();
+        assert another.isNotCompleted();
+        assert another.isDisposed();
+    }
+
+    @Test
+    public void mergeNull() {
+        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.merge((Signal) null));
+
+        assert subject.emitAndRetrieve(10) == 10;
+        assert subject.dispose();
+    }
+
+    @Test
+    public void completeFromOther() {
         monitor(signal -> signal.merge(other.signal()));
 
         main.emit("Main");
@@ -43,7 +81,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void completeFromMain() throws Exception {
+    public void completeFromMain() {
         monitor(signal -> signal.merge(other.signal()));
 
         main.emit("Main");
@@ -69,7 +107,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void disposeByTake() throws Exception {
+    public void disposeByTake() {
         monitor(() -> signal(1).merge(signal(10, 20)).effect(log1).take(2));
 
         assert log1.value(1, 10);

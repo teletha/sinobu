@@ -12,7 +12,6 @@ package kiss.signal;
 import static java.util.concurrent.TimeUnit.*;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
@@ -28,63 +27,6 @@ import kiss.Signal;
 public class SignalTest {
 
     public static final Chronus chronus = new Chronus(I.class);
-
-    @Test
-    public void merge() {
-        Subject<Integer, Integer> subject2 = new Subject<>();
-        Subject<Integer, Integer> subject1 = new Subject<>(signal -> signal.merge(subject2.signal()));
-
-        // from subject1
-        assert subject1.emitAndRetrieve(10) == 10;
-        assert subject1.emitAndRetrieve(20) == 20;
-
-        // from subject2
-        subject2.emit(100);
-        subject2.emit(200);
-        assert subject1.retrieve() == 100;
-        assert subject1.retrieve() == 200;
-
-        assert subject1.dispose();
-        assert subject2.isCompleted();
-    }
-
-    @Test
-    public void mergeIterable() {
-        Subject<Integer, Integer> subject4 = new Subject<>();
-        Subject<Integer, Integer> subject3 = new Subject<>();
-        Subject<Integer, Integer> subject2 = new Subject<>();
-
-        List<Signal<Integer>> list = new ArrayList();
-        list.add(subject2.signal());
-        list.add(subject3.signal());
-        list.add(subject4.signal());
-
-        Subject<Integer, Integer> subject1 = new Subject<>(signal -> signal.merge(list));
-
-        // from main
-        assert subject1.emitAndRetrieve(10) == 10;
-
-        // from sub
-        subject2.emit(100);
-        subject3.emit(200);
-        subject4.emit(300);
-        assert subject1.retrieve() == 100;
-        assert subject1.retrieve() == 200;
-        assert subject1.retrieve() == 300;
-
-        assert subject1.dispose();
-        assert subject2.isCompleted();
-        assert subject3.isCompleted();
-        assert subject4.isCompleted();
-    }
-
-    @Test
-    public void mergeNull() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.merge((Signal) null));
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.dispose();
-    }
 
     @Test
     public void never() {
@@ -508,7 +450,7 @@ public class SignalTest {
 
     @Test
     public void range() throws Exception {
-        List<Long> list = I.signalRange(0, 5).toList();
+        List<Integer> list = I.signalRange(0, 5).toList();
         assert list.get(0) == 0;
         assert list.get(1) == 1;
         assert list.get(2) == 2;
@@ -518,7 +460,7 @@ public class SignalTest {
 
     @Test
     public void rangeWithStep() throws Exception {
-        List<Long> list = I.signalRange(2, 5, 2).toList();
+        List<Integer> list = I.signalRange(2, 5, 2).toList();
         assert list.get(0) == 2;
         assert list.get(1) == 4;
         assert list.get(2) == 6;

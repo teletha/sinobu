@@ -759,24 +759,20 @@ public final class Signal<V> {
         }
 
         return new Signal<V>((observer, disposer) -> {
-            Iterator<Signal<? extends V>> iterator = others.iterator();
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.complete = () -> {
-                if (iterator.hasNext()) {
-                    Signal<? extends V> next = iterator.next();
+            Iterator<Signal<? extends V>> signals = others.iterator();
+            Runnable concat = I.recurseR(self -> () -> {
+                if (signals.hasNext()) {
+                    Signal<? extends V> signal = signals.next();
 
-                    if (next != null) {
-                        next.to(subscriber.child(), disposer);
-                    } else {
-                        subscriber.complete();
+                    if (signal != null) {
+                        signal.to(observer::accept, observer::error, self, disposer);
+                        return;
                     }
-                } else {
-                    observer.complete();
                 }
-            };
+                observer.complete();
+            });
 
-            return to(subscriber.child(), disposer);
+            return to(observer::accept, observer::error, concat, disposer);
         });
     }
 
@@ -814,9 +810,7 @@ public final class Signal<V> {
                 }
             });
 
-            return
-
-            index().to(indexed -> {
+            return index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
@@ -1590,8 +1584,8 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     @SafeVarargs
-    public final Signal<V> merge(Signal<? extends V>... others) {
-        return merge(Arrays.asList(others));
+    public final Signal<V> merge(Signal<V>... others) {
+        return merge(I.list(others));
     }
 
     /**
@@ -1603,35 +1597,44 @@ public final class Signal<V> {
      * @param others A target {@link Signal} set to merge. <code>null</code> will be ignored.
      * @return Chainable API.
      */
-    public final Signal<V> merge(Iterable<? extends Signal<? extends V>> others) {
+    public final Signal<V> merge(Iterable<Signal<V>> others) {
         // ignore invalid parameters
         if (others == null) {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> {
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.index--;
-            subscriber.observer = observer;
-            subscriber.complete = () -> {
-                if (subscriber.isCompleted()) {
-                    observer.complete();
-                }
-            };
+        List<Signal<V>> list = new ArrayList();
+        list.add(this);
 
-            disposer = to(subscriber.child(), disposer);
+        for (Signal<V> signal : others) {
+            list.add(signal);
+        }
 
-            for (Signal<? extends V> other : others) {
-                if (other != null && disposer.isDisposed() == false) {
-                    disposer = disposer.add(other.to(subscriber.child(), disposer));
-                }
-            }
+        return I.signalRange(0, list.size()).flatMap(i -> list.get(i));
 
-            subscriber.index++;
-            subscriber.complete();
-
-            return disposer;
-        });
+        // return new Signal<>((observer, disposer) -> {
+        // Subscriber<V> subscriber = new Subscriber();
+        // subscriber.index--;
+        // subscriber.observer = observer;
+        // subscriber.complete = () -> {
+        // if (subscriber.isCompleted()) {
+        // observer.complete();
+        // }
+        // };
+        //
+        // disposer = to(subscriber.child(), disposer);
+        //
+        // for (Signal<? extends V> other : others) {
+        // if (other != null && disposer.isDisposed() == false) {
+        // disposer = disposer.add(other.to(subscriber.child(), disposer));
+        // }
+        // }
+        //
+        // subscriber.index++;
+        // subscriber.complete();
+        //
+        // return disposer;
+        // });
     }
 
     /**
