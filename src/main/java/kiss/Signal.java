@@ -1718,20 +1718,19 @@ public final class Signal<V> {
     private <T> Signal<V> repeatUntil(Supplier<T> contextSupplier, Predicate<T> condition) {
         return new Signal<>((observer, disposer) -> {
             T context = contextSupplier.get();
-            Disposable[] latest = new Disposable[] {Disposable.empty()};
-
-            Subscriber subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.complete = () -> {
-                latest[0].dispose();
+            Disposable[] sub = new Disposable[1];
+            Runnable complete = I.recurseR(self -> () -> {
+                sub[0].dispose();
 
                 if (condition.test(context)) {
-                    subscriber.add(latest[0] = to(subscriber.child()));
+                    sub[0] = to(observer::accept, observer::error, self, disposer.sub());
                 } else {
                     observer.complete();
+                    disposer.dispose();
                 }
-            };
-            return subscriber.add(latest[0] = to(subscriber.child(), disposer));
+            });
+
+            return disposer.add(sub[0] = to(observer::accept, observer::error, complete));
         });
     }
 

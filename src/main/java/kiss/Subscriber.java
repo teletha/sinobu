@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +17,7 @@ import java.util.function.Consumer;
 /**
  * Internal subscription.
  * 
- * @version 2017/05/26 21:43:07
+ * @version 2018/03/04 12:55:17
  */
 class Subscriber<T> implements Observer<T>, Disposable {
 
@@ -89,38 +88,6 @@ class Subscriber<T> implements Observer<T>, Disposable {
                 observer.accept(value);
             }
         }
-    }
-
-    private List<Subscriber> children;
-
-    boolean isCompleted() {
-        if (index <= 0) {
-            return false;
-        }
-
-        if (children != null) {
-            for (Subscriber child : children) {
-                if (child.isCompleted() == false) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    Subscriber<T> child() {
-        Subscriber sub = new Subscriber();
-        sub.observer = observer;
-        sub.next = next;
-        sub.error = error;
-        sub.complete = complete;
-
-        if (children == null) {
-            children = new ArrayList();
-        }
-        children.add(sub);
-
-        return sub;
     }
 
     /**
