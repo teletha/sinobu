@@ -22,7 +22,7 @@ import kiss.I;
 import kiss.Signal;
 
 /**
- * @version 2018/02/28 19:24:35
+ * @version 2018/03/04 13:54:27
  */
 public class SignalTest {
 
@@ -35,25 +35,6 @@ public class SignalTest {
         assert subject.emitAndRetrieve(0) == null;
         assert subject.emitAndRetrieve(1) == null;
         assert subject.emitAndRetrieve(2) == null;
-    }
-
-    @Test
-    public void on() throws Exception {
-        String mainThread = Thread.currentThread().getName();
-        Subject<Integer, String> subject = new Subject<>(signal -> signal.map(v -> mainThread)
-                .on(this::runOtherThread)
-                .map(v -> v + " - " + Thread.currentThread().getName()));
-
-        subject.emit(10);
-        chronus.freeze(10);
-        assert subject.retrieve().equals(mainThread + " - other");
-    }
-
-    private void runOtherThread(Runnable action) {
-        Thread thread = new Thread(action);
-        thread.setName("other");
-        thread.start();
-
     }
 
     @Test
