@@ -12,9 +12,13 @@ package kiss.sample.bean;
 import java.beans.Transient;
 
 /**
- * @version 2011/02/27 21:42:10
+ * @version 2018/03/09 1:08:03
  */
 public class TransientBean {
+
+    public transient String field;
+
+    public String noneField;
 
     private int onlyGetter;
 

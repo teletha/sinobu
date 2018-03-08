@@ -14,42 +14,56 @@ import org.junit.Test;
 import kiss.sample.bean.TransientBean;
 
 /**
- * @version 2014/07/21 17:07:32
+ * @version 2018/03/09 0:48:14
  */
 public class TransientPropertyTest {
 
     @Test
-    public void transientGetter() throws Exception {
+    public void transientGetter() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("onlyGetter");
         assert property.isTransient;
     }
 
     @Test
-    public void transientSetter() throws Exception {
+    public void transientSetter() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("onlySetter");
         assert property.isTransient;
     }
 
     @Test
-    public void transientBoth() throws Exception {
+    public void transientBoth() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("both");
         assert property.isTransient;
     }
 
     @Test
-    public void transientInverse() throws Exception {
+    public void transientInverse() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("inverse");
         assert property.isTransient;
     }
 
     @Test
-    public void transientNone() throws Exception {
+    public void transientNone() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("none");
+        assert !property.isTransient;
+    }
+
+    @Test
+    public void transientField() {
+        Model model = Model.of(TransientBean.class);
+        Property property = model.property("field");
+        assert property.isTransient;
+    }
+
+    @Test
+    public void transientNoneField() {
+        Model model = Model.of(TransientBean.class);
+        Property property = model.property("noneField");
         assert !property.isTransient;
     }
 }
