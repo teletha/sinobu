@@ -16,20 +16,21 @@ import org.junit.Test;
 import kiss.Signal;
 
 /**
- * @version 2017/04/06 11:46:22
+ * @version 2018/03/11 2:53:01
  */
 public class ErrorResumeTest extends SignalTester {
 
     @Test
-    public void resumeSignal() throws Exception {
+    public void resumeSignal() {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume(signal(10, 11)));
 
         assert main.value(10, 11);
         assert main.isCompleted();
+        assert main.isNotError();
     }
 
     @Test
-    public void resumeNullSignal() throws Exception {
+    public void resumeNullSignal() {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume((Signal) null));
 
         assert main.value();
@@ -37,15 +38,16 @@ public class ErrorResumeTest extends SignalTester {
     }
 
     @Test
-    public void resumeFunction() throws Exception {
+    public void resumeFunction() {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume(e -> signal(10, 11)));
 
         assert main.value(10, 11);
         assert main.isCompleted();
+        assert main.isNotError();
     }
 
     @Test
-    public void resumeNullFunction() throws Exception {
+    public void resumeNullFunction() {
         monitor(() -> signal(1, 2).map(errorFunction()).errorResume((Function) null));
 
         assert main.value();

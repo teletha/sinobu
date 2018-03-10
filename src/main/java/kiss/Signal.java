@@ -178,7 +178,7 @@ public final class Signal<V> {
         subscriber.error = error;
         subscriber.complete = complete;
 
-        return to(subscriber, disposer == null ? Disposable.empty() : disposer);
+        return to(subscriber, disposer);
     }
 
     /**
@@ -190,7 +190,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return to(observer, Disposable.empty());
+        return to(observer, (Disposable) null);
     }
 
     /**
@@ -202,17 +202,16 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     private Disposable to(Observer<? super V> observer, Disposable disposer) {
+        if (disposer == null) {
+            disposer = Disposable.empty();
+        }
+
         if (observer instanceof Subscriber == false) {
             Subscriber<? super V> subscriber = new Subscriber();
             subscriber.observer = observer;
-            subscriber.error = e -> {
-                subscriber.observer.error(e);
-                disposer.dispose();
-            };
-            subscriber.complete = () -> {
-                subscriber.observer.complete();
-                disposer.dispose();
-            };
+            subscriber.error = I.bundle(observer::error, I.wise(disposer::dispose).asConsumer());
+            subscriber.complete = I.bundle(observer::complete, disposer::dispose);
+
             observer = subscriber;
         }
 

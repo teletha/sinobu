@@ -12,7 +12,7 @@ package kiss.signal;
 import org.junit.Test;
 
 /**
- * @version 2018/03/11 1:27:57
+ * @version 2018/03/11 2:44:25
  */
 public class DisposeTest extends SignalTester {
 
@@ -43,5 +43,6 @@ public class DisposeTest extends SignalTester {
         assert log1.value(1, 10);
         assert main.value(1, 10);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 }
