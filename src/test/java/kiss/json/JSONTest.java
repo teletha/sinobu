@@ -102,7 +102,8 @@ public class JSONTest {
         // @formatter:off
         validate(bean,
         "{",
-        "  'none': 15",
+        "  'none': 15,",
+        "  'noneField': null",
         "}");
         // @formatter:on
     }

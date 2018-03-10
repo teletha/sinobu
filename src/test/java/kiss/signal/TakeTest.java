@@ -215,15 +215,16 @@ public class TakeTest extends SignalTester {
 
         // error
         monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
-        assert main.emit(Error.class, 1, 2).value(1, 2);
+        assert main.emit(Error.class, 1, 2).value();
         assert main.isNotCompleted();
-        assert main.isNotDisposed();
+        assert main.isError();
+        assert main.isDisposed();
 
         // complete
         monitor(int.class, signal -> signal.takeUntil(value -> value == 3));
         assert main.emit(Complete, 1, 2).value();
         assert main.isCompleted();
-        assert main.isNotDisposed();
+        assert main.isDisposed();
     }
 
     @Test
@@ -245,14 +246,15 @@ public class TakeTest extends SignalTester {
 
         // error
         monitor(int.class, signal -> signal.takeWhile(value -> value != 3));
-        assert main.emit(Error.class, 1, 2).value(1, 2);
+        assert main.emit(Error.class, 1, 2).value();
         assert main.isNotCompleted();
-        assert main.isNotDisposed();
+        assert main.isError();
+        assert main.isDisposed();
 
         // complete
         monitor(int.class, signal -> signal.takeWhile(value -> value != 3));
         assert main.emit(Complete, 1, 2).value();
         assert main.isCompleted();
-        assert main.isNotDisposed();
+        assert main.isDisposed();
     }
 }

@@ -172,13 +172,13 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
+    private Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
         Subscriber subscriber = new Subscriber();
         subscriber.next = next;
         subscriber.error = error;
         subscriber.complete = complete;
 
-        return to(subscriber, disposer);
+        return to(subscriber, disposer == null ? Disposable.empty() : disposer);
     }
 
     /**
@@ -190,7 +190,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return to(observer, (Disposable) null);
+        return to(observer, Disposable.empty());
     }
 
     /**
@@ -202,13 +202,17 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     private Disposable to(Observer<? super V> observer, Disposable disposer) {
-        if (disposer == null) {
-            disposer = Disposable.empty();
-        }
-
         if (observer instanceof Subscriber == false) {
-            Subscriber subscriber = new Subscriber();
+            Subscriber<? super V> subscriber = new Subscriber();
             subscriber.observer = observer;
+            subscriber.error = e -> {
+                subscriber.observer.error(e);
+                disposer.dispose();
+            };
+            subscriber.complete = () -> {
+                subscriber.observer.complete();
+                disposer.dispose();
+            };
             observer = subscriber;
         }
 
@@ -798,14 +802,16 @@ public final class Signal<V> {
                 if (processing.get() == index) {
                     Ⅱ<AtomicBoolean, LinkedList<R>> next = buffer.remove(processing.incrementAndGet());
 
-                    // emit stored items
-                    for (R value : next.ⅱ) {
-                        observer.accept(value);
-                    }
+                    if (next != null) {
+                        // emit stored items
+                        for (R value : next.ⅱ) {
+                            observer.accept(value);
+                        }
 
-                    // this indexed buffer has been completed already, step into next buffer
-                    if (next.ⅰ.get() == true) {
-                        self.accept(processing.get());
+                        // this indexed buffer has been completed already, step into next buffer
+                        if (next.ⅰ.get() == true) {
+                            self.accept(processing.get());
+                        }
                     }
                 }
             });
@@ -1811,11 +1817,16 @@ public final class Signal<V> {
 
             notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
                 latest[0].dispose();
+                subscriber.index = 0;
                 subscriber.add(latest[0] = to(subscriber));
             }, e -> {
                 observer.error(e);
+                subscriber.dispose();
             }, () -> {
-                subscriber.error = null;
+                subscriber.error = e -> {
+                    subscriber.observer.error(e);
+                    subscriber.dispose();
+                };
             });
 
             return subscriber.add(latest[0] = to(subscriber, disposer));
@@ -2670,7 +2681,6 @@ public final class Signal<V> {
                     if (stopOnFail) {
                         if (includeOnStop) observer.accept(value);
                         observer.complete();
-                        disposer.dispose();
                     }
                 }
             }, observer::error, observer::complete, disposer);

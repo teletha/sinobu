@@ -65,14 +65,14 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void error(Throwable e) {
-        if (index == 0) {
-            if (error != null) {
-                error.accept(e);
-            } else if (observer != null) {
-                observer.error(e);
-            } else {
-                Observer.super.error(e);
-            }
+        index++;
+
+        if (error != null) {
+            error.accept(e);
+        } else if (observer != null) {
+            observer.error(e);
+        } else {
+            Observer.super.error(e);
         }
     }
 

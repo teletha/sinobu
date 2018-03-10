@@ -32,7 +32,7 @@ import kiss.Observer;
 import kiss.Signal;
 
 /**
- * @version 2018/03/02 10:07:09
+ * @version 2018/03/11 1:27:51
  */
 public class SignalTester {
 
@@ -427,7 +427,6 @@ public class SignalTester {
         @Override
         public boolean isNotError() {
             assert error == null;
-            assert completed == false;
             return true;
         }
 

@@ -40,7 +40,8 @@ public class FisrtTest extends SignalTester {
 
         assert main.emit(Error.class).value();
         assert main.isNotCompleted();
-        assert main.isNotDisposed();
+        assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test
@@ -67,6 +68,7 @@ public class FisrtTest extends SignalTester {
 
         assert main.emit(Error.class).value();
         assert main.isNotCompleted();
-        assert main.isNotDisposed();
+        assert main.isError();
+        assert main.isDisposed();
     }
 }

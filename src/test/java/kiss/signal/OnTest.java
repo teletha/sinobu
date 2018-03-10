@@ -43,8 +43,10 @@ public class OnTest extends SignalTester {
 
         main.emit(Error.class);
         assert main.isNotError();
+        assert main.isNotDisposed();
         await(20);
         assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test

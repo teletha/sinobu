@@ -33,6 +33,18 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
+    public void repeatInfinite() {
+        monitor(signal -> signal.skip(1).take(1).repeat());
+
+        assert main.emit(1, 2).value(2);
+        assert main.emit(3, 4).value(4);
+        assert main.emit(5, 6).value(6);
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
     public void disposeRepeat() throws Exception {
         monitor(signal -> signal.repeat(3));
 
@@ -57,6 +69,9 @@ public class RepeatTest extends SignalTester {
         assert other.emit("external").value("external");
 
         assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotDisposed();
 
         // dispose
         main.dispose();
@@ -64,6 +79,9 @@ public class RepeatTest extends SignalTester {
         assert other.emit("other is disposed so this value will be ignored").value();
 
         assert main.isNotCompleted();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isDisposed();
     }
 
     @Test

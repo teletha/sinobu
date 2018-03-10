@@ -32,7 +32,7 @@ public class IsCompletedTest extends SignalTester {
         assert main.emit(1, 2, 3).value();
         assert main.emit(Error.class).value();
         assert main.isNotCompleted();
-        assert main.isNotDisposed();
+        assert main.isDisposed();
     }
 
     @Test

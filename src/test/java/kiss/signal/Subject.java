@@ -22,7 +22,7 @@ import kiss.Observer;
 import kiss.Signal;
 
 /**
- * @version 2017/03/21 23:11:40
+ * @version 2018/03/11 1:27:16
  */
 public class Subject<V, R> {
 

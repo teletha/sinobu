@@ -159,12 +159,33 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
+    public void skipUntilValueWithRepeat() {
+        monitor(signal -> signal.skipUntil(3).take(2).repeat());
+
+        assert main.emit(2, 3, 4, 5, 6).value(3, 4);
+        assert main.emit(2, 3, 4, 5, 6).value(3, 4);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
     public void skipUntilValueCondition() {
         monitor(int.class, signal -> signal.skipUntil(value -> value == 3));
 
         assert main.emit(1, 2).value();
         assert main.emit(3, 4).value(3, 4);
         assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void skipUntilValueConditionWithRepeat() {
+        monitor(Integer.class, signal -> signal.skipUntil(value -> value % 3 == 0).take(2).repeat());
+
+        assert main.emit(2, 3, 4, 5).value(3, 4);
+        assert main.emit(2, 3, 4, 5).value(3, 4);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
     }
 
     @Test

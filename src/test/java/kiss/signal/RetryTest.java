@@ -34,8 +34,7 @@ public class RetryTest extends SignalTester {
         assert main.isNotError();
         assert main.emit("next will fail", Error).value("next will fail");
         assert main.isError();
-        assert main.emit("next will fail", Error).value("next will fail");
-        assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test
@@ -50,8 +49,7 @@ public class RetryTest extends SignalTester {
         assert main.isNotError();
         assert main.emit("next will fail", IllegalStateException.class).value("next will fail");
         assert main.isError();
-        assert main.emit("next will fail", IllegalStateException.class).value("next will fail");
-        assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test
@@ -65,8 +63,7 @@ public class RetryTest extends SignalTester {
         assert main.isNotError();
         assert main.emit("next will fail", Error).value("next will fail");
         assert main.isError();
-        assert main.emit("next will fail", Error).value("next will fail");
-        assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test
@@ -123,8 +120,7 @@ public class RetryTest extends SignalTester {
         canRetry.set(false);
         assert main.emit("next will fail", Error).value("next will fail");
         assert main.isError();
-        assert main.emit("next will fail", Error).value("next will fail");
-        assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test
@@ -147,7 +143,6 @@ public class RetryTest extends SignalTester {
         other.emit("never retry");
         assert main.emit("next will fail", Error).value("next will fail");
         assert main.isError();
-        assert main.emit("next will fail", Error).value("next will fail");
-        assert main.isError();
+        assert main.isDisposed();
     }
 }

@@ -40,7 +40,7 @@ public class LastTest extends SignalTester {
 
         assert main.emit(Error.class).value();
         assert main.isNotCompleted();
-        assert main.isNotDisposed();
+        assert main.isDisposed();
     }
 
     @Test
@@ -67,6 +67,6 @@ public class LastTest extends SignalTester {
 
         assert main.emit(Error.class).value();
         assert main.isNotCompleted();
-        assert main.isNotDisposed();
+        assert main.isDisposed();
     }
 }

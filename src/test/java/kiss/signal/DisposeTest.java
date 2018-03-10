@@ -12,9 +12,29 @@ package kiss.signal;
 import org.junit.Test;
 
 /**
- * @version 2017/04/15 11:39:04
+ * @version 2018/03/11 1:27:57
  */
 public class DisposeTest extends SignalTester {
+
+    @Test
+    public void disposeOnComplete() {
+        monitor(signal -> signal);
+
+        main.emit(Complete);
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void disposeOnError() {
+        monitor(signal -> signal);
+
+        main.emit(Error.class);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
 
     @Test
     public void disposeMerge() {

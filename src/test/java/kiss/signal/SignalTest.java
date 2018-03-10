@@ -38,22 +38,6 @@ public class SignalTest {
     }
 
     @Test
-    public void repeat() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat());
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(40) == 40;
-
-        assert subject.emitAndRetrieve(50) == null;
-        assert subject.emitAndRetrieve(60) == 60;
-
-        assert subject.disposeWithCountAlreadyDisposed(6);
-    }
-
-    @Test
     public void repeatFinitely() {
         Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat(2));
 
@@ -67,34 +51,6 @@ public class SignalTest {
         assert subject.emitAndRetrieve(60) == null;
 
         assert subject.isCompleted();
-    }
-
-    @Test
-    public void repeatThen() {
-        Subject<Integer, Integer> sub = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(2).repeat().merge(sub.signal()));
-
-        // from main subject
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(30) == 30;
-
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(40) == 40;
-        assert subject.emitAndRetrieve(50) == 50;
-
-        // from sub subject
-        sub.emit(100);
-        assert subject.retrieve() == 100;
-        sub.emit(200);
-        assert subject.retrieve() == 200;
-
-        assert subject.disposeWithCountAlreadyDisposed(4);
-        assert sub.isCompleted();
-
-        // from sub subject
-        sub.emit(300);
-        assert subject.retrieve() == null;
     }
 
     @Test
@@ -250,36 +206,6 @@ public class SignalTest {
         assert subject.emitAndRetrieve(30) == null;
         assert subject.emitAndRetrieve(null) == null;
         assert subject.emitAndRetrieve(40) == 40;
-    }
-
-    @Test
-    public void skipUntilValueWithRepeat() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(30).take(2).repeat());
-
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == 30;
-        assert subject.emitAndRetrieve(40) == 40;
-        assert subject.emitAndRetrieve(50) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == 30;
-        assert subject.emitAndRetrieve(40) == 40;
-        assert subject.emitAndRetrieve(50) == null;
-        assert subject.disposeWithCountAlreadyDisposed(4);
-    }
-
-    @Test
-    public void skipUntilConditionWithRepeat() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(value -> value % 3 == 0).take(2).repeat());
-
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == 30;
-        assert subject.emitAndRetrieve(40) == 40;
-        assert subject.emitAndRetrieve(50) == null;
-        assert subject.emitAndRetrieve(50) == null;
-        assert subject.emitAndRetrieve(60) == 60;
-        assert subject.emitAndRetrieve(70) == 70;
-        assert subject.emitAndRetrieve(80) == null;
-        assert subject.disposeWithCountAlreadyDisposed(4);
     }
 
     @Test
