@@ -37,10 +37,20 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    public void errorInSignal() {
         monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Error).value(10, 11, 20, 21);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void errorInFunction() {
+        monitor(() -> signal(1, 2).switchMap(errorFunction()));
+
+        assert main.value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();

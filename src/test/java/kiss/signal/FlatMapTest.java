@@ -39,10 +39,20 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    public void errorInSignal() {
         monitor(Integer.class, signal -> signal.flatMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Error).value(10, 11, 20, 21);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void errorInFunction() {
+        monitor(() -> signal(1, 2).flatMap(errorFunction()));
+
+        assert main.value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
@@ -144,13 +154,5 @@ public class FlatMapTest extends SignalTester {
     @Test(expected = NullPointerException.class)
     public void iterableNull() {
         monitor(String.class, signal -> signal.flatIterable(null));
-    }
-
-    @Test
-    public void throwError() {
-        monitor(() -> signal(1, 2).flatMap(errorFunction()));
-
-        assert main.value();
-        assert main.isError();
     }
 }
