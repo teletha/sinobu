@@ -2804,14 +2804,12 @@ public final class Signal<V> {
             return this;
         }
 
-        AtomicLong latest = new AtomicLong();
         long delay = unit.toNanos(time);
-
-        return take(value -> {
+        return take(AtomicLong::new, (context, value) -> {
             long now = System.nanoTime();
 
-            if (latest.get() + delay <= now) {
-                latest.set(now);
+            if (context.get() + delay <= now) {
+                context.set(now);
                 return true;
             }
             return false;

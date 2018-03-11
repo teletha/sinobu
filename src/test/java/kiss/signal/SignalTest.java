@@ -9,8 +9,6 @@
  */
 package kiss.signal;
 
-import static java.util.concurrent.TimeUnit.*;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -25,130 +23,6 @@ import kiss.I;
 public class SignalTest {
 
     public static final Chronus chronus = new Chronus(I.class);
-
-    @Test
-    public void skipByItems() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(10, 30));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void skipByItemCollection() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(I.set(10, 30)));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void skipByCondition() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(value -> value % 3 == 0));
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(40) == 40;
-        assert subject.emitAndRetrieve(50) == 50;
-        assert subject.emitAndRetrieve(60) == null;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void skipByConditionWithPreviousValue() {
-        Subject<Integer, Integer> subject = new Subject<>(e -> e.skip(0, (prev, value) -> value - prev > 5));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(11) == 11;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(22) == 22;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void skipByConditionEvent() {
-        Subject<Boolean, Boolean> condition = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipWhile(condition.signal()));
-
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-
-        condition.emit(true);
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-
-        condition.emit(false);
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
-        assert condition.isCompleted();
-    }
-
-    @Test
-    public void skipByCount() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.emitAndRetrieve(30) == 30;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void skipByTime() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(10, MILLISECONDS));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        chronus.freeze(100);
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void skipByTimeWaitingAtFirst() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(10, MILLISECONDS));
-
-        chronus.freeze(100);
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void skipUntilValue() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil(30));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == 30;
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
-    }
-
-    @Test
-    public void skipUntilNullValue() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skipUntil((Integer) null));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(null) == null;
-        assert subject.emitAndRetrieve(40) == 40;
-    }
 
     @Test
     public void toggle() {
@@ -195,24 +69,6 @@ public class SignalTest {
         assert subject.emitAndRetrieve(2) == null;
         assert subject.emitAndRetrieve(3).equals("one");
         assert subject.emitAndRetrieve(4) == null;
-    }
-
-    @Test
-    public void throttle() {
-        Subject<String, String> subject = new Subject<>(signal -> signal.throttle(30, MILLISECONDS));
-
-        chronus.mark();
-        assert subject.emitAndRetrieve("OK").equals("OK");
-
-        chronus.freezeFromMark(10, 20, () -> {
-            assert subject.emitAndRetrieve("10ms skip") == null;
-        });
-        chronus.freezeFromMark(20, 30, () -> {
-            assert subject.emitAndRetrieve("20ms skip") == null;
-        });
-        chronus.freezeFromMark(35);
-        assert subject.emitAndRetrieve("30ms OK") != null;
-        assert subject.emitAndRetrieve("skip") == null;
     }
 
     @Test

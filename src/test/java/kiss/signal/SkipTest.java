@@ -14,6 +14,8 @@ import java.util.function.Predicate;
 
 import org.junit.Test;
 
+import kiss.I;
+
 /**
  * @version 2018/03/03 19:54:42
  */
@@ -71,6 +73,14 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
+    public void skipByTimeWithInitialDelay() {
+        monitor(signal -> signal.skipUntil(30, ms));
+
+        await(40);
+        assert main.emit(1, 2).value(1, 2);
+    }
+
+    @Test
     public void skipBySignal() {
         monitor(signal -> signal.skip(other.signal()));
 
@@ -84,6 +94,28 @@ public class SkipTest extends SignalTester {
         main.dispose();
         assert main.isNotCompleted();
         assert other.isDisposed();
+    }
+
+    @Test
+    public void skipByValue() {
+        monitor(signal -> signal.skip(1, 3));
+
+        assert main.emit(1, 2, 3).value(2);
+        assert main.emit(1, 2, 3).value(2);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void skipByCollection() {
+        monitor(signal -> signal.skip(I.set(1, 3)));
+
+        assert main.emit(1, 2, 3).value(2);
+        assert main.emit(1, 2, 3).value(2);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -156,6 +188,26 @@ public class SkipTest extends SignalTester {
         assert main.isNotDisposed();
         assert other.isNotCompleted();
         assert other.isNotDisposed();
+    }
+
+    @Test
+    public void skipUntilValue() {
+        monitor(signal -> signal.skipUntil(4));
+
+        assert main.emit(2, 3, 4, 5).value(4, 5);
+        assert main.emit(2, 3, 4, 5).value(2, 3, 4, 5);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void skipUntilValueNull() {
+        monitor(signal -> signal.skipUntil((Object) null));
+
+        assert main.emit(2, 3, null, 4, 5).value(null, 4, 5);
+        assert main.emit(2, 3, 4, null).value(2, 3, 4, null);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
     }
 
     @Test
