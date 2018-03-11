@@ -93,6 +93,15 @@ public class SignalTester {
         };
     }
 
+    /**
+     * Create generic error {@link Signal}.
+     * 
+     * @return
+     */
+    protected final <T> Signal<T> errorSignal() {
+        return I.signalError(new Error());
+    }
+
     protected final Signal completeAfter(int time, TimeUnit unit) {
         Await await = new Await();
         awaits.add(await);

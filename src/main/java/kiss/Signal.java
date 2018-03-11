@@ -2395,11 +2395,11 @@ public final class Signal<V> {
             disposables[0] = to(value -> {
                 disposables[1].dispose();
                 disposables[1] = function.apply(value).to(observer::accept, observer::error, null, disposer.sub());
-            }, observer::error, observer::complete, disposer);
-            return () -> {
+            }, observer::error, observer::complete, disposer.sub());
+            return disposer.add(() -> {
                 disposables[0].dispose();
                 disposables[1].dispose();
-            };
+            });
         });
     }
 

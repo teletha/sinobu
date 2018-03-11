@@ -12,20 +12,62 @@ package kiss.signal;
 import org.junit.Test;
 
 /**
- * @version 2018/03/01 12:03:07
+ * @version 2018/03/11 12:07:59
  */
 public class SwitchMapTest extends SignalTester {
 
     @Test
-    public void switchMap() {
-        monitor(() -> signal(10, 20).switchMap(v -> signal(v, v + 1)));
+    public void value() {
+        monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
 
-        assert main.value(10, 11, 20, 21);
+        assert main.emit(10, 20).value(10, 11, 20, 21);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void complete() {
+        monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
+
+        assert main.emit(10, 20, Complete).value(10, 11, 20, 21);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void error() {
+        monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
+
+        assert main.emit(10, 20, Error).value(10, 11, 20, 21);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void otherComplete() {
+        monitor(Integer.class, signal -> signal.switchMap(v -> signal(v).take(1)));
+
+        assert main.emit(10, 20).value(10, 20);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void otherError() {
+        monitor(Integer.class, signal -> signal.switchMap(v -> errorSignal()));
+
+        assert main.emit(10, 20).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test(expected = NullPointerException.class)
-    public void switchMapNull() {
+    public void rejectNull() {
         monitor(() -> signal(1, 2).switchMap(null));
     }
 
