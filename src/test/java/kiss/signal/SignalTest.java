@@ -14,15 +14,12 @@ import java.util.Deque;
 
 import org.junit.Test;
 
-import antibug.Chronus;
 import kiss.I;
 
 /**
- * @version 2018/03/04 13:54:27
+ * @version 2018/03/11 17:47:54
  */
 public class SignalTest {
-
-    public static final Chronus chronus = new Chronus(I.class);
 
     @Test
     public void toggle() {

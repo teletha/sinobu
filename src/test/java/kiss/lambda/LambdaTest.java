@@ -9,9 +9,6 @@
  */
 package kiss.lambda;
 
-import static kiss.lambda.Lambda.*;
-
-import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -111,14 +108,5 @@ public class LambdaTest {
         });
 
         assert function.apply(0, 10) == 30;
-    }
-
-    @Test
-    public void fib() {
-        Function<BigInteger, BigInteger> fib = recursive(f -> n -> {
-            if (n.intValue() <= 2) return BigInteger.ONE;
-            return f.apply(n.subtract(BigInteger.ONE)).add(f.apply(n.subtract(BigInteger.valueOf(2))));
-        });
-        assert fib.apply(BigInteger.valueOf(10)).intValue() == 55;
     }
 }
