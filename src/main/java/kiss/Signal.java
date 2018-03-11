@@ -1840,7 +1840,7 @@ public final class Signal<V> {
      * @param sampler An {@link Signal} to use for sampling the source {@link Signal}.
      * @return Chainable API.
      */
-    public final Signal<V> sample(Signal sampler) {
+    public final Signal<V> sample(Signal<?> sampler) {
         // ignore invalid parameters
         if (sampler == null) {
             return NEVER;
@@ -1855,7 +1855,7 @@ public final class Signal<V> {
                 if (value != UNDEFINED) {
                     observer.accept(value);
                 }
-            }, disposer));
+            }, observer::error, observer::complete, disposer));
         });
     }
 
@@ -1880,10 +1880,34 @@ public final class Signal<V> {
             AtomicReference<R> ref = new AtomicReference(init);
 
             return to(value -> {
-                ref.set(function.apply(ref.get(), value));
-                observer.accept(ref.get());
+                try {
+                    ref.set(function.apply(ref.get(), value));
+                    observer.accept(ref.get());
+                } catch (Throwable e) {
+                    observer.error(e);
+                }
             }, observer::error, observer::complete, disposer);
         });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
+     * by a source {@link Signal} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Signal} into the same function, and so on
+     * until all items have been emitted by the source {@link Signal}, emitting the result of each
+     * of these iterations.
+     * </p>
+     *
+     * @param init An initial (seed) accumulator item.
+     * @param function An accumulator function to be invoked on each item emitted by the source
+     *            {@link Signal}, whose result will be emitted to {@link Signal} via
+     *            {@link Observer#accept(Object)} and used in the next accumulator call.
+     * @return An {@link Signal} that emits initial value followed by the results of each call to
+     *         the accumulator function.
+     */
+    public final <R> Signal<R> scan(R init, WiseBiFunction<R, V, R> function) {
+        return scan(init, I.quiet(function));
     }
 
     /**

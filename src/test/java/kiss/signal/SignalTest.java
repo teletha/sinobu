@@ -27,37 +27,6 @@ public class SignalTest {
     public static final Chronus chronus = new Chronus(I.class);
 
     @Test
-    public void sampleBySamplersignal() {
-        Subject<String, String> sampler = new Subject();
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.sample(sampler.signal()));
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(30) == null;
-
-        sampler.emit("NOW");
-        assert subject.retrieve() == 30;
-
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(20) == null;
-        assert subject.emitAndRetrieve(10) == null;
-
-        sampler.emit("NOW");
-        assert subject.retrieve() == 10;
-        assert subject.dispose();
-        assert sampler.isCompleted();
-    }
-
-    @Test
-    public void scan() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.scan(10, (accumulated, value) -> accumulated + value));
-
-        assert subject.emitAndRetrieve(1) == 11; // 10 + 1
-        assert subject.emitAndRetrieve(2) == 13; // 11 + 2
-        assert subject.emitAndRetrieve(3) == 16; // 13 + 3
-        assert subject.dispose();
-    }
-
-    @Test
     public void skipByItems() {
         Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(10, 30));
 

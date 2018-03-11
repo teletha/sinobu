@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -77,6 +78,17 @@ public class SignalTester {
      */
     protected final <P, R> Function<P, R> errorFunction() {
         return e -> {
+            throw new Error();
+        };
+    };
+
+    /**
+     * Create generic error {@link BiFunction}.
+     * 
+     * @return
+     */
+    protected final <P1, P2, R> BiFunction<P1, P2, R> errorBiFunction() {
+        return (p1, p2) -> {
             throw new Error();
         };
     };
@@ -210,7 +222,17 @@ public class SignalTester {
      * @param values
      * @return
      */
-    protected <T> Signal<T> signal(Iterable values) {
+    protected <T> Signal<T> signal(Iterable<T> values) {
+        return I.signal(values);
+    }
+
+    /**
+     * Shorthand method of {@link I#signal(Enumeration)}
+     * 
+     * @param values
+     * @return
+     */
+    protected <T> Signal<T> signal(Enumeration<T> values) {
         return I.signal(values);
     }
 
@@ -598,6 +620,8 @@ public class SignalTester {
 
         private boolean completed;
 
+        private boolean errored;
+
         /**
          * <p>
          * Emit the specified values to the managed {@link Signal}.
@@ -614,6 +638,7 @@ public class SignalTester {
                         completed = true;
                     } else if (value instanceof Class && Throwable.class.isAssignableFrom((Class) value)) {
                         observer.error(I.make((Class<Throwable>) value));
+                        errored = true;
                     } else {
                         observer.accept(value);
                     }
@@ -678,14 +703,14 @@ public class SignalTester {
          * {@inheritDoc}
          */
         public boolean isError() {
-            return result.isError();
+            return result == null ? errored : result.isError();
         }
 
         /**
          * {@inheritDoc}
          */
         public boolean isNotError() {
-            return result.isNotError();
+            return result == null ? !errored : result.isNotError();
         }
 
         /**

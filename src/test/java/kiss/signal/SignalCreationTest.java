@@ -10,8 +10,6 @@
 package kiss.signal;
 
 import java.util.Enumeration;
-import java.util.List;
-import java.util.stream.Stream;
 
 import org.junit.Test;
 
@@ -115,7 +113,7 @@ public class SignalCreationTest extends SignalTester {
 
     @Test
     public void enumeration() {
-        monitor(() -> signal(enume(1, 2)));
+        monitor(1, () -> signal(enume(1, 2)));
 
         assert main.value(1, 2);
         assert main.isCompleted();
@@ -170,11 +168,26 @@ public class SignalCreationTest extends SignalTester {
 
     @Test
     public void rangeWithStep() {
-        List<Integer> list = I.signalRange(2, 5, 2).toList();
-        assert list.get(0) == 2;
-        assert list.get(1) == 4;
-        assert list.get(2) == 6;
-        assert list.get(3) == 8;
-        assert list.get(4) == 10;
+        monitor(() -> I.signalRange(0, 3, 2));
+        assert main.value(0, 2, 4);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void rangeLong() {
+        monitor(() -> I.signalRange(0L, 5L));
+
+        assert main.value(0L, 1L, 2L, 3L, 4L);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void rangeLongWithStep() {
+        monitor(() -> I.signalRange(0L, 3L, 2L));
+        assert main.value(0L, 2L, 4L);
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 }
