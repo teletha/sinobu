@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 
 import antibug.Chronus;
@@ -90,6 +89,32 @@ public class SignalTester {
     protected final <T> Iterable<T> errorIterable() {
         return () -> {
             throw new Error();
+        };
+    }
+
+    /**
+     * Create generic error {@link Enumeration}.
+     * 
+     * @return
+     */
+    protected final <T> Enumeration<T> errorEnumeration() {
+        return new Enumeration<T>() {
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean hasMoreElements() {
+                throw new Error();
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public T nextElement() {
+                throw new Error();
+            }
         };
     }
 
@@ -186,26 +211,6 @@ public class SignalTester {
      * @return
      */
     protected <T> Signal<T> signal(Iterable values) {
-        return I.signal(values);
-    }
-
-    /**
-     * Shorthand method of {@link I#signal(Enumeration)}
-     * 
-     * @param values
-     * @return
-     */
-    protected <T> Signal<T> signal(Enumeration values) {
-        return I.signal(values);
-    }
-
-    /**
-     * Shorthand method of {@link I#signal(BaseStream)}
-     * 
-     * @param values
-     * @return
-     */
-    protected <T, S extends BaseStream<T, S>> Signal<T> signal(S values) {
         return I.signal(values);
     }
 

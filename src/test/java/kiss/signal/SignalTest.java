@@ -13,13 +13,11 @@ import static java.util.concurrent.TimeUnit.*;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 
 import org.junit.Test;
 
 import antibug.Chronus;
 import kiss.I;
-import kiss.Signal;
 
 /**
  * @version 2018/03/04 13:54:27
@@ -27,31 +25,6 @@ import kiss.Signal;
 public class SignalTest {
 
     public static final Chronus chronus = new Chronus(I.class);
-
-    @Test
-    public void never() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> Signal.NEVER);
-
-        assert subject.emitAndRetrieve(0) == null;
-        assert subject.emitAndRetrieve(1) == null;
-        assert subject.emitAndRetrieve(2) == null;
-    }
-
-    @Test
-    public void repeatFinitely() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.skip(1).take(1).repeat(2));
-
-        assert subject.emitAndRetrieve(10) == null;
-        assert subject.emitAndRetrieve(20) == 20;
-
-        assert subject.emitAndRetrieve(30) == null;
-        assert subject.emitAndRetrieve(40) == 40;
-
-        assert subject.emitAndRetrieve(50) == null;
-        assert subject.emitAndRetrieve(60) == null;
-
-        assert subject.isCompleted();
-    }
 
     @Test
     public void sampleBySamplersignal() {
@@ -271,42 +244,6 @@ public class SignalTest {
         chronus.freezeFromMark(35);
         assert subject.emitAndRetrieve("30ms OK") != null;
         assert subject.emitAndRetrieve("skip") == null;
-    }
-
-    @Test
-    public void infinite() {
-        Subject<Integer, Long> subject = new Subject<>(signal -> I.signal(0, 20, MILLISECONDS).take(2));
-
-        chronus.mark();
-        chronus.freezeFromMark(10);
-        assert subject.retrieve() == 0;
-        assert subject.retrieve() == null;
-        chronus.freezeFromMark(30);
-        assert subject.retrieve() == 1;
-        assert subject.retrieve() == null;
-
-        assert subject.isCompleted();
-        assert subject.retrieve() == null;
-    }
-
-    @Test
-    public void range() throws Exception {
-        List<Integer> list = I.signalRange(0, 5).toList();
-        assert list.get(0) == 0;
-        assert list.get(1) == 1;
-        assert list.get(2) == 2;
-        assert list.get(3) == 3;
-        assert list.get(4) == 4;
-    }
-
-    @Test
-    public void rangeWithStep() throws Exception {
-        List<Integer> list = I.signalRange(2, 5, 2).toList();
-        assert list.get(0) == 2;
-        assert list.get(1) == 4;
-        assert list.get(2) == 6;
-        assert list.get(3) == 8;
-        assert list.get(4) == 10;
     }
 
     @Test

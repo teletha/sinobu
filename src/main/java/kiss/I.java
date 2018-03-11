@@ -68,9 +68,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
-import java.util.stream.BaseStream;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -1727,18 +1724,6 @@ public class I {
 
     /**
      * <p>
-     * Signal the specified values.
-     * </p>
-     *
-     * @param values A list of values to emit.
-     * @return The {@link Signal} to emit sequencial values.
-     */
-    public static <V, S extends BaseStream<V, S>> Signal<V> signal(S values) {
-        return Signal.EMPTY.startWith(values);
-    }
-
-    /**
-     * <p>
      * {@link Signal} the specified values.
      * </p>
      *
@@ -1850,7 +1835,13 @@ public class I {
      * @return A {@link Signal} that emits a range of sequential longs
      */
     public static Signal<Integer> signalRange(int start, int count, int step) {
-        return signal(IntStream.range(0, count).map(v -> start + v * step));
+        return new Signal<>((observer, disposer) -> {
+            for (int i = 0; i < count; i++) {
+                observer.accept(start + i * step);
+            }
+            observer.complete();
+            return disposer;
+        });
     }
 
     /**
@@ -1873,7 +1864,13 @@ public class I {
      * @return A {@link Signal} that emits a range of sequential longs
      */
     public static Signal<Long> signalRange(long start, long count, long step) {
-        return signal(LongStream.range(0, count).map(v -> start + v * step));
+        return new Signal<>((observer, disposer) -> {
+            for (long i = 0; i < count; i++) {
+                observer.accept(start + i * step);
+            }
+            observer.complete();
+            return disposer;
+        });
     }
 
     /**

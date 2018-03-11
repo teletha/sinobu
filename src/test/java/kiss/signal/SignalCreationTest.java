@@ -10,108 +10,171 @@
 package kiss.signal;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.Test;
 
+import kiss.I;
+import kiss.Signal;
+
 /**
- * @version 2017/04/02 1:53:26
+ * @version 2018/03/11 12:37:33
  */
 public class SignalCreationTest extends SignalTester {
 
     @Test
-    public void single() throws Exception {
+    public void single() {
         monitor(() -> signal(1));
 
         assert main.value(1);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void multi() throws Exception {
+    public void multi() {
         monitor(() -> signal(1, 2, 3));
 
         assert main.value(1, 2, 3);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void empty() throws Exception {
-        monitor(() -> signal());
+    public void empty() {
+        monitor(() -> Signal.EMPTY);
 
         assert main.value();
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void singleNull() throws Exception {
+    public void never() {
+        monitor(() -> Signal.NEVER);
+
+        assert main.value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void singleNull() {
         monitor(() -> signal((String) null));
 
         assert main.value((String) null);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void multiNull() throws Exception {
+    public void multiNull() {
         monitor(() -> signal(null, null, null));
 
         assert main.value(null, null, null);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void arrayNull() throws Exception {
+    public void arrayNull() {
         monitor(() -> signal((String[]) null));
 
         assert main.value();
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void iterable() throws Exception {
+    public void iterable() {
         monitor(() -> signal(list(1, 2)));
 
         assert main.value(1, 2);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void iterableNull() throws Exception {
+    public void iterableNull() {
         monitor(() -> signal((Iterable) null));
 
         assert main.value();
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void enumeration() throws Exception {
+    public void enumeration() {
         monitor(() -> signal(enume(1, 2)));
 
         assert main.value(1, 2);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void enumerationNull() throws Exception {
+    public void enumerationNull() {
         monitor(() -> signal((Enumeration) null));
 
         assert main.value();
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void stream() throws Exception {
-        monitor(1, () -> signal(stream(1, 2)));
+    public void interval() {
+        monitor(() -> I.signal(0, 20, ms).take(2));
 
-        assert main.value(1, 2);
+        assert await(10).value(0L);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        assert await(20).value(1L);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
-    public void streamNull() throws Exception {
-        monitor(() -> signal((Stream) null));
+    public void delay() {
+        monitor(() -> I.signal(20, ms));
 
-        assert main.value();
+        assert await(10).value();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        assert await(20).value(0L);
         assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void range() {
+        monitor(() -> I.signalRange(0, 5));
+
+        assert main.value(0, 1, 2, 3, 4);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void rangeWithStep() {
+        List<Integer> list = I.signalRange(2, 5, 2).toList();
+        assert list.get(0) == 2;
+        assert list.get(1) == 4;
+        assert list.get(2) == 6;
+        assert list.get(3) == 8;
+        assert list.get(4) == 10;
     }
 }

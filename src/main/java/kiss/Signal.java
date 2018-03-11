@@ -16,7 +16,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -45,7 +44,6 @@ import java.util.function.Function;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.BaseStream;
 
 import kiss.signal.StartWithTest;
 
@@ -2293,28 +2291,17 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> startWith(Enumeration<V> values) {
-        return values == null ? this : startWith(Collections.list(values));
-    }
+        // ignore invalid parameter
+        if (values == null) {
+            return this;
+        }
 
-    /**
-     * <p>
-     * Emit a specified sequence of items before beginning to emit the items from the source
-     * {@link Signal}.
-     * </p>
-     * <p>
-     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
-     * the items normally expected from it, apply the StartWith operator to it.
-     * </p>
-     * <p>
-     * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
-     * </p>
-     *
-     * @param values The values that contains the items you want to emit first.
-     * @return Chainable API.
-     */
-    public final <S extends BaseStream<V, S>> Signal<V> startWith(S values) {
-        return values == null ? this : startWith(() -> values.iterator());
+        return new Signal<>((observer, disposer) -> {
+            while (values.hasMoreElements() && !disposer.isDisposed()) {
+                observer.accept(values.nextElement());
+            }
+            return to(observer, disposer);
+        });
     }
 
     /**

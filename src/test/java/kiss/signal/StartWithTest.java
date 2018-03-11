@@ -9,70 +9,93 @@
  */
 package kiss.signal;
 
-import java.util.stream.BaseStream;
+import java.util.Enumeration;
 
 import org.junit.Test;
 
 /**
- * @version 2017/04/06 8:47:03
+ * @version 2018/03/11 13:26:35
  */
 public class StartWithTest extends SignalTester {
 
     @Test
-    public void value() throws Exception {
+    public void value() {
         monitor(() -> signal(1, 2).startWith(0));
         assert main.value(0, 1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
 
         monitor(() -> signal(1, 2).startWith(3, 4));
         assert main.value(3, 4, 1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
 
         monitor(() -> signal(1, 2).startWith(3).startWith(4, 5));
         assert main.value(4, 5, 3, 1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
-    public void valueNull() throws Exception {
+    public void valueNull() {
         monitor(() -> signal("1", "2").startWith((String) null));
         assert main.value(null, "1", "2");
         assert main.isCompleted();
+        assert main.isDisposed();
 
         monitor(() -> signal("1", "2").startWith((String[]) null));
         assert main.value("1", "2");
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
-    public void iterable() throws Exception {
+    public void iterable() {
         monitor(() -> signal(1, 2).startWith(list(-1, 0)));
         assert main.value(-1, 0, 1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
-    public void iterableError() throws Exception {
+    public void iterableError() {
         monitor(() -> signal(1, 2).startWith(errorIterable()));
         assert main.value();
         assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
     }
 
     @Test
-    public void iterableNull() throws Exception {
+    public void iterableNull() {
         monitor(() -> signal(1, 2).startWith((Iterable) null));
         assert main.value(1, 2);
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
-    public void stream() throws Exception {
-        monitor(1, () -> signal(1, 2).startWith(stream(-1, 0)));
-        assert main.value(-1, 0, 1, 2);
+    public void enumerable() {
+        monitor(1, () -> signal(3, 4).startWith(enume(0, 1, 2)));
+        assert main.value(0, 1, 2, 3, 4);
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
-    public void streamNull() throws Exception {
-        monitor(() -> signal(1, 2).startWith((BaseStream) null));
+    public void enumerableError() {
+        monitor(() -> signal(1, 2).startWith(errorEnumeration()));
+        assert main.value();
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void enumerableNull() {
+        monitor(() -> signal(1, 2).startWith((Enumeration) null));
         assert main.value(1, 2);
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 }

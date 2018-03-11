@@ -15,12 +15,12 @@ import java.util.function.BooleanSupplier;
 import org.junit.Test;
 
 /**
- * @version 2017/04/18 20:12:05
+ * @version 2018/03/11 12:18:44
  */
 public class RepeatTest extends SignalTester {
 
     @Test
-    public void repeat() throws Exception {
+    public void repeat() {
         monitor(signal -> signal.repeat(3));
 
         assert main.emit("success to repeat 1", Complete).value("success to repeat 1");
@@ -29,7 +29,20 @@ public class RepeatTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.emit("success to repeat 3", Complete).value("success to repeat 3");
         assert main.isCompleted();
-        assert main.emit("fail to repeat", Complete).value();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert main.emit("fail to repeat").value();
+    }
+
+    @Test
+    public void repeatError() {
+        monitor(signal -> signal.repeat(3));
+
+        assert main.emit("success to repeat 1", Error).value("success to repeat 1");
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert main.emit("fail to repeat").value();
     }
 
     @Test
@@ -45,7 +58,18 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void disposeRepeat() throws Exception {
+    public void repeatInfiniteError() {
+        monitor(signal -> signal.skip(1).take(1).repeat());
+
+        assert main.emit(1, 2).value(2);
+        assert main.emit(3, 4, Error).value(4);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void disposeRepeat() {
         monitor(signal -> signal.repeat(3));
 
         assert main.emit("success to repeat", Complete).value("success to repeat");
@@ -85,7 +109,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatIf() throws Exception {
+    public void repeatIf() {
         AtomicBoolean canRepeat = new AtomicBoolean(true);
         monitor(signal -> signal.repeatIf(canRepeat::get));
 
@@ -102,7 +126,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatIfNull() throws Exception {
+    public void repeatIfNull() {
         monitor(() -> signal(1).effect(log1).repeatIf((BooleanSupplier) null));
         assert log1.value(1);
         assert main.value(1);
@@ -110,7 +134,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatUntil() throws Exception {
+    public void repeatUntil() {
         monitor(signal -> signal.repeatUntil(other.signal()));
 
         assert main.emit("success to repeat", Complete).value("success to repeat");
