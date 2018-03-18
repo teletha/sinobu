@@ -1859,18 +1859,12 @@ public final class Signal<V> {
             notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
                 latest[0].dispose();
                 subscriber.index = 0;
-                subscriber.add(latest[0] = to(subscriber));
-            }, e -> {
-                observer.error(e);
-                subscriber.dispose();
-            }, () -> {
-                subscriber.error = e -> {
-                    subscriber.observer.error(e);
-                    subscriber.dispose();
-                };
+                subscriber.add(latest[0] = to(subscriber, disposer.sub()));
+            }, observer::error, () -> {
+                subscriber.error = observer::error;
             });
 
-            return subscriber.add(latest[0] = to(subscriber, disposer));
+            return subscriber.add(latest[0] = to(subscriber));
         });
     }
 
