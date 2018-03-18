@@ -1730,6 +1730,50 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns an {@link Signal} that emits the same values as the source signal with the exception
+     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
+     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
+     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
+     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
+     * will resubscribe to the source {@link Signal}.
+     * 
+     * @param notificationHandler A receives an {@link Signal} of notifications with which a user
+     *            can complete or error, aborting the retry.
+     * @return Chainable API
+     */
+    public final Signal<V> recoverWhen(Function<Signal<? extends Throwable>, Signal<V>> notificationHandler) {
+        return new Signal<>((observer, disposer) -> {
+            Disposable[] latest = new Disposable[] {Disposable.empty()};
+            List<Observer<? super Throwable>> observers = new CopyOnWriteArrayList();
+
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.error = e -> {
+                for (Observer<? super Throwable> o : observers) {
+                    o.accept(e);
+                }
+            };
+
+            notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
+                latest[0].dispose();
+                subscriber.index = 0;
+                subscriber.add(latest[0] = to(subscriber));
+            }, e -> {
+                observer.error(e);
+                subscriber.dispose();
+            }, () -> {
+                subscriber.error = e -> {
+                    subscriber.observer.error(e);
+                    subscriber.dispose();
+                };
+            });
+
+            return subscriber.add(latest[0] = to(subscriber, disposer));
+        });
+    }
+
+    /**
      * <p>
      * Generates an {@link Signal} sequence that retry the given value infinitely.
      * </p>
@@ -2102,6 +2146,18 @@ public final class Signal<V> {
     }
 
     /**
+     * Skip all items emitted by the source {@link Signal} and only calls
+     * {@link Observer#complete()} or {@link Observer#error(Throwable)}.
+     * 
+     * @return An empty {@link Signal} that only calls {@link Observer#complete()} or
+     *         {@link Observer#error(Throwable)}, based on which one is called by the
+     *         {@link Signal}. Observable
+     */
+    public final Signal<V> skipAll() {
+        return skip(I.accept());
+    }
+
+    /**
      * <p>
      * Returns a specified index values from the start of an {@link Signal} sequence.
      * </p>
@@ -2111,6 +2167,18 @@ public final class Signal<V> {
      */
     public final Signal<V> skipAt(LongPredicate condition) {
         return takeAt(condition.negate());
+    }
+
+    /**
+     * Skip all items emitted by the source {@link Signal} and only calls
+     * {@link Observer#complete()} or {@link Observer#error(Throwable)}.
+     * 
+     * @return An empty {@link Signal} that only calls {@link Observer#complete()} or
+     *         {@link Observer#error(Throwable)}, based on which one is called by the
+     *         {@link Signal}. Observable
+     */
+    public final Signal<V> skipError() {
+        return skip(I.accept());
     }
 
     /**

@@ -119,6 +119,27 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
+    public void skipAll() {
+        monitor(signal -> signal.skipAll());
+        assert main.emit(1, 2, 3).value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        monitor(signal -> signal.skipAll());
+        assert main.emit(Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+
+        monitor(signal -> signal.skipAll());
+        assert main.emit(Complete).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
     public void skipAt() {
         monitor(() -> signal(0, 1, 2, 3, 4, 5).skipAt(index -> 3 < index));
         assert main.value(0, 1, 2, 3);

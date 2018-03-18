@@ -22,11 +22,12 @@ public class ErrorResumeTest extends SignalTester {
 
     @Test
     public void resumeSignal() {
-        monitor(() -> signal(1, 2).map(errorFunction()).errorResume(signal(10, 11)));
+        monitor(signal -> signal.errorResume(signal("resume", "error")));
 
-        assert main.value(10, 11);
+        assert main.emit("Signal", "will", Error).value("Signal", "will", "resume", "error");
         assert main.isCompleted();
         assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test

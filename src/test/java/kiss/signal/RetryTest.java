@@ -22,7 +22,24 @@ import kiss.I;
 public class RetryTest extends SignalTester {
 
     @Test
-    public void retry() throws Exception {
+    public void retry() {
+        monitor(signal -> signal.startWith("retry").retry());
+
+        assert main.value("retry");
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+        assert main.emit(Error).value("retry");
+        assert main.isNotError();
+    }
+
+    @Test
+    public void retryWithLimit() {
         monitor(signal -> signal.startWith("retry").retry(3));
 
         assert main.value("retry");
@@ -38,7 +55,33 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryWhenWithError() throws Exception {
+    public void retryWhenWithDelay() {
+        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(10, ms)));
+
+        assert main.value("retry");
+        assert main.emit(Error).value();
+        assert await(15).value("retry");
+        assert main.emit(Error).value();
+        assert await(15).value("retry");
+    }
+
+    @Test
+    public void retryWhenWithDelayAndLimit() {
+        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.take(2).delay(10, ms)));
+
+        assert main.value("retry");
+        assert main.emit(Error).value();
+        assert await(15).value("retry");
+        assert main.emit(Error).value();
+        assert await(15).value("retry");
+        assert main.emit(Error).value();
+        assert await(15).value();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void retryWhenWithError() {
         monitor(signal -> signal.startWith("retry")
                 .retryWhen(fail -> fail.flatMap(e -> e instanceof Error ? I.signal(e) : I.signalError(e))));
 
@@ -53,21 +96,21 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryWhenWithComplete() throws Exception {
-        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.take(2)));
+    public void retryWhenWithComplete() {
+        monitor(signal -> signal.retryWhen(fail -> fail.take(2)));
 
-        assert main.value("retry");
-        assert main.emit(Error).value("retry");
+        assert main.emit("first error will retry", Error).value("first error will retry");
         assert main.isNotError();
-        assert main.emit(Error).value("retry");
+        assert main.emit("second error will retry", Error).value("second error will retry");
         assert main.isNotError();
-        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.emit("third error will fail", Error).value("third error will fail");
+        assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
     }
 
     @Test
-    public void disposeRetry() throws Exception {
+    public void disposeRetry() {
         monitor(signal -> signal.startWith("retry").retry(3));
 
         assert main.value("retry");
@@ -107,7 +150,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryIf() throws Exception {
+    public void retryIf() {
         AtomicBoolean canRetry = new AtomicBoolean(true);
         monitor(signal -> signal.startWith("retry").retryIf(canRetry::get));
 
@@ -124,7 +167,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryIfNull() throws Exception {
+    public void retryIfNull() {
         monitor(() -> signal(1).effect(log1).retryIf((BooleanSupplier) null));
         assert log1.value(1);
         assert main.value(1);
@@ -132,7 +175,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryUntil() throws Exception {
+    public void retryUntil() {
         monitor(signal -> signal.startWith("retry").retryUntil(other.signal()));
 
         assert main.value("retry");
