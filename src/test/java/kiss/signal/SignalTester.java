@@ -32,7 +32,7 @@ import kiss.Observer;
 import kiss.Signal;
 
 /**
- * @version 2018/03/11 1:27:51
+ * @version 2018/03/19 19:45:55
  */
 public class SignalTester {
 
@@ -606,7 +606,7 @@ public class SignalTester {
     }
 
     /**
-     * @version 2017/04/18 16:04:43
+     * @version 2018/03/19 19:45:49
      */
     public class SignalSource {
 
@@ -721,6 +721,7 @@ public class SignalTester {
          * @return A result.
          */
         public boolean isDisposed() {
+            assert disposers.isEmpty() == false;
             for (Disposable disposable : disposers) {
                 if (disposable.isDisposed() == false) {
                     return false;
