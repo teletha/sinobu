@@ -71,11 +71,11 @@ public class RetryTest extends SignalTester {
 
         assert main.value("retry");
         assert main.emit(Error).value();
-        assert await(20).value("retry");
+        assert await(30).value("retry");
         assert main.emit(Error).value();
-        assert await(20).value("retry");
+        assert await(30).value("retry");
         assert main.emit(Error).value();
-        assert await(20).value();
+        assert await(30).value();
         assert main.isError();
         assert main.isDisposed();
     }

@@ -1846,25 +1846,17 @@ public final class Signal<V> {
     public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> notificationHandler) {
         return new Signal<>((observer, disposer) -> {
             Disposable[] latest = new Disposable[] {Disposable.empty()};
-            List<Observer<? super Throwable>> observers = new CopyOnWriteArrayList();
-
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.error = e -> {
-                for (Observer<? super Throwable> o : observers) {
-                    o.accept(e);
-                }
-            };
+            List<Observer<? super Throwable>> observers = new ArrayList(1);
+            Consumer<Throwable> error = I.bundle(Observer.class, observers);
 
             notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
                 latest[0].dispose();
-                subscriber.index = 0;
-                subscriber.add(latest[0] = to(subscriber, disposer.sub()));
+                disposer.add(latest[0] = to(observer::accept, error, observer::complete, disposer.sub()));
             }, observer::error, () -> {
-                subscriber.error = observer::error;
+                observers.set(0, observer::error);
             });
 
-            return subscriber.add(latest[0] = to(subscriber));
+            return disposer.add(latest[0] = to(observer::accept, error, observer::complete));
         });
     }
 

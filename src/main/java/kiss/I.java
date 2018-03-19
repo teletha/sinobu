@@ -402,9 +402,9 @@ public class I {
      * @param functions A list of functions to bundle.
      * @return A bundled function.
      */
-    public static <F> F bundle(Collection<F> functions) {
+    public static <F> F bundle(Collection<? extends F> functions) {
         Set<Class> types = null;
-        Iterator<F> iterator = functions.iterator();
+        Iterator<? extends F> iterator = functions.iterator();
 
         if (iterator.hasNext()) {
             types = Model.collectTypes(iterator.next().getClass());
@@ -439,7 +439,7 @@ public class I {
      * @param functions A list of functions to bundle.
      * @return A bundled function.
      */
-    public static <F> F bundle(Class<F> type, Collection<F> functions) {
+    public static <F> F bundle(Class<F> type, Collection<? extends F> functions) {
         return make(type, (proxy, method, args) -> {
             Object result = null;
 
