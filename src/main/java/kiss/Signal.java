@@ -980,6 +980,21 @@ public final class Signal<V> {
      * @param effect An action to invoke for each value in the {@link Signal} sequence.
      * @return Chainable API.
      */
+    public final Signal<V> effect(Runnable effect) {
+        if (effect == null) {
+            return this;
+        }
+        return effect(v -> effect.run());
+    }
+
+    /**
+     * <p>
+     * Invokes an action for each value in the {@link Signal} sequence.
+     * </p>
+     *
+     * @param effect An action to invoke for each value in the {@link Signal} sequence.
+     * @return Chainable API.
+     */
     public final Signal<V> effect(Consumer<? super V> effect) {
         if (effect == null) {
             return this;
@@ -2153,18 +2168,6 @@ public final class Signal<V> {
      */
     public final Signal<V> skipAt(LongPredicate condition) {
         return takeAt(condition.negate());
-    }
-
-    /**
-     * Skip all items emitted by the source {@link Signal} and only calls
-     * {@link Observer#complete()} or {@link Observer#error(Throwable)}.
-     * 
-     * @return An empty {@link Signal} that only calls {@link Observer#complete()} or
-     *         {@link Observer#error(Throwable)}, based on which one is called by the
-     *         {@link Signal}. Observable
-     */
-    public final Signal<V> skipError() {
-        return skip(I.accept());
     }
 
     /**

@@ -9,13 +9,15 @@
  */
 package kiss.signal;
 
+import java.util.function.Consumer;
+
 import org.junit.Test;
 
 import kiss.I;
 import kiss.Signal;
 
 /**
- * @version 2018/03/01 23:49:49
+ * @version 2018/03/20 9:57:29
  */
 public class EffectTest extends SignalTester {
 
@@ -30,9 +32,17 @@ public class EffectTest extends SignalTester {
     }
 
     @Test
-    public void effectNull() {
+    public void effectNullConsumer() {
         Signal<Integer> from = I.signal(0);
-        assert from == from.effect(null);
+        assert from == from.effect((Consumer) null);
+        assert from == from.effectOnComplete((Runnable) null);
+        assert from == from.effectOnError(null);
+    }
+
+    @Test
+    public void effectNullRunnable() {
+        Signal<Integer> from = I.signal(0);
+        assert from == from.effect((Runnable) null);
         assert from == from.effectOnComplete((Runnable) null);
         assert from == from.effectOnError(null);
     }
