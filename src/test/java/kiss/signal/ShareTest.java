@@ -19,12 +19,12 @@ import kiss.Observer;
 import kiss.Signal;
 
 /**
- * @version 2017/11/15 23:26:54
+ * @version 2018/03/20 10:25:11
  */
-public class ShareTest {
+public class ShareTest extends SignalTester {
 
     @Test
-    public void noShare() throws Exception {
+    public void noShare() {
         List<Observer<String>> observers = new ArrayList();
         List<String> result1 = new ArrayList();
         List<String> result2 = new ArrayList();
@@ -55,7 +55,7 @@ public class ShareTest {
     }
 
     @Test
-    public void share() throws Exception {
+    public void share() {
         List<Observer<String>> observers = new ArrayList();
         List<String> result1 = new ArrayList();
         List<String> result2 = new ArrayList();
@@ -83,5 +83,15 @@ public class ShareTest {
         assert observers.size() == 0;
         assert result1.size() == 1;
         assert result2.size() == 2;
+    }
+
+    @Test
+    public void error() {
+        monitor(Integer.class, signal -> signal.share().map(v -> 24 / v));
+
+        assert main.emit(3, 4).value(8, 6);
+        assert main.emit(0).value();
+        assert main.isError();
+        assert main.isDisposed();
     }
 }

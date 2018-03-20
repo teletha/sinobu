@@ -51,12 +51,12 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void complete() {
-        index++;
-
-        if (complete != null) {
-            complete.run();
-        } else if (observer != null) {
-            observer.complete();
+        if (index++ == 0) {
+            if (complete != null) {
+                complete.run();
+            } else if (observer != null) {
+                observer.complete();
+            }
         }
     }
 
@@ -65,14 +65,14 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void error(Throwable e) {
-        index++;
-
-        if (error != null) {
-            error.accept(e);
-        } else if (observer != null) {
-            observer.error(e);
-        } else {
-            Observer.super.error(e);
+        if (index++ == 0) {
+            if (error != null) {
+                error.accept(e);
+            } else if (observer != null) {
+                observer.error(e);
+            } else {
+                Observer.super.error(e);
+            }
         }
     }
 
@@ -82,10 +82,14 @@ class Subscriber<T> implements Observer<T>, Disposable {
     @Override
     public void accept(T value) {
         if (index == 0) {
-            if (next != null) {
-                next.accept(value);
-            } else if (observer != null) {
-                observer.accept(value);
+            try {
+                if (next != null) {
+                    next.accept(value);
+                } else if (observer != null) {
+                    observer.accept(value);
+                }
+            } catch (Throwable e) {
+                error(e);
             }
         }
     }

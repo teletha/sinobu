@@ -30,6 +30,7 @@ import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
 import kiss.Signal;
+import kiss.WiseFunction;
 
 /**
  * @version 2018/03/19 19:45:55
@@ -79,6 +80,28 @@ public class SignalTester {
     protected final <P, R> Function<P, R> errorFunction() {
         return e -> {
             throw new Error();
+        };
+    };
+
+    /**
+     * Create generic error {@link Function}.
+     * 
+     * @return
+     */
+    protected final <P, R> Function<P, R> runtimeExceptionFunction() {
+        return e -> {
+            throw new RuntimeException();
+        };
+    };
+
+    /**
+     * Create generic error {@link Function}.
+     * 
+     * @return
+     */
+    protected final <P, R> Function<P, R> exceptionFunction() {
+        return (WiseFunction<P, R>) e -> {
+            throw new Exception();
         };
     };
 
@@ -332,7 +355,6 @@ public class SignalTester {
             sets[i] = new LogSet();
             delegator1.log = sets[i].log1;
             delegator2.log = sets[i].log2;
-
             sets[i].disposer = base.map(v -> v).to(sets[i].result);
         }
 
@@ -631,8 +653,8 @@ public class SignalTester {
          * @return A correspoding {@link Signal} log.
          */
         public Log emit(Object... values) {
-            for (Observer observer : observers) {
-                for (Object value : values) {
+            for (Object value : values) {
+                for (Observer observer : observers) {
                     if (value == Complete) {
                         observer.complete();
                         completed = true;
@@ -667,13 +689,11 @@ public class SignalTester {
         public Signal signal() {
             return new Signal<>((observer, disposer) -> {
                 observers.add(observer);
-                disposer.add(() -> {
-                    observers.remove(observer);
-                });
-
                 disposers.add(disposer);
 
-                return disposer;
+                return disposer.add(() -> {
+                    observers.remove(observer);
+                });
             });
         }
 

@@ -51,7 +51,7 @@ public class RepeatTest extends SignalTester {
 
         assert main.emit(1, 2).value(2);
         assert main.emit(3, 4).value(4);
-        assert main.emit(5, 6).value(6);
+        assert main.emit(5, 6, 7, 8).value(6, 8);
         assert main.isNotError();
         assert main.isNotCompleted();
         assert main.isNotDisposed();
@@ -59,9 +59,9 @@ public class RepeatTest extends SignalTester {
 
     @Test
     public void repeatInfiniteError() {
-        monitor(signal -> signal.skip(1).take(1).repeat());
+        monitor(1, signal -> signal.skip(1).take(1).repeat());
 
-        assert main.emit(1, 2).value(2);
+        assert main.emit(1, 2, 1, 2).value(2, 2);
         assert main.emit(3, 4, Error).value(4);
         assert main.isNotCompleted();
         assert main.isError();

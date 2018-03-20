@@ -35,11 +35,12 @@ public class MapTest extends SignalTester {
     }
 
     @Test
-    public void throwError() throws Exception {
+    public void throwError() {
         monitor(() -> signal(1, 2).map(errorFunction()));
-
         assert main.value();
+        assert main.isNotCompleted();
         assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test

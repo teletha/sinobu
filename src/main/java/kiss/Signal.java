@@ -1086,6 +1086,9 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> errorResume(Signal<? extends V> resumer) {
+        if (resumer == null) {
+            return this;
+        }
         return errorResume(e -> resumer);
     }
 
@@ -1099,6 +1102,9 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> errorResume(Function<? super Throwable, Signal<? extends V>> resumer) {
+        if (resumer == null) {
+            return this;
+        }
         return new Signal<>((observer, disposer) -> {
             return to(observer::accept, e -> resumer.apply(e).to(observer, disposer), observer::complete, disposer);
         });
@@ -1736,7 +1742,6 @@ public final class Signal<V> {
                     sub[0] = to(observer::accept, observer::error, self, disposer.sub());
                 } else {
                     observer.complete();
-                    disposer.dispose();
                 }
             });
 
