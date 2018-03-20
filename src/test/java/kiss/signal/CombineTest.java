@@ -13,6 +13,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import antibug.powerassert.PowerAssertOff;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
@@ -62,10 +63,12 @@ public class CombineTest extends SignalTester {
     public void disposeByMain() {
         monitor(signal -> signal.combine(other.signal()));
 
-        // from main
         main.dispose();
-
+        assert main.isNotCompleted();
+        assert main.isNotError();
         assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
         assert other.isDisposed();
     }
 
@@ -73,10 +76,12 @@ public class CombineTest extends SignalTester {
     public void disposeByOther() {
         monitor(signal -> signal.combine(other.signal()));
 
-        // from other
         other.dispose();
-
+        assert main.isNotCompleted();
+        assert main.isNotError();
         assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
         assert other.isDisposed();
     }
 
@@ -84,30 +89,53 @@ public class CombineTest extends SignalTester {
     public void completeByMain() {
         monitor(signal -> signal.combine(other.signal()));
 
-        // from main
         main.emit(Complete);
-        assert main.isNotCompleted();
-        assert other.isNotCompleted();
-
-        // from other
-        other.emit(Complete);
         assert main.isCompleted();
-        assert other.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
     }
 
     @Test
     public void completeByOther() {
         monitor(signal -> signal.combine(other.signal()));
 
-        // from other
         other.emit(Complete);
-        assert main.isNotCompleted();
-        assert other.isCompleted();
-
-        // from main
-        main.emit(Complete);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
         assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void errorByMain() {
+        monitor(signal -> signal.combine(other.signal()));
+
+        main.emit(Error);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    @PowerAssertOff
+    public void errorByOther() {
+        monitor(signal -> signal.combine(other.signal()));
+
+        other.emit(Error);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isError();
+        assert other.isDisposed();
     }
 
     @Test

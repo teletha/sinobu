@@ -576,7 +576,6 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             LinkedList<V> baseValue = new LinkedList();
             LinkedList<O> otherValue = new LinkedList();
-            Runnable complete = countable(observer::complete, 2);
 
             return to(value -> {
                 if (otherValue.isEmpty()) {
@@ -584,13 +583,13 @@ public final class Signal<V> {
                 } else {
                     observer.accept(combiner.apply(value, otherValue.pollFirst()));
                 }
-            }, observer::error, complete, disposer).add(other.to(value -> {
+            }, observer::error, observer::complete, disposer).add(other.to(value -> {
                 if (baseValue.isEmpty()) {
                     otherValue.add(value);
                 } else {
                     observer.accept(combiner.apply(baseValue.pollFirst(), value));
                 }
-            }, observer::error, complete, disposer));
+            }, observer::error, observer::complete, disposer));
         });
     }
 
