@@ -14,7 +14,7 @@ import org.junit.Test;
 import kiss.Signal;
 
 /**
- * @version 2018/03/04 9:47:15
+ * @version 2018/03/20 23:50:24
  */
 public class MergeTest extends SignalTester {
 
@@ -55,55 +55,103 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
+    public void disposeByMain() {
+        monitor(signal -> signal.merge(other.signal()));
+
+        main.dispose();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void disposeByOther() {
+        monitor(signal -> signal.merge(other.signal()));
+
+        other.dispose();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
     public void completeFromOther() {
         monitor(signal -> signal.merge(other.signal()));
 
-        main.emit("Main");
-        assert main.value("Main");
-        other.emit("Other");
-        assert main.value("Other");
-
-        // test complete
-        assert main.isNotCompleted();
-
         // complete other
-        other.emit(Complete, "Other is completed so this value will be ignored.");
-        assert main.value();
+        assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
         assert main.isNotCompleted();
-
-        main.emit("Main is not completed.");
-        assert main.value("Main is not completed.");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+        assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isNotDisposed();
+        assert main.emit("Main is not completed.").value("Main is not completed.");
 
         // complete main
-        main.emit(Complete, "Main is completed so this value will be ignored.");
-        assert main.value();
+        assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
     }
 
     @Test
     public void completeFromMain() {
         monitor(signal -> signal.merge(other.signal()));
 
-        main.emit("Main");
-        assert main.value("Main");
-        other.emit("Other");
-        assert main.value("Other");
-
-        // test complete
-        assert main.isNotCompleted();
-
         // complete main
-        main.emit(Complete, "Main is completed so this value will be ignored.");
-        assert main.value();
+        assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
         assert main.isNotCompleted();
-
-        other.emit("Other is not completed.");
-        assert main.value("Other is not completed.");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isNotDisposed();
+        assert other.emit("Other is not completed.").value("Other is not completed.");
 
         // complete other
-        other.emit(Complete, "Other is completed so this value will be ignored.");
-        assert main.value();
+        assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void errorByMain() {
+        monitor(signal -> signal.merge(other.signal()));
+
+        main.emit(Error);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void errorByOther() {
+        monitor(signal -> signal.merge(other.signal()));
+
+        other.emit(Error);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isError();
+        assert other.isDisposed();
     }
 
     @Test

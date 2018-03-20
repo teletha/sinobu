@@ -62,10 +62,12 @@ public class CombineLatestTest extends SignalTester {
     public void disposeByMain() {
         monitor(signal -> signal.combineLatest(other.signal()));
 
-        // from main
         main.dispose();
-
+        assert main.isNotCompleted();
+        assert main.isNotError();
         assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
         assert other.isDisposed();
     }
 
@@ -73,10 +75,12 @@ public class CombineLatestTest extends SignalTester {
     public void disposeByOther() {
         monitor(signal -> signal.combineLatest(other.signal()));
 
-        // from other
         other.dispose();
-
+        assert main.isNotCompleted();
+        assert main.isNotError();
         assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
         assert other.isDisposed();
     }
 

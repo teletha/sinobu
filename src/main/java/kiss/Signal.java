@@ -1623,7 +1623,7 @@ public final class Signal<V> {
             Runnable complete = countable(observer::complete, signals.size());
 
             for (Signal<? extends V> signal : signals) {
-                disposer = disposer.add(signal.to(observer::accept, observer::error, complete, disposer.sub()));
+                signal.to(observer::accept, observer::error, complete, disposer);
             }
             return disposer;
         });
