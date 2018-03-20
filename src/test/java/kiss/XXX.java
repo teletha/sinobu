@@ -22,7 +22,7 @@ public class XXX {
         PublishSubject p1 = PublishSubject.create();
         PublishSubject p2 = PublishSubject.create();
 
-        Observable merge = Observable.zip(p1, p2, (r1, r2) -> I.list(r1, r2));
+        Observable merge = Observable.combineLatest(p1, p2, (r1, r2) -> I.list(r1, r2));
         Disposable dispose = merge.subscribe(v -> {
             System.out.println(v);
         }, e -> {
@@ -33,9 +33,11 @@ public class XXX {
 
         p1.onNext("1");
         p2.onNext("ONE");
-        p2.onComplete();
+        p1.onComplete();
         System.out.println(dispose.isDisposed());
         p1.onNext("2");
         p2.onNext("TWO");
+        p2.onComplete();
+        System.out.println(dispose.isDisposed());
     }
 }

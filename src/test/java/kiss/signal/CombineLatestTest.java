@@ -17,7 +17,7 @@ import kiss.Ⅱ;
 import kiss.Ⅲ;
 
 /**
- * @version 2018/02/28 19:23:27
+ * @version 2018/03/20 22:40:52
  */
 public class CombineLatestTest extends SignalTester {
 
@@ -87,12 +87,20 @@ public class CombineLatestTest extends SignalTester {
         // from main
         main.emit(Complete);
         assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
         assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isNotDisposed();
 
         // from other
         other.emit(Complete);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
         assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
     }
 
     @Test
@@ -102,12 +110,46 @@ public class CombineLatestTest extends SignalTester {
         // from other
         other.emit(Complete);
         assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
         assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isNotDisposed();
 
         // from main
         main.emit(Complete);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
         assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void errorByMain() {
+        monitor(signal -> signal.combineLatest(other.signal()));
+
+        main.emit(Error);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void errorByOther() {
+        monitor(signal -> signal.combineLatest(other.signal()));
+
+        other.emit(Error);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isError();
+        assert other.isDisposed();
     }
 
     @Test

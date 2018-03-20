@@ -13,12 +13,11 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
 /**
- * @version 2018/02/28 18:59:54
+ * @version 2018/03/20 22:40:11
  */
 public class CombineTest extends SignalTester {
 
@@ -125,7 +124,6 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    @PowerAssertOff
     public void errorByOther() {
         monitor(signal -> signal.combine(other.signal()));
 
