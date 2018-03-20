@@ -13,6 +13,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import kiss.I;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
@@ -88,7 +89,12 @@ public class CombineTest extends SignalTester {
     public void completeByMain() {
         monitor(signal -> signal.combine(other.signal()));
 
-        main.emit(Complete);
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+
+        assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
+        assert other.emit("Other is also disposed").value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -101,7 +107,12 @@ public class CombineTest extends SignalTester {
     public void completeByOther() {
         monitor(signal -> signal.combine(other.signal()));
 
-        other.emit(Complete);
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+
+        assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
+        assert main.emit("Main is also disposed").value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -114,7 +125,12 @@ public class CombineTest extends SignalTester {
     public void errorByMain() {
         monitor(signal -> signal.combine(other.signal()));
 
-        main.emit(Error);
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+
+        assert main.emit(Error, "Main is errored so this value will be ignored.").value();
+        assert other.emit("Other is also disposed").value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
@@ -127,7 +143,12 @@ public class CombineTest extends SignalTester {
     public void errorByOther() {
         monitor(signal -> signal.combine(other.signal()));
 
-        other.emit(Error);
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+
+        assert other.emit(Error, "Other is errored so this value will be ignored.").value();
+        assert main.emit("Main is also disposed").value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();

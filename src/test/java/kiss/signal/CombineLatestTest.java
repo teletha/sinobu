@@ -13,6 +13,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import kiss.I;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
@@ -88,17 +89,22 @@ public class CombineLatestTest extends SignalTester {
     public void completeByMain() {
         monitor(signal -> signal.combineLatest(other.signal()));
 
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+
         // from main
-        main.emit(Complete);
+        assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();
         assert other.isNotCompleted();
         assert other.isNotError();
         assert other.isNotDisposed();
+        assert other.emit("Other is not completed.").value(I.pair("MAIN", "Other is not completed."));
 
         // from other
-        other.emit(Complete);
+        assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -111,17 +117,22 @@ public class CombineLatestTest extends SignalTester {
     public void completeByOther() {
         monitor(signal -> signal.combineLatest(other.signal()));
 
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+
         // from other
-        other.emit(Complete);
+        assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();
         assert other.isCompleted();
         assert other.isNotError();
         assert other.isNotDisposed();
+        assert main.emit("Main is not completed.").value(I.pair("Main is not completed.", "OTHER"));
 
         // from main
-        main.emit(Complete);
+        assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -134,7 +145,12 @@ public class CombineLatestTest extends SignalTester {
     public void errorByMain() {
         monitor(signal -> signal.combineLatest(other.signal()));
 
-        main.emit(Error);
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+
+        assert main.emit(Error, "Main is errored so this value will be ignored.").value();
+        assert other.emit("Other is also disposed.").value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
@@ -147,7 +163,12 @@ public class CombineLatestTest extends SignalTester {
     public void errorByOther() {
         monitor(signal -> signal.combineLatest(other.signal()));
 
-        other.emit(Error);
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+
+        assert other.emit(Error, "Other is errored so this value will be ignored.").value();
+        assert main.emit("Main is also disposed.").value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
