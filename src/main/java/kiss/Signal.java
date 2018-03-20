@@ -1748,6 +1748,14 @@ public final class Signal<V> {
         });
     }
 
+    public final Signal<V> recover(long count) {
+        return new Signal<>((observer, disposer) -> {
+            return to(observer::accept, e -> {
+                System.out.println(e);
+            }, observer::complete, disposer);
+        });
+    }
+
     /**
      * Returns an {@link Signal} that emits the same values as the source signal with the exception
      * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
