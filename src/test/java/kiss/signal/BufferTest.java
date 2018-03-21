@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 /**
- * @version 2018/02/28 14:34:31
+ * @version 2018/03/22 0:05:46
  */
 public class BufferTest extends SignalTester {
 
     private final Function<List<String>, String> composer = v -> v.stream().collect(Collectors.joining());
 
     @Test
-    public void bySize() {
+    public void size() {
         monitor(signal -> signal.buffer(2).map(composer));
 
         assert main.emit("A").value();
@@ -36,7 +36,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void bySizeWithRepeat() {
+    public void sizeWithRepeat() {
         monitor(signal -> signal.buffer(2).skip(1).take(1).repeat().map(composer));
 
         assert main.emit("A").value();
@@ -47,7 +47,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void bySizeAndInterval1() {
+    public void sizeAndInterval1() {
         monitor(signal -> signal.buffer(2, 1).map(composer));
 
         assert main.emit("A").value();
@@ -58,7 +58,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void bySizeAndInterval2() {
+    public void sizeAndInterval2() {
         monitor(signal -> signal.buffer(2, 3).map(composer));
 
         assert main.emit("A").value();
@@ -69,7 +69,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void byTime() {
+    public void time() {
         monitor(signal -> signal.buffer(30, MILLISECONDS).map(composer));
 
         assert main.emit("A", "B").value();
@@ -81,7 +81,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void bySignal() {
+    public void signal() {
         monitor(signal -> signal.buffer(other.signal()).map(composer));
 
         assert main.emit("A", "B").value();
@@ -90,5 +90,57 @@ public class BufferTest extends SignalTester {
         assert main.emit("C", "D", "E").value();
         other.emit("OK");
         assert main.value("CDE");
+    }
+
+    @Test
+    public void signalErrorFromMain() {
+        monitor(signal -> signal.buffer(other.signal()).map(composer));
+
+        main.emit(Error);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void signalErrorFromOther() {
+        monitor(signal -> signal.buffer(other.signal()).map(composer));
+
+        other.emit(Error);
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void signalCompleteFromMain() {
+        monitor(signal -> signal.buffer(other.signal()).map(composer));
+
+        main.emit(Complete);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void signalCompleteFromOther() {
+        monitor(signal -> signal.buffer(other.signal()).map(composer));
+
+        other.emit(Complete);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
     }
 }

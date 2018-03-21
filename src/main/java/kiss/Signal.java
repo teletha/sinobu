@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -517,18 +518,15 @@ public final class Signal<V> {
      */
     public final <B extends Collection<V>> Signal<B> buffer(Signal<?> boundary, Supplier<B> bufferSupplier) {
         return new Signal<>((observer, disposer) -> {
-            List<V> list = new ArrayList();
+            LinkedTransferQueue<V> queue = new LinkedTransferQueue();
 
-            disposer.add(to(list::add));
-            disposer.add(boundary.to(v -> {
-                if (!list.isEmpty()) {
+            return to(queue::add, observer::error, observer::complete, disposer).add(boundary.to(v -> {
+                if (!queue.isEmpty()) {
                     B buffer = bufferSupplier.get();
-                    buffer.addAll(list);
+                    queue.drainTo(buffer);
                     observer.accept(buffer);
-                    list.clear();
                 }
             }, observer::error, observer::complete));
-            return disposer;
         });
     }
 
