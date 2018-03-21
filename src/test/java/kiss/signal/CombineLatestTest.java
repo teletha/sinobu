@@ -13,7 +13,6 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
@@ -87,7 +86,6 @@ public class CombineLatestTest extends SignalTester {
     }
 
     @Test
-    @PowerAssertOff
     public void completeByMain() {
         monitor(signal -> signal.combineLatest(other.signal()));
 

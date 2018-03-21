@@ -189,7 +189,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return to(observer, (Disposable) null);
+        return to(observer, Disposable.empty());
     }
 
     /**
@@ -201,10 +201,6 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     private Disposable to(Observer<? super V> observer, Disposable disposer) {
-        if (disposer == null) {
-            disposer = Disposable.empty();
-        }
-
         if (observer instanceof Subscriber == false) {
             Subscriber<? super V> subscriber = new Subscriber();
             subscriber.observer = observer;
