@@ -15,9 +15,10 @@ import java.util.function.Predicate;
 import org.junit.Test;
 
 import kiss.I;
+import kiss.Signal;
 
 /**
- * @version 2018/03/03 7:05:51
+ * @version 2018/03/21 23:17:52
  */
 public class TakeTest extends SignalTester {
 
@@ -202,6 +203,23 @@ public class TakeTest extends SignalTester {
         other.emit("STOP");
         assert main.emit(5, 6).value();
         assert main.isCompleted();
+        assert main.isDisposed();
+        assert other.isDisposed();
+    }
+
+    @Test
+    public void tekeUntilNullSignal() {
+        Signal<Integer> signal = I.signal(0);
+        assert signal == signal.takeUntil((Signal) null);
+    }
+
+    @Test
+    public void takeUntilAndDispose() {
+        monitor(signal -> signal.takeUntil(other.signal()));
+
+        assert main.isNotDisposed();
+        assert other.isNotDisposed();
+        main.dispose();
         assert main.isDisposed();
         assert other.isDisposed();
     }

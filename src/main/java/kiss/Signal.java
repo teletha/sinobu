@@ -2706,7 +2706,7 @@ public final class Signal<V> {
      * second {@link Signal} emits an item.
      *
      * @param timing A {@link Signal} whose first emitted item will cause takeUntil to stop emitting
-     *            items from the source {@link Signal}. <code>null</code> will ignore this
+     *            items from the source {@link Signal}. <code>null</code> will ignore this.
      *            instruction.
      * @return A {@link Signal} that emits the items emitted by the source {@link Signal} until such
      *         time as other emits its first item.
@@ -2718,7 +2718,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return timing.isSignaled().to(observer::complete).add(to(observer, disposer));
+            return to(observer, disposer).add(timing.isSignaled().to(observer::complete));
         });
     }
 
