@@ -12,7 +12,7 @@ package kiss.signal;
 import org.junit.Test;
 
 /**
- * @version 2018/03/11 2:44:25
+ * @version 2018/03/21 21:12:41
  */
 public class DisposeTest extends SignalTester {
 
@@ -20,9 +20,9 @@ public class DisposeTest extends SignalTester {
     public void disposeOnComplete() {
         monitor(signal -> signal);
 
-        main.emit(Complete);
-        assert main.isNotError();
+        assert main.emit(Complete, "This value and next error will be ignored", Error).value();
         assert main.isCompleted();
+        assert main.isNotError();
         assert main.isDisposed();
     }
 
@@ -30,7 +30,7 @@ public class DisposeTest extends SignalTester {
     public void disposeOnError() {
         monitor(signal -> signal);
 
-        main.emit(Error.class);
+        assert main.emit(Error, "This value and next complete will be ignored", Complete).value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();

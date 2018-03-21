@@ -13,6 +13,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import antibug.powerassert.PowerAssertOff;
+
 /**
  * @version 2018/03/11 12:09:22
  */
@@ -84,6 +86,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
+    @PowerAssertOff
     public void delayAndInterval() {
         monitor(Integer.class, signal -> signal.flatMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
 

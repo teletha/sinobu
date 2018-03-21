@@ -118,7 +118,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next) {
-        return to(v -> next.run(), null, (Runnable) null);
+        return to(v -> next.run(), null, null);
     }
 
     /**
@@ -157,7 +157,13 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
-        return to(next, error, complete, null);
+        Disposable disposer = Disposable.empty();
+        Subscriber<V> subscriber = new Subscriber();
+        subscriber.next = next;
+        subscriber.error = I.bundle(error, I.wise(disposer::dispose).asConsumer());
+        subscriber.complete = I.bundle(complete, disposer::dispose);
+
+        return to(subscriber, disposer);
     }
 
     /**
@@ -188,7 +194,18 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return to(observer, (Disposable) null);
+        Disposable disposer = Disposable.empty();
+
+        if (observer instanceof Subscriber == false) {
+            Subscriber<? super V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.error = I.bundle(observer::error, I.wise(disposer::dispose).asConsumer());
+            subscriber.complete = I.bundle(observer::complete, disposer::dispose);
+
+            observer = subscriber;
+        }
+
+        return to(observer, disposer);
     }
 
     /**
@@ -202,15 +219,6 @@ public final class Signal<V> {
     private Disposable to(Observer<? super V> observer, Disposable disposer) {
         if (disposer == null) {
             disposer = Disposable.empty();
-        }
-
-        if (observer instanceof Subscriber == false) {
-            Subscriber<? super V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.error = I.bundle(observer::error, I.wise(disposer::dispose).asConsumer());
-            subscriber.complete = I.bundle(observer::complete, disposer::dispose);
-
-            observer = subscriber;
         }
 
         if (disposer instanceof Subscriber == false) {
@@ -960,28 +968,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} which delays any errors till the all associated {@link Signal}
-     * terminate.
-     * 
-     * @return Chainable API.
-     */
-    public final Signal<V> delayError() {
-        return new Signal<>((observer, disposer) -> {
-            AtomicReference<Throwable> error = new AtomicReference();
-
-            return to(observer::accept, error::set, () -> {
-                Throwable e = error.get();
-
-                if (e == null) {
-                    observer.complete();
-                } else {
-                    observer.error(e);
-                }
-            }, disposer);
-        });
-    }
-
-    /**
      * <p>
      * Returns an {@link Signal} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
@@ -1283,9 +1269,14 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                function.apply(value).to(observer::accept, observer::error, null, disposer.sub());
+                Disposable sub = disposer.sub();
+                function.apply(value).to(observer::accept, error(observer, sub), sub::dispose, sub);
             }, observer::error, observer::complete, disposer);
         });
+    }
+
+    private Consumer<Throwable> error(Observer observer, Disposable disposer) {
+        return I.bundle(observer::error, I.wise(disposer::dispose).asConsumer());
     }
 
     /**
@@ -1915,7 +1906,7 @@ public final class Signal<V> {
     public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> notificationHandler) {
         return new Signal<>((observer, disposer) -> {
             Disposable[] latest = new Disposable[] {Disposable.empty()};
-            List<Observer<? super Throwable>> observers = new ArrayList(1);
+            List<Observer<? super Throwable>> observers = new CopyOnWriteArrayList();
             Consumer<Throwable> error = I.bundle(Observer.class, observers);
 
             notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
@@ -2975,6 +2966,21 @@ public final class Signal<V> {
                 if (acceptComplete && completeOuput != null) observer.accept(completeOuput);
                 observer.complete();
                 disposer.dispose();
+            }, disposer);
+        });
+    }
+
+    public Signal<V> ok() {
+        return new Signal<>((observer, disposer) -> {
+            System.out.println(observer + "  " + disposer);
+
+            return to(v -> {
+                observer.accept(v);
+                observer.complete();
+            }, e -> {
+                observer.error(e);
+            }, () -> {
+                observer.complete();
             }, disposer);
         });
     }

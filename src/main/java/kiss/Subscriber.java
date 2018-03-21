@@ -38,7 +38,7 @@ class Subscriber<T> implements Observer<T>, Disposable {
     Observer observer;
 
     /** The delegation. */
-    Consumer<T> next;
+    Consumer<? super T> next;
 
     /** The delegation. */
     Consumer<Throwable> error;
