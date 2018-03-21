@@ -13,6 +13,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
@@ -79,15 +80,16 @@ public class CombineLatestTest extends SignalTester {
         other.dispose();
         assert main.isNotCompleted();
         assert main.isNotError();
-        assert main.isDisposed();
+        assert main.isNotDisposed();
         assert other.isNotCompleted();
         assert other.isNotError();
         assert other.isDisposed();
     }
 
     @Test
+    @PowerAssertOff
     public void completeByMain() {
-        monitor(signal -> signal.combineLatest(other.signal()));
+        monitor(1, signal -> signal.combineLatest(other.signal()));
 
         main.emit("MAIN");
         other.emit("OTHER");
@@ -128,7 +130,7 @@ public class CombineLatestTest extends SignalTester {
         assert main.isNotDisposed();
         assert other.isCompleted();
         assert other.isNotError();
-        assert other.isNotDisposed();
+        assert other.isDisposed();
         assert main.emit("Main is not completed.").value(I.pair("Main is not completed.", "OTHER"));
 
         // from main

@@ -684,35 +684,23 @@ public final class Signal<V> {
             AtomicReference<V> baseValue = new AtomicReference(UNDEFINED);
             AtomicReference<O> otherValue = new AtomicReference(UNDEFINED);
             Runnable complete = countable(observer::complete, 2);
-            AtomicBoolean baseCompleted = new AtomicBoolean();
-            AtomicBoolean otherCompleted = new AtomicBoolean();
 
-            return to(value -> {
-                if (baseCompleted.get() == false) {
-                    baseValue.set(value);
-                    O joined = otherValue.get();
+            return disposer.add(to(value -> {
+                baseValue.set(value);
+                O joined = otherValue.get();
 
-                    if (joined != UNDEFINED) {
-                        observer.accept(function.apply(value, joined));
-                    }
+                if (joined != UNDEFINED) {
+                    observer.accept(function.apply(value, joined));
                 }
-            }, observer::error, () -> {
-                baseCompleted.set(true);
-                complete.run();
-            }, disposer).add(other.to(value -> {
-                if (otherCompleted.get() == false) {
-                    otherValue.set(value);
+            }, observer::error, complete)).add(other.to(value -> {
+                otherValue.set(value);
 
-                    V joined = baseValue.get();
+                V joined = baseValue.get();
 
-                    if (joined != UNDEFINED) {
-                        observer.accept(function.apply(joined, value));
-                    }
+                if (joined != UNDEFINED) {
+                    observer.accept(function.apply(joined, value));
                 }
-            }, observer::error, () -> {
-                otherCompleted.set(true);
-                complete.run();
-            }, disposer));
+            }, observer::error, complete));
         });
     }
 
@@ -1616,15 +1604,10 @@ public final class Signal<V> {
             Runnable complete = countable(observer::complete, signals.size());
 
             for (Signal<? extends V> signal : signals) {
-                AtomicBoolean completed = new AtomicBoolean();
+                Disposable sub = disposer.sub();
                 signal.to(v -> {
-                    if (completed.get() == false) {
-                        observer.accept(v);
-                    }
-                }, observer::error, () -> {
-                    completed.set(true);
-                    complete.run();
-                }, disposer);
+                    observer.accept(v);
+                }, observer::error, I.bundle(complete, sub::dispose), sub);
             }
             return disposer;
         });

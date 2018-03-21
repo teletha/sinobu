@@ -22,6 +22,19 @@ public class XXX {
         PublishSubject p1 = PublishSubject.create();
         PublishSubject p2 = PublishSubject.create();
 
+        p1.buffer(2, 3).subscribe(v -> {
+            System.out.println(v);
+        });
+        p1.onNext("1");
+        p1.onNext("2");
+        p1.onNext("3");
+        p1.onNext("4");
+        p1.onNext("5");
+
+        if (true) {
+            return;
+        }
+
         Observable merge = Observable.merge(p1, p2);
         Disposable dispose = merge.subscribe(v -> {
             System.out.println(v);

@@ -11,6 +11,7 @@ package kiss.signal;
 
 import org.junit.Test;
 
+import antibug.powerassert.PowerAssertOff;
 import kiss.Signal;
 
 /**
@@ -74,13 +75,14 @@ public class MergeTest extends SignalTester {
         other.dispose();
         assert main.isNotCompleted();
         assert main.isNotError();
-        assert main.isDisposed();
+        assert main.isNotDisposed();
         assert other.isNotCompleted();
         assert other.isNotError();
         assert other.isDisposed();
     }
 
     @Test
+    @PowerAssertOff
     public void completeFromMain() {
         monitor(signal -> signal.merge(other.signal()));
 
@@ -115,7 +117,7 @@ public class MergeTest extends SignalTester {
         assert main.isNotDisposed();
         assert other.isCompleted();
         assert other.isNotError();
-        assert other.isNotDisposed();
+        assert other.isDisposed();
         assert main.emit("Main is not completed.").value("Main is not completed.");
 
         // complete main
