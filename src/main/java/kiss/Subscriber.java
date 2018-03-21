@@ -51,12 +51,10 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void complete() {
-        if (index++ == 0) {
-            if (complete != null) {
-                complete.run();
-            } else if (observer != null) {
-                observer.complete();
-            }
+        if (complete != null) {
+            complete.run();
+        } else if (observer != null) {
+            observer.complete();
         }
     }
 
@@ -65,14 +63,12 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void error(Throwable e) {
-        if (index++ == 0) {
-            if (error != null) {
-                error.accept(e);
-            } else if (observer != null) {
-                observer.error(e);
-            } else {
-                Observer.super.error(e);
-            }
+        if (error != null) {
+            error.accept(e);
+        } else if (observer != null) {
+            observer.error(e);
+        } else {
+            Observer.super.error(e);
         }
     }
 

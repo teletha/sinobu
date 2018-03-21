@@ -416,6 +416,14 @@ public class SignalTester {
          * @return
          */
         boolean value(Object... expected);
+
+        /**
+         * Validate the size of result values.
+         * 
+         * @param expected
+         * @return
+         */
+        boolean size(int expectedSize);
     }
 
     /**
@@ -504,6 +512,16 @@ public class SignalTester {
             values.clear();
             return true;
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean size(int expectedSize) {
+            assert values.size() == expectedSize : new AssertionError(values);
+            values.clear();
+            return true;
+        }
     }
 
     /**
@@ -583,6 +601,14 @@ public class SignalTester {
         @Override
         public boolean value(Object... expected) {
             return log.value(expected);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean size(int expectedSize) {
+            return log.size(expectedSize);
         }
     }
 

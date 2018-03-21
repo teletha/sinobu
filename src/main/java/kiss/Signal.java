@@ -960,6 +960,28 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns an {@link Signal} which delays any errors till the all associated {@link Signal}
+     * terminate.
+     * 
+     * @return Chainable API.
+     */
+    public final Signal<V> delayError() {
+        return new Signal<>((observer, disposer) -> {
+            AtomicReference<Throwable> error = new AtomicReference();
+
+            return to(observer::accept, error::set, () -> {
+                Throwable e = error.get();
+
+                if (e == null) {
+                    observer.complete();
+                } else {
+                    observer.error(e);
+                }
+            }, disposer);
+        });
+    }
+
+    /**
      * <p>
      * Returns an {@link Signal} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
@@ -1089,7 +1111,7 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Instructs an Observable to emit an item (returned by a specified function) rather than
+     * Instructs an {@link Signal} to emit an item (returned by a specified function) rather than
      * invoking onError if it encounters an error.
      * </p>
      * 
@@ -1105,7 +1127,7 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Instructs an Observable to emit an item (returned by a specified function) rather than
+     * Instructs an {@link Signal} to emit an item (returned by a specified function) rather than
      * invoking onError if it encounters an error.
      * </p>
      * 
