@@ -82,7 +82,6 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    @PowerAssertOff
     public void retryWhenWithError() {
         monitor(signal -> signal.startWith("retry")
                 .retryWhen(fail -> fail.flatMap(e -> e instanceof Error ? I.signal(e) : I.signalError(e))));

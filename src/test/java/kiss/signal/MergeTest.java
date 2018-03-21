@@ -11,7 +11,6 @@ package kiss.signal;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.Signal;
 
 /**
@@ -82,7 +81,6 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    @PowerAssertOff
     public void completeFromMain() {
         monitor(signal -> signal.merge(other.signal()));
 
