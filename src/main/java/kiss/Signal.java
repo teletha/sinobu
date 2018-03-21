@@ -48,7 +48,7 @@ import java.util.function.Supplier;
 import kiss.signal.StartWithTest;
 
 /**
- * @version 2018/03/02 10:07:01
+ * @version 2018/03/21 22:55:13
  */
 public final class Signal<V> {
 
@@ -219,10 +219,6 @@ public final class Signal<V> {
     private Disposable to(Observer<? super V> observer, Disposable disposer) {
         if (disposer == null) {
             disposer = Disposable.empty();
-        }
-
-        if (disposer instanceof Subscriber == false) {
-            throw new Error(disposer.getClass().getName());
         }
 
         try {
@@ -1007,85 +1003,59 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Invokes an action for each value in the {@link Signal} sequence.
-     * </p>
+     * Modifies the source {@link Signal} so that it invokes an action when it calls
+     * {@link Observer#accept(Object)}.
      *
-     * @param effect An action to invoke for each value in the {@link Signal} sequence.
-     * @return Chainable API.
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#accept(Object)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effectOnComplete(Runnable)
+     * @see #effectOnError(Consumer)
      */
-    public final Signal<V> effect(Consumer<? super V> effect) {
-        if (effect == null) {
-            return this;
-        }
-
-        return new Signal<V>((observer, disposer) -> {
-            return to(value -> {
-                effect.accept(value);
-                observer.accept(value);
-            }, observer::error, observer::complete, disposer);
-        });
-    }
-
-    /**
-     * <p>
-     * Invokes an action for each value in the {@link Signal} sequence.
-     * </p>
-     *
-     * @param effect An action to invoke for each value in the {@link Signal} sequence.
-     * @return Chainable API.
-     */
-    public final Signal<V> effectOnComplete(Runnable effect) {
-        if (effect == null) {
-            return this;
-        }
-
-        return effectOnComplete((observer, disposer) -> effect.run());
-    }
-
-    /**
-     * <p>
-     * Invokes an action for each value in the {@link Signal} sequence.
-     * </p>
-     *
-     * @param effect An action to invoke for each value in the {@link Signal} sequence.
-     * @return Chainable API.
-     */
-    public final Signal<V> effectOnComplete(Supplier<Signal<V>> effect) {
-        if (effect == null) {
-            return this;
-        }
-
-        return effectOnComplete((observer, disposer) -> effect.get().to(observer, disposer));
-    }
-
-    /**
-     * <p>
-     * Invokes an action for each value in the {@link Signal} sequence.
-     * </p>
-     *
-     * @param effect An action to invoke for each value in the {@link Signal} sequence.
-     * @return Chainable API.
-     */
-    public final Signal<V> effectOnComplete(BiConsumer<Observer<? super V>, Disposable> effect) {
+    public final Signal<V> effect(Consumer<V> effect) {
+        // ignore invalid parameter
         if (effect == null) {
             return this;
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, observer::error, I.bundle(() -> effect.accept(observer, disposer), observer::complete), disposer);
+            return to(I.bundle(effect, observer::accept), observer::error, observer::complete, disposer);
         });
     }
 
     /**
-     * <p>
-     * Invokes an action for each value in the {@link Signal} sequence.
-     * </p>
+     * Modifies the source {@link Signal} so that it invokes an action when it calls
+     * {@link Observer#complete()}.
      *
-     * @param effect An action to invoke for each value in the {@link Signal} sequence.
-     * @return Chainable API.
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#complete()}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
+     */
+    public final Signal<V> effectOnComplete(Runnable effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            return to(observer::accept, observer::error, I.bundle(effect, observer::complete), disposer);
+        });
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes an action when it calls
+     * {@link Observer#error(Throwable)}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#error(Throwable)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnComplete(Runnable)
      */
     public final Signal<V> effectOnError(Consumer<Throwable> effect) {
+        // ignore invalid parameter
         if (effect == null) {
             return this;
         }

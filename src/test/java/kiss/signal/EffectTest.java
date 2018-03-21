@@ -48,20 +48,26 @@ public class EffectTest extends SignalTester {
     }
 
     @Test
-    public void effectOnComplet() throws Exception {
+    public void effectOnComplet() {
         monitor(signal -> signal.effectOnComplete(log1::complete));
 
         assert log1.isNotCompleted();
         main.emit(Complete);
         assert log1.isCompleted();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void effectOnError() throws Exception {
+    public void effectOnError() {
         monitor(1, signal -> signal.effectOnError(log1::error));
 
         assert log1.isNotError();
         main.emit(Error);
         assert log1.isError();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
     }
 }
