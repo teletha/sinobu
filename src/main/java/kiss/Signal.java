@@ -999,7 +999,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effect(v -> effect.run());
+        return effect(I.wise(effect).asConsumer());
     }
 
     /**

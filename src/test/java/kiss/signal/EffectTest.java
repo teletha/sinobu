@@ -17,18 +17,28 @@ import kiss.I;
 import kiss.Signal;
 
 /**
- * @version 2018/03/20 9:57:29
+ * @version 2018/03/21 22:56:42
  */
 public class EffectTest extends SignalTester {
 
     @Test
-    public void effect() {
+    public void effectConsumer() {
         monitor(1, signal -> signal.effect(log1));
 
         assert main.emit(1).value(1);
         assert log1.value(1);
         assert main.emit(2, 3).value(2, 3);
         assert log1.value(2, 3);
+    }
+
+    @Test
+    public void effectRunnable() {
+        monitor(1, signal -> signal.effect(() -> log1.accept("@")));
+
+        assert main.emit(1).value(1);
+        assert log1.value("@");
+        assert main.emit(2, 3).value(2, 3);
+        assert log1.value("@", "@");
     }
 
     @Test
