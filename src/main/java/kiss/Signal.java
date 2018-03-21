@@ -56,7 +56,7 @@ public final class Signal<V> {
      * For reuse.
      */
     public static final Signal EMPTY = new Signal<>((observer, disposer) -> {
-        observer.complete();
+        if (disposer.isNotDisposed()) observer.complete();
         return disposer;
     });
 
@@ -949,7 +949,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
                 Future<?> future = I.schedule(time, unit, false, () -> {
-                    if (disposer.isDisposed() == false) {
+                    if (disposer.isNotDisposed()) {
                         observer.accept(value);
                     }
                 });
@@ -2410,7 +2410,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            while (values.hasMoreElements() && !disposer.isDisposed()) {
+            while (values.hasMoreElements() && disposer.isNotDisposed()) {
                 observer.accept(values.nextElement());
             }
             return to(observer, disposer);
@@ -2444,7 +2444,7 @@ public final class Signal<V> {
             Iterator<V> iterator = values.iterator();
 
             if (iterator != null) {
-                while (iterator.hasNext() && !disposer.isDisposed()) {
+                while (iterator.hasNext() && disposer.isNotDisposed()) {
                     observer.accept(iterator.next());
                 }
             }

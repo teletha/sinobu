@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * prior to their destruction.
  * </p>
  * 
- * @version 2017/03/18 17:22:17
+ * @version 2018/03/21 09:22:17
  */
 public interface Disposable {
 
@@ -63,6 +63,17 @@ public interface Disposable {
      */
     default boolean isDisposed() {
         return Subscriber.of(this).index != 0;
+    }
+
+    /**
+     * <p>
+     * Check the state of operation. (default : true)
+     * </p>
+     * 
+     * @return A result.
+     */
+    default boolean isNotDisposed() {
+        return !isDisposed();
     }
 
     /**
