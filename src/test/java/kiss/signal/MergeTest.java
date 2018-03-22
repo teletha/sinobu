@@ -157,11 +157,22 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void disposeByTake() {
-        monitor(() -> signal(1).merge(signal(10, 20)).effect(log1).take(2));
+    public void completeFromOuterSignal() {
+        monitor(() -> signal(1).merge(signal(10, 20, 30)).take(2));
 
-        assert log1.value(1, 10);
         assert main.value(1, 10);
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void completeFromInnerSignal() {
+        monitor(1, () -> signal(1).merge(signal(10, 20, 30).take(2)));
+
+        assert main.value(1, 10, 20);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 }

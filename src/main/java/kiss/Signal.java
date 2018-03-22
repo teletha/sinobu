@@ -1619,10 +1619,7 @@ public final class Signal<V> {
             Runnable complete = countable(observer::complete, signals.size());
 
             for (Signal<? extends V> signal : signals) {
-                Disposable sub = disposer.sub();
-                signal.toAuto(v -> {
-                    observer.accept(v);
-                }, observer::error, complete, sub);
+                signal.toAuto(observer::accept, observer::error, complete, disposer.sub());
             }
             return disposer;
         });
