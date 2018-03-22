@@ -991,7 +991,7 @@ public final class Signal<V> {
      * @see #effectOnComplete(Runnable)
      * @see #effectOnError(Consumer)
      */
-    public final Signal<V> effect(Consumer<V> effect) {
+    public final Signal<V> effect(Consumer<? super V> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
