@@ -158,7 +158,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
-        return to(next, error, complete, Disposable.empty(), true);
+        return toAuto(next, error, complete, Disposable.empty());
     }
 
     /**
@@ -171,13 +171,42 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    private Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer, boolean autoDispose) {
+    private Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
         Subscriber subscriber = new Subscriber();
         subscriber.next = next;
-        subscriber.error = autoDispose ? I.bundle(error, I.wise(disposer::dispose).asConsumer()) : error;
-        subscriber.complete = autoDispose ? I.bundle(complete, disposer::dispose) : complete;
+        subscriber.error = error;
+        subscriber.complete = complete;
 
-        return to(subscriber, disposer);
+        try {
+            return this.subscriber.apply(subscriber, disposer);
+        } catch (Throwable e) {
+            subscriber.error(e);
+            return disposer;
+        }
+    }
+
+    /**
+     * <p>
+     * Receive values from this {@link Signal}.
+     * </p>
+     *
+     * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @param error A delegator method of {@link Observer#error(Throwable)}.
+     * @param complete A delegator method of {@link Observer#complete()}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
+    private Disposable toAuto(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
+        Subscriber subscriber = new Subscriber();
+        subscriber.next = next;
+        subscriber.error = I.bundle(error, I.wise(disposer::dispose).asConsumer());
+        subscriber.complete = I.bundle(complete, disposer::dispose);
+
+        try {
+            return this.subscriber.apply(subscriber, disposer);
+        } catch (Throwable e) {
+            subscriber.error(e);
+            return disposer;
+        }
     }
 
     /**
@@ -189,7 +218,19 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return to(observer, Disposable.empty());
+        Disposable disposer = Disposable.empty();
+
+        Subscriber<? super V> subscriber = new Subscriber();
+        subscriber.observer = observer;
+        subscriber.error = I.bundle(observer::error, I.wise(disposer::dispose).asConsumer());
+        subscriber.complete = I.bundle(observer::complete, disposer::dispose);
+
+        try {
+            return this.subscriber.apply(subscriber, disposer);
+        } catch (Throwable e) {
+            subscriber.error(e);
+            return disposer;
+        }
     }
 
     /**
@@ -201,15 +242,6 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     private Disposable to(Observer<? super V> observer, Disposable disposer) {
-        if (observer instanceof Subscriber == false) {
-            Subscriber<? super V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.error = I.bundle(observer::error, I.wise(disposer::dispose).asConsumer());
-            subscriber.complete = I.bundle(observer::complete, disposer::dispose);
-
-            observer = subscriber;
-        }
-
         try {
             return subscriber.apply(observer, disposer);
         } catch (Throwable e) {
@@ -461,7 +493,7 @@ public final class Signal<V> {
                 if (validSize) {
                     buffer.pollFirst();
                 }
-            }, observer::error, observer::complete, disposer, false);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -508,7 +540,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             LinkedTransferQueue<V> queue = new LinkedTransferQueue();
 
-            return to(queue::add, observer::error, observer::complete, disposer, false).add(boundary.to(v -> {
+            return to(queue::add, observer::error, observer::complete, disposer).add(boundary.to(v -> {
                 if (!queue.isEmpty()) {
                     B buffer = bufferSupplier.get();
                     queue.drainTo(buffer);
@@ -573,13 +605,13 @@ public final class Signal<V> {
                 } else {
                     observer.accept(combiner.apply(value, otherValue.pollFirst()));
                 }
-            }, observer::error, observer::complete, disposer, false).add(other.to(value -> {
+            }, observer::error, observer::complete, disposer).add(other.to(value -> {
                 if (baseValue.isEmpty()) {
                     otherValue.add(value);
                 } else {
                     observer.accept(combiner.apply(baseValue.pollFirst(), value));
                 }
-            }, observer::error, observer::complete, disposer, false));
+            }, observer::error, observer::complete, disposer));
         });
     }
 
@@ -755,14 +787,14 @@ public final class Signal<V> {
                     Signal<? extends V> signal = signals.next();
 
                     if (signal != null) {
-                        signal.to(observer::accept, observer::error, self, disposer, false);
+                        signal.to(observer::accept, observer::error, self, disposer);
                         return;
                     }
                 }
                 observer.complete();
             });
 
-            return to(observer::accept, observer::error, concat, disposer, false);
+            return to(observer::accept, observer::error, concat, disposer);
         });
     }
 
@@ -816,8 +848,8 @@ public final class Signal<V> {
                 }, observer::error, () -> {
                     completed.set(true);
                     complete.accept(indexed.ⅱ);
-                }, disposer.sub(), false);
-            }, observer::error, observer::complete, disposer, false);
+                }, disposer.sub());
+            }, observer::error, observer::complete, disposer);
         });
 
     }
@@ -877,7 +909,7 @@ public final class Signal<V> {
                     observer.accept(value);
                 };
                 latest.set(I.schedule(time, unit, true, task));
-            }, observer::error, observer::complete, disposer, false);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -933,7 +965,7 @@ public final class Signal<V> {
                 });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(time, unit, false, observer::complete), disposer, false);
+            }, observer::error, () -> I.schedule(time, unit, false, observer::complete), disposer);
         });
     }
 
@@ -993,7 +1025,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to(I.bundle(effect, observer::accept), observer::error, observer::complete, disposer, false);
+            return to(I.bundle(effect, observer), observer::error, observer::complete, disposer);
         });
     }
 
@@ -1014,7 +1046,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, observer::error, I.bundle(effect, observer::complete), disposer, false);
+            return to(observer::accept, observer::error, I.bundle(effect, observer::complete), disposer);
         });
     }
 
@@ -1035,7 +1067,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, I.bundle(effect, observer::error), observer::complete, disposer, false);
+            return to(observer::accept, I.bundle(effect, observer::error), observer::complete, disposer);
         });
     }
 
@@ -1069,7 +1101,7 @@ public final class Signal<V> {
             return this;
         }
         return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, e -> resumer.apply(e).to(observer, disposer), observer::complete, disposer, false);
+            return to(observer::accept, e -> resumer.apply(e).to(observer, disposer), observer::complete, disposer);
         });
     }
 
@@ -1214,8 +1246,8 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
                 Disposable sub = disposer.sub();
-                function.apply(value).to(observer::accept, observer::error, I.NoOP, sub, true);
-            }, observer::error, observer::complete, disposer, false);
+                function.apply(value).toAuto(observer::accept, observer::error, I.NoOP, sub);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -1331,7 +1363,7 @@ public final class Signal<V> {
             }, observer::error, () -> {
                 queue.add(UNDEFINED);
                 if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, false, sender);
-            }, disposer, false);
+            }, disposer);
         });
     }
 
@@ -1441,9 +1473,9 @@ public final class Signal<V> {
 
             return to(latest::set, observer::error, () -> {
                 V value = latest.get();
-                if (value != null) observer.accept(value);
+                if (value != null) observer.accept(latest.get());
                 observer.complete();
-            }, disposer, true);
+            }, disposer);
         });
     }
 
@@ -1524,7 +1556,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             C context = contextSupplier == null ? null : contextSupplier.get();
 
-            return to(value -> observer.accept(converter.apply(context, value)), observer::error, observer::complete, disposer, false);
+            return to(value -> observer.accept(converter.apply(context, value)), observer::error, observer::complete, disposer);
         });
     }
 
@@ -1588,9 +1620,9 @@ public final class Signal<V> {
 
             for (Signal<? extends V> signal : signals) {
                 Disposable sub = disposer.sub();
-                signal.to(v -> {
+                signal.toAuto(v -> {
                     observer.accept(v);
-                }, observer::error, complete, sub, true);
+                }, observer::error, complete, sub);
             }
             return disposer;
         });
@@ -1630,7 +1662,7 @@ public final class Signal<V> {
             scheduler.accept(() -> observer.error(e));
         }, () -> {
             scheduler.accept(observer::complete);
-        }, disposer, false));
+        }, disposer));
     }
 
     /**
@@ -1705,7 +1737,7 @@ public final class Signal<V> {
                 sub[0].dispose();
 
                 if (condition.test(context)) {
-                    sub[0] = to(observer::accept, observer::error, self, disposer.sub(), false);
+                    sub[0] = to(observer::accept, observer::error, self, disposer.sub());
                 } else {
                     observer.complete();
                 }
@@ -1719,7 +1751,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             return to(observer::accept, e -> {
                 System.out.println(e);
-            }, observer::complete, disposer, false);
+            }, observer::complete, disposer);
         });
     }
 
@@ -1845,7 +1877,7 @@ public final class Signal<V> {
 
             notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
                 latest[0].dispose();
-                disposer.add(latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), false));
+                disposer.add(latest[0] = to(observer::accept, error, observer::complete, disposer.sub()));
             }, observer::error, () -> {
                 observers.set(0, observer::error);
             });
@@ -1873,13 +1905,13 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<V> latest = new AtomicReference(UNDEFINED);
 
-            return to(latest::set, observer::error, observer::complete, disposer, false).add(sampler.to(sample -> {
+            return to(latest::set, observer::error, observer::complete, disposer).add(sampler.to(sample -> {
                 V value = latest.getAndSet((V) UNDEFINED);
 
                 if (value != UNDEFINED) {
                     observer.accept(value);
                 }
-            }, observer::error, observer::complete, disposer, false));
+            }, observer::error, observer::complete, disposer));
         });
     }
 
@@ -1910,7 +1942,7 @@ public final class Signal<V> {
                 } catch (Throwable e) {
                     observer.error(e);
                 }
-            }, observer::error, observer::complete, disposer, false);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -2079,7 +2111,7 @@ public final class Signal<V> {
                 if (count < counter.incrementAndGet()) {
                     observer.accept(value);
                 }
-            }, observer::error, observer::complete, disposer, false);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -2107,7 +2139,7 @@ public final class Signal<V> {
                 if (timing < System.nanoTime()) {
                     observer.accept(value);
                 }
-            }, observer::error, observer::complete, disposer, false);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -2183,7 +2215,7 @@ public final class Signal<V> {
                 if (System.nanoTime() > timing) {
                     observer.accept(value);
                 }
-            }, observer::error, observer::complete, disposer, false);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -2230,7 +2262,7 @@ public final class Signal<V> {
                     flag.set(true);
                     observer.accept(value);
                 }
-            }, observer::error, observer::complete, disposer, false);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -2441,8 +2473,8 @@ public final class Signal<V> {
 
             disposables[0] = to(value -> {
                 disposables[1].dispose();
-                disposables[1] = function.apply(value).to(observer::accept, observer::error, null, disposer.sub(), false);
-            }, observer::error, observer::complete, disposer.sub(), false);
+                disposables[1] = function.apply(value).to(observer::accept, observer::error, null, disposer.sub());
+            }, observer::error, observer::complete, disposer.sub());
             return disposer.add(() -> {
                 disposables[0].dispose();
                 disposables[1].dispose();
@@ -2594,7 +2626,7 @@ public final class Signal<V> {
                 if (flag.get()) {
                     observer.accept(v);
                 }
-            }, observer::error, observer::complete, disposer, false).add(condition.to(flag::set));
+            }, observer::error, observer::complete, disposer).add(condition.to(flag::set));
         });
     }
 
@@ -2729,7 +2761,7 @@ public final class Signal<V> {
                         observer.complete();
                     }
                 }
-            }, observer::error, observer::complete, disposer, false);
+            }, observer::error, observer::complete, disposer);
         });
     }
 
@@ -2767,7 +2799,7 @@ public final class Signal<V> {
             }, () -> {
                 future.get().cancel(false);
                 observer.complete();
-            }, disposer, false);
+            }, disposer);
         });
     }
 
@@ -2900,7 +2932,7 @@ public final class Signal<V> {
                 if (acceptComplete && completeOuput != null) observer.accept(completeOuput);
                 observer.complete();
                 disposer.dispose();
-            }, disposer, false);
+            }, disposer);
         });
     }
 
