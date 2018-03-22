@@ -14,11 +14,10 @@ import java.util.function.BooleanSupplier;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 
 /**
- * @version 2017/04/18 20:12:05
+ * @version 2018/03/22 17:36:17
  */
 public class RetryTest extends SignalTester {
 
@@ -60,10 +59,15 @@ public class RetryTest extends SignalTester {
         monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(10, ms)));
 
         assert main.value("retry");
+        assert main.countObservers() == 1;
         assert main.emit(Error).value();
+        assert main.hasNoObserver();
         assert await(15).value("retry");
+        assert main.countObservers() == 1;
         assert main.emit(Error).value();
+        assert main.hasNoObserver();
         assert await(15).value("retry");
+        assert main.countObservers() == 1;
     }
 
     @Test

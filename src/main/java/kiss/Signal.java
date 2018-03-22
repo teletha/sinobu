@@ -1846,12 +1846,13 @@ public final class Signal<V> {
 
             notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
                 latest[0].dispose();
-                disposer.add(latest[0] = to(observer::accept, error, observer::complete, disposer.sub()));
+                latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
             }, observer::error, () -> {
                 observers.set(0, observer::error);
             });
+            latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
 
-            return disposer.add(latest[0] = to(observer::accept, error, observer::complete));
+            return disposer;
         });
     }
 

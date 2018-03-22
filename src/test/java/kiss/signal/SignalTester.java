@@ -33,7 +33,7 @@ import kiss.Signal;
 import kiss.WiseFunction;
 
 /**
- * @version 2018/03/19 19:45:55
+ * @version 2018/03/22 17:36:26
  */
 public class SignalTester {
 
@@ -46,13 +46,16 @@ public class SignalTester {
     private static final Chronus clock = new Chronus(I.class);
 
     /** default multiplicity */
-    private static final int multiplicity = 2;
+    private static final int defaultMultiplicity = 2;
 
     /** Shorthand for {@link TimeUnit#MILLISECONDS}. */
     protected static final TimeUnit ms = TimeUnit.MILLISECONDS;
 
     /** The alias of 'this' for DSL. */
     protected final SignalTester Type = this;
+
+    /** READ ONLY */
+    protected int multiplicity;
 
     /** READ ONLY : DON'T MODIFY in test case */
     protected Log log1;
@@ -267,7 +270,7 @@ public class SignalTester {
      * @param signal
      */
     protected void monitor(Supplier<Signal> signal) {
-        monitor(multiplicity, signal);
+        monitor(defaultMultiplicity, signal);
     }
 
     /**
@@ -301,6 +304,7 @@ public class SignalTester {
         log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
         main.result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
         main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
+        this.multiplicity = multiplicity;
     }
 
     /**
@@ -311,7 +315,7 @@ public class SignalTester {
      * @param signal
      */
     protected <T> void monitor(Function<Signal<T>, Signal<T>> signal) {
-        monitor(multiplicity, signal);
+        monitor(defaultMultiplicity, signal);
     }
 
     /**
@@ -322,7 +326,7 @@ public class SignalTester {
      * @param signal
      */
     protected <T> void monitor(Class<T> type, Function<Signal<T>, Signal<T>> signal) {
-        monitor(multiplicity, signal);
+        monitor(defaultMultiplicity, signal);
     }
 
     /**
@@ -333,7 +337,7 @@ public class SignalTester {
      * @param signal
      */
     protected <In, Out> void monitor(Class<In> in, Class<Out> out, Function<Signal<In>, Signal<Out>> signal) {
-        monitor(multiplicity, signal);
+        monitor(defaultMultiplicity, signal);
     }
 
     /**
@@ -355,7 +359,7 @@ public class SignalTester {
             sets[i] = new LogSet();
             delegator1.log = sets[i].log1;
             delegator2.log = sets[i].log2;
-            sets[i].disposer = base.map(v -> v).to(sets[i].result);
+            sets[i].disposer = base.to(sets[i].result);
         }
 
         // await all awaitable signal
@@ -367,6 +371,7 @@ public class SignalTester {
         log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
         main.result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
         main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
+        this.multiplicity = multiplicity;
     }
 
     /**
@@ -654,7 +659,7 @@ public class SignalTester {
     }
 
     /**
-     * @version 2018/03/19 19:45:49
+     * @version 2018/03/22 17:36:32
      */
     public class SignalSource {
 
@@ -796,6 +801,24 @@ public class SignalTester {
             for (Disposable disposable : disposers) {
                 disposable.dispose();
             }
+        }
+
+        /**
+         * Count the number of observers.
+         * 
+         * @return
+         */
+        public int countObservers() {
+            return observers.size() / multiplicity;
+        }
+
+        /**
+         * Count the number of observers.
+         * 
+         * @return
+         */
+        public boolean hasNoObserver() {
+            return observers.isEmpty();
         }
     }
 }
