@@ -158,7 +158,19 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
-        return toAuto(next, error, complete, Disposable.empty());
+        return to(next, error, complete, Disposable.empty(), true);
+    }
+
+    /**
+     * <p>
+     * Receive values from this {@link Signal}.
+     * </p>
+     *
+     * @param observer A value observer of this {@link Signal}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
+    public final Disposable to(Observer<? super V> observer) {
+        return to(observer::accept, observer::error, observer::complete, Disposable.empty(), true);
     }
 
     /**
@@ -172,17 +184,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     private Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
-        Subscriber subscriber = new Subscriber();
-        subscriber.next = next;
-        subscriber.error = error;
-        subscriber.complete = complete;
-
-        try {
-            return this.subscriber.apply(subscriber, disposer);
-        } catch (Throwable e) {
-            subscriber.error(e);
-            return disposer;
-        }
+        return to(next, error, complete, disposer, false);
     }
 
     /**
@@ -195,42 +197,13 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    private Disposable toAuto(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
+    private Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer, boolean auto) {
         Subscriber subscriber = new Subscriber();
         subscriber.next = next;
-        subscriber.error = I.bundle(error, I.wise(disposer::dispose).asConsumer());
-        subscriber.complete = I.bundle(complete, disposer::dispose);
+        subscriber.error = auto ? I.bundle(error, I.wise(disposer::dispose).asConsumer()) : error;
+        subscriber.complete = auto ? I.bundle(complete, disposer::dispose) : complete;
 
-        try {
-            return this.subscriber.apply(subscriber, disposer);
-        } catch (Throwable e) {
-            subscriber.error(e);
-            return disposer;
-        }
-    }
-
-    /**
-     * <p>
-     * Receive values from this {@link Signal}.
-     * </p>
-     *
-     * @param observer A value observer of this {@link Signal}.
-     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
-     */
-    public final Disposable to(Observer<? super V> observer) {
-        Disposable disposer = Disposable.empty();
-
-        Subscriber<? super V> subscriber = new Subscriber();
-        subscriber.observer = observer;
-        subscriber.error = I.bundle(observer::error, I.wise(disposer::dispose).asConsumer());
-        subscriber.complete = I.bundle(observer::complete, disposer::dispose);
-
-        try {
-            return this.subscriber.apply(subscriber, disposer);
-        } catch (Throwable e) {
-            subscriber.error(e);
-            return disposer;
-        }
+        return to(subscriber, disposer);
     }
 
     /**
@@ -1245,8 +1218,7 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                Disposable sub = disposer.sub();
-                function.apply(value).toAuto(observer::accept, observer::error, I.NoOP, sub);
+                function.apply(value).to(observer::accept, observer::error, null, disposer.sub(), true);
             }, observer::error, observer::complete, disposer);
         });
     }
@@ -1619,7 +1591,7 @@ public final class Signal<V> {
             Runnable complete = countable(observer::complete, signals.size());
 
             for (Signal<? extends V> signal : signals) {
-                signal.toAuto(observer::accept, observer::error, complete, disposer.sub());
+                signal.to(observer::accept, observer::error, complete, disposer.sub(), true);
             }
             return disposer;
         });
