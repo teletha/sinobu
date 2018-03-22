@@ -78,13 +78,13 @@ public class CuncurrentTest {
 
         assert result != null;
         assert result.getList() != null;
-        assert 10000 == result.getList().size();
+        assert 5000 == result.getList().size();
     }
 
     private StringListProperty createBigList() {
-        List list = new ArrayList(10000);
+        List list = new ArrayList(5000);
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 5000; i++) {
             list.add(i);
         }
 
