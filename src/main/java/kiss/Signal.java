@@ -1743,11 +1743,25 @@ public final class Signal<V> {
         });
     }
 
-    public final Signal<V> recover(long count) {
-        return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, e -> {
-                System.out.println(e);
-            }, observer::complete, disposer);
+    /**
+     * Return the {@link Signal} which replace error by the specified value.
+     * 
+     * @param replacer A value to replace error.
+     * @return {@link Signal} which replace error by the specified value.
+     */
+    public final Signal<V> recover(V replacer) {
+        return recoverWhen(fail -> fail.mapTo(replacer));
+    }
+
+    /**
+     * Return the {@link Signal} which replace error by the specified value.
+     * 
+     * @param replacer A value builder to replace error.
+     * @return {@link Signal} which replace error by the specified value.
+     */
+    public final Signal<V> recover(Function<Throwable, V> replacer) {
+        return recoverWhen(fail -> {
+            return fail.map(replacer);
         });
     }
 
@@ -1766,32 +1780,10 @@ public final class Signal<V> {
      */
     public final Signal<V> recoverWhen(Function<Signal<? extends Throwable>, Signal<V>> notificationHandler) {
         return new Signal<>((observer, disposer) -> {
-            Disposable[] latest = new Disposable[] {Disposable.empty()};
-            List<Observer<? super Throwable>> observers = new CopyOnWriteArrayList();
+            Subscriber<Throwable> error = new Subscriber();
+            notificationHandler.apply(error.signal()).to(observer::accept, observer::error, () -> error.next = observer::error);
 
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.error = e -> {
-                for (Observer<? super Throwable> o : observers) {
-                    o.accept(e);
-                }
-            };
-
-            notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
-                latest[0].dispose();
-                subscriber.index = 0;
-                subscriber.add(latest[0] = to(subscriber));
-            }, e -> {
-                observer.error(e);
-                subscriber.dispose();
-            }, () -> {
-                subscriber.error = e -> {
-                    subscriber.observer.error(e);
-                    subscriber.dispose();
-                };
-            });
-
-            return subscriber.add(latest[0] = to(subscriber, disposer));
+            return to(observer::accept, error::accept, observer::complete, disposer);
         });
     }
 
@@ -2175,6 +2167,25 @@ public final class Signal<V> {
      */
     public final Signal<V> skipAt(LongPredicate condition) {
         return takeAt(condition.negate());
+    }
+
+    /**
+     * Return the {@link Signal} which ignores all errors.
+     * 
+     * @return {@link Signal} which ignores all errors.
+     */
+    public final Signal<V> skipError() {
+        return skipError(Throwable.class);
+    }
+
+    /**
+     * Return the {@link Signal} which ignores the specified type error.
+     * 
+     * @param type A type to ignore.
+     * @return {@link Signal} which ignores the specified type error.
+     */
+    public final Signal<V> skipError(Class<? extends Throwable> type) {
+        return recoverWhen(fail -> fail.flatMap(v -> type.isInstance(v) ? EMPTY : I.signalError(v)));
     }
 
     /**
