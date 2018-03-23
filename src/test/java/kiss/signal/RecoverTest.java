@@ -13,7 +13,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 
 /**
@@ -31,14 +30,10 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    @PowerAssertOff
     public void recoverByType() {
-        monitor(signal -> signal.recover(fail -> {
-            System.out.println(fail);
-            return fail.getClass().getSimpleName();
-        }));
+        monitor(signal -> signal.recover(fail -> fail.getClass().getSimpleName()));
 
-        assert main.emit(new IOException()).value("IOException");
+        assert main.emit(IOException.class).value("IOException");
         assert main.isNotError();
         assert main.isNotDisposed();
     }
