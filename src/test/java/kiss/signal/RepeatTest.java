@@ -144,4 +144,70 @@ public class RepeatTest extends SignalTester {
         assert main.emit("last message", Complete).value("last message");
         assert main.emit("failt to repeat", Complete).value();
     }
+
+    @Test
+    public void repeatWhen() {
+        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.delay(10, ms)));
+
+        assert main.value("repeat");
+        assert main.countObservers() == 1;
+        assert main.emit(Complete).value();
+        assert main.hasNoObserver();
+        assert await(15).value("repeat");
+        assert main.countObservers() == 1;
+        assert main.emit(Complete).value();
+        assert main.hasNoObserver();
+        assert await(15).value("repeat");
+        assert main.countObservers() == 1;
+    }
+
+    @Test
+    public void repeatWhenWithDelayAndLimit() {
+        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.take(2).delay(10, ms)));
+
+        assert main.value("repeat");
+        assert main.emit(Complete).value();
+        assert await(30).value("repeat");
+        assert main.emit(Complete).value();
+        assert await(30).value("repeat");
+        assert main.emit(Complete).value();
+        assert await(30).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void repeatWhenWithError() {
+        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.takeAt(index -> {
+            if (index == 2) {
+                throw new Error();
+            }
+            return true;
+        })));
+
+        assert main.value("repeat");
+        assert main.emit(Complete).value("repeat");
+        assert main.isNotCompleted();
+        assert main.emit(Complete).value("repeat");
+        assert main.isNotCompleted();
+        assert main.emit("next will fail", Complete).value("next will fail");
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void repeatWhenWithComplete() {
+        monitor(signal -> signal.repeatWhen(repeat -> repeat.take(2)));
+
+        assert main.emit("first will repeat", Complete).value("first will repeat");
+        assert main.isNotCompleted();
+        assert main.emit("second will repeat", Complete).value("second will repeat");
+        assert main.isNotCompleted();
+        assert main.emit("third will fail", Complete).value("third will fail");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
 }

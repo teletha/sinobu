@@ -1658,7 +1658,7 @@ public final class Signal<V> {
         if (count < 1) {
             return this;
         }
-        return repeatUntil(AtomicInteger::new, v -> v.incrementAndGet() < count);
+        return repeatWhen(complete -> complete.take(count - 1));
     }
 
     /**
@@ -1675,7 +1675,7 @@ public final class Signal<V> {
         if (condition == null) {
             return this;
         }
-        return repeatUntil(() -> condition, BooleanSupplier::getAsBoolean);
+        return repeatWhen(complete -> complete.takeWhile(v -> condition.getAsBoolean()), true);
     }
 
     /**
@@ -1688,31 +1688,58 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> repeatUntil(Signal stopper) {
-        return repeatUntil(stopper.take(1)::to, Variable::isAbsent);
+        return repeatWhen(complete -> complete.takeUntil(stopper));
     }
 
     /**
-     * Helper to repeat.
+     * Returns an {@link Signal} that emits the same values as the source signal with the exception
+     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
+     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
+     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
+     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
+     * will resubscribe to the source {@link Signal}.
      * 
-     * @param contextSupplier
-     * @param condition
-     * @return
+     * @param notificationHandler A receives an {@link Signal} of notifications with which a user
+     *            can complete or error, aborting the retry.
+     * @return Chainable API
      */
-    private <T> Signal<V> repeatUntil(Supplier<T> contextSupplier, Predicate<T> condition) {
-        return new Signal<>((observer, disposer) -> {
-            T context = contextSupplier.get();
-            Disposable[] sub = new Disposable[1];
-            Runnable complete = I.recurseR(self -> () -> {
-                sub[0].dispose();
+    public final Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notificationHandler) {
+        return repeatWhen(notificationHandler, false);
+    }
 
-                if (condition.test(context)) {
-                    sub[0] = to(observer::accept, observer::error, self, disposer.sub());
-                } else {
+    /**
+     * Returns an {@link Signal} that emits the same values as the source signal with the exception
+     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
+     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
+     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
+     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
+     * will resubscribe to the source {@link Signal}.
+     * 
+     * @param notificationHandler A receives an {@link Signal} of notifications with which a user
+     *            can complete or error, aborting the retry.
+     * @return Chainable API
+     */
+    private Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notificationHandler, boolean immediate) {
+        return new Signal<>((observer, disposer) -> {
+            Disposable[] latest = new Disposable[] {Disposable.empty()};
+            Subscriber<Object> subscriber = new Subscriber();
+            WiseRunnable complete = I.wise(subscriber).with(UNDEFINED);
+
+            notificationHandler.apply(subscriber.signal()).to(v -> {
+                latest[0].dispose();
+                latest[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+            }, observer::error, () -> {
+                if (immediate) {
                     observer.complete();
+                } else {
+                    subscriber.next = I.wise(observer::complete).asConsumer();
                 }
             });
+            latest[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
 
-            return disposer.add(sub[0] = to(observer::accept, observer::error, complete));
+            return disposer;
         });
     }
 
@@ -1841,16 +1868,15 @@ public final class Signal<V> {
     public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> notificationHandler) {
         return new Signal<>((observer, disposer) -> {
             Disposable[] latest = new Disposable[] {Disposable.empty()};
-            List<Observer<? super Throwable>> observers = new CopyOnWriteArrayList();
-            Consumer<Throwable> error = I.bundle(Observer.class, observers);
+            Subscriber<Throwable> error = new Subscriber();
 
-            notificationHandler.apply(new Signal<Throwable>(observers)).to(v -> {
+            notificationHandler.apply(error.signal()).to(v -> {
                 latest[0].dispose();
-                latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
+                latest[0] = to(observer::accept, error::accept, observer::complete, disposer.sub(), true);
             }, observer::error, () -> {
-                observers.set(0, observer::error);
+                error.next = observer::error;
             });
-            latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
+            latest[0] = to(observer::accept, error::accept, observer::complete, disposer.sub(), true);
 
             return disposer;
         });

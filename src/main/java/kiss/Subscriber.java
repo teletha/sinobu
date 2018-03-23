@@ -12,12 +12,13 @@ package kiss;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 /**
  * Internal subscription.
  * 
- * @version 2018/03/04 12:55:17
+ * @version 2018/03/23 10:27:07
  */
 class Subscriber<T> implements Observer<T>, Disposable {
 
@@ -93,6 +94,18 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void vandalize() {
+    }
+
+    /**
+     * Utility to create the specific {@link Signal} for this {@link Subscriber}.
+     * 
+     * @return
+     */
+    Signal<T> signal() {
+        CopyOnWriteArrayList<Observer<? super T>> observers = new CopyOnWriteArrayList();
+        observer = I.bundle(Observer.class, observers);
+
+        return new Signal<>(observers);
     }
 
     private static Map<Disposable, Subscriber> cache = new ConcurrentHashMap();
