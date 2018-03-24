@@ -9,6 +9,7 @@
  */
 package kiss.signal;
 
+import java.io.IOError;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -31,18 +32,28 @@ public class RecoverTest extends SignalTester {
 
     @Test
     public void recoverByType() {
-        monitor(signal -> signal.recover(fail -> fail.getClass().getSimpleName()));
+        monitor(signal -> signal.recover(IOException.class, fail -> "IO"));
 
-        assert main.emit(IOException.class).value("IOException");
+        assert main.emit(IOException.class).value("IO");
         assert main.isNotError();
         assert main.isNotDisposed();
+
+        assert main.emit(IOError.class).value();
+        assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test
-    public void recoverWhenMultiple() {
-        monitor(signal -> signal.recoverWhen(fail -> I.signal("success", "to", "recover")));
+    public void recoverWhenType() {
+        monitor(signal -> signal.recoverWhen(IOError.class, fail -> fail.mapTo("recover")));
 
-        assert main.emit(Error).value("success", "to", "recover");
+        assert main.emit(IOError.class).value("recover");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(Error.class).value();
+        assert main.isError();
+        assert main.isDisposed();
     }
 
     @Test

@@ -183,7 +183,7 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    private Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer) {
+    private Disposable to(Consumer<? super V> next, Consumer<? extends Throwable> error, Runnable complete, Disposable disposer) {
         return to(next, error, complete, disposer, false);
     }
 
@@ -197,7 +197,7 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    private Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete, Disposable disposer, boolean auto) {
+    private Disposable to(Consumer<? super V> next, Consumer<? extends Throwable> error, Runnable complete, Disposable disposer, boolean auto) {
         Subscriber subscriber = new Subscriber();
         subscriber.next = next;
         subscriber.error = auto ? I.bundle(error, I.wise(disposer::dispose).asConsumer()) : error;
@@ -1700,12 +1700,12 @@ public final class Signal<V> {
      * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
      * will resubscribe to the source {@link Signal}.
      * 
-     * @param notificationHandler A receives an {@link Signal} of notifications with which a user
-     *            can complete or error, aborting the retry.
+     * @param end A receives an {@link Signal} of notifications with which a user can complete or
+     *            error, aborting the retry.
      * @return Chainable API
      */
-    public final Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notificationHandler) {
-        return repeatWhen(notificationHandler, false);
+    public final Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> end) {
+        return repeatWhen(end, false);
     }
 
     /**
@@ -1717,17 +1717,17 @@ public final class Signal<V> {
      * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
      * will resubscribe to the source {@link Signal}.
      * 
-     * @param notificationHandler A receives an {@link Signal} of notifications with which a user
-     *            can complete or error, aborting the retry.
+     * @param end A receives an {@link Signal} of notifications with which a user can complete or
+     *            error, aborting the retry.
      * @return Chainable API
      */
-    private Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notificationHandler, boolean immediate) {
+    private Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> end, boolean immediate) {
         return new Signal<>((observer, disposer) -> {
             Disposable[] latest = new Disposable[] {Disposable.empty()};
             Subscriber<Object> subscriber = new Subscriber();
             WiseRunnable complete = I.wise(subscriber).with(UNDEFINED);
 
-            notificationHandler.apply(subscriber.signal()).to(v -> {
+            end.apply(subscriber.signal()).to(v -> {
                 latest[0].dispose();
                 latest[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
             }, observer::error, () -> {
@@ -1759,31 +1759,56 @@ public final class Signal<V> {
      * @param replacer A value builder to replace error.
      * @return {@link Signal} which replace error by the specified value.
      */
-    public final Signal<V> recover(Function<Throwable, V> replacer) {
-        return recoverWhen(fail -> {
-            return fail.map(replacer);
-        });
+    public final <E extends Throwable> Signal<V> recover(Class<E> type, Function<E, V> replacer) {
+        return recoverWhen(fail -> fail.map(e -> {
+            if (type.isInstance(e)) {
+                return replacer.apply((E) e);
+            } else {
+                throw e;
+            }
+        }));
     }
 
     /**
-     * Returns an {@link Signal} that emits the same values as the source signal with the exception
-     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
-     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
-     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
-     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
-     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
-     * will resubscribe to the source {@link Signal}.
+     * Returns an Observable that emits the same values as the source ObservableSource with the
+     * exception of an onError. An onError notification from the source will result in the emission
+     * of a Throwable item to the ObservableSource provided as an argument to the
+     * notificationHandler function. If that ObservableSource calls onComplete or onError then retry
+     * will call onComplete or onError on the child subscription. Otherwise, this ObservableSource
+     * will resubscribe to the source ObservableSource.
      * 
-     * @param notificationHandler A receives an {@link Signal} of notifications with which a user
-     *            can complete or error, aborting the retry.
+     * @param fail The error notifications. You can complete or error, aborting the recovery.
      * @return Chainable API
      */
-    public final Signal<V> recoverWhen(Function<Signal<? extends Throwable>, Signal<V>> notificationHandler) {
-        return new Signal<>((observer, disposer) -> {
-            Subscriber<Throwable> error = new Subscriber();
-            notificationHandler.apply(error.signal()).to(observer::accept, observer::error, () -> error.next = observer::error);
+    public final Signal<V> recoverWhen(Function<Signal<? extends Throwable>, Signal<V>> fail) {
+        return recoverWhen(Throwable.class, fail);
+    }
 
-            return to(observer::accept, error::accept, observer::complete, disposer);
+    /**
+     * Returns {@link Signal} that emits the same values as the source {@link Signal} with the
+     * exception of an {@link Observer#error(Throwable)}. An {@link Observer#error(Throwable)}
+     * notification from the source will result in the emission of a {@link Throwable} item to the
+     * {@link Signal} provided as an argument to the fail-handler function. If that {@link Signal}
+     * calls {@link Observer#complete()} or {@link Observer#error(Throwable)} then this method will
+     * call {@link Observer#complete()} or {@link Observer#error(Throwable)} on the child
+     * subscription. Otherwise, this {@link Signal} will emit values to the source {@link Signal}.
+     * 
+     * @param type
+     * @param fail
+     * @return
+     */
+    public final <E extends Throwable> Signal<V> recoverWhen(Class<E> type, Function<Signal<? extends E>, Signal<V>> fail) {
+        return new Signal<>((observer, disposer) -> {
+            Subscriber<E> error = new Subscriber();
+            fail.apply(error.signal()).to(observer::accept, observer::error, () -> error.next = observer::error);
+
+            return to(observer::accept, e -> {
+                if (type.isInstance(e)) {
+                    error.accept((E) e);
+                } else {
+                    observer.error(e);
+                }
+            }, observer::complete, disposer);
         });
     }
 
@@ -1853,16 +1878,16 @@ public final class Signal<V> {
      * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
      * will resubscribe to the source {@link Signal}.
      * 
-     * @param notificationHandler A receives an {@link Signal} of notifications with which a user
-     *            can complete or error, aborting the retry.
+     * @param fail A receives an {@link Signal} of notifications with which a user can complete or
+     *            error, aborting the retry.
      * @return Chainable API
      */
-    public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> notificationHandler) {
+    public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> fail) {
         return new Signal<>((observer, disposer) -> {
             Disposable[] latest = new Disposable[] {Disposable.empty()};
             Subscriber<Throwable> error = new Subscriber();
 
-            notificationHandler.apply(error.signal()).to(v -> {
+            fail.apply(error.signal()).to(v -> {
                 latest[0].dispose();
                 latest[0] = to(observer::accept, error::accept, observer::complete, disposer.sub(), true);
             }, observer::error, () -> {
@@ -2185,7 +2210,7 @@ public final class Signal<V> {
      * @return {@link Signal} which ignores the specified type error.
      */
     public final Signal<V> skipError(Class<? extends Throwable> type) {
-        return recoverWhen(fail -> fail.flatMap(v -> type.isInstance(v) ? EMPTY : I.signalError(v)));
+        return recoverWhen(type, fail -> NEVER);
     }
 
     /**

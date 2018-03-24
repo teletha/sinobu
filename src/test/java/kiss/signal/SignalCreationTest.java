@@ -133,13 +133,13 @@ public class SignalCreationTest extends SignalTester {
 
     @Test
     public void interval() {
-        monitor(() -> I.signal(0, 20, ms).take(2));
+        monitor(() -> I.signal(0, 25, ms).take(2));
 
         assert await(10).value(0L);
         assert main.isNotCompleted();
         assert main.isNotDisposed();
 
-        assert await(20).value(1L);
+        assert await(30).value(1L);
         assert main.isCompleted();
         assert main.isDisposed();
     }
