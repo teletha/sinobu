@@ -15,7 +15,7 @@ import java.util.function.BooleanSupplier;
 import org.junit.Test;
 
 /**
- * @version 2018/03/11 12:18:44
+ * @version 2018/03/25 9:15:26
  */
 public class RepeatTest extends SignalTester {
 
@@ -153,11 +153,11 @@ public class RepeatTest extends SignalTester {
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        assert await(15).value("repeat");
+        assert await().value("repeat");
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        assert await(15).value("repeat");
+        assert await().value("repeat");
         assert main.countObservers() == 1;
     }
 
@@ -167,11 +167,11 @@ public class RepeatTest extends SignalTester {
 
         assert main.value("repeat");
         assert main.emit(Complete).value();
-        assert await(30).value("repeat");
+        assert await().value("repeat");
         assert main.emit(Complete).value();
-        assert await(30).value("repeat");
+        assert await().value("repeat");
         assert main.emit(Complete).value();
-        assert await(30).value();
+        assert await().value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();

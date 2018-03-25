@@ -17,7 +17,7 @@ import org.junit.Test;
 import kiss.I;
 
 /**
- * @version 2018/03/23 16:16:02
+ * @version 2018/03/25 11:20:57
  */
 public class RecoverTest extends SignalTester {
 
@@ -32,15 +32,49 @@ public class RecoverTest extends SignalTester {
 
     @Test
     public void recoverByType() {
-        monitor(signal -> signal.recover(IOException.class, fail -> "IO"));
+        monitor(signal -> signal.recover(IOException.class, "IO"));
 
         assert main.emit(IOException.class).value("IO");
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        assert main.emit(IOError.class).value();
+        assert main.emit(Error.class).value();
         assert main.isError();
         assert main.isDisposed();
+    }
+
+    @Test
+    public void recoverByNullType() {
+        monitor(signal -> signal.recover(null, "Any"));
+
+        assert main.emit(IOException.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(Exception.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(RuntimeException.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(Error.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void recoverByNull() {
+        monitor(signal -> signal.recover(null));
+        assert main.emit(NoSuchFieldError.class).value((Object) null);
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        monitor(signal -> signal.recover(IOException.class, null));
+        assert main.emit(IOException.class).value((Object) null);
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -63,11 +97,11 @@ public class RecoverTest extends SignalTester {
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.countObservers() == 1;
-        assert await(15).value("recover");
+        assert await().value("recover");
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.countObservers() == 1;
-        assert await(15).value("recover");
+        assert await().value("recover");
         assert main.countObservers() == 1;
     }
 
@@ -76,11 +110,11 @@ public class RecoverTest extends SignalTester {
         monitor(signal -> signal.recoverWhen(fail -> fail.take(2).delay(10, ms).mapTo("recover")));
 
         assert main.emit(Error).value();
-        assert await(15).value("recover");
+        assert await().value("recover");
         assert main.emit(Error).value();
-        assert await(15).value("recover");
+        assert await().value("recover");
         assert main.emit(Error).value();
-        assert await(15).value();
+        assert await().value();
         assert main.isError();
         assert main.isDisposed();
     }

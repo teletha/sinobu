@@ -29,7 +29,7 @@ public class DiffTest extends SignalTester {
     }
 
     @Test
-    public void Null() {
+    public void acceptNull() {
         monitor(signal -> signal.diff());
 
         assert main.emit("A").value("A");

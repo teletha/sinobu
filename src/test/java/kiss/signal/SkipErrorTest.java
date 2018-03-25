@@ -22,7 +22,7 @@ public class SkipErrorTest extends SignalTester {
     public void error() {
         monitor(signal -> signal.skipError());
 
-        main.emit(Error);
+        main.emit(Error.class);
         assert main.isNotError();
         assert main.isNotDisposed();
 
@@ -50,5 +50,22 @@ public class SkipErrorTest extends SignalTester {
         main.emit(Error.class);
         assert main.isError();
         assert main.isDisposed();
+    }
+
+    @Test
+    public void acceptNull() {
+        monitor(signal -> signal.skipError(null));
+
+        main.emit(Exception.class, IOException.class);
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        main.emit(RuntimeException.class, IllegalAccessException.class);
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        main.emit(Error.class);
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 }
