@@ -1757,8 +1757,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Recover the source {@link Signal} on the specified error type by the specified value.
-     * Unspecified error types will pass through the source {@link Signal}.
+     * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
+     * error types will pass through the source {@link Signal}.
      * </p>
      * 
      * @param type An error type that you want to recover.
@@ -1789,8 +1789,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Recover the source {@link Signal} on the specified error type by the notifier emitting
-     * values. Unspecified error types will pass through the source {@link Signal}.
+     * Recover the source {@link Signal} on the specified error by the notifier emitting values.
+     * Unspecified errors will pass through the source {@link Signal}.
      * </p>
      * <h>When the notifier signal emits event</h>
      * <ul>
@@ -1866,60 +1866,112 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> retryIf(BooleanSupplier condition) {
-        if (condition == null) {
-            return this;
-        }
-        return retryWhen(fail -> fail.flatMap(v -> condition.getAsBoolean() ? I.signal(v) : I.signalError(v)));
+        return retryIf(null, condition);
     }
 
     /**
      * <p>
-     * Returns an {@link Signal} that retry the sequence of items emitted by the source
-     * {@link Signal} until a stopper {@link Signal} emits an item.
+     * Retry the source {@link Signal} whenever the specified error is occured if the stopper is
+     * signaled.
      * </p>
      * 
-     * @param stopper A {@link Signal} whose first emitted item will stop repeating.
+     * @param type An error type that you want to retry.
+     * @param condition A {@link Signal} whose first emitted item will stop retrying.
      * @return Chainable API.
      */
-    public final Signal<V> retryUntil(Signal stopper) {
-        return retryWhen(fail -> fail.takeUntil(stopper));
+    public final Signal<V> retryIf(Class<? extends Throwable> type, BooleanSupplier condition) {
+        return retryWhen(type, fail -> fail.map(v -> {
+            if (condition == null || condition.getAsBoolean()) {
+                return v;
+            } else {
+                throw v;
+            }
+        }));
     }
 
     /**
-     * Returns an {@link Signal} that emits the same values as the source signal with the exception
-     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
-     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
-     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
-     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
-     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
-     * will resubscribe to the source {@link Signal}.
+     * <p>
+     * Retry the source {@link Signal} whenever any error is occured until the stopper is signaled.
+     * </p>
      * 
-     * @param notifier A receives an {@link Signal} of notifications with which a user can complete
-     *            or error, aborting the retry.
+     * @param stopper A {@link Signal} whose first emitted item will stop retrying.
+     * @return Chainable API.
+     */
+    public final Signal<V> retryUntil(Signal stopper) {
+        return retryUntil(null, stopper);
+    }
+
+    /**
+     * <p>
+     * Retry the source {@link Signal} whenever the specified error is occured until the stopper is
+     * signaled.
+     * </p>
+     * 
+     * @param type An error type that you want to retry.
+     * @param stopper A {@link Signal} whose first emitted item will stop retrying.
+     * @return Chainable API.
+     */
+    public final Signal<V> retryUntil(Class<? extends Throwable> type, Signal stopper) {
+        return retryWhen(type, fail -> fail.takeUntil(stopper));
+    }
+
+    /**
+     * <p>
+     * Retry the source {@link Signal} whenever any error is occured.
+     * </p>
+     * <h>When the notifier signal emits event</h>
+     * <ul>
+     * <li>Next - Retry source {@link Signal}.</li>
+     * <li>Error - Propagate to source error and dispose them.</li>
+     * <li>Complete - Terminate notifier signal. Souce signal will never retry errors.</li>
+     * </ul>
+     * 
+     * @param type An error type that you want to retry.
+     * @param notifier An error notifier to define retrying flow.
      * @return Chainable API
      */
     public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> notifier) {
-        return retryWhen(Throwable.class, notifier);
+        return retryWhen(null, notifier);
     }
 
+    /**
+     * <p>
+     * Retry the source {@link Signal} when the specified error is occured. Unspecified errors will
+     * pass through the source {@link Signal}.
+     * </p>
+     * <h>When the notifier signal emits event</h>
+     * <ul>
+     * <li>Next - Retry source {@link Signal}.</li>
+     * <li>Error - Propagate to source error and dispose them.</li>
+     * <li>Complete - Terminate notifier signal. Souce signal will never retry errors.</li>
+     * </ul>
+     * 
+     * @param type An error type that you want to retry.
+     * @param notifier An error notifier to define retrying flow.
+     * @return Chainable API
+     */
     public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, Function<Signal<? extends E>, Signal<?>> notifier) {
         return new Signal<>((observer, disposer) -> {
+            // error notifier
             Disposable[] latest = new Disposable[] {Disposable.empty()};
             Subscriber<E> error = new Subscriber();
             error.next = e -> {
-                if (type.isInstance(e)) {
+                if (type == null || type.isInstance(e)) {
                     error.observer.accept(e);
                 } else {
                     observer.error(e);
                 }
             };
 
+            // define error retrying flow
             notifier.apply(error.signal()).to(v -> {
                 latest[0].dispose();
                 latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
             }, observer::error, () -> {
                 error.next = observer::error;
             });
+
+            // delegate error to the notifier
             latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
 
             return disposer;
