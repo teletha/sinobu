@@ -2558,7 +2558,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return values.to(observer, disposer).add(to(observer, disposer));
+            return values.to(observer::accept, observer::error, () -> to(observer, disposer), disposer.sub(), true);
         });
     }
 
@@ -2954,10 +2954,11 @@ public final class Signal<V> {
             return NEVER;
         }
 
-        return new Signal<>((observer, disposable) -> {
+        return new Signal<>((observer, disposer) -> {
             AtomicInteger count = new AtomicInteger();
 
-            return to(value -> observer.accept(values[count.getAndIncrement() % values.length]));
+            return to(value -> observer
+                    .accept(values[count.getAndIncrement() % values.length]), observer::error, observer::complete, disposer);
         });
     }
 

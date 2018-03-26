@@ -14,7 +14,7 @@ import java.util.Enumeration;
 import org.junit.Test;
 
 /**
- * @version 2018/03/11 13:26:35
+ * @version 2018/03/26 21:58:41
  */
 public class StartWithTest extends SignalTester {
 
@@ -96,6 +96,35 @@ public class StartWithTest extends SignalTester {
         monitor(() -> signal(1, 2).startWith((Enumeration) null));
         assert main.value(1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    public void signal() {
+        monitor(signal -> signal.startWith(other.signal()));
+
+        assert main.emit("other is not completed, so this value will ignored").size(0);
+        assert other.emit("other is ", Complete).size(1);
+        assert main.emit("main can signal").size(1);
+        assert other.isCompleted();
+        assert other.isDisposed();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    public void signalError() {
+        monitor(signal -> signal.startWith(other.signal()));
+
+        assert main.emit("other is not completed, so this value will ignored").size(0);
+        assert other.emit("other is ", Error).size(1);
+        assert main.emit("main can't signal").size(0);
+        assert other.isNotCompleted();
+        assert other.isError();
+        assert other.isDisposed();
+        assert main.isNotCompleted();
+        assert main.isError();
         assert main.isDisposed();
     }
 }
