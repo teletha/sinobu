@@ -17,32 +17,26 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import kiss.Signal;
+import kiss.I;
 import kiss.Variable;
 
 /**
  * @version 2017/05/14 12:09:49
  */
-public class ReceiverTest {
+public class ReceiverTest extends SignalTester {
 
     @Test
     public void to() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal);
+        monitor(signal -> signal);
 
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.emitAndRetrieve(20) == 20;
-        assert subject.dispose();
+        assert main.emit(1).value(1);
+        assert main.emit(2).value(2);
+        assert main.isNotDisposed();
     }
 
     @Test
     public void toCollection() {
-        Subject<Integer, Integer> subject = new Subject<>();
-        LinkedHashSet<Integer> set = subject.signal().to(LinkedHashSet.class);
-
-        subject.emit(30);
-        subject.emit(20);
-        subject.emit(10);
-
+        LinkedHashSet<Integer> set = I.signal(30, 20, 10).to(LinkedHashSet.class);
         Iterator<Integer> iterator = set.iterator();
         assert iterator.next() == 30;
         assert iterator.next() == 20;
@@ -51,126 +45,82 @@ public class ReceiverTest {
 
     @Test
     public void toAlternate() {
-        Subject<Integer, Integer> subject = new Subject<>();
-        Set<Integer> set = subject.signal().toAlternate();
-
-        subject.emit(10);
-        assert set.size() == 1;
-
-        subject.emit(20);
-        assert set.size() == 2;
+        Set<Integer> set = I.signal(30, 20, 10).toAlternate();
+        assert set.contains(10);
+        assert set.contains(20);
+        assert set.contains(30);
 
         // duplicate
-        subject.emit(10);
-        assert set.size() == 1;
+        set = I.signal(30, 20, 20, 30).toAlternate();
+        assert set.isEmpty();
 
-        subject.emit(20);
-        assert set.size() == 0;
-
-        // again
-        subject.emit(10);
-        assert set.size() == 1;
-
-        subject.emit(20);
-        assert set.size() == 2;
+        // triple
+        set = I.signal(30, 20, 20, 30, 10, 20).toAlternate();
+        assert set.contains(10);
+        assert set.contains(20);
     }
 
     @Test
     public void toBinary() {
-        Subject<Integer, Integer> subject = new Subject<>();
-        Variable<Boolean> binary = subject.signal().toBinary();
+        Variable<Boolean> binary = I.signal().toBinary();
+        assert binary.is(false);
 
-        subject.emit(10);
-        assert binary.get() == true;
+        binary = I.signal("on").toBinary();
+        assert binary.is(true);
 
-        subject.emit(20);
-        assert binary.get() == false;
+        binary = I.signal("on", "off").toBinary();
+        assert binary.is(false);
 
-        subject.emit(30);
-        assert binary.get() == true;
-
-        subject.emit(10);
-        assert binary.get() == false;
+        binary = I.signal("on", "off", "on again").toBinary();
+        assert binary.is(true);
     }
 
     @Test
     public void toList() {
-        Subject<Integer, Integer> subject = new Subject<>();
-        List<Integer> list = subject.signal().toList();
+        List<String> list = I.<String> signal().toList();
+        assert list.isEmpty();
 
-        subject.emit(10);
-        assert list.size() == 1;
-        assert list.get(0) == 10;
+        list = I.signal("A").toList();
+        assert list.get(0) == "A";
 
-        subject.emit(20);
-        assert list.size() == 2;
-        assert list.get(1) == 20;
+        list = I.signal("A", "B").toList();
+        assert list.get(0) == "A";
+        assert list.get(1) == "B";
 
-        subject.emit(30);
-        assert list.size() == 3;
-        assert list.get(2) == 30;
-
-        // duplicate
-        subject.emit(10);
-        assert list.size() == 4;
-        assert list.get(3) == 10;
-    }
-
-    @Test
-    public void toMultiList() {
-        Subject<Integer, Integer> subject = new Subject<>();
-        Signal<Integer> signal = subject.signal();
-        List<Integer> list1 = signal.toList();
-        List<Integer> list2 = signal.toList();
-
-        subject.emit(10);
-        assert list1.size() == 1;
-        assert list1.get(0) == 10;
-        assert list2.size() == 1;
-        assert list2.get(0) == 10;
-
-        subject.emit(20);
-        assert list1.size() == 2;
-        assert list1.get(1) == 20;
-        assert list2.size() == 2;
-        assert list2.get(1) == 20;
+        list = I.signal("A", "B", "C").toList();
+        assert list.get(0) == "A";
+        assert list.get(1) == "B";
+        assert list.get(2) == "C";
     }
 
     @Test
     public void toMap() {
-        Subject<Integer, Integer> subject = new Subject<>();
-        Map<String, Integer> map = subject.signal().toMap(v -> String.valueOf(v));
+        Map<String, String> map = I.<String> signal().toMap(v -> "KEY-" + v);
+        assert map.isEmpty();
 
-        subject.emit(10);
-        assert map.size() == 1;
-        assert map.get("10") == 10;
+        map = I.signal("A").toMap(v -> "KEY-" + v);
+        assert map.get("KEY-A") == "A";
 
-        subject.emit(20);
+        map = I.signal("A", "B").toMap(v -> "KEY-" + v);
+        assert map.get("KEY-B") == "B";
         assert map.size() == 2;
-        assert map.get("20") == 20;
 
-        // duplicate
-        subject.emit(10);
+        map = I.signal("A", "B", "A").toMap(v -> "KEY-" + v);
         assert map.size() == 2;
-        assert map.get("10") == 10;
     }
 
     @Test
     public void toSet() {
-        Subject<Integer, Integer> subject = new Subject<>();
-        Set<Integer> set = subject.signal().toSet();
+        Set<String> set = I.<String> signal().toSet();
+        assert set.isEmpty();
 
-        subject.emit(10);
+        set = I.signal("A").toSet();
         assert set.size() == 1;
 
-        subject.emit(20);
+        set = I.signal("A", "B").toSet();
         assert set.size() == 2;
 
-        subject.emit(30);
-        assert set.size() == 3;
-
-        // duplicate
-        subject.emit(10);
-        assert set.size() == 3;
+        set = I.signal("A", "B", "A").toSet();
+        assert set.size() == 2;
     }
 }
