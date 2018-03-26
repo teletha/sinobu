@@ -2028,12 +2028,8 @@ public final class Signal<V> {
             AtomicReference<R> ref = new AtomicReference(init);
 
             return to(value -> {
-                try {
-                    ref.set(function.apply(ref.get(), value));
-                    observer.accept(ref.get());
-                } catch (Throwable e) {
-                    observer.error(e);
-                }
+                ref.set(function.apply(ref.get(), value));
+                observer.accept(ref.get());
             }, observer::error, observer::complete, disposer);
         });
     }
