@@ -39,7 +39,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void errorInSignal() {
+    public void error() {
         monitor(Integer.class, signal -> signal.flatMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Error).value(10, 11, 20, 21);
@@ -59,17 +59,17 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void otherComplete() {
-        monitor(Integer.class, signal -> signal.flatMap(v -> signal(v).take(1)));
+    public void innerComplete() {
+        monitor(Integer.class, signal -> signal.flatMap(v -> signal(v, v + 1, v + 2).take(2)));
 
-        assert main.emit(10, 20).value(10, 20);
+        assert main.emit(10, 20, 30).value(10, 11, 20, 21, 30, 31);
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();
     }
 
     @Test
-    public void otherError() {
+    public void innerError() {
         monitor(Integer.class, signal -> signal.flatMap(v -> errorSignal()));
 
         assert main.emit(10, 20).value();
