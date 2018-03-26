@@ -14,7 +14,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 /**
- * @version 2018/03/11 12:09:22
+ * @version 2018/03/26 11:17:41
  */
 public class FlatMapTest extends SignalTester {
 
@@ -93,30 +93,24 @@ public class FlatMapTest extends SignalTester {
 
     @Test
     public void detail() {
-        Subject<String, String> emitA = new Subject();
-        Subject<String, String> emitB = new Subject();
-        Subject<Integer, String> subject = new Subject<>(signal -> signal.flatMap(x -> x == 1 ? emitA.signal() : emitB.signal()));
+        monitor(String.class, signal -> signal.flatMap(x -> x.equals("start other") ? other.signal() : another.signal()));
 
-        subject.emit(1); // connect to emitA
-        assert subject.retrieve() == null; // emitA doesn't emit value yet
-        emitA.emit("1A");
-        assert subject.retrieve() == "1A";
-        emitB.emit("1B"); // emitB has no relation yet
-        assert subject.retrieve() == null;
+        assert main.emit("start other").size(0);
+        assert other.emit("other is connected").size(1);
+        assert another.emit("another is not connected yet").size(0);
 
-        subject.emit(2); // connect to emitB
-        assert subject.retrieve() == null; // emitB doesn't emit value yet
-        emitB.emit("2B");
-        assert subject.retrieve() == "2B";
-        emitA.emit("2A");
-        assert subject.retrieve() == "2A";
+        assert main.emit("start another").size(0);
+        assert another.emit("another is connected").size(1);
+        assert other.emit("other is also connected").size(1);
 
-        // test disposing
-        subject.dispose();
-        emitA.emit("Disposed");
-        assert subject.retrieve() == null;
-        emitB.emit("Disposed");
-        assert subject.retrieve() == null;
+        assert main.isNotDisposed();
+        assert other.isNotDisposed();
+        assert another.isNotDisposed();
+
+        main.dispose();
+        assert main.isDisposed();
+        assert other.isDisposed();
+        assert another.isDisposed();
     }
 
     @Test

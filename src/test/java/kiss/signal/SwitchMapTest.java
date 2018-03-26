@@ -12,7 +12,7 @@ package kiss.signal;
 import org.junit.Test;
 
 /**
- * @version 2018/03/11 12:07:59
+ * @version 2018/03/26 11:17:33
  */
 public class SwitchMapTest extends SignalTester {
 
@@ -37,7 +37,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void errorInSignal() {
+    public void error() {
         monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Error).value(10, 11, 20, 21);
@@ -57,7 +57,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void otherComplete() {
+    public void innerComplete() {
         monitor(Integer.class, signal -> signal.switchMap(v -> signal(v).take(1)));
 
         assert main.emit(10, 20).value(10, 20);
@@ -67,7 +67,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void otherError() {
+    public void innerError() {
         monitor(Integer.class, signal -> signal.switchMap(v -> errorSignal()));
 
         assert main.emit(10, 20).value();
@@ -91,34 +91,27 @@ public class SwitchMapTest extends SignalTester {
 
     @Test
     public void detail() {
-        Subject<String, String> emitA = new Subject();
-        Subject<String, String> emitB = new Subject();
-        Subject<Integer, String> subject = new Subject<>(signal -> signal.switchMap(x -> x == 1 ? emitA.signal() : emitB.signal()));
+        monitor(String.class, signal -> signal.switchMap(x -> x.equals("start other") ? other.signal() : another.signal()));
 
-        subject.emit(1); // connect to emitA
-        assert subject.retrieve() == null; // emitA doesn't emit value yet
-        emitA.emit("1A");
-        assert subject.retrieve() == "1A";
-        emitB.emit("1B"); // emitB has no relation yet
-        assert subject.retrieve() == null;
+        assert main.emit("start other").size(0);
+        assert other.emit("other is connected").size(1);
+        assert another.emit("another is not connected yet").size(0);
 
-        subject.emit(2); // connect to emitB and disconnect from emitA
-        assert subject.retrieve() == null; // emitB doesn't emit value yet
-        emitB.emit("2B");
-        assert subject.retrieve() == "2B";
-        emitA.emit("2A");
-        assert subject.retrieve() == null;
+        assert main.emit("start another").size(0);
+        assert another.emit("another is connected").size(1);
+        assert other.emit("other is disconnected").size(0);
+        assert other.isDisposed();
+        assert another.isNotDisposed();
 
-        subject.emit(1); // reconnect to emitA and disconnect from emitB
-        assert subject.retrieve() == null; // emitA doesn't emit value yet
-        emitA.emit("3A");
-        assert subject.retrieve() == "3A";
-        emitB.emit("3B");
-        assert subject.retrieve() == null;
+        assert main.emit("start other").size(0);
+        assert other.emit("other is connected again").size(1);
+        assert another.emit("another is disconnected").size(0);
+        assert other.isNotDisposed();
+        assert another.isDisposed();
 
-        // test disposing
-        subject.dispose();
-        emitA.emit("Disposed");
-        assert subject.retrieve() == null;
+        main.dispose();
+        assert main.isDisposed();
+        assert other.isDisposed();
+        assert another.isDisposed();
     }
 }

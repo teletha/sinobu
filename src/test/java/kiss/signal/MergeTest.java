@@ -47,11 +47,13 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void mergeNull() {
-        Subject<Integer, Integer> subject = new Subject<>(signal -> signal.merge((Signal) null));
+    public void acceptNull() {
+        monitor(signal -> signal.merge((Signal) null));
 
-        assert subject.emitAndRetrieve(10) == 10;
-        assert subject.dispose();
+        assert main.emit("accept null").size(1);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test

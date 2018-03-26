@@ -12,7 +12,7 @@ package kiss.signal;
 import org.junit.Test;
 
 /**
- * @version 2018/03/11 12:07:55
+ * @version 2018/03/26 11:17:26
  */
 public class ConcatMapTest extends SignalTester {
 
@@ -37,7 +37,7 @@ public class ConcatMapTest extends SignalTester {
     }
 
     @Test
-    public void errorInSignal() {
+    public void error() {
         monitor(Integer.class, signal -> signal.concatMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Error).value(10, 11, 20, 21);
@@ -57,7 +57,7 @@ public class ConcatMapTest extends SignalTester {
     }
 
     @Test
-    public void otherComplete() {
+    public void innerComplete() {
         monitor(Integer.class, signal -> signal.concatMap(v -> signal(v).take(1)));
 
         assert main.emit(10, 20).value(10, 20);
@@ -67,7 +67,7 @@ public class ConcatMapTest extends SignalTester {
     }
 
     @Test
-    public void otherError() {
+    public void innerError() {
         monitor(Integer.class, signal -> signal.concatMap(v -> errorSignal()));
 
         assert main.emit(10, 20).value();
