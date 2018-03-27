@@ -17,21 +17,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
-import javafx.beans.value.ObservableValue;
-
 import org.junit.Test;
 
 import kiss.I;
+import kiss.model.Model;
 import kiss.sample.bean.GenericBoundedBean;
+import kiss.sample.bean.Person;
+import kiss.sample.bean.School;
 import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.Student;
 
 /**
- * @version 2016/05/18 9:52:45
+ * @version 2018/03/27 23:14:21
  */
 public class CollectParametersTest {
 
@@ -42,14 +40,7 @@ public class CollectParametersTest {
 
     @Test
     public void parameterIsVariable() {
-        Type[] parameters = kiss.model.Model.collectParameters(ArrayList.class, List.class);
-        assert parameters.length == 1;
-        assert parameters[0] == Object.class;
-    }
-
-    @Test
-    public void parameterIsVariableOnInterface() {
-        Type[] parameters = kiss.model.Model.collectParameters(javafx.beans.property.Property.class, ObservableValue.class);
+        Type[] parameters = Model.collectParameters(ArrayList.class, List.class);
         assert parameters.length == 1;
         assert parameters[0] == Object.class;
     }
@@ -59,7 +50,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes01() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedStringByInterface.class, ParameterInterface.class);
+        Type[] types = Model.collectParameters(ParameterizedStringByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -69,7 +60,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes02() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedObjectByInterface.class, ParameterInterface.class);
+        Type[] types = Model.collectParameters(ParameterizedObjectByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Object.class == types[0];
     }
@@ -79,7 +70,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes14() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedWildcardByInterface.class, ParameterInterface.class);
+        Type[] types = Model.collectParameters(ParameterizedWildcardByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Map.class == types[0];
     }
@@ -89,7 +80,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes03() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedNoneByInterface.class, ParameterInterface.class);
+        Type[] types = Model.collectParameters(ParameterizedNoneByInterface.class, ParameterInterface.class);
         assert 0 == types.length;
     }
 
@@ -98,21 +89,21 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes04() {
-        Type[] types = kiss.model.Model.collectParameters(ExtendedFromInterface.class, ParameterInterface.class);
+        Type[] types = Model.collectParameters(ExtendedFromInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void parameterFromOverriddenInterface() {
-        Type[] types = kiss.model.Model.collectParameters(TypedExtendedFromInterface.class, ParameterInterface.class);
+        Type[] types = Model.collectParameters(TypedExtendedFromInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void parameterFromOverrideInterface() {
-        Type[] types = kiss.model.Model.collectParameters(TypedExtendedFromInterface.class, ExtensibleByInterface.class);
+        Type[] types = Model.collectParameters(TypedExtendedFromInterface.class, ExtensibleByInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -122,7 +113,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes06() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedStringByClass.class, ParameterClass.class);
+        Type[] types = Model.collectParameters(ParameterizedStringByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -132,7 +123,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes07() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedObjectByClass.class, ParameterClass.class);
+        Type[] types = Model.collectParameters(ParameterizedObjectByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert Object.class == types[0];
     }
@@ -142,7 +133,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes15() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedWildcardByClass.class, ParameterClass.class);
+        Type[] types = Model.collectParameters(ParameterizedWildcardByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert Map.class == types[0];
     }
@@ -152,7 +143,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes08() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedNoneByClass.class, ParameterClass.class);
+        Type[] types = Model.collectParameters(ParameterizedNoneByClass.class, ParameterClass.class);
         assert 0 == types.length;
     }
 
@@ -161,7 +152,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes09() {
-        Type[] types = kiss.model.Model.collectParameters(ExtendedFromClass.class, ParameterClass.class);
+        Type[] types = Model.collectParameters(ExtendedFromClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -171,7 +162,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes10() {
-        Type[] types = kiss.model.Model.collectParameters(TypedExtendedFromClass.class, ParameterClass.class);
+        Type[] types = Model.collectParameters(TypedExtendedFromClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
@@ -181,11 +172,11 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes11() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterFromMultipleSource.class, ParameterInterface.class);
+        Type[] types = Model.collectParameters(ParameterFromMultipleSource.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Type.class == types[0];
 
-        types = kiss.model.Model.collectParameters(ParameterFromMultipleSource.class, ParameterClass.class);
+        types = Model.collectParameters(ParameterFromMultipleSource.class, ParameterClass.class);
         assert 1 == types.length;
         assert Class.class == types[0];
     }
@@ -195,7 +186,7 @@ public class CollectParametersTest {
      */
     @Test
     public void testGetParameterizedTypes12() {
-        Type[] types = kiss.model.Model.collectParameters(MultipleParameterClass.class, MultipleParameter.class);
+        Type[] types = Model.collectParameters(MultipleParameterClass.class, MultipleParameter.class);
         assert 2 == types.length;
         assert Integer.class == types[0];
         assert Long.class == types[1];
@@ -203,65 +194,65 @@ public class CollectParametersTest {
 
     @Test
     public void parameterIsArrayFromInterface() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
+        Type[] types = Model.collectParameters(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String[].class == types[0];
     }
 
     @Test
     public void parameterIsArrayFromClass() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedStringArrayByClass.class, ParameterClass.class);
+        Type[] types = Model.collectParameters(ParameterizedStringArrayByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String[].class == types[0];
     }
 
     @Test
     public void methodGetPrameterAcceptsNullType() {
-        Type[] types = kiss.model.Model.collectParameters(null, ParameterClass.class);
+        Type[] types = Model.collectParameters(null, ParameterClass.class);
         assert 0 == types.length;
     }
 
     @Test
     public void methodGetPrameterAcceptsNullTarget() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterizedStringByClass.class, null);
+        Type[] types = Model.collectParameters(ParameterizedStringByClass.class, null);
         assert 0 == types.length;
     }
 
     @Test
     public void subclassHasAnotherParameter() {
-        Type[] types = kiss.model.Model.collectParameters(TypedSubClass.class, ParameterClass.class);
+        Type[] types = Model.collectParameters(TypedSubClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void constructorHasParameterClass() {
-        Constructor constructor = kiss.model.Model.collectConstructors(ParameterClassConstructor.class)[0];
-        Type[] types = kiss.model.Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        Constructor constructor = Model.collectConstructors(ParameterClassConstructor.class)[0];
+        Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void constructorHasExtendableByClass() {
-        Constructor constructor = kiss.model.Model.collectConstructors(ExtensibleByClassConstructor.class)[0];
-        Type[] types = kiss.model.Model.collectParameters(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
+        Constructor constructor = Model.collectConstructors(ExtensibleByClassConstructor.class)[0];
+        Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
         assert 1 == types.length;
         assert Integer.class == types[0];
     }
 
     @Test
     public void constructorHasArrayParameter() {
-        Constructor constructor = kiss.model.Model.collectConstructors(ArrayParameterConstructor.class)[0];
-        Type[] types = kiss.model.Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        Constructor constructor = Model.collectConstructors(ArrayParameterConstructor.class)[0];
+        Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String[].class == types[0];
     }
 
     @Test
     public void constructorHasMultipleParameter() {
-        Constructor constructor = kiss.model.Model.collectConstructors(MultipleParameterConstructor.class)[0];
-        Type[] types = kiss.model.Model.collectParameters(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
+        Constructor constructor = Model.collectConstructors(MultipleParameterConstructor.class)[0];
+        Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
         assert 2 == types.length;
         assert Readable.class == types[0];
         assert Appendable.class == types[1];
@@ -269,59 +260,59 @@ public class CollectParametersTest {
 
     @Test
     public void constructorHasOverlapParameter() {
-        Constructor constructor = kiss.model.Model.collectConstructors(ImplicitParameterConstructor.class)[0];
-        Type[] types = kiss.model.Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
+        Constructor constructor = Model.collectConstructors(ImplicitParameterConstructor.class)[0];
+        Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
         assert 1 == types.length;
         assert Map.class == types[0];
     }
 
     @Test
     public void constructorHasOverlappedParameter() {
-        Constructor constructor = kiss.model.Model.collectConstructors(ImplicitParameterConstructor.class)[0];
-        Type[] types = kiss.model.Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
+        Constructor constructor = Model.collectConstructors(ImplicitParameterConstructor.class)[0];
+        Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void parameterVariableFromInterface() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
+        Type[] types = Model.collectParameters(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void parameterVariableFromClass() {
-        Type[] types = kiss.model.Model.collectParameters(ParameterVariableStringByClass.class, ParameterVariableClass.class);
+        Type[] types = Model.collectParameters(ParameterVariableStringByClass.class, ParameterVariableClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void list() throws Exception {
-        Type[] types = kiss.model.Model.collectParameters(StringList.class, List.class);
+        Type[] types = Model.collectParameters(StringList.class, List.class);
         assert 1 == types.length;
         assert String.class == types[0];
 
-        types = kiss.model.Model.collectParameters(StringList.class, ArrayList.class);
+        types = Model.collectParameters(StringList.class, ArrayList.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void map() throws Exception {
-        Type[] types = kiss.model.Model.collectParameters(StringMap.class, Map.class);
+        Type[] types = Model.collectParameters(StringMap.class, Map.class);
         assert 2 == types.length;
         assert String.class == types[0];
 
-        types = kiss.model.Model.collectParameters(StringMap.class, HashMap.class);
+        types = Model.collectParameters(StringMap.class, HashMap.class);
         assert 2 == types.length;
         assert String.class == types[0];
     }
 
     @Test
     public void bundedBean() {
-        Type[] types = kiss.model.Model.collectParameters(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
+        Type[] types = Model.collectParameters(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
         assert 1 == types.length;
         assert Student.class == types[0];
     }
@@ -568,81 +559,69 @@ public class CollectParametersTest {
 
     @Test
     public void complexTypeHierarchy1() {
-        Type[] types = kiss.model.Model.collectParameters(ConsolesUI.class, StackContainer.class);
+        Type[] types = Model.collectParameters(Child3.class, Child2.class);
         assert 2 == types.length;
-        assert Shell.class == types[0];
-        assert Console.class == types[1];
+        assert Teacher.class == types[0];
+        assert School.class == types[1];
 
     }
 
     @Test
     public void complexTypeHierarchy2() {
-        Type[] types = kiss.model.Model.collectParameters(ConsolesUI.class, SelectableUI.class);
+        Type[] types = Model.collectParameters(Child3.class, Child1.class);
         assert 3 == types.length;
-        assert JPanel.class == types[0];
-        assert Shell.class == types[1];
-        assert Console.class == types[2];
+        assert Student.class == types[0];
+        assert Teacher.class == types[1];
+        assert School.class == types[2];
     }
 
     @Test
     public void complexTypeHierarchy3() {
-        Type[] types = kiss.model.Model.collectParameters(ConsolesUI.class, UI.class);
+        Type[] types = Model.collectParameters(Child3.class, Root.class);
         assert 2 == types.length;
-        assert JPanel.class == types[0];
-        assert Shell.class == types[1];
-    }
-
-    /**
-     * @version 2010/02/15 15:11:48
-     */
-    private static interface Model {
+        assert Student.class == types[0];
+        assert Teacher.class == types[1];
     }
 
     /**
      * @version 2010/02/15 15:11:46
      */
-    private static class SingleSelectableMode<M extends Model> implements Model {
-    }
-
-    /**
-     * @version 2010/02/15 15:11:44
-     */
-    private static class Console implements Model {
+    private static class Assoication<M> {
     }
 
     /**
      * @version 2010/02/15 15:11:42
      */
-    private static class Shell extends SingleSelectableMode<Console> {
+    private static class Teacher extends Assoication<School> {
     }
 
     /**
      * @version 2010/02/15 15:11:40
      */
-    private static class UI<W extends JComponent, M extends Model> {
+    private static class Root<W extends Person, M> {
     }
 
     /**
      * @version 2010/02/15 15:11:38
      */
-    private static class SelectableUI<W extends JComponent, M extends SingleSelectableMode<R>, R extends Model> extends UI<W, M> {
+    private static class Child1<W extends Person, M extends Assoication<R>, R> extends Root<W, M> {
     }
 
     /**
      * @version 2010/02/15 15:11:36
      */
-    private static class StackContainer<M extends SingleSelectableMode<R>, R extends Model> extends SelectableUI<JPanel, M, R> {
+    private static class Child2<M extends Assoication<R>, R> extends Child1<Student, M, R> {
     }
 
     /**
      * @version 2010/02/15 15:11:33
      */
-    private static class ConsolesUI extends StackContainer<Shell, Console> {
+    private static class Child3 extends Child2<Teacher, School> {
     }
 
     @Test
     public void complexTypeHierarchy4() {
-        Type[] types = kiss.model.Model.collectParameters(CheckBox.class, Widget.class);
+        Type[] types = Model.collectParameters(CheckBox.class, Widget.class);
         assert 1 == types.length;
         assert UserStyle.class == types[0];
     }
