@@ -22,13 +22,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-
 /**
- * @version 2016/10/23 13:23:45
+ * @version 2018/03/28 9:11:30
  */
-public class Variable<V> implements Consumer<V>, Supplier<V>, Observable {
+public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The modifier. */
     private static final Field modify;
@@ -51,41 +48,11 @@ public class Variable<V> implements Consumer<V>, Supplier<V>, Observable {
     /** The observers. */
     private volatile List<Observer> observers;
 
-    /** The listeners. */
-    private volatile List<InvalidationListener> listeners;
-
     /**
      * Hide constructor.
      */
     private Variable(V value) {
         this.v = value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addListener(InvalidationListener listener) {
-        if (listener != null) {
-            if (listeners == null) {
-                listeners = new CopyOnWriteArrayList();
-            }
-            listeners.add(listener);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeListener(InvalidationListener listener) {
-        if (listener != null && listeners != null) {
-            listeners.remove(listener);
-
-            if (listeners.isEmpty()) {
-                listeners = null;
-            }
-        }
     }
 
     /**
@@ -1796,12 +1763,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V>, Observable {
                     if (observers != null) {
                         for (Observer observer : observers) {
                             observer.accept(v);
-                        }
-                    }
-
-                    if (listeners != null) {
-                        for (InvalidationListener listener : listeners) {
-                            listener.invalidated(this);
                         }
                     }
                 }
