@@ -9,7 +9,6 @@
  */
 package kiss.model;
 
-import java.beans.Transient;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -25,11 +24,9 @@ public class PropertyTest {
         Model model = Model.of(Annotated.class);
         Property property = model.property("name");
         assert property.getAnnotation(KarenBee.class) != null;
-        assert property.getAnnotation(Transient.class) == null;
 
         property = model.property("field");
         assert property.getAnnotation(KarenBee.class) != null;
-        assert property.getAnnotation(Transient.class) == null;
     }
 
     /**

@@ -11,7 +11,6 @@ package kiss.model;
 
 import static java.lang.reflect.Modifier.*;
 
-import java.beans.Transient;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -73,7 +72,7 @@ public class Property implements Comparable<Property> {
         boolean serializable = false;
 
         for (T element : elements) {
-            if ((element.getModifiers() & TRANSIENT) != 0 || element.isAnnotationPresent(Transient.class)) {
+            if ((element.getModifiers() & TRANSIENT) != 0) {
                 serializable = true;
             }
 

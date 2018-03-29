@@ -11,7 +11,6 @@ package kiss.model;
 
 import static java.lang.reflect.Modifier.*;
 
-import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 import java.lang.reflect.Constructor;
@@ -118,7 +117,8 @@ public class Model<M> {
                                     // exclude the method (by parameter signature)
                                     if (method.getGenericParameterTypes().length == length) {
                                         // compute property name
-                                        name = Introspector.decapitalize(name.substring(prefix.length()));
+                                        name = name.substring(prefix.length());
+                                        name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 
                                         // store a candidate of property accessor
                                         Method[] methods = candidates.get(name);

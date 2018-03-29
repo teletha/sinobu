@@ -96,14 +96,13 @@ public class JSONTest {
     @Test
     public void transientProperty() {
         TransientBean bean = I.make(TransientBean.class);
-        bean.setBoth(8);
-        bean.setNone(15);
+        bean.field = "transient";
+        bean.noneField = "serializable";
 
         // @formatter:off
         validate(bean,
         "{",
-        "  'none': 15,",
-        "  'noneField': null",
+        "  'noneField': 'serializable'",
         "}");
         // @formatter:on
     }

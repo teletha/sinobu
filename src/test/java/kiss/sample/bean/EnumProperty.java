@@ -11,9 +11,6 @@ package kiss.sample.bean;
 
 import java.util.Optional;
 
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-
 /**
  * @version 2016/04/04 14:30:27
  */
@@ -22,10 +19,6 @@ public class EnumProperty {
     public Value field;
 
     public Value fieldWithDefault = Value.One;
-
-    public Property<Value> property;
-
-    public Property<Value> propertyWithDefault = new SimpleObjectProperty(Value.One);
 
     public Optional<Value> optional;
 
