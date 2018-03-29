@@ -45,6 +45,7 @@ import java.util.function.Function;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 import kiss.signal.StartWithTest;
 
@@ -2024,14 +2025,9 @@ public final class Signal<V> {
      *         the accumulator function.
      */
     public final <R> Signal<R> scan(R init, BiFunction<R, V, R> function) {
-        return new Signal<>((observer, disposer) -> {
-            AtomicReference<R> ref = new AtomicReference(init);
-
-            return to(value -> {
-                ref.set(function.apply(ref.get(), value));
-                observer.accept(ref.get());
-            }, observer::error, observer::complete, disposer);
-        });
+        return scan(Collector.of(() -> new AtomicReference<R>(init), (ref, value) -> {
+            ref.set(function.apply(ref.get(), value));
+        }, (a, b) -> a, AtomicReference<R>::get));
     }
 
     /**
@@ -2052,6 +2048,32 @@ public final class Signal<V> {
      */
     public final <R> Signal<R> scan(R init, WiseBiFunction<R, V, R> function) {
         return scan(init, I.quiet(function));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
+     * by a source {@link Signal} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Signal} into the same function, and so on
+     * until all items have been emitted by the source {@link Signal}, emitting the result of each
+     * of these iterations.
+     * </p>
+     *
+     * @param collector An accumulator function to be invoked on each item emitted by the source
+     *            {@link Signal}, whose result will be emitted to {@link Signal} via
+     *            {@link Observer#accept(Object)} and used in the next accumulator call.
+     * @return An {@link Signal} that emits initial value followed by the results of each call to
+     *         the accumulator function.
+     */
+    public final <A, R> Signal<R> scan(Collector<? super V, A, R> collector) {
+        return new Signal<>((observer, disposer) -> {
+            A ref = collector.supplier().get();
+
+            return to(value -> {
+                collector.accumulator().accept(ref, value);
+                observer.accept(collector.finisher().apply(ref));
+            }, observer::error, observer::complete, disposer);
+        });
     }
 
     /**

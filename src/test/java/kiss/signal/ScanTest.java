@@ -9,10 +9,12 @@
  */
 package kiss.signal;
 
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 
 /**
- * @version 2018/03/11 15:10:49
+ * @version 2018/03/29 13:50:56
  */
 public class ScanTest extends SignalTester {
 
@@ -44,5 +46,16 @@ public class ScanTest extends SignalTester {
         assert main.emit(1, Complete).value(11);
         assert main.isCompleted();
         assert main.isDisposed();
+    }
+
+    @Test
+    public void collector() {
+        monitor(signal -> signal.scan(Collectors.joining("-")));
+
+        assert main.emit("A").value("A");
+        assert main.emit("B").value("A-B");
+        assert main.emit("C").value("A-B-C");
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
     }
 }
