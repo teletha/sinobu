@@ -30,7 +30,7 @@ import kiss.I;
 import kiss.sample.bean.StringListProperty;
 
 /**
- * @version 2016/03/16 21:08:47
+ * @version 2018/03/29 21:55:33
  */
 public class CuncurrentTest {
 
@@ -51,7 +51,7 @@ public class CuncurrentTest {
     @Before
     public void init() throws Exception {
         // create new thread pool
-        pool = Executors.newFixedThreadPool(5);
+        pool = Executors.newFixedThreadPool(6);
 
     }
 
@@ -78,13 +78,13 @@ public class CuncurrentTest {
 
         assert result != null;
         assert result.getList() != null;
-        assert 5000 == result.getList().size();
+        assert 2000 == result.getList().size();
     }
 
     private StringListProperty createBigList() {
-        List list = new ArrayList(5000);
+        List list = new ArrayList(2000);
 
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 2000; i++) {
             list.add(i);
         }
 

@@ -65,11 +65,11 @@ public class RetryTest extends SignalTester {
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.hasNoObserver();
-        assert await(15).value("retry");
+        assert await().value("retry");
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.hasNoObserver();
-        assert await(15).value("retry");
+        assert await().value("retry");
         assert main.countObservers() == 1;
     }
 
@@ -79,11 +79,11 @@ public class RetryTest extends SignalTester {
 
         assert main.value("retry");
         assert main.emit(Error).value();
-        assert await(30).value("retry");
+        assert await().value("retry");
         assert main.emit(Error).value();
-        assert await(30).value("retry");
+        assert await().value("retry");
         assert main.emit(Error).value();
-        assert await(30).value();
+        assert await().value();
         assert main.isError();
         assert main.isDisposed();
     }
