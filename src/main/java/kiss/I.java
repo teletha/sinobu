@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PushbackReader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -778,8 +777,6 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     private static JSON json(Object input) {
-        PushbackReader reader = null;
-
         try {
             // aquire lock
             lock.readLock().lock();
@@ -791,9 +788,6 @@ public class I {
         } finally {
             // relese lock
             lock.readLock().unlock();
-
-            // close carefuly
-            quiet(reader);
         }
     }
 
@@ -2249,6 +2243,6 @@ public class I {
                 input = out.toByteArray();
             }
         }
-        return input instanceof byte[] ? (byte[]) input : input.toString().getBytes();
+        return input instanceof byte[] ? (byte[]) input : input.toString().getBytes(StandardCharsets.UTF_8);
     }
 }
