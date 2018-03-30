@@ -11,20 +11,22 @@ package kiss.lifestyle;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.junit.Test;
 
 import kiss.I;
 import kiss.Manageable;
 import kiss.ThreadSpecific;
 
-import org.junit.Test;
-
-import antibug.MultiThreadTestCase;
-
 /**
- * @version 2011/03/22 16:28:30
+ * @version 2018/03/30 10:52:30
  */
-public class ThreadSpecificTest extends MultiThreadTestCase {
+public class ThreadSpecificTest {
+
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     @Test
     public void resolve1() {
