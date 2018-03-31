@@ -19,36 +19,34 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import antibug.CleanRoom;
 import kiss.I;
 import kiss.sample.bean.StringListProperty;
 
 /**
- * @version 2018/03/29 21:55:33
+ * @version 2018/03/31 9:32:11
  */
 public class CuncurrentTest {
 
     /** The temporaries. */
-    @Rule
-    @ClassRule
-    public static final CleanRoom room = new CleanRoom();
+    @RegisterExtension
+    static final CleanRoom room = new CleanRoom();
 
     /** The serialization file. */
-    private static final Path testFile = room.locateFile("config.xml");
+    static final Path testFile = room.locateFile("config.xml");
 
     /** Thread pool for this test. */
-    private ExecutorService pool = Executors.newFixedThreadPool(2);
+    private ExecutorService pool;
 
     /**
      * Initialize all resources.
      */
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         // create new thread pool
         pool = Executors.newFixedThreadPool(6);
@@ -58,7 +56,7 @@ public class CuncurrentTest {
     /**
      * Release all resources.
      */
-    @After
+    @AfterEach
     public void release() throws Exception {
         // shutdown all pooled threads
         pool.shutdownNow();
