@@ -9,7 +9,7 @@
  */
 package kiss.experimental;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2010/02/08 23:39:34

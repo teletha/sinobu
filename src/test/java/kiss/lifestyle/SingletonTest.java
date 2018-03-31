@@ -13,7 +13,7 @@ import kiss.I;
 import kiss.Manageable;
 import kiss.Singleton;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2011/03/22 16:27:26

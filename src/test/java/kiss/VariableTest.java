@@ -18,11 +18,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- * @version 2016/10/23 13:49:19
+ * @version 2018/03/31 22:12:45
  */
 public class VariableTest {
 
@@ -30,7 +30,7 @@ public class VariableTest {
 
     private Variable<String> string;
 
-    @Before
+    @BeforeEach
     public void init() {
         empty = Variable.empty();
         string = Variable.of("value");

@@ -16,12 +16,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import antibug.ExpectThrow;
 import kiss.I;
 
 /**
- * @version 2017/03/21 22:57:13
+ * @version 2018/03/31 22:14:28
  */
 public class BundleFunctionTest {
 
@@ -67,7 +68,7 @@ public class BundleFunctionTest {
         assert value.get() == 30;
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @ExpectThrow(IllegalArgumentException.class)
     public void byClass() {
         ArrayList array = new ArrayList();
         LinkedList linked = new LinkedList();

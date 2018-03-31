@@ -12,7 +12,7 @@ package kiss.signal;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.I;
 

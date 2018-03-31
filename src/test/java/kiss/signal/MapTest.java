@@ -11,7 +11,7 @@ package kiss.signal;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2018/02/28 20:03:32

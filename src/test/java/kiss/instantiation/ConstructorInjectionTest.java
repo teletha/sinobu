@@ -9,7 +9,7 @@
  */
 package kiss.instantiation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.Lifestyle;

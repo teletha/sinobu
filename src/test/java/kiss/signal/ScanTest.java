@@ -11,7 +11,7 @@ package kiss.signal;
 
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2018/03/29 13:50:56

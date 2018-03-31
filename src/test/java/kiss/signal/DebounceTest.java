@@ -11,7 +11,7 @@ package kiss.signal;
 
 import static java.util.concurrent.TimeUnit.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2018/03/02 9:47:18

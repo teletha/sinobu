@@ -12,7 +12,7 @@ package kiss.core;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.model.Model;
 

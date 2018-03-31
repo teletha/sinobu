@@ -31,12 +31,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import antibug.ExpectThrow;
 import kiss.I;
 
 /**
- * @version 2017/04/28 21:22:33
+ * @version 2018/03/31 23:13:47
  */
 public class TransformTest {
 
@@ -46,7 +47,7 @@ public class TransformTest {
         assert I.transform(null, String.class) == null;
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void outputNull() throws Exception {
         assert I.transform("1", null) == null;
     }

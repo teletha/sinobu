@@ -13,8 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import antibug.ExpectThrow;
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
@@ -43,7 +44,7 @@ import kiss.sample.bean.invalid.ProtectedAccessor;
 import kiss.sample.bean.invalid.StaticAccessor;
 
 /**
- * @version 2016/04/04 13:50:16
+ * @version 2018/03/31 23:16:15
  */
 public class ModelTest {
 
@@ -541,7 +542,7 @@ public class ModelTest {
     /**
      * Properties are unmodifiable.
      */
-    @Test(expected = UnsupportedOperationException.class)
+    @ExpectThrow(UnsupportedOperationException.class)
     public void testUnmodifiable01() {
         Model model = Model.of(Person.class);
         List<Property> properties = model.properties();
@@ -552,7 +553,7 @@ public class ModelTest {
     /**
      * Properties are unmodifiable.
      */
-    @Test(expected = UnsupportedOperationException.class)
+    @ExpectThrow(UnsupportedOperationException.class)
     public void testUnmodifiable02() {
         Model model = Model.of(Person.class);
         List<Property> properties = model.properties();
@@ -563,7 +564,7 @@ public class ModelTest {
     /**
      * Properties are unmodifiable.
      */
-    @Test(expected = UnsupportedOperationException.class)
+    @ExpectThrow(UnsupportedOperationException.class)
     public void testUnmodifiable03() {
         Model model = Model.of(Person.class);
         List<Property> properties = model.properties();
@@ -574,7 +575,7 @@ public class ModelTest {
     /**
      * Properties are unmodifiable.
      */
-    @Test(expected = UnsupportedOperationException.class)
+    @ExpectThrow(UnsupportedOperationException.class)
     public void testUnmodifiable04() {
         Model model = Model.of(Person.class);
         List<Property> properties = model.properties();
@@ -585,7 +586,7 @@ public class ModelTest {
     /**
      * Properties are unmodifiable.
      */
-    @Test(expected = UnsupportedOperationException.class)
+    @ExpectThrow(UnsupportedOperationException.class)
     public void testUnmodifiable05() {
         Model model = Model.of(Person.class);
         List<Property> properties = model.properties();

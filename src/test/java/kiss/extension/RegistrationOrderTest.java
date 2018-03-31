@@ -11,8 +11,8 @@ package kiss.extension;
 
 import java.io.Serializable;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import kiss.Disposable;
 import kiss.Extensible;
@@ -20,13 +20,13 @@ import kiss.I;
 import kiss.model.Model;
 
 /**
- * @version 2017/05/02 16:18:23
+ * @version 2018/03/31 23:13:29
  */
 public class RegistrationOrderTest {
 
     private Disposable disposer = Disposable.empty();
 
-    @After
+    @AfterEach
     public void after() {
         disposer.dispose();
     }

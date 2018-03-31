@@ -9,7 +9,7 @@
  */
 package kiss.codec;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.Decoder;
 import kiss.Disposable;

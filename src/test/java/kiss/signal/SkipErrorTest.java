@@ -11,7 +11,7 @@ package kiss.signal;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2018/03/23 17:17:56

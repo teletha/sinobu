@@ -15,7 +15,7 @@ import java.util.UnknownFormatConversionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.I;
 

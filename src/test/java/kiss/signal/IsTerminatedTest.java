@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2018/03/03 19:40:55

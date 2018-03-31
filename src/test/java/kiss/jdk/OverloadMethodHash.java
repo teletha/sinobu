@@ -12,7 +12,7 @@ package kiss.jdk;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2011/12/19 0:50:10

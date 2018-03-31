@@ -12,7 +12,7 @@ package kiss.lifestyle;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.Lifestyle;

@@ -12,7 +12,7 @@ package kiss.xml;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import filer.Filer;
 import kiss.I;

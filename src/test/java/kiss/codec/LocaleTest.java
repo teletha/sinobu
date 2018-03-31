@@ -11,7 +11,7 @@ package kiss.codec;
 
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.Decoder;
 import kiss.Encoder;

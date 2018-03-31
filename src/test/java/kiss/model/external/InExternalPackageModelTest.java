@@ -11,7 +11,7 @@ package kiss.model.external;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.model.Model;
 import kiss.model.Property;

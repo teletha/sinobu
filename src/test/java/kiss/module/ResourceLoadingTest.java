@@ -9,7 +9,7 @@
  */
 package kiss.module;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.sample.bean.Person;

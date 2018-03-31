@@ -11,10 +11,12 @@ package kiss.signal;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import antibug.ExpectThrow;
 
 /**
- * @version 2018/03/26 11:17:41
+ * @version 2018/03/31 23:15:31
  */
 public class FlatMapTest extends SignalTester {
 
@@ -78,7 +80,7 @@ public class FlatMapTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void rejectNull() {
         monitor(() -> signal(1, 2).flatMap(null));
     }
@@ -121,7 +123,7 @@ public class FlatMapTest extends SignalTester {
         assert main.isCompleted();
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void enumerationNull() {
         monitor(() -> signal(1, 2).flatEnum(null));
     }
@@ -133,7 +135,7 @@ public class FlatMapTest extends SignalTester {
         assert main.emit("TEST").value("T", "E", "S", "T");
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void arrayNull() {
         monitor(String.class, signal -> signal.flatArray(null));
     }
@@ -145,7 +147,7 @@ public class FlatMapTest extends SignalTester {
         assert main.emit("TEST").value("T", "E", "S", "T");
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void iterableNull() {
         monitor(String.class, signal -> signal.flatIterable(null));
     }

@@ -14,17 +14,18 @@ import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.util.StringJoiner;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import antibug.ExpectThrow;
 import kiss.I;
 
 /**
- * @version 2017/04/20 12:31:27
+ * @version 2018/03/31 22:51:43
  */
 public class ParserTest {
 
     @Test
-    public void empty() throws Exception {
+    public void empty() {
         parse("{}");
         parse("{ }");
         parse("{\t}");
@@ -34,7 +35,7 @@ public class ParserTest {
     }
 
     @Test
-    public void space() throws Exception {
+    public void space() {
         // @formatter:off
         parse("  {  ",
         "   ' s p a c e '  :   null    ",
@@ -42,18 +43,18 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidEndBrace() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidEndBrace() {
         parse("{");
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidStartBrace() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidStartBrace() {
         parse("}");
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidNoSeparator() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidNoSeparator() {
         // @formatter:off
         parse("{",
         "  'true': true",
@@ -62,8 +63,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidTailSeparator() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidTailSeparator() {
         // @formatter:off
         parse("{",
         "  'true': true,",
@@ -73,7 +74,7 @@ public class ParserTest {
     }
 
     @Test
-    public void primitives() throws Exception {
+    public void primitives() {
         // @formatter:off
         parse("{",
         "  'true': true,",
@@ -83,8 +84,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidPrimitives() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidPrimitives() {
         // @formatter:off
         parse("{",
         "  'name': undefined",
@@ -93,7 +94,7 @@ public class ParserTest {
     }
 
     @Test
-    public void array() throws Exception {
+    public void array() {
         // @formatter:off
         parse("{",
         "  'value': ['a', true, false, null, 1, -1, 0.2, 3e+1],",
@@ -104,7 +105,7 @@ public class ParserTest {
     }
 
     @Test
-    public void object() throws Exception {
+    public void object() {
         // @formatter:off
         parse("{",
         "  'value': {'a': 1, 'b': false, 'c': null},",
@@ -115,7 +116,7 @@ public class ParserTest {
     }
 
     @Test
-    public void string() throws Exception {
+    public void string() {
         // @formatter:off
         parse("{",
         "  'name': 'value',",
@@ -128,7 +129,7 @@ public class ParserTest {
     }
 
     @Test
-    public void escapedQuote1() throws Exception {
+    public void escapedQuote1() {
         // @formatter:off
         parse("{",
         "  'valid': '\\\"'", // \"
@@ -136,8 +137,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void escapedQuote2() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void escapedQuote2() {
         // @formatter:off
         parse("{",
         "  'invalid': '\\\\\"'", // \\"
@@ -146,7 +147,7 @@ public class ParserTest {
     }
 
     @Test
-    public void escapedQuote3() throws Exception {
+    public void escapedQuote3() {
         // @formatter:off
         parse("{",
         "  'valid': '\\\\\\\"'", // \\\"
@@ -154,8 +155,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void escapedQuote4() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void escapedQuote4() {
         // @formatter:off
         parse("{",
         "  'invalid': '\\\\\\\\\"'", // \\\\"
@@ -164,7 +165,7 @@ public class ParserTest {
     }
 
     @Test
-    public void escapedQuote5() throws Exception {
+    public void escapedQuote5() {
         // @formatter:off
         parse("{",
         "  'valid': '\\\\\\\\\\\"'", // \\\\\"
@@ -172,8 +173,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void escapedQuote6() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void escapedQuote6() {
         // @formatter:off
         parse("{",
         "  'invalid': '\\\\\\\\\\\\\"'", // \\\\\\"
@@ -182,7 +183,7 @@ public class ParserTest {
     }
 
     @Test
-    public void number() throws Exception {
+    public void number() {
         // @formatter:off
         parse("{",
         "  '0': 0,",
@@ -206,8 +207,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidNoQuotedName() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidNoQuotedName() {
         // @formatter:off
         parse("{",
         "  invalid: 'name'",
@@ -215,8 +216,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidNaN() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidNaN() {
         // @formatter:off
         parse("{",
         "  'NaN': NaN",
@@ -224,8 +225,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidPlus() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidPlus() {
         // @formatter:off
         parse("{",
         "  'plus': +1",
@@ -233,8 +234,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidZeroPrefix() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidZeroPrefix() {
         // @formatter:off
         parse("{",
         "  'zeroPrefix': 012",
@@ -242,8 +243,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidMinusZeroPrefix() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidMinusZeroPrefix() {
         // @formatter:off
         parse("{",
         "  'zeroPrefix': -012",
@@ -251,8 +252,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidFraction() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidFraction() {
         // @formatter:off
         parse("{",
         "  'fraction-abbr': .1",
@@ -260,8 +261,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidExponent() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidExponent() {
         // @formatter:off
         parse("{",
         "  'invalid': 1e*1",
@@ -269,8 +270,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidMinusOnly() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidMinusOnly() {
         // @formatter:off
         parse("{",
         "  'minus': -",
@@ -278,8 +279,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void invalidMinus() throws Exception {
+    @ExpectThrow(IllegalStateException.class)
+    public void invalidMinus() {
         // @formatter:off
         parse("{",
         "  'minus': -a",
@@ -287,8 +288,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = NumberFormatException.class)
-    public void invalidUnicode1() throws Exception {
+    @ExpectThrow(NumberFormatException.class)
+    public void invalidUnicode1() {
         // @formatter:off
         parse("{",
         "  'invalid': '\\u000'",
@@ -296,8 +297,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = NumberFormatException.class)
-    public void invalidUnicode2() throws Exception {
+    @ExpectThrow(NumberFormatException.class)
+    public void invalidUnicode2() {
         // @formatter:off
         parse("{",
         "  'invalid': '\\u000G'",
@@ -305,8 +306,8 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @Test(expected = NumberFormatException.class)
-    public void invalidUnicode3() throws Exception {
+    @ExpectThrow(NumberFormatException.class)
+    public void invalidUnicode3() {
         // @formatter:off
         parse("{",
         "  'invalid': '\\u000-'",

@@ -11,7 +11,7 @@ package kiss.extension;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.Extensible;
 import kiss.I;

@@ -12,7 +12,7 @@ package kiss.instantiation;
 import java.io.File;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.sample.bean.BuiltinBean;

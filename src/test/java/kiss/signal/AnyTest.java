@@ -9,10 +9,12 @@
  */
 package kiss.signal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import antibug.ExpectThrow;
 
 /**
- * @version 2018/03/02 12:41:30
+ * @version 2018/03/31 23:15:48
  */
 public class AnyTest extends SignalTester {
 
@@ -34,7 +36,7 @@ public class AnyTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void acceptNull() {
         monitor(Integer.class, Boolean.class, signal -> signal.any(null));
     }

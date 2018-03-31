@@ -9,10 +9,12 @@
  */
 package kiss.signal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import antibug.ExpectThrow;
 
 /**
- * @version 2018/03/26 11:17:26
+ * @version 2018/03/31 23:15:41
  */
 public class ConcatMapTest extends SignalTester {
 
@@ -76,7 +78,7 @@ public class ConcatMapTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void rejectNull() {
         monitor(() -> signal(1, 2).concatMap(null));
     }

@@ -12,7 +12,7 @@ package kiss.core;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.model.Model;
 

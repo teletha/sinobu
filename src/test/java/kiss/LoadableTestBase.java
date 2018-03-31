@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @version 2017/05/02 16:18:04
@@ -35,7 +35,7 @@ public abstract class LoadableTestBase {
         this.base = base == null ? getClass() : base;
     }
 
-    @Before
+    @BeforeEach
     public final void loadClasses() {
         if (loaded == null) {
             loaded = Disposable.empty();
@@ -48,7 +48,7 @@ public abstract class LoadableTestBase {
      * Unload all loaded classes.
      * </p>
      */
-    @After
+    @AfterEach
     public final void unloadClasses() {
         if (loaded != null) {
             loaded.dispose();

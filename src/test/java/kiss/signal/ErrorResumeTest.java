@@ -11,7 +11,7 @@ package kiss.signal;
 
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.Signal;
 

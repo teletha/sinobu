@@ -15,12 +15,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import antibug.ExpectThrow;
 import kiss.I;
 
 /**
- * @version 2017/03/20 9:36:00
+ * @version 2018/03/31 23:13:15
  */
 public class CreateCollectionTest {
 
@@ -72,7 +73,7 @@ public class CreateCollectionTest {
         assert list.size() == 0;
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void collectNull() {
         I.collect((Class) null);
     }

@@ -16,8 +16,7 @@ import java.util.function.Function;
 
 import javax.crypto.IllegalBlockSizeException;
 
-import org.junit.Test;
-
+import antibug.ExpectThrow;
 import kiss.I;
 import kiss.WiseBiConsumer;
 import kiss.WiseBiFunction;
@@ -26,11 +25,11 @@ import kiss.WiseFunction;
 import kiss.WiseRunnable;
 
 /**
- * @version 2017/03/13 10:33:07
+ * @version 2018/03/31 23:16:30
  */
 public class ExceptionTest {
 
-    @Test(expected = IllegalBlockSizeException.class)
+    @ExpectThrow(IllegalBlockSizeException.class)
     public void runnable() {
         Runnable lambda = I.quiet(this::runnableThrow);
         assert lambda != null;
@@ -42,7 +41,7 @@ public class ExceptionTest {
         throw new IllegalBlockSizeException();
     }
 
-    @Test(expected = IllegalBlockSizeException.class)
+    @ExpectThrow(IllegalBlockSizeException.class)
     public void consumer() {
         Consumer<Object> lambda = I.quiet(this::consumerThrow);
         assert lambda != null;
@@ -54,7 +53,7 @@ public class ExceptionTest {
         throw new IllegalBlockSizeException();
     }
 
-    @Test(expected = IllegalBlockSizeException.class)
+    @ExpectThrow(IllegalBlockSizeException.class)
     public void biconsumer() {
         BiConsumer<Object, Object> lambda = I.quiet(this::biconsumerThrow);
         assert lambda != null;
@@ -66,7 +65,7 @@ public class ExceptionTest {
         throw new IllegalBlockSizeException();
     }
 
-    @Test(expected = IllegalBlockSizeException.class)
+    @ExpectThrow(IllegalBlockSizeException.class)
     public void function() {
         Function<Object, Object> lambda = I.quiet(this::functionThrow);
         assert lambda != null;
@@ -78,7 +77,7 @@ public class ExceptionTest {
         throw new IllegalBlockSizeException();
     }
 
-    @Test(expected = IllegalBlockSizeException.class)
+    @ExpectThrow(IllegalBlockSizeException.class)
     public void bifunction() {
         BiFunction<Object, Object, Object> lambda = I.quiet(this::bifunctionThrow);
         assert lambda != null;

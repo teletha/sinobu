@@ -14,15 +14,16 @@ import java.io.File;
 import java.io.StringReader;
 import java.nio.file.Path;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXParseException;
 
 import antibug.AntiBug;
+import antibug.ExpectThrow;
 import kiss.I;
 import kiss.XML;
 
 /**
- * @version 2017/03/30 16:50:34
+ * @version 2018/03/31 23:14:35
  */
 public class ReadTest {
 
@@ -85,12 +86,12 @@ public class ReadTest {
         assert xml.name() == "html";
     }
 
-    @Test(expected = NullPointerException.class)
+    @ExpectThrow(NullPointerException.class)
     public void inputNull() throws Exception {
         I.xml((File) null);
     }
 
-    @Test(expected = SAXParseException.class)
+    @ExpectThrow(SAXParseException.class)
     public void invalidLiteral() throws Exception {
         I.xml("<m><></m>");
     }

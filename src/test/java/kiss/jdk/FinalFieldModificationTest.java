@@ -11,7 +11,7 @@ package kiss.jdk;
 
 import java.lang.reflect.Field;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2016/10/24 15:52:32

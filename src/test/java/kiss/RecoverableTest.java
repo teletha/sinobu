@@ -13,10 +13,12 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import antibug.ExpectThrow;
 
 /**
- * @version 2017/03/27 2:37:40
+ * @version 2018/03/31 23:14:18
  */
 public class RecoverableTest {
 
@@ -43,13 +45,13 @@ public class RecoverableTest {
         assert value == 10;
     }
 
-    @Test(expected = Error.class)
+    @ExpectThrow(Error.class)
     public void error1WithoutRecovery() throws Exception {
         int value = I.run(unstableOperation(() -> 10, Error.class));
         assert value == 10;
     }
 
-    @Test(expected = Error.class)
+    @ExpectThrow(Error.class)
     public void error2() throws Exception {
         int value = I.run(unstableOperation(() -> 10, Error.class, Error.class), I.retryWhen(Error.class, 1));
         assert value == 10;
@@ -61,13 +63,13 @@ public class RecoverableTest {
         assert value == 10;
     }
 
-    @Test(expected = Exception.class)
+    @ExpectThrow(Exception.class)
     public void recoverOnlyError() throws Exception {
         int value = I.run(unstableOperation(() -> 10, Error.class, Exception.class), I.retryWhen(Error.class));
         assert value == 10;
     }
 
-    @Test(expected = Error.class)
+    @ExpectThrow(Error.class)
     public void recoverOnlyException() throws Exception {
         int value = I.run(unstableOperation(() -> 10, Error.class, Exception.class), I.retryWhen(Exception.class));
         assert value == 10;

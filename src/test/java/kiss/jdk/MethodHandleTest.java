@@ -12,7 +12,7 @@ package kiss.jdk;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 2011/12/15 18:21:34

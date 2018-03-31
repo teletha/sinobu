@@ -9,14 +9,14 @@
  */
 package kiss.codec;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
 
 /**
- * @version 2017/03/04 16:23:33
+ * @version 2018/03/31 22:51:16
  */
 public class ClassCodecTest {
 

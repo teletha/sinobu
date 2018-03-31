@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.Signal;
 

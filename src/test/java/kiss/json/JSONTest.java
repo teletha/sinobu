@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import antibug.ExpectThrow;
 import kiss.I;
 import kiss.model.Model;
 import kiss.model.Property;
@@ -38,7 +39,7 @@ import kiss.sample.bean.TransientBean;
 import kiss.sample.bean.VariablePropertyAtField;
 
 /**
- * @version 2017/04/28 21:22:40
+ * @version 2018/03/31 23:12:26
  */
 public class JSONTest {
 
@@ -354,7 +355,7 @@ public class JSONTest {
         assert instance.getLastName() == null;
     }
 
-    @Test(expected = ClassCircularityError.class)
+    @ExpectThrow(ClassCircularityError.class)
     public void cyclic() {
         ChainBean chain = I.make(ChainBean.class);
         chain.setNext(chain);

@@ -12,7 +12,7 @@ package kiss.signal;
 import java.io.IOError;
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
