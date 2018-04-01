@@ -9,10 +9,12 @@
  */
 package kiss;
 
+import java.io.Serializable;
+
 /**
- * @version 2017/03/13 9:34:23
+ * @version 2018/04/02 8:35:09
  */
-public interface WiseTriConsumer<Param1, Param2, Param3> {
+public interface WiseTriConsumer<Param1, Param2, Param3> extends Serializable {
 
     /**
      * Performs this operation on the given argument.

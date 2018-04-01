@@ -12,87 +12,88 @@ package kiss.xml;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
-import java.nio.file.Path;
+import java.net.MalformedURLException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xml.sax.SAXParseException;
 
-import antibug.AntiBug;
+import antibug.CleanRoom;
 import antibug.ExpectThrow;
 import kiss.I;
 import kiss.XML;
 
 /**
- * @version 2018/03/31 23:14:35
+ * @version 2018/04/01 17:19:13
  */
 public class ReadTest {
 
+    @RegisterExtension
+    CleanRoom room = new CleanRoom();
+
     @Test
-    public void elementName() throws Exception {
+    void elementName() {
         XML xml = I.xml("test");
         assert xml.size() == 1;
         assert xml.name().equals("test");
     }
 
     @Test
-    public void xmlLiteral() throws Exception {
+    void xmlLiteral() {
         XML xml = I.xml("<test/>");
         assert xml.size() == 1;
         assert xml.name() == "test";
     }
 
     @Test
-    public void htmlLiteral() throws Exception {
+    void htmlLiteral() {
         XML xml = I.xml("<html/>");
         assert xml.size() == 1;
         assert xml.name() == "html";
     }
 
     @Test
-    public void inputStream() throws Exception {
+    void inputStream() {
         XML xml = I.xml(new ByteArrayInputStream("<html/>".getBytes()));
         assert xml.size() == 1;
         assert xml.name() == "html";
     }
 
     @Test
-    public void reader() throws Exception {
+    void reader() {
         XML xml = I.xml(new StringReader("<html/>"));
         assert xml.size() == 1;
         assert xml.name() == "html";
     }
 
     @Test
-    public void file() throws Exception {
-        Path memo = AntiBug.memo("<html/>");
-        XML xml = I.xml(memo.toFile());
+    void file() {
+        XML xml = I.xml(room.locateFile("temp", "<html/>").toFile());
         assert xml.size() == 1;
         assert xml.name() == "html";
     }
 
     @Test
-    public void url() throws Exception {
-        Path memo = AntiBug.memo("<html/>");
-        XML xml = I.xml(memo.toUri().toURL());
+    void url() throws MalformedURLException {
+        XML xml = I.xml(room.locateFile("temp", "<html/>").toUri().toURL());
         assert xml.size() == 1;
         assert xml.name() == "html";
     }
 
     @Test
-    public void uri() throws Exception {
-        Path memo = AntiBug.memo("<html/>");
-        XML xml = I.xml(memo.toUri());
+    void uri() {
+        XML xml = I.xml(room.locateFile("temp", "<html/>").toUri());
         assert xml.size() == 1;
         assert xml.name() == "html";
     }
 
     @ExpectThrow(NullPointerException.class)
-    public void inputNull() throws Exception {
+    void inputNull() {
         I.xml((File) null);
     }
 
     @ExpectThrow(SAXParseException.class)
-    public void invalidLiteral() throws Exception {
+    void invalidLiteral() {
         I.xml("<m><></m>");
     }
 }

@@ -9,12 +9,13 @@
  */
 package kiss;
 
+import java.io.Serializable;
 import java.util.function.BiFunction;
 
 /**
- * @version 2017/05/02 15:27:26
+ * @version 2018/04/02 8:35:58
  */
-public interface WiseBiFunction<Param1, Param2, Return> extends BiFunction<Param1, Param2, Return> {
+public interface WiseBiFunction<Param1, Param2, Return> extends BiFunction<Param1, Param2, Return>, Serializable {
 
     /**
      * <p>

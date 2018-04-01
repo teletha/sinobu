@@ -9,14 +9,12 @@
  */
 package kiss.core;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.AntiBug;
+import antibug.Get;
 import kiss.I;
 import kiss.sample.bean.FinalBean;
 import kiss.sample.bean.Primitive;
@@ -135,31 +133,14 @@ public class CoreMethodsTest {
 
     @Test
     public void instatiateAbstract() throws Exception {
-        assertThrows(InstantiationException.class, () -> I.make(Abstract.class));
+        assert Get.error(() -> I.make(Abstract.class)) instanceof InstantiationException;
     }
 
-    /**
-     * Test runtime exception.
-     */
     @Test
-    public void instatiateRuntimeExceptionThrower() throws Exception {
-        assert AntiBug.willCatch(() -> I.make(RuntimeExceptionClass.class)) instanceof RuntimeExceptionClass.E;
-    }
-
-    /**
-     * Test error.
-     */
-    @Test
-    public void instatiateErrorThrower() throws Exception {
-        assert AntiBug.willCatch(() -> I.make(ErrorClass.class)) instanceof ErrorClass.E;
-    }
-
-    /**
-     * Test exception.
-     */
-    @Test
-    public void instatiateExceptionThrower() throws Exception {
-        assert AntiBug.willCatch(() -> I.make(ExceptionClass.class)) instanceof ExceptionClass.E;
+    public void instatiateThrowable() throws Exception {
+        assert Get.error(() -> I.make(ExceptionClass.class)) instanceof ExceptionClass.E;
+        assert Get.error(() -> I.make(RuntimeExceptionClass.class)) instanceof RuntimeExceptionClass.E;
+        assert Get.error(() -> I.make(ErrorClass.class)) instanceof ErrorClass.E;
     }
 
     /**
@@ -307,14 +288,6 @@ public class CoreMethodsTest {
      * Test checked exception.
      */
     @Test
-    public void testExceptionQuietly() {
-        assert AntiBug.willCatch(() -> I.quiet(new ClassNotFoundException())) instanceof ClassNotFoundException;
-    }
-
-    /**
-     * Test checked exception.
-     */
-    @Test
     public void testCatchException() {
         try {
             throwError();
@@ -334,20 +307,10 @@ public class CoreMethodsTest {
         }
     }
 
-    /**
-     * Test unchecked exception.
-     */
     @Test
-    public void testRuntimeExceptionQuietly() {
-        assert AntiBug.willCatch(() -> I.quiet(new UnsupportedOperationException())) instanceof UnsupportedOperationException;
+    public void testExceptionQuietly() {
+        assert Get.error(() -> I.quiet(new ClassNotFoundException())) instanceof ClassNotFoundException;
+        assert Get.error(() -> I.quiet(new UnsupportedOperationException())) instanceof UnsupportedOperationException;
+        assert Get.error(() -> I.quiet(new LinkageError())) instanceof LinkageError;
     }
-
-    /**
-     * Test error.
-     */
-    @Test
-    public void testErrorQuietly() {
-        assert AntiBug.willCatch(() -> I.quiet(new LinkageError())) instanceof LinkageError;
-    }
-
 }

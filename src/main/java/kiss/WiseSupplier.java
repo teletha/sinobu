@@ -9,12 +9,13 @@
  */
 package kiss;
 
+import java.io.Serializable;
 import java.util.function.Supplier;
 
 /**
- * @version 2017/05/02 15:28:23
+ * @version 2018/04/02 8:35:21
  */
-public interface WiseSupplier<Return> extends Supplier<Return> {
+public interface WiseSupplier<Return> extends Supplier<Return>, Serializable {
 
     /**
      * <p>
