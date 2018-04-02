@@ -18,74 +18,71 @@ import org.junit.jupiter.api.Test;
 import antibug.ExpectThrow;
 
 /**
- * @version 2018/03/31 23:14:18
+ * @version 2018/04/02 9:25:12
  */
 public class RecoverableTest {
 
     @Test
-    public void ok() throws Exception {
-        int value = I.run(this::value);
-        assert value == 10;
+    void ok() {
+        String value = I.run(this::value);
+        assert value == "pass";
     }
 
-    private int value() {
-        return 10;
+    private String value() {
+        return "pass";
     }
 
     @Test
-    public void exception1() throws Exception {
+    void exception1() {
         AtomicInteger value = new AtomicInteger();
         I.run(unstableOperation(() -> value.set(20), Exception.class), I.retryWhen(Exception.class));
         assert value.get() == 20;
     }
 
     @Test
-    public void error1() throws Exception {
-        int value = I.run(unstableOperation(() -> 10, Error.class), I.retryWhen(Error.class, 1));
-        assert value == 10;
+    void error1() {
+        String value = I.run(unstableOperation(() -> "pass", Error.class), I.retryWhen(Error.class, 1));
+        assert value == "pass";
     }
 
     @ExpectThrow(Error.class)
-    public void error1WithoutRecovery() throws Exception {
-        int value = I.run(unstableOperation(() -> 10, Error.class));
-        assert value == 10;
+    void error1WithoutRecovery() {
+        String value = I.run(unstableOperation(() -> "pass", Error.class));
+        assert value == "pass";
     }
 
     @ExpectThrow(Error.class)
-    public void error2() throws Exception {
-        int value = I.run(unstableOperation(() -> 10, Error.class, Error.class), I.retryWhen(Error.class, 1));
-        assert value == 10;
+    void error2() {
+        I.run(unstableOperation(() -> "error", Error.class, Error.class), I.retryWhen(Error.class, 1));
     }
 
     @Test
-    public void error2WithUnlimitedRetry() throws Exception {
-        int value = I.run(unstableOperation(() -> 10, Error.class, Error.class), I.retryWhen(Error.class));
-        assert value == 10;
+    void error2WithUnlimitedRetry() {
+        String value = I.run(unstableOperation(() -> "pass", Error.class, Error.class), I.retryWhen(Error.class));
+        assert value == "pass";
     }
 
     @ExpectThrow(Exception.class)
-    public void recoverOnlyError() throws Exception {
-        int value = I.run(unstableOperation(() -> 10, Error.class, Exception.class), I.retryWhen(Error.class));
-        assert value == 10;
+    void recoverOnlyError() {
+        I.run(unstableOperation(() -> "error", Error.class, Exception.class), I.retryWhen(Error.class));
     }
 
     @ExpectThrow(Error.class)
-    public void recoverOnlyException() throws Exception {
-        int value = I.run(unstableOperation(() -> 10, Error.class, Exception.class), I.retryWhen(Exception.class));
-        assert value == 10;
+    void recoverOnlyException() {
+        I.run(unstableOperation(() -> "error", Error.class, Exception.class), I.retryWhen(Exception.class));
     }
 
     @Test
-    public void recoverErrorAndException() throws Exception {
-        int value = I
-                .run(unstableOperation(() -> 10, Error.class, Exception.class), I.retryWhen(Exception.class), I.retryWhen(Error.class));
-        assert value == 10;
+    void recoverErrorAndException() {
+        String value = I
+                .run(unstableOperation(() -> "pass", Error.class, Exception.class), I.retryWhen(Exception.class), I.retryWhen(Error.class));
+        assert value == "pass";
     }
 
     @Test
-    public void recoverSubType() throws Exception {
-        int value = I.run(unstableOperation(() -> 10, IOException.class), I.retryWhen(Exception.class));
-        assert value == 10;
+    void recoverSubType() {
+        String value = I.run(unstableOperation(() -> "pass", IOException.class), I.retryWhen(Exception.class));
+        assert value == "pass";
     }
 
     /**

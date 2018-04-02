@@ -14,7 +14,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.Get;
+import antibug.Code;
 import kiss.I;
 import kiss.sample.bean.FinalBean;
 import kiss.sample.bean.Primitive;
@@ -133,14 +133,14 @@ public class CoreMethodsTest {
 
     @Test
     public void instatiateAbstract() throws Exception {
-        assert Get.error(() -> I.make(Abstract.class)) instanceof InstantiationException;
+        assert Code.catches(() -> I.make(Abstract.class)) instanceof InstantiationException;
     }
 
     @Test
     public void instatiateThrowable() throws Exception {
-        assert Get.error(() -> I.make(ExceptionClass.class)) instanceof ExceptionClass.E;
-        assert Get.error(() -> I.make(RuntimeExceptionClass.class)) instanceof RuntimeExceptionClass.E;
-        assert Get.error(() -> I.make(ErrorClass.class)) instanceof ErrorClass.E;
+        assert Code.catches(() -> I.make(ExceptionThrower.class)) instanceof ExceptionThrower.Bug;
+        assert Code.catches(() -> I.make(RuntimeThrower.class)) instanceof RuntimeThrower.Bug;
+        assert Code.catches(() -> I.make(ErrorThrower.class)) instanceof ErrorThrower.Bug;
     }
 
     /**
@@ -199,75 +199,63 @@ public class CoreMethodsTest {
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/11/10 20:02:15
+     * @version 2018/04/02 9:30:58
      */
-    private static class RuntimeExceptionClass {
+    private static class RuntimeThrower {
 
         /**
          * Create RuntimeExceptionClass instance.
          */
-        private RuntimeExceptionClass() {
-            throw new E();
+        private RuntimeThrower() {
+            throw new Bug();
         }
 
         /**
-         * DOCUMENT.
-         * 
-         * @version 2007/11/10 20:06:49
+         * @version 2018/04/02 9:30:55
          */
-        private static class E extends RuntimeException {
+        private static class Bug extends RuntimeException {
 
             private static final long serialVersionUID = 6965448734007115961L;
         }
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/11/10 20:02:15
+     * @version 2018/04/02 9:30:52
      */
-    private static class ErrorClass {
+    private static class ErrorThrower {
 
         /**
          * Create ErrorClass instance.
          */
-        private ErrorClass() {
-            throw new E();
+        private ErrorThrower() {
+            throw new Bug();
         }
 
         /**
-         * DOCUMENT.
-         * 
-         * @version 2007/11/10 20:06:49
+         * @version 2018/04/02 9:30:48
          */
-        private static class E extends Error {
+        private static class Bug extends Error {
 
             private static final long serialVersionUID = 219714084165765163L;
         }
     }
 
     /**
-     * DOCUMENT.
-     * 
-     * @version 2007/11/10 20:02:15
+     * @version 2018/04/02 9:30:43
      */
-    private static class ExceptionClass {
+    private static class ExceptionThrower {
 
         /**
          * Create ExceptionClass instance.
          */
-        private ExceptionClass() throws E {
-            throw new E();
+        private ExceptionThrower() throws Bug {
+            throw new Bug();
         }
 
         /**
-         * DOCUMENT.
-         * 
-         * @version 2007/11/10 20:06:49
+         * @version 2018/04/02 9:30:40
          */
-        private static class E extends Exception {
+        private static class Bug extends Exception {
 
             private static final long serialVersionUID = 5333091127457345270L;
         }
@@ -309,8 +297,8 @@ public class CoreMethodsTest {
 
     @Test
     public void testExceptionQuietly() {
-        assert Get.error(() -> I.quiet(new ClassNotFoundException())) instanceof ClassNotFoundException;
-        assert Get.error(() -> I.quiet(new UnsupportedOperationException())) instanceof UnsupportedOperationException;
-        assert Get.error(() -> I.quiet(new LinkageError())) instanceof LinkageError;
+        assert Code.catches(() -> I.quiet(new ClassNotFoundException())) instanceof ClassNotFoundException;
+        assert Code.catches(() -> I.quiet(new UnsupportedOperationException())) instanceof UnsupportedOperationException;
+        assert Code.catches(() -> I.quiet(new LinkageError())) instanceof LinkageError;
     }
 }
