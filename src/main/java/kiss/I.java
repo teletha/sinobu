@@ -1692,6 +1692,14 @@ public class I {
         return Signal.EMPTY.startWith(values);
     }
 
+    /**
+     * Converts a {@link Future} into a {@link Signal}.
+     *
+     * @param value The source {@link Future}.
+     * @param <V> The type of object that the {@link Future} returns, and also the type of item to
+     *            be emitted by the resulting {@link Signal}.
+     * @return {@link Signal} that emits the item from the source {@link Future}.
+     */
     public static <V> Signal<V> signal(Future<V> value) {
         return new Signal<>((observer, disposer) -> {
             I.schedule(() -> {
@@ -1706,6 +1714,14 @@ public class I {
         });
     }
 
+    /**
+     * Converts a {@link CompletableFuture} into a {@link Signal}.
+     *
+     * @param value The source {@link CompletableFuture}.
+     * @param <V> The type of object that the {@link CompletableFuture} returns, and also the type
+     *            of item to be emitted by the resulting {@link Signal}.
+     * @return {@link Signal} that emits the item from the source {@link CompletableFuture}.
+     */
     public static <V> Signal<V> signal(CompletableFuture<V> value) {
         return new Signal<>((observer, disposer) -> {
             value.whenComplete((v, e) -> {

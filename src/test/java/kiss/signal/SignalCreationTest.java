@@ -15,7 +15,6 @@ import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.Chronus;
 import kiss.I;
 import kiss.Signal;
 
@@ -23,8 +22,6 @@ import kiss.Signal;
  * @version 2018/04/02 11:31:51
  */
 class SignalCreationTest extends SignalTester {
-
-    Chronus chronus = new Chronus(I.class);
 
     @Test
     void single() {
