@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,7 +50,7 @@ public class CuncurrentTest {
     @BeforeEach
     public void init() throws Exception {
         // create new thread pool
-        pool = Executors.newFixedThreadPool(6);
+        pool = Executors.newFixedThreadPool(12);
 
     }
 
@@ -64,25 +65,31 @@ public class CuncurrentTest {
 
     @Test
     public void testReadAndWrite1() throws Exception {
+        int writeCount = 100;
+
+        CountDownLatch latch = new CountDownLatch(writeCount * 2);
         StringListProperty bean = createBigList();
 
         // write
-        for (int i = 0; i < 5; i++) {
-            pool.execute(new Writer(bean));
+        for (int i = 0; i < writeCount; i++) {
+            I.signal(pool.submit(new Writer(bean))).to(v -> {
+                latch.countDown();
+            });
+            I.signal(pool.submit(new Reader())).to(result -> {
+                assert result != null;
+                assert result.getList() != null;
+                assert 10000 == result.getList().size();
+                latch.countDown();
+            });
         }
 
-        // read
-        StringListProperty result = pool.submit(new Reader()).get();
-
-        assert result != null;
-        assert result.getList() != null;
-        assert 2000 == result.getList().size();
+        latch.await();
     }
 
     private StringListProperty createBigList() {
-        List list = new ArrayList(2000);
+        List list = new ArrayList(10000);
 
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 10000; i++) {
             list.add(i);
         }
 
@@ -109,7 +116,7 @@ public class CuncurrentTest {
     /**
      * @version 2011/03/29 12:37:27
      */
-    private static class Writer implements Runnable {
+    private static class Writer implements Callable<Object> {
 
         private final Object bean;
 
@@ -124,12 +131,13 @@ public class CuncurrentTest {
          * {@inheritDoc}
          */
         @Override
-        public void run() {
+        public Object call() throws Exception {
             try {
                 I.write(bean, Files.newBufferedWriter(testFile, StandardCharsets.UTF_8));
             } catch (IOException e) {
                 throw I.quiet(e);
             }
+            return null;
         }
     }
 }

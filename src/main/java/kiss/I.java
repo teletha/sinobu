@@ -268,25 +268,25 @@ public class I {
             switch (type.getName().hashCode()) {
             case 64711720: // boolean
             case 344809556: // java.lang.Boolean
-                return Boolean::new;
+                return Boolean::parseBoolean;
             case 104431: // int
             case -2056817302: // java.lang.Integer
-                return Integer::new;
+                return Integer::parseInt;
             case 3327612: // long
             case 398795216: // java.lang.Long
-                return Long::new;
+                return Long::parseLong;
             case 97526364: // float
             case -527879800: // java.lang.Float
-                return Float::new;
+                return Float::parseFloat;
             case -1325958191: // double
             case 761287205: // java.lang.Double
-                return Double::new;
+                return Double::parseDouble;
             case 3039496: // byte
             case 398507100: // java.lang.Byte
-                return Byte::new;
+                return Byte::parseByte;
             case 109413500: // short
             case -515992664: // java.lang.Short
-                return Short::new;
+                return Short::parseShort;
             case 3052374: // char
             case 155276373: // java.lang.Character
                 return value -> value.charAt(0);
@@ -485,9 +485,9 @@ public class I {
      * @param input A {@link InputStream} to read from.
      * @param output An {@link OutputStream} to write to.
      * @param close Whether input and output steream will be closed automatically or not.
-     * @throws IOException If an I/O error occurs.
+     * @throws IOException If an  I/O error occurs.
      * @throws NullPointerException If the input or output is null.
-     * @throws SecurityException If a security manager exists and its
+     * @throws SecurityException If a   security manager exists and its
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
@@ -518,7 +518,7 @@ public class I {
      * @param input A {@link Readable} to read from.
      * @param output An {@link Appendable} to write to.
      * @param close Whether input and output steream will be closed automatically or not.
-     * @throws IOException If an I/O error occurs.
+     * @throws IOException If an  I/O error occurs.
      * @throws NullPointerException If the input or output is null.
      */
     public static void copy(Readable input, Appendable output, boolean close) {
@@ -572,7 +572,7 @@ public class I {
      * @param extensionPoint An Extension Point class. The
      *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
      *            otherwise this method will return <code>null</code>.
-     * @param key An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.
+     * @param key An <a  href="Extensible.html#ExtensionKey">Extension Key</a> class.
      * @return A associated Extension of the given Extension Point and the given Extension Key or
      *         <code>null</code>.
      */
@@ -1692,6 +1692,34 @@ public class I {
         return Signal.EMPTY.startWith(values);
     }
 
+    public static <V> Signal<V> signal(Future<V> value) {
+        return new Signal<>((observer, disposer) -> {
+            I.schedule(() -> {
+                try {
+                    observer.accept(value.get());
+                    observer.complete();
+                } catch (Throwable e) {
+                    observer.error(e);
+                }
+            });
+            return disposer.add(() -> value.cancel(true));
+        });
+    }
+
+    public static <V> Signal<V> signal(CompletableFuture<V> value) {
+        return new Signal<>((observer, disposer) -> {
+            value.whenComplete((v, e) -> {
+                if (e == null) {
+                    observer.accept(v);
+                    observer.complete();
+                } else {
+                    observer.error(e);
+                }
+            });
+            return disposer.add(() -> value.cancel(true));
+        });
+    }
+
     /**
      * <p>
      * Signal the specified values.
@@ -2051,7 +2079,7 @@ public class I {
      * @see #read(CharSequence, Object)
      */
     public static void write(Object input, Appendable out) {
-        Objects.nonNull(out);
+        Objects.requireNonNull(out);
 
         try {
             // aquire lock

@@ -10,19 +10,24 @@
 package kiss.signal;
 
 import java.util.Enumeration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 
+import antibug.Chronus;
 import kiss.I;
 import kiss.Signal;
 
 /**
- * @version 2018/03/11 12:37:33
+ * @version 2018/04/02 11:31:51
  */
-public class SignalCreationTest extends SignalTester {
+class SignalCreationTest extends SignalTester {
+
+    Chronus chronus = new Chronus(I.class);
 
     @Test
-    public void single() {
+    void single() {
         monitor(() -> signal(1));
 
         assert main.value(1);
@@ -32,7 +37,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void multi() {
+    void multi() {
         monitor(() -> signal(1, 2, 3));
 
         assert main.value(1, 2, 3);
@@ -42,7 +47,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void empty() {
+    void empty() {
         monitor(() -> Signal.EMPTY);
 
         assert main.value();
@@ -52,7 +57,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void never() {
+    void never() {
         monitor(() -> Signal.NEVER);
 
         assert main.value();
@@ -62,7 +67,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void singleNull() {
+    void singleNull() {
         monitor(() -> signal((String) null));
 
         assert main.value((String) null);
@@ -72,7 +77,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void multiNull() {
+    void multiNull() {
         monitor(() -> signal(null, null, null));
 
         assert main.value(null, null, null);
@@ -82,7 +87,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void arrayNull() {
+    void arrayNull() {
         monitor(() -> signal((String[]) null));
 
         assert main.value();
@@ -92,7 +97,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void iterable() {
+    void iterable() {
         monitor(() -> signal(list(1, 2)));
 
         assert main.value(1, 2);
@@ -102,7 +107,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void iterableNull() {
+    void iterableNull() {
         monitor(() -> signal((Iterable) null));
 
         assert main.value();
@@ -112,7 +117,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void enumeration() {
+    void enumeration() {
         monitor(1, () -> signal(enume(1, 2)));
 
         assert main.value(1, 2);
@@ -122,7 +127,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void enumerationNull() {
+    void enumerationNull() {
         monitor(() -> signal((Enumeration) null));
 
         assert main.value();
@@ -132,7 +137,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void interval() {
+    void interval() {
         monitor(() -> I.signal(0, 25, ms).take(2));
 
         assert await(10).value(0L);
@@ -145,7 +150,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void delay() {
+    void delay() {
         monitor(() -> I.signal(20, ms));
 
         assert await(10).value();
@@ -158,7 +163,77 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void range() {
+    void future() {
+        monitor(() -> I.signal((Future) CompletableFuture.completedFuture("ok")));
+
+        assert await().value("ok");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void futureError() {
+        monitor(() -> I.signal((Future) CompletableFuture.failedFuture(new Error())));
+
+        assert await().value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void futureDelay() {
+        monitor(() -> I.signal((Future) CompletableFuture.supplyAsync(() -> "ok", CompletableFuture.delayedExecutor(10, ms))));
+
+        assert main.value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert await(30).value("ok");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void completableFuture() {
+        monitor(() -> I.signal(CompletableFuture.completedFuture("ok")));
+
+        assert await().value("ok");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void completableFutureError() {
+        monitor(() -> I.signal(CompletableFuture.failedFuture(new Error())));
+
+        assert await().value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void completableFutureDelay() {
+        monitor(() -> I.signal(CompletableFuture.supplyAsync(() -> "ok", CompletableFuture.delayedExecutor(10, ms))));
+
+        assert main.value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert await(30).value("ok");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void range() {
         monitor(() -> I.signalRange(0, 5));
 
         assert main.value(0, 1, 2, 3, 4);
@@ -167,7 +242,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void rangeWithStep() {
+    void rangeWithStep() {
         monitor(() -> I.signalRange(0, 3, 2));
         assert main.value(0, 2, 4);
         assert main.isCompleted();
@@ -175,7 +250,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void rangeLong() {
+    void rangeLong() {
         monitor(() -> I.signalRange(0L, 5L));
 
         assert main.value(0L, 1L, 2L, 3L, 4L);
@@ -184,7 +259,7 @@ public class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    public void rangeLongWithStep() {
+    void rangeLongWithStep() {
         monitor(() -> I.signalRange(0L, 3L, 2L));
         assert main.value(0L, 2L, 4L);
         assert main.isCompleted();

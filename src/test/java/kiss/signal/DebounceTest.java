@@ -14,7 +14,7 @@ import static java.util.concurrent.TimeUnit.*;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/03/02 9:47:18
+ * @version 2018/04/02 9:37:09
  */
 public class DebounceTest extends SignalTester {
 
@@ -31,15 +31,11 @@ public class DebounceTest extends SignalTester {
         assert main.emit("D").value();
         await(10);
         assert main.emit("E").value();
-        await(10); // 10ms elapsed
-        assert main.value();
-        await(10); // 20ms elapsed
-        assert main.value();
-        await(15); // 35ms elapsed
+        await(40); // 40ms elapsed
         assert main.value("E");
 
         assert main.emit("F", "G", "H").value();
-        await(50);
+        await(40); // 40ms elapsed
         assert main.value("H");
     }
 
