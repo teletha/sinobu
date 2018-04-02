@@ -58,7 +58,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -186,9 +185,6 @@ public class I {
 
     /** The definitions of extensions. */
     private static final Map<Class, Ⅱ> extensions = new HashMap<>();
-
-    /** The lock for configurations. */
-    private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     /** The daemon thread factory. */
     private static final ThreadFactory factory = run -> {
@@ -777,17 +773,15 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     private static JSON json(Object input) {
-        try {
-            // aquire lock
-            lock.readLock().lock();
+        InputStreamReader stream = null;
 
+        try {
             // Parse as JSON
-            return new JSON(new InputStreamReader(new ByteArrayInputStream(read(input)), StandardCharsets.UTF_8));
+            return new JSON(stream = new InputStreamReader(new ByteArrayInputStream(read(input)), StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw quiet(e);
         } finally {
-            // relese lock
-            lock.readLock().unlock();
+            I.quiet(stream);
         }
     }
 
@@ -2098,16 +2092,10 @@ public class I {
         Objects.requireNonNull(out);
 
         try {
-            // aquire lock
-            lock.writeLock().lock();
-
             // traverse object as json
             Model model = Model.of(input);
             new JSON(out).write(model, new Property(model, ""), input);
         } finally {
-            // relese lock
-            lock.writeLock().unlock();
-
             // close carefuly
             quiet(out);
         }
