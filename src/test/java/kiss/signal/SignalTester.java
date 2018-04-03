@@ -509,7 +509,7 @@ public class SignalTester {
          */
         @Override
         public boolean value(Object... expected) {
-            assert values.size() == expected.length : new AssertionError(values + "  " + Arrays.toString(expected));
+            assert values.size() == expected.length;
 
             for (int i = 0; i < expected.length; i++) {
                 assert Objects.equals(values.get(i), expected[i]) : values + " " + Arrays.toString(expected);
@@ -523,7 +523,7 @@ public class SignalTester {
          */
         @Override
         public boolean size(int expectedSize) {
-            assert values.size() == expectedSize : new AssertionError(values);
+            assert values.size() == expectedSize;
             values.clear();
             return true;
         }
