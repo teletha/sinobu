@@ -460,7 +460,11 @@ public class I {
             if (functions != null) {
                 for (Object fun : functions) {
                     if (fun != null) {
-                        result = method.invoke(fun, args);
+                        try {
+                            result = method.invoke(fun, args);
+                        } catch (InvocationTargetException e) {
+                            throw e.getCause();
+                        }
                     }
                 }
             }

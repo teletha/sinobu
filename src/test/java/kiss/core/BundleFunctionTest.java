@@ -22,12 +22,12 @@ import antibug.ExpectThrow;
 import kiss.I;
 
 /**
- * @version 2018/03/31 22:14:28
+ * @version 2018/04/04 1:11:33
  */
-public class BundleFunctionTest {
+class BundleFunctionTest {
 
     @Test
-    public void function() {
+    void function() {
         AtomicInteger value = new AtomicInteger();
         assert value.get() == 0;
 
@@ -37,7 +37,7 @@ public class BundleFunctionTest {
     }
 
     @Test
-    public void functionList() {
+    void functionList() {
         AtomicInteger value = new AtomicInteger();
         assert value.get() == 0;
 
@@ -48,7 +48,7 @@ public class BundleFunctionTest {
     }
 
     @Test
-    public void generic() {
+    void generic() {
         AtomicInteger value = new AtomicInteger();
         assert value.get() == 0;
 
@@ -58,7 +58,7 @@ public class BundleFunctionTest {
     }
 
     @Test
-    public void genericList() {
+    void genericList() {
         AtomicInteger value = new AtomicInteger();
         assert value.get() == 0;
 
@@ -69,14 +69,14 @@ public class BundleFunctionTest {
     }
 
     @ExpectThrow(IllegalArgumentException.class)
-    public void byClass() {
+    void byClass() {
         ArrayList array = new ArrayList();
         LinkedList linked = new LinkedList();
         I.bundle(array, linked);
     }
 
     @Test
-    public void byInterface1() {
+    void byInterface1() {
         ArrayList array = new ArrayList();
         LinkedList linked = new LinkedList();
         List bundle = I.bundle(List.class, array, linked);
@@ -86,7 +86,7 @@ public class BundleFunctionTest {
     }
 
     @Test
-    public void byInterface2() {
+    void byInterface2() {
         ArrayList<String> array = new ArrayList();
         LinkedList<String> linked = new LinkedList();
         Collection<String> bundle = I.bundle(Collection.class, array, linked);
@@ -101,5 +101,12 @@ public class BundleFunctionTest {
 
     private Consumer<Integer> consumer(Consumer<Integer> consumer) {
         return consumer;
+    }
+
+    @ExpectThrow(IndexOutOfBoundsException.class)
+    void error() {
+        ArrayList<String> array = new ArrayList();
+        List<String> bundle = I.bundle(List.class, array);
+        bundle.set(10, "Bundle will throw not UndeclaredThrowableException but IndexOutOfBoundsException.");
     }
 }
