@@ -33,6 +33,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -48,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -213,6 +216,9 @@ public class I {
     /** The submarine {@link Encoder} / {@link Decoder} support for java.nio.file.Path. */
     private static Method path;
 
+    /** The cached environment variables. */
+    private static final Properties env = new Properties();
+
     // initialization
     static {
         // built-in lifestyles
@@ -356,6 +362,19 @@ public class I {
                 return null;
             }
         });
+
+        // build twelve-factor configuration
+        try {
+            env.load(new InputStreamReader(I.class.getClassLoader().getResourceAsStream(".env"), StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            // ignore
+        }
+        try {
+            env.load(Files.newBufferedReader(Paths.get(".env")));
+        } catch (Exception e) {
+            // ignore
+        }
+        env.putAll(System.getenv());
     }
 
     /**
@@ -535,6 +554,36 @@ public class I {
                 quiet(output);
             }
         }
+    }
+
+    /**
+     * ENV resolution order (sources higher in the list take precedence over those located lower):
+     * <ol>
+     * <li>System.getenv()</li>
+     * <li>.env file in current working directory (might not exist)</li>
+     * <li>.env file on the classpath (might not exist)</li>
+     * </ol>
+     * 
+     * @param key A environment variable name.
+     * @return
+     */
+    public static String env(String key) {
+        return env.getProperty(key);
+    }
+
+    /**
+     * ENV resolution order (sources higher in the list take precedence over those located lower):
+     * <ol>
+     * <li>System.getenv()</li>
+     * <li>.env file in current working directory (might not exist)</li>
+     * <li>.env file on the classpath (might not exist)</li>
+     * </ol>
+     * 
+     * @param key A environment variable name.
+     * @return
+     */
+    public static String env(String key, String defaults) {
+        return env.getProperty(key, defaults);
     }
 
     /**
