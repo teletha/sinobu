@@ -47,8 +47,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import kiss.signal.StartWithTest;
-
 /**
  * @version 2018/03/21 22:55:13
  */
@@ -2466,7 +2464,6 @@ public final class Signal<V> {
      *
      * @param value The initial value.
      * @return Chainable API.
-     * @see StartWithTest#value()
      */
     public final Signal<V> startWith(V value) {
         return startWith(Arrays.asList(value));
