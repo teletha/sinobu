@@ -76,6 +76,7 @@ public class TakeTest extends SignalTester {
 
         assert main.emit(1, 2, 3, 4).value(1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
