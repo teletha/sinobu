@@ -102,7 +102,7 @@ class Subscriber<T> implements Observer<T>, Disposable {
      * @return
      */
     Signal<T> signal() {
-        CopyOnWriteArrayList<Observer<? super T>> observers = new CopyOnWriteArrayList();
+        CopyOnWriteArrayList<Observer<T>> observers = new CopyOnWriteArrayList();
         observer = I.bundle(Observer.class, observers);
 
         return new Signal<>(observers);

@@ -9,13 +9,17 @@
  */
 package kiss.signal;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Disposable;
 import kiss.I;
+import kiss.Observer;
 import kiss.Signal;
 
 /**
@@ -261,5 +265,24 @@ class SignalCreationTest extends SignalTester {
         assert main.value(0L, 2L, 4L);
         assert main.isCompleted();
         assert main.isDisposed();
+    }
+
+    @Test
+    void constructWithObserverCollection() {
+        List<Observer<String>> observers = new ArrayList();
+
+        List<String> results = new ArrayList();
+        Disposable disposer = new Signal<String>(observers).map(String::toUpperCase).to(results::add);
+
+        observers.forEach(e -> e.accept("one"));
+        assert results.get(0).equals("ONE");
+        observers.forEach(e -> e.accept("two"));
+        assert results.get(1).equals("TWO");
+
+        // dispose
+        disposer.dispose();
+
+        observers.forEach(e -> e.accept("Disposed signal doesn't propagate event."));
+        assert results.size() == 2;
     }
 }

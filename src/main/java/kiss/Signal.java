@@ -86,11 +86,19 @@ public final class Signal<V> {
      * @see #to(Consumer, Consumer)
      * @see #to(Consumer, Consumer, Runnable)
      */
-    public Signal(Collection<Observer<? super V>> observers) {
+    public Signal(Collection<Observer<V>> observers) {
         this((observer, disposer) -> {
-            observers.add(observer);
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.next = v -> {
+                if (disposer.isNotDisposed()) {
+                    observer.accept(v);
+                }
+            };
 
-            return disposer.add(() -> observers.remove(observer));
+            observers.add(subscriber);
+
+            return disposer.add(() -> observers.remove(subscriber));
         });
     }
 
@@ -806,7 +814,9 @@ public final class Signal<V> {
                 }
             });
 
-            return index().to(indexed -> {
+            return
+
+            index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
@@ -2879,7 +2889,7 @@ public final class Signal<V> {
             C context = contextSupplier == null ? null : contextSupplier.get();
 
             return to(value -> {
-                if (condition.test(context, value) == expected) {
+                if (disposer.isNotDisposed() && condition.test(context, value) == expected) {
                     observer.accept(value);
                 } else {
                     if (stopOnFail) {
