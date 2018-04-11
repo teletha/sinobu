@@ -16,48 +16,48 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 
 /**
- * @version 2018/04/12 8:35:33
+ * @version 2018/04/12 8:51:29
  */
 class OnTest extends SignalTester {
 
     @Test
     void on() {
-        monitor(signal -> signal.on(thread("other")).map(v -> Thread.currentThread().getName()));
+        monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName()));
 
         main.emit("START");
-        assert await(20).value("other");
+        assert await().value("Sinobu Scheduler");
     }
 
     @Test
     void multiple() {
-        monitor(signal -> signal.on(thread("other"))
-                .map(v -> Thread.currentThread().getName())
-                .on(thread("last"))
-                .map(v -> v + " " + Thread.currentThread().getName()));
+        monitor(String.class, Boolean.class, signal -> signal.on(after20ms)
+                .map(v -> Thread.currentThread())
+                .on(after20ms)
+                .map(v -> v == Thread.currentThread()));
 
         main.emit("START");
-        assert await(20).value("other last");
+        assert await().value(false);
     }
 
     @Test
     void error() {
-        monitor(signal -> signal.on(thread("other")).map(v -> Thread.currentThread().getName()));
+        monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName()));
 
         main.emit(Error.class);
         assert main.isNotError();
         assert main.isNotDisposed();
-        await(20);
+        await();
         assert main.isError();
         assert main.isDisposed();
     }
 
     @Test
     void complete() {
-        monitor(signal -> signal.on(thread("other")).map(v -> Thread.currentThread().getName()));
+        monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName()));
 
         main.emit(Complete);
         assert main.isNotCompleted();
-        await(20);
+        await();
         assert main.isCompleted();
     }
 
@@ -73,22 +73,9 @@ class OnTest extends SignalTester {
     }
 
     /**
-     * Thread builder.
-     * 
-     * @param action
-     */
-    private Consumer<Runnable> thread(String name) {
-        return action -> {
-            Thread thread = new Thread(action);
-            thread.setName(name);
-            thread.start();
-        };
-    }
-
-    /**
      * Scheduler.
      */
     private Consumer<Runnable> after20ms = runner -> {
-        I.schedule(20, ms, false, runner);
+        I.schedule(20, ms, true, runner);
     };
 }
