@@ -13,13 +13,15 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.I;
+
 /**
- * @version 2018/03/04 13:33:46
+ * @version 2018/04/12 8:35:33
  */
-public class OnTest extends SignalTester {
+class OnTest extends SignalTester {
 
     @Test
-    public void on() {
+    void on() {
         monitor(signal -> signal.on(thread("other")).map(v -> Thread.currentThread().getName()));
 
         main.emit("START");
@@ -27,7 +29,7 @@ public class OnTest extends SignalTester {
     }
 
     @Test
-    public void multiple() {
+    void multiple() {
         monitor(signal -> signal.on(thread("other"))
                 .map(v -> Thread.currentThread().getName())
                 .on(thread("last"))
@@ -38,7 +40,7 @@ public class OnTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(signal -> signal.on(thread("other")).map(v -> Thread.currentThread().getName()));
 
         main.emit(Error.class);
@@ -50,13 +52,24 @@ public class OnTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(signal -> signal.on(thread("other")).map(v -> Thread.currentThread().getName()));
 
         main.emit(Complete);
         assert main.isNotCompleted();
         await(20);
         assert main.isCompleted();
+    }
+
+    @Test
+    void dispose() {
+        monitor(signal -> signal.take(1).on(after20ms));
+
+        assert main.emit("send value", "immediately").value();
+        assert await().value("send value");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     /**
@@ -71,4 +84,11 @@ public class OnTest extends SignalTester {
             thread.start();
         };
     }
+
+    /**
+     * Scheduler.
+     */
+    private Consumer<Runnable> after20ms = runner -> {
+        I.schedule(20, ms, false, runner);
+    };
 }
