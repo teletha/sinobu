@@ -11,7 +11,7 @@ package kiss;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
@@ -108,7 +108,7 @@ class Subscriber<T> implements Observer<T>, Disposable {
         return new Signal<>(observers);
     }
 
-    private static Map<Disposable, Subscriber> cache = new ConcurrentHashMap();
+    private static Map<Disposable, Subscriber> cache = new WeakHashMap();
 
     static Subscriber of(Disposable disposable) {
         if (disposable instanceof Subscriber) {

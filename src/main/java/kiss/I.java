@@ -192,6 +192,7 @@ public class I {
     /** The daemon thread factory. */
     private static final ThreadFactory factory = run -> {
         Thread thread = new Thread(run);
+        thread.setName("Sinobu Scheduler");
         thread.setDaemon(true);
         return thread;
     };
