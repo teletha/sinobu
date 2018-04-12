@@ -1639,7 +1639,7 @@ public final class Signal<V> {
         }, e -> {
             scheduler.accept(() -> observer.error(e));
         }, () -> {
-            scheduler.accept(observer::complete);
+            scheduler.accept(() -> observer.complete());
         }, disposer));
     }
 
@@ -2889,7 +2889,7 @@ public final class Signal<V> {
             C context = contextSupplier == null ? null : contextSupplier.get();
 
             return to(value -> {
-                if (disposer.isNotDisposed() && condition.test(context, value) == expected) {
+                if (condition.test(context, value) == expected) {
                     observer.accept(value);
                 } else {
                     if (stopOnFail) {
@@ -2897,7 +2897,7 @@ public final class Signal<V> {
                         observer.complete();
                     }
                 }
-            }, observer::error, observer::complete, disposer);
+            }, observer::error, observer::complete, disposer, true);
         });
     }
 
