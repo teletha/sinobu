@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/01 16:33:28
  */
-public class IndexText extends SignalTester {
+class IndexText extends SignalTester {
 
     @Test
-    public void index() {
+    void index() {
         monitor(String.class, signal -> signal.index().map(v -> v.ⅰ + v.ⅱ));
 
         assert main.emit("A").value("A0");
@@ -27,7 +27,7 @@ public class IndexText extends SignalTester {
     }
 
     @Test
-    public void start() {
+    void start() {
         monitor(String.class, signal -> signal.index(10).map(v -> v.ⅰ + v.ⅱ));
 
         assert main.emit("A").value("A10");

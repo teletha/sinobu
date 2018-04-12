@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/11 16:03:18
  */
-public class ThrottleTest extends SignalTester {
+class ThrottleTest extends SignalTester {
 
     @Test
-    public void throttle() {
+    void throttle() {
         monitor(1, signal -> signal.throttle(30, ms));
 
         assert main.emit("success").value("success");

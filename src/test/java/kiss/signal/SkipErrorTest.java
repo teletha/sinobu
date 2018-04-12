@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/23 17:17:56
  */
-public class SkipErrorTest extends SignalTester {
+class SkipErrorTest extends SignalTester {
 
     @Test
-    public void error() {
+    void error() {
         monitor(signal -> signal.skipError());
 
         main.emit(Error.class);
@@ -36,7 +36,7 @@ public class SkipErrorTest extends SignalTester {
     }
 
     @Test
-    public void errorSpecifiec() {
+    void errorSpecifiec() {
         monitor(signal -> signal.skipError(Exception.class));
 
         main.emit(Exception.class, IOException.class);
@@ -53,7 +53,7 @@ public class SkipErrorTest extends SignalTester {
     }
 
     @Test
-    public void acceptNull() {
+    void acceptNull() {
         monitor(signal -> signal.skipError(null));
 
         main.emit(Exception.class, IOException.class);

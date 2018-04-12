@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/01 12:02:57
  */
-public class DelayTest extends SignalTester {
+class DelayTest extends SignalTester {
 
     @Test
-    public void delay() throws Exception {
+    void delay() throws Exception {
         monitor(signal -> signal.delay(30, ms));
 
         assert main.emit("delay").value();
@@ -28,14 +28,14 @@ public class DelayTest extends SignalTester {
     }
 
     @Test
-    public void delayNegative() throws Exception {
+    void delayNegative() throws Exception {
         monitor(signal -> signal.delay(-10, ms));
 
         assert main.emit("delay").value("delay");
     }
 
     @Test
-    public void delayByCount1() throws Exception {
+    void delayByCount1() throws Exception {
         monitor(signal -> signal.delay(1));
 
         assert main.emit("1").value();
@@ -44,7 +44,7 @@ public class DelayTest extends SignalTester {
     }
 
     @Test
-    public void delayByCount2() throws Exception {
+    void delayByCount2() throws Exception {
         monitor(signal -> signal.delay(2));
 
         assert main.emit("1").value();

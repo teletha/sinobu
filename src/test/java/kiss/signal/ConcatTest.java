@@ -16,10 +16,10 @@ import kiss.Signal;
 /**
  * @version 2017/04/01 21:41:59
  */
-public class ConcatTest extends SignalTester {
+class ConcatTest extends SignalTester {
 
     @Test
-    public void signal() {
+    void signal() {
         monitor(() -> signal(1, 2).concat(signal(3, 4)));
 
         assert main.value(1, 2, 3, 4);
@@ -27,7 +27,7 @@ public class ConcatTest extends SignalTester {
     }
 
     @Test
-    public void signalArray() {
+    void signalArray() {
         monitor(() -> signal(1, 2).concat(signal(3, 4), signal(5, 6)));
 
         assert main.value(1, 2, 3, 4, 5, 6);
@@ -35,7 +35,7 @@ public class ConcatTest extends SignalTester {
     }
 
     @Test
-    public void signalNull() {
+    void signalNull() {
         monitor(() -> signal(1, 2).concat((Signal) null));
 
         assert main.value(1, 2);
@@ -43,7 +43,7 @@ public class ConcatTest extends SignalTester {
     }
 
     @Test
-    public void signalArrayNull() {
+    void signalArrayNull() {
         monitor(() -> signal(1, 2).concat((Signal[]) null));
 
         assert main.value(1, 2);
@@ -51,7 +51,7 @@ public class ConcatTest extends SignalTester {
     }
 
     @Test
-    public void quitInTheMiddle() {
+    void quitInTheMiddle() {
         monitor(() -> signal(1, 2).concat(signal(3, 4)).effect(log1).take(2));
 
         assert log1.value(1, 2);

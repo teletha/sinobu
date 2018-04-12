@@ -24,7 +24,7 @@ import kiss.Signal;
 /**
  * @version 2017/03/18 10:55:14
  */
-public class SignalDebugger {
+class SignalDebugger {
 
     private static final Class Agent;
 
@@ -64,7 +64,7 @@ public class SignalDebugger {
      * 
      * @return
      */
-    public static void dump(Object... texts) {
+    static void dump(Object... texts) {
         StringBuilder builder = new StringBuilder();
 
         for (Object text : texts) {

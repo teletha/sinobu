@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/26 21:58:41
  */
-public class StartWithTest extends SignalTester {
+class StartWithTest extends SignalTester {
 
     @Test
-    public void value() {
+    void value() {
         monitor(() -> signal(1, 2).startWith(0));
         assert main.value(0, 1, 2);
         assert main.isCompleted();
@@ -37,7 +37,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void valueNull() {
+    void valueNull() {
         monitor(() -> signal("1", "2").startWith((String) null));
         assert main.value(null, "1", "2");
         assert main.isCompleted();
@@ -50,7 +50,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void iterable() {
+    void iterable() {
         monitor(() -> signal(1, 2).startWith(list(-1, 0)));
         assert main.value(-1, 0, 1, 2);
         assert main.isCompleted();
@@ -58,7 +58,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void iterableError() {
+    void iterableError() {
         monitor(() -> signal(1, 2).startWith(errorIterable()));
         assert main.value();
         assert main.isError();
@@ -67,7 +67,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void iterableNull() {
+    void iterableNull() {
         monitor(() -> signal(1, 2).startWith((Iterable) null));
         assert main.value(1, 2);
         assert main.isCompleted();
@@ -75,7 +75,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void enumerable() {
+    void enumerable() {
         monitor(1, () -> signal(3, 4).startWith(enume(0, 1, 2)));
         assert main.value(0, 1, 2, 3, 4);
         assert main.isCompleted();
@@ -83,7 +83,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void enumerableError() {
+    void enumerableError() {
         monitor(() -> signal(1, 2).startWith(errorEnumeration()));
         assert main.value();
         assert main.isError();
@@ -92,7 +92,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void enumerableNull() {
+    void enumerableNull() {
         monitor(() -> signal(1, 2).startWith((Enumeration) null));
         assert main.value(1, 2);
         assert main.isCompleted();
@@ -100,7 +100,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void signal() {
+    void signal() {
         monitor(signal -> signal.startWith(other.signal()));
 
         assert main.emit("other is not completed, so this value will ignored").size(0);
@@ -114,7 +114,7 @@ public class StartWithTest extends SignalTester {
     }
 
     @Test
-    public void signalError() {
+    void signalError() {
         monitor(signal -> signal.startWith(other.signal()));
 
         assert main.emit("other is not completed, so this value will ignored").size(0);

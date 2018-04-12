@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/22 15:55:34
  */
-public class DisposeTest extends SignalTester {
+class DisposeTest extends SignalTester {
 
     @Test
-    public void disposeOnComplete() {
+    void disposeOnComplete() {
         monitor(signal -> signal);
 
         assert main.emit(Complete, "This value and next error will be ignored", Error).value();
@@ -27,7 +27,7 @@ public class DisposeTest extends SignalTester {
     }
 
     @Test
-    public void disposeOnError() {
+    void disposeOnError() {
         monitor(signal -> signal);
 
         assert main.emit(Error, "This value and next complete will be ignored", Complete).value();

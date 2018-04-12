@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/02/28 20:03:32
  */
-public class MapTest extends SignalTester {
+class MapTest extends SignalTester {
 
     @Test
-    public void map() throws Exception {
+    void map() throws Exception {
         monitor(() -> signal(1, 2).map(v -> v * 2));
 
         assert main.value(2, 4);
@@ -27,7 +27,7 @@ public class MapTest extends SignalTester {
     }
 
     @Test
-    public void mapNull() throws Exception {
+    void mapNull() throws Exception {
         monitor(() -> signal(1, 2).map(null));
 
         assert main.value(1, 2);
@@ -35,7 +35,7 @@ public class MapTest extends SignalTester {
     }
 
     @Test
-    public void throwError() {
+    void throwError() {
         monitor(() -> signal(1, 2).map(errorFunction()));
         assert main.value();
         assert main.isNotCompleted();
@@ -44,7 +44,7 @@ public class MapTest extends SignalTester {
     }
 
     @Test
-    public void mapTo() {
+    void mapTo() {
         monitor(signal -> signal.mapTo("ZZZ"));
 
         assert main.emit("A").value("ZZZ");
@@ -54,7 +54,7 @@ public class MapTest extends SignalTester {
     }
 
     @Test
-    public void mapWithPreviousValue() {
+    void mapWithPreviousValue() {
         monitor(signal -> signal.map(1, (prev, now) -> prev + now));
 
         assert main.emit(1).value(2);
@@ -63,7 +63,7 @@ public class MapTest extends SignalTester {
     }
 
     @Test
-    public void mapWithContext() {
+    void mapWithContext() {
         monitor(Integer.class, signal -> signal.map(AtomicInteger::new, (context, value) -> context.getAndIncrement() + value));
 
         assert main.emit(1).value(1);

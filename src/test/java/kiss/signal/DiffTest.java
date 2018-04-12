@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/02/28 19:25:20
  */
-public class DiffTest extends SignalTester {
+class DiffTest extends SignalTester {
 
     @Test
-    public void diff() {
+    void diff() {
         monitor(signal -> signal.diff());
 
         assert main.emit("A").value("A");
@@ -29,7 +29,7 @@ public class DiffTest extends SignalTester {
     }
 
     @Test
-    public void acceptNull() {
+    void acceptNull() {
         monitor(signal -> signal.diff());
 
         assert main.emit("A").value("A");

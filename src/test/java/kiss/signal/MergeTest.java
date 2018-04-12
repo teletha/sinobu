@@ -16,10 +16,10 @@ import kiss.Signal;
 /**
  * @version 2018/03/20 23:50:24
  */
-public class MergeTest extends SignalTester {
+class MergeTest extends SignalTester {
 
     @Test
-    public void merge() {
+    void merge() {
         monitor(signal -> signal.merge(other.signal(), another.signal()));
 
         assert main.emit(1, 2).value(1, 2);
@@ -47,7 +47,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void acceptNull() {
+    void acceptNull() {
         monitor(signal -> signal.merge((Signal) null));
 
         assert main.emit("accept null").size(1);
@@ -57,7 +57,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void disposeByMain() {
+    void disposeByMain() {
         monitor(signal -> signal.merge(other.signal()));
 
         main.dispose();
@@ -70,7 +70,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void disposeByOther() {
+    void disposeByOther() {
         monitor(signal -> signal.merge(other.signal()));
 
         other.dispose();
@@ -83,7 +83,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void completeFromMain() {
+    void completeFromMain() {
         monitor(signal -> signal.merge(other.signal()));
 
         // complete main
@@ -107,7 +107,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void completeFromOther() {
+    void completeFromOther() {
         monitor(signal -> signal.merge(other.signal()));
 
         // complete other
@@ -131,7 +131,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void errorByMain() {
+    void errorByMain() {
         monitor(signal -> signal.merge(other.signal()));
 
         assert main.emit(Error, "Main is errored so this value will be ignored.").value();
@@ -145,7 +145,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void errorByOther() {
+    void errorByOther() {
         monitor(signal -> signal.merge(other.signal()));
 
         assert other.emit(Error, "Other is errored so this value will be ignored.").value();
@@ -159,7 +159,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void completeFromOuterSignal() {
+    void completeFromOuterSignal() {
         monitor(() -> signal(1).merge(signal(10, 20, 30)).take(2));
 
         assert main.value(1, 10);
@@ -169,7 +169,7 @@ public class MergeTest extends SignalTester {
     }
 
     @Test
-    public void completeFromInnerSignal() {
+    void completeFromInnerSignal() {
         monitor(1, () -> signal(1).merge(signal(10, 20, 30).take(2)));
 
         assert main.value(1, 10, 20);

@@ -16,10 +16,10 @@ import antibug.ExpectThrow;
 /**
  * @version 2018/03/31 23:15:55
  */
-public class AllTest extends SignalTester {
+class AllTest extends SignalTester {
 
     @Test
-    public void OK() {
+    void OK() {
         monitor(Integer.class, Boolean.class, signal -> signal.all(v -> v % 2 == 0));
 
         assert main.emit(2, 4, 6, 8, Complete).value(true);
@@ -28,7 +28,7 @@ public class AllTest extends SignalTester {
     }
 
     @Test
-    public void NG() {
+    void NG() {
         monitor(Integer.class, Boolean.class, signal -> signal.all(v -> v % 2 == 0));
 
         assert main.emit(2, 4, 5, 6).value(false);
@@ -37,7 +37,7 @@ public class AllTest extends SignalTester {
     }
 
     @ExpectThrow(NullPointerException.class)
-    public void acceptNull() {
+    void acceptNull() {
         monitor(Integer.class, Boolean.class, signal -> signal.all(null));
     }
 }

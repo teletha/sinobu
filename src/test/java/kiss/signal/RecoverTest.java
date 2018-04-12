@@ -19,10 +19,10 @@ import kiss.I;
 /**
  * @version 2018/03/25 11:20:57
  */
-public class RecoverTest extends SignalTester {
+class RecoverTest extends SignalTester {
 
     @Test
-    public void recover() {
+    void recover() {
         monitor(signal -> signal.recover("recover"));
 
         assert main.emit(Error).value("recover");
@@ -31,7 +31,7 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    public void recoverByType() {
+    void recoverByType() {
         monitor(signal -> signal.recover(IOException.class, "IO"));
 
         assert main.emit(IOException.class).value("IO");
@@ -44,7 +44,7 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    public void recoverByNullType() {
+    void recoverByNullType() {
         monitor(signal -> signal.recover(null, "Any"));
 
         assert main.emit(IOException.class).value("Any");
@@ -65,7 +65,7 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    public void recoverByNull() {
+    void recoverByNull() {
         monitor(signal -> signal.recover(null));
         assert main.emit(NoSuchFieldError.class).value((Object) null);
         assert main.isNotError();
@@ -78,7 +78,7 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    public void recoverWhenType() {
+    void recoverWhenType() {
         monitor(signal -> signal.recoverWhen(IOError.class, fail -> fail.mapTo("recover")));
 
         assert main.emit(IOError.class).value("recover");
@@ -91,7 +91,7 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    public void recoverWhenWithDelay() {
+    void recoverWhenWithDelay() {
         monitor(signal -> signal.recoverWhen(fail -> fail.delay(10, ms).mapTo("recover")));
 
         assert main.countObservers() == 1;
@@ -106,7 +106,7 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    public void recoverWhenWithDelayAndLimit() {
+    void recoverWhenWithDelayAndLimit() {
         monitor(signal -> signal.recoverWhen(fail -> fail.take(2).delay(10, ms).mapTo("recover")));
 
         assert main.emit(Error).value();
@@ -120,7 +120,7 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    public void recoverWhenWithError() {
+    void recoverWhenWithError() {
         monitor(signal -> signal.recoverWhen(fail -> fail.flatMap(e -> e instanceof Error ? I.signal("recover") : I.signalError(e))));
 
         assert main.emit(Error).value("recover");
@@ -133,7 +133,7 @@ public class RecoverTest extends SignalTester {
     }
 
     @Test
-    public void recoverWhenWithComplete() {
+    void recoverWhenWithComplete() {
         monitor(signal -> signal.recoverWhen(fail -> fail.take(2).mapTo("recover")));
 
         assert main.emit("first error will recover", Error).value("first error will recover", "recover");

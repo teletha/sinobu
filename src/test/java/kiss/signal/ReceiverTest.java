@@ -23,10 +23,10 @@ import kiss.Variable;
 /**
  * @version 2017/05/14 12:09:49
  */
-public class ReceiverTest extends SignalTester {
+class ReceiverTest extends SignalTester {
 
     @Test
-    public void to() {
+    void to() {
         monitor(signal -> signal);
 
         assert main.emit(1).value(1);
@@ -35,7 +35,7 @@ public class ReceiverTest extends SignalTester {
     }
 
     @Test
-    public void toCollection() {
+    void toCollection() {
         LinkedHashSet<Integer> set = I.signal(30, 20, 10).to(LinkedHashSet.class);
         Iterator<Integer> iterator = set.iterator();
         assert iterator.next() == 30;
@@ -44,7 +44,7 @@ public class ReceiverTest extends SignalTester {
     }
 
     @Test
-    public void toAlternate() {
+    void toAlternate() {
         Set<Integer> set = I.signal(30, 20, 10).toAlternate();
         assert set.contains(10);
         assert set.contains(20);
@@ -61,7 +61,7 @@ public class ReceiverTest extends SignalTester {
     }
 
     @Test
-    public void toBinary() {
+    void toBinary() {
         Variable<Boolean> binary = I.signal().toBinary();
         assert binary.is(false);
 
@@ -76,7 +76,7 @@ public class ReceiverTest extends SignalTester {
     }
 
     @Test
-    public void toList() {
+    void toList() {
         List<String> list = I.<String> signal().toList();
         assert list.isEmpty();
 
@@ -94,7 +94,7 @@ public class ReceiverTest extends SignalTester {
     }
 
     @Test
-    public void toMap() {
+    void toMap() {
         Map<String, String> map = I.<String> signal().toMap(v -> "KEY-" + v);
         assert map.isEmpty();
 
@@ -110,7 +110,7 @@ public class ReceiverTest extends SignalTester {
     }
 
     @Test
-    public void toSet() {
+    void toSet() {
         Set<String> set = I.<String> signal().toSet();
         assert set.isEmpty();
 

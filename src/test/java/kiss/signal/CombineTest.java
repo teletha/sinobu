@@ -20,14 +20,14 @@ import kiss.Ⅲ;
 /**
  * @version 2018/03/20 22:40:11
  */
-public class CombineTest extends SignalTester {
+class CombineTest extends SignalTester {
 
     private final Function<Ⅱ<String, String>, String> composer2 = v -> v.ⅰ + v.ⅱ;
 
     private final Function<Ⅲ<String, Integer, String>, String> composer3 = v -> v.ⅰ + v.ⅱ + v.ⅲ;
 
     @Test
-    public void combine() {
+    void combine() {
         monitor(signal -> signal.combine(other.signal()).map(composer2));
 
         // from main
@@ -60,7 +60,7 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    public void disposeByMain() {
+    void disposeByMain() {
         monitor(signal -> signal.combine(other.signal()));
 
         main.dispose();
@@ -73,7 +73,7 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    public void disposeByOther() {
+    void disposeByOther() {
         monitor(signal -> signal.combine(other.signal()));
 
         other.dispose();
@@ -86,7 +86,7 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    public void completeByMain() {
+    void completeByMain() {
         monitor(signal -> signal.combine(other.signal()));
 
         main.emit("MAIN");
@@ -104,7 +104,7 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    public void completeByOther() {
+    void completeByOther() {
         monitor(signal -> signal.combine(other.signal()));
 
         main.emit("MAIN");
@@ -122,7 +122,7 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    public void errorByMain() {
+    void errorByMain() {
         monitor(signal -> signal.combine(other.signal()));
 
         main.emit("MAIN");
@@ -140,7 +140,7 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    public void errorByOther() {
+    void errorByOther() {
         monitor(signal -> signal.combine(other.signal()));
 
         main.emit("MAIN");
@@ -158,7 +158,7 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    public void acceptNull() {
+    void acceptNull() {
         monitor(signal -> signal.combine(other.signal()).map(composer2));
 
         // from main
@@ -177,7 +177,7 @@ public class CombineTest extends SignalTester {
     }
 
     @Test
-    public void ternary() throws Exception {
+    void ternary() throws Exception {
         monitor(signal -> signal.combine(other.signal(), another.signal()).map(composer3));
 
         // from main

@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/01 12:02:57
  */
-public class IntervalTest extends SignalTester {
+class IntervalTest extends SignalTester {
 
     @Test
-    public void interval() throws Exception {
+    void interval() throws Exception {
         monitor(signal -> signal.interval(20, ms));
 
         assert main.emit("A", "B", "C").value("A");
@@ -28,7 +28,7 @@ public class IntervalTest extends SignalTester {
     }
 
     @Test
-    public void complete() throws Exception {
+    void complete() throws Exception {
         monitor(signal -> signal.interval(20, ms));
 
         assert main.emit("A", "B", Complete).value("A");

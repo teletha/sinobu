@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/02 12:09:21
  */
-public class CountTest extends SignalTester {
+class CountTest extends SignalTester {
 
     @Test
-    public void count() {
+    void count() {
         monitor(Long.class, signal -> signal.count());
 
         assert main.emit(10).value(1L);

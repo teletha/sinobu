@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/02 16:28:04
  */
-public class LastTest extends SignalTester {
+class LastTest extends SignalTester {
 
     @Test
-    public void last() {
+    void last() {
         monitor(signal -> signal.last());
 
         assert main.emit(1, 2, 3, Complete).value(3);
@@ -26,7 +26,7 @@ public class LastTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(signal -> signal.last());
 
         assert main.emit(Complete).value();
@@ -35,7 +35,7 @@ public class LastTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(signal -> signal.last());
 
         assert main.emit(Error.class).value();
@@ -44,7 +44,7 @@ public class LastTest extends SignalTester {
     }
 
     @Test
-    public void lastWithDefault() {
+    void lastWithDefault() {
         monitor(signal -> signal.last("Default"));
 
         assert main.emit(1, 2, 3, Complete).value(3);
@@ -53,7 +53,7 @@ public class LastTest extends SignalTester {
     }
 
     @Test
-    public void completeWithDefault() {
+    void completeWithDefault() {
         monitor(signal -> signal.last("Default"));
 
         assert main.emit(Complete).value("Default");
@@ -62,7 +62,7 @@ public class LastTest extends SignalTester {
     }
 
     @Test
-    public void errorWithDefault() {
+    void errorWithDefault() {
         monitor(signal -> signal.last("Default"));
 
         assert main.emit(Error.class).value();

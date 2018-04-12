@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/26 6:58:19
  */
-public class ToggleTest extends SignalTester {
+class ToggleTest extends SignalTester {
 
     @Test
-    public void trueOrFalse() {
+    void trueOrFalse() {
         monitor(String.class, boolean.class, signal -> signal.toggle());
 
         assert main.emit("first value is true").value(true);
@@ -29,7 +29,7 @@ public class ToggleTest extends SignalTester {
     }
 
     @Test
-    public void falseOrTrue() {
+    void falseOrTrue() {
         monitor(String.class, boolean.class, signal -> signal.toggle(false));
 
         assert main.emit("first value is false").value(false);
@@ -41,7 +41,7 @@ public class ToggleTest extends SignalTester {
     }
 
     @Test
-    public void value() {
+    void value() {
         monitor(signal -> signal.toggle("A", "B"));
 
         assert main.emit("first value is A").value("A");
@@ -53,7 +53,7 @@ public class ToggleTest extends SignalTester {
     }
 
     @Test
-    public void values() {
+    void values() {
         monitor(signal -> signal.toggle("A", "B", "C"));
 
         assert main.emit("first value is A").value("A");
@@ -68,7 +68,7 @@ public class ToggleTest extends SignalTester {
     }
 
     @Test
-    public void acceptNull() {
+    void acceptNull() {
         monitor(signal -> signal.toggle("A", null));
 
         assert main.emit("first value is A").value("A");
@@ -80,7 +80,7 @@ public class ToggleTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(boolean.class, signal -> signal.toggle());
 
         assert main.emit(Error).value();
@@ -90,7 +90,7 @@ public class ToggleTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(boolean.class, signal -> signal.toggle());
 
         assert main.emit(Complete).value();

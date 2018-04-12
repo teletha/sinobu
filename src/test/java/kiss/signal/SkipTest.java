@@ -19,10 +19,10 @@ import kiss.I;
 /**
  * @version 2018/03/03 19:54:42
  */
-public class SkipTest extends SignalTester {
+class SkipTest extends SignalTester {
 
     @Test
-    public void skip() {
+    void skip() {
         monitor(int.class, signal -> signal.skip(value -> value % 2 == 0));
 
         assert main.emit(1, 2, 3, 4).value(1, 3);
@@ -30,7 +30,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipNull() {
+    void skipNull() {
         monitor(int.class, signal -> signal.skip((Predicate) null));
 
         assert main.emit(1, 2, 3, 4).value(1, 2, 3, 4);
@@ -38,7 +38,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipWithPrevious() {
+    void skipWithPrevious() {
         monitor(() -> signal(10, 11, 20, 21).skip(0, (prev, now) -> now - prev > 5));
 
         assert main.value(11, 21);
@@ -46,7 +46,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipWithPreviousNull() {
+    void skipWithPreviousNull() {
         monitor(() -> signal(10, 11, 20, 21).skip(0, (BiPredicate) null));
 
         assert main.value(10, 11, 20, 21);
@@ -54,7 +54,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipByCount() {
+    void skipByCount() {
         monitor(int.class, signal -> signal.skip(2));
 
         assert main.emit(1, 2, 3, 4).value(3, 4);
@@ -62,7 +62,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipByTime() {
+    void skipByTime() {
         monitor(signal -> signal.skipUntil(30, ms));
 
         assert main.emit(1, 2).value();
@@ -73,7 +73,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipByTimeWithInitialDelay() {
+    void skipByTimeWithInitialDelay() {
         monitor(signal -> signal.skipUntil(30, ms));
 
         await(40);
@@ -81,7 +81,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipBySignal() {
+    void skipBySignal() {
         monitor(signal -> signal.skip(other.signal()));
 
         assert main.emit(1, 2).value(1, 2);
@@ -97,7 +97,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipByValue() {
+    void skipByValue() {
         monitor(signal -> signal.skip(1, 3));
 
         assert main.emit(1, 2, 3).value(2);
@@ -108,7 +108,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipByCollection() {
+    void skipByCollection() {
         monitor(signal -> signal.skip(I.set(1, 3)));
 
         assert main.emit(1, 2, 3).value(2);
@@ -119,7 +119,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipAll() {
+    void skipAll() {
         monitor(signal -> signal.skipAll());
         assert main.emit(1, 2, 3).value();
         assert main.isNotCompleted();
@@ -140,7 +140,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipAt() {
+    void skipAt() {
         monitor(() -> signal(0, 1, 2, 3, 4, 5).skipAt(index -> 3 < index));
         assert main.value(0, 1, 2, 3);
 
@@ -149,7 +149,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilOtherSignal() {
+    void skipUntilOtherSignal() {
         monitor(signal -> signal.skipUntil(other.signal()));
 
         assert main.emit(1, 2).value();
@@ -165,7 +165,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilOtherSignalIsErrored() {
+    void skipUntilOtherSignalIsErrored() {
         monitor(signal -> signal.skipUntil(other.signal()));
 
         assert main.emit(1, 2).value();
@@ -181,7 +181,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilOtherSignalIsCompleted() {
+    void skipUntilOtherSignalIsCompleted() {
         monitor(signal -> signal.skipUntil(other.signal()));
 
         assert main.emit(1, 2).value();
@@ -197,7 +197,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilOtherSignalWithRepeat() {
+    void skipUntilOtherSignalWithRepeat() {
         monitor(signal -> signal.skipUntil(other.signal()).take(1).repeat());
 
         assert main.emit(1, 2).value();
@@ -212,7 +212,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilValue() {
+    void skipUntilValue() {
         monitor(signal -> signal.skipUntil(4));
 
         assert main.emit(2, 3, 4, 5).value(4, 5);
@@ -222,7 +222,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilValueNull() {
+    void skipUntilValueNull() {
         monitor(signal -> signal.skipUntil((Object) null));
 
         assert main.emit(2, 3, null, 4, 5).value(null, 4, 5);
@@ -232,7 +232,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilValueWithRepeat() {
+    void skipUntilValueWithRepeat() {
         monitor(signal -> signal.skipUntil(3).take(2).repeat());
 
         assert main.emit(2, 3, 4, 5, 6).value(3, 4);
@@ -242,7 +242,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilValueCondition() {
+    void skipUntilValueCondition() {
         monitor(int.class, signal -> signal.skipUntil(value -> value == 3));
 
         assert main.emit(1, 2).value();
@@ -252,7 +252,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipUntilValueConditionWithRepeat() {
+    void skipUntilValueConditionWithRepeat() {
         monitor(Integer.class, signal -> signal.skipUntil(value -> value % 3 == 0).take(2).repeat());
 
         assert main.emit(2, 3, 4, 5).value(3, 4);
@@ -262,7 +262,7 @@ public class SkipTest extends SignalTester {
     }
 
     @Test
-    public void skipWhileValueCondition() {
+    void skipWhileValueCondition() {
         monitor(int.class, signal -> signal.skipWhile(value -> value != 3));
 
         assert main.emit(1, 2).value();

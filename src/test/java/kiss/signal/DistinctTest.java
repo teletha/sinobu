@@ -14,17 +14,17 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/04 14:08:29
  */
-public class DistinctTest extends SignalTester {
+class DistinctTest extends SignalTester {
 
     @Test
-    public void distinct() {
+    void distinct() {
         monitor(signal -> signal.distinct());
 
         assert main.emit("A", "B", "C", "C", "B", "A", "Z").value("A", "B", "C", "Z");
     }
 
     @Test
-    public void withRepeat() {
+    void withRepeat() {
         monitor(signal -> signal.distinct().take(3).repeat());
 
         assert main.emit("A", "A", "B", "B", "C").value("A", "B", "C");
@@ -33,7 +33,7 @@ public class DistinctTest extends SignalTester {
     }
 
     @Test
-    public void acceptNull() {
+    void acceptNull() {
         monitor(signal -> signal.distinct());
 
         assert main.emit("A", null, null, "C").value("A", null, "C");

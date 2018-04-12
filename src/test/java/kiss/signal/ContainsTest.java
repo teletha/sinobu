@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/02 13:55:14
  */
-public class ContainsTest extends SignalTester {
+class ContainsTest extends SignalTester {
 
     @Test
-    public void OK() {
+    void OK() {
         monitor(String.class, Boolean.class, signal -> signal.contains("OK"));
 
         assert main.emit("A", "B", "OK", "C").value(true);
@@ -26,7 +26,7 @@ public class ContainsTest extends SignalTester {
     }
 
     @Test
-    public void NG() {
+    void NG() {
         monitor(String.class, Boolean.class, signal -> signal.contains("OK"));
 
         assert main.emit("A", "B", "C", Complete).value(false);

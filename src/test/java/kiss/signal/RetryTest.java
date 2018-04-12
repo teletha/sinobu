@@ -22,10 +22,10 @@ import kiss.I;
 /**
  * @version 2018/03/25 18:53:59
  */
-public class RetryTest extends SignalTester {
+class RetryTest extends SignalTester {
 
     @Test
-    public void retry() {
+    void retry() {
         monitor(signal -> signal.startWith("retry").retry());
 
         assert main.value("retry");
@@ -42,7 +42,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryWithLimit() {
+    void retryWithLimit() {
         monitor(signal -> signal.startWith("retry").retry(3));
 
         assert main.value("retry");
@@ -58,7 +58,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryWhenWithDelay() {
+    void retryWhenWithDelay() {
         monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(10, ms)));
 
         assert main.value("retry");
@@ -74,7 +74,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryWhenWithDelayAndLimit() {
+    void retryWhenWithDelayAndLimit() {
         monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.take(2).delay(10, ms)));
 
         assert main.value("retry");
@@ -89,7 +89,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryWhenWithError() {
+    void retryWhenWithError() {
         monitor(signal -> signal.startWith("retry")
                 .retryWhen(fail -> fail.flatMap(e -> e instanceof Error ? I.signal(e) : I.signalError(e))));
 
@@ -104,7 +104,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryWhenWithComplete() {
+    void retryWhenWithComplete() {
         monitor(signal -> signal.retryWhen(fail -> fail.take(2)));
 
         assert main.emit("first error will retry", Error).value("first error will retry");
@@ -118,7 +118,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void disposeRetry() {
+    void disposeRetry() {
         monitor(signal -> signal.startWith("retry").retry(3));
 
         assert main.value("retry");
@@ -132,7 +132,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryThenMerge() {
+    void retryThenMerge() {
         monitor(signal -> signal.startWith("retry").retry(3).merge(other.signal()));
 
         // from main
@@ -158,7 +158,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryIf() {
+    void retryIf() {
         AtomicBoolean canRetry = new AtomicBoolean(true);
         monitor(signal -> signal.startWith("retry").retryIf(canRetry::get));
 
@@ -175,7 +175,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryIfNull() {
+    void retryIfNull() {
         monitor(() -> signal(1).effect(log1).retryIf((BooleanSupplier) null));
         assert log1.value(1);
         assert main.value(1);
@@ -183,7 +183,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryUntil() {
+    void retryUntil() {
         monitor(signal -> signal.retryUntil(other.signal()));
 
         assert main.emit(Error.class, "Retry any error type").size(1);
@@ -194,7 +194,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryUntilByType() {
+    void retryUntilByType() {
         monitor(signal -> signal.retryUntil(Error.class, other.signal()));
         assert main.emit(Error.class, "Error can retry").size(1);
         assert main.emit(IOError.class, "Sub type can retry").size(1);
@@ -207,7 +207,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryUntilByTypeNull() {
+    void retryUntilByTypeNull() {
         monitor(signal -> signal.retryUntil(null, other.signal()));
         assert main.emit(Error.class, "null means accepting any error type").size(1);
         assert main.emit(Exception.class, "null means accepting any error type").size(1);
@@ -218,7 +218,7 @@ public class RetryTest extends SignalTester {
     }
 
     @Test
-    public void retryUntilByTypeNullNotifier() {
+    void retryUntilByTypeNullNotifier() {
         monitor(signal -> signal.retryUntil(Error.class, null));
         assert main.emit(Error.class, IOError.class, ThreadDeath.class, "null notifier means unconditional").size(1);
         assert main.isNotError();

@@ -17,10 +17,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/25 9:15:26
  */
-public class RepeatTest extends SignalTester {
+class RepeatTest extends SignalTester {
 
     @Test
-    public void repeat() {
+    void repeat() {
         monitor(signal -> signal.repeat(3));
 
         assert main.emit("success to repeat 1", Complete).value("success to repeat 1");
@@ -35,7 +35,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatError() {
+    void repeatError() {
         monitor(signal -> signal.repeat(3));
 
         assert main.emit("success to repeat 1", Error).value("success to repeat 1");
@@ -46,7 +46,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatInfinite() {
+    void repeatInfinite() {
         monitor(signal -> signal.skip(1).take(1).repeat());
 
         assert main.emit(1, 2).value(2);
@@ -58,7 +58,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatInfiniteError() {
+    void repeatInfiniteError() {
         monitor(1, signal -> signal.skip(1).take(1).repeat());
 
         assert main.emit(1, 2, 1, 2).value(2, 2);
@@ -69,7 +69,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void disposeRepeat() {
+    void disposeRepeat() {
         monitor(signal -> signal.repeat(3));
 
         assert main.emit("success to repeat", Complete).value("success to repeat");
@@ -81,7 +81,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatThenMerge() {
+    void repeatThenMerge() {
         monitor(signal -> signal.repeat().merge(other.signal()));
 
         // from main
@@ -109,7 +109,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatIf() {
+    void repeatIf() {
         AtomicBoolean canRepeat = new AtomicBoolean(true);
         monitor(signal -> signal.repeatIf(canRepeat::get));
 
@@ -126,7 +126,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatIfNull() {
+    void repeatIfNull() {
         monitor(() -> signal(1).effect(log1).repeatIf((BooleanSupplier) null));
         assert log1.value(1);
         assert main.value(1);
@@ -134,7 +134,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatUntil() {
+    void repeatUntil() {
         monitor(signal -> signal.repeatUntil(other.signal()));
 
         assert main.emit("success to repeat", Complete).value("success to repeat");
@@ -146,7 +146,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatWhen() {
+    void repeatWhen() {
         monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.delay(10, ms)));
 
         assert main.value("repeat");
@@ -162,7 +162,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatWhenWithDelayAndLimit() {
+    void repeatWhenWithDelayAndLimit() {
         monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.take(2).delay(10, ms)));
 
         assert main.value("repeat");
@@ -178,7 +178,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatWhenWithError() {
+    void repeatWhenWithError() {
         monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.takeAt(index -> {
             if (index == 2) {
                 throw new Error();
@@ -198,7 +198,7 @@ public class RepeatTest extends SignalTester {
     }
 
     @Test
-    public void repeatWhenWithComplete() {
+    void repeatWhenWithComplete() {
         monitor(signal -> signal.repeatWhen(repeat -> repeat.take(2)));
 
         assert main.emit("first will repeat", Complete).value("first will repeat");

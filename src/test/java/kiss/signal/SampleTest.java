@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/11 15:44:40
  */
-public class SampleTest extends SignalTester {
+class SampleTest extends SignalTester {
 
     @Test
-    public void value() {
+    void value() {
         monitor(signal -> signal.sample(other.signal()));
 
         assert main.emit(1, 2, 3).value();
@@ -32,7 +32,7 @@ public class SampleTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(signal -> signal.sample(other.signal()));
 
         assert main.emit(1, 2, Complete).value();
@@ -44,7 +44,7 @@ public class SampleTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(signal -> signal.sample(other.signal()));
 
         assert main.emit(1, 2, Error).value();
@@ -57,7 +57,7 @@ public class SampleTest extends SignalTester {
     }
 
     @Test
-    public void otherComplete() {
+    void otherComplete() {
         monitor(signal -> signal.sample(other.signal()));
 
         assert main.emit(1, 2).value();
@@ -72,7 +72,7 @@ public class SampleTest extends SignalTester {
     }
 
     @Test
-    public void otherError() {
+    void otherError() {
         monitor(signal -> signal.sample(other.signal()));
 
         assert main.emit(1, 2).value();

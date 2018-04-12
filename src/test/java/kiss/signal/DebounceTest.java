@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/04/02 9:37:09
  */
-public class DebounceTest extends SignalTester {
+class DebounceTest extends SignalTester {
 
     @Test
-    public void debounce() {
+    void debounce() {
         monitor(signal -> signal.debounce(30, MILLISECONDS));
 
         assert main.emit("A").value();
@@ -40,7 +40,7 @@ public class DebounceTest extends SignalTester {
     }
 
     @Test
-    public void withRepeat() {
+    void withRepeat() {
         monitor(signal -> signal.debounce(10, MILLISECONDS).skip(1).take(1).repeat());
 
         assert main.emit("A", "B").value();

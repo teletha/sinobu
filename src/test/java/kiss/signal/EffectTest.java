@@ -19,10 +19,10 @@ import kiss.Signal;
 /**
  * @version 2018/03/21 22:56:42
  */
-public class EffectTest extends SignalTester {
+class EffectTest extends SignalTester {
 
     @Test
-    public void effectConsumer() {
+    void effectConsumer() {
         monitor(1, signal -> signal.effect(log1));
 
         assert main.emit(1).value(1);
@@ -32,7 +32,7 @@ public class EffectTest extends SignalTester {
     }
 
     @Test
-    public void effectRunnable() {
+    void effectRunnable() {
         monitor(1, signal -> signal.effect(() -> log1.accept("@")));
 
         assert main.emit(1).value(1);
@@ -42,7 +42,7 @@ public class EffectTest extends SignalTester {
     }
 
     @Test
-    public void effectOnComplet() {
+    void effectOnComplet() {
         monitor(signal -> signal.effectOnComplete(log1::complete));
 
         assert log1.isNotCompleted();
@@ -54,7 +54,7 @@ public class EffectTest extends SignalTester {
     }
 
     @Test
-    public void effectOnError() {
+    void effectOnError() {
         monitor(1, signal -> signal.effectOnError(log1::error));
 
         assert log1.isNotError();
@@ -66,7 +66,7 @@ public class EffectTest extends SignalTester {
     }
 
     @Test
-    public void acceptNull() {
+    void acceptNull() {
         Signal<Integer> from = I.signal(0);
         assert from == from.effect((Runnable) null);
         assert from == from.effect((Consumer) null);

@@ -20,12 +20,12 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/22 0:05:46
  */
-public class BufferTest extends SignalTester {
+class BufferTest extends SignalTester {
 
     private final Function<List<String>, String> composer = v -> v.stream().collect(Collectors.joining());
 
     @Test
-    public void size() {
+    void size() {
         monitor(signal -> signal.buffer(2).map(composer));
 
         assert main.emit("A").value();
@@ -36,7 +36,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void sizeWithRepeat() {
+    void sizeWithRepeat() {
         monitor(signal -> signal.buffer(2).skip(1).take(1).repeat().map(composer));
 
         assert main.emit("A").value();
@@ -47,7 +47,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void sizeAndInterval1() {
+    void sizeAndInterval1() {
         monitor(signal -> signal.buffer(2, 1).map(composer));
 
         assert main.emit("A").value();
@@ -58,7 +58,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void sizeAndInterval2() {
+    void sizeAndInterval2() {
         monitor(signal -> signal.buffer(2, 3).map(composer));
 
         assert main.emit("A").value();
@@ -69,7 +69,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void time() {
+    void time() {
         monitor(signal -> signal.buffer(30, MILLISECONDS).map(composer));
 
         assert main.emit("A", "B").value();
@@ -81,7 +81,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void signal() {
+    void signal() {
         monitor(signal -> signal.buffer(other.signal()).map(composer));
 
         assert main.emit("A", "B").value();
@@ -93,7 +93,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void signalErrorFromMain() {
+    void signalErrorFromMain() {
         monitor(signal -> signal.buffer(other.signal()).map(composer));
 
         main.emit(Error);
@@ -106,7 +106,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void signalErrorFromOther() {
+    void signalErrorFromOther() {
         monitor(signal -> signal.buffer(other.signal()).map(composer));
 
         other.emit(Error);
@@ -119,7 +119,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void signalCompleteFromMain() {
+    void signalCompleteFromMain() {
         monitor(signal -> signal.buffer(other.signal()).map(composer));
 
         main.emit(Complete);
@@ -132,7 +132,7 @@ public class BufferTest extends SignalTester {
     }
 
     @Test
-    public void signalCompleteFromOther() {
+    void signalCompleteFromOther() {
         monitor(signal -> signal.buffer(other.signal()).map(composer));
 
         other.emit(Complete);

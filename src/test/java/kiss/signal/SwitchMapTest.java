@@ -16,10 +16,10 @@ import antibug.ExpectThrow;
 /**
  * @version 2018/03/31 23:14:49
  */
-public class SwitchMapTest extends SignalTester {
+class SwitchMapTest extends SignalTester {
 
     @Test
-    public void value() {
+    void value() {
         monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20).value(10, 11, 20, 21);
@@ -29,7 +29,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Complete).value(10, 11, 20, 21);
@@ -39,7 +39,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Error).value(10, 11, 20, 21);
@@ -49,7 +49,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void errorInFunction() {
+    void errorInFunction() {
         monitor(() -> signal(1, 2).switchMap(errorFunction()));
 
         assert main.value();
@@ -59,7 +59,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void innerComplete() {
+    void innerComplete() {
         monitor(Integer.class, signal -> signal.switchMap(v -> signal(v).take(1)));
 
         assert main.emit(10, 20).value(10, 20);
@@ -69,7 +69,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void innerError() {
+    void innerError() {
         monitor(Integer.class, signal -> signal.switchMap(v -> errorSignal()));
 
         assert main.emit(10, 20).value();
@@ -79,12 +79,12 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @ExpectThrow(NullPointerException.class)
-    public void rejectNull() {
+    void rejectNull() {
         monitor(() -> signal(1, 2).switchMap(null));
     }
 
     @Test
-    public void delayAndInterval() {
+    void delayAndInterval() {
         monitor(Integer.class, signal -> signal.switchMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
 
         main.emit(60, 40, 20);
@@ -92,7 +92,7 @@ public class SwitchMapTest extends SignalTester {
     }
 
     @Test
-    public void detail() {
+    void detail() {
         monitor(String.class, signal -> signal.switchMap(x -> x.equals("start other") ? other.signal() : another.signal()));
 
         assert main.emit("start other").size(0);

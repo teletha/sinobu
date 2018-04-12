@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/02/28 19:25:20
  */
-public class AsTest extends SignalTester {
+class AsTest extends SignalTester {
 
     @Test
-    public void as() {
+    void as() {
         monitor(signal -> signal.as(Integer.class));
 
         assert main.emit(10).value(10);

@@ -18,10 +18,10 @@ import antibug.ExpectThrow;
 /**
  * @version 2018/03/31 23:15:31
  */
-public class FlatMapTest extends SignalTester {
+class FlatMapTest extends SignalTester {
 
     @Test
-    public void value() {
+    void value() {
         monitor(Integer.class, signal -> signal.flatMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20).value(10, 11, 20, 21);
@@ -31,7 +31,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(Integer.class, signal -> signal.flatMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Complete).value(10, 11, 20, 21);
@@ -41,7 +41,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(Integer.class, signal -> signal.flatMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Error).value(10, 11, 20, 21);
@@ -51,7 +51,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void errorInFunction() {
+    void errorInFunction() {
         monitor(() -> signal(1, 2).flatMap(errorFunction()));
 
         assert main.value();
@@ -61,7 +61,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void innerComplete() {
+    void innerComplete() {
         monitor(Integer.class, signal -> signal.flatMap(v -> signal(v, v + 1, v + 2).take(2)));
 
         assert main.emit(10, 20, 30).value(10, 11, 20, 21, 30, 31);
@@ -71,7 +71,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void innerError() {
+    void innerError() {
         monitor(Integer.class, signal -> signal.flatMap(v -> errorSignal()));
 
         assert main.emit(10, 20).value();
@@ -81,12 +81,12 @@ public class FlatMapTest extends SignalTester {
     }
 
     @ExpectThrow(NullPointerException.class)
-    public void rejectNull() {
+    void rejectNull() {
         monitor(() -> signal(1, 2).flatMap(null));
     }
 
     @Test
-    public void delayAndInterval() {
+    void delayAndInterval() {
         monitor(Integer.class, signal -> signal.flatMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
 
         main.emit(60, 40, 20);
@@ -94,7 +94,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void detail() {
+    void detail() {
         monitor(String.class, signal -> signal.flatMap(x -> x.equals("start other") ? other.signal() : another.signal()));
 
         assert main.emit("start other").size(0);
@@ -116,7 +116,7 @@ public class FlatMapTest extends SignalTester {
     }
 
     @Test
-    public void enumeration() {
+    void enumeration() {
         monitor(() -> signal(10, 20).flatEnum(v -> enume(v, v + 1)));
 
         assert main.value(10, 11, 20, 21);
@@ -124,31 +124,31 @@ public class FlatMapTest extends SignalTester {
     }
 
     @ExpectThrow(NullPointerException.class)
-    public void enumerationNull() {
+    void enumerationNull() {
         monitor(() -> signal(1, 2).flatEnum(null));
     }
 
     @Test
-    public void array() {
+    void array() {
         monitor(String.class, signal -> signal.flatArray(v -> v.split("")));
 
         assert main.emit("TEST").value("T", "E", "S", "T");
     }
 
     @ExpectThrow(NullPointerException.class)
-    public void arrayNull() {
+    void arrayNull() {
         monitor(String.class, signal -> signal.flatArray(null));
     }
 
     @Test
-    public void iterable() {
+    void iterable() {
         monitor(String.class, signal -> signal.flatIterable(v -> Arrays.asList(v.split(""))));
 
         assert main.emit("TEST").value("T", "E", "S", "T");
     }
 
     @ExpectThrow(NullPointerException.class)
-    public void iterableNull() {
+    void iterableNull() {
         monitor(String.class, signal -> signal.flatIterable(null));
     }
 }

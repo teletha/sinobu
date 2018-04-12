@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/29 13:50:56
  */
-public class ScanTest extends SignalTester {
+class ScanTest extends SignalTester {
 
     @Test
-    public void scan() {
+    void scan() {
         monitor(signal -> signal.scan(10, (accumulated, value) -> accumulated + value));
 
         assert main.emit(1).value(11); // 10 + 1
@@ -30,7 +30,7 @@ public class ScanTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(signal -> signal.scan(10, errorBiFunction()));
 
         assert main.emit(1).value();
@@ -40,7 +40,7 @@ public class ScanTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(signal -> signal.scan(10, (accumulated, value) -> accumulated + value));
 
         assert main.emit(1, Complete).value(11);
@@ -49,7 +49,7 @@ public class ScanTest extends SignalTester {
     }
 
     @Test
-    public void collector() {
+    void collector() {
         monitor(signal -> signal.scan(Collectors.joining("-")));
 
         assert main.emit("A").value("A");

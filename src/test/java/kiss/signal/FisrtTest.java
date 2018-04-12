@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/02 16:28:04
  */
-public class FisrtTest extends SignalTester {
+class FisrtTest extends SignalTester {
 
     @Test
-    public void first() {
+    void first() {
         monitor(signal -> signal.first());
 
         assert main.emit(1, 2, 3).value(1);
@@ -26,7 +26,7 @@ public class FisrtTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(signal -> signal.first());
 
         assert main.emit(Complete).value();
@@ -35,7 +35,7 @@ public class FisrtTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(signal -> signal.first());
 
         assert main.emit(Error.class).value();
@@ -45,7 +45,7 @@ public class FisrtTest extends SignalTester {
     }
 
     @Test
-    public void firstWithDefault() {
+    void firstWithDefault() {
         monitor(signal -> signal.first("Default"));
 
         assert main.emit(1, 2, 3).value(1);
@@ -54,7 +54,7 @@ public class FisrtTest extends SignalTester {
     }
 
     @Test
-    public void completeWithDefault() {
+    void completeWithDefault() {
         monitor(signal -> signal.first("Default"));
 
         assert main.emit(Complete).value("Default");
@@ -63,7 +63,7 @@ public class FisrtTest extends SignalTester {
     }
 
     @Test
-    public void errorWithDefault() {
+    void errorWithDefault() {
         monitor(signal -> signal.first("Default"));
 
         assert main.emit(Error.class).value();

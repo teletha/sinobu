@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/02/27 13:35:47
  */
-public class TimeoutTest extends SignalTester {
+class TimeoutTest extends SignalTester {
 
     @Test
-    public void timeout() throws Exception {
+    void timeout() throws Exception {
         monitor(signal -> signal.timeout(30, ms));
 
         assert main.emit("success").value("success");
@@ -48,7 +48,7 @@ public class TimeoutTest extends SignalTester {
     }
 
     @Test
-    public void delayNegative() throws Exception {
+    void delayNegative() throws Exception {
         monitor(signal -> signal.timeout(-10, ms));
 
         assert main.emit("success").value("success");

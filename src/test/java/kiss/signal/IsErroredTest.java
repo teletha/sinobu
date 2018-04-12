@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @version 2018/03/02 13:36:05
  */
-public class IsErroredTest extends SignalTester {
+class IsErroredTest extends SignalTester {
 
     @Test
-    public void value() {
+    void value() {
         monitor(Object.class, Boolean.class, signal -> signal.isErrored());
 
         assert main.emit(1, 2, 3).value();
@@ -26,7 +26,7 @@ public class IsErroredTest extends SignalTester {
     }
 
     @Test
-    public void error() {
+    void error() {
         monitor(Object.class, Boolean.class, signal -> signal.isErrored());
 
         assert main.emit(1, 2, 3).value();
@@ -36,7 +36,7 @@ public class IsErroredTest extends SignalTester {
     }
 
     @Test
-    public void complete() {
+    void complete() {
         monitor(Object.class, Boolean.class, signal -> signal.isErrored());
 
         assert main.emit(1, 2, 3).value();
