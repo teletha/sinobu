@@ -1953,12 +1953,16 @@ public final class Signal<V> {
      */
     public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, Function<Signal<? extends E>, Signal<?>> notifier) {
         return new Signal<>((observer, disposer) -> {
+            AtomicInteger count = new AtomicInteger();
             // error notifier
             Disposable[] latest = new Disposable[] {Disposable.empty()};
             Subscriber<E> error = new Subscriber();
             error.next = e -> {
                 if (type == null || type.isInstance(e)) {
-                    error.observer.accept(e);
+                    System.out.println("match error " + e + "  " + error.observer);
+                    if (count.incrementAndGet() < 5) {
+                        error.observer.accept(e);
+                    }
                 } else {
                     observer.error(e);
                 }
@@ -1966,9 +1970,24 @@ public final class Signal<V> {
 
             // define error retrying flow
             notifier.apply(error.signal()).to(v -> {
+                System.out.println("error is occured " + v + ", retry");
                 latest[0].dispose();
-                latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
-            }, observer::error, () -> {
+                latest[0] = to(observer::accept, e -> {
+                    if (type == null || type.isInstance(e)) {
+                        e.printStackTrace();
+                        System.out.println("match error " + e + "  " + error.observer + "  " + disposer);
+                        if (count.incrementAndGet() < 5) {
+                            error.observer.accept(e);
+                        }
+                    } else {
+                        observer.error(e);
+                    }
+                }, observer::complete, disposer.sub(), true);
+            }, e -> {
+                System.out.println("##################################");
+                // observer.error(e);
+            }, () -> {
+                System.out.println("error notifier complete");
                 error.next = observer::error;
             });
 
@@ -2902,6 +2921,7 @@ public final class Signal<V> {
                     if (condition.test(context, value) == expected) {
                         observer.accept(value);
                     } else {
+                        System.out.println("stop " + stopOnFail + "  " + includeOnStop);
                         if (stopOnFail) {
                             if (includeOnStop) observer.accept(value);
                             observer.complete();
