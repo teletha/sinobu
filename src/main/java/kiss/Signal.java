@@ -88,17 +88,9 @@ public final class Signal<V> {
      */
     public Signal(Collection<Observer<V>> observers) {
         this((observer, disposer) -> {
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.next = v -> {
-                if (disposer.isNotDisposed()) {
-                    observer.accept(v);
-                }
-            };
+            observers.add((Observer<V>) observer);
 
-            observers.add(subscriber);
-
-            return disposer.add(() -> observers.remove(subscriber));
+            return disposer.add(() -> observers.remove(observer));
         });
     }
 
@@ -1639,7 +1631,7 @@ public final class Signal<V> {
         }, e -> {
             scheduler.accept(() -> observer.error(e));
         }, () -> {
-            scheduler.accept(() -> observer.complete());
+            scheduler.accept(observer::complete);
         }, disposer));
     }
 
@@ -2886,18 +2878,38 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
+            // Normally, Signal will be diposed automatically after a COMPLETE event is sent. But it
+            // is not immediately disposed if the COMPLETE event itself is delayed for some
+            // reason (#delay, #interval or #on, etc).
+            // In that case, even though the current signal has already stopped event propagation,
+            // it is possible to propagate the subsequent event to the next signal.
+            // There are several ways to avoid this.
+            //
+            // 1. Execute "dispose" immediately at the same time as the complete event
+            // Although this way seems to work at first glance, problems will arise in #repeat or
+            // #recover and so on because invokeing "dispose" forcedly.
+            //
+            // 2. The sender transmits the event while sequentially checking Disposable#isDisposed.
+            // The DISPOSE event itself is delayed and issued, so it can not be used.
+            //
+            // 3. After COMPLETE, stop all the events
+            // Here we adopt this way.
+            AtomicBoolean stopped = new AtomicBoolean();
             C context = contextSupplier == null ? null : contextSupplier.get();
 
             return to(value -> {
-                if (condition.test(context, value) == expected) {
-                    observer.accept(value);
-                } else {
-                    if (stopOnFail) {
-                        if (includeOnStop) observer.accept(value);
-                        observer.complete();
+                if (stopped.get() == false) {
+                    if (condition.test(context, value) == expected) {
+                        observer.accept(value);
+                    } else {
+                        if (stopOnFail) {
+                            if (includeOnStop) observer.accept(value);
+                            observer.complete();
+                            stopped.set(true);
+                        }
                     }
                 }
-            }, observer::error, observer::complete, disposer, true);
+            }, observer::error, observer::complete, disposer);
         });
     }
 

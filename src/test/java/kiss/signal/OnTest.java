@@ -65,8 +65,8 @@ class OnTest extends SignalTester {
     void dispose() {
         monitor(signal -> signal.take(1).on(after20ms));
 
-        assert main.emit("send value", "immediately").value();
-        assert await().value("send value");
+        assert main.emit("First value will be accepted", "Second will not!").value();
+        assert await().size(1);
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
