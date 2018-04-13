@@ -14,6 +14,8 @@ import java.util.function.BooleanSupplier;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.I;
+
 /**
  * @version 2018/03/25 9:15:26
  */
@@ -209,5 +211,17 @@ class RepeatTest extends SignalTester {
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
+    }
+
+    @Test
+    void repeatWhenWithAfterEffect() {
+        monitor(() -> I.signal("start").effect(log("Begin")).repeatWhen(repeat -> repeat.take(3).effect(log("Repeat"))).effect(log("End")));
+
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert checkLog("Begin").size() == 4;
+        assert checkLog("Repeat").size() == 3;
+        assert checkLog("End").size() == 4;
     }
 }

@@ -1728,9 +1728,16 @@ public final class Signal<V> {
             Subscriber<Object> subscriber = new Subscriber();
             WiseRunnable complete = I.wise(subscriber).with(UNDEFINED);
 
+            // How many times should we call?
+            AtomicInteger count = new AtomicInteger();
+
             notifier.apply(subscriber.signal()).to(v -> {
-                latest[0].dispose();
-                latest[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+                if (count.getAndIncrement() == 0) {
+                    do {
+                        latest[0].dispose();
+                        latest[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+                    } while (count.decrementAndGet() != 0);
+                }
             }, observer::error, () -> {
                 if (immediate) {
                     observer.complete();
@@ -1953,41 +1960,29 @@ public final class Signal<V> {
      */
     public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, Function<Signal<? extends E>, Signal<?>> notifier) {
         return new Signal<>((observer, disposer) -> {
-            AtomicInteger count = new AtomicInteger();
             // error notifier
             Disposable[] latest = new Disposable[] {Disposable.empty()};
             Subscriber<E> error = new Subscriber();
             error.next = e -> {
                 if (type == null || type.isInstance(e)) {
-                    System.out.println("match error " + e + "  " + error.observer);
-                    if (count.incrementAndGet() < 5) {
-                        error.observer.accept(e);
-                    }
+                    error.observer.accept(e);
                 } else {
                     observer.error(e);
                 }
             };
 
+            // How many times should we call?
+            AtomicInteger retry = new AtomicInteger();
+
             // define error retrying flow
             notifier.apply(error.signal()).to(v -> {
-                System.out.println("error is occured " + v + ", retry");
-                latest[0].dispose();
-                latest[0] = to(observer::accept, e -> {
-                    if (type == null || type.isInstance(e)) {
-                        e.printStackTrace();
-                        System.out.println("match error " + e + "  " + error.observer + "  " + disposer);
-                        if (count.incrementAndGet() < 5) {
-                            error.observer.accept(e);
-                        }
-                    } else {
-                        observer.error(e);
-                    }
-                }, observer::complete, disposer.sub(), true);
-            }, e -> {
-                System.out.println("##################################");
-                // observer.error(e);
-            }, () -> {
-                System.out.println("error notifier complete");
+                if (retry.getAndIncrement() == 0) {
+                    do {
+                        latest[0].dispose();
+                        latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
+                    } while (retry.decrementAndGet() != 0);
+                }
+            }, observer::error, () -> {
                 error.next = observer::error;
             });
 
@@ -2921,7 +2916,6 @@ public final class Signal<V> {
                     if (condition.test(context, value) == expected) {
                         observer.accept(value);
                     } else {
-                        System.out.println("stop " + stopOnFail + "  " + includeOnStop);
                         if (stopOnFail) {
                             if (includeOnStop) observer.accept(value);
                             observer.complete();

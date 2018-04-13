@@ -145,4 +145,20 @@ class RecoverTest extends SignalTester {
         assert main.isError();
         assert main.isDisposed();
     }
+
+    @Test
+    void recoverWhenWithAfterEffect() {
+        monitor(() -> I.signal("start")
+                .effect(log("Begin"))
+                .map(errorUnaryOperator())
+                .recoverWhen(recover -> recover.take(3).mapTo("OK").effect(log("Recover")))
+                .effect(log("End")));
+
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert checkLog("Begin").size() == 1;
+        assert checkLog("Recover").size() == 1;
+        assert checkLog("End").size() == 1;
+    }
 }

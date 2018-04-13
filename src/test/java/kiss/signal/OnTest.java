@@ -29,17 +29,6 @@ class OnTest extends SignalTester {
     }
 
     @Test
-    void multiple() {
-        monitor(String.class, Boolean.class, signal -> signal.on(after20ms)
-                .map(v -> Thread.currentThread())
-                .on(after20ms)
-                .map(v -> v == Thread.currentThread()));
-
-        main.emit("START");
-        assert await().value(false);
-    }
-
-    @Test
     void error() {
         monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName()));
 

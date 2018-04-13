@@ -17,7 +17,6 @@ import java.util.function.BooleanSupplier;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.Disposable;
 import kiss.I;
 
 /**
@@ -120,9 +119,20 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryWhenWithAfterEffect() {
-        Disposable disposable = I.signal("ok").map(errorFunction()).retryWhen(fail -> fail.take(2)).to(v -> {
-            System.out.println(v);
-        });
+        monitor(() -> I.signal("start")
+                .effect(log("Begin"))
+                .map(errorFunction())
+                .retryWhen(fail -> fail.take(3).effect(log("Retry")))
+                .effect(log("Unreached"))
+                .effectOnError(log("ErrorFinally")));
+
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert checkLog("Begin").size() == 4;
+        assert checkLog("Unreached").size() == 0;
+        assert checkLog("Retry").size() == 3;
+        assert checkLog("ErrorFinally").size() == 1;
     }
 
     @Test

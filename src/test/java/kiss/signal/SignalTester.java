@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +25,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import antibug.Chronus;
@@ -75,12 +78,26 @@ public class SignalTester {
     /** READ ONLY : DON'T MODIFY in test case */
     private final List<Await> awaits = new CopyOnWriteArrayList();
 
+    /** The log manager. */
+    private Map<String, List> logs;
+
     /**
      * Create generic error {@link Function}.
      * 
      * @return
      */
     protected final <P, R> Function<P, R> errorFunction() {
+        return e -> {
+            throw new Error();
+        };
+    };
+
+    /**
+     * Create generic error {@link Function}.
+     * 
+     * @return
+     */
+    protected final <P> UnaryOperator<P> errorUnaryOperator() {
         return e -> {
             throw new Error();
         };
@@ -191,6 +208,28 @@ public class SignalTester {
     }
 
     /**
+     * Create logging interface for the specified key. Use in {@link Signal#effect(Consumer)}.
+     * 
+     * @param key A log key.
+     * @return Loggin {@link Consumer} interface.
+     */
+    protected final <T> Consumer<T> log(String key) {
+        return e -> {
+            logs.computeIfAbsent(key, k -> new ArrayList()).add(e);
+        };
+    }
+
+    /**
+     * Read log for te specified key.
+     * 
+     * @param key A log key.
+     * @return The stored log or empty {@link List}.
+     */
+    protected final <T> List<T> checkLog(String key) {
+        return logs.computeIfAbsent(key, k -> Collections.EMPTY_LIST);
+    }
+
+    /**
      * Shorthand method of {@link I#list(Object...)}.
      * 
      * @param values
@@ -292,6 +331,7 @@ public class SignalTester {
             sets[i] = new LogSet();
             delegator1.log = sets[i].log1;
             delegator2.log = sets[i].log2;
+            logs = sets[i].logs;
             sets[i].disposer = base.map(v -> v).to(sets[i].result);
         }
 
@@ -359,6 +399,7 @@ public class SignalTester {
             sets[i] = new LogSet();
             delegator1.log = sets[i].log1;
             delegator2.log = sets[i].log2;
+            logs = sets[i].logs;
             sets[i].disposer = base.to(sets[i].result);
         }
 
@@ -618,7 +659,7 @@ public class SignalTester {
     }
 
     /**
-     * @version 2017/04/04 12:52:06
+     * @version 2018/04/13 13:47:38
      */
     private class LogSet {
 
@@ -627,6 +668,8 @@ public class SignalTester {
         Log log1 = new Logger();
 
         Log log2 = new Logger();
+
+        Map<String, List> logs = new HashMap();
 
         Disposable disposer;
     }
