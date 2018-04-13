@@ -1967,23 +1967,38 @@ public final class Signal<V> {
                 if (type == null || type.isInstance(e)) {
                     error.observer.accept(e);
                 } else {
+                    System.out.println("NONONO");
                     observer.error(e);
                 }
             };
 
             // How many times should we call?
             AtomicInteger retry = new AtomicInteger();
+            AtomicBoolean completed = new AtomicBoolean();
 
             // define error retrying flow
             notifier.apply(error.signal()).to(v -> {
+                System.out.println(completed.get() + "  " + completed.hashCode());
+                if (completed.get()) {
+                    observer.error((Throwable) v);
+                    return;
+                }
+
+                System.out.println("error passed " + v + "   " + retry.get());
                 if (retry.getAndIncrement() == 0) {
                     do {
                         latest[0].dispose();
+                        System.out.println("retry ");
                         latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
                     } while (retry.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
-                error.next = observer::error;
+                completed.set(true);
+                System.out.println("Complete fail handler " + completed.get());
+                error.next = e -> {
+                    System.out.println("Error " + e);
+                    observer.error(e);
+                };
             });
 
             // delegate error to the notifier

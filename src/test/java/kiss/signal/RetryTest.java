@@ -17,6 +17,7 @@ import java.util.function.BooleanSupplier;
 
 import org.junit.jupiter.api.Test;
 
+import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 
 /**
@@ -123,6 +124,7 @@ class RetryTest extends SignalTester {
                 .effect(log("Begin"))
                 .map(errorFunction())
                 .retryWhen(fail -> fail.take(3).effect(log("Retry")))
+                .map(v -> "@" + v)
                 .effect(log("Unreached"))
                 .effectOnError(log("ErrorFinally")));
 
@@ -132,6 +134,26 @@ class RetryTest extends SignalTester {
         assert checkLog("Begin").size() == 4;
         assert checkLog("Unreached").size() == 0;
         assert checkLog("Retry").size() == 3;
+        assert checkLog("ErrorFinally").size() == 1;
+    }
+
+    @Test
+    @PowerAssertOff
+    void retryWhenWithDelayAfterEffect() {
+        monitor(1, () -> I.signal("start")
+                .effect(log("Begin"))
+                .map(errorFunction())
+                .retryWhen(fail -> fail.take(1).delay(20, ms).effect(log("Retry")))
+                .map(v -> "@" + v)
+                .effect(log("Unreached"))
+                .effectOnError(log("ErrorFinally")));
+
+        assert await(300).isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+        assert checkLog("Begin").size() == 2;
+        assert checkLog("Unreached").size() == 0;
+        assert checkLog("Retry").size() == 1;
         assert checkLog("ErrorFinally").size() == 1;
     }
 
