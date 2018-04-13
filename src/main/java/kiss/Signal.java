@@ -1961,48 +1961,42 @@ public final class Signal<V> {
     public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, Function<Signal<? extends E>, Signal<?>> notifier) {
         return new Signal<>((observer, disposer) -> {
             // error notifier
+            Throwable[] latestError = new Throwable[1];
             Disposable[] latest = new Disposable[] {Disposable.empty()};
-            Subscriber<E> error = new Subscriber();
-            error.next = e -> {
+            Subscriber<E> errorHandler = new Subscriber();
+            errorHandler.next = e -> {
                 if (type == null || type.isInstance(e)) {
-                    error.observer.accept(e);
+                    errorHandler.observer.accept(latestError[0] = e);
                 } else {
-                    System.out.println("NONONO");
                     observer.error(e);
                 }
             };
 
             // How many times should we call?
             AtomicInteger retry = new AtomicInteger();
-            AtomicBoolean completed = new AtomicBoolean();
 
             // define error retrying flow
-            notifier.apply(error.signal()).to(v -> {
-                System.out.println(completed.get() + "  " + completed.hashCode());
-                if (completed.get()) {
-                    observer.error((Throwable) v);
-                    return;
-                }
+            notifier.apply(errorHandler.signal()).to(v -> {
+                latestError[0] = null;
 
-                System.out.println("error passed " + v + "   " + retry.get());
                 if (retry.getAndIncrement() == 0) {
                     do {
                         latest[0].dispose();
-                        System.out.println("retry ");
-                        latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
+                        latest[0] = to(observer::accept, errorHandler, observer::complete, disposer.sub(), true);
                     } while (retry.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
-                completed.set(true);
-                System.out.println("Complete fail handler " + completed.get());
-                error.next = e -> {
-                    System.out.println("Error " + e);
+                errorHandler.next = e -> {
                     observer.error(e);
                 };
+
+                if (latestError[0] != null) {
+                    observer.error(latestError[0]);
+                }
             });
 
             // delegate error to the notifier
-            latest[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
+            latest[0] = to(observer::accept, errorHandler, observer::complete, disposer.sub(), true);
 
             return disposer;
         });
