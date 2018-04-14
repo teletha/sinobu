@@ -1724,29 +1724,50 @@ public final class Signal<V> {
      */
     private Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notifier, boolean immediate) {
         return new Signal<>((observer, disposer) -> {
-            Disposable[] latest = new Disposable[] {Disposable.empty()};
+            // recorder for the processing complete
+            Object[] processing = new Object[1];
+
+            // build the actual complete handler
             Subscriber<Object> subscriber = new Subscriber();
-            WiseRunnable complete = I.wise(subscriber).with(UNDEFINED);
+            WiseRunnable complete = () -> {
+                subscriber.accept(processing[0] = UNDEFINED);
+            };
 
-            // How many times should we call?
-            AtomicInteger count = new AtomicInteger();
+            // number of remaining repeats
+            AtomicInteger remaining = new AtomicInteger();
+            // previous repeat operation
+            Disposable[] previous = new Disposable[] {Disposable.empty()};
 
+            // define complete repeating flow
             notifier.apply(subscriber.signal()).to(v -> {
-                if (count.getAndIncrement() == 0) {
+                processing[0] = null; // processing complete will be handled, so clear it
+
+                // If you are not repeating, repeat it immediately, otherwise you can do it later
+                if (remaining.getAndIncrement() == 0) {
                     do {
-                        latest[0].dispose();
-                        latest[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
-                    } while (count.decrementAndGet() != 0);
+                        // dispose previous and reconnect
+                        previous[0].dispose();
+                        previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+                    } while (remaining.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
+                // Since this complete flow has ended,
+                // all subsequent complete are passed to the source signal.
                 if (immediate) {
                     observer.complete();
                 } else {
                     subscriber.next = I.wise(observer::complete).asConsumer();
+
+                    // Since there is a complete in processing, but this complete flow has ended,
+                    // the processing complete is passed to the source signal.
+                    if (processing[0] != null) observer.complete();
                 }
             });
-            latest[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
 
+            // connect with complete handling flow
+            previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+
+            // API difinition
             return disposer;
         });
     }
