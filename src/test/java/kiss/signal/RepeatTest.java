@@ -214,10 +214,25 @@ class RepeatTest extends SignalTester {
     }
 
     @Test
-    void repeatWhenWithAfterEffect() {
+    void repeatWhenImmediately() {
         monitor(() -> I.signal("start").effect(log("Begin")).repeatWhen(repeat -> repeat.take(3).effect(log("Repeat"))).effect(log("End")));
 
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert checkLog("Begin").size() == 4;
+        assert checkLog("Repeat").size() == 3;
+        assert checkLog("End").size() == 4;
+    }
+
+    @Test
+    void repeatWhenWithDelayImmediately() {
+        monitor(1, () -> I.signal("start")
+                .effect(log("Begin"))
+                .repeatWhen(repeat -> repeat.take(3).delay(10, ms).effect(log("Repeat")))
+                .effect(log("End")));
+
+        assert await().isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
         assert checkLog("Begin").size() == 4;

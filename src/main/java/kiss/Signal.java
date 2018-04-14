@@ -1955,49 +1955,56 @@ public final class Signal<V> {
      * </ul>
      * 
      * @param type An error type that you want to retry.
-     * @param notifier An error notifier to define retrying flow.
+     * @param flow An error notifier to define retrying flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, Function<Signal<? extends E>, Signal<?>> notifier) {
+    public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, Function<Signal<? extends E>, Signal<?>> flow) {
         return new Signal<>((observer, disposer) -> {
-            // error notifier
-            Throwable[] latestError = new Throwable[1];
-            Disposable[] latest = new Disposable[] {Disposable.empty()};
-            Subscriber<E> errorHandler = new Subscriber();
-            errorHandler.next = e -> {
+            // recorder for the processing error
+            Throwable[] processing = new Throwable[1];
+
+            // build the actual error handler
+            Subscriber<E> error = new Subscriber();
+            error.next = e -> {
+                // determine whether errors should be handled by type
                 if (type == null || type.isInstance(e)) {
-                    errorHandler.observer.accept(latestError[0] = e);
+                    error.observer.accept(processing[0] = e); // to user defined error flow
                 } else {
-                    observer.error(e);
+                    observer.error(e); // to source signal
                 }
             };
 
-            // How many times should we call?
-            AtomicInteger retry = new AtomicInteger();
+            // number of remaining retrys
+            AtomicInteger remaining = new AtomicInteger();
+            // previous retry operation
+            Disposable[] previous = new Disposable[] {Disposable.empty()};
 
             // define error retrying flow
-            notifier.apply(errorHandler.signal()).to(v -> {
-                latestError[0] = null;
+            flow.apply(error.signal()).to(v -> {
+                processing[0] = null; // processing error will be handled, so clear it
 
-                if (retry.getAndIncrement() == 0) {
+                // If you are not retrying, retry it immediately, otherwise you can do it later
+                if (remaining.getAndIncrement() == 0) {
                     do {
-                        latest[0].dispose();
-                        latest[0] = to(observer::accept, errorHandler, observer::complete, disposer.sub(), true);
-                    } while (retry.decrementAndGet() != 0);
+                        // dispose previous and reconnect
+                        previous[0].dispose();
+                        previous[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
+                    } while (remaining.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
-                errorHandler.next = e -> {
-                    observer.error(e);
-                };
+                // Since this error flow has ended,
+                // all subsequent errors are passed to the source signal.
+                error.next = observer::error;
 
-                if (latestError[0] != null) {
-                    observer.error(latestError[0]);
-                }
+                // Since there is an error in processing, but this error flow has ended,
+                // the processing error is passed to the source signal.
+                if (processing[0] != null) observer.error(processing[0]);
             });
 
-            // delegate error to the notifier
-            latest[0] = to(observer::accept, errorHandler, observer::complete, disposer.sub(), true);
+            // connect with error handling flow
+            previous[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
 
+            // API definition
             return disposer;
         });
     }
