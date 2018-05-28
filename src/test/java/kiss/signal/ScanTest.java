@@ -14,24 +14,24 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/03/29 13:50:56
+ * @version 2018/05/29 8:33:10
  */
 class ScanTest extends SignalTester {
 
     @Test
     void scan() {
-        monitor(signal -> signal.scan(10, (accumulated, value) -> accumulated + value));
+        monitor(int.class, signal -> signal.scan(v -> v * 10, (accumulated, value) -> accumulated + value));
 
-        assert main.emit(1).value(11); // 10 + 1
-        assert main.emit(2).value(13); // 11 + 2
-        assert main.emit(3).value(16); // 13 + 3
+        assert main.emit(1).value(10); // 1 * 10
+        assert main.emit(2).value(12); // 10 + 2
+        assert main.emit(3).value(15); // 12 + 3
         assert main.isNotCompleted();
         assert main.isNotDisposed();
     }
 
     @Test
-    void error() {
-        monitor(signal -> signal.scan(10, errorBiFunction()));
+    void scanErrorInFirst() {
+        monitor(int.class, signal -> signal.scan(errorFunction(), (accumulated, value) -> accumulated + value));
 
         assert main.emit(1).value();
         assert main.isNotCompleted();
@@ -40,10 +40,25 @@ class ScanTest extends SignalTester {
     }
 
     @Test
-    void complete() {
-        monitor(signal -> signal.scan(10, (accumulated, value) -> accumulated + value));
+    void scanErrorInOthers() {
+        monitor(int.class, signal -> signal.scan(v -> v * 10, errorBiFunction()));
 
-        assert main.emit(1, Complete).value(11);
+        assert main.emit(1).value(10); // 1 * 10
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(2).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void scanComplete() {
+        monitor(int.class, signal -> signal.scan(v -> v * 10, (accumulated, value) -> accumulated + value));
+
+        assert main.emit(1, Complete).value(10);
         assert main.isCompleted();
         assert main.isDisposed();
     }
@@ -57,5 +72,35 @@ class ScanTest extends SignalTester {
         assert main.emit("C").value("A-B-C");
         assert main.isNotCompleted();
         assert main.isNotDisposed();
+    }
+
+    @Test
+    void scanWith() {
+        monitor(signal -> signal.scanWith(10, (accumulated, value) -> accumulated + value));
+
+        assert main.emit(1).value(11); // 10 + 1
+        assert main.emit(2).value(13); // 11 + 2
+        assert main.emit(3).value(16); // 13 + 3
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void scanWithError() {
+        monitor(signal -> signal.scanWith(10, errorBiFunction()));
+
+        assert main.emit(1).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void scanWithComplete() {
+        monitor(signal -> signal.scanWith(10, (accumulated, value) -> accumulated + value));
+
+        assert main.emit(1, Complete).value(11);
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 }
