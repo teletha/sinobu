@@ -69,6 +69,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
+import java.util.stream.BaseStream;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -172,8 +173,8 @@ public class I {
 
     /**
      * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
-     * separate format instances for each thread. If multiple threads access a format concurrently,
-     * it must be synchronized externally.
+     * separate format instances for each thread. If multiple threads access a format concurrently, it
+     * must be synchronized externally.
      */
     static final ThreadSpecific<SimpleDateFormat> format = new ThreadSpecific(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
 
@@ -498,16 +499,16 @@ public class I {
      * Note : This method closes both input and output stream carefully.
      * </p>
      * <p>
-     * Copy bytes from a {@link InputStream} to an {@link OutputStream}. This method buffers the
-     * input internally, so there is no need to use a buffered stream.
+     * Copy bytes from a {@link InputStream} to an {@link OutputStream}. This method buffers the input
+     * internally, so there is no need to use a buffered stream.
      * </p>
      *
      * @param input A {@link InputStream} to read from.
      * @param output An {@link OutputStream} to write to.
      * @param close Whether input and output steream will be closed automatically or not.
-     * @throws IOException If an  I/O error occurs.
+     * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the input or output is null.
-     * @throws SecurityException If a   security manager exists and its
+     * @throws SecurityException If a security manager exists and its
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
      *             created.
      */
@@ -538,7 +539,7 @@ public class I {
      * @param input A {@link Readable} to read from.
      * @param output An {@link Appendable} to write to.
      * @param close Whether input and output steream will be closed automatically or not.
-     * @throws IOException If an  I/O error occurs.
+     * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the input or output is null.
      */
     public static void copy(Readable input, Appendable output, boolean close) {
@@ -597,15 +598,14 @@ public class I {
      * <a href="Extensible#ExtensionPoint">Extension Point</a>.
      * </p>
      * <p>
-     * The returned list will be "safe" in that no references to it are maintained by Sinobu. (In
-     * other words, this method must allocate a new list). The caller is thus free to modify the
-     * returned list.
+     * The returned list will be "safe" in that no references to it are maintained by Sinobu. (In other
+     * words, this method must allocate a new list). The caller is thus free to modify the returned
+     * list.
      * </p>
      *
      * @param <E> An Extension Point.
-     * @param extensionPoint An extension point class. The
-     *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     *            otherwise this method will return empty list.
+     * @param extensionPoint An extension point class. The <a href="Extensible#ExtensionPoint">Extension
+     *            Point</a> class is only accepted, otherwise this method will return empty list.
      * @return All Extensions of the given Extension Point or empty list.
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
@@ -619,10 +619,9 @@ public class I {
      * </p>
      *
      * @param <E> An Extension Point.
-     * @param extensionPoint An Extension Point class. The
-     *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     *            otherwise this method will return <code>null</code>.
-     * @param key An <a  href="Extensible.html#ExtensionKey">Extension Key</a> class.
+     * @param extensionPoint An Extension Point class. The <a href="Extensible#ExtensionPoint">Extension
+     *            Point</a> class is only accepted, otherwise this method will return <code>null</code>.
+     * @param key An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.
      * @return A associated Extension of the given Extension Point and the given Extension Key or
      *         <code>null</code>.
      */
@@ -651,19 +650,18 @@ public class I {
 
     /**
      * <p>
-     * Find all <a href="Extensible.html#Extension">Extensions</a> classes which are specified by
-     * the given <a href="Extensible#ExtensionPoint">Extension Point</a>.
+     * Find all <a href="Extensible.html#Extension">Extensions</a> classes which are specified by the
+     * given <a href="Extensible#ExtensionPoint">Extension Point</a>.
      * </p>
      * <p>
-     * The returned list will be "safe" in that no references to it are maintained by Sinobu. (In
-     * other words, this method must allocate a new list). The caller is thus free to modify the
-     * returned list.
+     * The returned list will be "safe" in that no references to it are maintained by Sinobu. (In other
+     * words, this method must allocate a new list). The caller is thus free to modify the returned
+     * list.
      * </p>
      *
      * @param <E> An Extension Point.
-     * @param extensionPoint An extension point class. The
-     *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
-     *            otherwise this method will return empty list.
+     * @param extensionPoint An extension point class. The <a href="Extensible#ExtensionPoint">Extension
+     *            Point</a> class is only accepted, otherwise this method will return empty list.
      * @return All Extension classes of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
@@ -689,8 +687,8 @@ public class I {
      * separator between each.
      * </p>
      *
-     * @param delimiter A sequence of characters that is used to separate each of the elements in
-     *            the resulting String.
+     * @param delimiter A sequence of characters that is used to separate each of the elements in the
+     *            resulting String.
      * @param items A {@link Iterable} items.
      * @return A concat expression.
      */
@@ -721,8 +719,8 @@ public class I {
      * Parse the specified JSON format text.
      * </p>
      * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}. The
+     *            empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
@@ -736,8 +734,8 @@ public class I {
      * Parse the specified JSON format text.
      * </p>
      * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}. The
+     *            empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
@@ -751,8 +749,8 @@ public class I {
      * Parse the specified JSON format text.
      * </p>
      * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}. The
+     *            empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
@@ -766,8 +764,8 @@ public class I {
      * Parse the specified JSON format text.
      * </p>
      * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}. The
+     *            empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
@@ -781,8 +779,8 @@ public class I {
      * Parse the specified JSON format text.
      * </p>
      * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}. The
+     *            empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
@@ -796,8 +794,8 @@ public class I {
      * Parse the specified JSON format text.
      * </p>
      * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}. The
+     *            empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
@@ -820,8 +818,8 @@ public class I {
      * <li>{@link CharSequence}</li>
      * </ul>
      * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}. The
+     *            empty or invalid format data will throw {@link IllegalStateException}.
      * @return A parsed {@link JSON}.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
@@ -856,8 +854,8 @@ public class I {
      * Load all {@link Extensible} typs from the specified source.
      * </p>
      * <p>
-     * You can define the special class "kiss.Index" which defines pre-scanned class names.
-     * "kiss.Index" must implement List<Set<String>>.
+     * You can define the special class "kiss.Index" which defines pre-scanned class names. "kiss.Index"
+     * must implement List<Set<String>>.
      * </p>
      *
      * @param source A source class to indicate the class set which are loaded.
@@ -994,9 +992,9 @@ public class I {
      * Returns a new or cached instance of the model class.
      * </p>
      * <p>
-     * This method supports the top-level class and the member type. If the local class or the
-     * anonymous class is passed to this argument, {@link UnsupportedOperationException} will be
-     * thrown. There is a possibility that a part of this limitation will be removed in the future.
+     * This method supports the top-level class and the member type. If the local class or the anonymous
+     * class is passed to this argument, {@link UnsupportedOperationException} will be thrown. There is
+     * a possibility that a part of this limitation will be removed in the future.
      * </p>
      *
      * @param <M> A model type.
@@ -1036,9 +1034,9 @@ public class I {
      * Returns a new or cached instance of the model class.
      * </p>
      * <p>
-     * This method supports the top-level class and the member type. If the local class or the
-     * anonymous class is passed to this argument, {@link UnsupportedOperationException} will be
-     * thrown. There is a possibility that a part of this limitation will be removed in the future.
+     * This method supports the top-level class and the member type. If the local class or the anonymous
+     * class is passed to this argument, {@link UnsupportedOperationException} will be thrown. There is
+     * a possibility that a part of this limitation will be removed in the future.
      * </p>
      *
      * @param <M> A model class.
@@ -1222,8 +1220,8 @@ public class I {
     /**
      * <p>
      * Close the specified object quietly if it is {@link AutoCloseable}. Equivalent to
-     * {@link AutoCloseable#close()}, except any exceptions will be ignored. This is typically used
-     * in finally block like the following.
+     * {@link AutoCloseable#close()}, except any exceptions will be ignored. This is typically used in
+     * finally block like the following.
      * </p>
      * <p>
      * <pre>
@@ -1238,14 +1236,14 @@ public class I {
      * }
      * </pre>
      * <p>
-     * Throw the specified checked exception quietly or close the specified {@link AutoCloseable}
-     * object quietly.
+     * Throw the specified checked exception quietly or close the specified {@link AutoCloseable} object
+     * quietly.
      * </p>
      * <p>
      * This method <em>doesn't</em> wrap checked exception around unchecked exception (e.g. new
-     * RuntimeException(e)) and <em>doesn't</em> shelve it. This method deceive the compiler that
-     * the checked exception is unchecked one. So you can catch a raw checked exception in the
-     * caller of the method which calls this method.
+     * RuntimeException(e)) and <em>doesn't</em> shelve it. This method deceive the compiler that the
+     * checked exception is unchecked one. So you can catch a raw checked exception in the caller of the
+     * method which calls this method.
      * </p>
      * <p>
      * <pre>
@@ -1316,12 +1314,12 @@ public class I {
      * Reads Java object from the JSON input.
      * </p>
      *
-     * @param input A serialized JSON representation of Java object. If the input is incompatible
-     *            with Java object, this method ignores the input. <code>null</code> will throw
+     * @param input A serialized JSON representation of Java object. If the input is incompatible with
+     *            Java object, this method ignores the input. <code>null</code> will throw
      *            {@link NullPointerException}. The empty or invalid format data will throw
      *            {@link IllegalStateException}.
-     * @param output A root Java object. All properties will be assigned from the given data deeply.
-     *            If the input is incompatible with Java object, this method ignores the input.
+     * @param output A root Java object. All properties will be assigned from the given data deeply. If
+     *            the input is incompatible with Java object, this method ignores the input.
      *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
@@ -1337,16 +1335,16 @@ public class I {
      * Reads Java object from the JSON input.
      * </p>
      * <p>
-     * If the input object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
-     * will be invoked certainly.
+     * If the input object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method will
+     * be invoked certainly.
      * </p>
      *
-     * @param input A serialized JSON representation of Java object. If the input is incompatible
-     *            with Java object, this method ignores the input. <code>null</code> will throw
+     * @param input A serialized JSON representation of Java object. If the input is incompatible with
+     *            Java object, this method ignores the input. <code>null</code> will throw
      *            {@link NullPointerException}. The empty or invalid format data will throw
      *            {@link IllegalStateException}.
-     * @param output A root Java object. All properties will be assigned from the given data deeply.
-     *            If the input is incompatible with Java object, this method ignores the input.
+     * @param output A root Java object. All properties will be assigned from the given data deeply. If
+     *            the input is incompatible with Java object, this method ignores the input.
      *            <code>null</code> will throw {@link java.lang.NullPointerException}.
      * @return A root Java object.
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
@@ -1606,8 +1604,8 @@ public class I {
 
     /**
      * <p>
-     * Perform recoverable operation. If some recoverable error will occur, this method perform
-     * recovery operation automatically.
+     * Perform recoverable operation. If some recoverable error will occur, this method perform recovery
+     * operation automatically.
      * </p>
      * 
      * @param operation A original user operation.
@@ -1626,8 +1624,8 @@ public class I {
 
     /**
      * <p>
-     * Perform recoverable operation. If some recoverable error will occur, this method perform
-     * recovery operation automatically.
+     * Perform recoverable operation. If some recoverable error will occur, this method perform recovery
+     * operation automatically.
      * </p>
      * 
      * @param operation A original user operation.
@@ -1644,8 +1642,8 @@ public class I {
 
     /**
      * <p>
-     * Perform recoverable operation. If some recoverable error will occur, this method perform
-     * recovery operation automatically.
+     * Perform recoverable operation. If some recoverable error will occur, this method perform recovery
+     * operation automatically.
      * </p>
      * 
      * @param original A original user operation.
@@ -1689,8 +1687,8 @@ public class I {
      *
      * @param delay A initial delay time.
      * @param unit A delay time unit.
-     * @param parallelExecution The <code>true</code> will execute task in parallel,
-     *            <code>false</code> will execute task in serial.
+     * @param parallelExecution The <code>true</code> will execute task in parallel, <code>false</code>
+     *            will execute task in serial.
      * @param task A task to execute.
      */
     public static Future<?> schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
@@ -1744,8 +1742,8 @@ public class I {
      * Converts a {@link Future} into a {@link Signal}.
      *
      * @param value The source {@link Future}.
-     * @param <V> The type of object that the {@link Future} returns, and also the type of item to
-     *            be emitted by the resulting {@link Signal}.
+     * @param <V> The type of object that the {@link Future} returns, and also the type of item to be
+     *            emitted by the resulting {@link Signal}.
      * @return {@link Signal} that emits the item from the source {@link Future}.
      */
     public static <V> Signal<V> signal(Future<V> value) {
@@ -1766,8 +1764,8 @@ public class I {
      * Converts a {@link CompletableFuture} into a {@link Signal}.
      *
      * @param value The source {@link CompletableFuture}.
-     * @param <V> The type of object that the {@link CompletableFuture} returns, and also the type
-     *            of item to be emitted by the resulting {@link Signal}.
+     * @param <V> The type of object that the {@link CompletableFuture} returns, and also the type of
+     *            item to be emitted by the resulting {@link Signal}.
      * @return {@link Signal} that emits the item from the source {@link CompletableFuture}.
      */
     public static <V> Signal<V> signal(CompletableFuture<V> value) {
@@ -1810,6 +1808,18 @@ public class I {
 
     /**
      * <p>
+     * Signal the specified values.
+     * </p>
+     *
+     * @param values A stream of values to emit.
+     * @return The {@link Signal} to emit sequencial values.
+     */
+    public static <V, S extends BaseStream<V, S>> Signal<V> signal(S values) {
+        return Signal.EMPTY.startWith(values);
+    }
+
+    /**
+     * <p>
      * {@link Signal} the specified values.
      * </p>
      *
@@ -1839,14 +1849,14 @@ public class I {
     }
 
     /**
-     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
-     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever increasing
+     * numbers after each {@code intervalTime} of time thereafter.
      * 
      * @param delayTime The initial delay time to wait before emitting the first value of 0L
      * @param intervalTime The period of time between emissions of the subsequent numbers
      * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
-     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
-     *         numbers after each {@code intervalTime} of time thereafter
+     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing numbers
+     *         after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit) {
         return new Signal<>((observer, disposer) -> {
@@ -2130,14 +2140,13 @@ public class I {
      * Write JSON representation of Java object to the specified output.
      * </p>
      * <p>
-     * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
-     * will be invoked certainly.
+     * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method will
+     * be invoked certainly.
      * </p>
      *
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
-     * @param out A serialized data output. <code>null</code> will throw
-     *            {@link NullPointerException}.
+     * @param out A serialized data output. <code>null</code> will throw {@link NullPointerException}.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      * @see #read(Readable, Object)
      * @see #read(CharSequence, Object)
