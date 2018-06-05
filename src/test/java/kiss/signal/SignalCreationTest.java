@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -130,6 +131,26 @@ class SignalCreationTest extends SignalTester {
     @Test
     void enumerationNull() {
         monitor(() -> signal((Enumeration) null));
+
+        assert main.value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void stream() {
+        monitor(1, () -> signal(stream(1, 2)));
+
+        assert main.value(1, 2);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void streamNull() {
+        monitor(() -> signal((Stream<String>) null));
 
         assert main.value();
         assert main.isCompleted();
