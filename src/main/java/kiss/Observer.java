@@ -51,6 +51,9 @@ public interface Observer<V> extends Consumer<V> {
      * @param error An object that provides additional information about the error.
      */
     public default void error(Throwable error) {
-        Thread.currentThread().getThreadGroup().uncaughtException(Thread.currentThread(), error);
+        Thread thread = Thread.currentThread();
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, error);
+
+        throw I.quiet(error);
     }
 }
