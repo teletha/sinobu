@@ -149,6 +149,19 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive items
+     * and notifications from the Observable.
+     *
+     * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @param complete A delegator method of {@link Observer#complete()}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
+    public final Disposable to(Consumer<? super V> next, Runnable complete) {
+        return to(next, null, complete);
+    }
+
+    /**
+     * <p>
      * Receive values from this {@link Signal}.
      * </p>
      *
