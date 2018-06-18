@@ -77,6 +77,8 @@ public class JSON {
                 if (v instanceof Map) {
                     if (name.equals("*")) {
                         return I.signal(((Map) v).values());
+                    } else if (name.equals("^")) {
+                        return I.signal(((Map) v).values()).reverse();
                     } else {
                         int i = name.lastIndexOf('[');
                         String main = i == -1 ? name : name.substring(0, i);
@@ -553,8 +555,8 @@ public class JSON {
 
     /**
      * <p>
-     * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor
-     * nodes, but same object in sibling nodes will be acceptable.
+     * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor nodes,
+     * but same object in sibling nodes will be acceptable.
      * </p>
      * 
      * @param model

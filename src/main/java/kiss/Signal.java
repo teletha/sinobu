@@ -2043,6 +2043,26 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Buffer all values until complete, then all buffered values are emitted in descending order.
+     * </p>
+     * 
+     * @return Chainable API.
+     */
+    public final Signal<V> reverse() {
+        return new Signal<>((observer, disposer) -> {
+            LinkedList<V> list = new LinkedList();
+
+            return to(list::addFirst, observer::error, () -> {
+                for (V v : list) {
+                    observer.accept(v);
+                }
+                observer.complete();
+            }, disposer);
+        });
+    }
+
+    /**
+     * <p>
      * Returns an {@link Signal} that, when the specified sampler {@link Signal} emits an item, emits
      * the most recently emitted item (if any) emitted by the source {@link Signal} since the previous
      * emission from the sampler {@link Signal}.
