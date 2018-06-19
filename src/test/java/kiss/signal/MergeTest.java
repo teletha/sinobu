@@ -83,6 +83,22 @@ class MergeTest extends SignalTester {
     }
 
     @Test
+    void complete() {
+        monitor(signal -> signal.merge(other.signal()).take(3));
+
+        assert main.emit("OK").value("OK");
+        assert other.emit("OK").value("OK");
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        assert main.emit("This value will complete merged signal.").value("This value will complete merged signal.");
+        assert main.isCompleted();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isDisposed();
+    }
+
+    @Test
     void completeFromMain() {
         monitor(signal -> signal.merge(other.signal()));
 

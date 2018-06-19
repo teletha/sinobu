@@ -1615,6 +1615,9 @@ public final class Signal<V> {
             Runnable complete = countable(observer::complete, signals.size());
 
             for (Signal<? extends V> signal : signals) {
+                if (disposer.isDisposed()) {
+                    break;
+                }
                 signal.to(observer::accept, observer::error, complete, disposer.sub(), true);
             }
             return disposer;

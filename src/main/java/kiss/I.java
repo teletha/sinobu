@@ -882,7 +882,7 @@ public class I {
             } else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
-                names = I.signal(file, entry -> entry.flatArray(File::listFiles))
+                names = I.signalBox(file, entry -> entry.flatArray(File::listFiles))
                         .take(File::isFile)
                         .map(entry -> entry.getPath().substring(prefix).replace(File.separatorChar, '.'));
             }
@@ -1871,28 +1871,41 @@ public class I {
 
     /**
      * <p>
-     * Traverse the tree structure.
+     * Traverse from initial value to followings.
      * </p>
      * 
-     * @param root A root node to traverse.
-     * @param traverser A function to navigate from a node to its children.
-     * @return
+     * @param init An initial value to traverse.
+     * @param traverser A function to navigate from a current to next.
+     * @return {@link Signal} that emits values from initial to followings.
      */
-    public static <T> Signal<T> signal(T root, UnaryOperator<Signal<T>> traverser) {
-        return signal(signal(root), traverser);
+    public static <T> Signal<T> signal(T init, UnaryOperator<T> traverser) {
+        return signalBox(init, e -> e.map(traverser));
     }
 
     /**
      * <p>
-     * Traverse the tree structure.
+     * Traverse from initial value to followings.
      * </p>
      * 
-     * @param root A root node to traverse.
-     * @param traverser A function to navigate from a node to its children.
-     * @return
+     * @param init An initial value to traverse.
+     * @param traverser A function to navigate from a current to next.
+     * @return {@link Signal} that emits values from initial to followings.
      */
-    private static <T> Signal<T> signal(Signal<T> root, UnaryOperator<Signal<T>> traverser) {
-        return root.merge(root.flatMap(e -> signal(traverser.apply(I.signal(e)), traverser)));
+    public static <T> Signal<T> signalBox(T init, UnaryOperator<Signal<T>> traverser) {
+        return signalBox(signal(init), traverser);
+    }
+
+    /**
+     * <p>
+     * Traverse from initial value to followings.
+     * </p>
+     * 
+     * @param init An initial value to traverse.
+     * @param traverser A function to navigate from a current to next.
+     * @return {@link Signal} that emits values from initial to followings.
+     */
+    private static <T> Signal<T> signalBox(Signal<T> init, UnaryOperator<Signal<T>> traverser) {
+        return init.merge(init.flatMap(e -> signalBox(traverser.apply(I.signal(e)), traverser)));
     }
 
     /**
@@ -1931,13 +1944,7 @@ public class I {
      * @return A {@link Signal} that emits a range of sequential longs
      */
     public static Signal<Integer> signalRange(int start, int count, int step) {
-        return new Signal<>((observer, disposer) -> {
-            for (int i = 0; i < count; i++) {
-                observer.accept(start + i * step);
-            }
-            observer.complete();
-            return disposer;
-        });
+        return signal(start, v -> v + step).take(count);
     }
 
     /**
@@ -1960,13 +1967,7 @@ public class I {
      * @return A {@link Signal} that emits a range of sequential longs
      */
     public static Signal<Long> signalRange(long start, long count, long step) {
-        return new Signal<>((observer, disposer) -> {
-            for (long i = 0; i < count; i++) {
-                observer.accept(start + i * step);
-            }
-            observer.complete();
-            return disposer;
-        });
+        return signal(start, v -> v + step).take(count);
     }
 
     /**

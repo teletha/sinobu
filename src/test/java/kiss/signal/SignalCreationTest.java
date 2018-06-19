@@ -306,4 +306,20 @@ class SignalCreationTest extends SignalTester {
         observers.forEach(e -> e.accept("Disposed signal doesn't propagate event."));
         assert results.size() == 2;
     }
+
+    @Test
+    void traverse() {
+        monitor(() -> I.signal(0, v -> v + 1).take(3));
+        assert main.value(0, 1, 2);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void traverseBox() {
+        monitor(() -> I.signalBox(0, v -> v.map(x -> x + 1)).take(3));
+        assert main.value(0, 1, 2);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
 }
