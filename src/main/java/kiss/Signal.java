@@ -316,6 +316,18 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Receive values as {@link Collection} from this {@link Signal}.
+     * </p>
+     *
+     * @return A {@link Collection} as value receiver.
+     */
+    public final <C extends Collection<V>> C toCollection(C collection) {
+        to(collection::add);
+        return collection;
+    }
+
+    /**
+     * <p>
      * Receive values as {@link List} from this {@link Signal}.
      * </p>
      *
