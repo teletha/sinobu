@@ -778,20 +778,17 @@ public final class Signal<V> {
         }
 
         return new Signal<V>((observer, disposer) -> {
-            Iterator<Signal<? extends V>> signals = others.iterator();
-            Runnable concat = I.recurseR(self -> () -> {
+            Iterator<Signal<? extends V>> signals = I.signal(others).skipNull().startWith(this).toList().iterator();
+
+            I.recurseR(self -> () -> {
                 if (signals.hasNext()) {
-                    Signal<? extends V> signal = signals.next();
-
-                    if (signal != null) {
-                        signal.to(observer::accept, observer::error, self, disposer);
-                        return;
-                    }
+                    signals.next().to(observer::accept, observer::error, self, disposer.sub());
+                } else {
+                    observer.complete();
                 }
-                observer.complete();
-            });
+            }).run();
 
-            return to(observer::accept, observer::error, concat, disposer);
+            return disposer;
         });
     }
 

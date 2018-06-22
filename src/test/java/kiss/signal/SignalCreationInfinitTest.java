@@ -9,6 +9,7 @@
  */
 package kiss.signal;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -19,6 +20,7 @@ import kiss.I;
 public class SignalCreationInfinitTest {
 
     @Test
+    @Disabled
     void infinite() {
         I.signal(1, v -> v + 1).to(v -> {
             if (v % 100 == 0) {

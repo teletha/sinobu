@@ -37,7 +37,7 @@ import kiss.Signal;
 import kiss.WiseFunction;
 
 /**
- * @version 2018/03/22 17:36:26
+ * @version 2018/06/22 9:02:45
  */
 public class SignalTester {
 
@@ -826,7 +826,10 @@ public class SignalTester {
          * @return A result.
          */
         public boolean isDisposed() {
-            assert disposers.isEmpty() == false;
+            if (disposers.isEmpty()) {
+                return false;
+            }
+
             for (Disposable disposable : disposers) {
                 if (disposable.isDisposed() == false) {
                     return false;

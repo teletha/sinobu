@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import kiss.Signal;
 
 /**
- * @version 2017/04/01 21:41:59
+ * @version 2018/06/22 9:11:51
  */
 class ConcatTest extends SignalTester {
 
@@ -24,6 +24,7 @@ class ConcatTest extends SignalTester {
 
         assert main.value(1, 2, 3, 4);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
@@ -32,6 +33,7 @@ class ConcatTest extends SignalTester {
 
         assert main.value(1, 2, 3, 4, 5, 6);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
@@ -40,6 +42,7 @@ class ConcatTest extends SignalTester {
 
         assert main.value(1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
@@ -48,6 +51,7 @@ class ConcatTest extends SignalTester {
 
         assert main.value(1, 2);
         assert main.isCompleted();
+        assert main.isDisposed();
     }
 
     @Test
@@ -58,5 +62,54 @@ class ConcatTest extends SignalTester {
         assert main.value(1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
+    }
+
+    @Test
+    void complete() {
+        monitor(signal -> signal.concat(other.signal()));
+
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotDisposed();
+
+        main.emit(Complete);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotDisposed();
+
+        other.emit(Complete);
+        assert main.isCompleted();
+        assert main.isDisposed();
+        assert other.isCompleted();
+        assert other.isDisposed();
+    }
+
+    @Test
+    void disposeWhileMainIsActive() {
+        monitor(signal -> signal.concat(other.signal()));
+
+        assert main.isNotDisposed();
+        main.dispose();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void disposeWhileOtherIsActive() {
+        monitor(signal -> signal.concat(other.signal()));
+
+        assert main.isNotDisposed();
+        main.emit(Complete);
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotDisposed();
+
+        main.dispose();
+        assert main.isNotCompleted();
+        assert other.isNotCompleted();
+        assert main.isDisposed();
+        assert other.isDisposed();
     }
 }
