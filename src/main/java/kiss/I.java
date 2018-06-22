@@ -46,6 +46,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -58,9 +59,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -1891,21 +1894,78 @@ public class I {
      * @param traverser A function to navigate from a current to next.
      * @return {@link Signal} that emits values from initial to followings.
      */
-    public static <T> Signal<T> signalBox(T init, UnaryOperator<Signal<T>> traverser) {
-        return signalBox(signal(init), traverser);
+    public static <T> Signal<T> signalBox2(T init, UnaryOperator<Signal<T>> traverser) {
+        // DON'T use the recursive call, it will throw StackOverflowError in some case.
+        return new Signal<T>((observer, disposer) -> {
+            Signal<T> now = I.signal(init);
+            LinkedList<T> queue = new LinkedList();
+
+            while (disposer.isNotDisposed()) {
+                now.to(v -> {
+                    queue.addLast(v);
+                    observer.accept(v);
+                }, observer::error);
+
+                if (queue.isEmpty()) {
+                    observer.complete();
+                    break;
+                }
+                now = traverser.apply(I.signal(queue.pollFirst()));
+            }
+            return disposer;
+        });
     }
 
-    /**
-     * <p>
-     * Traverse from initial value to followings.
-     * </p>
-     * 
-     * @param init An initial value to traverse.
-     * @param traverser A function to navigate from a current to next.
-     * @return {@link Signal} that emits values from initial to followings.
-     */
-    private static <T> Signal<T> signalBox(Signal<T> init, UnaryOperator<Signal<T>> traverser) {
-        return init.merge(init.flatMap(e -> signalBox(traverser.apply(I.signal(e)), traverser)));
+    public static <T> Signal<T> signalBox(T init, UnaryOperator<Signal<T>> traverser) {
+        // DON'T use the recursive call, it will throw StackOverflowError in some case.
+        return new Signal<T>((observer, disposer) -> {
+            Semaphore semaphore = new Semaphore(1);
+            LinkedList<T> queue = new LinkedList();
+            AtomicReference<Signal<T>> ref = new AtomicReference(I.signal(init));
+
+            while (disposer.isNotDisposed()) {
+                try {
+                    semaphore.acquire();
+                } catch (InterruptedException e) {
+                    throw I.quiet(e);
+                }
+
+                ref.get().to(v -> {
+                    queue.addLast(v);
+                    observer.accept(v);
+                }, observer::error, () -> {
+                    if (queue.isEmpty()) {
+                        System.out.println("All values are expired, complete");
+                        observer.complete();
+                    } else {
+                        ref.set(traverser.apply(I.signal(queue.pollFirst())));
+                        semaphore.release();
+                    }
+                });
+            }
+            return disposer;
+        });
+    }
+
+    public static <T> Signal<T> signalBox3(T init, UnaryOperator<Signal<T>> traverser) {
+        // DON'T use the recursive call, it will throw StackOverflowError in some case.
+        return new Signal<T>((observer, disposer) -> {
+            LinkedList<T> queue = new LinkedList();
+            queue.addLast(init);
+
+            I.recurseR(self -> () -> {
+                if (queue.isEmpty()) {
+                    System.out.println("All values are expired, complete");
+                    observer.complete();
+                } else {
+                    traverser.apply(I.signal(queue.pollFirst())).to(v -> {
+                        queue.addLast(v);
+                        observer.accept(v);
+                    }, observer::error, self);
+                }
+            }).run();
+            return disposer;
+        });
     }
 
     /**

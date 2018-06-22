@@ -9,11 +9,14 @@
  */
 package kiss.signal;
 
+import static java.util.concurrent.TimeUnit.*;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -321,5 +324,21 @@ class SignalCreationTest extends SignalTester {
         assert main.value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
+    }
+
+    @Test
+    void inifinite() {
+        AtomicInteger count = new AtomicInteger();
+
+        I.signal(1, v -> v + 1).take(1234567).to(count::incrementAndGet);
+        assert count.get() == 1234567;
+    }
+
+    @Test
+    void inifiniteAsynchronous() throws InterruptedException {
+        AtomicInteger count = new AtomicInteger();
+
+        I.signalBox(1, v -> v.map(i -> i + 1).delay(1000, MILLISECONDS)).take(5).to(count::incrementAndGet);
+        assert count.get() == 5;
     }
 }
