@@ -782,7 +782,7 @@ public final class Signal<V> {
 
             I.recurseR(self -> () -> {
                 if (signals.hasNext()) {
-                    signals.next().to(observer::accept, observer::error, self, disposer.sub());
+                    signals.next().to(observer::accept, observer::error, self, disposer.sub(), true);
                 } else {
                     observer.complete();
                 }
