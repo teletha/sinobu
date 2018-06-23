@@ -57,13 +57,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -885,7 +884,7 @@ public class I {
             } else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
-                names = I.signalBox(file, entry -> entry.flatArray(File::listFiles))
+                names = I.signal(true, file, entry -> entry.flatArray(File::listFiles))
                         .take(File::isFile)
                         .map(entry -> entry.getPath().substring(prefix).replace(File.separatorChar, '.'));
             }
@@ -1878,11 +1877,11 @@ public class I {
      * </p>
      * 
      * @param init An initial value to traverse.
-     * @param traverser A function to navigate from a current to next.
+     * @param iterator A function to navigate from a current to next.
      * @return {@link Signal} that emits values from initial to followings.
      */
-    public static <T> Signal<T> signal(T init, UnaryOperator<T> traverser) {
-        return signalBox(init, e -> e.map(traverser));
+    public static <T> Signal<T> signal(T init, UnaryOperator<T> iterator) {
+        return signal(true, init, e -> e.map(iterator));
     }
 
     /**
@@ -1890,80 +1889,42 @@ public class I {
      * Traverse from initial value to followings.
      * </p>
      * 
+     * @param sync Compute iteration synchronusly or not.
      * @param init An initial value to traverse.
-     * @param traverser A function to navigate from a current to next.
+     * @param iterator A function to navigate from a current to next.
      * @return {@link Signal} that emits values from initial to followings.
      */
-    public static <T> Signal<T> signalBox2(T init, UnaryOperator<Signal<T>> traverser) {
-        // DON'T use the recursive call, it will throw StackOverflowError in some case.
+    public static <T> Signal<T> signal(boolean sync, T init, UnaryOperator<Signal<T>> iterator) {
+        // DON'T use the recursive call, it will throw StackOverflowError.
         return new Signal<T>((observer, disposer) -> {
-            Signal<T> now = I.signal(init);
-            LinkedList<T> queue = new LinkedList();
-
-            while (disposer.isNotDisposed()) {
-                now.to(v -> {
-                    queue.addLast(v);
-                    observer.accept(v);
-                }, observer::error);
-
-                if (queue.isEmpty()) {
-                    observer.complete();
-                    break;
-                }
-                now = traverser.apply(I.signal(queue.pollFirst()));
-            }
-            return disposer;
-        });
-    }
-
-    public static <T> Signal<T> signalBox(T init, UnaryOperator<Signal<T>> traverser) {
-        // DON'T use the recursive call, it will throw StackOverflowError in some case.
-        return new Signal<T>((observer, disposer) -> {
-            Semaphore semaphore = new Semaphore(1);
-            LinkedList<T> queue = new LinkedList();
-            AtomicReference<Signal<T>> ref = new AtomicReference(I.signal(init));
-
-            while (disposer.isNotDisposed()) {
+            Runnable r = () -> {
                 try {
-                    semaphore.acquire();
-                } catch (InterruptedException e) {
-                    throw I.quiet(e);
-                }
+                    LinkedList<T> values = new LinkedList(); // LinkedList accepts null
+                    LinkedTransferQueue<Signal<T>> signal = new LinkedTransferQueue();
+                    signal.put(I.signal(init));
 
-                ref.get().to(v -> {
-                    queue.addLast(v);
-                    observer.accept(v);
-                }, observer::error, () -> {
-                    if (queue.isEmpty()) {
-                        System.out.println("All values are expired, complete");
-                        observer.complete();
-                    } else {
-                        ref.set(traverser.apply(I.signal(queue.pollFirst())));
-                        semaphore.release();
+                    while (disposer.isNotDisposed()) {
+                        signal.take().to(v -> {
+                            values.addLast(v);
+                            observer.accept(v);
+                        }, observer::error, () -> {
+                            if (values.isEmpty()) {
+                                observer.complete();
+                            } else {
+                                signal.put(iterator.apply(I.signal(values.pollFirst())));
+                            }
+                        });
                     }
-                });
-            }
-            return disposer;
-        });
-    }
-
-    public static <T> Signal<T> signalBox3(T init, UnaryOperator<Signal<T>> traverser) {
-        // DON'T use the recursive call, it will throw StackOverflowError in some case.
-        return new Signal<T>((observer, disposer) -> {
-            LinkedList<T> queue = new LinkedList();
-            queue.addLast(init);
-
-            I.recurseR(self -> () -> {
-                if (queue.isEmpty()) {
-                    System.out.println("All values are expired, complete");
-                    observer.complete();
-                } else {
-                    traverser.apply(I.signal(queue.pollFirst())).to(v -> {
-                        queue.addLast(v);
-                        observer.accept(v);
-                    }, observer::error, self);
+                } catch (Throwable e) {
+                    observer.error(e);
                 }
-            }).run();
+            };
+
+            if (sync) {
+                r.run();
+            } else {
+                I.schedule(r);
+            }
             return disposer;
         });
     }

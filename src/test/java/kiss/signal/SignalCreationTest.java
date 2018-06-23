@@ -9,13 +9,12 @@
  */
 package kiss.signal;
 
-import static java.util.concurrent.TimeUnit.*;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -311,7 +310,7 @@ class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    void traverse() {
+    void iterate() {
         monitor(() -> I.signal(0, v -> v + 1).take(3));
         assert main.value(0, 1, 2);
         assert main.isCompleted();
@@ -319,26 +318,47 @@ class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    void traverseBox() {
-        monitor(() -> I.signalBox(0, v -> v.map(x -> x + 1)).take(3));
+    void iterateDontThrowStackOverflowError() {
+        int count = 1234567;
+        AtomicInteger counter = new AtomicInteger();
+
+        I.signal(1, v -> v + 1).take(count).to(counter::incrementAndGet);
+        assert counter.get() == count;
+    }
+
+    @Test
+    void iterateSignal() {
+        monitor(() -> I.signal(true, 0, signal -> signal.map(x -> x + 1)).take(3));
         assert main.value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
     }
 
     @Test
-    void inifinite() {
-        AtomicInteger count = new AtomicInteger();
+    void iterateSignalWithAsynchronusComputation() throws InterruptedException {
+        int count = 5;
+        AtomicInteger counter = new AtomicInteger();
 
-        I.signal(1, v -> v + 1).take(1234567).to(count::incrementAndGet);
-        assert count.get() == 1234567;
+        I.signal(true, 1, signal -> signal.map(i -> i + 1).delay(50, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
+        assert counter.get() == count;
     }
 
     @Test
-    void inifiniteAsynchronous() throws InterruptedException {
-        AtomicInteger count = new AtomicInteger();
+    void iterateSignalAsynchronusly() {
+        monitor(() -> I.signal(false, 0, signal -> signal.map(x -> x + 1)).take(3));
+        assert main.value(0, 1, 2);
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
 
-        I.signalBox(1, v -> v.map(i -> i + 1).delay(1000, MILLISECONDS)).take(5).to(count::incrementAndGet);
-        assert count.get() == 5;
+    @Test
+    void iterateSignalAsynchronuslyWithAsynchronusComputation() throws InterruptedException {
+        int count = 5;
+        AtomicInteger counter = new AtomicInteger();
+
+        I.signal(false, 1, signal -> signal.map(i -> i + 1).delay(50, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
+        assert counter.get() == 1;
+        await();
+        assert counter.get() == count;
     }
 }

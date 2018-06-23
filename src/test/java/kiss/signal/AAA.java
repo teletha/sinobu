@@ -19,12 +19,8 @@ import kiss.I;
 public class AAA {
 
     public static void main(String[] args) throws InterruptedException {
-        I.signalBox(1, s -> s.map(v -> v + 1).delay(100, TimeUnit.MILLISECONDS)).take(30).to(v -> {
+        I.signal(true, 1, s -> s.map(v -> v + 1).delay(0, TimeUnit.MILLISECONDS)).take(10000).to(v -> {
             System.out.println("show " + v);
         });
-        long start = System.currentTimeMillis();
-        Thread.sleep(3000);
-        long end = System.currentTimeMillis();
-        System.out.println(end - start);
     }
 }
