@@ -9,6 +9,8 @@
  */
 package kiss.signal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -66,13 +68,29 @@ class EffectTest extends SignalTester {
     }
 
     @Test
+    void effectOnObserve() {
+        List<String> list = new ArrayList();
+        Signal<String> signal = I.signal("1").effectOnObserve(disposer -> {
+            list.add("subscribe");
+        });
+
+        assert list.isEmpty();
+        signal.to();
+        assert list.size() == 1;
+        signal.to();
+        assert list.size() == 2;
+        signal.to();
+        assert list.size() == 3;
+    }
+
+    @Test
     void effectOnTerminate() {
         // by complete
         monitor(signal -> signal.effectOnTerminate(log1::complete));
         assert log1.isNotCompleted();
         main.emit(Complete);
         assert log1.isCompleted();
-    
+
         // by error
         monitor(signal -> signal.effectOnTerminate(log1::complete));
         assert log1.isNotCompleted();
