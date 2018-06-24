@@ -989,16 +989,18 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Invokes an action for each value in the {@link Signal} sequence.
-     * </p>
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * {@link Observer#accept(Object)}.
      *
-     * @param effect An action to invoke for each value in the {@link Signal} sequence.
-     * @return Chainable API.
-     * @see #effectOnComplete(Runnable)
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#accept(Object)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
      * @see #effectOnError(Consumer)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnComplete(Runnable)
      * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effect(Runnable effect) {
         if (effect == null) {
@@ -1008,16 +1010,18 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an action when it calls
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#accept(Object)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(Consumer)
      * @see #effectOnError(Consumer)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnComplete(Runnable)
      * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effect(Consumer<? super V> effect) {
         // ignore invalid parameter
@@ -1031,7 +1035,7 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an action when it calls
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#complete()}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1039,8 +1043,10 @@ public final class Signal<V> {
      * @return The source {@link Signal} with the side-effecting behavior applied.
      * @see #effect(Consumer)
      * @see #effectOnError(Consumer)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnComplete(Runnable)
      * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effectOnComplete(Runnable effect) {
         // ignore invalid parameter
@@ -1054,16 +1060,43 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an action when it calls
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * {@link Disposable#dispose()}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Disposable#dispose()}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
+     * @see #effectOnComplete(Runnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
+     */
+    public final Signal<V> effectOnDispose(Runnable effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            return to(observer, disposer.add(effect::run));
+        });
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#error(Throwable)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#error(Throwable)}
      * @return The source {@link Signal} with the side-effecting behavior applied.
      * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
      * @see #effectOnComplete(Runnable)
-     * @see #effectOnObserve(Consumer)
      * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effectOnError(Consumer<Throwable> effect) {
         // ignore invalid parameter
@@ -1077,7 +1110,7 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes the given action when it is observed from
+     * Modifies the source {@link Signal} so that it invokes the given effect when it is observed from
      * its observers. Each observation will result in an invocation of the given action except when the
      * source {@link Signal} is reference counted, in which case the source {@link Signal} will invoke
      * the given action for the first observation.
@@ -1089,6 +1122,8 @@ public final class Signal<V> {
      * @see #effectOnError(Consumer)
      * @see #effectOnComplete(Runnable)
      * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effectOnObserve(Consumer<? super Disposable> effect) {
         // ignore invalid parameter
@@ -1103,7 +1138,7 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an action when it calls
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#error(Throwable)} or {@link Observer#complete()}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1112,6 +1147,8 @@ public final class Signal<V> {
      * @see #effect(Consumer)
      * @see #effectOnError(Consumer)
      * @see #effectOnComplete(Runnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effectOnTerminate(WiseRunnable effect) {

@@ -44,6 +44,18 @@ class EffectTest extends SignalTester {
     }
 
     @Test
+    void effectOnError() {
+        monitor(1, signal -> signal.effectOnError(log1::error));
+    
+        assert log1.isNotError();
+        main.emit(Error);
+        assert log1.isError();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
     void effectOnComplet() {
         monitor(signal -> signal.effectOnComplete(log1::complete));
 
@@ -56,15 +68,18 @@ class EffectTest extends SignalTester {
     }
 
     @Test
-    void effectOnError() {
-        monitor(1, signal -> signal.effectOnError(log1::error));
-
-        assert log1.isNotError();
+    void effectOnTerminate() {
+        // by complete
+        monitor(signal -> signal.effectOnTerminate(log1::complete));
+        assert log1.isNotCompleted();
+        main.emit(Complete);
+        assert log1.isCompleted();
+    
+        // by error
+        monitor(signal -> signal.effectOnTerminate(log1::complete));
+        assert log1.isNotCompleted();
         main.emit(Error);
-        assert log1.isError();
-        assert main.isNotCompleted();
-        assert main.isError();
-        assert main.isDisposed();
+        assert log1.isCompleted();
     }
 
     @Test
@@ -73,7 +88,7 @@ class EffectTest extends SignalTester {
         Signal<String> signal = I.signal("1").effectOnObserve(disposer -> {
             list.add("subscribe");
         });
-
+    
         assert list.isEmpty();
         signal.to();
         assert list.size() == 1;
@@ -84,17 +99,11 @@ class EffectTest extends SignalTester {
     }
 
     @Test
-    void effectOnTerminate() {
-        // by complete
-        monitor(signal -> signal.effectOnTerminate(log1::complete));
-        assert log1.isNotCompleted();
-        main.emit(Complete);
-        assert log1.isCompleted();
+    void effectOnDispose() {
+        monitor(signal -> signal.effectOnDispose(log1::complete));
 
-        // by error
-        monitor(signal -> signal.effectOnTerminate(log1::complete));
         assert log1.isNotCompleted();
-        main.emit(Error);
+        main.dispose();
         assert log1.isCompleted();
     }
 
