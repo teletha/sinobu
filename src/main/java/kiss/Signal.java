@@ -112,8 +112,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive items
-     * and notifications from the Observable.
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
@@ -124,8 +124,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive items
-     * and notifications from the Observable.
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
@@ -136,8 +136,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive items
-     * and notifications from the Observable.
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @param error A delegator method of {@link Observer#error(Throwable)}.
@@ -149,8 +149,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive items
-     * and notifications from the Observable.
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @param complete A delegator method of {@link Observer#complete()}.
@@ -282,7 +282,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Receive values as {@link Set} from this {@link Signal}. Each value alternates between In and Out.
+     * Receive values as {@link Set} from this {@link Signal}. Each value alternates between In and
+     * Out.
      * </p>
      *
      * @return A {@link Set} as value receiver.
@@ -399,8 +400,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted by
-     * the source {@link Signal} satisfy a condition.
+     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
+     * by the source {@link Signal} satisfy a condition.
      * 
      * @param condition A condition that evaluates an item and returns a Boolean.
      * @return A {@link Signal} that emits true if all items emitted by the source {@link Signal}
@@ -442,8 +443,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Indicates each value of an {@link Signal} sequence into consecutive non-overlapping buffers which
-     * are produced based on value count information.
+     * Indicates each value of an {@link Signal} sequence into consecutive non-overlapping buffers
+     * which are produced based on value count information.
      * </p>
      *
      * @param size A length of each buffer.
@@ -455,12 +456,12 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are produced
-     * based on value count information.
+     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
+     * produced based on value count information.
      * </p>
      *
-     * @param size A length of each buffer. Zero or negative number are treated exactly the same way as
-     *            1.
+     * @param size A length of each buffer. Zero or negative number are treated exactly the same way
+     *            as 1.
      * @param interval A number of values to skip between creation of consecutive buffers. Zero or
      *            negative number are treated exactly the same way as 1.
      * @return Chainable API.
@@ -496,8 +497,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are produced
-     * based on time count information.
+     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
+     * produced based on time count information.
      * </p>
      *
      * @param time Time to collect values. Zero or negative number will ignore this instruction.
@@ -529,8 +530,8 @@ public final class Signal<V> {
      * </p>
      * 
      * @param boundary A boundary {@link Signal}.
-     * @param bufferSupplier A factory function that returns an instance of the collection subclass to
-     *            be used and returned as the buffer.
+     * @param bufferSupplier A factory function that returns an instance of the collection subclass
+     *            to be used and returned as the buffer.
      * @return Chainable API.
      */
     public final <B extends Collection<V>> Signal<B> buffer(Signal<?> boundary, Supplier<B> bufferSupplier) {
@@ -550,13 +551,13 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
-     * combinations of two items emitted, in sequence, by this {@link Signal} and the other specified
-     * {@link Signal}.
+     * combinations of two items emitted, in sequence, by this {@link Signal} and the other
+     * specified {@link Signal}.
      * </p>
      *
      * @param other An other {@link Signal} to combine.
-     * @return A {@link Signal} that emits items that are the result of combining the items emitted by
-     *         source {@link Signal} by means of the given aggregation function.
+     * @return A {@link Signal} that emits items that are the result of combining the items emitted
+     *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O> Signal<Ⅱ<V, O>> combine(Signal<O> other) {
         return combine(other, I::pair);
@@ -565,14 +566,14 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
-     * combinations of two items emitted, in sequence, by this {@link Signal} and the other specified
-     * {@link Signal}.
+     * combinations of two items emitted, in sequence, by this {@link Signal} and the other
+     * specified {@link Signal}.
      * </p>
      *
      * @param other An other {@link Signal} to combine.
      * @param another An another {@link Signal} to combine.
-     * @return A {@link Signal} that emits items that are the result of combining the items emitted by
-     *         source {@link Signal} by means of the given aggregation function.
+     * @return A {@link Signal} that emits items that are the result of combining the items emitted
+     *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
         return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> append);
@@ -581,15 +582,15 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
-     * combinations of two items emitted, in sequence, by this {@link Signal} and the other specified
-     * {@link Signal}.
+     * combinations of two items emitted, in sequence, by this {@link Signal} and the other
+     * specified {@link Signal}.
      * </p>
      *
      * @param other An other {@link Signal} to combine.
      * @param combiner An aggregation function used to combine the items emitted by the source
      *            {@link Signal}.
-     * @return A {@link Signal} that emits items that are the result of combining the items emitted by
-     *         source {@link Signal} by means of the given aggregation function.
+     * @return A {@link Signal} that emits items that are the result of combining the items emitted
+     *         by source {@link Signal} by means of the given aggregation function.
      */
     public final <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> combiner) {
         return new Signal<>((observer, disposer) -> {
@@ -623,8 +624,8 @@ public final class Signal<V> {
      * @param operator A function that, when applied to an item emitted by each of the source
      *            {@link Signal}, results in an item that will be emitted by the resulting
      *            {@link Signal}.
-     * @return A {@link Signal} that emits items that are the result of combining the items emitted by
-     *         source {@link Signal} by means of the given aggregation function.
+     * @return A {@link Signal} that emits items that are the result of combining the items emitted
+     *         by source {@link Signal} by means of the given aggregation function.
      */
     public final Signal<V> combine(Signal<V>[] others, BinaryOperator<V> operator) {
         Signal<V> base = this;
@@ -639,14 +640,14 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of each
-     * of the source {@link Signal} each time an item is received from either of the source
+     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
+     * each of the source {@link Signal} each time an item is received from either of the source
      * {@link Signal}, where this aggregation is defined by a specified function.
      * </p>
      *
      * @param other An other constant {@link Signal} to combine.
-     * @return An {@link Signal} that emits items that are the result of combining the items emitted by
-     *         the source {@link Signal} by means of the given aggregation function
+     * @return An {@link Signal} that emits items that are the result of combining the items emitted
+     *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O> Signal<Ⅱ<V, O>> combineLatest(O other) {
         return combineLatest(I.signal(other));
@@ -654,14 +655,14 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of each
-     * of the source {@link Signal} each time an item is received from either of the source
+     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
+     * each of the source {@link Signal} each time an item is received from either of the source
      * {@link Signal}, where this aggregation is defined by a specified function.
      * </p>
      *
      * @param other An other {@link Signal} to combine.
-     * @return An {@link Signal} that emits items that are the result of combining the items emitted by
-     *         the source {@link Signal} by means of the given aggregation function
+     * @return An {@link Signal} that emits items that are the result of combining the items emitted
+     *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O> Signal<Ⅱ<V, O>> combineLatest(Signal<O> other) {
         return combineLatest(other, I::pair);
@@ -669,15 +670,15 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of each
-     * of the source {@link Signal} each time an item is received from either of the source
+     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
+     * each of the source {@link Signal} each time an item is received from either of the source
      * {@link Signal}, where this aggregation is defined by a specified function.
      * </p>
      *
      * @param other An other {@link Signal} to combine.
      * @param another An another {@link Signal} to combine.
-     * @return An {@link Signal} that emits items that are the result of combining the items emitted by
-     *         the source {@link Signal} by means of the given aggregation function
+     * @return An {@link Signal} that emits items that are the result of combining the items emitted
+     *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
         return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> append);
@@ -685,16 +686,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of each
-     * of the source {@link Signal} each time an item is received from either of the source
+     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
+     * each of the source {@link Signal} each time an item is received from either of the source
      * {@link Signal}, where this aggregation is defined by a specified function.
      * </p>
      *
      * @param other An other {@link Signal} to combine.
      * @param function An aggregation function used to combine the items emitted by the source
      *            {@link Signal}.
-     * @return An {@link Signal} that emits items that are the result of combining the items emitted by
-     *         the source {@link Signal} by means of the given aggregation function
+     * @return An {@link Signal} that emits items that are the result of combining the items emitted
+     *         by the source {@link Signal} by means of the given aggregation function
      */
     public final <O, R> Signal<R> combineLatest(Signal<O> other, BiFunction<V, O, R> function) {
         return new Signal<>((observer, disposer) -> {
@@ -723,16 +724,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Combines several source {@link Signal} by emitting an item that aggregates the latest values of
-     * each of the source {@link Signal} each time an item is received from either of the source
+     * Combines several source {@link Signal} by emitting an item that aggregates the latest values
+     * of each of the source {@link Signal} each time an item is received from either of the source
      * {@link Signal}, where this aggregation is defined by a specified function.
      * </p>
      *
      * @param others Other {@link Signal} to combine.
      * @param operator An aggregation function used to combine the items emitted by the source
      *            {@link Signal}.
-     * @return An {@link Signal} that emits items that are the result of combining the items emitted by
-     *         the source {@link Signal} by means of the given aggregation function
+     * @return An {@link Signal} that emits items that are the result of combining the items emitted
+     *         by the source {@link Signal} by means of the given aggregation function
      */
     public final Signal<V> combineLatest(Signal<V>[] others, BinaryOperator<V> operator) {
         Signal<V> base = this;
@@ -747,8 +748,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the other,
-     * without interleaving them.
+     * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
+     * other, without interleaving them.
      * </p>
      * 
      * @param others A sequence of {@link Signal}s to concat.
@@ -764,8 +765,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the other,
-     * without interleaving them.
+     * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
+     * other, without interleaving them.
      * </p>
      * 
      * @param others A sequence of {@link Signal}s to concat.
@@ -793,13 +794,14 @@ public final class Signal<V> {
     }
 
     /**
-     * Maps a sequence of values into {@link Signal} and concatenates these {@link Signal} eagerly into
-     * a single {@link Signal}. Eager concatenation means that once a subscriber subscribes, this
-     * operator subscribes to all of the source {@link Signal}. The operator buffers the values emitted
-     * by these {@link Signal} and then drains them in order, each one after the previous one completes.
+     * Maps a sequence of values into {@link Signal} and concatenates these {@link Signal} eagerly
+     * into a single {@link Signal}. Eager concatenation means that once a subscriber subscribes,
+     * this operator subscribes to all of the source {@link Signal}. The operator buffers the values
+     * emitted by these {@link Signal} and then drains them in order, each one after the previous
+     * one completes.
      * 
-     * @param function A function that maps a sequence of values into a sequence of {@link Signal} that
-     *            will be eagerly concatenated.
+     * @param function A function that maps a sequence of values into a sequence of {@link Signal}
+     *            that will be eagerly concatenated.
      * @return Chainable API.
      */
     public final <R> Signal<R> concatMap(Function<V, Signal<R>> function) {
@@ -850,8 +852,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a {@link Signal} that emits a Boolean that indicates whether the source {@link Signal}
-     * emitted a specified item.
+     * Returns a {@link Signal} that emits a Boolean that indicates whether the source
+     * {@link Signal} emitted a specified item.
      * 
      * @param value An item to search for in the emissions from the source {@link Signal}.
      * @return A {@link Signal} that emits true if the specified item is emitted by the source
@@ -875,8 +877,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Drops values that are followed by newer values before a timeout. The timer resets on each value
-     * emission.
+     * Drops values that are followed by newer values before a timeout. The timer resets on each
+     * value emission.
      * </p>
      *
      * @param time A time value. Zero or negative number will ignore this instruction.
@@ -913,8 +915,8 @@ public final class Signal<V> {
      * Indicates the {@link Signal} sequence by item count with the specified source and time.
      * </p>
      *
-     * @param count The positive time used to shift the {@link Signal} sequence. Zero or negative number
-     *            will ignore this instruction.
+     * @param count The positive time used to shift the {@link Signal} sequence. Zero or negative
+     *            number will ignore this instruction.
      * @return Chainable API.
      */
     public final Signal<V> delay(long count) {
@@ -939,8 +941,8 @@ public final class Signal<V> {
      * Indicates the {@link Signal} sequence by due time with the specified source and time.
      * </p>
      *
-     * @param time The absolute time used to shift the {@link Signal} sequence. Zero or negative number
-     *            will ignore this instruction.
+     * @param time The absolute time used to shift the {@link Signal} sequence. Zero or negative
+     *            number will ignore this instruction.
      * @param unit A unit of time for the specified time. <code>null</code> will ignore this
      *            instruction.
      * @return Chainable API.
@@ -1067,6 +1069,28 @@ public final class Signal<V> {
     }
 
     /**
+     * Modifies the source {@link Signal} so that it invokes an action when it calls
+     * {@link Observer#error(Throwable)} or {@link Observer#complete()}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#error(Throwable)} or {@link Observer#complete()}.
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
+     * @see #effectOnComplete(Runnable)
+     */
+    public final Signal<V> effectOnTerminate(WiseRunnable effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            return to(observer::accept, I.bundle(effect.asConsumer(), observer::error), I.bundle(effect, observer::complete), disposer);
+        });
+    }
+
+    /**
      * <p>
      * Instructs an {@link Signal} to emit an item (returned by a specified function) rather than
      * invoking onError if it encounters an error.
@@ -1101,8 +1125,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits only the very first item emitted by the source {@link Signal},
-     * or completes if the source {@link Signal} is empty.
+     * Returns {@link Signal} that emits only the very first item emitted by the source
+     * {@link Signal}, or completes if the source {@link Signal} is empty.
      * 
      * @return Chainable API.
      */
@@ -1111,8 +1135,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits only the very first item emitted by the source {@link Signal},
-     * or completes if the source {@link Signal} is empty.
+     * Returns {@link Signal} that emits only the very first item emitted by the source
+     * {@link Signal}, or completes if the source {@link Signal} is empty.
      * 
      * @return Chainable API.
      */
@@ -1122,16 +1146,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatArray(Function<V, R[]> function) {
         return flatMap(function.andThen(I::signal));
@@ -1139,16 +1163,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatArray(WiseFunction<V, R[]> function) {
         return flatArray(I.quiet(function));
@@ -1156,16 +1180,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatEnum(Function<V, ? extends Enumeration<R>> function) {
         return flatMap(function.andThen(I::signal));
@@ -1173,16 +1197,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatEnum(WiseFunction<V, ? extends Enumeration<R>> function) {
         return flatEnum(I.quiet(function));
@@ -1190,16 +1214,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatIterable(Function<V, ? extends Iterable<R>> function) {
         return flatMap(function.andThen(I::signal));
@@ -1207,16 +1231,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatIterable(WiseFunction<V, ? extends Iterable<R>> function) {
         return flatIterable(I.quiet(function));
@@ -1224,16 +1248,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatMap(Function<V, Signal<R>> function) {
         Objects.requireNonNull(function);
@@ -1247,16 +1271,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
         return flatMap(I.quiet(function));
@@ -1264,16 +1288,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatVariable(Function<V, Variable<R>> function) {
         return flatMap(function.andThen(I::signal));
@@ -1281,16 +1305,16 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
         return flatVariable(I.quiet(function));
@@ -1363,8 +1387,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies the given {@link Predicate} function to each value emitted
-     * by an {@link Signal} and emits the result.
+     * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
+     * emitted by an {@link Signal} and emits the result.
      * </p>
      *
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
@@ -1394,8 +1418,8 @@ public final class Signal<V> {
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
      * {@link Signal} emits any value.
      * 
-     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} emits any
-     *         value.
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} emits
+     *         any value.
      */
     public final Signal<Boolean> isEmitted() {
         return signal(I.accept(), TRUE, true, FALSE, true, FALSE);
@@ -1405,8 +1429,8 @@ public final class Signal<V> {
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
      * {@link Signal} is completed without any value emitted.
      * 
-     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is completed
-     *         without any value emitted.
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         completed without any value emitted.
      */
     public final Signal<Boolean> isEmpty() {
         return signal(I.accept(), FALSE, true, FALSE, true, TRUE);
@@ -1416,7 +1440,8 @@ public final class Signal<V> {
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
      * {@link Signal} is errored.
      * 
-     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is errored.
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         errored.
      */
     public final Signal<Boolean> isErrored() {
         return signal(null, FALSE, true, TRUE, true, FALSE);
@@ -1426,8 +1451,8 @@ public final class Signal<V> {
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
      * {@link Signal} is emitted, errored or completed.
      * 
-     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is emitted,
-     *         errored or completed.
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         emitted, errored or completed.
      */
     public final Signal<Boolean> isSignaled() {
         return signal(I.accept(), TRUE, true, TRUE, true, TRUE);
@@ -1437,16 +1462,16 @@ public final class Signal<V> {
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
      * {@link Signal} is errored or completed.
      * 
-     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is errored
-     *         or completed.
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         errored or completed.
      */
     public final Signal<Boolean> isTerminated() {
         return signal(null, FALSE, true, TRUE, true, TRUE);
     }
 
     /**
-     * Returns a {@link Signal} that emits the last item emitted by this {@link Signal} or completes if
-     * this {@link Signal} is empty.
+     * Returns a {@link Signal} that emits the last item emitted by this {@link Signal} or completes
+     * if this {@link Signal} is empty.
      * 
      * @return Chainable API.
      */
@@ -1622,8 +1647,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted by
-     * the source {@link Signal} unsatisfy a condition.
+     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
+     * by the source {@link Signal} unsatisfy a condition.
      * 
      * @param condition A condition that evaluates an item and returns a Boolean.
      * @return A {@link Signal} that emits false if all items emitted by the source {@link Signal}
@@ -1687,12 +1712,12 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that repeats the sequence of items emitted by the source {@link Signal}
-     * until the provided condition function returns false.
+     * Returns an {@link Signal} that repeats the sequence of items emitted by the source
+     * {@link Signal} until the provided condition function returns false.
      * </p>
      * 
-     * @param condition A condition supplier that is called when the current {@link Signal} completes
-     *            and unless it returns false, the current {@link Signal} is resubscribed.
+     * @param condition A condition supplier that is called when the current {@link Signal}
+     *            completes and unless it returns false, the current {@link Signal} is resubscribed.
      * @return Chainable API.
      */
     public final Signal<V> repeatIf(BooleanSupplier condition) {
@@ -1704,8 +1729,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that repeats the sequence of items emitted by the source {@link Signal}
-     * until a stopper {@link Signal} emits an item.
+     * Returns an {@link Signal} that repeats the sequence of items emitted by the source
+     * {@link Signal} until a stopper {@link Signal} emits an item.
      * </p>
      * 
      * @param stopper A {@link Signal} whose first emitted item will stop repeating.
@@ -1716,16 +1741,16 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the same values as the source signal with the exception of
-     * an {@link Observer#error(Throwable)}. An error notification from the source will result in the
-     * emission of a Throwable item to the {@link Signal} provided as an argument to the
+     * Returns an {@link Signal} that emits the same values as the source signal with the exception
+     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
+     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
      * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
      * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
-     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal} will
-     * resubscribe to the source {@link Signal}.
+     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
+     * will resubscribe to the source {@link Signal}.
      * 
-     * @param notifier A receives an {@link Signal} of notifications with which a user can complete or
-     *            error, aborting the retry.
+     * @param notifier A receives an {@link Signal} of notifications with which a user can complete
+     *            or error, aborting the retry.
      * @return Chainable API
      */
     public final Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notifier) {
@@ -1733,16 +1758,16 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the same values as the source signal with the exception of
-     * an {@link Observer#error(Throwable)}. An error notification from the source will result in the
-     * emission of a Throwable item to the {@link Signal} provided as an argument to the
+     * Returns an {@link Signal} that emits the same values as the source signal with the exception
+     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
+     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
      * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
      * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
-     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal} will
-     * resubscribe to the source {@link Signal}.
+     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
+     * will resubscribe to the source {@link Signal}.
      * 
-     * @param notifier A receives an {@link Signal} of notifications with which a user can complete or
-     *            error, aborting the retry.
+     * @param notifier A receives an {@link Signal} of notifications with which a user can complete
+     *            or error, aborting the retry.
      * @return Chainable API
      */
     private Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notifier, boolean immediate) {
@@ -1909,12 +1934,12 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that retry the sequence of items emitted by the source {@link Signal}
-     * until the provided condition function returns false.
+     * Returns an {@link Signal} that retry the sequence of items emitted by the source
+     * {@link Signal} until the provided condition function returns false.
      * </p>
      * 
-     * @param condition A condition supplier that is called when the current {@link Signal} completes
-     *            and unless it returns false, the current {@link Signal} is resubscribed.
+     * @param condition A condition supplier that is called when the current {@link Signal}
+     *            completes and unless it returns false, the current {@link Signal} is resubscribed.
      * @return Chainable API.
      */
     public final Signal<V> retryIf(BooleanSupplier condition) {
@@ -1988,8 +2013,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Retry the source {@link Signal} when the specified error is occured. Unspecified errors will pass
-     * through the source {@link Signal}.
+     * Retry the source {@link Signal} when the specified error is occured. Unspecified errors will
+     * pass through the source {@link Signal}.
      * </p>
      * <h>When the notifier signal emits event</h>
      * <ul>
@@ -2075,9 +2100,9 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that, when the specified sampler {@link Signal} emits an item, emits
-     * the most recently emitted item (if any) emitted by the source {@link Signal} since the previous
-     * emission from the sampler {@link Signal}.
+     * Returns an {@link Signal} that, when the specified sampler {@link Signal} emits an item,
+     * emits the most recently emitted item (if any) emitted by the source {@link Signal} since the
+     * previous emission from the sampler {@link Signal}.
      * </p>
      *
      * @param sampler An {@link Signal} to use for sampling the source {@link Signal}.
@@ -2104,18 +2129,18 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted by a
-     * source {@link Signal} and a seed value, then feeds the result of that function along with the
-     * second item emitted by the source {@link Signal} into the same function, and so on until all
-     * items have been emitted by the source {@link Signal}, emitting the result of each of these
-     * iterations.
+     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
+     * by a source {@link Signal} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Signal} into the same function, and so on
+     * until all items have been emitted by the source {@link Signal}, emitting the result of each
+     * of these iterations.
      * </p>
      *
      * @param collector An accumulator function to be invoked on each item emitted by the source
      *            {@link Signal}, whose result will be emitted to {@link Signal} via
      *            {@link Observer#accept(Object)} and used in the next accumulator call.
-     * @return An {@link Signal} that emits initial value followed by the results of each call to the
-     *         accumulator function.
+     * @return An {@link Signal} that emits initial value followed by the results of each call to
+     *         the accumulator function.
      */
     public final <A, R> Signal<R> scan(Collector<? super V, A, R> collector) {
         return new Signal<>((observer, disposer) -> {
@@ -2130,19 +2155,19 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted by a
-     * source {@link Signal} and a seed value, then feeds the result of that function along with the
-     * second item emitted by the source {@link Signal} into the same function, and so on until all
-     * items have been emitted by the source {@link Signal}, emitting the result of each of these
-     * iterations.
+     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
+     * by a source {@link Signal} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Signal} into the same function, and so on
+     * until all items have been emitted by the source {@link Signal}, emitting the result of each
+     * of these iterations.
      * </p>
      *
      * @param first An accumulator which process only first value.
      * @param others An accumulator function to be invoked on each item emitted by the source
      *            {@link Signal}, whose result will be emitted to {@link Signal} via
      *            {@link Observer#accept(Object)} and used in the next accumulator call.
-     * @return An {@link Signal} that emits initial value followed by the results of each call to the
-     *         accumulator function.
+     * @return An {@link Signal} that emits initial value followed by the results of each call to
+     *         the accumulator function.
      */
     public final <R> Signal<R> scan(Function<V, R> first, BiFunction<R, V, R> others) {
         return new Signal<>((observer, disposer) -> {
@@ -2156,19 +2181,19 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted by a
-     * source {@link Signal} and a seed value, then feeds the result of that function along with the
-     * second item emitted by the source {@link Signal} into the same function, and so on until all
-     * items have been emitted by the source {@link Signal}, emitting the result of each of these
-     * iterations.
+     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
+     * by a source {@link Signal} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Signal} into the same function, and so on
+     * until all items have been emitted by the source {@link Signal}, emitting the result of each
+     * of these iterations.
      * </p>
      *
      * @param init An initial (seed) accumulator item.
      * @param function An accumulator function to be invoked on each item emitted by the source
      *            {@link Signal}, whose result will be emitted to {@link Signal} via
      *            {@link Observer#accept(Object)} and used in the next accumulator call.
-     * @return An {@link Signal} that emits initial value followed by the results of each call to the
-     *         accumulator function.
+     * @return An {@link Signal} that emits initial value followed by the results of each call to
+     *         the accumulator function.
      */
     public final <R> Signal<R> scanWith(R init, BiFunction<R, V, R> function) {
         return scan(Collector.of(() -> new AtomicReference<R>(init), (ref, value) -> {
@@ -2178,19 +2203,19 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted by a
-     * source {@link Signal} and a seed value, then feeds the result of that function along with the
-     * second item emitted by the source {@link Signal} into the same function, and so on until all
-     * items have been emitted by the source {@link Signal}, emitting the result of each of these
-     * iterations.
+     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
+     * by a source {@link Signal} and a seed value, then feeds the result of that function along
+     * with the second item emitted by the source {@link Signal} into the same function, and so on
+     * until all items have been emitted by the source {@link Signal}, emitting the result of each
+     * of these iterations.
      * </p>
      *
      * @param init An initial (seed) accumulator item.
      * @param function An accumulator function to be invoked on each item emitted by the source
      *            {@link Signal}, whose result will be emitted to {@link Signal} via
      *            {@link Observer#accept(Object)} and used in the next accumulator call.
-     * @return An {@link Signal} that emits initial value followed by the results of each call to the
-     *         accumulator function.
+     * @return An {@link Signal} that emits initial value followed by the results of each call to
+     *         the accumulator function.
      */
     public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
         return scanWith(init, I.quiet(function));
@@ -2199,8 +2224,8 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns a new {@link Signal} that multicasts (shares) the original {@link Signal}. As long as
-     * there is at least one {@link Observer} this {@link Signal} will be subscribed and emitting data.
-     * When all observers have disposed it will disposes from the source {@link Signal}.
+     * there is at least one {@link Observer} this {@link Signal} will be subscribed and emitting
+     * data. When all observers have disposed it will disposes from the source {@link Signal}.
      * </p>
      * 
      * @return Chainable API.
@@ -2325,7 +2350,8 @@ public final class Signal<V> {
      * remaining values.
      * </p>
      *
-     * @param count A number of values to skip. Zero or negative number will ignore this instruction.
+     * @param count A number of values to skip. Zero or negative number will ignore this
+     *            instruction.
      * @return Chainable API.
      */
     public final Signal<V> skip(int count) {
@@ -2374,8 +2400,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the given
-     * predicate.
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
      * </p>
      *
      * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
@@ -2387,12 +2413,12 @@ public final class Signal<V> {
     }
 
     /**
-     * Skip all items emitted by the source {@link Signal} and only calls {@link Observer#complete()} or
-     * {@link Observer#error(Throwable)}.
+     * Skip all items emitted by the source {@link Signal} and only calls
+     * {@link Observer#complete()} or {@link Observer#error(Throwable)}.
      * 
      * @return An empty {@link Signal} that only calls {@link Observer#complete()} or
-     *         {@link Observer#error(Throwable)}, based on which one is called by the {@link Signal}.
-     *         Observable
+     *         {@link Observer#error(Throwable)}, based on which one is called by the
+     *         {@link Signal}. Observable
      */
     public final Signal<V> skipAll() {
         return skip(I.accept());
@@ -2476,8 +2502,8 @@ public final class Signal<V> {
      * </pre>
      *
      * @param value A value to test each item emitted from the source {@link Signal}.
-     * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal} when
-     *         the specified value is coming.
+     * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal}
+     *         when the specified value is coming.
      */
     public final Signal<V> skipUntil(V value) {
         return skipUntil(v -> Objects.equals(v, value));
@@ -2485,14 +2511,14 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long as a
-     * specified condition holds true, but emits all further source items as soon as the condition
-     * becomes false.
+     * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long
+     * as a specified condition holds true, but emits all further source items as soon as the
+     * condition becomes false.
      * </p>
      *
      * @param predicate A function to test each item emitted from the source {@link Signal}.
-     * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal} when
-     *         the specified predicate becomes false.
+     * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal}
+     *         when the specified predicate becomes false.
      */
     public final Signal<V> skipUntil(Predicate<? super V> predicate) {
         // ignore invalid parameter
@@ -2516,12 +2542,12 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns the values from the source {@link Signal} sequence only after the other {@link Signal}
-     * sequence produces a value.
+     * Returns the values from the source {@link Signal} sequence only after the other
+     * {@link Signal} sequence produces a value.
      * </p>
      *
-     * @param timing The second {@link Signal} that has to emit an item before the source {@link Signal}
-     *            elements begin to be mirrored by the resulting {@link Signal}.
+     * @param timing The second {@link Signal} that has to emit an item before the source
+     *            {@link Signal} elements begin to be mirrored by the resulting {@link Signal}.
      * @return An {@link Signal} that skips items from the source {@link Signal} until the second
      *         {@link Signal} emits an item, then emits the remaining items.
      */
@@ -2551,14 +2577,14 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long as a
-     * specified condition holds true, but emits all further source items as soon as the condition
-     * becomes false.
+     * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long
+     * as a specified condition holds true, but emits all further source items as soon as the
+     * condition becomes false.
      * </p>
      *
      * @param predicate A function to test each item emitted from the source {@link Signal}.
-     * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal} when
-     *         the specified predicate becomes false.
+     * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal}
+     *         when the specified predicate becomes false.
      */
     public final Signal<V> skipWhile(Predicate<? super V> predicate) {
         return skipUntil(predicate.negate());
@@ -2596,8 +2622,8 @@ public final class Signal<V> {
      * {@link Signal}.
      * </p>
      * <p>
-     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting the
-     * items normally expected from it, apply the StartWith operator to it.
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
@@ -2618,8 +2644,8 @@ public final class Signal<V> {
      * {@link Signal}.
      * </p>
      * <p>
-     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting the
-     * items normally expected from it, apply the StartWith operator to it.
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
@@ -2649,8 +2675,8 @@ public final class Signal<V> {
      * {@link Signal}.
      * </p>
      * <p>
-     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting the
-     * items normally expected from it, apply the StartWith operator to it.
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
@@ -2684,8 +2710,8 @@ public final class Signal<V> {
      * {@link Signal}.
      * </p>
      * <p>
-     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting the
-     * items normally expected from it, apply the StartWith operator to it.
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
@@ -2725,16 +2751,17 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging the latest resulting {@link Signal} and emitting the results of this merger.
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging the latest resulting {@link Signal} and emitting the results of this
+     * merger.
      * </p>
      *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> switchMap(Function<V, Signal<R>> function) {
         Objects.requireNonNull(function);
@@ -2758,7 +2785,8 @@ public final class Signal<V> {
      * Returns a specified number of contiguous values from the start of an {@link Signal} sequence.
      * </p>
      *
-     * @param count A number of values to emit. Zero or negative number will ignore this instruction.
+     * @param count A number of values to emit. Zero or negative number will ignore this
+     *            instruction.
      * @return Chainable API.
      */
     public final Signal<V> take(long count) {
@@ -2803,8 +2831,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the given
-     * predicate.
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
      * </p>
      *
      * @param condition A function that evaluates the values emitted by the source {@link Signal},
@@ -2822,8 +2850,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the given
-     * predicate.
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
      * </p>
      *
      * @param condition A function that evaluates the values emitted by the source {@link Signal},
@@ -2861,8 +2889,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the given
-     * predicate.
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
      * </p>
      *
      * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
@@ -2875,8 +2903,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the given
-     * predicate.
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
      * </p>
      *
      * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
@@ -2943,8 +2971,9 @@ public final class Signal<V> {
      * </pre>
      *
      * @param value A value to test each item emitted from the source {@link Signal}.
-     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks the
-     *         specified condition after each item, and then completes if the condition is satisfied.
+     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks
+     *         the specified condition after each item, and then completes if the condition is
+     *         satisfied.
      */
     public final Signal<V> takeUntil(V value) {
         return take(() -> value, Objects::equals, false, true, true);
@@ -2958,19 +2987,21 @@ public final class Signal<V> {
      *
      * @param condition A function that evaluates an item emitted by the source {@link Signal} and
      *            returns a Boolean.
-     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks the
-     *         specified condition after each item, and then completes if the condition is satisfied.
+     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks
+     *         the specified condition after each item, and then completes if the condition is
+     *         satisfied.
      */
     public final Signal<V> takeUntil(Predicate<? super V> condition) {
         return take(null, (context, value) -> condition.test(value), false, true, true);
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} until a second
-     * {@link Signal} emits an item.
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} until a
+     * second {@link Signal} emits an item.
      *
      * @param timing A {@link Signal} whose first emitted item will cause takeUntil to stop emitting
-     *            items from the source {@link Signal}. <code>null</code> will ignore this. instruction.
+     *            items from the source {@link Signal}. <code>null</code> will ignore this.
+     *            instruction.
      * @return A {@link Signal} that emits the items emitted by the source {@link Signal} until such
      *         time as other emits its first item.
      */
@@ -2993,8 +3024,9 @@ public final class Signal<V> {
      *
      * @param condition A function that evaluates an item emitted by the source {@link Signal} and
      *            returns a Boolean.
-     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks the
-     *         specified condition after each item, and then completes if the condition is satisfied.
+     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks
+     *         the specified condition after each item, and then completes if the condition is
+     *         satisfied.
      */
     public final Signal<V> takeWhile(Predicate<? super V> condition) {
         return take(null, (context, value) -> condition.test(value), true, true, false);
@@ -3052,9 +3084,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an Signal that mirrors the source Signal but applies a timeout policy for each emitted
-     * item. If the next item isn't emitted within the specified timeout duration starting from its
-     * predecessor, the resulting Signal terminates and notifies observers of a
+     * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
+     * emitted item. If the next item isn't emitted within the specified timeout duration starting
+     * from its predecessor, the resulting Signal terminates and notifies observers of a
      * {@link TimeoutException}.
      * 
      * @param time Time to take values. Zero or negative number will ignore this instruction.
@@ -3091,8 +3123,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by an
-     * {@link Signal} and emits the result. Initial value is true.
+     * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by
+     * an {@link Signal} and emits the result. Initial value is true.
      * </p>
      *
      * @return Chainable API.
@@ -3103,8 +3135,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by an
-     * {@link Signal} and emits the result.
+     * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by
+     * an {@link Signal} and emits the result.
      * </p>
      *
      * @param initial A initial boolean value to apply to each value emitted by this {@link Signal}.
@@ -3116,8 +3148,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies the given two constants alternately to each item emitted
-     * by an {@link Signal} and emits the result.
+     * Returns an {@link Signal} that applies the given two constants alternately to each item
+     * emitted by an {@link Signal} and emits the result.
      * </p>
      *
      * @param values A list of constants to apply to each value emitted by this {@link Signal}.
@@ -3139,11 +3171,12 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Throttles by skipping values until "skipDuration" passes and then emits the next received value.
+     * Throttles by skipping values until "skipDuration" passes and then emits the next received
+     * value.
      * </p>
      * <p>
-     * Ignores the values from an {@link Signal} sequence which are followed by another value before due
-     * time with the specified source and time.
+     * Ignores the values from an {@link Signal} sequence which are followed by another value before
+     * due time with the specified source and time.
      * </p>
      *
      * @param time Time to wait before sending another item after emitting the last item. Zero or
