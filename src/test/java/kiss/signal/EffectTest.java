@@ -66,26 +66,26 @@ class EffectTest extends SignalTester {
     }
 
     @Test
-    void acceptNull() {
-        Signal<Integer> from = I.signal(0);
-        assert from == from.effect((Runnable) null);
-        assert from == from.effect((Consumer) null);
-        assert from == from.effectOnComplete(null);
-        assert from == from.effectOnError(null);
-    }
-
-    @Test
     void effectOnTerminate() {
         // by complete
         monitor(signal -> signal.effectOnTerminate(log1::complete));
         assert log1.isNotCompleted();
         main.emit(Complete);
         assert log1.isCompleted();
-
+    
         // by error
         monitor(signal -> signal.effectOnTerminate(log1::complete));
         assert log1.isNotCompleted();
         main.emit(Error);
         assert log1.isCompleted();
+    }
+
+    @Test
+    void acceptNull() {
+        Signal<Integer> from = I.signal(0);
+        assert from == from.effect((Runnable) null);
+        assert from == from.effect((Consumer) null);
+        assert from == from.effectOnComplete(null);
+        assert from == from.effectOnError(null);
     }
 }
