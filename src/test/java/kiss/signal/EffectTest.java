@@ -46,7 +46,7 @@ class EffectTest extends SignalTester {
     @Test
     void effectOnError() {
         monitor(1, signal -> signal.effectOnError(log1::error));
-    
+
         assert log1.isNotError();
         main.emit(Error);
         assert log1.isError();
@@ -74,7 +74,7 @@ class EffectTest extends SignalTester {
         assert log1.isNotCompleted();
         main.emit(Complete);
         assert log1.isCompleted();
-    
+
         // by error
         monitor(signal -> signal.effectOnTerminate(log1::complete));
         assert log1.isNotCompleted();
@@ -83,12 +83,12 @@ class EffectTest extends SignalTester {
     }
 
     @Test
-    void effectOnObserve() {
+    void effectOnObserveByRunnable() {
         List<String> list = new ArrayList();
-        Signal<String> signal = I.signal("1").effectOnObserve(disposer -> {
+        Signal<String> signal = I.signal("1").effectOnObserve(() -> {
             list.add("subscribe");
         });
-    
+
         assert list.isEmpty();
         signal.to();
         assert list.size() == 1;
@@ -96,6 +96,34 @@ class EffectTest extends SignalTester {
         assert list.size() == 2;
         signal.to();
         assert list.size() == 3;
+    }
+
+    @Test
+    void effectOnObserveByNullRunnable() {
+        Signal<String> signal = I.signal("1");
+        assert signal == signal.effectOnObserve((Runnable) null);
+    }
+
+    @Test
+    void effectOnObserveByConsumer() {
+        List<String> list = new ArrayList();
+        Signal<String> signal = I.signal("1").effectOnObserve(disposer -> {
+            list.add("subscribe");
+        });
+
+        assert list.isEmpty();
+        signal.to();
+        assert list.size() == 1;
+        signal.to();
+        assert list.size() == 2;
+        signal.to();
+        assert list.size() == 3;
+    }
+
+    @Test
+    void effectOnObserveByNullConsumer() {
+        Signal<String> signal = I.signal("1");
+        assert signal == signal.effectOnObserve((Consumer) null);
     }
 
     @Test

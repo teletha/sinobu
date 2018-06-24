@@ -1115,6 +1115,30 @@ public final class Signal<V> {
      * source {@link Signal} is reference counted, in which case the source {@link Signal} will invoke
      * the given action for the first observation.
      *
+     * @param effect The {@link Runnable} that gets called when an {@link Observer} subscribes to the
+     *            current {@link Signal}.
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
+     * @see #effectOnComplete(Runnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
+     */
+    public final Signal<V> effectOnObserve(Runnable effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+        return effectOnObserve(I.wise(effect).asConsumer());
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes the given effect when it is observed from
+     * its observers. Each observation will result in an invocation of the given action except when the
+     * source {@link Signal} is reference counted, in which case the source {@link Signal} will invoke
+     * the given action for the first observation.
+     *
      * @param effect The {@link Consumer} that gets called when an {@link Observer} subscribes to the
      *            current {@link Signal}.
      * @return The source {@link Signal} with the side-effecting behavior applied.
