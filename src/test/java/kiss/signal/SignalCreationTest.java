@@ -346,6 +346,7 @@ class SignalCreationTest extends SignalTester {
     @Test
     void iterateSignalAsynchronusly() {
         monitor(() -> I.signal(false, 0, signal -> signal.map(x -> x + 1)).take(3));
+        await();
         assert main.value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
@@ -357,7 +358,6 @@ class SignalCreationTest extends SignalTester {
         AtomicInteger counter = new AtomicInteger();
 
         I.signal(false, 1, signal -> signal.map(i -> i + 1).delay(50, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
-        assert counter.get() == 1;
         await();
         assert counter.get() == count;
     }
