@@ -619,7 +619,19 @@ public class I {
      * @param message A message log.
      * @param params A list of parameters to format.
      */
-    public static void error(String message) {
+    public static void error(Throwable message) {
+        log.logp(Level.SEVERE, "", "", message, () -> message.getMessage());
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#SEVERE} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void error(Object message) {
         error(String.valueOf(message), message);
     }
 
