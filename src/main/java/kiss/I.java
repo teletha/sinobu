@@ -73,6 +73,7 @@ import java.util.function.UnaryOperator;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
@@ -232,11 +233,14 @@ public class I {
 
     // initialization
     static {
+        // apply human-readable log format
+        System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %5$s%n");
+
         // remove all built-in log handlers
         for (Handler h : log.getHandlers()) {
             log.removeHandler(h);
         }
-        config(new StreamHandler(System.out, new Log()));
+        log.addHandler((new StreamHandler(System.out, new SimpleFormatter())));
 
         // built-in lifestyles
         lifestyles.put(List.class, ArrayList::new);
@@ -511,18 +515,6 @@ public class I {
 
     /**
      * <p>
-     * Rgister the specified log handler.
-     * </p>
-     * 
-     * @param handler
-     */
-    public static void config(Handler handler) {
-        handler.setFormatter(new Log());
-        log.addHandler(handler);
-    }
-
-    /**
-     * <p>
      * Note : This method closes both input and output stream carefully.
      * </p>
      * <p>
@@ -628,7 +620,7 @@ public class I {
      * @param params A list of parameters to format.
      */
     public static void error(String message) {
-        log.logp(Level.SEVERE, "", "", message);
+        error(String.valueOf(message), message);
     }
 
     /**
@@ -740,8 +732,8 @@ public class I {
      * @param message A message log.
      * @param params A list of parameters to format.
      */
-    public static void info(String message) {
-        log.logp(Level.INFO, "", "", message);
+    public static void info(Object message) {
+        info(String.valueOf(message), message);
     }
 
     /**

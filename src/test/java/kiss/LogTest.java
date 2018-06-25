@@ -13,6 +13,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,7 +30,7 @@ class LogTest {
 
     @BeforeAll
     static void store() {
-        buffer.setFormatter(new Log());
+        buffer.setFormatter(new SimpleFormatter());
 
         handlers = I.log.getHandlers();
 
@@ -42,7 +43,7 @@ class LogTest {
 
     @AfterAll
     static void restore() {
-        I.config(new ConsoleHandler());
+        I.log.addHandler(new ConsoleHandler());
     }
 
     @Test
@@ -50,7 +51,7 @@ class LogTest {
         I.error("message");
         assert buffer.is("message");
 
-        I.error("param {} {} {}", 1, 2, 3);
+        I.error("param {0} {1} {2}", 1, 2, 3);
         assert buffer.is("param 1 2 3");
     }
 
@@ -59,68 +60,8 @@ class LogTest {
         I.info("message");
         assert buffer.is("message");
 
-        I.info("param {} {} {}", 1, 2, 3);
+        I.info("param {0} {1} {2}", 1, 2, 3);
         assert buffer.is("param 1 2 3");
-    }
-
-    @Test
-    void param() {
-        I.info("{}", 1);
-        assert buffer.is("1");
-    }
-
-    @Test
-    void paramNull() {
-        I.info("{}", (Object) null);
-        assert buffer.is("null");
-    }
-
-    @Test
-    void params() {
-        I.info("{}{}{}", 1, 2, 3);
-        assert buffer.is("123");
-    }
-
-    @Test
-    void paramsNull() {
-        I.info("{}", (Object[]) null);
-        assert buffer.is("{}");
-    }
-
-    @Test
-    void middle() {
-        I.info("param {} middle", "in");
-        assert buffer.is("param in middle");
-    }
-
-    @Test
-    void illegal() {
-        I.info("{ } {0} {{ }} {{}} }{", "ok");
-        assert buffer.is("{ } {0} {{ }} {ok} }{");
-    }
-
-    @Test
-    void escape() {
-        I.info("\\{}", "don't match");
-        assert buffer.is("{}");
-    }
-
-    @Test
-    void overflow() {
-        I.info("{} {}", "This", "is", "overflow");
-        assert buffer.is("This is");
-    }
-
-    @Test
-    void underflow() {
-        I.info("{} {} {} {}", "This", "is", "underflow");
-        assert buffer.is("This is underflow {}");
-    }
-
-    @Test
-    void stacktrace() {
-        I.info("error", new Error());
-        assert buffer.isNot("error");
     }
 
     /**
