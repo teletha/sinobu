@@ -70,6 +70,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
 import java.util.zip.ZipFile;
@@ -186,6 +190,9 @@ public class I {
     /** The xpath evaluator. */
     static final XPath xpath;
 
+    /** The configuration of root logger in Sinobu. */
+    static final Logger log = Logger.getLogger("");
+
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
@@ -225,6 +232,12 @@ public class I {
 
     // initialization
     static {
+        // remove all built-in log handlers
+        for (Handler h : log.getHandlers()) {
+            log.removeHandler(h);
+        }
+        config(new StreamHandler(System.out, new Log()));
+
         // built-in lifestyles
         lifestyles.put(List.class, ArrayList::new);
         lifestyles.put(Map.class, HashMap::new);
@@ -498,6 +511,18 @@ public class I {
 
     /**
      * <p>
+     * Rgister the specified log handler.
+     * </p>
+     * 
+     * @param handler
+     */
+    public static void config(Handler handler) {
+        handler.setFormatter(new Log());
+        log.addHandler(handler);
+    }
+
+    /**
+     * <p>
      * Note : This method closes both input and output stream carefully.
      * </p>
      * <p>
@@ -596,6 +621,30 @@ public class I {
 
     /**
      * <p>
+     * Write {@link Level#SEVERE} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void error(String message) {
+        log.logp(Level.SEVERE, "", "", message);
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#SEVERE} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void error(String message, Object... params) {
+        log.logp(Level.SEVERE, "", "", message, params);
+    }
+
+    /**
+     * <p>
      * Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
      * <a href="Extensible#ExtensionPoint">Extension Point</a>.
      * </p>
@@ -681,6 +730,30 @@ public class I {
      */
     private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#INFO} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void info(String message) {
+        log.logp(Level.INFO, "", "", message);
+    }
+
+    /**
+     * <p>
+     * Write {@link Level#INFO} log.
+     * </p>
+     * 
+     * @param message A message log.
+     * @param params A list of parameters to format.
+     */
+    public static void info(String message, Object... params) {
+        log.logp(Level.INFO, "", "", message, params);
     }
 
     /**
