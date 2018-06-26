@@ -2845,6 +2845,17 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Emit <code>null</code> item before beginning to emit the items from the source {@link Signal}.
+     * </p>
+     * 
+     * @return Chainable API.
+     */
+    public final Signal<V> startWithNull() {
+        return startWith((V) null);
+    }
+
+    /**
+     * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to each
      * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
      * then merging the latest resulting {@link Signal} and emitting the results of this merger.

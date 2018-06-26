@@ -14,7 +14,7 @@ import java.util.Enumeration;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/03/26 21:58:41
+ * @version 2018/06/26 18:32:38
  */
 class StartWithTest extends SignalTester {
 
@@ -125,6 +125,14 @@ class StartWithTest extends SignalTester {
         assert other.isDisposed();
         assert main.isNotCompleted();
         assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void withNull() {
+        monitor(() -> signal("1", "2").startWithNull());
+        assert main.value(null, "1", "2");
+        assert main.isCompleted();
         assert main.isDisposed();
     }
 }
