@@ -14,6 +14,8 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import antibug.ExpectThrow;
+import kiss.I;
+import kiss.Signaling;
 
 /**
  * @version 2018/03/31 23:15:31
@@ -150,5 +152,48 @@ class FlatMapTest extends SignalTester {
     @ExpectThrow(NullPointerException.class)
     void iterableNull() {
         monitor(String.class, signal -> signal.flatIterable(null));
+    }
+
+    @Test
+    void fromFinitToInfinit() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).flatMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.accept("ok");
+        assert main.value("ok");
+    }
+
+    @Test
+    void fromFinitToInfinitWithComplete() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).flatMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.complete();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void fromFinitToInfinitWithError() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).flatMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.error(new IllegalAccessError());
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
     }
 }

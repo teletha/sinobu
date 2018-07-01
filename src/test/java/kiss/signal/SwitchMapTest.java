@@ -12,6 +12,8 @@ package kiss.signal;
 import org.junit.jupiter.api.Test;
 
 import antibug.ExpectThrow;
+import kiss.I;
+import kiss.Signaling;
 
 /**
  * @version 2018/03/31 23:14:49
@@ -115,5 +117,48 @@ class SwitchMapTest extends SignalTester {
         assert main.isDisposed();
         assert other.isDisposed();
         assert another.isDisposed();
+    }
+
+    @Test
+    void fromFinitToInfinit() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).switchMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.accept("ok");
+        assert main.value("ok");
+    }
+
+    @Test
+    void fromFinitToInfinitWithComplete() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).switchMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.complete();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void fromFinitToInfinitWithError() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).switchMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.error(new IllegalAccessError());
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
     }
 }

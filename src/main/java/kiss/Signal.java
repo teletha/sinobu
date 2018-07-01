@@ -700,7 +700,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<V> baseValue = new AtomicReference(UNDEFINED);
             AtomicReference<O> otherValue = new AtomicReference(UNDEFINED);
-            Runnable complete = countable(observer::complete, 2);
+            Subscriber completer = countable(observer, 2);
 
             return disposer.add(to(value -> {
                 baseValue.set(value);
@@ -709,7 +709,7 @@ public final class Signal<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(value, joined));
                 }
-            }, observer::error, complete)).add(other.to(value -> {
+            }, observer::error, completer::complete)).add(other.to(value -> {
                 otherValue.set(value);
 
                 V joined = baseValue.get();
@@ -717,7 +717,7 @@ public final class Signal<V> {
                 if (joined != UNDEFINED) {
                     observer.accept(function.apply(joined, value));
                 }
-            }, observer::error, complete));
+            }, observer::error, completer::complete));
         });
     }
 
@@ -827,12 +827,13 @@ public final class Signal<V> {
                 }
             });
 
-            return
+            Subscriber end = countable(observer, 1);
 
-            index().to(indexed -> {
+            return index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
+                end.index++;
 
                 function.apply(indexed.ⅰ).to(v -> {
                     if (processing.get() == indexed.ⅱ) {
@@ -843,8 +844,9 @@ public final class Signal<V> {
                 }, observer::error, () -> {
                     completed.set(true);
                     complete.accept(indexed.ⅱ);
-                }, disposer.sub());
-            }, observer::error, observer::complete, disposer);
+                    end.complete();
+                }, disposer.sub(), true);
+            }, observer::error, end::complete, disposer);
         });
 
     }
@@ -1359,9 +1361,12 @@ public final class Signal<V> {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
+            Subscriber end = countable(observer, 1);
+
             return to(value -> {
-                function.apply(value).to(observer::accept, observer::error, null, disposer.sub(), true);
-            }, observer::error, observer::complete, disposer);
+                end.index++;
+                function.apply(value).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
+            }, observer::error, end::complete, disposer);
         });
     }
 
@@ -1729,13 +1734,13 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             List<Signal<? extends V>> signals = I.signal(others).skipNull().startWith(this).toList();
-            Runnable complete = countable(observer::complete, signals.size());
+            Subscriber completer = countable(observer, signals.size());
 
             for (Signal<? extends V> signal : signals) {
                 if (disposer.isDisposed()) {
                     break;
                 }
-                signal.to(observer::accept, observer::error, complete, disposer.sub(), true);
+                signal.to(observer::accept, observer::error, completer::complete, disposer.sub(), true);
             }
             return disposer;
         });
@@ -2872,11 +2877,13 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             Disposable[] disposables = {null, Disposable.empty()};
+            Subscriber end = countable(observer, 1);
 
             disposables[0] = to(value -> {
+                end.index++;
                 disposables[1].dispose();
-                disposables[1] = function.apply(value).to(observer::accept, observer::error, null, disposer.sub());
-            }, observer::error, observer::complete, disposer.sub());
+                disposables[1] = function.apply(value).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
+            }, observer::error, end::complete, disposer.sub());
             return disposer.add(() -> {
                 disposables[0].dispose();
                 disposables[1].dispose();
@@ -3302,20 +3309,22 @@ public final class Signal<V> {
     }
 
     /**
-     * Create event delegater with counter.
+     * Create countable completer.
      * 
-     * @param delgator
-     * @param count
+     * @param delgator A complete action.
+     * @param count A complete count.
      * @return Chainable API.
      */
-    private Runnable countable(Runnable delgator, int count) {
-        AtomicInteger counter = new AtomicInteger();
-
-        return () -> {
-            if (counter.incrementAndGet() == count) {
-                delgator.run();
+    private Subscriber countable(Observer delgator, int count) {
+        Subscriber completer = new Subscriber();
+        completer.index = count;
+        completer.complete = () -> {
+            completer.index--;
+            if (completer.index == 0) {
+                delgator.complete();
             }
         };
+        return completer;
     }
 
     /**

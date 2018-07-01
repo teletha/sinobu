@@ -12,6 +12,8 @@ package kiss.signal;
 import org.junit.jupiter.api.Test;
 
 import antibug.ExpectThrow;
+import kiss.I;
+import kiss.Signaling;
 
 /**
  * @version 2018/03/31 23:15:41
@@ -89,5 +91,48 @@ class ConcatMapTest extends SignalTester {
 
         main.emit(60, 40, 20);
         assert await().value(60, 61, 40, 41, 20, 21);
+    }
+
+    @Test
+    void fromFinitToInfinit() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).concatMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.accept("ok");
+        assert main.value("ok");
+    }
+
+    @Test
+    void fromFinitToInfinitWithComplete() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).concatMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.complete();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void fromFinitToInfinitWithError() {
+        Signaling<String> signaling = new Signaling();
+
+        monitor(() -> I.signal(signaling).concatMap(s -> s.expose));
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        signaling.error(new IllegalAccessError());
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
     }
 }
