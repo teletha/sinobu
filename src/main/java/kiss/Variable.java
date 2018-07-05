@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
@@ -26,13 +28,15 @@ import java.util.function.UnaryOperator;
  */
 public class Variable<V> implements Consumer<V>, Supplier<V> {
 
-    /** The modifier. */
-    private static final Field modify;
+    /** The modifier base. */
+    private static final MethodHandle base;
 
     static {
         try {
-            modify = Variable.class.getField("v");
+            Field modify = Variable.class.getField("v");
             modify.setAccessible(true);
+
+            base = MethodHandles.lookup().unreflectSetter(modify);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -40,6 +44,9 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The current value. This value is not final but read-only. */
     public transient final V v;
+
+    /** The binded modifier. */
+    private final MethodHandle set;
 
     /** The immutability. */
     private boolean fix;
@@ -52,6 +59,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     private Variable(V value) {
         this.v = value;
+        this.set = base.bindTo(this);
     }
 
     /**
@@ -1754,8 +1762,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
             if (let) fix = true;
 
             try {
-                modify.set(this, value);
-            } catch (Exception e) {
+                set.invoke(value);
+            } catch (Throwable e) {
                 throw I.quiet(e);
             }
 
