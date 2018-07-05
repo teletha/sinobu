@@ -191,12 +191,12 @@ public class VariableTest {
 
     @Test
     public void setIfNullCondition() {
-        assert string.setIf(null, "change").equals("value");
-        assert string.setIf(null, () -> "supply").equals("value");
-        assert string.setIf(null, current -> current + " update").equals("value");
-        assert string.setIf(null, Optional.of("optional")).equals("value");
-        assert string.setIf(null, Variable.of("variable")).equals("value");
-        assert string.is("value");
+        assert string.setIf(null, "change").equals("change");
+        assert string.setIf(null, () -> "supply").equals("change");
+        assert string.setIf(null, current -> current + " update").equals("supply");
+        assert string.setIf(null, Optional.of("optional")).equals("supply update");
+        assert string.setIf(null, Variable.of("variable")).equals("optional");
+        assert string.is("variable");
     }
 
     @Test

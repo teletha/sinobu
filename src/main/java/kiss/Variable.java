@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -43,7 +42,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     public transient final V v;
 
     /** The immutability. */
-    private final AtomicBoolean fix = new AtomicBoolean();
+    private boolean fix;
 
     /** The observers. */
     private volatile List<Observer> observers;
@@ -65,8 +64,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /**
      * <p>
-     * Compute the current value. If it is <code>null</code>, this method returns the specified
-     * default value.
+     * Compute the current value. If it is <code>null</code>, this method returns the specified default
+     * value.
      * </p>
      *
      * @param value The default value.
@@ -1497,7 +1496,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V set(V value) {
-        return setIf(I.accept(), value);
+        return setIf(null, value);
     }
 
     /**
@@ -1509,7 +1508,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V set(Optional<V> value) {
-        return setIf(I.accept(), value);
+        return setIf(null, value);
     }
 
     /**
@@ -1521,7 +1520,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V set(Variable<V> value) {
-        return setIf(I.accept(), value);
+        return setIf(null, value);
     }
 
     /**
@@ -1533,7 +1532,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V set(Supplier<V> value) {
-        return setIf(I.accept(), value);
+        return setIf(null, value);
     }
 
     /**
@@ -1545,7 +1544,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V set(UnaryOperator<V> value) {
-        return setIf(I.accept(), value);
+        return setIf(null, value);
     }
 
     /**
@@ -1558,7 +1557,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V setIf(Predicate<V> condition, V value) {
-        return setIf(condition, of(value));
+        return assign(condition, value, false);
     }
 
     /**
@@ -1584,7 +1583,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V setIf(Predicate<V> condition, Variable<V> value) {
-        return assign(condition, value, false);
+        return setIf(condition, value == null ? null : value.v);
     }
 
     /**
@@ -1622,7 +1621,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V let(V value) {
-        return letIf(I.accept(), value);
+        return letIf(null, value);
     }
 
     /**
@@ -1634,7 +1633,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V let(Optional<V> value) {
-        return letIf(I.accept(), value);
+        return letIf(null, value);
     }
 
     /**
@@ -1646,7 +1645,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V let(Variable<V> value) {
-        return letIf(I.accept(), value);
+        return letIf(null, value);
     }
 
     /**
@@ -1658,7 +1657,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V let(Supplier<V> value) {
-        return letIf(I.accept(), value);
+        return letIf(null, value);
     }
 
     /**
@@ -1670,7 +1669,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V let(UnaryOperator<V> value) {
-        return letIf(I.accept(), value);
+        return letIf(null, value);
     }
 
     /**
@@ -1683,7 +1682,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V letIf(Predicate<V> condition, V value) {
-        return letIf(condition, of(value));
+        return assign(condition, value, true);
     }
 
     /**
@@ -1709,7 +1708,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V letIf(Predicate<V> condition, Variable<V> value) {
-        return assign(condition, value, true);
+        return letIf(condition, value == null ? null : value.v);
     }
 
     /**
@@ -1748,23 +1747,21 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param let A state of let or set.
      * @return A previous value.
      */
-    private V assign(Predicate<V> condition, Variable<V> value, boolean let) {
+    private synchronized V assign(Predicate<V> condition, V value, boolean let) {
         V prev = v;
 
-        if (fix.get() == false) {
-            if (is(condition)) {
-                if (fix.compareAndSet(false, let)) {
-                    try {
-                        modify.set(this, value == null ? null : value.v);
-                    } catch (Exception e) {
-                        throw I.quiet(e);
-                    }
+        if (fix == false && (condition == null || is(condition))) {
+            if (let) fix = true;
 
-                    if (observers != null) {
-                        for (Observer observer : observers) {
-                            observer.accept(v);
-                        }
-                    }
+            try {
+                modify.set(this, value);
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+
+            if (observers != null) {
+                for (Observer observer : observers) {
+                    observer.accept(v);
                 }
             }
         }
