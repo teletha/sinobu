@@ -49,7 +49,7 @@ import java.util.stream.BaseStream;
 import java.util.stream.Collector;
 
 /**
- * @version 2018/03/21 22:55:13
+ * @version 2018/07/15 8:34:25
  */
 public final class Signal<V> {
 
@@ -211,10 +211,18 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     private Disposable to(Consumer<? super V> next, Consumer<? extends Throwable> error, Runnable complete, Disposable disposer, boolean auto) {
-        Subscriber subscriber = new Subscriber();
-        subscriber.next = next;
-        subscriber.error = auto ? I.bundle(error, I.wise(disposer::dispose).asConsumer()) : error;
-        subscriber.complete = auto ? I.bundle(complete, disposer::dispose) : complete;
+        Subscriber<V> subscriber = new Subscriber();
+        subscriber.next = e -> {
+            if (disposer.isNotDisposed()) next.accept(e);
+        };
+        subscriber.error = e -> {
+            if (error != null && disposer.isNotDisposed()) ((Consumer<Throwable>) error).accept(e);
+            if (auto) disposer.dispose();
+        };
+        subscriber.complete = () -> {
+            if (complete != null && disposer.isNotDisposed()) complete.run();
+            if (auto) disposer.dispose();
+        };
 
         return to(subscriber, disposer);
     }
