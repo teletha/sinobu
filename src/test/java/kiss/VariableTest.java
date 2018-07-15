@@ -191,7 +191,7 @@ public class VariableTest {
 
     @Test
     public void setIfNullCondition() {
-        assert string.setIf(null, "change").equals("change");
+        assert string.setIf(null, "change").equals("value");
         assert string.setIf(null, () -> "supply").equals("change");
         assert string.setIf(null, current -> current + " update").equals("supply");
         assert string.setIf(null, Optional.of("optional")).equals("supply update");
