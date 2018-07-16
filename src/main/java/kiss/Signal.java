@@ -612,13 +612,25 @@ public final class Signal<V> {
                 } else {
                     observer.accept(combiner.apply(value, otherValue.pollFirst()));
                 }
-            }, observer::error, completer::complete, disposer).add(other.to(value -> {
+            }, observer::error, () -> {
+                if (baseValue.isEmpty()) {
+                    observer.complete();
+                } else {
+                    completer.complete();
+                }
+            }, disposer).add(other.to(value -> {
                 if (baseValue.isEmpty()) {
                     otherValue.add(value);
                 } else {
                     observer.accept(combiner.apply(baseValue.pollFirst(), value));
                 }
-            }, observer::error, completer::complete, disposer));
+            }, observer::error, () -> {
+                if (otherValue.isEmpty()) {
+                    observer.complete();
+                } else {
+                    completer.complete();
+                }
+            }, disposer));
         });
     }
 

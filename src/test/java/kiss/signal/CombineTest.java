@@ -86,7 +86,7 @@ class CombineTest extends SignalTester {
     }
 
     @Test
-    void completeByMain() {
+    void completeByMainWithRemaining() {
         monitor(signal -> signal.combine(other.signal()));
 
         main.emit("MAIN1", "MAIN2", "MAIN3");
@@ -114,7 +114,7 @@ class CombineTest extends SignalTester {
     }
 
     @Test
-    void completeByOther() {
+    void completeByOtherWithRemaining() {
         monitor(signal -> signal.combine(other.signal()));
 
         main.emit("MAIN");
@@ -133,6 +133,42 @@ class CombineTest extends SignalTester {
 
         // from main
         assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    void completeByMainWithoutRemaining() {
+        monitor(signal -> signal.combine(other.signal()));
+    
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+    
+        assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
+        assert other.emit("Other is also disposed").value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    void completeByOtherWithoutRemaining() {
+        monitor(signal -> signal.combine(other.signal()));
+    
+        main.emit("MAIN");
+        other.emit("OTHER");
+        assert main.value(I.pair("MAIN", "OTHER"));
+    
+        assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
+        assert main.emit("Main is also disposed").value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
