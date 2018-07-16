@@ -9,15 +9,19 @@
  */
 package kiss.signal;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 
+import kiss.Variable;
+
 /**
- * @version 2018/03/01 12:02:57
+ * @version 2018/07/16 11:07:12
  */
 class DelayTest extends SignalTester {
 
     @Test
-    void delay() throws Exception {
+    void delay() {
         monitor(signal -> signal.delay(30, ms));
 
         assert main.emit("delay").value();
@@ -28,14 +32,99 @@ class DelayTest extends SignalTester {
     }
 
     @Test
-    void delayNegative() throws Exception {
-        monitor(signal -> signal.delay(-10, ms));
+    void delayZero() {
+        monitor(signal -> signal.delay(0, ms));
 
-        assert main.emit("delay").value("delay");
+        assert main.emit("no delay").value("no delay");
     }
 
     @Test
-    void delayByCount1() throws Exception {
+    void delayNegative() {
+        monitor(signal -> signal.delay(-10, ms));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayNullUnit() {
+        monitor(signal -> signal.delay(10, null));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayDuration() {
+        monitor(signal -> signal.delay(Duration.ofMillis(30)));
+
+        assert main.emit("delay").value();
+        assert await().value("delay");
+
+        assert main.emit("one", "more").value();
+        assert await().value("one", "more");
+    }
+
+    @Test
+    void delayNegativeDuration() {
+        monitor(signal -> signal.delay(Duration.ofMillis(-30)));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayZeroDuration() {
+        monitor(signal -> signal.delay(Duration.ofMillis(0)));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayNullDuration() {
+        monitor(signal -> signal.delay((Duration) null));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayVariable() {
+        monitor(signal -> signal.delay(Variable.of(Duration.ofMillis(30))));
+
+        assert main.emit("delay").value();
+        assert await().value("delay");
+
+        assert main.emit("one", "more").value();
+        assert await().value("one", "more");
+    }
+
+    @Test
+    void delayNegativeVariable() {
+        monitor(signal -> signal.delay(Variable.of(Duration.ofMillis(-30))));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayZeroVariable() {
+        monitor(signal -> signal.delay(Variable.of(Duration.ofMillis(0))));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayEmptyVariable() {
+        monitor(signal -> signal.delay(Variable.empty()));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayNullVariable() {
+        monitor(signal -> signal.delay((Variable<Duration>) null));
+
+        assert main.emit("no delay").value("no delay");
+    }
+
+    @Test
+    void delayByCount1() {
         monitor(signal -> signal.delay(1));
 
         assert main.emit("1").value();
@@ -44,7 +133,7 @@ class DelayTest extends SignalTester {
     }
 
     @Test
-    void delayByCount2() throws Exception {
+    void delayByCount2() {
         monitor(signal -> signal.delay(2));
 
         assert main.emit("1").value();

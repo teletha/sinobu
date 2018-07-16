@@ -12,6 +12,7 @@ package kiss;
 import static java.lang.Boolean.*;
 import static java.util.concurrent.TimeUnit.*;
 
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -957,20 +958,56 @@ public final class Signal<V> {
      */
     public final Signal<V> delay(long time, TimeUnit unit) {
         // ignore invalid parameters
-        if (time <= 0 || unit == null) {
+        if (unit == null) {
+            return this;
+        }
+        return delay(Duration.of(time, unit.toChronoUnit()));
+    }
+
+    /**
+     * <p>
+     * Indicates the {@link Signal} sequence by due time with the specified source and time.
+     * </p>
+     *
+     * @param time The absolute {@link Duration} used to shift the {@link Signal} sequence. Zero or
+     *            negative value will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> delay(Duration time) {
+        // ignore invalid parameters
+        if (time == null || time.isNegative() || time.isZero()) {
+            return this;
+        }
+        return delay(Variable.of(time));
+    }
+
+    /**
+     * <p>
+     * Indicates the {@link Signal} sequence by due time with the specified source and time.
+     * </p>
+     *
+     * @param time The absolute time used to shift the {@link Signal} sequence. Zero or negative number
+     *            will ignore this instruction.
+     * @param unit A unit of time for the specified time. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> delay(Variable<Duration> time) {
+        // ignore invalid parameters
+        if (time == null) {
             return this;
         }
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                Future<?> future = I.schedule(time, unit, false, () -> {
+                Future<?> future = I.schedule(time.or(Duration.ZERO).v.toNanos(), NANOSECONDS, false, () -> {
                     if (disposer.isNotDisposed()) {
                         observer.accept(value);
                     }
                 });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(time, unit, false, observer::complete), disposer);
+            }, observer::error, () -> I.schedule(time.or(Duration.ZERO).v.toNanos(), NANOSECONDS, false, observer::complete), disposer);
         });
     }
 
