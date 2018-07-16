@@ -10,10 +10,9 @@
 package kiss.signal;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
-
-import kiss.Variable;
 
 /**
  * @version 2018/07/16 11:07:12
@@ -85,8 +84,8 @@ class DelayTest extends SignalTester {
     }
 
     @Test
-    void delayVariable() {
-        monitor(signal -> signal.delay(Variable.of(Duration.ofMillis(30))));
+    void delaySupplier() {
+        monitor(signal -> signal.delay(() -> Duration.ofMillis(30)));
 
         assert main.emit("delay").value();
         assert await().value("delay");
@@ -96,29 +95,22 @@ class DelayTest extends SignalTester {
     }
 
     @Test
-    void delayNegativeVariable() {
-        monitor(signal -> signal.delay(Variable.of(Duration.ofMillis(-30))));
+    void delayNegativeSupplier() {
+        monitor(signal -> signal.delay(() -> Duration.ofMillis(-30)));
 
         assert main.emit("no delay").value("no delay");
     }
 
     @Test
-    void delayZeroVariable() {
-        monitor(signal -> signal.delay(Variable.of(Duration.ofMillis(0))));
+    void delayZeroSupplier() {
+        monitor(signal -> signal.delay(() -> Duration.ofMillis(0)));
 
         assert main.emit("no delay").value("no delay");
     }
 
     @Test
-    void delayEmptyVariable() {
-        monitor(signal -> signal.delay(Variable.empty()));
-
-        assert main.emit("no delay").value("no delay");
-    }
-
-    @Test
-    void delayNullVariable() {
-        monitor(signal -> signal.delay((Variable<Duration>) null));
+    void delayNullSupplier() {
+        monitor(signal -> signal.delay((Supplier<Duration>) null));
 
         assert main.emit("no delay").value("no delay");
     }

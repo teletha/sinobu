@@ -988,11 +988,9 @@ public final class Signal<V> {
      *
      * @param time The absolute time used to shift the {@link Signal} sequence. Zero or negative number
      *            will ignore this instruction.
-     * @param unit A unit of time for the specified time. <code>null</code> will ignore this
-     *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> delay(Variable<Duration> time) {
+    public final Signal<V> delay(Supplier<Duration> time) {
         // ignore invalid parameters
         if (time == null) {
             return this;
@@ -1000,14 +998,14 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                Future<?> future = I.schedule(time.or(Duration.ZERO).v.toNanos(), NANOSECONDS, false, () -> {
+                Future<?> future = I.schedule(time.get().toNanos(), NANOSECONDS, false, () -> {
                     if (disposer.isNotDisposed()) {
                         observer.accept(value);
                     }
                 });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(time.or(Duration.ZERO).v.toNanos(), NANOSECONDS, false, observer::complete), disposer);
+            }, observer::error, () -> I.schedule(time.get().toNanos(), NANOSECONDS, false, observer::complete), disposer);
         });
     }
 
