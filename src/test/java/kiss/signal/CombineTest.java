@@ -89,16 +89,26 @@ class CombineTest extends SignalTester {
     void completeByMain() {
         monitor(signal -> signal.combine(other.signal()));
 
-        main.emit("MAIN");
+        main.emit("MAIN1", "MAIN2", "MAIN3");
         other.emit("OTHER");
-        assert main.value(I.pair("MAIN", "OTHER"));
+        assert main.value(I.pair("MAIN1", "OTHER"));
 
+        // from main
         assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
-        assert other.emit("Other is also disposed").value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isNotDisposed();
+        assert other.emit("Other is not completed.").value(I.pair("MAIN2", "Other is not completed."));
+
+        // from other
+        assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
-        assert other.isNotCompleted();
+        assert other.isCompleted();
         assert other.isNotError();
         assert other.isDisposed();
     }
@@ -108,11 +118,21 @@ class CombineTest extends SignalTester {
         monitor(signal -> signal.combine(other.signal()));
 
         main.emit("MAIN");
-        other.emit("OTHER");
-        assert main.value(I.pair("MAIN", "OTHER"));
+        other.emit("OTHER1", "OTHER2", "OTHER3");
+        assert main.value(I.pair("MAIN", "OTHER1"));
 
+        // from other
         assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
-        assert main.emit("Main is also disposed").value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+        assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isNotDisposed();
+        assert main.emit("Main is not completed.").value(I.pair("Main is not completed.", "OTHER2"));
+
+        // from main
+        assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
