@@ -143,4 +143,40 @@ class EffectTest extends SignalTester {
         assert from == from.effectOnComplete(null);
         assert from == from.effectOnError(null);
     }
+
+    @Test
+    void effectOnceRunnable() {
+        monitor(1, signal -> signal.effectOnce(() -> log1.accept("once")));
+
+        assert main.emit(1).value(1);
+        assert log1.value("once");
+        assert main.emit(2, 3).value(2, 3);
+        assert log1.value();
+    }
+
+    @Test
+    void effectOnceConsumer() {
+        monitor(1, signal -> signal.effectOnce(log1));
+
+        assert main.emit(1).value(1);
+        assert log1.value(1);
+        assert main.emit(2, 3).value(2, 3);
+        assert log1.value();
+    }
+
+    @Test
+    void effectOnceNullRunnable() {
+        monitor(1, signal -> signal.effectOnce((Runnable) null));
+
+        assert main.emit(1).value(1);
+        assert main.emit(2, 3).value(2, 3);
+    }
+
+    @Test
+    void effectOnceNullConsumer() {
+        monitor(1, signal -> signal.effectOnce((Consumer) null));
+
+        assert main.emit(1).value(1);
+        assert main.emit(2, 3).value(2, 3);
+    }
 }

@@ -1080,6 +1080,59 @@ public final class Signal<V> {
     }
 
     /**
+     * Modifies the source {@link Signal} so that it invokes an effect only once when it calls
+     * {@link Observer#accept(Object)}.
+     *
+     * @param effect The action to invoke only once when the source {@link Signal} calls
+     *            {@link Observer#accept(Object)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
+     * @see #effectOnComplete(Runnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
+     */
+    public final Signal<V> effectOnce(Runnable effect) {
+        if (effect == null) {
+            return this;
+        }
+        return effectOnce(I.wise(effect).asConsumer());
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes an effect only once when it calls
+     * {@link Observer#accept(Object)}.
+     *
+     * @param effect The action to invoke only once when the source {@link Signal} calls
+     *            {@link Observer#accept(Object)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
+     * @see #effectOnComplete(Runnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
+     */
+    public final Signal<V> effectOnce(Consumer<? super V> effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            AtomicBoolean once = new AtomicBoolean();
+
+            return to(v -> {
+                if (once.compareAndSet(false, true)) {
+                    effect.accept(v);
+                }
+                observer.accept(v);
+            }, observer::error, observer::complete, disposer);
+        });
+    }
+
+    /**
      * Modifies the source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#complete()}.
      *
