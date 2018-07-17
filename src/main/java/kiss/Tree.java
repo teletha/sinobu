@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
  * The skeleton of DSL for tree structure.
  * </p>
  * 
- * @version 2017/02/11 17:22:03
+ * @version 2018/07/17 13:03:40
  */
 public abstract class Tree<Name, Node extends Consumer<Node>> {
 
@@ -56,25 +56,19 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * Create tree structure DSL.
      * </p>
      *
-     * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and
-     *            unique id.
+     * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and unique
+     *            id.
      * @param uniqueKeyBuilder A builder for identical key.
      */
     protected Tree(WiseTriFunction<Name, Integer, Object, Node> namedNodeBuilder, IntUnaryOperator uniqueKeyBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
-        this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder : id -> {
-            Exception e = new Exception();
-            StackTraceElement[] elements = e.getStackTrace();
-
-            for (int i = 2; i < 7; i++) {
-                StackTraceElement element = elements[i];
-
-                if (!element.getClassName().equals(THIS)) {
-                    return hash(element.getLineNumber() ^ id);
-                }
-            }
-            return id;
-        };
+        this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder
+                : id -> StackWalker.getInstance()
+                        .walk(s -> s.skip(2)
+                                .filter(f -> !f.getClassName().equals(THIS))
+                                .findFirst()
+                                .map(f -> hash(f.getByteCodeIndex() ^ id))
+                                .orElse(id));
     }
 
     /**
