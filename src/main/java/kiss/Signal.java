@@ -2512,7 +2512,7 @@ public final class Signal<V> {
      *         {@link Signal} as a 64-bit Long item
      */
     public final Signal<List<V>> size(long size) {
-        return buffer(Signal.NEVER);
+        return buffer(Signal.NEVER).take(v -> v.size() == size);
     }
 
     /**
