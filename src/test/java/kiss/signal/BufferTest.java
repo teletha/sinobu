@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/03/22 0:05:46
+ * @version 2018/07/20 8:38:39
  */
 class BufferTest extends SignalTester {
 
@@ -132,6 +132,19 @@ class BufferTest extends SignalTester {
     }
 
     @Test
+    void signalCompleteFromMainWithRemainings() {
+        monitor(signal -> signal.buffer(other.signal()).map(composer));
+
+        assert main.emit("A", "B", Complete).value("AB");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isNotCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
     void signalCompleteFromOther() {
         monitor(signal -> signal.buffer(other.signal()).map(composer));
 
@@ -142,5 +155,41 @@ class BufferTest extends SignalTester {
         assert other.isCompleted();
         assert other.isNotError();
         assert other.isDisposed();
+    }
+
+    @Test
+    void signalCompleteFromOtherWithRemainings() {
+        monitor(signal -> signal.buffer(other.signal()).map(composer));
+
+        assert main.emit("A", "B").value();
+        assert other.emit(Complete).value("AB");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+        assert other.isCompleted();
+        assert other.isNotError();
+        assert other.isDisposed();
+    }
+
+    @Test
+    void all() {
+        monitor(signal -> signal.buffer().map(composer));
+
+        assert main.emit("A", "B", "C", "D").value();
+        assert main.emit(Complete).value("ABCD");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void allError() {
+        monitor(signal -> signal.buffer().map(composer));
+
+        assert main.emit("A", "B", "C", "D").value();
+        assert main.emit(Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
     }
 }

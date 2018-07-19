@@ -171,6 +171,20 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
+    public final Disposable to(WiseRunnable next, Consumer<Throwable> error, Runnable complete) {
+        return to(next.asConsumer(), error, complete);
+    }
+
+    /**
+     * <p>
+     * Receive values from this {@link Signal}.
+     * </p>
+     *
+     * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @param error A delegator method of {@link Observer#error(Throwable)}.
+     * @param complete A delegator method of {@link Observer#complete()}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
     public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
         return to(next, error, complete, Disposable.empty(), true);
     }
@@ -458,6 +472,19 @@ public final class Signal<V> {
      * @param size A length of each buffer.
      * @return Chainable API.
      */
+    public final Signal<List<V>> buffer() {
+        return buffer(NEVER);
+    }
+
+    /**
+     * <p>
+     * Indicates each value of an {@link Signal} sequence into consecutive non-overlapping buffers which
+     * are produced based on value count information.
+     * </p>
+     *
+     * @param size A length of each buffer.
+     * @return Chainable API.
+     */
     public final Signal<List<V>> buffer(int size) {
         return buffer(size, size);
     }
@@ -546,13 +573,17 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             LinkedTransferQueue<V> queue = new LinkedTransferQueue();
 
-            return to(queue::add, observer::error, observer::complete, disposer).add(boundary.to(v -> {
+            WiseRunnable transfer = () -> {
                 if (!queue.isEmpty()) {
                     B buffer = bufferSupplier.get();
                     queue.drainTo(buffer);
                     observer.accept(buffer);
                 }
-            }, observer::error, observer::complete));
+            };
+            WiseRunnable completor = transfer.then(observer::complete);
+
+            return to(queue::add, observer::error, completor::run, disposer)
+                    .add(boundary.to(transfer::run, observer::error, completor::run));
         });
     }
 
@@ -2471,6 +2502,17 @@ public final class Signal<V> {
                 }
             });
         });
+    }
+
+    /**
+     * Returns a {@link Signal} that counts the total number of items emitted by the source
+     * {@link Signal} and emits this count as a 64-bit Long.
+     * 
+     * @return {@link Signal} that emits a single item: the number of items emitted by the source
+     *         {@link Signal} as a 64-bit Long item
+     */
+    public final Signal<List<V>> size(long size) {
+        return buffer(Signal.NEVER);
     }
 
     /**
