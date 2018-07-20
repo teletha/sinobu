@@ -12,7 +12,7 @@ package kiss;
 import java.io.Serializable;
 
 /**
- * @version 2018/04/02 8:35:30
+ * @version 2018/07/20 9:37:16
  */
 public interface WiseRunnable extends Runnable, Serializable {
 
@@ -49,19 +49,23 @@ public interface WiseRunnable extends Runnable, Serializable {
     }
 
     /**
-     * Returns a composed {@link WiseRunnable} that performs, in sequence, this operation followed by
-     * the after operation. If performing either operation throws an exception, it is relayed to the
-     * caller of the composed operation. If performing this operation throws an exception, the after
-     * operation will not be performed.
+     * Returns a composed {@link WiseRunnable} that performs, in sequence, this operation followed
+     * by the after operation. If performing either operation throws an exception, it is relayed to
+     * the caller of the composed operation. If performing this operation throws an exception, the
+     * after operation will not be performed.
      * 
      * @param after The operation to perform after this operation.
-     * @return A composed {@link WiseRunnable} that performs in sequence this operation followed by the
-     *         after operation.
+     * @return A composed {@link WiseRunnable} that performs in sequence this operation followed by
+     *         the after operation.
      */
     default WiseRunnable then(Runnable after) {
-        return () -> {
-            run();
-            if (after != null) after.run();
-        };
+        if (after == null) {
+            return this;
+        } else {
+            return () -> {
+                run();
+                after.run();
+            };
+        }
     }
 }

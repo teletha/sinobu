@@ -23,7 +23,7 @@ class SizeTest extends SignalTester {
     private final Function<List<String>, String> composer = v -> v.stream().collect(Collectors.joining());
 
     @Test
-    void correct() {
+    void same() {
         monitor(signal -> signal.size(2).map(composer));
 
         assert main.emit("A", "B", Complete).value("AB");
@@ -33,7 +33,7 @@ class SizeTest extends SignalTester {
     }
 
     @Test
-    void wrong() {
+    void overflow() {
         monitor(signal -> signal.size(5).map(composer));
 
         assert main.emit("A", "B", Complete).value();
@@ -43,8 +43,8 @@ class SizeTest extends SignalTester {
     }
 
     @Test
-    void negative() {
-        monitor(signal -> signal.size(-1).map(composer));
+    void underflow() {
+        monitor(signal -> signal.size(1).map(composer));
 
         assert main.emit("A", "B", Complete).value();
         assert main.isCompleted();
@@ -54,7 +54,17 @@ class SizeTest extends SignalTester {
 
     @Test
     void zero() {
-        monitor(String.class, List.class, signal -> signal.size(0));
+        monitor(String.class, List.class, signal -> signal.size(0).as(List.class));
+
+        assert main.emit(Complete).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void negative() {
+        monitor(signal -> signal.size(-2).map(composer));
 
         assert main.emit("A", "B", Complete).value();
         assert main.isCompleted();
