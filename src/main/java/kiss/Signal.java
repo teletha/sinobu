@@ -1204,6 +1204,39 @@ public final class Signal<V> {
 
     /**
      * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * {@link Observer#complete()}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#complete()}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
+     * @see #effectOnComplete(Runnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
+     */
+    public final Signal<V> effectOnComplete(Consumer<V> effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            ArrayList<V> list = new ArrayList();
+
+            return to(v -> {
+                list.add(v);
+                observer.accept(v);
+            }, observer::error, () -> {
+                list.forEach(effect::accept);
+                observer.complete();
+            }, disposer);
+        });
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
      * {@link Disposable#dispose()}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -2507,6 +2540,17 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns {@link Signal} that emits the single element only. If this {@link Signal} has no
+     * element or too many elements, signal will complete immediately.
+     * 
+     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
+     *         emitted, errored or completed.
+     */
+    public final Signal<V> single() {
+        return size(1).map(v -> v.get(0));
+    }
+
+    /**
      * Returns a {@link Signal} that counts the total number of items emitted by the source
      * {@link Signal} and emits this count as a 32-bit Integer.
      * 
@@ -2514,7 +2558,24 @@ public final class Signal<V> {
      *         {@link Signal} as a 32-bit Integer item
      */
     public final Signal<List<V>> size(int size) {
-        return buffer(Signal.NEVER).take(v -> v.size() == size);
+        if (size < 0) {
+            return EMPTY;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            ArrayList<V> list = new ArrayList(size);
+
+            return to(v -> {
+                if (list.size() < size) {
+                    list.add(v);
+                } else {
+                    observer.complete();
+                }
+            }, observer::error, () -> {
+                if (list.size() == size) observer.accept(list);
+                observer.complete();
+            }, disposer);
+        });
     }
 
     /**

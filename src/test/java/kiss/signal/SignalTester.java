@@ -37,7 +37,7 @@ import kiss.Signal;
 import kiss.WiseFunction;
 
 /**
- * @version 2018/06/22 9:02:45
+ * @version 2018/07/20 10:48:03
  */
 public class SignalTester {
 
@@ -387,8 +387,30 @@ public class SignalTester {
      * 
      * @param signal
      */
+    protected <T> void monitor(int multiplicity, Class<T> type, Function<Signal<T>, Signal<T>> signal) {
+        monitor(multiplicity, signal);
+    }
+
+    /**
+     * <p>
+     * Monitor signal to test.
+     * </p>
+     * 
+     * @param signal
+     */
     protected <In, Out> void monitor(Class<In> in, Class<Out> out, Function<Signal<In>, Signal<Out>> signal) {
         monitor(defaultMultiplicity, signal);
+    }
+
+    /**
+     * <p>
+     * Monitor signal to test.
+     * </p>
+     * 
+     * @param signal
+     */
+    protected <In, Out> void monitor(int multiplicity, Class<In> in, Class<Out> out, Function<Signal<In>, Signal<Out>> signal) {
+        monitor(multiplicity, signal);
     }
 
     /**

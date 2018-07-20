@@ -56,12 +56,27 @@ class EffectTest extends SignalTester {
     }
 
     @Test
-    void effectOnComplet() {
+    void effectOnComplete() {
         monitor(signal -> signal.effectOnComplete(log1::complete));
 
         assert log1.isNotCompleted();
         main.emit(Complete);
         assert log1.isCompleted();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void effectOnCompleteForEachValue() {
+        ArrayList<String> list = new ArrayList();
+
+        monitor(1, String.class, signal -> signal.effectOnComplete(list::add));
+
+        assert main.emit("A", "B").value("A", "B");
+        assert list.size() == 0;
+        assert main.emit(Complete).value();
+        assert list.size() == 2;
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -140,7 +155,7 @@ class EffectTest extends SignalTester {
         Signal<Integer> from = I.signal(0);
         assert from == from.effect((Runnable) null);
         assert from == from.effect((Consumer) null);
-        assert from == from.effectOnComplete(null);
+        assert from == from.effectOnComplete((Runnable) null);
         assert from == from.effectOnError(null);
     }
 

@@ -9,6 +9,7 @@
  */
 package kiss.signal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ class SizeTest extends SignalTester {
     }
 
     @Test
-    void overflow() {
+    void underflow() {
         monitor(signal -> signal.size(5).map(composer));
 
         assert main.emit("A", "B", Complete).value();
@@ -43,10 +44,10 @@ class SizeTest extends SignalTester {
     }
 
     @Test
-    void underflow() {
+    void overflow() {
         monitor(signal -> signal.size(1).map(composer));
 
-        assert main.emit("A", "B", Complete).value();
+        assert main.emit("A", "B").value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -56,7 +57,7 @@ class SizeTest extends SignalTester {
     void zero() {
         monitor(String.class, List.class, signal -> signal.size(0).as(List.class));
 
-        assert main.emit(Complete).value();
+        assert main.emit(Complete).value(new ArrayList());
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
