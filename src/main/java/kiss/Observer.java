@@ -44,19 +44,13 @@ public interface Observer<V> extends Consumer<V> {
      * Notifies the observer that the provider has experienced an error condition.
      * </p>
      * <p>
-     * If the {@link Signal} calls this closure, it will not thereafter call {@link #accept(Object)} or
-     * {@link #complete()}.
+     * If the {@link Signal} calls this closure, it will not thereafter call {@link #accept(Object)}
+     * or {@link #complete()}.
      * </p>
      * 
      * @param e An object that provides additional information about the error.
      */
     public default void error(Throwable e) {
-        if (e instanceof VirtualMachineError || e instanceof LinkageError || e instanceof ThreadDeath || e instanceof AssertionError) {
-            throw I.quiet(e);
-        } else {
-            I.error(e);
-            Thread thread = Thread.currentThread();
-            thread.getUncaughtExceptionHandler().uncaughtException(thread, e);
-        }
+        throw I.quiet(e);
     }
 }
