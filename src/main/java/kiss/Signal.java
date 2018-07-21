@@ -460,10 +460,7 @@ public final class Signal<V> {
      * @throws NullPointerException If the type is <code>null</code>.
      */
     public final <R> Signal<R> as(Class<R> type) {
-        if (type == null) {
-            return (Signal<R>) this;
-        }
-        return (Signal<R>) take(I.wrap(type)::isInstance);
+        return (Signal<R>) (type == null ? this : take(I.wrap(type)::isInstance));
     }
 
     /**
