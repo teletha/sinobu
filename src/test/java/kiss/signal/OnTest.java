@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 
 /**
- * @version 2018/04/12 8:51:29
+ * @version 2018/07/21 20:07:00
  */
 class OnTest extends SignalTester {
 
@@ -59,6 +59,16 @@ class OnTest extends SignalTester {
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
+    }
+
+    @Test
+    void ignoreNull() {
+        monitor(signal -> signal.on(null));
+
+        assert main.emit("ignore").value("ignore");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     /**

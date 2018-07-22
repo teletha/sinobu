@@ -50,7 +50,7 @@ import java.util.stream.BaseStream;
 import java.util.stream.Collector;
 
 /**
- * @version 2018/07/20 9:42:33
+ * @version 2018/07/21 20:07:56
  */
 public final class Signal<V> {
 
@@ -1054,14 +1054,87 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} consisting of the distinct values (according to
-     * {@link Object#equals(Object)}) of this stream.
+     * Returns an {@link Signal} that emits all items emitted by the source {@link Signal} that are
+     * distinct from their immediate predecessors based on {@link Object#equals(Object)} comparison.
      * </p>
+     * <p>
+     * It is recommended the elements' class {@code V} in the flow overrides the default
+     * {@code Object.equals()} to provide meaningful comparison between items as the default Java
+     * implementation only considers reference equivalence. Alternatively, use the
+     * {@link #diff(BiPredicate)} overload and provide a comparison function in case the class {@code V}
+     * can't be overridden with custom {@code equals()} or the comparison itself should happen on
+     * different terms or properties of the class {@code V}.
+     * <p>
      *
-     * @return Chainable API.
+     * @return {@link Signal} that emits those items from the source {@link Signal} that are distinct
+     *         from their immediate predecessors.
+     * @see #diff(Function)
+     * @see #diff(BiPredicate)
      */
     public final Signal<V> diff() {
-        return take((V) null, ((BiPredicate) Objects::equals).negate());
+        return skip((V) null, Objects::equals);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits all items emitted by the source {@link Signal} that are
+     * distinct from their immediate predecessors, according to a key selector function and based on
+     * {@link Object#equals(Object)} comparison of those objects returned by the key selector function.
+     * </p>
+     * <p>
+     * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} to
+     * provide meaningful comparison between the key objects as the default Java implementation only
+     * considers reference equivalence. Alternatively, use the {@link #diff(BiPredicate)} overload and
+     * provide a comparison function in case the class {@code K} can't be overridden with custom
+     * {@code equals()} or the comparison itself should happen on different terms or properties of the
+     * item class {@code V} (for which the keys can be derived via a similar selector).
+     * </p>
+     *
+     * @param <K> the key type
+     * @param keySelector A function that projects an emitted item to a key value that is used to decide
+     *            whether an item is distinct from another one or not.
+     * @return {@link Signal} that emits those items from the source {@link Signal} whose keys are
+     *         distinct from those of their immediate predecessors.
+     * @see #diff()
+     * @see #diff(BiPredicate)
+     */
+    public final <K> Signal<V> diff(Function<V, K> keySelector) {
+        // ignore invalid parameter
+        if (keySelector == null) {
+            return this;
+        }
+        return diff((prev, now) -> Objects.equals(keySelector.apply(prev), keySelector.apply(now)));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits all items emitted by the source {@link Signal} that are
+     * distinct from their immediate predecessors when compared with each other via the provided
+     * comparator function.
+     * </p>
+     *
+     * @param comparer The function that receives the previous item and the current item and is expected
+     *            to return true if the two are equal, thus skipping the current value.
+     * @return {@link Signal} that emits those items from the source {@link Signal} that are distinct
+     *         from their immediate predecessors.
+     * @see #diff()
+     * @see #diff(Function)
+     */
+    public final Signal<V> diff(BiPredicate<V, V> comparer) {
+        // ignore invalid parameter
+        if (comparer == null) {
+            return this;
+        }
+
+        return skip((V) null, (prev, now) -> {
+            if (prev == null) {
+                return now == null;
+            } else if (now == null) {
+                return false;
+            } else {
+                return comparer.test(prev, now);
+            }
+        });
     }
 
     /**

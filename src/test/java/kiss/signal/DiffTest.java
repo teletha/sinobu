@@ -9,10 +9,13 @@
  */
 package kiss.signal;
 
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/02/28 19:25:20
+ * @version 2018/07/21 20:22:57
  */
 class DiffTest extends SignalTester {
 
@@ -36,5 +39,57 @@ class DiffTest extends SignalTester {
         assert main.emit((String) null).value((String) null);
         assert main.emit((String) null).value();
         assert main.emit("A").value("A");
+    }
+
+    @Test
+    void keySelector() {
+        monitor(String.class, signal -> signal.diff(String::length));
+
+        assert main.emit("A").value("A");
+        assert main.emit("B").value();
+        assert main.emit("C").value();
+        assert main.emit("AA").value("AA");
+        assert main.emit("BB").value();
+        assert main.emit((String) null).value((String) null);
+        assert main.emit((String) null).value();
+    }
+
+    @Test
+    void keySelectorNull() {
+        monitor(String.class, signal -> signal.diff((Function) null));
+
+        assert main.emit("A").value("A");
+        assert main.emit("B").value("B");
+        assert main.emit("C").value("C");
+        assert main.emit("AA").value("AA");
+        assert main.emit("BB").value("BB");
+        assert main.emit((String) null).value((String) null);
+        assert main.emit((String) null).value((String) null);
+    }
+
+    @Test
+    void comparetor() {
+        monitor(String.class, signal -> signal.diff((previous, now) -> previous.length() == now.length()));
+
+        assert main.emit("A").value("A");
+        assert main.emit("B").value();
+        assert main.emit("C").value();
+        assert main.emit("AA").value("AA");
+        assert main.emit("BB").value();
+        assert main.emit((String) null).value((String) null);
+        assert main.emit((String) null).value();
+    }
+
+    @Test
+    void comparetorNull() {
+        monitor(String.class, signal -> signal.diff((BiPredicate) null));
+
+        assert main.emit("A").value("A");
+        assert main.emit("B").value("B");
+        assert main.emit("C").value("C");
+        assert main.emit("AA").value("AA");
+        assert main.emit("BB").value("BB");
+        assert main.emit((String) null).value((String) null);
+        assert main.emit((String) null).value((String) null);
     }
 }
