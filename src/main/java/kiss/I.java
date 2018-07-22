@@ -2023,29 +2023,6 @@ public class I {
      * @param count A number of sequential longs to generate.
      * @return A {@link Signal} that emits a range of sequential longs
      */
-    public static Signal<Integer> signalRange(int start, int count) {
-        return signalRange(start, count, 1);
-    }
-
-    /**
-     * Signal a sequence of logns within a specified range.
-     * 
-     * @param start A value of the first long in the sequence.
-     * @param count A number of sequential longs to generate.
-     * @param step A step value for each sequential longs to generate.
-     * @return A {@link Signal} that emits a range of sequential longs
-     */
-    public static Signal<Integer> signalRange(int start, int count, int step) {
-        return signal(start, v -> v + step).take(count);
-    }
-
-    /**
-     * Signal a sequence of logns within a specified range.
-     * 
-     * @param start A value of the first long in the sequence.
-     * @param count A number of sequential longs to generate.
-     * @return A {@link Signal} that emits a range of sequential longs
-     */
     public static Signal<Long> signalRange(long start, long count) {
         return signalRange(start, count, 1L);
     }
