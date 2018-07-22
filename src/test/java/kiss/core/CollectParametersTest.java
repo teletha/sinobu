@@ -35,7 +35,7 @@ public class CollectParametersTest {
 
     static {
         // dirty code to load I class at first
-        assert I.NoOP != null;
+        assert I.class != null;
     }
 
     @Test

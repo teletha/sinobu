@@ -50,7 +50,7 @@ public class ModelTest {
 
     static {
         // dirty code to load I class at first
-        assert I.NoOP != null;
+        assert I.class != null;
     }
 
     /**

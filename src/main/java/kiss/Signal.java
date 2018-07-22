@@ -1222,9 +1222,6 @@ public final class Signal<V> {
      * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effectOnce(Runnable effect) {
-        if (effect == null) {
-            return this;
-        }
         return effectOnce(I.wise(effect).asConsumer());
     }
 
@@ -1243,20 +1240,15 @@ public final class Signal<V> {
      * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effectOnce(Consumer<? super V> effect) {
-        // ignore invalid parameter
-        if (effect == null) {
-            return this;
-        }
-
         return new Signal<>((observer, disposer) -> {
-            AtomicBoolean once = new AtomicBoolean();
-
-            return to(v -> {
-                if (once.compareAndSet(false, true)) {
-                    effect.accept(v);
-                }
+            Subscriber<V> subscriber = new Subscriber();
+            subscriber.observer = observer;
+            subscriber.next = v -> {
+                if (effect != null) effect.accept(v);
                 observer.accept(v);
-            }, observer::error, observer::complete, disposer);
+                subscriber.next = null;
+            };
+            return to(subscriber, disposer);
         });
     }
 
@@ -1385,11 +1377,7 @@ public final class Signal<V> {
      * @see #effectOnObserve(Consumer)
      */
     public final Signal<V> effectOnObserve(Runnable effect) {
-        // ignore invalid parameter
-        if (effect == null) {
-            return this;
-        }
-        return effectOnObserve(I.wise(effect).asConsumer());
+        return effectOnObserve(effect == null ? null : I.wise(effect).asConsumer());
     }
 
     /**

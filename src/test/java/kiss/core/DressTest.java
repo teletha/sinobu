@@ -26,12 +26,12 @@ import kiss.WiseRunnable;
 import kiss.WiseSupplier;
 
 /**
- * @version 2017/05/02 14:36:31
+ * @version 2018/07/22 20:06:49
  */
-public class DressTest {
+class DressTest {
 
     @Test
-    public void runnable() throws Exception {
+    void runnable() {
         Runnable lambda = () -> {
         };
         WiseRunnable dressed = I.wise(lambda);
@@ -41,10 +41,15 @@ public class DressTest {
         };
         dressed = I.wise(lambda);
         assert dressed == lambda;
+
+        lambda = null;
+        dressed = I.wise(lambda);
+        assert dressed != lambda;
+        dressed.run();
     }
 
     @Test
-    public void consumer() throws Exception {
+    void consumer() {
         Consumer lambda = v -> {
         };
         WiseConsumer dressed = I.wise(lambda);
@@ -57,7 +62,7 @@ public class DressTest {
     }
 
     @Test
-    public void biconsumer() throws Exception {
+    void biconsumer() {
         BiConsumer lambda = (p1, p2) -> {
         };
         WiseBiConsumer dressed = I.wise(lambda);
@@ -70,7 +75,7 @@ public class DressTest {
     }
 
     @Test
-    public void supplier() throws Exception {
+    void supplier() {
         Supplier lambda = () -> "";
         WiseSupplier dressed = I.wise(lambda);
         assert dressed != lambda;
@@ -81,7 +86,7 @@ public class DressTest {
     }
 
     @Test
-    public void function() throws Exception {
+    void function() {
         Function lambda = p -> "";
         WiseFunction dressed = I.wise(lambda);
         assert dressed != lambda;
@@ -92,7 +97,7 @@ public class DressTest {
     }
 
     @Test
-    public void bifunction() throws Exception {
+    void bifunction() {
         BiFunction lambda = (p1, p2) -> "";
         WiseBiFunction dressed = I.wise(lambda);
         assert dressed != lambda;
