@@ -1146,7 +1146,19 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> distinct() {
-        return take(HashSet::new, Set::add, true, false, false);
+        return distinct(Function.identity());
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} consisting of the distinct values (according to
+     * {@link Object#equals(Object)}) of this stream.
+     * </p>
+     *
+     * @return Chainable API.
+     */
+    public final <K> Signal<V> distinct(Function<V, K> keySelector) {
+        return take(HashSet::new, (set, v) -> set.add(v == null ? null : keySelector.apply(v)), true, false, false);
     }
 
     /**

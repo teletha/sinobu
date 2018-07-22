@@ -38,4 +38,11 @@ class DistinctTest extends SignalTester {
 
         assert main.emit("A", null, null, "C").value("A", null, "C");
     }
+
+    @Test
+    void keySelector() {
+        monitor(String.class, signal -> signal.distinct(v -> v.length()));
+
+        assert main.emit("A", "BB", "CCC", "CC", null, "BBBB", "AA", "ZZZZ", null).value("A", "BB", "CCC", null, "BBBB");
+    }
 }
