@@ -12,7 +12,7 @@ package kiss.signal;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/06/18 19:03:12
+ * @version 2018/07/23 16:39:43
  */
 class ReverseTest extends SignalTester {
 
@@ -24,5 +24,19 @@ class ReverseTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.emit(Complete).value("C", "B", "A");
         assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void acceptNull() {
+        monitor(signal -> signal.reverse());
+
+        assert main.emit("A", null, "C").value();
+        assert main.isNotCompleted();
+        assert main.emit(Complete).value("C", null, "A");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 }

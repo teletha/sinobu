@@ -90,6 +90,9 @@ class BufferTest extends SignalTester {
         assert main.emit("C", "D", "E").value();
         other.emit("OK");
         assert main.value("CDE");
+        assert main.emit("F", null, "G").value();
+        other.emit("OK");
+        assert main.value("FnullG");
     }
 
     @Test
