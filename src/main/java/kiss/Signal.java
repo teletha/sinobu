@@ -2469,6 +2469,8 @@ public final class Signal<V> {
         if (sampler == null) {
             return NEVER;
         }
+        // buffer(sampler, () -> (List<V>) I.list(UNDEFINED), (c, v) -> c.set(0,
+        // v)).flatIterable(Function.identity());
 
         return new Signal<>((observer, disposer) -> {
             AtomicReference<V> latest = new AtomicReference(UNDEFINED);
