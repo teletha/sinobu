@@ -564,8 +564,8 @@ public final class Signal<V> {
      * </p>
      * 
      * @param boundary A boundary {@link Signal}.
-     * @param supplier A factory function that returns an instance of the collection subclass to
-     *            be used and returned as the buffer.
+     * @param supplier A factory function that returns an instance of the collection subclass to be used
+     *            and returned as the buffer.
      * @return Chainable API.
      */
     public final <B extends Collection<V>> Signal<B> buffer(Signal<?> boundary, Supplier<B> supplier) {
@@ -579,8 +579,8 @@ public final class Signal<V> {
      * </p>
      * 
      * @param boundary A boundary {@link Signal}.
-     * @param supplier A factory function that returns an instance of the collection subclass to
-     *            be used and returned as the buffer.
+     * @param supplier A factory function that returns an instance of the collection subclass to be used
+     *            and returned as the buffer.
      * @param assigner A operation function that assigns a value to the buffer.
      * @return Chainable API.
      */
@@ -1858,15 +1858,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> last(V defaultValue) {
-        return new Signal<>((observer, disposer) -> {
-            AtomicReference<V> latest = new AtomicReference(defaultValue);
-
-            return to(latest::set, observer::error, () -> {
-                V value = latest.get();
-                if (value != null) observer.accept(latest.get());
-                observer.complete();
-            }, disposer);
-        });
+        return buffer(NEVER, () -> new AtomicReference<V>(defaultValue), AtomicReference::set).map(AtomicReference::get).skipNull();
     }
 
     /**
