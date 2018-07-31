@@ -13,8 +13,12 @@ import java.util.Enumeration;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Disposable;
+import kiss.I;
+import kiss.Signal;
+
 /**
- * @version 2018/06/26 18:32:38
+ * @version 2018/07/31 18:25:12
  */
 class StartWithTest extends SignalTester {
 
@@ -126,6 +130,18 @@ class StartWithTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
+    }
+
+    @Test
+    void signalChildCompleteWillNotAffectMain() {
+        Disposable disposable = Signal.NEVER.startWith(Signal.EMPTY).to(I.NoOP);
+        assert disposable.isNotDisposed();
+    }
+
+    @Test
+    void signalChildErrorWillAffectMain() {
+        Disposable disposable = Signal.NEVER.startWith(I.signalError(new Error())).to(I.NoOP);
+        assert disposable.isDisposed();
     }
 
     @Test

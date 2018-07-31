@@ -1899,7 +1899,7 @@ public class I {
      * @param values A list of values to emit.
      * @return The {@link Signal} to emit sequencial values.
      */
-    public static <V> Signal<V> signal(Variable<V> value) {
+    public static <V> Signal<V> signal(Supplier<V> value) {
         return Signal.EMPTY.startWith(value);
     }
 

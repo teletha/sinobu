@@ -2974,19 +2974,6 @@ public final class Signal<V> {
      * {@link Signal}.
      * </p>
      *
-     * @param value The initial values.
-     * @return Chainable API.
-     */
-    public final Signal<V> startWith(Variable<V> value) {
-        return startWith(value.v).skipNull();
-    }
-
-    /**
-     * <p>
-     * Emit a specified sequence of items before beginning to emit the items from the source
-     * {@link Signal}.
-     * </p>
-     *
      * @param value The initial value.
      * @return Chainable API.
      */
@@ -3113,6 +3100,19 @@ public final class Signal<V> {
      * {@link Signal}.
      * </p>
      *
+     * @param value The initial values.
+     * @return Chainable API.
+     */
+    public final Signal<V> startWith(Supplier<V> value) {
+        return startWith(value.get()).skipNull();
+    }
+
+    /**
+     * <p>
+     * Emit a specified sequence of items before beginning to emit the items from the source
+     * {@link Signal}.
+     * </p>
+     *
      * @param values The initial values.
      * @return Chainable API.
      */
@@ -3123,7 +3123,8 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return values.to(observer::accept, observer::error, () -> to(observer, disposer), disposer.sub(), true);
+            values.to(observer::accept, observer::error, () -> to(observer, disposer), disposer.sub(), true);
+            return disposer;
         });
     }
 
