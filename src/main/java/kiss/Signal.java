@@ -49,7 +49,7 @@ import java.util.stream.BaseStream;
 import java.util.stream.Collector;
 
 /**
- * @version 2018/07/21 20:07:56
+ * @version 2018/08/01 13:38:16
  */
 public final class Signal<V> {
 
@@ -2966,7 +2966,7 @@ public final class Signal<V> {
      * @param value The initial values.
      * @return Chainable API.
      */
-    public final Signal<V> startWith(Supplier<V> value) {
+    public final Signal<V> startWith(WiseSupplier<V> value) {
         return startWith(value.get()).skipNull();
     }
 
