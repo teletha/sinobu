@@ -9,11 +9,10 @@
  */
 package kiss.signal;
 
-import java.util.function.Function;
-
 import org.junit.jupiter.api.Test;
 
 import kiss.Signal;
+import kiss.WiseFunction;
 
 /**
  * @version 2018/03/11 2:53:01
@@ -49,7 +48,7 @@ class ErrorResumeTest extends SignalTester {
 
     @Test
     void resumeNullFunction() {
-        monitor(() -> signal(1, 2).map(errorFunction()).errorResume((Function) null));
+        monitor(() -> signal(1, 2).map(errorFunction()).errorResume((WiseFunction) null));
 
         assert main.value();
         assert main.isError();

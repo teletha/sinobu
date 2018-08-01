@@ -10,9 +10,10 @@
 package kiss.signal;
 
 import java.util.function.BiPredicate;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
+
+import kiss.WiseFunction;
 
 /**
  * @version 2018/07/21 20:22:57
@@ -56,7 +57,7 @@ class DiffTest extends SignalTester {
 
     @Test
     void keySelectorNull() {
-        monitor(String.class, signal -> signal.diff((Function) null));
+        monitor(String.class, signal -> signal.diff((WiseFunction) null));
 
         assert main.emit("A").value("A");
         assert main.emit("B").value("B");

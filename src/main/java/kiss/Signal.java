@@ -881,7 +881,7 @@ public final class Signal<V> {
      *            will be eagerly concatenated.
      * @return Chainable API.
      */
-    public final <R> Signal<R> concatMap(Function<V, Signal<R>> function) {
+    public final <R> Signal<R> concatMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -1125,7 +1125,7 @@ public final class Signal<V> {
      * @see #diff()
      * @see #diff(BiPredicate)
      */
-    public final <K> Signal<V> diff(Function<V, K> keySelector) {
+    public final <K> Signal<V> diff(WiseFunction<V, K> keySelector) {
         // ignore invalid parameter
         if (keySelector == null) {
             return this;
@@ -1173,7 +1173,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> distinct() {
-        return distinct(Function.identity());
+        return distinct(I.wise(Function.identity()));
     }
 
     /**
@@ -1184,7 +1184,7 @@ public final class Signal<V> {
      *
      * @return Chainable API.
      */
-    public final <K> Signal<V> distinct(Function<V, K> keySelector) {
+    public final <K> Signal<V> distinct(WiseFunction<V, K> keySelector) {
         return take(HashSet::new, (set, v) -> set.add(v == null ? null : keySelector.apply(v)), true, false, false);
     }
 
@@ -1485,7 +1485,7 @@ public final class Signal<V> {
      * @param resumer
      * @return Chainable API.
      */
-    public final Signal<V> errorResume(Function<? super Throwable, Signal<? extends V>> resumer) {
+    public final Signal<V> errorResume(WiseFunction<? super Throwable, Signal<? extends V>> resumer) {
         if (resumer == null) {
             return this;
         }
@@ -2003,7 +2003,7 @@ public final class Signal<V> {
      *            error, aborting the retry.
      * @return Chainable API
      */
-    public final Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notifier) {
+    public final Signal<V> repeatWhen(WiseFunction<Signal<? extends Object>, Signal<?>> notifier) {
         return repeatWhen(notifier, false);
     }
 
@@ -2110,7 +2110,7 @@ public final class Signal<V> {
      * @param notifier An error notifier to define recovering flow.
      * @return Chainable API
      */
-    public final Signal<V> recoverWhen(Function<Signal<? extends Throwable>, Signal<V>> notifier) {
+    public final Signal<V> recoverWhen(WiseFunction<Signal<? extends Throwable>, Signal<V>> notifier) {
         return recoverWhen(null, notifier);
     }
 
@@ -2130,7 +2130,7 @@ public final class Signal<V> {
      * @param notifier An error notifier to define recovering flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> recoverWhen(Class<E> type, Function<Signal<? extends E>, Signal<V>> notifier) {
+    public final <E extends Throwable> Signal<V> recoverWhen(Class<E> type, WiseFunction<Signal<? extends E>, Signal<V>> notifier) {
         // ignore invalid parameter
         if (notifier == null) {
             return this;
@@ -2257,7 +2257,7 @@ public final class Signal<V> {
      * @param notifier An error notifier to define retrying flow.
      * @return Chainable API
      */
-    public final Signal<V> retryWhen(Function<Signal<? extends Throwable>, Signal<?>> notifier) {
+    public final Signal<V> retryWhen(WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
         return retryWhen(null, notifier);
     }
 
@@ -2277,7 +2277,7 @@ public final class Signal<V> {
      * @param flow An error notifier to define retrying flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, Function<Signal<? extends E>, Signal<?>> flow) {
+    public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, WiseFunction<Signal<? extends E>, Signal<?>> flow) {
         return new Signal<>((observer, disposer) -> {
             // recorder for the processing error
             Throwable[] processing = new Throwable[1];
@@ -2395,7 +2395,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits initial value followed by the results of each call to the
      *         accumulator function.
      */
-    public final <R> Signal<R> scan(Function<V, R> first, BiFunction<R, V, R> others) {
+    public final <R> Signal<R> scan(WiseFunction<V, R> first, WiseBiFunction<R, V, R> others) {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<R> ref = new AtomicReference(UNDEFINED);
 
@@ -2421,30 +2421,10 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits initial value followed by the results of each call to the
      *         accumulator function.
      */
-    public final <R> Signal<R> scanWith(R init, BiFunction<R, V, R> function) {
+    public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
         return scan(Collector.of(() -> new AtomicReference<R>(init), (ref, value) -> {
             ref.set(function.apply(ref.get(), value));
         }, (a, b) -> a, AtomicReference<R>::get));
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted by a
-     * source {@link Signal} and a seed value, then feeds the result of that function along with the
-     * second item emitted by the source {@link Signal} into the same function, and so on until all
-     * items have been emitted by the source {@link Signal}, emitting the result of each of these
-     * iterations.
-     * </p>
-     *
-     * @param init An initial (seed) accumulator item.
-     * @param function An accumulator function to be invoked on each item emitted by the source
-     *            {@link Signal}, whose result will be emitted to {@link Signal} via
-     *            {@link Observer#accept(Object)} and used in the next accumulator call.
-     * @return An {@link Signal} that emits initial value followed by the results of each call to the
-     *         accumulator function.
-     */
-    public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
-        return scanWith(init, I.quiet(function));
     }
 
     /**
@@ -3038,7 +3018,7 @@ public final class Signal<V> {
      *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
      *         obtained from this transformation.
      */
-    public final <R> Signal<R> switchMap(Function<V, Signal<R>> function) {
+    public final <R> Signal<R> switchMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
