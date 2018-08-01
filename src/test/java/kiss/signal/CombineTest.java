@@ -9,11 +9,10 @@
  */
 package kiss.signal;
 
-import java.util.function.Function;
-
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.WiseFunction;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
@@ -22,9 +21,9 @@ import kiss.Ⅲ;
  */
 class CombineTest extends SignalTester {
 
-    private final Function<Ⅱ<String, String>, String> composer2 = v -> v.ⅰ + v.ⅱ;
+    private final WiseFunction<Ⅱ<String, String>, String> composer2 = v -> v.ⅰ + v.ⅱ;
 
-    private final Function<Ⅲ<String, Integer, String>, String> composer3 = v -> v.ⅰ + v.ⅱ + v.ⅲ;
+    private final WiseFunction<Ⅲ<String, Integer, String>, String> composer3 = v -> v.ⅰ + v.ⅱ + v.ⅲ;
 
     @Test
     void combine() {
@@ -144,11 +143,11 @@ class CombineTest extends SignalTester {
     @Test
     void completeByMainWithoutRemaining() {
         monitor(signal -> signal.combine(other.signal()));
-    
+
         main.emit("MAIN");
         other.emit("OTHER");
         assert main.value(I.pair("MAIN", "OTHER"));
-    
+
         assert main.emit(Complete, "Main is completed so this value will be ignored.").value();
         assert other.emit("Other is also disposed").value();
         assert main.isCompleted();
@@ -162,11 +161,11 @@ class CombineTest extends SignalTester {
     @Test
     void completeByOtherWithoutRemaining() {
         monitor(signal -> signal.combine(other.signal()));
-    
+
         main.emit("MAIN");
         other.emit("OTHER");
         assert main.value(I.pair("MAIN", "OTHER"));
-    
+
         assert other.emit(Complete, "Other is completed so this value will be ignored.").value();
         assert main.emit("Main is also disposed").value();
         assert main.isCompleted();

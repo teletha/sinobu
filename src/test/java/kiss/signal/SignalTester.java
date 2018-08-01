@@ -25,7 +25,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 
@@ -34,10 +33,11 @@ import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
 import kiss.Signal;
+import kiss.WiseBiFunction;
 import kiss.WiseFunction;
 
 /**
- * @version 2018/07/20 10:48:03
+ * @version 2018/08/01 11:56:22
  */
 public class SignalTester {
 
@@ -87,7 +87,7 @@ public class SignalTester {
      * 
      * @return
      */
-    protected final <P, R> Function<P, R> errorFunction() {
+    protected final <P, R> WiseFunction<P, R> errorFunction() {
         return e -> {
             throw new Error();
         };
@@ -98,7 +98,7 @@ public class SignalTester {
      * 
      * @return
      */
-    protected final <P> UnaryOperator<P> errorUnaryOperator() {
+    protected final <P> WiseFunction<P, P> errorUnaryOperator() {
         return e -> {
             throw new Error();
         };
@@ -109,7 +109,7 @@ public class SignalTester {
      * 
      * @return
      */
-    protected final <P, R> Function<P, R> runtimeExceptionFunction() {
+    protected final <P, R> WiseFunction<P, R> runtimeExceptionFunction() {
         return e -> {
             throw new RuntimeException();
         };
@@ -120,7 +120,7 @@ public class SignalTester {
      * 
      * @return
      */
-    protected final <P, R> Function<P, R> exceptionFunction() {
+    protected final <P, R> WiseFunction<P, R> exceptionFunction() {
         return (WiseFunction<P, R>) e -> {
             throw new Exception();
         };
@@ -131,7 +131,7 @@ public class SignalTester {
      * 
      * @return
      */
-    protected final <P1, P2, R> BiFunction<P1, P2, R> errorBiFunction() {
+    protected final <P1, P2, R> WiseBiFunction<P1, P2, R> errorBiFunction() {
         return (p1, p2) -> {
             throw new Error();
         };

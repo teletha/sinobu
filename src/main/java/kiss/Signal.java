@@ -1871,12 +1871,28 @@ public final class Signal<V> {
      *            <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <R> Signal<R> map(Function<? super V, R> converter) {
-        // ignore invalid parameters
-        if (converter == null) {
-            return (Signal<R>) this;
-        }
+    public final <R> Signal<R> map(WiseFunction<? super V, R> converter) {
+        Objects.requireNonNull(converter);
+
         return map((Supplier) null, (context, value) -> converter.apply(value));
+    }
+
+    /**
+     * {@link #map(Function)} with context.
+     * 
+     * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
+     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
+     *            <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final <C, R> Signal<R> map(Supplier<C> contextSupplier, WiseBiFunction<C, ? super V, R> converter) {
+        Objects.requireNonNull(converter);
+
+        return new Signal<>((observer, disposer) -> {
+            C context = contextSupplier == null ? null : contextSupplier.get();
+
+            return to(value -> observer.accept(converter.apply(context, value)), observer::error, observer::complete, disposer);
+        });
     }
 
     /**
@@ -1889,8 +1905,10 @@ public final class Signal<V> {
      *            <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <R> Signal<R> map(WiseFunction<? super V, R> converter) {
-        return map(I.quiet(converter));
+    public final <R> Signal<R> maps(WiseBiFunction<? super V, ? super V, R> converter) {
+        Objects.requireNonNull(converter);
+
+        return buffer(2, 1).map(values -> converter.apply(values.get(0), values.get(1)));
     }
 
     /**
@@ -1901,57 +1919,10 @@ public final class Signal<V> {
      *            <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <R> Signal<R> map(V init, BiFunction<? super V, ? super V, R> converter) {
-        // ignore invalid parameters
-        if (converter == null) {
-            return (Signal<R>) this;
-        }
-        return map(() -> new AtomicReference<>(init), (context, value) -> converter.apply(context.getAndSet(value), value));
-    }
+    public final <R> Signal<R> maps(V init, WiseBiFunction<? super V, ? super V, R> converter) {
+        Objects.requireNonNull(converter);
 
-    /**
-     * {@link #map(Function)} with previuos value.
-     *
-     * @param init A initial previous value.
-     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
-     * @return Chainable API.
-     */
-    public final <R> Signal<R> map(V init, WiseBiFunction<? super V, ? super V, R> converter) {
-        return map(init, I.quiet(converter));
-    }
-
-    /**
-     * {@link #map(Function)} with context.
-     * 
-     * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
-     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
-     * @return Chainable API.
-     */
-    public final <C, R> Signal<R> map(Supplier<C> contextSupplier, BiFunction<C, ? super V, R> converter) {
-        // ignore invalid parameters
-        if (converter == null) {
-            return (Signal<R>) this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            C context = contextSupplier == null ? null : contextSupplier.get();
-
-            return to(value -> observer.accept(converter.apply(context, value)), observer::error, observer::complete, disposer);
-        });
-    }
-
-    /**
-     * {@link #map(Function)} with context.
-     * 
-     * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
-     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
-     * @return Chainable API.
-     */
-    public final <C, R> Signal<R> map(Supplier<C> contextSupplier, WiseBiFunction<C, ? super V, R> converter) {
-        return map(contextSupplier, I.quiet(converter));
+        return startWith(init).maps(converter);
     }
 
     /**

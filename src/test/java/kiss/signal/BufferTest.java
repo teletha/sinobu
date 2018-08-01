@@ -12,17 +12,18 @@ package kiss.signal;
 import static java.util.concurrent.TimeUnit.*;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+
+import kiss.WiseFunction;
 
 /**
  * @version 2018/07/20 8:38:39
  */
 class BufferTest extends SignalTester {
 
-    private final Function<List<String>, String> composer = v -> v.stream().collect(Collectors.joining());
+    private final WiseFunction<List<String>, String> composer = v -> v.stream().collect(Collectors.joining());
 
     @Test
     void size() {

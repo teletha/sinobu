@@ -9,11 +9,10 @@
  */
 package kiss.signal;
 
-import java.util.function.Function;
-
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.WiseFunction;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
@@ -22,9 +21,9 @@ import kiss.Ⅲ;
  */
 class CombineLatestTest extends SignalTester {
 
-    private final Function<Ⅱ<String, String>, String> composer2 = v -> v.ⅰ + v.ⅱ;
+    private final WiseFunction<Ⅱ<String, String>, String> composer2 = v -> v.ⅰ + v.ⅱ;
 
-    private final Function<Ⅲ<String, Integer, String>, String> composer3 = v -> v.ⅰ + v.ⅱ + v.ⅲ;
+    private final WiseFunction<Ⅲ<String, Integer, String>, String> composer3 = v -> v.ⅰ + v.ⅱ + v.ⅲ;
 
     @Test
     void combineLatest() {
