@@ -34,6 +34,7 @@ import kiss.I;
 import kiss.Observer;
 import kiss.Signal;
 import kiss.WiseBiFunction;
+import kiss.WiseConsumer;
 import kiss.WiseFunction;
 
 /**
@@ -214,7 +215,7 @@ public class SignalTester {
      * @param key A log key.
      * @return Loggin {@link Consumer} interface.
      */
-    protected final <T> Consumer<T> log(String key) {
+    protected final <T> WiseConsumer<T> log(String key) {
         return e -> {
             logs.computeIfAbsent(key, k -> new ArrayList()).add(e);
         };
@@ -451,7 +452,7 @@ public class SignalTester {
     /**
      * @version 2017/04/04 12:59:48
      */
-    protected static interface Log<T> extends Observer<T> {
+    protected static interface Log<T> extends Observer<T>, WiseConsumer<T> {
         /**
          * <p>
          * Cehck this subscription is completed or not.
@@ -520,7 +521,7 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
-        public void accept(Object value) {
+        public void ACCEPT(Object value) {
             values.add(value);
         }
 
@@ -614,7 +615,7 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
-        public void accept(Object t) {
+        public void ACCEPT(Object t) {
             log.accept(t);
         }
 

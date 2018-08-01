@@ -119,7 +119,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next) {
-        return to(v -> next.run(), null, null);
+        return to(I.wise(next).asConsumer(), null, null);
     }
 
     /**
@@ -170,8 +170,8 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(WiseRunnable next, Consumer<Throwable> error, Runnable complete) {
-        return to(next.asConsumer(), error, complete);
+    public final Disposable to(Runnable next, Consumer<Throwable> error, Runnable complete) {
+        return to(I.wise(next).asConsumer(), error, complete);
     }
 
     /**
@@ -1202,11 +1202,12 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effect(Runnable effect) {
+    public final Signal<V> effect(WiseRunnable effect) {
+        // ignore invalid parameter
         if (effect == null) {
             return this;
         }
-        return effect(I.wise(effect).asConsumer());
+        return effect(effect.asConsumer());
     }
 
     /**
@@ -1223,7 +1224,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effect(Consumer<? super V> effect) {
+    public final Signal<V> effect(WiseConsumer<? super V> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1248,8 +1249,12 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effectOnce(Runnable effect) {
-        return effectOnce(I.wise(effect).asConsumer());
+    public final Signal<V> effectOnce(WiseRunnable effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+        return effectOnce(effect.asConsumer());
     }
 
     /**
@@ -1266,12 +1271,17 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effectOnce(Consumer<? super V> effect) {
+    public final Signal<V> effectOnce(WiseConsumer<? super V> effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+
         return new Signal<>((observer, disposer) -> {
             Subscriber<V> subscriber = new Subscriber();
             subscriber.observer = observer;
             subscriber.next = v -> {
-                if (effect != null) effect.accept(v);
+                effect.accept(v);
                 observer.accept(v);
                 subscriber.next = null;
             };
@@ -1293,7 +1303,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effectOnComplete(Runnable effect) {
+    public final Signal<V> effectOnComplete(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1318,7 +1328,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effectOnComplete(Consumer<V> effect) {
+    public final Signal<V> effectOnComplete(WiseConsumer<V> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1351,7 +1361,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effectOnDispose(Runnable effect) {
+    public final Signal<V> effectOnDispose(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1376,7 +1386,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effectOnError(Consumer<Throwable> effect) {
+    public final Signal<V> effectOnError(WiseConsumer<Throwable> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1403,8 +1413,8 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effectOnObserve(Runnable effect) {
-        return effectOnObserve(effect == null ? null : I.wise(effect).asConsumer());
+    public final Signal<V> effectOnObserve(WiseRunnable effect) {
+        return effectOnObserve(effect == null ? null : effect.asConsumer());
     }
 
     /**
@@ -1423,7 +1433,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(Runnable)
      * @see #effectOnObserve(Consumer)
      */
-    public final Signal<V> effectOnObserve(Consumer<? super Disposable> effect) {
+    public final Signal<V> effectOnObserve(WiseConsumer<? super Disposable> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;

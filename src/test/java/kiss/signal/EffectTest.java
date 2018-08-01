@@ -11,12 +11,13 @@ package kiss.signal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.Signal;
+import kiss.WiseConsumer;
+import kiss.WiseRunnable;
 
 /**
  * @version 2018/03/21 22:56:42
@@ -116,7 +117,7 @@ class EffectTest extends SignalTester {
     @Test
     void effectOnObserveByNullRunnable() {
         Signal<String> signal = I.signal("1");
-        assert signal == signal.effectOnObserve((Runnable) null);
+        assert signal == signal.effectOnObserve((WiseRunnable) null);
     }
 
     @Test
@@ -138,7 +139,7 @@ class EffectTest extends SignalTester {
     @Test
     void effectOnObserveByNullConsumer() {
         Signal<String> signal = I.signal("1");
-        assert signal == signal.effectOnObserve((Consumer) null);
+        assert signal == signal.effectOnObserve((WiseConsumer) null);
     }
 
     @Test
@@ -153,9 +154,9 @@ class EffectTest extends SignalTester {
     @Test
     void acceptNull() {
         Signal<Integer> from = I.signal(0);
-        assert from == from.effect((Runnable) null);
-        assert from == from.effect((Consumer) null);
-        assert from == from.effectOnComplete((Runnable) null);
+        assert from == from.effect((WiseRunnable) null);
+        assert from == from.effect((WiseConsumer) null);
+        assert from == from.effectOnComplete((WiseRunnable) null);
         assert from == from.effectOnError(null);
     }
 
@@ -181,7 +182,7 @@ class EffectTest extends SignalTester {
 
     @Test
     void effectOnceNullRunnable() {
-        monitor(1, signal -> signal.effectOnce((Runnable) null));
+        monitor(1, signal -> signal.effectOnce((WiseRunnable) null));
 
         assert main.emit(1).value(1);
         assert main.emit(2, 3).value(2, 3);
@@ -189,7 +190,7 @@ class EffectTest extends SignalTester {
 
     @Test
     void effectOnceNullConsumer() {
-        monitor(1, signal -> signal.effectOnce((Consumer) null));
+        monitor(1, signal -> signal.effectOnce((WiseConsumer) null));
 
         assert main.emit(1).value(1);
         assert main.emit(2, 3).value(2, 3);
