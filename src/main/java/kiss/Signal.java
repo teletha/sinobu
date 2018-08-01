@@ -1799,7 +1799,7 @@ public final class Signal<V> {
     public final <R> Signal<R> map(WiseFunction<? super V, R> converter) {
         Objects.requireNonNull(converter);
 
-        return map((Supplier) null, (context, value) -> converter.apply(value));
+        return map((WiseSupplier) null, (context, value) -> converter.apply(value));
     }
 
     /**
@@ -1810,7 +1810,7 @@ public final class Signal<V> {
      *            <code>null</code> will ignore this instruction.
      * @return Chainable API.
      */
-    public final <C, R> Signal<R> map(Supplier<C> contextSupplier, WiseBiFunction<C, ? super V, R> converter) {
+    public final <C, R> Signal<R> map(WiseSupplier<C> contextSupplier, WiseBiFunction<C, ? super V, R> converter) {
         Objects.requireNonNull(converter);
 
         return new Signal<>((observer, disposer) -> {
@@ -2842,19 +2842,6 @@ public final class Signal<V> {
      */
     public final Signal<V> skipWhile(Predicate<? super V> predicate) {
         return skipUntil(predicate.negate());
-    }
-
-    /**
-     * <p>
-     * Emit a specified sequence of items before beginning to emit the items from the source
-     * {@link Signal}.
-     * </p>
-     *
-     * @param value The initial value.
-     * @return Chainable API.
-     */
-    public final Signal<V> startWith(V value) {
-        return startWith(Arrays.asList(value));
     }
 
     /**
