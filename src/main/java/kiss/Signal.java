@@ -1527,41 +1527,7 @@ public final class Signal<V> {
      *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
      *         obtained from this transformation.
      */
-    public final <R> Signal<R> flatArray(Function<V, R[]> function) {
-        return flatMap(function.andThen(I::signal));
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
-     * </p>
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
-     */
     public final <R> Signal<R> flatArray(WiseFunction<V, R[]> function) {
-        return flatArray(I.quiet(function));
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
-     * </p>
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
-     */
-    public final <R> Signal<R> flatEnum(Function<V, ? extends Enumeration<R>> function) {
         return flatMap(function.andThen(I::signal));
     }
 
@@ -1579,23 +1545,6 @@ public final class Signal<V> {
      *         obtained from this transformation.
      */
     public final <R> Signal<R> flatEnum(WiseFunction<V, ? extends Enumeration<R>> function) {
-        return flatEnum(I.quiet(function));
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
-     * </p>
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
-     */
-    public final <R> Signal<R> flatIterable(Function<V, ? extends Iterable<R>> function) {
         return flatMap(function.andThen(I::signal));
     }
 
@@ -1613,7 +1562,7 @@ public final class Signal<V> {
      *         obtained from this transformation.
      */
     public final <R> Signal<R> flatIterable(WiseFunction<V, ? extends Iterable<R>> function) {
-        return flatIterable(I.quiet(function));
+        return flatMap(function.andThen(I::signal));
     }
 
     /**
@@ -1629,7 +1578,7 @@ public final class Signal<V> {
      *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
      *         obtained from this transformation.
      */
-    public final <R> Signal<R> flatMap(Function<V, Signal<R>> function) {
+    public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -1655,42 +1604,8 @@ public final class Signal<V> {
      *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
      *         obtained from this transformation.
      */
-    public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
-        return flatMap(I.quiet(function));
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
-     * </p>
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
-     */
-    public final <R> Signal<R> flatVariable(Function<V, Variable<R>> function) {
-        return flatMap(function.andThen(I::signal));
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to each
-     * item emitted by the source {@link Signal}, where that function returns an {@link Signal} , and
-     * then merging those resulting {@link Signal} and emitting the results of this merger.
-     * </p>
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal} ,
-     *            returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to each
-     *         item emitted by the source {@link Signal} and merging the results of the {@link Signal}
-     *         obtained from this transformation.
-     */
     public final <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
-        return flatVariable(I.quiet(function));
+        return flatMap(function.andThen(I::signal));
     }
 
     /**
@@ -2421,7 +2336,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> reverse() {
-        return buffer(NEVER, LinkedList<V>::new, Deque::addFirst).flatIterable(Function.identity());
+        return buffer(NEVER, LinkedList<V>::new, Deque::addFirst).flatIterable(I.wise(Function.identity()));
     }
 
     /**
