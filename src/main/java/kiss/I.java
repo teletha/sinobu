@@ -65,6 +65,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -414,8 +415,19 @@ public class I {
      * 
      * @return An acceptable {@link Predicate}.
      */
-    public static <V> Predicate<V> accept() {
-        return e -> true;
+    public static <P> Predicate<P> accept() {
+        return p -> true;
+    }
+
+    /**
+     * <p>
+     * Create {@link BiPredicate} which accepts any item.
+     * </p>
+     * 
+     * @return An acceptable {@link BiPredicate}.
+     */
+    public static <P, Q> BiPredicate<P, Q> accepţ() {
+        return (p, q) -> true;
     }
 
     /**
@@ -1599,8 +1611,19 @@ public class I {
      * 
      * @return An rejectable {@link Predicate}.
      */
-    public static <V> Predicate<V> reject() {
-        return e -> false;
+    public static <P> Predicate<P> reject() {
+        return p -> false;
+    }
+
+    /**
+     * <p>
+     * Create {@link BiPredicate} which rejects any item.
+     * </p>
+     * 
+     * @return An rejectable {@link BiPredicate}.
+     */
+    public static <P, Q> BiPredicate<P, Q> rejecţ() {
+        return (p, q) -> false;
     }
 
     /**
@@ -1951,7 +1974,7 @@ public class I {
      * @param iterator A function to navigate from a current to next.
      * @return {@link Signal} that emits values from initial to followings.
      */
-    public static <T> Signal<T> signal(T init, UnaryOperator<T> iterator) {
+    public static <T> Signal<T> signal(T init, WiseFunction<T, T> iterator) {
         return signal(true, init, e -> e.map(iterator));
     }
 
@@ -2111,7 +2134,7 @@ public class I {
      * @see #quiet(WiseConsumer)
      */
     public static <P> WiseConsumer<P> wise(Consumer<P> lambda) {
-        return lambda instanceof WiseConsumer ? (WiseConsumer) lambda : lambda::accept;
+        return lambda == null || lambda instanceof WiseConsumer ? (WiseConsumer) lambda : lambda::accept;
     }
 
     /**
@@ -2124,7 +2147,7 @@ public class I {
      * @see #quiet(WiseBiConsumer)
      */
     public static <P1, P2> WiseBiConsumer<P1, P2> wise(BiConsumer<P1, P2> lambda) {
-        return lambda instanceof WiseBiConsumer ? (WiseBiConsumer) lambda : lambda::accept;
+        return lambda == null || lambda instanceof WiseBiConsumer ? (WiseBiConsumer) lambda : lambda::accept;
     }
 
     /**
@@ -2137,7 +2160,7 @@ public class I {
      * @see #quiet(WiseSupplier)
      */
     public static <R> WiseSupplier<R> wise(Supplier<R> lambda) {
-        return lambda instanceof WiseSupplier ? (WiseSupplier) lambda : lambda::get;
+        return lambda == null || lambda instanceof WiseSupplier ? (WiseSupplier) lambda : lambda::get;
     }
 
     /**
@@ -2150,7 +2173,7 @@ public class I {
      * @see #quiet(WiseFunction)
      */
     public static <P, R> WiseFunction<P, R> wise(Function<P, R> lambda) {
-        return lambda instanceof WiseFunction ? (WiseFunction) lambda : lambda::apply;
+        return lambda == null || lambda instanceof WiseFunction ? (WiseFunction) lambda : lambda::apply;
     }
 
     /**
@@ -2163,7 +2186,7 @@ public class I {
      * @see #quiet(WiseBiFunction)
      */
     public static <P1, P2, R> WiseBiFunction<P1, P2, R> wise(BiFunction<P1, P2, R> lambda) {
-        return lambda instanceof WiseBiFunction ? (WiseBiFunction) lambda : lambda::apply;
+        return lambda == null || lambda instanceof WiseBiFunction ? (WiseBiFunction) lambda : lambda::apply;
     }
 
     /**
