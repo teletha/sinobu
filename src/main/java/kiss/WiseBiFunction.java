@@ -43,7 +43,7 @@ public interface WiseBiFunction<Param1, Param2, Return> extends BiFunction<Param
 
     /**
      * <p>
-     * Apply parameter partialy.
+     * Apply head parameter partialy.
      * </p>
      * 
      * @param function A target function to apply parameter.
@@ -52,5 +52,18 @@ public interface WiseBiFunction<Param1, Param2, Return> extends BiFunction<Param
      */
     default WiseFunction<Param2, Return> with(Param1 param1) {
         return param2 -> APPLY(param1, param2);
+    }
+
+    /**
+     * <p>
+     * Apply tail parameter partialy.
+     * </p>
+     * 
+     * @param function A target function to apply parameter.
+     * @param param1 A fixed parameter.
+     * @return A partial applied function.
+     */
+    default WiseFunction<Param1, Return> witħ(Param2 param2) {
+        return param1 -> APPLY(param1, param2);
     }
 }

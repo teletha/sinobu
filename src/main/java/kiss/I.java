@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -864,6 +865,65 @@ public class I {
     // }
     // return make(bundleClass);
     // }
+
+    /**
+     * Return the localized message from the specified resource bundle method reference.
+     *
+     * @param <B> A resource bundle.
+     * @param bundle A resource bundle method reference. <code>null</code> will throw
+     *            {@link NullPointerException}.
+     * @return A suitable message for the given bundle method reference and locale.
+     * @throws NullPointerException If the bundle class is <code>null</code>.
+     */
+    public static <B extends Extensible> String i18n(WiseFunction<B, String> bundle) {
+        return bundle.apply(i18n((Object) bundle));
+    }
+
+    /**
+     * Return the localized message from the specified resource bundle method reference.
+     *
+     * @param <B> A resource bundle.
+     * @param bundle A resource bundle method reference. <code>null</code> will throw
+     *            {@link NullPointerException}.
+     * @param param1 A message parameter.
+     * @return A suitable message for the given bundle method reference and locale.
+     * @throws NullPointerException If the bundle class is <code>null</code>.
+     */
+    public static <B extends Extensible, Param> String i18n(WiseBiFunction<B, Param, String> bundle, Param param) {
+        return bundle.apply(i18n(bundle), param);
+    }
+
+    /**
+     * Return the localized message from the specified resource bundle method reference.
+     *
+     * @param <B> A resource bundle.
+     * @param bundle A resource bundle method reference. <code>null</code> will throw
+     *            {@link NullPointerException}.
+     * @param param1 A message parameter.
+     * @param param2 A message parameter.
+     * @return A suitable message for the given bundle method reference and locale.
+     * @throws NullPointerException If the bundle class is <code>null</code>.
+     */
+    public static <B extends Extensible, Param1, Param2> String i18n(WiseTriFunction<B, Param1, Param2, String> bundle, Param1 param1, Param2 param2) {
+        return bundle.apply(i18n(bundle), param1, param2);
+    }
+
+    /**
+     * Internal method to instantiate the specified lambda.
+     * 
+     * @param lambda
+     * @return
+     */
+    private static <B extends Extensible> B i18n(Object lambda) {
+        try {
+            Method serializer = lambda.getClass().getDeclaredMethod("writeReplace");
+            serializer.setAccessible(true);
+
+            return i18n((Class<B>) Class.forName(((SerializedLambda) serializer.invoke(lambda)).getImplClass().replaceAll("/", ".")));
+        } catch (Throwable e) {
+            throw I.quiet(e);
+        }
+    }
 
     /**
      * <p>

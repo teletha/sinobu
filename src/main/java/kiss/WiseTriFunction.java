@@ -44,4 +44,30 @@ public interface WiseTriFunction<Param1, Param2, Param3, Return> extends Seriali
             throw I.quiet(e);
         }
     }
+
+    /**
+     * <p>
+     * Apply head parameter partialy.
+     * </p>
+     * 
+     * @param function A target function to apply parameter.
+     * @param param1 A fixed parameter.
+     * @return A partial applied function.
+     */
+    default WiseBiFunction<Param2, Param3, Return> with(Param1 param1) {
+        return (param2, param3) -> APPLY(param1, param2, param3);
+    }
+
+    /**
+     * <p>
+     * Apply tail parameter partialy.
+     * </p>
+     * 
+     * @param function A target function to apply parameter.
+     * @param param1 A fixed parameter.
+     * @return A partial applied function.
+     */
+    default WiseBiFunction<Param1, Param2, Return> witħ(Param3 param3) {
+        return (param1, param2) -> APPLY(param1, param2, param3);
+    }
 }
