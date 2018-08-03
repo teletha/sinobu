@@ -867,7 +867,8 @@ public class I {
     // }
 
     /**
-     * Return the localized message from the specified resource bundle method reference.
+     * The type-safe resource bundle. Return the localized message from the specified resource
+     * bundle method reference.
      *
      * @param <B> A resource bundle.
      * @param bundle A resource bundle method reference. <code>null</code> will throw
@@ -875,12 +876,13 @@ public class I {
      * @return A suitable message for the given bundle method reference and locale.
      * @throws NullPointerException If the bundle class is <code>null</code>.
      */
-    public static <B extends Extensible> String i18n(WiseFunction<B, String> bundle) {
+    public static <B extends Extensible, R> R i18n(WiseFunction<B, R> bundle) {
         return bundle.apply(i18n((Object) bundle));
     }
 
     /**
-     * Return the localized message from the specified resource bundle method reference.
+     * The type-safe resource bundle. Return the localized message from the specified resource
+     * bundle method reference.
      *
      * @param <B> A resource bundle.
      * @param bundle A resource bundle method reference. <code>null</code> will throw
@@ -889,12 +891,13 @@ public class I {
      * @return A suitable message for the given bundle method reference and locale.
      * @throws NullPointerException If the bundle class is <code>null</code>.
      */
-    public static <B extends Extensible, Param> String i18n(WiseBiFunction<B, Param, String> bundle, Param param) {
+    public static <B extends Extensible, Param, R> R i18n(WiseBiFunction<B, Param, R> bundle, Param param) {
         return bundle.apply(i18n(bundle), param);
     }
 
     /**
-     * Return the localized message from the specified resource bundle method reference.
+     * The type-safe resource bundle. Return the localized message from the specified resource
+     * bundle method reference.
      *
      * @param <B> A resource bundle.
      * @param bundle A resource bundle method reference. <code>null</code> will throw
@@ -904,7 +907,7 @@ public class I {
      * @return A suitable message for the given bundle method reference and locale.
      * @throws NullPointerException If the bundle class is <code>null</code>.
      */
-    public static <B extends Extensible, Param1, Param2> String i18n(WiseTriFunction<B, Param1, Param2, String> bundle, Param1 param1, Param2 param2) {
+    public static <B extends Extensible, Param1, Param2, R> R i18n(WiseTriFunction<B, Param1, Param2, R> bundle, Param1 param1, Param2 param2) {
         return bundle.apply(i18n(bundle), param1, param2);
     }
 
