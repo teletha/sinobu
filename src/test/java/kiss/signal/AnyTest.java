@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import antibug.ExpectThrow;
 
 /**
- * @version 2018/03/31 23:15:48
+ * @version 2018/08/06 20:27:16
  */
 class AnyTest extends SignalTester {
 
@@ -39,5 +39,14 @@ class AnyTest extends SignalTester {
     @ExpectThrow(NullPointerException.class)
     void acceptNull() {
         monitor(Integer.class, Boolean.class, signal -> signal.any(null));
+    }
+
+    @Test
+    void empty() {
+        monitor(Integer.class, Boolean.class, signal -> signal.any(v -> v % 2 == 0));
+
+        assert main.emit(Complete).value(false);
+        assert main.isCompleted();
+        assert main.isDisposed();
     }
 }
