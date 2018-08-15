@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import kiss.Decoder;
 import kiss.Encoder;
@@ -53,7 +55,7 @@ import kiss.WiseTriConsumer;
 public class Model<M> {
 
     /** The model repository. */
-    static final Map<Class, Model> models = new HashMap();
+    static final Map<Class, Model> models = new ConcurrentHashMap();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class<M> type;
@@ -66,6 +68,9 @@ public class Model<M> {
 
     /** The unmodifiable properties list of this object model. */
     private List<Property> properties = Collections.EMPTY_LIST;
+
+    /** The flag of initialization. */
+    private final AtomicBoolean initialized = new AtomicBoolean();
 
     /**
      * Create Model instance.
@@ -211,8 +216,8 @@ public class Model<M> {
     }
 
     /**
-     * Find the property which has the specified name in this object model. If the suitable property is
-     * not found, <code>null</code> is returned.
+     * Find the property which has the specified name in this object model. If the suitable property
+     * is not found, <code>null</code> is returned.
      * 
      * @param propertyName A name of property.
      * @return A suitable property or <code>null</code>.
@@ -297,8 +302,8 @@ public class Model<M> {
     }
 
     /**
-     * Iterate over all properties in the given object and propagate the property and it's value to the
-     * given {@link PropertyWalker}.
+     * Iterate over all properties in the given object and propagate the property and it's value to
+     * the given {@link PropertyWalker}.
      * 
      * @param object A object as source. This value must not be <code>null</code>,
      * @param walker A property iterator. This value accepts <code>null</code>.
@@ -319,8 +324,8 @@ public class Model<M> {
      * {@link IllegalArgumentException} will be thrown.
      * </p>
      * <p>
-     * If the given model has no cached information, it will be created automatically. This operation is
-     * thread-safe.
+     * If the given model has no cached information, it will be created automatically. This
+     * operation is thread-safe.
      * </p>
      * <p>
      * Note : All classes do not necessary have each information. Some classes might share same
@@ -342,8 +347,8 @@ public class Model<M> {
      * {@link IllegalArgumentException} will be thrown.
      * </p>
      * <p>
-     * If the given model has no cached information, it will be created automatically. This operation is
-     * thread-safe.
+     * If the given model has no cached information, it will be created automatically. This
+     * operation is thread-safe.
      * </p>
      * <p>
      * Note : All classes do not necessary have each information. Some classes might share same
@@ -355,20 +360,18 @@ public class Model<M> {
      * @throws NullPointerException If the given model class is null.
      * @throws IllegalArgumentException If the given model class is not found.
      */
-    public static synchronized <M> Model<M> of(Class<? super M> modelClass) {
+    public static <M> Model<M> of(Class<? super M> modelClass) {
         // check cache
-        Model model = models.get(modelClass);
+        Model model;
 
-        if (model == null) {
-            // create new model
-            if (List.class.isAssignableFrom(modelClass)) {
-                model = new ListModel(modelClass, Model.collectParameters(modelClass, List.class), List.class);
-            } else if (Map.class.isAssignableFrom(modelClass)) {
-                model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
-            } else {
-                model = new Model(modelClass);
-                model.init();
-            }
+        // create new model
+        if (List.class.isAssignableFrom(modelClass)) {
+            model = new ListModel(modelClass, Model.collectParameters(modelClass, List.class), List.class);
+        } else if (Map.class.isAssignableFrom(modelClass)) {
+            model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
+        } else {
+            model = models.computeIfAbsent(modelClass, Model::new);
+            if (model.initialized.compareAndSet(false, true)) model.init();
         }
 
         // API definition
@@ -542,9 +545,9 @@ public class Model<M> {
 
     /**
      * <p>
-     * > Collect all constructors which are defined in the specified {@link Class}. If the given class
-     * is interface, primitive types, array class or <code>void</code>, <code>empty array</code> will be
-     * return.
+     * > Collect all constructors which are defined in the specified {@link Class}. If the given
+     * class is interface, primitive types, array class or <code>void</code>,
+     * <code>empty array</code> will be return.
      * </p>
      * 
      * @param <T> A class type.
@@ -606,8 +609,8 @@ public class Model<M> {
      * 
      * @param type A class type which implements(extends) the specified target interface(class).
      *            <code>null</code> will be return the zero-length array.
-     * @param target A target type to list up types. <code>null</code> will be return the zero-length
-     *            array.
+     * @param target A target type to list up types. <code>null</code> will be return the
+     *            zero-length array.
      * @return A list of actual types.
      */
     public static Type[] collectParameters(Type type, GenericDeclaration target) {
@@ -621,8 +624,8 @@ public class Model<M> {
      * 
      * @param clazz A class type which implements(extends) the specified target interface(class).
      *            <code>null</code> will be return the zero-length array.
-     * @param target A target type to list up types. <code>null</code> will be return the zero-length
-     *            array.
+     * @param target A target type to list up types. <code>null</code> will be return the
+     *            zero-length array.
      * @param base A base class type.
      * @return A list of actual types.
      */
