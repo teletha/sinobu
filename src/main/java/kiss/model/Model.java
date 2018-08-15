@@ -86,11 +86,10 @@ public class Model<M> {
         this.attribute = I.find(Decoder.class, type) != null;
     }
 
-    void init() {
-        // To avoid StackOverFlowException caused by circular reference of Model, you must define
-        // this model in here.
-        models.put(type, this);
-
+    /**
+     * Initialize this {@link Model} only once.
+     */
+    private void init() {
         try {
             // examine all methods without private, final, static or native
             Map<String, Method[]> candidates = new HashMap();
