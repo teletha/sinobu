@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import kiss.Decoder;
 import kiss.Encoder;
@@ -55,7 +53,7 @@ import kiss.WiseTriConsumer;
 public class Model<M> {
 
     /** The model repository. */
-    static final Map<Class, Model> models = new ConcurrentHashMap();
+    static final Map<Class, Model> models = new HashMap();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class<M> type;
@@ -70,7 +68,7 @@ public class Model<M> {
     private List<Property> properties = Collections.EMPTY_LIST;
 
     /** The flag of initialization. */
-    private final AtomicBoolean initialized = new AtomicBoolean();
+    private boolean initialized;
 
     /**
      * Create Model instance.
@@ -369,8 +367,13 @@ public class Model<M> {
         } else if (Map.class.isAssignableFrom(modelClass)) {
             model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
         } else {
-            model = models.computeIfAbsent(modelClass, Model::new);
-            if (model.initialized.compareAndSet(false, true)) model.init();
+            synchronized (modelClass) {
+                model = models.computeIfAbsent(modelClass, Model::new);
+                if (model.initialized == false) {
+                    model.initialized = true;
+                    model.init();
+                }
+            }
         }
 
         // API definition
