@@ -104,16 +104,6 @@ class LogTest {
         }
 
         /**
-         * Matching.
-         * 
-         * @param expected
-         * @return
-         */
-        private boolean isNot(String expected) {
-            return !is(expected);
-        }
-
-        /**
          * {@inheritDoc}
          */
         @Override

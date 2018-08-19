@@ -509,6 +509,7 @@ public class SignalTester {
     /**
      * @version 2017/04/02 1:14:02
      */
+    @SuppressWarnings("serial")
     private static class Logger implements Log {
 
         private List values = new ArrayList();
@@ -607,6 +608,7 @@ public class SignalTester {
     /**
      * @version 2018/03/02 8:40:33
      */
+    @SuppressWarnings("serial")
     private static class LogDelegator implements Log {
 
         private Log log;
