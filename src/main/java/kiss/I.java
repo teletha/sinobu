@@ -211,7 +211,7 @@ public class I {
     };
 
     /** The parallel task manager. */
-    private static final ScheduledExecutorService parallel = Executors.newScheduledThreadPool(8, factory);
+    private static final ScheduledExecutorService parallel = Executors.newScheduledThreadPool(2, factory);
 
     /** The serial task manager. */
     private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(factory);
@@ -1955,20 +1955,6 @@ public class I {
             return CompletableFuture.completedFuture(null);
         }
         return (parallelExecution ? parallel : serial).schedule(task, delay, unit);
-
-    }
-
-    /**
-     * <p>
-     * Execute the specified task in background {@link Thread} with the specified delay.
-     * </p>
-     *
-     * @param task A task to execute.
-     * @param interval A initial delay time.
-     * @param unit A delay time unit.
-     */
-    public static Future<?> schedule(Runnable task, long interval, TimeUnit unit) {
-        return parallel.scheduleWithFixedDelay(task, 0, interval, unit);
     }
 
     /**
