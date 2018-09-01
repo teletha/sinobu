@@ -77,9 +77,6 @@ public class SignalTester {
     /** READ ONLY */
     protected final SignalSource another = new SignalSource();
 
-    /** READ ONLY : DON'T MODIFY in test case */
-    private final List<Await> awaits = new CopyOnWriteArrayList();
-
     /** The log manager. */
     private Map<String, List> logs;
 
@@ -182,19 +179,6 @@ public class SignalTester {
      */
     protected final <T> Signal<T> errorSignal() {
         return I.signalError(new Error());
-    }
-
-    protected final Signal completeAfter(int time, TimeUnit unit) {
-        Await await = new Await();
-        awaits.add(await);
-
-        return new Signal<>((observer, disposer) -> {
-            I.schedule(time, unit, false, () -> {
-                observer.complete();
-                await.completed = true;
-            });
-            return disposer;
-        });
     }
 
     protected final Log await() {
@@ -347,11 +331,6 @@ public class SignalTester {
             sets[i].disposer = base.map(v -> v).to(sets[i].result);
         }
 
-        // await all awaitable signal
-        for (Await awaiter : awaits) {
-            awaiter.await();
-        }
-
         log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
         log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
         main.result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
@@ -435,11 +414,6 @@ public class SignalTester {
             delegator2.log = sets[i].log2;
             logs = sets[i].logs;
             sets[i].disposer = base.to(sets[i].result);
-        }
-
-        // await all awaitable signal
-        for (Await awaiter : awaits) {
-            awaiter.await();
         }
 
         log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
@@ -708,33 +682,6 @@ public class SignalTester {
         Map<String, List> logs = new HashMap();
 
         Disposable disposer;
-    }
-
-    /**
-     * @version 2017/04/06 12:38:00
-     */
-    private class Await {
-
-        boolean completed;
-
-        /**
-         * Await completed event.
-         */
-        private void await() {
-            int count = 0;
-
-            while (completed == false) {
-                try {
-                    Thread.sleep(10);
-
-                    if (100 < count) {
-                        throw new IllegalThreadStateException("Test must execute within 1 sec.");
-                    }
-                } catch (InterruptedException e) {
-                    throw I.quiet(e);
-                }
-            }
-        }
     }
 
     /**
