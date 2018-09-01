@@ -329,7 +329,7 @@ class SignalCreationTest extends SignalTester {
     @Test
     void iterateSignalAsynchronusly() {
         monitor(() -> I.signal(false, 0, signal -> signal.map(x -> x + 1)).take(3));
-        await();
+        await(30);
         assert main.value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();

@@ -60,7 +60,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -209,9 +208,6 @@ public class I {
         thread.setDaemon(true);
         return thread;
     };
-
-    /** The parallel task manager. */
-    private static final ScheduledExecutorService parallel = Executors.newScheduledThreadPool(2, factory);
 
     /** The serial task manager. */
     private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(factory);
@@ -1935,7 +1931,7 @@ public class I {
      * @param task A task to execute.
      */
     public static Future<?> schedule(Runnable task) {
-        return parallel.submit(task);
+        return CompletableFuture.runAsync(task);
     }
 
     /**
@@ -1954,7 +1950,12 @@ public class I {
             task.run();
             return CompletableFuture.completedFuture(null);
         }
-        return (parallelExecution ? parallel : serial).schedule(task, delay, unit);
+
+        if (parallelExecution) {
+            return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, unit));
+        } else {
+            return serial.schedule(task, delay, unit);
+        }
     }
 
     /**
@@ -2083,10 +2084,10 @@ public class I {
      */
     public static Signal<Long> signal(long delayTime, TimeUnit timeUnit) {
         return new Signal<>((observer, disposer) -> {
-            ScheduledFuture<?> future = parallel.schedule(() -> {
+            Future future = I.schedule(delayTime, timeUnit, true, () -> {
                 observer.accept(0L);
                 observer.complete();
-            }, delayTime, timeUnit);
+            });
 
             return disposer.add(() -> future.cancel(true));
         });
@@ -2104,12 +2105,16 @@ public class I {
      */
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit) {
         return new Signal<>((observer, disposer) -> {
+            Future[] result = new Future[1];
             AtomicLong count = new AtomicLong();
-            ScheduledFuture<?> future = parallel.scheduleAtFixedRate(() -> {
-                observer.accept(count.getAndIncrement());
-            }, delayTime, intervalTime, timeUnit);
 
-            return disposer.add(() -> future.cancel(true));
+            result[0] = I.schedule(delayTime, timeUnit, true, I.recurseR(self -> () -> {
+                observer.accept(count.getAndIncrement());
+
+                result[0] = I.schedule(intervalTime, timeUnit, true, self);
+            }));
+
+            return disposer.add(() -> result[0].cancel(true));
         });
     }
 

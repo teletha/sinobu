@@ -16,16 +16,16 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 
 /**
- * @version 2018/07/21 20:07:00
+ * @version 2018/09/01 11:59:24
  */
 class OnTest extends SignalTester {
 
     @Test
     void on() {
-        monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName()));
+        monitor(1, signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName().contains("ForkJoinPool")));
 
         main.emit("START");
-        assert await().value("Sinobu Scheduler");
+        assert await(40).value(true);
     }
 
     @Test
@@ -35,7 +35,7 @@ class OnTest extends SignalTester {
         main.emit(Error.class);
         assert main.isNotError();
         assert main.isNotDisposed();
-        await();
+        await(40);
         assert main.isError();
         assert main.isDisposed();
     }
@@ -46,7 +46,7 @@ class OnTest extends SignalTester {
 
         main.emit(Complete);
         assert main.isNotCompleted();
-        await();
+        await(40);
         assert main.isCompleted();
     }
 
@@ -55,7 +55,7 @@ class OnTest extends SignalTester {
         monitor(signal -> signal.take(1).on(after20ms));
 
         assert main.emit("First value will be accepted", "Second will not!").value();
-        assert await().size(1);
+        assert await(40).size(1);
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
