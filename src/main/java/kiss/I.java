@@ -56,6 +56,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
@@ -199,6 +200,9 @@ public class I {
 
     /** The definitions of extensions. */
     private static final Map<Class, Ⅱ> extensions = new HashMap<>();
+
+    /** The parallel task manager. */
+    private static final ExecutorService parallel = Executors.newWorkStealingPool(16);
 
     /** The serial task manager. */
     private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(run -> {
@@ -1927,7 +1931,7 @@ public class I {
      * @param task A task to execute.
      */
     public static Future<?> schedule(Runnable task) {
-        return CompletableFuture.runAsync(task);
+        return CompletableFuture.runAsync(task, parallel);
     }
 
     /**
@@ -1948,7 +1952,7 @@ public class I {
         }
 
         if (parallelExecution) {
-            return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, unit));
+            return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, unit, parallel));
         } else {
             return serial.schedule(task, delay, unit);
         }
