@@ -669,7 +669,7 @@ public class I {
      * @return All Extensions of the given Extension Point or empty list.
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
-        return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).map(I::make).toList();
+        return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).skip(e -> Modifier.isAbstract(e.getModifiers())).map(I::make).toList();
     }
 
     /**
@@ -1160,7 +1160,7 @@ public class I {
             Class extension = I.type(name);
 
             // fast check : exclude non-initializable class
-            if (extension.isEnum() || extension.isAnonymousClass() || Modifier.isAbstract(extension.getModifiers())) {
+            if (extension.isEnum() || extension.isAnonymousClass()) {
                 continue;
             }
 

@@ -97,7 +97,7 @@ public class ExtensibleTest extends LoadableTestBase {
     @Test
     public void findAs() throws Exception {
         List<Class<EPClass>> extensions = I.findAs(EPClass.class);
-        assert extensions.size() == 5;
+        assert extensions.size() == 6;
 
         extensions.clear(); // we can modify
         assert extensions.size() == 0;
