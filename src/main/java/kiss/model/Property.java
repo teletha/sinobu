@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import kiss.Signal;
 import kiss.WiseBiConsumer;
 import kiss.WiseFunction;
 
@@ -55,8 +56,8 @@ public class Property implements Comparable<Property> {
     /** The property accessor. */
     WiseBiConsumer setter;
 
-    /** The {@link Property} type. */
-    int type;
+    /** The property ovserver. */
+    WiseFunction<Object, Signal> observer;
 
     /**
      * Create a property.

@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import static java.util.concurrent.TimeUnit.*;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,9 +21,10 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 import kiss.model.Model;
+import kiss.model.Property;
 
 /**
- * @version 2017/05/02 22:21:49
+ * @version 2018/09/06 23:36:57
  */
 public interface Storable<Self> {
 
@@ -71,5 +74,30 @@ public interface Storable<Self> {
      */
     default String locate() {
         return ".preferences/" + Model.of(this).type.getName() + ".json";
+    }
+
+    /**
+     * Make this {@link Storable} save automatically.
+     */
+    default Self storeAuto() {
+        auto(this, Model.of(this), this);
+        return (Self) this;
+    }
+
+    /**
+     * Search autosavable {@link Variable} property.
+     * 
+     * @param root
+     * @param model
+     * @param object
+     */
+    private void auto(Storable root, Model<Object> model, Object object) {
+        for (Property property : model.properties()) {
+            if (property.isAttribute()) {
+                model.observe(object, property).diff().debounce(3, SECONDS).to(root::store);
+            } else {
+                auto(root, property.model, model.get(object, property));
+            }
+        }
     }
 }

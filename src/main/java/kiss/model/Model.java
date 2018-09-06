@@ -39,16 +39,15 @@ import java.util.Set;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
+import kiss.Signal;
 import kiss.Table;
 import kiss.Variable;
 import kiss.WiseTriConsumer;
 
 /**
- * <p>
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
- * </p>
  * 
- * @version 2017/02/09 20:47:50
+ * @version 2018/09/06 23:29:00
  */
 public class Model<M> {
 
@@ -183,6 +182,7 @@ public class Model<M> {
                                 .getGenericType(), Variable.class)[0], Variable.class), field.getName());
                         property.getter = m -> ((Variable) field.get(m)).v;
                         property.setter = (m, v) -> ((Variable) field.get(m)).set(v);
+                        property.observer = m -> ((Variable) field.get(m)).observe();
 
                         // register it
                         properties.add(property);
@@ -267,8 +267,8 @@ public class Model<M> {
     /**
      * Returns the value of the given property in the given object.
      * 
-     * @param object A object as source. This value must not be <code>null</code>,
-     * @param property A property. This value must not be <code>null</code>,
+     * @param object A object as source. This value must not be <code>null</code>.
+     * @param property A property. This value must not be <code>null</code>.
      * @return A resolved property value. This value may be <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
@@ -282,8 +282,8 @@ public class Model<M> {
     /**
      * Change the given property in the given object to the given new property value.
      * 
-     * @param object A object as source. This value must not be <code>null</code>,
-     * @param property A property. This value must not be <code>null</code>,
+     * @param object A object as source. This value must not be <code>null</code>.
+     * @param property A property. This value must not be <code>null</code>.
      * @param value A new property value that you want to set. This value accepts <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
@@ -295,6 +295,22 @@ public class Model<M> {
             if ((!type.isPrimitive() && !type.isEnum()) || value != null) {
                 property.setter.accept(object, value);
             }
+        }
+    }
+
+    /**
+     * Observe the given property in the given object.
+     * 
+     * @param object A object as source. This value must not be <code>null</code>.
+     * @param property A property. This value must not be <code>null</code>.
+     * @return A property observer.
+     * @throws IllegalArgumentException If the given object can't resolve the given property.
+     */
+    public Signal observe(M object, Property property) {
+        if (object != null && property != null && property.observer != null) {
+            return property.observer.apply(object);
+        } else {
+            return Signal.NEVER;
         }
     }
 
