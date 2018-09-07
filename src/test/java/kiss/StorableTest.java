@@ -9,23 +9,26 @@
  */
 package kiss;
 
+import static java.util.concurrent.TimeUnit.*;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
 import filer.Filer;
 
 /**
- * @version 2017/05/02 18:25:05
+ * @version 2018/09/07 9:32:21
  */
-public class StorableTest {
+class StorableTest {
 
     private Path temp = Filer.locateTemporary();
 
     @Test
-    public void readFromNotExist() throws Exception {
+    void readFromNotExist() throws Exception {
         Some instance = new Some();
         Path path = Paths.get(instance.locate());
         assert Files.notExists(path);
@@ -37,7 +40,7 @@ public class StorableTest {
     }
 
     @Test
-    public void readFromSizeZero() throws Exception {
+    void readFromSizeZero() throws Exception {
         Some instance = new Some();
         Path path = Paths.get(instance.locate());
         Files.createDirectories(path.getParent());
@@ -53,7 +56,7 @@ public class StorableTest {
     }
 
     @Test
-    public void writeToNotExist() throws Exception {
+    void writeToNotExist() throws Exception {
         Some instance = new Some();
         Path path = Paths.get(instance.locate());
         assert Files.notExists(path);
@@ -63,7 +66,7 @@ public class StorableTest {
     }
 
     @Test
-    public void writeToSizeZero() throws Exception {
+    void writeToSizeZero() throws Exception {
         Some instance = new Some();
         Path path = Paths.get(instance.locate());
         Files.createDirectories(path.getParent());
@@ -91,6 +94,55 @@ public class StorableTest {
         @Override
         public String locate() {
             return temp.resolve(Some.class.getSimpleName()).toString();
+        }
+    }
+
+    @Test
+    void auto() throws Exception {
+        Auto instance = new Auto();
+        Path path = Paths.get(instance.locate());
+        assert Files.notExists(path);
+
+        instance.text.set("OK");
+        instance.integer.set(20);
+        Thread.sleep(100);
+        assert instance.count.get() == 1;
+
+        instance.text.set("OK");
+        instance.integer.set(20);
+        Thread.sleep(100);
+        assert instance.count.get() == 1;
+
+        instance.text.set("Change");
+        instance.integer.set(40);
+        Thread.sleep(100);
+        assert instance.count.get() == 2;
+    }
+
+    /**
+     * @version 2018/09/07 9:29:53
+     */
+    private class Auto implements Storable<Auto> {
+
+        public Variable<String> text = Variable.empty();
+
+        public Variable<Integer> integer = Variable.empty();
+
+        private AtomicInteger count = new AtomicInteger();
+
+        /**
+         * 
+         */
+        private Auto() {
+            auto(timing -> timing.debounce(50, MILLISECONDS).effect(() -> count.incrementAndGet()));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String locate() {
+            return temp.resolve(Auto.class.getSimpleName()).toString();
         }
     }
 }

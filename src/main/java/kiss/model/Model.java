@@ -174,6 +174,7 @@ public class Model<M> {
                 boolean notFinal = (FINAL & modifier) == 0;
 
                 if (((STATIC | PRIVATE | NATIVE) & modifier) == 0) {
+                    field.setAccessible(true);
                     Model fieldModel = of(field.getGenericType(), type);
 
                     if (fieldModel.type == Variable.class) {

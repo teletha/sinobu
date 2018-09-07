@@ -11,14 +11,10 @@ package kiss;
 
 import static java.util.concurrent.TimeUnit.*;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.function.Function;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -37,7 +33,7 @@ public interface Storable<Self> {
      */
     default Self restore() {
         try {
-            I.read(new BufferedReader(new InputStreamReader(new FileInputStream(new File(locate())), StandardCharsets.UTF_8)), this);
+            I.read(Files.newBufferedReader(Paths.get(locate())), this);
         } catch (Throwable e) {
             // ignore error
         }
@@ -53,16 +49,54 @@ public interface Storable<Self> {
      */
     default Self store() {
         try {
-            File file = new File(locate());
+            Path path = Paths.get(locate());
 
-            if (!file.exists()) {
-                file.getParentFile().mkdirs();
+            if (Files.notExists(path)) {
+                Files.createDirectories(path.getParent());
             }
-            I.write(this, new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(locate())), StandardCharsets.UTF_8)));
+            I.write(this, Files.newBufferedWriter(path));
         } catch (Throwable e) {
             // ignore error
         }
         return (Self) this;
+    }
+
+    /**
+     * Make this {@link Storable} save automatically.
+     * 
+     * @return Chainable API.
+     */
+    default Self auto() {
+        return auto(timing -> timing.debounce(1, SECONDS));
+    }
+
+    /**
+     * Make this {@link Storable} save automatically.
+     * 
+     * @return Chainable API.
+     */
+    default Self auto(Function<Signal, Signal> timing) {
+        timing.apply(auto(Model.of(this), this)).to(this::store);
+        return (Self) this;
+    }
+
+    /**
+     * Search autosavable {@link Variable} property.
+     * 
+     * @param model
+     * @param object
+     */
+    private Signal auto(Model<Object> model, Object object) {
+        Signal signal = Signal.NEVER;
+
+        for (Property property : model.properties()) {
+            if (property.isAttribute()) {
+                signal = signal.merge(model.observe(object, property).diff());
+            } else {
+                signal = signal.merge(auto(property.model, model.get(object, property)));
+            }
+        }
+        return signal;
     }
 
     /**
@@ -74,30 +108,5 @@ public interface Storable<Self> {
      */
     default String locate() {
         return ".preferences/" + Model.of(this).type.getName() + ".json";
-    }
-
-    /**
-     * Make this {@link Storable} save automatically.
-     */
-    default Self storeAuto() {
-        auto(this, Model.of(this), this);
-        return (Self) this;
-    }
-
-    /**
-     * Search autosavable {@link Variable} property.
-     * 
-     * @param root
-     * @param model
-     * @param object
-     */
-    private void auto(Storable root, Model<Object> model, Object object) {
-        for (Property property : model.properties()) {
-            if (property.isAttribute()) {
-                model.observe(object, property).diff().debounce(3, SECONDS).to(root::store);
-            } else {
-                auto(root, property.model, model.get(object, property));
-            }
-        }
     }
 }
