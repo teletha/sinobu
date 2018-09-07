@@ -20,7 +20,7 @@ import kiss.model.Model;
 import kiss.model.Property;
 
 /**
- * @version 2018/09/06 23:36:57
+ * @version 2018/09/07 10:21:25
  */
 public interface Storable<Self> {
 
