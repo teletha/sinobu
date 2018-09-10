@@ -22,11 +22,9 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 /**
- * <p>
  * The skeleton of DSL for tree structure.
- * </p>
  * 
- * @version 2018/07/17 13:03:40
+ * @version 2018/09/10 18:38:20
  */
 public abstract class Tree<Name, Node extends Consumer<Node>> {
 
@@ -41,6 +39,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
 
     /** The unique key builder. */
     private final IntUnaryOperator uniqueKeyBuilder;
+
+    /** The follower processor. */
+    private final BiConsumer<Consumer<Node>, Node> followerBuilder;
 
     /** The current writering node. */
     private Node current;
@@ -61,6 +62,19 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param uniqueKeyBuilder A builder for identical key.
      */
     protected Tree(WiseTriFunction<Name, Integer, Object, Node> namedNodeBuilder, IntUnaryOperator uniqueKeyBuilder) {
+        this(namedNodeBuilder, uniqueKeyBuilder, null);
+    }
+
+    /**
+     * <p>
+     * Create tree structure DSL.
+     * </p>
+     *
+     * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and
+     *            unique id.
+     * @param uniqueKeyBuilder A builder for identical key.
+     */
+    protected Tree(WiseTriFunction<Name, Integer, Object, Node> namedNodeBuilder, IntUnaryOperator uniqueKeyBuilder, BiConsumer<Consumer<Node>, Node> followerBuilder) {
         this.namedNodeBuilder = Objects.requireNonNull(namedNodeBuilder);
         this.uniqueKeyBuilder = uniqueKeyBuilder != null ? uniqueKeyBuilder
                 : id -> StackWalker.getInstance()
@@ -69,6 +83,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
                                 .findFirst()
                                 .map(f -> hash(f.getByteCodeIndex() ^ id))
                                 .orElse(id));
+        this.followerBuilder = Objects.requireNonNullElse(followerBuilder, Consumer<Node>::accept);
     }
 
     /**
@@ -208,7 +223,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
         if (followers != null) {
             for (Consumer<Node> follower : followers) {
                 if (follower != null) {
-                    follower.accept(current);
+                    followerBuilder.accept(follower, current);
                 }
             }
         }
