@@ -56,8 +56,8 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * Create tree structure DSL.
      * </p>
      *
-     * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and unique
-     *            id.
+     * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and
+     *            unique id.
      * @param uniqueKeyBuilder A builder for identical key.
      */
     protected Tree(WiseTriFunction<Name, Integer, Object, Node> namedNodeBuilder, IntUnaryOperator uniqueKeyBuilder) {
@@ -93,8 +93,8 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param name A name of new node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(Name name, Runnable writer) {
-        $(name, new Consumer[] {$(writer)});
+    protected final void $(Name name, WiseRunnable writer) {
+        $(name, new Consumer[] {writer.asConsumer()});
     }
 
     /**
@@ -109,8 +109,8 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param one A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(Name name, Consumer<Node> one, Runnable writer) {
-        $(name, new Consumer[] {one, $(writer)});
+    protected final void $(Name name, Consumer<Node> one, WiseRunnable writer) {
+        $(name, new Consumer[] {one, writer.asConsumer()});
     }
 
     /**
@@ -126,8 +126,8 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param two A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Runnable writer) {
-        $(name, new Consumer[] {one, two, $(writer)});
+    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, WiseRunnable writer) {
+        $(name, new Consumer[] {one, two, writer.asConsumer()});
     }
 
     /**
@@ -144,8 +144,8 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param three A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Consumer<Node> three, Runnable writer) {
-        $(name, new Consumer[] {one, two, three, $(writer)});
+    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Consumer<Node> three, WiseRunnable writer) {
+        $(name, new Consumer[] {one, two, three, writer.asConsumer()});
     }
 
     /**
@@ -163,8 +163,8 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param four A following node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
-    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Consumer<Node> three, Consumer<Node> four, Runnable writer) {
-        $(name, new Consumer[] {one, two, three, four, $(writer)});
+    protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Consumer<Node> three, Consumer<Node> four, WiseRunnable writer) {
+        $(name, new Consumer[] {one, two, three, four, writer.asConsumer()});
     }
 
     /**
@@ -180,18 +180,6 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      */
     protected final void $(Name name, Consumer<Node>... nodes) {
         $(namedNodeBuilder.apply(name, uniqueKeyBuilder.applyAsInt(modifier), context), nodes);
-    }
-
-    /**
-     * Helper method to convert {@link Runnable} to {@link Consumer}.
-     * 
-     * @param run A target {@link Runnable} to convert.
-     * @return A converted {@link Consumer}.
-     */
-    private final Consumer<Node> $(Runnable run) {
-        return e -> {
-            if (run != null) run.run();
-        };
     }
 
     /**
