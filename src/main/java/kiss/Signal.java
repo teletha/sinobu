@@ -1693,16 +1693,30 @@ public final class Signal<V> {
      * emitted by an {@link Signal} and emits the result.
      * </p>
      *
-     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
+     * @param condition A conditional function to apply to each value emitted by this
+     *            {@link Signal}.
      * @return Chainable API.
      */
-    public final Signal<Boolean> is(Predicate<? super V> converter) {
-        // ignore invalid parameters
-        if (converter == null) {
-            return NEVER;
-        }
-        return map(converter::test);
+    public final Signal<Boolean> is(Predicate<? super V> condition) {
+        Objects.requireNonNull(condition);
+
+        return map(condition::test);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
+     * emitted by an {@link Signal} and emits the result.
+     * </p>
+     *
+     * @param condition A conditional function to apply to each value emitted by this
+     *            {@link Signal}.
+     * @return Chainable API.
+     */
+    public final Signal<Boolean> isNot(Predicate<? super V> condition) {
+        Objects.requireNonNull(condition);
+
+        return is(condition.negate());
     }
 
     /**
