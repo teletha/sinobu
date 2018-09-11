@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -72,8 +71,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /**
      * <p>
-     * Compute the current value. If it is <code>null</code>, this method returns the specified default
-     * value.
+     * Compute the current value. If it is <code>null</code>, this method returns the specified
+     * default value.
      * </p>
      *
      * @param value The default value.
@@ -98,18 +97,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /**
      * <p>
-     * Test whether the current value is equal to the specified value or not.
-     * </p>
-     * 
-     * @param value A value to check the equality.
-     * @return A result of equality.
-     */
-    public final boolean is(BooleanSupplier condition) {
-        return condition == null ? false : condition.getAsBoolean();
-    }
-
-    /**
-     * <p>
      * Test whether the current value fulfills the specified condition or not.
      * </p>
      * 
@@ -118,6 +105,21 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     public final boolean is(Predicate<V> condition) {
         return condition == null ? false : condition.test(v);
+    }
+
+    /**
+     * <p>
+     * Test whether the value fulfills the specified condition or not. This method is shortcut for
+     * </p>
+     * <pre>
+     * variable.observeNow().is(condition);
+     * </pre>
+     * 
+     * @param value A value to check the equality.
+     * @return A result {@link Signal}.
+     */
+    public final Signal<Boolean> iŝ(Predicate<V> condition) {
+        return observeNow().is(condition);
     }
 
     /**
@@ -134,18 +136,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /**
      * <p>
-     * Test whether the current value is NOT equal to the specified value or not.
-     * </p>
-     * 
-     * @param value A value to check the equality.
-     * @return A result of equality.
-     */
-    public final boolean isNot(BooleanSupplier condition) {
-        return !is(condition);
-    }
-
-    /**
-     * <p>
      * Test whether the current value does NOT fulfill the specified condition or not.
      * </p>
      * 
@@ -157,950 +147,18 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(V condition, Runnable valid) {
-        return is(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(V condition, Consumer<V> valid) {
-        return is(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(V condition, Runnable valid, Runnable invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(V condition, Runnable valid, Consumer<V> invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(V condition, Consumer<V> valid, Runnable invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(V condition, Consumer<V> valid, Consumer<V> invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param value A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(Predicate<V> value, Runnable valid) {
-        return is(value, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param value A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(Predicate<V> value, Consumer<V> valid) {
-        return is(value, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(Predicate<V> condition, Runnable valid, Runnable invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(Predicate<V> condition, Runnable valid, Consumer<V> invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(Predicate<V> condition, Consumer<V> valid, Runnable invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A conditional.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> is(Predicate<V> condition, Consumer<V> valid, Consumer<V> invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(V condition, Runnable valid) {
-        return isNot(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(V condition, Consumer<V> valid) {
-        return isNot(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(V condition, Runnable valid, Runnable invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(V condition, Runnable valid, Consumer<V> invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(V condition, Consumer<V> valid, Runnable invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(V condition, Consumer<V> valid, Consumer<V> invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(BooleanSupplier condition, Runnable valid) {
-        return isNot(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(BooleanSupplier condition, Consumer<V> valid) {
-        return isNot(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(BooleanSupplier condition, Runnable valid, Runnable invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(BooleanSupplier condition, Runnable valid, Consumer<V> invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(BooleanSupplier condition, Consumer<V> valid, Runnable invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(BooleanSupplier condition, Consumer<V> valid, Consumer<V> invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(Predicate<V> condition, Runnable valid) {
-        return isNot(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(Predicate<V> condition, Consumer<V> valid) {
-        return isNot(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(Predicate<V> condition, Runnable valid, Runnable invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(Predicate<V> condition, Runnable valid, Consumer<V> invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(Predicate<V> condition, Consumer<V> valid, Runnable invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isNot(Predicate<V> condition, Consumer<V> valid, Consumer<V> invalid) {
-        return effect(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> effectIf(BooleanSupplier condition, Runnable valid) {
-        return effectIf(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> effectIf(BooleanSupplier condition, Consumer<V> valid) {
-        return effectIf(condition, valid, (Consumer) null);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> effectIf(BooleanSupplier condition, Runnable valid, Runnable invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> effectIf(BooleanSupplier condition, Runnable valid, Consumer<V> invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> effectIf(BooleanSupplier condition, Consumer<V> valid, Runnable invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> effectIf(BooleanSupplier condition, Consumer<V> valid, Consumer<V> invalid) {
-        return effect(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    private Variable<V> effect(boolean condition, Runnable valid, Runnable invalid) {
-        return effect(condition, I.wise(valid).asConsumer(), I.wise(invalid).asConsumer());
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    private Variable<V> effect(boolean condition, Runnable valid, Consumer<V> invalid) {
-        return effect(condition, I.wise(valid).asConsumer(), invalid);
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    private Variable<V> effect(boolean condition, Consumer<V> valid, Runnable invalid) {
-        return effect(condition, valid, I.wise(invalid).asConsumer());
-    }
-
-    /**
-     * Emulate if-else statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    private Variable<V> effect(boolean condition, Consumer<V> valid, Consumer<V> invalid) {
-        if (condition) {
-            if (valid != null) valid.accept(v);
-        } else {
-            if (invalid != null) invalid.accept(v);
-        }
-        return this;
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(V condition, Supplier<R> valid) {
-        return is(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(V condition, Function<V, R> valid) {
-        return is(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(V condition, Supplier<R> valid, Supplier<R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(V condition, Function<V, R> valid, Supplier<R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(V condition, Supplier<R> valid, Function<V, R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(V condition, Function<V, R> valid, Function<V, R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(BooleanSupplier condition, Supplier<R> valid) {
-        return is(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(BooleanSupplier condition, Function<V, R> valid) {
-        return is(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(BooleanSupplier condition, Supplier<R> valid, Supplier<R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(BooleanSupplier condition, Function<V, R> valid, Supplier<R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(BooleanSupplier condition, Supplier<R> valid, Function<V, R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(BooleanSupplier condition, Function<V, R> valid, Function<V, R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(Predicate<V> condition, Supplier<R> valid) {
-        return is(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(Predicate<V> condition, Function<V, R> valid) {
-        return is(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(Predicate<V> condition, Supplier<R> valid, Supplier<R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(Predicate<V> condition, Function<V, R> valid, Supplier<R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(Predicate<V> condition, Supplier<R> valid, Function<V, R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> is(Predicate<V> condition, Function<V, R> valid, Function<V, R> invalid) {
-        return map(is(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(V condition, Supplier<R> valid) {
-        return isNot(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(V condition, Function<V, R> valid) {
-        return isNot(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(V condition, Supplier<R> valid, Supplier<R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(V condition, Function<V, R> valid, Supplier<R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(V condition, Supplier<R> valid, Function<V, R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(V condition, Function<V, R> valid, Function<V, R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(BooleanSupplier condition, Supplier<R> valid) {
-        return isNot(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(BooleanSupplier condition, Function<V, R> valid) {
-        return isNot(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(BooleanSupplier condition, Supplier<R> valid, Supplier<R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(BooleanSupplier condition, Function<V, R> valid, Supplier<R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(BooleanSupplier condition, Supplier<R> valid, Function<V, R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(BooleanSupplier condition, Function<V, R> valid, Function<V, R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(Predicate<V> condition, Supplier<R> valid) {
-        return isNot(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(Predicate<V> condition, Function<V, R> valid) {
-        return isNot(condition, valid, (Function) null);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(Predicate<V> condition, Supplier<R> valid, Supplier<R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(Predicate<V> condition, Function<V, R> valid, Supplier<R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(Predicate<V> condition, Supplier<R> valid, Function<V, R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isNot(Predicate<V> condition, Function<V, R> valid, Function<V, R> invalid) {
-        return map(isNot(condition), valid, invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    private <R> Variable<R> map(boolean condition, Supplier<R> valid, Supplier<R> invalid) {
-        return map(condition, I.wise(valid).asFunction(), I.wise(invalid).asFunction());
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    private <R> Variable<R> map(boolean condition, Supplier<R> valid, Function<V, R> invalid) {
-        return map(condition, I.wise(valid).asFunction(), invalid);
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    private <R> Variable<R> map(boolean condition, Function<V, R> valid, Supplier<R> invalid) {
-        return map(condition, valid, I.wise(invalid).asFunction());
-    }
-
-    /**
-     * Emulate if-else and return statement.
-     * 
-     * @param condition A condition.
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    private <R> Variable<R> map(boolean condition, Function<V, R> valid, Function<V, R> invalid) {
-        return map(v -> {
-            if (condition) {
-                return valid == null ? null : valid.apply(v);
-            } else {
-                return invalid == null ? null : invalid.apply(v);
-            }
-        });
+     * <p>
+     * Test whether the value fulfills the specified condition or not. This method is shortcut for
+     * </p>
+     * <pre>
+     * variable.observeNow().isNot(condition);
+     * </pre>
+     * 
+     * @param value A value to check the equality.
+     * @return A result {@link Signal}.
+     */
+    public final Signal<Boolean> iŝNot(Predicate<V> condition) {
+        return observeNow().isNot(condition);
     }
 
     /**
@@ -1113,268 +171,12 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * Execute the specified operation if the current value is absent.
-     * 
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isAbsent(Runnable valid) {
-        return isAbsent(valid, (Consumer) null);
-    }
-
-    /**
-     * Execute the specified operation if the current value is absent.
-     * 
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isAbsent(Consumer<V> valid) {
-        return isAbsent(valid, (Consumer) null);
-    }
-
-    /**
-     * Detect whether the current value is absent or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isAbsent(Runnable valid, Runnable invalid) {
-        return effect(isAbsent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is absent or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isAbsent(Consumer<V> valid, Runnable invalid) {
-        return effect(isAbsent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is absent or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isAbsent(Runnable valid, Consumer<V> invalid) {
-        return effect(isAbsent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is absent or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isAbsent(Consumer<V> valid, Consumer<V> invalid) {
-        return effect(isAbsent(), valid, invalid);
-    }
-
-    /**
-     * Execute the specified operation if the current value is absent.
-     * 
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isAbsent(Supplier<R> valid) {
-        return isAbsent(valid, (Function) null);
-    }
-
-    /**
-     * Execute the specified operation if the current value is absent.
-     * 
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isAbsent(Function<V, R> valid) {
-        return isAbsent(valid, (Function) null);
-    }
-
-    /**
-     * Detect whether the current value is absent or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isAbsent(Supplier<R> valid, Supplier<R> invalid) {
-        return map(isAbsent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is absent or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isAbsent(Supplier<R> valid, Function<V, R> invalid) {
-        return map(isAbsent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is absent or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isAbsent(Function<V, R> valid, Supplier<R> invalid) {
-        return map(isAbsent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is absent or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isAbsent(Function<V, R> valid, Function<V, R> invalid) {
-        return map(isAbsent(), valid, invalid);
-    }
-
-    /**
      * Check whether the value is present or not.
      *
      * @return A result.
      */
     public final boolean isPresent() {
         return is(Objects::nonNull);
-    }
-
-    /**
-     * Execute the specified operation if the current value is present.
-     * 
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isPresent(Runnable valid) {
-        return isPresent(valid, (Consumer) null);
-    }
-
-    /**
-     * Execute the specified operation if the current value is present.
-     * 
-     * @param valid A valid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isPresent(Consumer<V> valid) {
-        return isPresent(valid, (Consumer) null);
-    }
-
-    /**
-     * Detect whether the current value is present or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isPresent(Runnable valid, Runnable invalid) {
-        return effect(isPresent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is present or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isPresent(Consumer<V> valid, Runnable invalid) {
-        return effect(isPresent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is present or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isPresent(Runnable valid, Consumer<V> invalid) {
-        return effect(isPresent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is present or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return Chainable API.
-     */
-    public final Variable<V> isPresent(Consumer<V> valid, Consumer<V> invalid) {
-        return effect(isPresent(), valid, invalid);
-    }
-
-    /**
-     * Execute the specified operation if the current value is present.
-     * 
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isPresent(Supplier<R> valid) {
-        return isPresent(valid, (Function) null);
-    }
-
-    /**
-     * Execute the specified operation if the current value is present.
-     * 
-     * @param valid A valid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isPresent(Function<V, R> valid) {
-        return isPresent(valid, (Function) null);
-    }
-
-    /**
-     * Detect whether the current value is present or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isPresent(Supplier<R> valid, Supplier<R> invalid) {
-        return map(isPresent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is present or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isPresent(Supplier<R> valid, Function<V, R> invalid) {
-        return map(isPresent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is present or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isPresent(Function<V, R> valid, Supplier<R> invalid) {
-        return map(isPresent(), valid, invalid);
-    }
-
-    /**
-     * Detect whether the current value is present or not, then execute the suitable opration.
-     * 
-     * @param valid A valid process.
-     * @param invalid A invalid process.
-     * @return The returned value or empty.
-     */
-    public final <R> Variable<R> isPresent(Function<V, R> valid, Function<V, R> invalid) {
-        return map(isPresent(), valid, invalid);
     }
 
     /**
@@ -1478,19 +280,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param other An other value.
      * @return A {@link Variable}.
      */
-    public Variable<V> or(Variable<V> other) {
-        return v != null ? this : other != null ? other : empty();
-    }
-
-    /**
-     * <p>
-     * If the value is present, return this {@link Variable}. If the value is absent, return other
-     * {@link Variable}.
-     * </p>
-     *
-     * @param other An other value.
-     * @return A {@link Variable}.
-     */
     public Variable<V> or(Supplier<V> other) {
         return v != null ? this : of(other);
     }
@@ -1516,18 +305,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V set(Optional<V> value) {
-        return setIf(null, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new value.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public V set(Variable<V> value) {
         return setIf(null, value);
     }
 
@@ -1590,21 +367,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V setIf(Predicate<V> condition, Variable<V> value) {
-        return setIf(condition, value == null ? null : value.v);
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
     public V setIf(Predicate<V> condition, Supplier<V> value) {
-        return setIf(condition, of(value));
+        return assign(condition, of(value).v, false);
     }
 
     /**
@@ -1641,18 +405,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public V let(Optional<V> value) {
-        return letIf(null, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public V let(Variable<V> value) {
         return letIf(null, value);
     }
 
@@ -1715,21 +467,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V letIf(Predicate<V> condition, Variable<V> value) {
-        return letIf(condition, value == null ? null : value.v);
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
     public V letIf(Predicate<V> condition, Supplier<V> value) {
-        return letIf(condition, of(value));
+        return letIf(condition, of(value).v);
     }
 
     /**
@@ -1793,11 +532,26 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * Execute the specified action if the value is present.
      * </p>
      * 
-     * @param action A user action.
+     * @param some A user action.
      */
-    public void to(Consumer<V> action) {
-        if (v != null && action != null) {
-            action.accept(v);
+    public void to(Consumer<V> some) {
+        to(some, null);
+    }
+
+    /**
+     * Execute the specified action.
+     * 
+     * @param some A user action.
+     */
+    public void to(Consumer<V> some, Runnable none) {
+        if (v != null) {
+            if (some != null) {
+                some.accept(v);
+            }
+        } else {
+            if (none != null) {
+                none.run();
+            }
         }
     }
 
