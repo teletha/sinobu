@@ -1931,7 +1931,7 @@ public class I {
      * @param task A task to execute.
      */
     public static Future<?> schedule(Runnable task) {
-        return CompletableFuture.runAsync(task, parallel);
+        return CompletableFuture.runAsync(error(task), parallel);
     }
 
     /**
@@ -1946,6 +1946,8 @@ public class I {
      * @param task A task to execute.
      */
     public static Future<?> schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
+        task = error(task);
+
         if (delay <= 0) {
             task.run();
             return CompletableFuture.completedFuture(null);
@@ -1956,6 +1958,22 @@ public class I {
         } else {
             return serial.schedule(task, delay, unit);
         }
+    }
+
+    /**
+     * Decorate error handler.
+     * 
+     * @param task A target task to decorate.
+     * @return A decorated task.
+     */
+    private static Runnable error(Runnable task) {
+        return () -> {
+            try {
+                task.run();
+            } catch (Throwable e) {
+                error(e);
+            }
+        };
     }
 
     /**
