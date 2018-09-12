@@ -71,11 +71,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
 import java.util.zip.ZipFile;
@@ -192,9 +187,6 @@ public class I {
     /** The xpath evaluator. */
     static final XPath xpath;
 
-    /** The configuration of root logger in Sinobu. */
-    static final Logger log = Logger.getLogger("");
-
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
@@ -231,16 +223,6 @@ public class I {
 
     // initialization
     static {
-        // apply human-readable log format
-        System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %5$s%6$s%n");
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> I.error(e));
-
-        // remove all built-in log handlers
-        for (Handler h : log.getHandlers()) {
-            log.removeHandler(h);
-        }
-        log.addHandler((new StreamHandler(System.out, new SimpleFormatter())));
-
         // built-in lifestyles
         lifestyles.put(List.class, ArrayList::new);
         lifestyles.put(Map.class, HashMap::new);
@@ -617,42 +599,6 @@ public class I {
 
     /**
      * <p>
-     * Write {@link Level#SEVERE} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void error(Throwable message) {
-        log.logp(Level.SEVERE, "", "", message, () -> message.getMessage());
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#SEVERE} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void error(Object message) {
-        error(String.valueOf(message), message);
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#SEVERE} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void error(String message, Object... params) {
-        log.logp(Level.SEVERE, "", "", message, params);
-    }
-
-    /**
-     * <p>
      * Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
      * <a href="Extensible#ExtensionPoint">Extension Point</a>.
      * </p>
@@ -741,30 +687,6 @@ public class I {
      */
     private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#INFO} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void info(Object message) {
-        info(String.valueOf(message), message);
-    }
-
-    /**
-     * <p>
-     * Write {@link Level#INFO} log.
-     * </p>
-     * 
-     * @param message A message log.
-     * @param params A list of parameters to format.
-     */
-    public static void info(String message, Object... params) {
-        log.logp(Level.INFO, "", "", message, params);
     }
 
     /**
@@ -1971,7 +1893,7 @@ public class I {
             try {
                 task.run();
             } catch (Throwable e) {
-                error(e);
+                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
             }
         };
     }
