@@ -38,7 +38,7 @@ import kiss.WiseConsumer;
 import kiss.WiseFunction;
 
 /**
- * @version 2018/08/01 11:56:22
+ * @version 2018/09/13 10:19:19
  */
 public class SignalTester {
 
@@ -294,6 +294,16 @@ public class SignalTester {
      * @return
      */
     protected <T, S extends BaseStream<T, S>> Signal<T> signal(S values) {
+        return I.signal(values);
+    }
+
+    /**
+     * Shorthand method of {@link I#signal(Supplier)}
+     * 
+     * @param values
+     * @return
+     */
+    protected <T> Signal<T> signal(Supplier<T> values) {
         return I.signal(values);
     }
 

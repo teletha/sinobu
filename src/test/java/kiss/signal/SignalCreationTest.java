@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ import kiss.Observer;
 import kiss.Signal;
 
 /**
- * @version 2018/04/02 11:31:51
+ * @version 2018/09/13 10:19:13
  */
 class SignalCreationTest extends SignalTester {
 
@@ -153,6 +154,26 @@ class SignalCreationTest extends SignalTester {
     @Test
     void streamNull() {
         monitor(() -> signal((Stream<String>) null));
+
+        assert main.value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void supplier() {
+        monitor(() -> signal(() -> 1));
+
+        assert main.value(1);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void supplierNull() {
+        monitor(() -> signal((Supplier) null));
 
         assert main.value();
         assert main.isCompleted();

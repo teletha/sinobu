@@ -1816,6 +1816,14 @@ public class I {
         return run(operation, operation, Supplier<R>::get, recoveries, new int[recoveries.length]);
     }
 
+    public static void run(WiseRunnable opereation, WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
+        I.signal("").effect(opereation).retryWhen(notifier).to();
+    }
+
+    public static <R> R run(WiseSupplier<R> operation, WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
+        return I.signal("").map(operation.asFunction()).retryWhen(notifier).to().v;
+    }
+
     /**
      * <p>
      * Perform recoverable operation. If some recoverable error will occur, this method perform
@@ -2292,10 +2300,16 @@ public class I {
      * @return A non-primitive {@link Class} object.
      */
     public static Class wrap(Class type) {
-        // check primitive classes
-        for (int i = 0; i < primitives.length; i++) {
-            if (primitives[i] == type) {
-                return wrappers[i];
+        if (type == null) {
+            return Object.class;
+        }
+
+        if (type.isPrimitive()) {
+            // check primitive classes
+            for (int i = 0; i < primitives.length; i++) {
+                if (primitives[i] == type) {
+                    return wrappers[i];
+                }
             }
         }
 

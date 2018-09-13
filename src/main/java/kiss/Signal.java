@@ -12,6 +12,7 @@ package kiss;
 import static java.lang.Boolean.*;
 import static java.util.concurrent.TimeUnit.*;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -2169,6 +2170,10 @@ public final class Signal<V> {
             // error notifier
             Subscriber<E> error = new Subscriber();
             error.next = e -> {
+                if (e instanceof UndeclaredThrowableException) {
+                    e = (E) e.getCause();
+                }
+
                 if (type == null || type.isInstance(e)) {
                     error.observer.accept(e);
                 } else {
@@ -2314,6 +2319,9 @@ public final class Signal<V> {
             // build the actual error handler
             Subscriber<E> error = new Subscriber();
             error.next = e -> {
+                if (e instanceof UndeclaredThrowableException) {
+                    e = (E) e.getCause();
+                }
                 // determine whether errors should be handled by type
                 if (type == null || type.isInstance(e)) {
                     error.observer.accept(processing[0] = e); // to user defined error flow
@@ -2865,6 +2873,16 @@ public final class Signal<V> {
     }
 
     /**
+     * Buffer all items until complete event and then soted items will be emitted sequentially.
+     * 
+     * @param comparator
+     * @return Chainable API.
+     */
+    public final Signal<V> sort(Comparator<? super V> comparator) {
+        return buffer().effect(e -> e.sort(comparator)).flatIterable(e -> e);
+    }
+
+    /**
      * <p>
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
@@ -2887,13 +2905,24 @@ public final class Signal<V> {
     }
 
     /**
-     * Buffer all items until complete event and then soted items will be emitted sequentially.
-     * 
-     * @param comparator
+     * <p>
+     * Emit a specified sequence of items before beginning to emit the items from the source
+     * {@link Signal}.
+     * </p>
+     * <p>
+     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
+     * the items normally expected from it, apply the StartWith operator to it.
+     * </p>
+     * <p>
+     * If, on the other hand, you want to append a sequence of items to the end of those normally
+     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
+     * </p>
+     *
+     * @param values The values that contains the items you want to emit first.
      * @return Chainable API.
      */
-    public final Signal<V> sort(Comparator<? super V> comparator) {
-        return buffer().effect(e -> e.sort(comparator)).flatIterable(e -> e);
+    public final Signal<V> startWith(Supplier<V> value) {
+        return value == null ? this : startWith(value.get());
     }
 
     /**
@@ -3359,9 +3388,9 @@ public final class Signal<V> {
                         observer.accept(value);
                     } else {
                         if (stopOnFail) {
+                            stopped.set(true); // flag up immediately
                             if (includeOnStop) observer.accept(value);
                             observer.complete();
-                            stopped.set(true);
                         }
                     }
                 }
@@ -3484,6 +3513,29 @@ public final class Signal<V> {
             if (context.get() + delay <= now) {
                 context.set(now);
                 return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * Ensures that all values of the {@link Signal} are the specified type. If an unspecified typed
+     * value flows, {@link Signal} will be completed immediately.
+     *
+     * @param types A list of types you want.
+     * @return Chainable API.
+     */
+    public final Signal<V> type(Class... types) {
+        // ignore invalid parameters
+        if (types == null) {
+            return this;
+        }
+
+        return takeWhile(v -> {
+            for (Class type : types) {
+                if (I.wrap(type).isInstance(v)) {
+                    return true;
+                }
             }
             return false;
         });

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 
 /**
- * @version 2016/05/04 2:04:59
+ * @version 2018/09/13 10:29:24
  */
 public class WrapTest {
 
@@ -38,6 +38,6 @@ public class WrapTest {
 
     @Test
     public void wrapNull() {
-        assert null == I.wrap(null);
+        assert Object.class == I.wrap(null);
     }
 }
