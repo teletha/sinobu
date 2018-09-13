@@ -1707,150 +1707,26 @@ public class I {
     }
 
     /**
-     * <p>
-     * Convenient method to describe the recovery operation.
-     * </p>
-     * <p>
-     * If the specified error will occur, retry the original action.
-     * </p>
-     * 
-     * @param type A target error type.
-     * @param recovery A recovery operation builder.
-     * @return A recovery operation.
-     * @see #run(WiseRunnable, WiseTriFunction...)
-     * @see #run(WiseSupplier, WiseTriFunction...)
-     */
-    public static <O> WiseTriFunction<O, Throwable, Integer, O> recoverWhen(Class<? extends Throwable> type, UnaryOperator<O> recovery) {
-        return recoverWhen(type, Integer.MAX_VALUE, recovery);
-    }
-
-    /**
-     * <p>
-     * Convenient method to describe the recovery operation.
-     * </p>
-     * <p>
-     * If the specified error will occur, retry the original action.
-     * </p>
-     * 
-     * @param type A target error type.
-     * @param limit A limit number of trials.
-     * @param recovery A recovery operation builder.
-     * @return A recovery operation.
-     * @see #run(WiseRunnable, WiseTriFunction...)
-     * @see #run(WiseSupplier, WiseTriFunction...)
-     */
-    public static <O> WiseTriFunction<O, Throwable, Integer, O> recoverWhen(Class<? extends Throwable> type, int limit, UnaryOperator<O> recovery) {
-        return (o, e, i) -> type.isInstance(e) && i < limit ? recovery.apply(o) : null;
-    }
-
-    /**
-     * <p>
-     * Convenient method to describe the recovery operation.
-     * </p>
-     * <p>
-     * If the specified error will occur, retry the original action.
-     * </p>
-     * 
-     * @param type A target error type.
-     * @return A recovery operation.
-     * @see #run(WiseRunnable, WiseTriFunction...)
-     * @see #run(WiseSupplier, WiseTriFunction...)
-     */
-    public static <O> WiseTriFunction<O, Throwable, Integer, O> retryWhen(Class<? extends Throwable> type) {
-        return retryWhen(type, Integer.MAX_VALUE);
-    }
-
-    /**
-     * <p>
-     * Convenient method to describe the recovery operation.
-     * </p>
-     * <p>
-     * If the specified error will occur, retry the original action.
-     * </p>
-     * 
-     * @param type A target error type.
-     * @param limit A limit number of trials.
-     * @return A recovery operation.
-     * @see #run(WiseRunnable, WiseTriFunction...)
-     * @see #run(WiseSupplier, WiseTriFunction...)
-     */
-    public static <O> WiseTriFunction<O, Throwable, Integer, O> retryWhen(Class<? extends Throwable> type, int limit) {
-        return (o, e, i) -> type.isInstance(e) && i < limit ? o : null;
-    }
-
-    /**
-     * <p>
      * Perform recoverable operation. If some recoverable error will occur, this method perform
      * recovery operation automatically.
-     * </p>
      * 
      * @param operation A original user operation.
      * @param recoveries A list of recovery operations.
-     * @see #retryWhen(Class)
-     * @see #retryWhen(Class, int)
-     * @see #recoverWhen(Class, UnaryOperator)
-     * @see #recoverWhen(Class, int, UnaryOperator)
      */
-    public static void run(WiseRunnable operation, WiseTriFunction<Runnable, Throwable, Integer, Runnable>... recoveries) {
-        run(operation, operation, o -> {
-            o.run();
-            return null;
-        }, recoveries, new int[recoveries.length]);
-    }
-
-    /**
-     * <p>
-     * Perform recoverable operation. If some recoverable error will occur, this method perform
-     * recovery operation automatically.
-     * </p>
-     * 
-     * @param operation A original user operation.
-     * @param recoveries A list of recovery operations.
-     * @return A operation result.
-     * @see #retryWhen(Class)
-     * @see #retryWhen(Class, int)
-     * @see #recoverWhen(Class, UnaryOperator)
-     * @see #recoverWhen(Class, int, UnaryOperator)
-     */
-    public static <R> R run(WiseSupplier<R> operation, WiseTriFunction<Supplier<R>, Throwable, Integer, Supplier<R>>... recoveries) {
-        return run(operation, operation, Supplier<R>::get, recoveries, new int[recoveries.length]);
-    }
-
     public static void run(WiseRunnable opereation, WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
         I.signal("").effect(opereation).retryWhen(notifier).to();
     }
 
-    public static <R> R run(WiseSupplier<R> operation, WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
-        return I.signal("").map(operation.asFunction()).retryWhen(notifier).to().v;
-    }
-
     /**
-     * <p>
      * Perform recoverable operation. If some recoverable error will occur, this method perform
      * recovery operation automatically.
-     * </p>
      * 
-     * @param original A original user operation.
-     * @param recover A current (original or recovery) operation.
-     * @param invoker A operation invoker.
+     * @param operation A original user operation.
      * @param recoveries A list of recovery operations.
-     * @param counts A current number of trials.
      * @return A operation result.
      */
-    private static <O, R> R run(O original, O recover, Function<O, R> invoker, WiseTriFunction<O, Throwable, Integer, O>[] recoveries, int[] counts) {
-        try {
-            return invoker.apply(recover);
-        } catch (Throwable e) {
-            for (int i = 0; i < recoveries.length; i++) {
-                O next = recoveries[i].apply(original, e, counts[i]);
-
-                if (next != null) {
-                    counts[i]++;
-                    return run(original, next, invoker, recoveries, counts);
-                }
-            }
-            throw e;
-        }
+    public static <R> R run(WiseSupplier<R> operation, WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
+        return I.signal("").map(operation.asFunction()).retryWhen(notifier).to().v;
     }
 
     /**
