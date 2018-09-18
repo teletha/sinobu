@@ -1020,15 +1020,14 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Indicates the {@link Signal} sequence by due time with the specified source and time.
-     * </p>
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
+     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * {@link Signal} are not delayed.
      *
-     * @param time The absolute time used to shift the {@link Signal} sequence. Zero or negative
-     *            number will ignore this instruction.
-     * @param unit A unit of time for the specified time. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
+     * @param time The delay to shift the source by.
+     * @param unit The {@link TimeUnit} in which {@code period} is defined.
+     * @return The source {@link Signal} shifted in time by the specified delay.
+     * @see #wait(long, TimeUnit)
      */
     public final Signal<V> delay(long time, TimeUnit unit) {
         // ignore invalid parameters
@@ -1039,13 +1038,12 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Indicates the {@link Signal} sequence by due time with the specified source and time.
-     * </p>
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
+     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * {@link Signal} are not delayed.
      *
-     * @param time The absolute {@link Duration} used to shift the {@link Signal} sequence. Zero or
-     *            negative value will ignore this instruction.
-     * @return Chainable API.
+     * @param time The delay to shift the source by.
+     * @return The source {@link Signal} shifted in time by the specified delay.
      */
     public final Signal<V> delay(Duration time) {
         // ignore invalid parameters
@@ -1056,13 +1054,12 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Indicates the {@link Signal} sequence by due time with the specified source and time.
-     * </p>
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
+     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * {@link Signal} are not delayed.
      *
-     * @param time The absolute time used to shift the {@link Signal} sequence. Zero or negative
-     *            number will ignore this instruction.
-     * @return Chainable API.
+     * @param time The delay to shift the source by.
+     * @return The source {@link Signal} shifted in time by the specified delay.
      */
     public final Signal<V> delay(Supplier<Duration> time) {
         // ignore invalid parameters
@@ -3539,6 +3536,24 @@ public final class Signal<V> {
             }
             return false;
         });
+    }
+
+    /**
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
+     * forward in time by a specified delay at current thread. Error notifications from the source
+     * {@link Signal} are not delayed.
+     *
+     * @param time The delay to shift the source by.
+     * @param unit The {@link TimeUnit} in which {@code period} is defined.
+     * @return The source {@link Signal} shifted in time by the specified delay.
+     * @see #delay(long, TimeUnit)
+     */
+    public final Signal<V> wait(long time, TimeUnit unit) {
+        // ignore invalid parameters
+        if (time <= 0 || unit == null) {
+            return this;
+        }
+        return effect(() -> Thread.sleep(unit.toMillis(time)));
     }
 
     /**
