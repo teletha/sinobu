@@ -2735,6 +2735,17 @@ public final class Signal<V> {
     }
 
     /**
+     * Return the {@link Signal} which ignores complete event.
+     * 
+     * @return {@link Signal} which ignores complete event.
+     */
+    public final Signal<V> skipComplete() {
+        return new Signal<>((observer, disposer) -> {
+            return to(observer::accept, observer::error, I.NoOP, disposer);
+        });
+    }
+
+    /**
      * <p>
      * Alias for skip(Objects::isNull).
      * </p>
