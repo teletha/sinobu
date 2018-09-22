@@ -11,6 +11,7 @@ package kiss.signal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ import kiss.Observer;
 import kiss.Signal;
 
 /**
- * @version 2018/03/20 10:25:11
+ * @version 2018/09/22 14:21:19
  */
 class ShareTest extends SignalTester {
 
@@ -55,7 +56,7 @@ class ShareTest extends SignalTester {
     }
 
     @Test
-    void share() {
+    void shareMultiple() {
         List<Observer<String>> observers = new ArrayList();
         List<String> result1 = new ArrayList();
         List<String> result2 = new ArrayList();
@@ -86,6 +87,74 @@ class ShareTest extends SignalTester {
     }
 
     @Test
+    void shareTwiceByDispose() {
+        List<Observer<String>> observers = new ArrayList();
+        List<String> result1 = new ArrayList();
+
+        Signal<String> source = new Signal(observers).share();
+        Disposable disposable1 = source.to(result1::add);
+
+        // publish
+        observers.stream().forEach(o -> o.accept("Success"));
+        assert observers.size() == 1;
+        assert result1.size() == 1;
+
+        // dispose 1
+        disposable1.dispose();
+        observers.stream().forEach(o -> o.accept("Fail"));
+        assert observers.size() == 0;
+        assert result1.size() == 1;
+
+        // restart
+        Disposable disposable2 = source.to(result1::add);
+        observers.stream().forEach(o -> o.accept("Success"));
+        assert observers.size() == 1;
+        assert result1.size() == 2;
+
+        // dispose again
+        disposable2.dispose();
+        observers.stream().forEach(o -> o.accept("Fail"));
+        assert observers.size() == 0;
+        assert result1.size() == 2;
+    }
+
+    @Test
+    void shareTwiceByComplete() {
+        List<Observer<String>> observers = new CopyOnWriteArrayList();
+        List<String> result1 = new ArrayList();
+
+        Signal<String> source = new Signal(observers).share();
+        Disposable disposable1 = source.to(result1::add);
+
+        // publish
+        observers.stream().forEach(o -> o.accept("Success"));
+        assert observers.size() == 1;
+        assert result1.size() == 1;
+        assert disposable1.isNotDisposed();
+
+        // complete 1
+        observers.stream().forEach(o -> o.complete());
+        observers.stream().forEach(o -> o.accept("Fail"));
+        assert observers.size() == 0;
+        assert result1.size() == 1;
+        assert disposable1.isDisposed();
+
+        // restart
+        Disposable disposable2 = source.to(result1::add);
+        observers.stream().forEach(o -> o.accept("Success"));
+        assert observers.size() == 1;
+        assert result1.size() == 2;
+        assert disposable2.isNotDisposed();
+
+        // complete again
+        observers.stream().forEach(o -> o.complete());
+        observers.stream().forEach(o -> o.accept("Fail"));
+        assert observers.size() == 0;
+        assert result1.size() == 2;
+        assert disposable2.isDisposed();
+    }
+
+    @Test
     void error() {
         monitor(Integer.class, signal -> signal.share().map(v -> 24 / v));
 
@@ -94,4 +163,5 @@ class ShareTest extends SignalTester {
         assert main.isError();
         assert main.isDisposed();
     }
+
 }

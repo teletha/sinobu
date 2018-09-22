@@ -912,7 +912,9 @@ public final class Signal<V> {
 
             Subscriber end = countable(observer, 1);
 
-            return index().to(indexed -> {
+            return
+
+            index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
@@ -1935,6 +1937,32 @@ public final class Signal<V> {
         Objects.requireNonNull(condition);
 
         return signal(condition, FALSE, false, FALSE, true, TRUE);
+    }
+
+    /**
+     * Return an {@link Signal} that is observed as long as the specified timing {@link Signal}
+     * indicates true. When the timing {@link Signal} returns false, the currently subscribed
+     * {@link Signal} is immediately disposed.
+     *
+     * @param timing A timing whether the {@link Signal} is observed or not.
+     * @return Chainable API.
+     */
+    public final Signal<V> observeWhile(Signal<Boolean> timing) {
+        if (timing == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            Disposable[] root = {Disposable.empty()};
+
+            return disposer.add(timing.startWith(false).diff().to(v -> {
+                if (v) {
+                    root[0] = to(observer, disposer.sub());
+                } else {
+                    root[0].dispose();
+                }
+            }));
+        });
     }
 
     /**
