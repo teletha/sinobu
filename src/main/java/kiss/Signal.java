@@ -58,15 +58,19 @@ public final class Signal<V> {
     /**
      * For reuse.
      */
-    public static final Signal EMPTY = new Signal<>((observer, disposer) -> {
-        if (disposer.isNotDisposed()) observer.complete();
-        return disposer;
-    });
+    public static final <R> Signal<R> empty() {
+        return new Signal<>((observer, disposer) -> {
+            if (disposer.isNotDisposed()) observer.complete();
+            return disposer;
+        });
+    }
 
     /**
      * For reuse.
      */
-    public static final Signal NEVER = new Signal<>((observer, disposer) -> disposer);
+    public static final <R> Signal<R> never() {
+        return new Signal<>((observer, disposer) -> disposer);
+    }
 
     /**
      * For reuse.
@@ -475,7 +479,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<List<V>> buffer() {
-        return buffer(NEVER);
+        return buffer(never());
     }
 
     /**
@@ -1802,7 +1806,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> last(V defaultValue) {
-        return buffer(NEVER, () -> new AtomicReference<V>(defaultValue), AtomicReference::set).map(AtomicReference::get).skipNull();
+        return buffer(never(), () -> new AtomicReference<V>(defaultValue), AtomicReference::set).map(AtomicReference::get).skipNull();
     }
 
     /**
@@ -1940,32 +1944,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Return an {@link Signal} that is observed as long as the specified timing {@link Signal}
-     * indicates true. When the timing {@link Signal} returns false, the currently subscribed
-     * {@link Signal} is immediately disposed.
-     *
-     * @param timing A timing whether the {@link Signal} is observed or not.
-     * @return Chainable API.
-     */
-    public final Signal<V> observeWhile(Signal<Boolean> timing) {
-        if (timing == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            Disposable[] root = {Disposable.empty()};
-
-            return disposer.add(timing.startWith(false).diff().to(v -> {
-                if (v) {
-                    root[0] = to(observer, disposer.sub());
-                } else {
-                    root[0].dispose();
-                }
-            }));
-        });
-    }
-
-    /**
      * <p>
      * Switch event stream context.
      * </p>
@@ -1996,7 +1974,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> repeat() {
-        return repeatUntil(NEVER);
+        return repeatUntil(never());
     }
 
     /**
@@ -2222,7 +2200,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> retry() {
-        return retryUntil(NEVER);
+        return retryUntil(never());
     }
 
     /**
@@ -2398,7 +2376,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> reverse() {
-        return buffer(NEVER, LinkedList<V>::new, Deque::addFirst).flatIterable(I.wise(Function.identity()));
+        return buffer(never(), LinkedList<V>::new, Deque::addFirst).flatIterable(I.wise(Function.identity()));
     }
 
     /**
@@ -2552,7 +2530,7 @@ public final class Signal<V> {
      */
     public final Signal<List<V>> size(int size) {
         if (size < 0) {
-            return EMPTY;
+            return empty();
         }
 
         return new Signal<>((observer, disposer) -> {
@@ -2759,7 +2737,7 @@ public final class Signal<V> {
      * @return {@link Signal} which ignores the specified error.
      */
     public final Signal<V> skipError(Class<? extends Throwable> type) {
-        return recoverWhen(type, fail -> NEVER);
+        return recoverWhen(type, fail -> never());
     }
 
     /**
@@ -2958,7 +2936,16 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> startWith(Supplier<V> value) {
-        return value == null ? this : startWith(value.get());
+        if (value == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            if (disposer.isNotDisposed()) {
+                observer.accept(value.get());
+            }
+            return to(observer, disposer);
+        });
     }
 
     /**
@@ -3058,19 +3045,6 @@ public final class Signal<V> {
      * {@link Signal}.
      * </p>
      *
-     * @param value The initial values.
-     * @return Chainable API.
-     */
-    public final Signal<V> startWith(WiseSupplier<V> value) {
-        return startWith(value.get()).skipNull();
-    }
-
-    /**
-     * <p>
-     * Emit a specified sequence of items before beginning to emit the items from the source
-     * {@link Signal}.
-     * </p>
-     *
      * @param values The initial values.
      * @return Chainable API.
      */
@@ -3128,6 +3102,32 @@ public final class Signal<V> {
                 disposables[0].dispose();
                 disposables[1].dispose();
             });
+        });
+    }
+
+    /**
+     * Return an {@link Signal} that is observed as long as the specified timing {@link Signal}
+     * indicates true. When the timing {@link Signal} returns false, the currently subscribed
+     * {@link Signal} is immediately disposed.
+     *
+     * @param timing A timing whether the {@link Signal} is observed or not.
+     * @return Chainable API.
+     */
+    public final Signal<V> switchOn(Signal<Boolean> timing) {
+        if (timing == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            Disposable[] root = {Disposable.empty()};
+
+            return disposer.add(timing.startWith(false).diff().to(v -> {
+                if (v) {
+                    root[0] = to(observer, disposer.sub());
+                } else {
+                    root[0].dispose();
+                }
+            }));
         });
     }
 
@@ -3509,7 +3509,7 @@ public final class Signal<V> {
     @SafeVarargs
     public final <E> Signal<E> toggle(E... values) {
         if (values.length == 0) {
-            return NEVER;
+            return never();
         }
 
         return new Signal<>((observer, disposer) -> {

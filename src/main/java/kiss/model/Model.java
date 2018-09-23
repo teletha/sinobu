@@ -311,7 +311,7 @@ public class Model<M> {
         if (object != null && property != null && property.observer != null) {
             return property.observer.apply(object);
         } else {
-            return Signal.NEVER;
+            return Signal.never();
         }
     }
 

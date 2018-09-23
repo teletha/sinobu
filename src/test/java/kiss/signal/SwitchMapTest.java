@@ -16,7 +16,7 @@ import kiss.I;
 import kiss.Signaling;
 
 /**
- * @version 2018/03/31 23:14:49
+ * @version 2018/09/23 16:38:31
  */
 class SwitchMapTest extends SignalTester {
 

@@ -242,7 +242,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return
      */
     public Signal<V> observeNow() {
-        return observe().startWith(v);
+        return observe().startWith(this::get);
     }
 
     /**

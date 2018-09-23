@@ -87,7 +87,7 @@ public interface Storable<Self> {
      * @param object
      */
     private Signal auto(Model<Object> model, Object object) {
-        Signal signal = Signal.NEVER;
+        Signal signal = Signal.never();
 
         for (Property property : model.properties()) {
             if (property.isAttribute()) {

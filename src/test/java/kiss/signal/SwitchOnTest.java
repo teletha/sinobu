@@ -12,13 +12,13 @@ package kiss.signal;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/09/22 16:21:56
+ * @version 2018/09/23 16:37:54
  */
-class ObserveWhileTest extends SignalTester {
+class SwitchOnTest extends SignalTester {
 
     @Test
-    void observeWhile() {
-        monitor(1, signal -> signal.observeWhile(other.signal().startWith(true)));
+    void on() {
+        monitor(signal -> signal.switchOn(other.signal().startWith(true)));
 
         assert main.emit("Success").value("Success");
         assert main.isNotCompleted();

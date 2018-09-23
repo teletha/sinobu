@@ -92,7 +92,7 @@ public class JSON {
                         return I.signal(value);
                     }
                 } else {
-                    return Signal.NEVER;
+                    return Signal.never();
                 }
             });
         }
@@ -555,8 +555,8 @@ public class JSON {
 
     /**
      * <p>
-     * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor nodes,
-     * but same object in sibling nodes will be acceptable.
+     * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor
+     * nodes, but same object in sibling nodes will be acceptable.
      * </p>
      * 
      * @param model

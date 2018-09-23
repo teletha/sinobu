@@ -1804,7 +1804,7 @@ public class I {
      */
     @SafeVarargs
     public static <V> Signal<V> signal(V... values) {
-        return Signal.EMPTY.startWith(values);
+        return Signal.<V> empty().startWith(values);
     }
 
     /**
@@ -1860,7 +1860,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Iterable<V> values) {
-        return Signal.EMPTY.startWith(values);
+        return Signal.<V> empty().startWith(values);
     }
 
     /**
@@ -1872,7 +1872,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Enumeration<V> values) {
-        return Signal.EMPTY.startWith(values);
+        return Signal.<V> empty().startWith(values);
     }
 
     /**
@@ -1884,7 +1884,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V, S extends BaseStream<V, S>> Signal<V> signal(S values) {
-        return Signal.EMPTY.startWith(values);
+        return Signal.<V> empty().startWith(values);
     }
 
     /**
@@ -1896,7 +1896,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Supplier<V> value) {
-        return Signal.EMPTY.startWith(value);
+        return Signal.<V> empty().startWith(value);
     }
 
     /**

@@ -53,7 +53,7 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void empty() {
-        monitor(() -> Signal.EMPTY);
+        monitor(() -> Signal.empty());
 
         assert main.value();
         assert main.isCompleted();
@@ -63,7 +63,7 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void never() {
-        monitor(() -> Signal.NEVER);
+        monitor(() -> Signal.never());
 
         assert main.value();
         assert main.isNotCompleted();
