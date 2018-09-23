@@ -1244,6 +1244,30 @@ public final class Signal<V> {
     }
 
     /**
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * {@link Observer#accept(Object)}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#accept(Object)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(Consumer)
+     * @see #effectOnError(Consumer)
+     * @see #effectOnComplete(Runnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(Runnable)
+     * @see #effectOnObserve(Consumer)
+     */
+    public final Signal<V> effectOnLifecycle(WiseFunction<Disposable, WiseConsumer<V>> effect) {
+        if (effect == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            return effect(effect.apply(disposer)).to(observer, disposer);
+        });
+    }
+
+    /**
      * Modifies the source {@link Signal} so that it invokes an effect only once when it calls
      * {@link Observer#accept(Object)}.
      *
