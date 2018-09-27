@@ -53,8 +53,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /** The observers. */
     private volatile List<Observer> observers;
 
-    /** The requirements. */
-    private volatile List<Predicate<V>> requirements;
+    /** The adjuster. */
+    private volatile Function<V, V> adjuster;
 
     /**
      * Hide constructor.
@@ -501,12 +501,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
         V prev = v;
 
         if (fix == false && (condition == null || is(condition))) {
-            if (requirements != null) {
-                for (Predicate<V> requirement : requirements) {
-                    if (!requirement.test(value)) {
-                        return prev;
-                    }
-                }
+            if (adjuster != null) {
+                value = adjuster.apply(value);
             }
 
             if (let) fix = true;
@@ -529,15 +525,23 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /**
      * Set requirment of this {@link Variable}.
      * 
+     * @param adjuster
+     * @return Chainable API.
+     */
+    public Variable<V> adjust(Function<V, V> adjuster) {
+        this.adjuster = adjuster;
+        return this;
+    }
+
+    /**
+     * Set requirment of this {@link Variable}.
+     * 
      * @param requirement
      * @return Chainable API.
      */
     public Variable<V> require(Predicate<V> requirement) {
         if (requirement != null) {
-            if (requirements == null) {
-                requirements = new CopyOnWriteArrayList();
-            }
-            requirements.add(requirement);
+            adjust(v -> requirement.test(v) ? v : this.v);
         }
         return this;
     }

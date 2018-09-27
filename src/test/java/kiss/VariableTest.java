@@ -30,13 +30,13 @@ public class VariableTest {
     private Variable<String> string;
 
     @BeforeEach
-    public void init() {
+    void init() {
         empty = Variable.empty();
         string = Variable.of("value");
     }
 
     @Test
-    public void of() {
+    void of() {
         Variable<String> var = Variable.of("A");
         assert var != null;
         assert var.v != null;
@@ -44,14 +44,14 @@ public class VariableTest {
     }
 
     @Test
-    public void ofNull() {
+    void ofNull() {
         Variable<String> var = Variable.of((String) null);
         assert var != null;
         assert var.v == null;
     }
 
     @Test
-    public void ofOptional() {
+    void ofOptional() {
         Variable<String> var = Variable.of(Optional.of("A"));
         assert var != null;
         assert var.v != null;
@@ -63,14 +63,14 @@ public class VariableTest {
     }
 
     @Test
-    public void ofNullOptional() {
+    void ofNullOptional() {
         Variable<String> var = Variable.of((Optional) null);
         assert var != null;
         assert var.v == null;
     }
 
     @Test
-    public void ofSupplier() {
+    void ofSupplier() {
         Variable<String> var = Variable.of(() -> "A");
         assert var != null;
         assert var.v != null;
@@ -82,49 +82,49 @@ public class VariableTest {
     }
 
     @Test
-    public void ofNullSupplier() {
+    void ofNullSupplier() {
         Variable<String> var = Variable.of((Supplier) null);
         assert var != null;
         assert var.v == null;
     }
 
     @Test
-    public void emptyIsNotSingleton() {
+    void emptyIsNotSingleton() {
         Variable<String> e1 = Variable.empty();
         Variable<String> e2 = Variable.empty();
         assert e1 != e2;
     }
 
     @Test
-    public void is() {
+    void is() {
         assert empty.is("") == false;
         assert string.is("") == false;
         assert string.is("value");
     }
 
     @Test
-    public void isNull() {
+    void isNull() {
         String value = null;
         assert empty.is(value);
         assert string.is(value) == false;
     }
 
     @Test
-    public void isCondition() {
+    void isCondition() {
         Predicate<String> condition = value -> value == null;
         assert empty.is(condition) == true;
         assert string.is(condition) == false;
     }
 
     @Test
-    public void isNullCondition() {
+    void isNullCondition() {
         Predicate<String> condition = null;
         assert empty.is(condition) == false;
         assert string.is(condition) == false;
     }
 
     @Test
-    public void set() {
+    void set() {
         assert string.set("change").equals("value");
         assert string.set(() -> "supply").equals("change");
         assert string.set(current -> current + " update").equals("supply");
@@ -134,37 +134,37 @@ public class VariableTest {
     }
 
     @Test
-    public void setNull() {
+    void setNull() {
         assert string.set((String) null).equals("value");
         assert string.isAbsent();
     }
 
     @Test
-    public void setNullSupplier() {
+    void setNullSupplier() {
         assert string.set((Supplier<String>) null).equals("value");
         assert string.isAbsent();
     }
 
     @Test
-    public void setNullOperator() {
+    void setNullOperator() {
         assert string.set((UnaryOperator<String>) null).equals("value");
         assert string.isAbsent();
     }
 
     @Test
-    public void setNullOptional() {
+    void setNullOptional() {
         assert string.set((Optional) null).equals("value");
         assert string.isAbsent();
     }
 
     @Test
-    public void setNullVariable() {
+    void setNullVariable() {
         assert string.set((Variable) null).equals("value");
         assert string.isAbsent();
     }
 
     @Test
-    public void setIf() {
+    void setIf() {
         assert string.setIf(I.reject(), "change").equals("value");
         assert string.setIf(I.reject(), () -> "supply").equals("value");
         assert string.setIf(I.reject(), current -> current + " update").equals("value");
@@ -181,7 +181,7 @@ public class VariableTest {
     }
 
     @Test
-    public void setIfNullCondition() {
+    void setIfNullCondition() {
         assert string.setIf(null, "change").equals("value");
         assert string.setIf(null, () -> "supply").equals("change");
         assert string.setIf(null, current -> current + " update").equals("supply");
@@ -191,21 +191,21 @@ public class VariableTest {
     }
 
     @Test
-    public void let() {
+    void let() {
         assert string.let("immutable").equals("value");
         assert string.set("failed").equals("immutable");
         assert string.let("failed").equals("immutable");
     }
 
     @Test
-    public void letNull() {
+    void letNull() {
         assert string.let((String) null).equals("value");
         assert string.set("failed") == null;
         assert string.let("failed") == null;
     }
 
     @Test
-    public void letIf() {
+    void letIf() {
         assert string.letIf(I.reject(), "rejected").equals("value");
 
         assert string.letIf(I.accept(), "accepted").equals("value");
@@ -214,7 +214,7 @@ public class VariableTest {
     }
 
     @Test
-    public void letIfNull() {
+    void letIfNull() {
         assert string.letIf(I.reject(), (String) null).equals("value");
         assert string.setIf(I.reject(), "rejected").equals("value");
         assert string.letIf(I.reject(), "rejected").equals("value");
@@ -225,14 +225,14 @@ public class VariableTest {
     }
 
     @Test
-    public void letSupplier() {
+    void letSupplier() {
         Supplier<String> updater = () -> "supplied";
         assert string.let(updater).equals("value");
         assert string.let(updater).equals("supplied");
     }
 
     @Test
-    public void letNullSupplier() {
+    void letNullSupplier() {
         Supplier<String> updater = null;
         assert string.let(updater).equals("value");
         assert string.let(() -> "failed") == null;
@@ -240,59 +240,59 @@ public class VariableTest {
     }
 
     @Test
-    public void or() throws Exception {
+    void or() throws Exception {
         assert empty.or("text").is("text");
         assert string.or("text").is("value");
     }
 
     @Test
-    public void orNull() throws Exception {
+    void orNull() throws Exception {
         String nill = null;
         assert empty.or(nill).isAbsent();
         assert string.or(nill).is("value");
     }
 
     @Test
-    public void orVariable() throws Exception {
+    void orVariable() throws Exception {
         assert empty.or(string).is("value");
         assert string.or(empty).is("value");
     }
 
     @Test
-    public void orNullVariable() throws Exception {
+    void orNullVariable() throws Exception {
         Variable<String> nill = null;
         assert empty.or(nill).isAbsent();
         assert string.or(nill).is("value");
     }
 
     @Test
-    public void mapFunction() {
+    void mapFunction() {
         Function<String, Integer> size = e -> e.length();
         assert string.map(size).is(5);
         assert empty.map(size).isAbsent();
     }
 
     @Test
-    public void mapFunctionNull() {
+    void mapFunctionNull() {
         assert string.map((Function) null).isAbsent();
         assert empty.map((Function) null).isAbsent();
     }
 
     @Test
-    public void flatMap() {
+    void flatMap() {
         Function<String, Variable<Integer>> size = e -> Variable.of(e.length());
         assert string.flatMap(size).is(5);
         assert empty.flatMap(size).isAbsent();
     }
 
     @Test
-    public void flatMapNull() {
+    void flatMapNull() {
         assert string.flatMap(null).isAbsent();
         assert empty.flatMap(null).isAbsent();
     }
 
     @Test
-    public void correctHashAndEqual() {
+    void correctHashAndEqual() {
         Variable<String> one = Variable.of("one");
         Variable<String> other = Variable.of("one");
         assert one != other;
@@ -302,7 +302,7 @@ public class VariableTest {
     }
 
     @Test
-    public void incorrectHashAndEqual() {
+    void incorrectHashAndEqual() {
         Variable<String> one = Variable.of("one");
         Variable<String> other = Variable.of("other");
         assert one != other;
@@ -312,7 +312,7 @@ public class VariableTest {
     }
 
     @Test
-    public void emptyHashAndEqual() {
+    void emptyHashAndEqual() {
         Variable<String> one = Variable.empty();
         Variable<String> other = Variable.empty();
         assert one != other;
@@ -322,7 +322,7 @@ public class VariableTest {
     }
 
     @Test
-    public void observeDispose() throws Exception {
+    void observeDispose() throws Exception {
         Variable<String> start = Variable.of("test");
         Variable<String> end = start.observe().take(1).to();
         assert end.isAbsent();
@@ -352,6 +352,13 @@ public class VariableTest {
         } catch (Exception e) {
             throw I.quiet(e);
         }
+    }
+
+    @Test
+    void adjust() {
+        Variable<String> upper = Variable.<String> empty().adjust(String::toUpperCase);
+        upper.set("lower");
+        assert upper.get().equals("LOWER");
     }
 
     @Test
