@@ -353,4 +353,17 @@ public class VariableTest {
             throw I.quiet(e);
         }
     }
+
+    @Test
+    void require() {
+        Variable<String> min = Variable.<String> empty().require(v -> v.length() <= 4);
+        min.set("ok");
+        assert min.get().equals("ok");
+
+        min.set("pass");
+        assert min.get().equals("pass");
+
+        min.set("non-qualified");
+        assert min.get().equals("pass");
+    }
 }

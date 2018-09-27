@@ -53,6 +53,9 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /** The observers. */
     private volatile List<Observer> observers;
 
+    /** The requirements. */
+    private volatile List<Predicate<V>> requirements;
+
     /**
      * Hide constructor.
      */
@@ -498,6 +501,14 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
         V prev = v;
 
         if (fix == false && (condition == null || is(condition))) {
+            if (requirements != null) {
+                for (Predicate<V> requirement : requirements) {
+                    if (!requirement.test(value)) {
+                        return prev;
+                    }
+                }
+            }
+
             if (let) fix = true;
 
             try {
@@ -516,15 +527,19 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
-     * Require the specified condition.
-     * </p>
+     * Set requirment of this {@link Variable}.
      * 
-     * @param condition
-     * @return
+     * @param requirement
+     * @return Chainable API.
      */
-    public Variable<V> require(Predicate<V> condition) {
-        return condition == null || condition.test(v) ? this : empty();
+    public Variable<V> require(Predicate<V> requirement) {
+        if (requirement != null) {
+            if (requirements == null) {
+                requirements = new CopyOnWriteArrayList();
+            }
+            requirements.add(requirement);
+        }
+        return this;
     }
 
     /**
