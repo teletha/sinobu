@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
@@ -359,6 +361,9 @@ public class VariableTest {
         Variable<String> upper = Variable.<String> empty().adjust(String::toUpperCase);
         upper.set("lower");
         assert upper.get().equals("LOWER");
+
+        // reject null
+        assertThrows(NullPointerException.class, () -> upper.set((String) null));
     }
 
     @Test
@@ -372,5 +377,8 @@ public class VariableTest {
 
         min.set("non-qualified");
         assert min.get().equals("pass");
+
+        // reject null
+        assertThrows(NullPointerException.class, () -> min.set((String) null));
     }
 }
