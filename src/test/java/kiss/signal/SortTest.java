@@ -13,10 +13,8 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
-
 /**
- * @version 2018/08/31 23:59:23
+ * @version 2018/09/28 13:34:18
  */
 class SortTest extends SignalTester {
 
@@ -30,8 +28,10 @@ class SortTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void empty() {
         monitor(int.class, signal -> signal.sort(null));
+
+        main.emit(1, 2, Complete);
     }
 }

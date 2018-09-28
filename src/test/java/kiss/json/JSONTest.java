@@ -9,6 +9,8 @@
  */
 package kiss.json;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +23,6 @@ import java.util.StringJoiner;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 import kiss.model.Model;
 import kiss.model.Property;
@@ -39,12 +40,12 @@ import kiss.sample.bean.TransientBean;
 import kiss.sample.bean.VariablePropertyAtField;
 
 /**
- * @version 2018/03/31 23:12:26
+ * @version 2018/09/28 13:21:13
  */
-public class JSONTest {
+class JSONTest {
 
     @Test
-    public void empty() {
+    void empty() {
         BuiltinBean instance = new BuiltinBean();
 
         // @formatter:off
@@ -63,7 +64,7 @@ public class JSONTest {
     }
 
     @Test
-    public void singleProperty() {
+    void singleProperty() {
         Person person = new Person();
         person.setAge(20);
 
@@ -78,7 +79,7 @@ public class JSONTest {
     }
 
     @Test
-    public void multipleProperties() {
+    void multipleProperties() {
         Person person = new Person();
         person.setAge(20);
         person.setFirstName("Umi");
@@ -95,7 +96,7 @@ public class JSONTest {
     }
 
     @Test
-    public void transientProperty() {
+    void transientProperty() {
         TransientBean bean = I.make(TransientBean.class);
         bean.field = "transient";
         bean.noneField = "serializable";
@@ -109,7 +110,7 @@ public class JSONTest {
     }
 
     @Test
-    public void variableProperty() {
+    void variableProperty() {
         VariablePropertyAtField bean = I.make(VariablePropertyAtField.class);
         bean.string.set("value");
         bean.integer.set(10);
@@ -136,7 +137,7 @@ public class JSONTest {
     }
 
     @Test
-    public void defaultValue() {
+    void defaultValue() {
         DefaultValue instant = new DefaultValue();
 
         // @formatter:off
@@ -163,7 +164,7 @@ public class JSONTest {
     }
 
     @Test
-    public void list() {
+    void list() {
         List<String> list = new ArrayList();
         list.add("one");
         list.add("two");
@@ -184,7 +185,7 @@ public class JSONTest {
     }
 
     @Test
-    public void listNull() {
+    void listNull() {
         List<String> list = new ArrayList();
         list.add(null);
         list.add("null");
@@ -205,7 +206,7 @@ public class JSONTest {
     }
 
     @Test
-    public void listNested() {
+    void listNested() {
         NestingList list = I.make(NestingList.class);
         list.setNesting(Arrays.asList(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
 
@@ -221,7 +222,7 @@ public class JSONTest {
     }
 
     @Test
-    public void map() {
+    void map() {
         Map<String, String> map = new LinkedHashMap();
         map.put("one", "1");
         map.put("two", "2");
@@ -242,7 +243,7 @@ public class JSONTest {
     }
 
     @Test
-    public void mapNull() {
+    void mapNull() {
         Map<String, String> map = new LinkedHashMap();
         map.put(null, null);
         map.put("null", "NULL");
@@ -260,7 +261,7 @@ public class JSONTest {
     }
 
     @Test
-    public void primitives() {
+    void primitives() {
         Primitive primitive = I.make(Primitive.class);
         primitive.setBoolean(true);
         primitive.setChar('c');
@@ -283,7 +284,7 @@ public class JSONTest {
     }
 
     @Test
-    public void escaped() {
+    void escaped() {
         Person person = new Person();
         person.setAge(20);
         person.setFirstName("A\r\nA\t");
@@ -300,7 +301,7 @@ public class JSONTest {
     }
 
     @Test
-    public void codecValue() {
+    void codecValue() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         bean.setSomeClass(String.class);
         bean.setDate(new Date(0));
@@ -322,7 +323,7 @@ public class JSONTest {
     }
 
     @Test
-    public void nestedObject() {
+    void nestedObject() {
         School school = I.make(School.class);
         school.setName("Sakura High School");
 
@@ -347,7 +348,8 @@ public class JSONTest {
         // @formatter:on
     }
 
-    public void readIncompatible() {
+    @Test
+    void readIncompatible() {
         Person instance = I.read("15", I.make(Person.class));
         assert instance != null;
         assert instance.getAge() == 0;
@@ -355,12 +357,13 @@ public class JSONTest {
         assert instance.getLastName() == null;
     }
 
-    @ExpectThrow(ClassCircularityError.class)
-    public void cyclic() {
-        ChainBean chain = I.make(ChainBean.class);
-        chain.setNext(chain);
-
-        validate(chain);
+    @Test
+    void cyclic() {
+        assertThrows(ClassCircularityError.class, () -> {
+            ChainBean chain = I.make(ChainBean.class);
+            chain.setNext(chain);
+            validate(chain);
+        });
     }
 
     /**

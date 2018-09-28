@@ -9,13 +9,14 @@
  */
 package kiss.model;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.FieldProperty;
@@ -44,9 +45,9 @@ import kiss.sample.bean.invalid.ProtectedAccessor;
 import kiss.sample.bean.invalid.StaticAccessor;
 
 /**
- * @version 2018/03/31 23:16:15
+ * @version 2018/09/28 13:29:28
  */
-public class ModelTest {
+class ModelTest {
 
     static {
         // dirty code to load I class at first
@@ -69,7 +70,7 @@ public class ModelTest {
     }
 
     @Test
-    public void identicalCehck() throws Exception {
+    void identicalCehck() throws Exception {
         // from class
         Model model = Model.of(Person.class);
         assert model != null;
@@ -86,14 +87,14 @@ public class ModelTest {
     }
 
     @Test
-    public void load() {
+    void load() {
         Model model = Model.of(Model.class);
         assert model != null;
         assert Model.class == model.type;
     }
 
     @Test
-    public void wildcardProperty() {
+    void wildcardProperty() {
         Model model = Model.of(WildcardBean.class);
         assert model != null;
 
@@ -113,7 +114,7 @@ public class ModelTest {
     }
 
     @Test
-    public void inheritProperty() {
+    void inheritProperty() {
         Model model = Model.of(InheritanceBean.class);
         assert model != null;
         assert InheritanceBean.class == model.type;
@@ -128,7 +129,7 @@ public class ModelTest {
     }
 
     @Test
-    public void stringMap() {
+    void stringMap() {
         Model model = Model.of(StringMapProperty.class);
         assert model != null;
 
@@ -149,7 +150,7 @@ public class ModelTest {
     }
 
     @Test
-    public void fieldProperty() {
+    void fieldProperty() {
         Model<FieldProperty> model = Model.of(FieldProperty.class);
         assert 2 == model.properties().size();
 
@@ -160,7 +161,7 @@ public class ModelTest {
     }
 
     @Test
-    public void fieldGenericProperty() {
+    void fieldGenericProperty() {
         Model<GenericFieldProperty> model = Model.of(GenericFieldProperty.class);
         assert 2 == model.properties().size();
 
@@ -171,7 +172,7 @@ public class ModelTest {
     }
 
     @Test
-    public void variableAtFieldProperty() {
+    void variableAtFieldProperty() {
         Model<VariablePropertyAtField> model = Model.of(VariablePropertyAtField.class);
         assert model.properties().size() == 4;
 
@@ -198,7 +199,7 @@ public class ModelTest {
     }
 
     @Test
-    public void noneAttributeFinalFieldProperty() {
+    void noneAttributeFinalFieldProperty() {
         Model<FinalFieldProperty> model = Model.of(FinalFieldProperty.class);
         assert model.properties().size() == 1;
 
@@ -217,7 +218,7 @@ public class ModelTest {
     }
 
     @Test
-    public void protectedAccessor() {
+    void protectedAccessor() {
         Model model = Model.of(ProtectedAccessor.class);
         assert model != null;
 
@@ -238,7 +239,7 @@ public class ModelTest {
      * Test {@link Map} model with the key which can convert to string.
      */
     @Test
-    public void compatibleKeyMap() {
+    void compatibleKeyMap() {
         Model model = Model.of(CompatibleKeyMap.class);
         assert model != null;
 
@@ -262,7 +263,7 @@ public class ModelTest {
      * Test {@link Map} model with the key which can convert to string.
      */
     @Test
-    public void incompatibleKeyMap() {
+    void incompatibleKeyMap() {
         Model model = Model.of(IncompatibleKeyMap.class);
         assert model != null;
 
@@ -279,7 +280,7 @@ public class ModelTest {
      * Valid Bean Model.
      */
     @Test
-    public void testModel06() {
+    void testModel06() {
         Model model = Model.of(GenericStringBean.class);
         assert model != null;
 
@@ -308,7 +309,7 @@ public class ModelTest {
      * Valid Bean Model.
      */
     @Test
-    public void testGenericObjectModel() {
+    void testGenericObjectModel() {
         Model model = Model.of(ModelBean.class);
         assert model != null;
 
@@ -343,7 +344,7 @@ public class ModelTest {
      * Valid Bean Model.
      */
     @Test
-    public void testGenericListModel() {
+    void testGenericListModel() {
         Model model = Model.of(ListBean.class);
         assert model != null;
 
@@ -390,7 +391,7 @@ public class ModelTest {
      * Valid Bean Model.
      */
     @Test
-    public void testGenericMapModel() {
+    void testGenericMapModel() {
         Model model = Model.of(MapBean.class);
         assert model != null;
 
@@ -434,19 +435,19 @@ public class ModelTest {
     }
 
     @Test
-    public void list() throws Exception {
+    void list() throws Exception {
         Model model = Model.of(StringList.class);
         assert model instanceof ListModel;
     }
 
     @Test
-    public void map() throws Exception {
+    void map() throws Exception {
         Model model = Model.of(StringMap.class);
         assert model instanceof MapModel;
     }
 
     @Test
-    public void testGenericGetterBean() {
+    void testGenericGetterBean() {
         Model model = Model.of(GenericGetterBean.class);
 
         assertProperty(model, "generic", String.class);
@@ -455,7 +456,7 @@ public class ModelTest {
     }
 
     @Test
-    public void testGenericSetterBean() {
+    void testGenericSetterBean() {
         Model model = Model.of(GenericSetterBean.class);
 
         assertProperty(model, "generic", String.class);
@@ -464,7 +465,7 @@ public class ModelTest {
     }
 
     @Test
-    public void testGenericBoundedTypedBean() {
+    void testGenericBoundedTypedBean() {
         Model model = Model.of(GenericBoundedTypedBean.class);
 
         assertProperty(model, "generic", Student.class);
@@ -473,7 +474,7 @@ public class ModelTest {
     }
 
     @Test
-    public void testWildcardTypeSetterBean() throws Exception {
+    void testWildcardTypeSetterBean() throws Exception {
         Model model = Model.of(WildcardTypeSetter.class);
 
         assertProperty(model, "list", List.class);
@@ -483,7 +484,7 @@ public class ModelTest {
      * Test the class which has no property.
      */
     @Test
-    public void testInvalidBean02() {
+    void testInvalidBean02() {
         Model model = Model.of(OnlyGetter.class);
         assert model != null;
 
@@ -495,7 +496,7 @@ public class ModelTest {
      * Test the class which has no property.
      */
     @Test
-    public void testInvalidBean03() {
+    void testInvalidBean03() {
         Model model = Model.of(OnlySetter.class);
         assert model != null;
 
@@ -507,7 +508,7 @@ public class ModelTest {
      * Test the class which has no property.
      */
     @Test
-    public void testInvalidBean04() {
+    void testInvalidBean04() {
         Model model = Model.of(FinalAccessor.class);
         assert model != null;
 
@@ -519,7 +520,7 @@ public class ModelTest {
      * Test the class which has no property.
      */
     @Test
-    public void testInvalidBean07() {
+    void testInvalidBean07() {
         Model model = Model.of(OverrideFinalAccessor.class);
         assert model != null;
 
@@ -531,7 +532,7 @@ public class ModelTest {
      * Test the class which has no property.
      */
     @Test
-    public void testInvalidBean06() {
+    void testInvalidBean06() {
         Model model = Model.of(StaticAccessor.class);
         assert model != null;
 
@@ -542,60 +543,65 @@ public class ModelTest {
     /**
      * Properties are unmodifiable.
      */
-    @ExpectThrow(UnsupportedOperationException.class)
-    public void testUnmodifiable01() {
-        Model model = Model.of(Person.class);
-        List<Property> properties = model.properties();
-
-        properties.clear();
+    @Test
+    void testUnmodifiable01() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Model model = Model.of(Person.class);
+            List<Property> properties = model.properties();
+            properties.clear();
+        });
     }
 
     /**
      * Properties are unmodifiable.
      */
-    @ExpectThrow(UnsupportedOperationException.class)
-    public void testUnmodifiable02() {
-        Model model = Model.of(Person.class);
-        List<Property> properties = model.properties();
-
-        properties.remove(0);
+    @Test
+    void testUnmodifiable02() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Model model = Model.of(Person.class);
+            List<Property> properties = model.properties();
+            properties.remove(0);
+        });
     }
 
     /**
      * Properties are unmodifiable.
      */
-    @ExpectThrow(UnsupportedOperationException.class)
-    public void testUnmodifiable03() {
-        Model model = Model.of(Person.class);
-        List<Property> properties = model.properties();
-
-        properties.add(new Property(model, "test"));
+    @Test
+    void testUnmodifiable03() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Model model = Model.of(Person.class);
+            List<Property> properties = model.properties();
+            properties.add(new Property(model, "test"));
+        });
     }
 
     /**
      * Properties are unmodifiable.
      */
-    @ExpectThrow(UnsupportedOperationException.class)
-    public void testUnmodifiable04() {
-        Model model = Model.of(Person.class);
-        List<Property> properties = model.properties();
-
-        properties.iterator().remove();
+    @Test
+    void testUnmodifiable04() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Model model = Model.of(Person.class);
+            List<Property> properties = model.properties();
+            properties.iterator().remove();
+        });
     }
 
     /**
      * Properties are unmodifiable.
      */
-    @ExpectThrow(UnsupportedOperationException.class)
-    public void testUnmodifiable05() {
-        Model model = Model.of(Person.class);
-        List<Property> properties = model.properties();
-
-        Collections.sort(properties);
+    @Test
+    void testUnmodifiable05() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Model model = Model.of(Person.class);
+            List<Property> properties = model.properties();
+            Collections.sort(properties);
+        });
     }
 
     @Test
-    public void proxy() throws Exception {
+    void proxy() throws Exception {
         ProxyModel proxy = I.make(ProxyModel.class, (p, m, a) -> null);
         Model model = Model.of(proxy);
         List<Property> properties = model.properties();
@@ -606,7 +612,7 @@ public class ModelTest {
     /**
      * @version 2017/02/09 20:35:34
      */
-    public static interface ProxyModel {
+    static interface ProxyModel {
         int getValue();
 
         void setValue(int v);

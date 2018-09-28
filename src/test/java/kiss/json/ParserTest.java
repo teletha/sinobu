@@ -9,6 +9,8 @@
  */
 package kiss.json;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
@@ -16,16 +18,15 @@ import java.util.StringJoiner;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 
 /**
- * @version 2018/03/31 22:51:43
+ * @version 2018/09/28 13:25:13
  */
-public class ParserTest {
+class ParserTest {
 
     @Test
-    public void empty() {
+    void empty() {
         parse("{}");
         parse("{ }");
         parse("{\t}");
@@ -35,7 +36,7 @@ public class ParserTest {
     }
 
     @Test
-    public void space() {
+    void space() {
         // @formatter:off
         parse("  {  ",
         "   ' s p a c e '  :   null    ",
@@ -43,38 +44,46 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidEndBrace() {
-        parse("{");
-    }
-
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidStartBrace() {
-        parse("}");
-    }
-
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidNoSeparator() {
-        // @formatter:off
-        parse("{",
-        "  'true': true",
-        "  'false': false",
-        "}");
-        // @formatter:on
-    }
-
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidTailSeparator() {
-        // @formatter:off
-        parse("{",
-        "  'true': true,",
-        "  'false': false,",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidEndBrace() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("{");
+        });
     }
 
     @Test
-    public void primitives() {
+    void invalidStartBrace() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("}");
+        });
+    }
+
+    @Test
+    void invalidNoSeparator() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'true': true",
+            "  'false': false",
+            "}");
+            // @formatter:on
+        });
+    }
+
+    @Test
+    void invalidTailSeparator() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'true': true,",
+            "  'false': false,",
+            "}");
+            // @formatter:on
+        });
+    }
+
+    @Test
+    void primitives() {
         // @formatter:off
         parse("{",
         "  'true': true,",
@@ -84,17 +93,19 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidPrimitives() {
-        // @formatter:off
-        parse("{",
-        "  'name': undefined",
-        "}");
-        // @formatter:on 
+    @Test
+    void invalidPrimitives() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'name': undefined",
+            "}");
+            // @formatter:on 
+        });
     }
 
     @Test
-    public void array() {
+    void array() {
         // @formatter:off
         parse("{",
         "  'value': ['a', true, false, null, 1, -1, 0.2, 3e+1],",
@@ -105,7 +116,7 @@ public class ParserTest {
     }
 
     @Test
-    public void object() {
+    void object() {
         // @formatter:off
         parse("{",
         "  'value': {'a': 1, 'b': false, 'c': null},",
@@ -116,7 +127,7 @@ public class ParserTest {
     }
 
     @Test
-    public void string() {
+    void string() {
         // @formatter:off
         parse("{",
         "  'name': 'value',",
@@ -129,7 +140,7 @@ public class ParserTest {
     }
 
     @Test
-    public void escapedQuote1() {
+    void escapedQuote1() {
         // @formatter:off
         parse("{",
         "  'valid': '\\\"'", // \"
@@ -137,17 +148,19 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void escapedQuote2() {
-        // @formatter:off
-        parse("{",
-        "  'invalid': '\\\\\"'", // \\"
-        "}");
-        // @formatter:on
+    @Test
+    void escapedQuote2() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'invalid': '\\\\\"'", // \\"
+            "}");
+            // @formatter:on
+        });
     }
 
     @Test
-    public void escapedQuote3() {
+    void escapedQuote3() {
         // @formatter:off
         parse("{",
         "  'valid': '\\\\\\\"'", // \\\"
@@ -155,17 +168,19 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void escapedQuote4() {
-        // @formatter:off
-        parse("{",
-        "  'invalid': '\\\\\\\\\"'", // \\\\"
-        "}");
-        // @formatter:on
+    @Test
+    void escapedQuote4() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'invalid': '\\\\\\\\\"'", // \\\\"
+            "}");
+            // @formatter:on
+        });
     }
 
     @Test
-    public void escapedQuote5() {
+    void escapedQuote5() {
         // @formatter:off
         parse("{",
         "  'valid': '\\\\\\\\\\\"'", // \\\\\"
@@ -173,17 +188,19 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void escapedQuote6() {
-        // @formatter:off
-        parse("{",
-        "  'invalid': '\\\\\\\\\\\\\"'", // \\\\\\"
-        "}");
-        // @formatter:on
+    @Test
+    void escapedQuote6() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'invalid': '\\\\\\\\\\\\\"'", // \\\\\\"
+            "}");
+            // @formatter:on
+        });
     }
 
     @Test
-    public void number() {
+    void number() {
         // @formatter:off
         parse("{",
         "  '0': 0,",
@@ -207,112 +224,136 @@ public class ParserTest {
         // @formatter:on
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidNoQuotedName() {
-        // @formatter:off
+    @Test
+    void invalidNoQuotedName() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
         parse("{",
         "  invalid: 'name'",
         "}");
         // @formatter:on
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidNaN() {
-        // @formatter:off
-        parse("{",
-        "  'NaN': NaN",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidNaN() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'NaN': NaN",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidPlus() {
-        // @formatter:off
-        parse("{",
-        "  'plus': +1",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidPlus() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'plus': +1",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidZeroPrefix() {
-        // @formatter:off
-        parse("{",
-        "  'zeroPrefix': 012",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidZeroPrefix() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'zeroPrefix': 012",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidMinusZeroPrefix() {
-        // @formatter:off
-        parse("{",
-        "  'zeroPrefix': -012",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidMinusZeroPrefix() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'zeroPrefix': -012",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidFraction() {
-        // @formatter:off
-        parse("{",
-        "  'fraction-abbr': .1",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidFraction() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'fraction-abbr': .1",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidExponent() {
-        // @formatter:off
-        parse("{",
-        "  'invalid': 1e*1",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidExponent() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'invalid': 1e*1",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidMinusOnly() {
-        // @formatter:off
-        parse("{",
-        "  'minus': -",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidMinusOnly() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'minus': -",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void invalidMinus() {
-        // @formatter:off
-        parse("{",
-        "  'minus': -a",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidMinus() {
+        assertThrows(IllegalStateException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'minus': -a",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(NumberFormatException.class)
-    public void invalidUnicode1() {
-        // @formatter:off
-        parse("{",
-        "  'invalid': '\\u000'",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidUnicode1() {
+        assertThrows(NumberFormatException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'invalid': '\\u000'",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(NumberFormatException.class)
-    public void invalidUnicode2() {
-        // @formatter:off
-        parse("{",
-        "  'invalid': '\\u000G'",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidUnicode2() {
+        assertThrows(NumberFormatException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'invalid': '\\u000G'",
+            "}");
+            // @formatter:on
+        });
     }
 
-    @ExpectThrow(NumberFormatException.class)
-    public void invalidUnicode3() {
-        // @formatter:off
-        parse("{",
-        "  'invalid': '\\u000-'",
-        "}");
-        // @formatter:on
+    @Test
+    void invalidUnicode3() {
+        assertThrows(NumberFormatException.class, () -> {
+            // @formatter:off
+            parse("{",
+            "  'invalid': '\\u000-'",
+            "}");
+            // @formatter:on
+        });
     }
 
     private void parse(String... texts) {

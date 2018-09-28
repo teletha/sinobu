@@ -9,14 +9,15 @@
  */
 package kiss.signal;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 import kiss.Signaling;
 
 /**
- * @version 2018/09/23 16:38:31
+ * @version 2018/09/28 13:31:51
  */
 class SwitchMapTest extends SignalTester {
 
@@ -80,9 +81,11 @@ class SwitchMapTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void rejectNull() {
-        monitor(() -> signal(1, 2).switchMap(null));
+        assertThrows(NullPointerException.class, () -> {
+            monitor(() -> signal(1, 2).switchMap(null));
+        });
     }
 
     @Test

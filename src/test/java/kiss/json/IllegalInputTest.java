@@ -9,61 +9,76 @@
  */
 package kiss.json;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.Reader;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 import kiss.sample.bean.Person;
 
 /**
- * @version 2018/03/31 23:12:52
+ * @version 2018/09/28 13:20:01
  */
-public class IllegalInputTest {
+class IllegalInputTest {
 
     /** The normal bean. */
     private Person bean = I.make(Person.class);
 
-    @ExpectThrow(NullPointerException.class)
-    public void readNullCharSequence() {
-        I.read((CharSequence) null, bean);
-    }
-
-    @ExpectThrow(NullPointerException.class)
-    public void readNullReader() {
-        I.read((Reader) null, bean);
-    }
-
-    @ExpectThrow(NullPointerException.class)
-    public void readNullOutput() throws Exception {
-        I.read("{\"age\":\"15\"}", (Object) null);
+    @Test
+    void readNullCharSequence() {
+        assertThrows(NullPointerException.class, () -> {
+            I.read((CharSequence) null, bean);
+        });
     }
 
     @Test
-    public void readInvalidOutputBean() throws Exception {
+    void readNullReader() {
+        assertThrows(NullPointerException.class, () -> {
+            I.read((Reader) null, bean);
+        });
+    }
+
+    @Test
+    void readNullOutput() {
+        assertThrows(NullPointerException.class, () -> {
+            I.read("{\"age\":\"15\"}", (Object) null);
+        });
+    }
+
+    @Test
+    void readInvalidOutputBean() {
         Class clazz = I.read("{\"age\":\"15\"}", Class.class);
         assert clazz == Class.class;
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void readEmpty() {
-        assert I.read("", bean) != null;
+    @Test
+    void readEmpty() {
+        assertThrows(IllegalStateException.class, () -> {
+            assert I.read("", bean) != null;
+        });
     }
 
-    @ExpectThrow(IllegalStateException.class)
-    public void readInvalid() {
-        assert I.read("@", bean) != null;
+    @Test
+    void readInvalid() {
+        assertThrows(IllegalStateException.class, () -> {
+            assert I.read("@", bean) != null;
+        });
     }
 
-    @ExpectThrow(NullPointerException.class)
-    public void writeNullAppendable() {
-        I.write(bean, (Appendable) null);
+    @Test
+    void writeNullAppendable() {
+        assertThrows(NullPointerException.class, () -> {
+            I.write(bean, (Appendable) null);
+        });
     }
 
-    @ExpectThrow(NullPointerException.class)
-    public void writeNullJavaObject() {
-        I.write(null, new StringBuilder());
+    @Test
+    void writeNullJavaObject() {
+        assertThrows(NullPointerException.class, () -> {
+            I.write(null, new StringBuilder());
+        });
     }
 
 }

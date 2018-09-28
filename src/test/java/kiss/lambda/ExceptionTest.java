@@ -9,6 +9,8 @@
  */
 package kiss.lambda;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -16,7 +18,8 @@ import java.util.function.Function;
 
 import javax.crypto.IllegalBlockSizeException;
 
-import antibug.ExpectThrow;
+import org.junit.jupiter.api.Test;
+
 import kiss.I;
 import kiss.WiseBiConsumer;
 import kiss.WiseBiFunction;
@@ -25,64 +28,74 @@ import kiss.WiseFunction;
 import kiss.WiseRunnable;
 
 /**
- * @version 2018/03/31 23:16:30
+ * @version 2018/09/28 13:26:26
  */
-public class ExceptionTest {
+class ExceptionTest {
 
-    @ExpectThrow(IllegalBlockSizeException.class)
-    public void runnable() {
-        Runnable lambda = I.quiet(this::runnableThrow);
-        assert lambda != null;
-        assert lambda instanceof WiseRunnable;
-        lambda.run();
+    @Test
+    void runnable() {
+        assertThrows(IllegalBlockSizeException.class, () -> {
+            Runnable lambda = I.quiet(this::runnableThrow);
+            assert lambda != null;
+            assert lambda instanceof WiseRunnable;
+            lambda.run();
+        });
     }
 
     private void runnableThrow() throws Exception {
         throw new IllegalBlockSizeException();
     }
 
-    @ExpectThrow(IllegalBlockSizeException.class)
-    public void consumer() {
-        Consumer<Object> lambda = I.quiet(this::consumerThrow);
-        assert lambda != null;
-        assert lambda instanceof WiseConsumer;
-        lambda.accept(null);
+    @Test
+    void consumer() {
+        assertThrows(IllegalBlockSizeException.class, () -> {
+            Consumer<Object> lambda = I.quiet(this::consumerThrow);
+            assert lambda != null;
+            assert lambda instanceof WiseConsumer;
+            lambda.accept(null);
+        });
     }
 
     private void consumerThrow(Object p) throws Exception {
         throw new IllegalBlockSizeException();
     }
 
-    @ExpectThrow(IllegalBlockSizeException.class)
-    public void biconsumer() {
-        BiConsumer<Object, Object> lambda = I.quiet(this::biconsumerThrow);
-        assert lambda != null;
-        assert lambda instanceof WiseBiConsumer;
-        lambda.accept(null, null);
+    @Test
+    void biconsumer() {
+        assertThrows(IllegalBlockSizeException.class, () -> {
+            BiConsumer<Object, Object> lambda = I.quiet(this::biconsumerThrow);
+            assert lambda != null;
+            assert lambda instanceof WiseBiConsumer;
+            lambda.accept(null, null);
+        });
     }
 
     private void biconsumerThrow(Object p, Object q) throws Exception {
         throw new IllegalBlockSizeException();
     }
 
-    @ExpectThrow(IllegalBlockSizeException.class)
-    public void function() {
-        Function<Object, Object> lambda = I.quiet(this::functionThrow);
-        assert lambda != null;
-        assert lambda instanceof WiseFunction;
-        lambda.apply(null);
+    @Test
+    void function() {
+        assertThrows(IllegalBlockSizeException.class, () -> {
+            Function<Object, Object> lambda = I.quiet(this::functionThrow);
+            assert lambda != null;
+            assert lambda instanceof WiseFunction;
+            lambda.apply(null);
+        });
     }
 
     private Object functionThrow(Object p) throws Exception {
         throw new IllegalBlockSizeException();
     }
 
-    @ExpectThrow(IllegalBlockSizeException.class)
-    public void bifunction() {
-        BiFunction<Object, Object, Object> lambda = I.quiet(this::bifunctionThrow);
-        assert lambda != null;
-        assert lambda instanceof WiseBiFunction;
-        lambda.apply(null, null);
+    @Test
+    void bifunction() {
+        assertThrows(IllegalBlockSizeException.class, () -> {
+            BiFunction<Object, Object, Object> lambda = I.quiet(this::bifunctionThrow);
+            assert lambda != null;
+            assert lambda instanceof WiseBiFunction;
+            lambda.apply(null, null);
+        });
     }
 
     private Object bifunctionThrow(Object p, Object q) throws Exception {

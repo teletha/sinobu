@@ -9,16 +9,17 @@
  */
 package kiss.signal;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 import kiss.Signaling;
 
 /**
- * @version 2018/03/31 23:15:31
+ * @version 2018/09/28 13:30:50
  */
 class FlatMapTest extends SignalTester {
 
@@ -82,9 +83,11 @@ class FlatMapTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void rejectNull() {
-        monitor(() -> signal(1, 2).flatMap(null));
+        assertThrows(NullPointerException.class, () -> {
+            monitor(() -> signal(1, 2).flatMap(null));
+        });
     }
 
     @Test
@@ -125,9 +128,11 @@ class FlatMapTest extends SignalTester {
         assert main.isCompleted();
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void enumerationNull() {
-        monitor(() -> signal(1, 2).flatEnum(null));
+        assertThrows(NullPointerException.class, () -> {
+            monitor(() -> signal(1, 2).flatEnum(null));
+        });
     }
 
     @Test
@@ -137,9 +142,11 @@ class FlatMapTest extends SignalTester {
         assert main.emit("TEST").value("T", "E", "S", "T");
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void arrayNull() {
-        monitor(String.class, signal -> signal.flatArray(null));
+        assertThrows(NullPointerException.class, () -> {
+            monitor(String.class, signal -> signal.flatArray(null));
+        });
     }
 
     @Test
@@ -149,9 +156,11 @@ class FlatMapTest extends SignalTester {
         assert main.emit("TEST").value("T", "E", "S", "T");
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void iterableNull() {
-        monitor(String.class, signal -> signal.flatIterable(null));
+        assertThrows(NullPointerException.class, () -> {
+            monitor(String.class, signal -> signal.flatIterable(null));
+        });
     }
 
     @Test

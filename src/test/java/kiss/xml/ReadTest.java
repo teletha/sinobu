@@ -9,6 +9,8 @@
  */
 package kiss.xml;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
@@ -19,12 +21,11 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xml.sax.SAXParseException;
 
 import antibug.CleanRoom;
-import antibug.ExpectThrow;
 import kiss.I;
 import kiss.XML;
 
 /**
- * @version 2018/04/01 17:19:13
+ * @version 2018/09/28 13:35:29
  */
 public class ReadTest {
 
@@ -87,13 +88,17 @@ public class ReadTest {
         assert xml.name() == "html";
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void inputNull() {
-        I.xml((File) null);
+        assertThrows(NullPointerException.class, () -> {
+            I.xml((File) null);
+        });
     }
 
-    @ExpectThrow(SAXParseException.class)
+    @Test
     void invalidLiteral() {
-        I.xml("<m><></m>");
+        assertThrows(SAXParseException.class, () -> {
+            I.xml("<m><></m>");
+        });
     }
 }

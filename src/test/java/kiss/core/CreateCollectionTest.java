@@ -9,6 +9,8 @@
  */
 package kiss.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -17,7 +19,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 
 /**
@@ -73,8 +74,8 @@ public class CreateCollectionTest {
         assert list.size() == 0;
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     public void collectNull() {
-        I.collect((Class) null);
+        assertThrows(NullPointerException.class, () -> I.collect((Class) null));
     }
 }

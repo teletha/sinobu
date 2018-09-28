@@ -9,15 +9,16 @@
  */
 package kiss.signal;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 
 /**
- * @version 2018/08/01 11:51:08
+ * @version 2018/09/28 13:31:27
  */
 class MapTest extends SignalTester {
 
@@ -61,9 +62,11 @@ class MapTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void mapNullConverter() {
-        I.signal().map(null);
+        assertThrows(NullPointerException.class, () -> {
+            I.signal().map(null);
+        });
     }
 
     @Test
@@ -108,9 +111,11 @@ class MapTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void mapWithContextNullConverter() {
-        I.signal().map(AtomicInteger::new, null);
+        assertThrows(NullPointerException.class, () -> {
+            I.signal().map(AtomicInteger::new, null);
+        });
     }
 
     @Test
@@ -213,9 +218,11 @@ class MapTest extends SignalTester {
         assert main.isDisposed();
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     void mapsNull() {
-        monitor(int.class, signal -> signal.maps(null));
+        assertThrows(NullPointerException.class, () -> {
+            monitor(int.class, signal -> signal.maps(null));
+        });
     }
 
     @Test

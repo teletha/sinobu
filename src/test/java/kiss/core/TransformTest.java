@@ -9,6 +9,8 @@
  */
 package kiss.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -33,11 +35,10 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 
 /**
- * @version 2018/03/31 23:13:47
+ * @version 2018/09/28 13:14:06
  */
 public class TransformTest {
 
@@ -47,9 +48,11 @@ public class TransformTest {
         assert I.transform(null, String.class) == null;
     }
 
-    @ExpectThrow(NullPointerException.class)
+    @Test
     public void outputNull() throws Exception {
-        assert I.transform("1", null) == null;
+        assertThrows(NullPointerException.class, () -> {
+            I.transform("1", null);
+        });
     }
 
     @Test

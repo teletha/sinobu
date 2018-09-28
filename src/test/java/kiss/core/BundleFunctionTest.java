@@ -9,6 +9,8 @@
  */
 package kiss.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -18,7 +20,6 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.ExpectThrow;
 import kiss.I;
 
 /**
@@ -68,11 +69,12 @@ class BundleFunctionTest {
         assert value.get() == 30;
     }
 
-    @ExpectThrow(IllegalArgumentException.class)
+    @Test
     void byClass() {
         ArrayList array = new ArrayList();
         LinkedList linked = new LinkedList();
-        I.bundle(array, linked);
+
+        assertThrows(IllegalArgumentException.class, () -> I.bundle(array, linked));
     }
 
     @Test
@@ -103,10 +105,13 @@ class BundleFunctionTest {
         return consumer;
     }
 
-    @ExpectThrow(IndexOutOfBoundsException.class)
+    @Test
     void error() {
         ArrayList<String> array = new ArrayList();
         List<String> bundle = I.bundle(List.class, array);
-        bundle.set(10, "Bundle will throw not UndeclaredThrowableException but IndexOutOfBoundsException.");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            bundle.set(10, "Bundle will throw not UndeclaredThrowableException but IndexOutOfBoundsException.");
+        });
     }
 }
