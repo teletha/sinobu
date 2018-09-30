@@ -10,7 +10,6 @@
 package kiss;
 
 import java.lang.reflect.Constructor;
-import java.util.function.Supplier;
 
 import kiss.model.Model;
 
@@ -24,12 +23,12 @@ import kiss.model.Model;
  * @param <M> A {@link Manageable} class.
  * @see Singleton
  * @see ThreadSpecific
- * @version 2017/04/21 21:03:39
+ * @version 2018/09/30 18:51:13
  */
 public class Prototype<M> implements Lifestyle<M> {
 
     /** The cache for instantiator. */
-    protected final Supplier<M> instantiator;
+    protected final WiseSupplier<M> instantiator;
 
     /**
      * Create Prototype instance.
@@ -46,7 +45,6 @@ public class Prototype<M> implements Lifestyle<M> {
         Constructor<M> constructor = constructors[0];
 
         Class[] types = constructor.getParameterTypes();
-
         // We can safely call the method 'newInstance()' because the generated class has
         // only one public constructor without arguments. But we should make this
         // instantiator accessible because it makes the creation speed faster.
@@ -72,13 +70,8 @@ public class Prototype<M> implements Lifestyle<M> {
                     }
                 }
             }
-
-            try {
-                // create new instance
-                return constructor.newInstance(params);
-            } catch (Exception e) {
-                throw I.quiet(e);
-            }
+            // create new instance
+            return constructor.newInstance(params);
         };
     }
 
@@ -87,7 +80,7 @@ public class Prototype<M> implements Lifestyle<M> {
      * 
      * @param inistantiator A instantiator.
      */
-    protected Prototype(Supplier<M> inistantiator) {
+    protected Prototype(WiseSupplier<M> inistantiator) {
         this.instantiator = inistantiator;
     }
 

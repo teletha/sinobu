@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.util.function.Supplier;
-
 /**
  * <p>
  * This lifestyle guarantees that only one instance of a specific class exists per thread.
@@ -36,7 +34,7 @@ import java.util.function.Supplier;
  * @param <M> A {@link Manageable} class.
  * @see Prototype
  * @see Singleton
- * @version 2011/11/04 0:12:03
+ * @version 2018/09/30 18:51:01
  */
 public class ThreadSpecific<M> extends Prototype<M> {
 
@@ -57,7 +55,7 @@ public class ThreadSpecific<M> extends Prototype<M> {
      * 
      * @param inistantiator
      */
-    protected ThreadSpecific(Supplier<M> inistantiator) {
+    protected ThreadSpecific(WiseSupplier<M> inistantiator) {
         super(inistantiator);
     }
 
