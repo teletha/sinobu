@@ -15,7 +15,7 @@ import java.math.BigInteger;
 import java.util.Date;
 
 /**
- * @version 2017/04/19 10:34:38
+ * @version 2018/10/04 21:48:41
  */
 public class BuiltinBean {
 
@@ -69,24 +69,6 @@ public class BuiltinBean {
      */
     public void setBigInteger(BigInteger bigInteger) {
         this.bigInteger = bigInteger;
-    }
-
-    /**
-     * Get the date property of this {@link BuiltinBean}.
-     * 
-     * @return The date prperty.
-     */
-    public Date getDate() {
-        return date;
-    }
-
-    /**
-     * Set the date property of this {@link BuiltinBean}.
-     * 
-     * @param date The date value to set.
-     */
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     /**

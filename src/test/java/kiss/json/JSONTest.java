@@ -15,7 +15,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ import kiss.sample.bean.TransientBean;
 import kiss.sample.bean.VariablePropertyAtField;
 
 /**
- * @version 2018/09/28 13:21:13
+ * @version 2018/10/04 21:48:35
  */
 class JSONTest {
 
@@ -53,7 +52,6 @@ class JSONTest {
         "{",
         "  'bigDecimal': null,",
         "  'bigInteger': null,",
-        "  'date': null,",
         "  'file': null,",
         "  'schoolEnum': null,",
         "  'someClass': null,",
@@ -304,7 +302,6 @@ class JSONTest {
     void codecValue() {
         BuiltinBean bean = I.make(BuiltinBean.class);
         bean.setSomeClass(String.class);
-        bean.setDate(new Date(0));
         bean.setBigInteger(new BigInteger("1234567890987654321"));
 
         // @formatter:off
@@ -312,7 +309,6 @@ class JSONTest {
         "{",
         "  'bigDecimal': null,",
         "  'bigInteger': '1234567890987654321',",
-        "  'date': '1970-01-01T09:00:00.000',",
         "  'file': null,",
         "  'schoolEnum': null,",
         "  'someClass': 'java.lang.String',",

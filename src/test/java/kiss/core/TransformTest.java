@@ -13,7 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -30,7 +32,6 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
@@ -38,67 +39,61 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 
 /**
- * @version 2018/09/28 13:14:06
+ * @version 2018/10/04 21:48:56
  */
-public class TransformTest {
+class TransformTest {
 
     @Test
-    public void inputNull() throws Exception {
+    void inputNull() {
         assert I.transform(null, int.class) == null;
         assert I.transform(null, String.class) == null;
     }
 
     @Test
-    public void outputNull() throws Exception {
+    void outputNull() {
         assertThrows(NullPointerException.class, () -> {
             I.transform("1", null);
         });
     }
 
     @Test
-    public void primitiveInt() {
+    void primitiveInt() {
         assert I.transform("1", int.class) == 1;
         assert I.transform(1, String.class).equals("1");
     }
 
     @Test
-    public void primitiveLong() {
+    void primitiveLong() {
         assert I.transform("1", long.class) == 1L;
         assert I.transform(1L, String.class).equals("1");
     }
 
     @Test
-    public void primitiveChar() {
+    void primitiveChar() {
         assert I.transform("1", char.class) == '1';
         assert I.transform('1', String.class).equals("1");
     }
 
     @Test
-    public void primitiveFloat() {
+    void primitiveFloat() {
         assert I.transform("1.3", float.class) == 1.3f;
         assert I.transform(1.3f, String.class).equals("1.3");
     }
 
     @Test
-    public void primitiveDouble() {
+    void primitiveDouble() {
         assert I.transform("1.3", double.class) == 1.3d;
         assert I.transform(1.3d, String.class).equals("1.3");
     }
 
     @Test
-    public void primitiveBoolean() {
+    void primitiveBoolean() {
         assert I.transform("true", boolean.class);
         assert I.transform(true, String.class).equals("true");
     }
 
     @Test
-    public void date() throws Exception {
-        assert I.transform(new Date(0), String.class).equals("1970-01-01T09:00:00.000");
-        assert I.transform("1970-01-01T09:00:00.000", Date.class).equals(new Date(0));
-    }
-
-    @Test
-    public void url() throws Exception {
+    void url() throws MalformedURLException {
         URL value = new URL("http://localhost:8888/");
         String text = "http://localhost:8888/";
 
@@ -107,7 +102,7 @@ public class TransformTest {
     }
 
     @Test
-    public void uri() throws Exception {
+    void uri() throws URISyntaxException {
         URI value = new URI("http://localhost:8888/");
         String text = "http://localhost:8888/";
 
@@ -116,7 +111,7 @@ public class TransformTest {
     }
 
     @Test
-    public void locale() throws Exception {
+    void locale() {
         Locale value = new Locale("en");
         String text = "en";
 
@@ -125,7 +120,7 @@ public class TransformTest {
     }
 
     @Test
-    public void bigInteger() throws Exception {
+    void bigInteger() {
         BigInteger value = new BigInteger("12345678901234567890");
         String text = "12345678901234567890";
 
@@ -134,7 +129,7 @@ public class TransformTest {
     }
 
     @Test
-    public void bigDecimal() throws Exception {
+    void bigDecimal() {
         BigDecimal value = new BigDecimal("123.456789012345678901");
         String text = "123.456789012345678901";
 
@@ -143,7 +138,7 @@ public class TransformTest {
     }
 
     @Test
-    public void stringBuilder() throws Exception {
+    void stringBuilder() {
         StringBuilder value = new StringBuilder("123.456789012345678901");
         String text = "123.456789012345678901";
 
@@ -152,7 +147,7 @@ public class TransformTest {
     }
 
     @Test
-    public void stringBuffer() throws Exception {
+    void stringBuffer() {
         StringBuffer value = new StringBuffer("123.456789012345678901");
         String text = "123.456789012345678901";
 
@@ -161,7 +156,7 @@ public class TransformTest {
     }
 
     @Test
-    public void localDateTime() throws Exception {
+    void localDateTime() {
         LocalDateTime local = LocalDateTime.of(2014, 3, 10, 13, 43, 56);
         String text = "2014-03-10T13:43:56";
 
@@ -170,7 +165,7 @@ public class TransformTest {
     }
 
     @Test
-    public void localDate() throws Exception {
+    void localDate() {
         LocalDate local = LocalDate.of(2014, 3, 10);
         String text = "2014-03-10";
 
@@ -179,7 +174,7 @@ public class TransformTest {
     }
 
     @Test
-    public void localTime() throws Exception {
+    void localTime() {
         LocalTime local = LocalTime.of(23, 45, 9, 765);
         String text = "23:45:09.000000765";
 
@@ -188,7 +183,7 @@ public class TransformTest {
     }
 
     @Test
-    public void offsetDateTime() throws Exception {
+    void offsetDateTime() {
         OffsetDateTime offset = OffsetDateTime.of(2014, 3, 10, 13, 43, 56, 203, ZoneOffset.ofHours(9));
         String text = "2014-03-10T13:43:56.000000203+09:00";
 
@@ -197,7 +192,7 @@ public class TransformTest {
     }
 
     @Test
-    public void offsetTime() throws Exception {
+    void offsetTime() {
         OffsetTime offset = OffsetTime.of(13, 43, 56, 203, ZoneOffset.ofHours(9));
         String text = "13:43:56.000000203+09:00";
 
@@ -206,7 +201,7 @@ public class TransformTest {
     }
 
     @Test
-    public void zonedDateTime() throws Exception {
+    void zonedDateTime() {
         ZonedDateTime offset = ZonedDateTime.of(2014, 3, 10, 13, 43, 56, 203, ZoneId.of(ZoneId.SHORT_IDS.get("JST")));
         String text = "2014-03-10T13:43:56.000000203+09:00[Asia/Tokyo]";
 
@@ -215,7 +210,7 @@ public class TransformTest {
     }
 
     @Test
-    public void monthDay() throws Exception {
+    void monthDay() {
         MonthDay date = MonthDay.of(10, 31);
         String text = "--10-31";
 
@@ -224,7 +219,7 @@ public class TransformTest {
     }
 
     @Test
-    public void yearMonth() throws Exception {
+    void yearMonth() {
         YearMonth date = YearMonth.of(2014, 5);
         String text = "2014-05";
 
@@ -233,7 +228,7 @@ public class TransformTest {
     }
 
     @Test
-    public void year() throws Exception {
+    void year() {
         Year date = Year.of(2014);
         String text = "2014";
 
@@ -242,7 +237,7 @@ public class TransformTest {
     }
 
     @Test
-    public void duration() throws Exception {
+    void duration() {
         Duration duration = Duration.of(40, ChronoUnit.SECONDS);
         String text = "PT40S";
 
@@ -251,7 +246,7 @@ public class TransformTest {
     }
 
     @Test
-    public void period() throws Exception {
+    void period() {
         Period period = Period.of(1, 2, 14);
         String text = "P1Y2M14D";
 
@@ -260,7 +255,7 @@ public class TransformTest {
     }
 
     @Test
-    public void instant() throws Exception {
+    void instant() {
         Instant instant = Instant.ofEpochMilli(1000);
         String text = "1970-01-01T00:00:01Z";
 

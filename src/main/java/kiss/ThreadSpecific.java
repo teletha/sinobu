@@ -34,7 +34,7 @@ package kiss;
  * @param <M> A {@link Manageable} class.
  * @see Prototype
  * @see Singleton
- * @version 2018/09/30 18:51:01
+ * @version 2018/10/04 21:22:00
  */
 public class ThreadSpecific<M> extends Prototype<M> {
 
@@ -48,15 +48,6 @@ public class ThreadSpecific<M> extends Prototype<M> {
      */
     protected ThreadSpecific(Class<M> modelClass) {
         super(modelClass);
-    }
-
-    /**
-     * Create ThreadSpecific instance.
-     * 
-     * @param inistantiator
-     */
-    protected ThreadSpecific(WiseSupplier<M> inistantiator) {
-        super(inistantiator);
     }
 
     /**

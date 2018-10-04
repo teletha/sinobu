@@ -36,7 +36,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,13 +173,6 @@ public class I {
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
 
-    /**
-     * The date format for W3CDTF. Date formats are not synchronized. It is recommended to create
-     * separate format instances for each thread. If multiple threads access a format concurrently,
-     * it must be synchronized externally.
-     */
-    static final ThreadSpecific<SimpleDateFormat> format = new ThreadSpecific(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-
     /** The document builder. */
     static final DocumentBuilder dom;
 
@@ -229,8 +221,7 @@ public class I {
         lifestyles.put(Set.class, HashSet::new);
         lifestyles.put(Lifestyle.class, new Prototype(Prototype.class));
         lifestyles.put(Prototype.class, new Prototype(Prototype.class));
-        lifestyles.put(SimpleDateFormat.class, format);
-        lifestyles.put(Locale.class, new Prototype(Locale::getDefault));
+        lifestyles.put(Locale.class, Locale::getDefault);
 
         try {
             // configure dom builder
@@ -258,8 +249,6 @@ public class I {
             switch (type.getName().hashCode()) {
             case -530663260: // java.lang.Class
                 return value -> ((Class) value).getName();
-            case 65575278: // java.util.Date
-                return format.get()::format;
             default:
                 return String::valueOf;
             }
@@ -319,14 +308,6 @@ public class I {
                 return BigInteger::new;
             case -1405464277: // java.math.BigDecimal
                 return BigDecimal::new;
-            case 65575278: // java.util.Date
-                return value -> {
-                    try {
-                        return format.get().parse(value);
-                    } catch (Exception e) {
-                        throw I.quiet(e);
-                    }
-                };
             case -1165211622: // java.util.Locale
                 return Locale::forLanguageTag;
             case 1464606545: // java.nio.file.Path
@@ -1230,7 +1211,7 @@ public class I {
             throw new UnsupportedOperationException(modelClass + " is  inner class.");
         }
 
-        // Construct dependency graph for the current thred.
+        // Construct dependency graph for the current thraed.
         Deque<Class> dependency = dependencies.get();
         dependency.add(modelClass);
 

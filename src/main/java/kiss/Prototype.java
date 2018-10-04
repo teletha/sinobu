@@ -14,16 +14,14 @@ import java.lang.reflect.Constructor;
 import kiss.model.Model;
 
 /**
- * <p>
  * This lifestyle creates a new instance every time demanded. This is default lifestyle in Sinobu.
  * If you want to create new lifestyle in your application, you can extend this class and override
  * the method {@link #get()}.
- * </p>
  * 
  * @param <M> A {@link Manageable} class.
  * @see Singleton
  * @see ThreadSpecific
- * @version 2018/09/30 18:51:13
+ * @version 2018/10/04 21:21:47
  */
 public class Prototype<M> implements Lifestyle<M> {
 
@@ -73,15 +71,6 @@ public class Prototype<M> implements Lifestyle<M> {
             // create new instance
             return constructor.newInstance(params);
         };
-    }
-
-    /**
-     * Create Prototype instance.
-     * 
-     * @param inistantiator A instantiator.
-     */
-    protected Prototype(WiseSupplier<M> inistantiator) {
-        this.instantiator = inistantiator;
     }
 
     /**

@@ -10,7 +10,6 @@
 package kiss.instantiation;
 
 import java.io.File;
-import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +20,7 @@ import kiss.sample.bean.Primitive;
 import kiss.sample.bean.SchoolEnum;
 
 /**
- * @version 2014/07/22 12:15:41
+ * @version 2018/10/04 21:48:48
  */
 public class BeanTest {
 
@@ -83,19 +82,6 @@ public class BeanTest {
         assert null == bean.getSchoolEnum();
         bean.setSchoolEnum(SchoolEnum.Lulim);
         assert SchoolEnum.Lulim == bean.getSchoolEnum();
-    }
-
-    /**
-     * Bean with {@link Date}.
-     */
-    @Test
-    public void date() {
-        BuiltinBean bean = I.make(BuiltinBean.class);
-        assert bean != null;
-
-        assert null == bean.getDate();
-        bean.setDate(new Date(0L));
-        assert bean.getDate().equals(new Date(0L));
     }
 
     /**
