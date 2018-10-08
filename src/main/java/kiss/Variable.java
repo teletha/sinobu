@@ -183,6 +183,15 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
+     * Chech whether the value is fiexed or not.
+     * 
+     * @return A result.
+     */
+    public final boolean isFixed() {
+        return fix;
+    }
+
+    /**
      * <p>
      * Perform the specified action if the value is present.
      * </p>
