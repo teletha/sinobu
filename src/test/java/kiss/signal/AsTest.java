@@ -12,7 +12,7 @@ package kiss.signal;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/07/21 18:23:33
+ * @version 2018/11/06 15:24:07
  */
 class AsTest extends SignalTester {
 
@@ -25,6 +25,7 @@ class AsTest extends SignalTester {
         assert main.emit(-1.1D).value();
         assert main.emit(20L).value();
         assert main.emit("5000").value();
+        assert main.emit((Integer) null).value();
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();
