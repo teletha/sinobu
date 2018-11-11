@@ -15,7 +15,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import filer.Filer;
+import kiss.I;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
 
@@ -27,7 +27,7 @@ public class PropertyComparatorTest {
     static {
         // When we activates only this test, it throws initialization error, so we have to load I
         // class at first.
-        Filer.locate("");
+        I.accept();
     }
 
     /**

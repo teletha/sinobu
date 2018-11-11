@@ -13,18 +13,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import filer.Filer;
+import antibug.CleanRoom;
 import kiss.I;
 
 /**
- * @version 2017/04/02 13:40:52
+ * @version 2018/11/11 10:35:38
  */
-public class WriteTest {
+class WriteTest {
+
+    @RegisterExtension
+    CleanRoom room = new CleanRoom();
 
     @Test
-    public void xml() throws Exception {
-        Path file = Filer.locateTemporary();
+    void xml() throws Exception {
+        Path file = room.locateFile("test.xml");
         I.xml("root").to(Files.newBufferedWriter(file));
 
         assert Files.exists(file);

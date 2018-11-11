@@ -17,15 +17,17 @@ import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import filer.Filer;
+import antibug.CleanRoom;
 
 /**
  * @version 2018/09/07 9:32:21
  */
 class StorableTest {
 
-    private Path temp = Filer.locateTemporary();
+    @RegisterExtension
+    CleanRoom room = new CleanRoom();
 
     @Test
     void readFromNotExist() throws Exception {
@@ -69,6 +71,8 @@ class StorableTest {
     void writeToSizeZero() throws Exception {
         Some instance = new Some();
         Path path = Paths.get(instance.locate());
+        assert Files.notExists(path);
+
         Files.createDirectories(path.getParent());
         Files.createFile(path);
         assert Files.exists(path);
@@ -80,7 +84,7 @@ class StorableTest {
     }
 
     /**
-     * @version 2017/03/29 10:49:49
+     * @version 2018/11/11 10:54:33
      */
     private class Some implements Storable<Some> {
 
@@ -93,7 +97,7 @@ class StorableTest {
          */
         @Override
         public String locate() {
-            return temp.resolve(Some.class.getSimpleName()).toString();
+            return room.locate(Some.class.getSimpleName()).toString();
         }
     }
 
@@ -142,7 +146,7 @@ class StorableTest {
          */
         @Override
         public String locate() {
-            return temp.resolve(Auto.class.getSimpleName()).toString();
+            return room.locate(Auto.class.getSimpleName()).toString();
         }
     }
 }
