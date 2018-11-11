@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * @version 2018/03/28 9:11:30
+ * @version 2018/11/11 10:21:07
  */
 public class Variable<V> implements Consumer<V>, Supplier<V> {
 
@@ -69,7 +69,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     @Override
     public void accept(V value) {
-        set(v);
+        set(value);
     }
 
     /**

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 2018/03/31 22:12:45
+ * @version 2018/11/11 10:21:13
  */
 public class VariableTest {
 
@@ -123,6 +123,12 @@ public class VariableTest {
         Predicate<String> condition = null;
         assert empty.is(condition) == false;
         assert string.is(condition) == false;
+    }
+
+    @Test
+    void accept() {
+        string.accept("ok");
+        assert string.is("ok");
     }
 
     @Test
