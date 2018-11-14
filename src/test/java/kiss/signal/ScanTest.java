@@ -76,7 +76,7 @@ class ScanTest extends SignalTester {
 
     @Test
     void scanWith() {
-        monitor(signal -> signal.scanWith(10, (accumulated, value) -> accumulated + value));
+        monitor(int.class, signal -> signal.scanWith(10, (accumulated, value) -> accumulated + value));
 
         assert main.emit(1).value(11); // 10 + 1
         assert main.emit(2).value(13); // 11 + 2
@@ -97,7 +97,7 @@ class ScanTest extends SignalTester {
 
     @Test
     void scanWithComplete() {
-        monitor(signal -> signal.scanWith(10, (accumulated, value) -> accumulated + value));
+        monitor(int.class, signal -> signal.scanWith(10, (accumulated, value) -> accumulated + value));
 
         assert main.emit(1, Complete).value(11);
         assert main.isCompleted();
