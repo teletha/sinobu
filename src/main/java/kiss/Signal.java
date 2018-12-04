@@ -3130,6 +3130,44 @@ public final class Signal<V> {
     }
 
     /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging the latest resulting {@link Signal} and emitting the results of this
+     * merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<R> switchVariable(WiseFunction<V, Variable<R>> function) {
+        Objects.requireNonNull(function);
+
+        return new Signal<>((observer, disposer) -> {
+            Disposable[] disposables = {null, Disposable.empty()};
+            Subscriber end = countable(observer, 1);
+
+            disposables[0] = to(value -> {
+                end.index++;
+                disposables[1].dispose();
+                disposables[1] = function.apply(value)
+                        .observeNow()
+                        .to(observer::accept, observer::error, end::complete, disposer.sub(), true);
+            }, observer::error, () -> {
+                System.out.println("COMP");
+                observer.complete();
+            }, disposer.sub());
+            return disposer.add(() -> {
+                disposables[0].dispose();
+                disposables[1].dispose();
+            });
+        });
+    }
+
+    /**
      * Return an {@link Signal} that is observed as long as the specified timing {@link Signal}
      * indicates true. When the timing {@link Signal} returns false, the currently subscribed
      * {@link Signal} is immediately disposed.
