@@ -42,10 +42,10 @@ import kiss.WiseFunction;
  */
 public class SignalTester {
 
-    /** The complete state for {@link #emit(Object...)}. */
+    /** The complete state for {@link Observer#accept(Object)} . */
     protected static final Object Complete = new Object();
 
-    /** The error state for {@link #emit(Object...)}. */
+    /** The error state for {@link  Observer#accept(Object)}. */
     protected static final Class Error = Error.class;
 
     private static final Chronus clock = new Chronus(I.class);
@@ -194,7 +194,7 @@ public class SignalTester {
     }
 
     /**
-     * Create logging interface for the specified key. Use in {@link Signal#effect(Consumer)}.
+     * Create logging interface for the specified key. Use in {@link Signal#effect(WiseConsumer)}.
      * 
      * @param key A log key.
      * @return Loggin {@link Consumer} interface.
@@ -355,7 +355,7 @@ public class SignalTester {
      * 
      * @param signal
      */
-    protected <T> void monitor(Function<Signal<T>, Signal<T>> signal) {
+    protected <In, Out> void monitor(Function<Signal<In>, Signal<Out>> signal) {
         monitor(defaultMultiplicity, signal);
     }
 
@@ -484,7 +484,7 @@ public class SignalTester {
         /**
          * Validate the size of result values.
          * 
-         * @param expected
+         * @param expectedSize
          * @return
          */
         boolean size(int expectedSize);

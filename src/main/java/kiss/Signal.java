@@ -475,7 +475,6 @@ public final class Signal<V> {
      * which are produced based on value count information.
      * </p>
      *
-     * @param size A length of each buffer.
      * @return Chainable API.
      */
     public final Signal<List<V>> buffer() {
@@ -1102,7 +1101,7 @@ public final class Signal<V> {
      *
      * @return {@link Signal} that emits those items from the source {@link Signal} that are
      *         distinct from their immediate predecessors.
-     * @see #diff(Function)
+     * @see #diff(WiseFunction)
      * @see #diff(BiPredicate)
      */
     public final Signal<V> diff() {
@@ -1153,7 +1152,7 @@ public final class Signal<V> {
      * @return {@link Signal} that emits those items from the source {@link Signal} that are
      *         distinct from their immediate predecessors.
      * @see #diff()
-     * @see #diff(Function)
+     * @see #diff(WiseFunction)
      */
     public final Signal<V> diff(BiPredicate<V, V> comparer) {
         // ignore invalid parameter
@@ -1203,12 +1202,12 @@ public final class Signal<V> {
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effect(WiseRunnable effect) {
         // ignore invalid parameter
@@ -1225,12 +1224,12 @@ public final class Signal<V> {
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effect(WiseConsumer<? super V> effect) {
         // ignore invalid parameter
@@ -1239,7 +1238,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to(I.bundle(effect, observer), observer::error, observer::complete, disposer);
+            return to((Consumer<? super V>) I.bundle( effect, observer), observer::error, observer::complete, disposer);
         });
     }
 
@@ -1250,12 +1249,12 @@ public final class Signal<V> {
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnLifecycle(WiseFunction<Disposable, WiseConsumer<V>> effect) {
         if (effect == null) {
@@ -1274,12 +1273,12 @@ public final class Signal<V> {
      * @param effect The action to invoke only once when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnce(WiseRunnable effect) {
         // ignore invalid parameter
@@ -1296,12 +1295,12 @@ public final class Signal<V> {
      * @param effect The action to invoke only once when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnce(WiseConsumer<? super V> effect) {
         // ignore invalid parameter
@@ -1328,12 +1327,12 @@ public final class Signal<V> {
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#complete()}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnComplete(WiseRunnable effect) {
         // ignore invalid parameter
@@ -1341,9 +1340,7 @@ public final class Signal<V> {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, observer::error, I.bundle(effect, observer::complete), disposer);
-        });
+        return new Signal<>((observer, disposer) -> to(observer::accept, observer::error, I.bundle(effect, observer::complete), disposer));
     }
 
     /**
@@ -1353,12 +1350,12 @@ public final class Signal<V> {
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#complete()}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnComplete(WiseConsumer<V> effect) {
         // ignore invalid parameter
@@ -1386,12 +1383,12 @@ public final class Signal<V> {
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Disposable#dispose()}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnDispose(WiseRunnable effect) {
         // ignore invalid parameter
@@ -1411,12 +1408,12 @@ public final class Signal<V> {
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#error(Throwable)}
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnError(WiseConsumer<Throwable> effect) {
         // ignore invalid parameter
@@ -1438,12 +1435,12 @@ public final class Signal<V> {
      * @param effect The {@link Runnable} that gets called when an {@link Observer} subscribes to
      *            the current {@link Signal}.
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnObserve(WiseRunnable effect) {
         return effectOnObserve(effect == null ? null : effect.asConsumer());
@@ -1458,12 +1455,12 @@ public final class Signal<V> {
      * @param effect The {@link Consumer} that gets called when an {@link Observer} subscribes to
      *            the current {@link Signal}.
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnObserve(WiseConsumer<? super Disposable> effect) {
         // ignore invalid parameter
@@ -1484,12 +1481,12 @@ public final class Signal<V> {
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#error(Throwable)} or {@link Observer#complete()}.
      * @return The source {@link Signal} with the side-effecting behavior applied.
-     * @see #effect(Consumer)
-     * @see #effectOnError(Consumer)
-     * @see #effectOnComplete(Runnable)
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
      * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(Runnable)
-     * @see #effectOnObserve(Consumer)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnTerminate(WiseRunnable effect) {
         // ignore invalid parameter
@@ -1850,7 +1847,7 @@ public final class Signal<V> {
     }
 
     /**
-     * {@link #map(Function)} with context.
+     * {@link #map(WiseFunction)} with context.
      * 
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
@@ -1884,7 +1881,7 @@ public final class Signal<V> {
     }
 
     /**
-     * {@link #map(Function)} with previuos value.
+     * {@link #map(WiseFunction)} with previuos value.
      *
      * @param init A initial previous value.
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
@@ -2314,7 +2311,6 @@ public final class Signal<V> {
      * <li>Complete - Terminate notifier signal. Souce signal will never retry errors.</li>
      * </ul>
      * 
-     * @param type An error type that you want to retry.
      * @param notifier An error notifier to define retrying flow.
      * @return Chainable API
      */
@@ -2931,7 +2927,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -2953,10 +2949,10 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
      * </p>
      *
-     * @param values The values that contains the items you want to emit first.
+     * @param value The values that contains the items you want to emit first.
      * @return Chainable API.
      */
     public final Signal<V> startWith(Supplier<V> value) {
@@ -2983,7 +2979,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -3014,7 +3010,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -3049,7 +3045,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(Function)} operator.
+     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -3060,7 +3056,7 @@ public final class Signal<V> {
         if (values == null) {
             return this;
         }
-        return startWith(values::iterator);
+        return startWith((Iterable<V>) values::iterator);
     }
 
     /**
