@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.powerassert.PowerAssertOff;
 import kiss.I;
 import kiss.Signaling;
 import kiss.Variable;
@@ -57,7 +56,6 @@ class SwitchVariableTest extends SignalTester {
     }
 
     @Test
-    @PowerAssertOff
     void complete() {
         monitor(1, Host.class, Integer.class, signal -> signal.switchVariable(v -> v.var));
 

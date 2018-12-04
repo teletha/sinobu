@@ -205,4 +205,72 @@ class FlatMapTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isDisposed();
     }
+
+    class Host {
+        Signaling<String> signal = new Signaling();
+    }
+
+    @Test
+    void fromInfinitToInfinit() {
+        monitor(Host.class, String.class, signal -> signal.flatMap(s -> s.signal.expose));
+
+        Host host = new Host();
+        assert main.emit(host).value();
+
+        host.signal.accept("1");
+        assert main.value("1");
+        host.signal.accept("2");
+        assert main.value("2");
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void fromInfinitToInfinitWithComplete() {
+        monitor(Host.class, String.class, signal -> signal.flatMap(s -> s.signal.expose));
+
+        Host host = new Host();
+        assert main.emit(host).value();
+
+        host.signal.complete();
+        host.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void fromInfinitToInfinitWithSourceComplete() {
+        monitor(Host.class, String.class, signal -> signal.flatMap(s -> s.signal.expose));
+
+        Host host = new Host();
+        assert main.emit(host, Complete).value();
+
+        host.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void fromInfinitToInfinitWithError() {
+        monitor(Host.class, String.class, signal -> signal.flatMap(s -> s.signal.expose));
+
+        Host host = new Host();
+        assert main.emit(host).value();
+
+        host.signal.error(new java.lang.Error());
+        host.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
+    }
 }

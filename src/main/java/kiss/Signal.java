@@ -1238,7 +1238,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to((Consumer<? super V>) I.bundle( effect, observer), observer::error, observer::complete, disposer);
+            return to((Consumer<? super V>) I.bundle(effect, observer), observer::error, observer::complete, disposer);
         });
     }
 
@@ -3111,13 +3111,11 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             Disposable[] disposables = {null, Disposable.empty()};
-            Subscriber end = countable(observer, 1);
 
             disposables[0] = to(value -> {
-                end.index++;
                 disposables[1].dispose();
-                disposables[1] = function.apply(value).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
-            }, observer::error, end::complete, disposer.sub());
+                disposables[1] = function.apply(value).to(observer::accept, observer::error, I.NoOP, disposer.sub(), true);
+            }, observer::error, observer::complete, disposer.sub());
             return disposer.add(() -> {
                 disposables[0].dispose();
                 disposables[1].dispose();
@@ -3140,27 +3138,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> switchVariable(WiseFunction<V, Variable<R>> function) {
-        Objects.requireNonNull(function);
-
-        return new Signal<>((observer, disposer) -> {
-            Disposable[] disposables = {null, Disposable.empty()};
-            Subscriber end = countable(observer, 1);
-
-            disposables[0] = to(value -> {
-                end.index++;
-                disposables[1].dispose();
-                disposables[1] = function.apply(value)
-                        .observeNow()
-                        .to(observer::accept, observer::error, end::complete, disposer.sub(), true);
-            }, observer::error, () -> {
-                System.out.println("COMP");
-                observer.complete();
-            }, disposer.sub());
-            return disposer.add(() -> {
-                disposables[0].dispose();
-                disposables[1].dispose();
-            });
-        });
+        return switchMap(function.andThen(Variable::observeNow));
     }
 
     /**
