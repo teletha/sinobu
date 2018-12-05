@@ -9,8 +9,9 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1627,6 +1628,35 @@ public final class Signal<V> {
                 end.index++;
                 function.apply(value).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
             }, observer::error, end::complete, disposer);
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function, boolean forceComplete) {
+        Objects.requireNonNull(function);
+
+        return new Signal<>((observer, disposer) -> {
+            Subscriber end = countable(observer, 1);
+
+            return to(value -> {
+                end.index++;
+                function.apply(value).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
+            }, observer::error, () -> {
+                if (forceComplete) end.index = 0;
+                end.complete();
+            }, disposer);
         });
     }
 
