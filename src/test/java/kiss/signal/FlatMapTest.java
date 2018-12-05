@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 
@@ -250,9 +250,14 @@ class FlatMapTest extends SignalTester {
         Host host = new Host();
         assert main.emit(host, Complete).value();
 
-        host.signal.accept("This value will be ignored");
-        assert main.value();
+        host.signal.accept("This value will be accepted");
+        assert main.value("This value will be accepted");
 
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        host.signal.complete();
         assert main.isNotError();
         assert main.isCompleted();
         assert main.isDisposed();
