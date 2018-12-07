@@ -1997,6 +1997,16 @@ public final class Signal<V> {
     }
 
     /**
+     * Create {@link Signal} which observes the latest {@link Variable} value.
+     * 
+     * @param function
+     * @return
+     */
+    public final <R> Signal<R> observe(Function<V, Variable<R>> function) {
+        return switchMap((v, self) -> function.apply(v).observeNow().takeUntil(self.isCompleted()));
+    }
+
+    /**
      * <p>
      * Switch event stream context.
      * </p>
