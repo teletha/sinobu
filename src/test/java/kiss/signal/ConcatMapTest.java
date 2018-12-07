@@ -9,12 +9,13 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.Signaling;
+import kiss.WiseFunction;
 
 /**
  * @version 2018/09/28 13:34:59
@@ -84,7 +85,7 @@ class ConcatMapTest extends SignalTester {
     @Test
     void rejectNull() {
         assertThrows(NullPointerException.class, () -> {
-            monitor(() -> signal(1, 2).concatMap(null));
+            monitor(() -> signal(1, 2).concatMap((WiseFunction) null));
         });
     }
 
