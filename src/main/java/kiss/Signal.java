@@ -1621,14 +1621,7 @@ public final class Signal<V> {
     public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
-        return new Signal<>((observer, disposer) -> {
-            Subscriber end = countable(observer, 1);
-
-            return to(value -> {
-                end.index++;
-                function.apply(value).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
-            }, observer::error, end::complete, disposer);
-        });
+        return flatMap(function.append());
     }
 
     /**

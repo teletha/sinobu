@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.function.Function;
 
 /**
- * @version 2018/04/02 8:35:38
+ * @version 2018/12/07 16:09:15
  */
 public interface WiseFunction<Param, Return> extends Function<Param, Return>, Serializable {
 
@@ -51,6 +51,24 @@ public interface WiseFunction<Param, Return> extends Function<Param, Return>, Se
      */
     default WiseSupplier<Return> with(Param param) {
         return () -> APPLY(param);
+    }
+
+    /**
+     * Widen parameter at last (appended parameter will be ignored).
+     * 
+     * @return A widen function.
+     */
+    default <Append> WiseBiFunction<Param, Append, Return> append() {
+        return (p, q) -> apply(p);
+    }
+
+    /**
+     * Widen parameter at last (appended parameter will be ignored).
+     * 
+     * @return A widen function.
+     */
+    default <Prepend> WiseBiFunction<Prepend, Param, Return> prepend() {
+        return (p, q) -> apply(q);
     }
 
     /**
