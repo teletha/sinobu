@@ -1644,7 +1644,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function, boolean forceComplete) {
+    public final <R> Signal<R> flatMap(WiseBiFunction<V, Signal<V>, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -1652,11 +1652,8 @@ public final class Signal<V> {
 
             return to(value -> {
                 end.index++;
-                function.apply(value).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
-            }, observer::error, () -> {
-                if (forceComplete) end.index = 0;
-                end.complete();
-            }, disposer);
+                function.apply(value, this).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
+            }, observer::error, end::complete, disposer);
         });
     }
 

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.Signaling;
+import kiss.WiseFunction;
 
 /**
  * @version 2018/09/28 13:30:50
@@ -86,7 +87,7 @@ class FlatMapTest extends SignalTester {
     @Test
     void rejectNull() {
         assertThrows(NullPointerException.class, () -> {
-            monitor(() -> signal(1, 2).flatMap(null));
+            monitor(() -> signal(1, 2).flatMap((WiseFunction) null));
         });
     }
 
@@ -231,11 +232,24 @@ class FlatMapTest extends SignalTester {
     void fromInfinitToInfinitWithComplete() {
         monitor(Host.class, String.class, signal -> signal.flatMap(s -> s.signal.expose));
 
-        Host host = new Host();
-        assert main.emit(host).value();
+        Host host1 = new Host();
+        assert main.emit(host1).value();
 
-        host.signal.complete();
-        host.signal.accept("This value will be ignored");
+        host1.signal.complete();
+        host1.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        Host host2 = new Host();
+        assert main.emit(host2).value();
+
+        host2.signal.accept("This value will be accepted");
+        assert main.value("This value will be accepted");
+        host2.signal.complete();
+        host2.signal.accept("This value will be ignored");
         assert main.value();
 
         assert main.isNotError();
@@ -247,17 +261,27 @@ class FlatMapTest extends SignalTester {
     void fromInfinitToInfinitWithSourceComplete() {
         monitor(Host.class, String.class, signal -> signal.flatMap(s -> s.signal.expose));
 
-        Host host = new Host();
-        assert main.emit(host, Complete).value();
+        Host host1 = new Host();
+        Host host2 = new Host();
+        assert main.emit(host1, host2, Complete).value();
 
-        host.signal.accept("This value will be accepted");
+        host1.signal.accept("This value will be accepted");
         assert main.value("This value will be accepted");
 
         assert main.isNotError();
         assert main.isNotCompleted();
         assert main.isNotDisposed();
 
-        host.signal.complete();
+        // host2 is remaining
+        host1.signal.complete();
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        host2.signal.accept("This value will be accepted");
+        assert main.value("This value will be accepted");
+
+        host2.signal.complete();
         assert main.isNotError();
         assert main.isCompleted();
         assert main.isDisposed();
@@ -276,6 +300,24 @@ class FlatMapTest extends SignalTester {
 
         assert main.isError();
         assert main.isNotCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void fromInfinitToInfinitWithSourceCompleteForceToCompleteSubSources() {
+        monitor(Host.class, String.class, signal -> signal.flatMap((v, source) -> v.signal.expose.takeUntil(source.isCompleted())));
+
+        Host host1 = new Host();
+        Host host2 = new Host();
+        assert main.emit(host1, host2, Complete).value();
+
+        host1.signal.accept("This value will be ignored");
+        assert main.value();
+        host2.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isNotError();
+        assert main.isCompleted();
         assert main.isDisposed();
     }
 }
