@@ -17,7 +17,7 @@ import kiss.I;
 /**
  * @version 2018/09/11 20:36:14
  */
-class IsNotTest2 extends SignalTester {
+class IsNotTest extends SignalTester {
 
     @Test
     void value() {
