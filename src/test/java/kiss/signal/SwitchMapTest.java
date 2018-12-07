@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ import kiss.Signaling;
 import kiss.WiseFunction;
 
 /**
- * @version 2018/09/28 13:31:51
+ * @version 2018/12/08 8:45:33
  */
 class SwitchMapTest extends SignalTester {
 
@@ -34,7 +34,7 @@ class SwitchMapTest extends SignalTester {
 
     @Test
     void complete() {
-        monitor(Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
+        monitor(1, Integer.class, signal -> signal.switchMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Complete).value(10, 11, 20, 21);
         assert main.isCompleted();
@@ -163,6 +163,114 @@ class SwitchMapTest extends SignalTester {
         signaling.error(new IllegalAccessError());
         assert main.isError();
         assert main.isNotCompleted();
+        assert main.isDisposed();
+    }
+
+    class Host {
+        Signaling<String> signal = new Signaling();
+    }
+
+    @Test
+    void fromInfinitToInfinit() {
+        monitor(Host.class, String.class, signal -> signal.switchMap(s -> s.signal.expose));
+
+        Host host = new Host();
+        assert main.emit(host).value();
+
+        host.signal.accept("1");
+        assert main.value("1");
+        host.signal.accept("2");
+        assert main.value("2");
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void fromInfinitToInfinitWithComplete() {
+        monitor(Host.class, String.class, signal -> signal.switchMap(s -> s.signal.expose));
+
+        Host host1 = new Host();
+        assert main.emit(host1).value();
+
+        host1.signal.complete();
+        host1.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        Host host2 = new Host();
+        assert main.emit(host2).value();
+
+        host2.signal.accept("This value will be accepted");
+        assert main.value("This value will be accepted");
+        host2.signal.complete();
+        host2.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void fromInfinitToInfinitWithSourceComplete() {
+        monitor(Host.class, String.class, signal -> signal.switchMap(s -> s.signal.expose));
+
+        Host host1 = new Host();
+        Host host2 = new Host();
+        assert main.emit(host1, host2, Complete).value();
+
+        host1.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+
+        host2.signal.accept("This value will be accepted");
+        assert main.value("This value will be accepted");
+
+        host2.signal.complete();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void fromInfinitToInfinitWithError() {
+        monitor(Host.class, String.class, signal -> signal.switchMap(s -> s.signal.expose));
+
+        Host host = new Host();
+        assert main.emit(host).value();
+
+        host.signal.error(new java.lang.Error());
+        host.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void fromInfinitToInfinitWithSourceCompleteForceToCompleteSubSources() {
+        monitor(Host.class, String.class, signal -> signal.switchMap((v, source) -> v.signal.expose.takeUntil(source.isCompleted())));
+
+        Host host1 = new Host();
+        Host host2 = new Host();
+        assert main.emit(host1, host2, Complete).value();
+
+        host1.signal.accept("This value will be ignored");
+        assert main.value();
+        host2.signal.accept("This value will be ignored");
+        assert main.value();
+
+        assert main.isNotError();
+        assert main.isCompleted();
         assert main.isDisposed();
     }
 }

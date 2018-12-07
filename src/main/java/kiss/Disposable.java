@@ -48,7 +48,7 @@ public interface Disposable {
             for (Disposable child : subscriber.list) {
                 child.dispose();
             }
-            subscriber.list.clear();
+            if (subscriber.list != null) subscriber.list.clear();
             subscriber.list = null;
         }
 

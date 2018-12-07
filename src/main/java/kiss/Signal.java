@@ -9,9 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.lang.Boolean.*;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -3176,7 +3175,8 @@ public final class Signal<V> {
             disposables[0] = to(value -> {
                 end.index++;
                 disposables[1].dispose();
-                disposables[1] = function.apply(value, this).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
+                disposables[1] = function.apply(value, this)
+                        .to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
             }, observer::error, end::complete, disposer.sub());
             return disposer.add(() -> {
                 disposables[0].dispose();
@@ -3701,8 +3701,12 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     private Subscriber countable(Observer delgator, int count) {
-        Subscriber completer = new Subscriber();
+        Subscriber<?> completer = new Subscriber();
         completer.index = count;
+        completer.error = e -> {
+            completer.index = -1;
+            delgator.error(e);
+        };
         completer.complete = () -> {
             completer.index--;
             if (completer.index == 0) {
