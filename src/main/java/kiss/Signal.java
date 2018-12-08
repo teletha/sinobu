@@ -1271,6 +1271,53 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
+    public final Signal<V> effectAfter(WiseRunnable effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+        return effectAfter(effect.asConsumer());
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * {@link Observer#accept(Object)}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#accept(Object)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
+     */
+    public final Signal<V> effectAfter(WiseConsumer<? super V> effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            return to((Consumer<? super V>) I.bundle(observer, effect), observer::error, observer::complete, disposer);
+        });
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * {@link Observer#accept(Object)}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#accept(Object)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
+     */
     public final Signal<V> effectOnLifecycle(WiseFunction<Disposable, WiseConsumer<V>> effect) {
         if (effect == null) {
             return this;
