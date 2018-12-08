@@ -9,8 +9,9 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1656,7 +1657,7 @@ public final class Signal<V> {
 
             return to(value -> {
                 end.index++;
-                function.apply(value, this).to(observer::accept, observer::error, end::complete, disposer.sub(), true);
+                function.apply(value, this).to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
             }, observer::error, end::complete, disposer);
         });
     }
@@ -1675,7 +1676,9 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
-        return flatMap(function.andThen(I::signal));
+        Objects.requireNonNull(function);
+
+        return flatMap((v, self) -> function.apply(v).observeNow().takeUntil(self.isCompleted()));
     }
 
     /**
@@ -1993,16 +1996,6 @@ public final class Signal<V> {
         Objects.requireNonNull(condition);
 
         return signal(condition, FALSE, false, FALSE, true, TRUE);
-    }
-
-    /**
-     * Create {@link Signal} which observes the latest {@link Variable} value.
-     * 
-     * @param function
-     * @return
-     */
-    public final <R> Signal<R> observe(Function<V, Variable<R>> function) {
-        return switchMap((v, self) -> function.apply(v).observeNow().takeUntil(self.isCompleted()));
     }
 
     /**
@@ -3200,7 +3193,9 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> switchVariable(WiseFunction<V, Variable<R>> function) {
-        return switchMap(function.andThen(Variable::observeNow));
+        Objects.requireNonNull(function);
+
+        return switchMap((v, self) -> function.apply(v).observeNow().takeUntil(self.isCompleted()));
     }
 
     /**
