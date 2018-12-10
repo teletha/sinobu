@@ -1911,15 +1911,6 @@ public final class Signal<V> {
         return buffer(never(), () -> new AtomicReference<V>(defaultValue), AtomicReference::set).map(AtomicReference::get).skipNull();
     }
 
-    public final Signal<V> loopMap(WiseFunction<V, Signal<V>> function) {
-        return new Signal<>((observer, disposer) -> {
-
-            return to(v -> {
-                function.apply(v).to();
-            });
-        });
-    }
-
     /**
      * <p>
      * Returns an {@link Signal} that applies the given function to each value emitted by an
