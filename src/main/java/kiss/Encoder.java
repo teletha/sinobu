@@ -20,7 +20,6 @@ package kiss;
  *
  * @param <M> A model class to decode and encode.
  * @see Decoder
- * @version 2016/01/20 10:39:37
  */
 public interface Encoder<M> extends Extensible {
 

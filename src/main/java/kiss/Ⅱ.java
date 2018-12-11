@@ -13,9 +13,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * @version 2016/03/27 12:13:49
- */
 public class Ⅱ<Param1, Param2> {
 
     /** The first parameter. */

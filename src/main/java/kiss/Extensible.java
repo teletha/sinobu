@@ -82,7 +82,6 @@ package kiss;
  * 
  * @see I#find(Class)
  * @see I#find(Class, Class)
- * @version 2009/12/31 3:08:59
  */
 public interface Extensible {
 }
