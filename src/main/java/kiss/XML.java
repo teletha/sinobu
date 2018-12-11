@@ -40,10 +40,6 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
-/**
- * @version 2017/03/30 16:10:29
- */
-@Manageable
 public class XML implements Iterable<XML> {
 
     /**
