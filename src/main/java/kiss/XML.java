@@ -9,7 +9,8 @@
  */
 package kiss;
 
-import static javax.xml.XMLConstants.*;
+import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
+import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import org.w3c.dom.ls.LSSerializer;
 /**
  * @version 2017/03/30 16:10:29
  */
+@Manageable
 public class XML implements Iterable<XML> {
 
     /**

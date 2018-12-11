@@ -1,14 +1,14 @@
 #
-#Wed Apr 04 09:01:57 JST 2018
+#Tue Dec 11 11:54:31 JST 2018
 =\=\=\=\=\=\=
 org.eclipse.jdt.core.compiler.problem.unusedLocal=warning
 org.eclipse.jdt.core.compiler.problem.unclosedCloseable=ignore
-org.eclipse.jdt.core.compiler.problem.emptyStatement=ignore
-org.eclipse.jdt.core.compiler.problem.unusedTypeParameter=ignore
 encoding//src/main/java=UTF-8
+org.eclipse.jdt.core.compiler.problem.unusedTypeParameter=ignore
+org.eclipse.jdt.core.compiler.problem.emptyStatement=ignore
 org.eclipse.jdt.core.compiler.problem.nullUncheckedConversion=warning
-org.eclipse.jdt.core.compiler.problem.unnecessaryTypeCheck=ignore
 org.eclipse.jdt.core.compiler.problem.forbiddenReference=error
+org.eclipse.jdt.core.compiler.problem.unnecessaryTypeCheck=ignore
 encoding//src/main/resources=UTF-8
 org.eclipse.jdt.core.compiler.problem.missingEnumCaseDespiteDefault=disabled
 org.eclipse.jdt.core.compiler.problem.unusedParameterWhenImplementingAbstract=disabled
@@ -18,19 +18,19 @@ org.eclipse.jdt.core.compiler.problem.annotationSuperInterface=warning
 org.eclipse.jdt.core.compiler.problem.unlikelyCollectionMethodArgumentTypeStrict=disabled
 org.eclipse.jdt.core.compiler.problem.unavoidableGenericTypeProblems=disabled
 encoding//src/test/resources=UTF-8
-org.eclipse.jdt.core.compiler.annotation.nonnullbydefault.secondary=
 org.eclipse.jdt.core.compiler.problem.unlikelyCollectionMethodArgumentType=warning
-org.eclipse.jdt.core.compiler.problem.unusedImport=warning
+org.eclipse.jdt.core.compiler.annotation.nonnullbydefault.secondary=
 org.eclipse.jdt.core.compiler.problem.parameterAssignment=ignore
+org.eclipse.jdt.core.compiler.problem.unusedImport=warning
 org.eclipse.jdt.core.compiler.problem.possibleAccidentalBooleanAssignment=ignore
 org.eclipse.jdt.core.compiler.annotation.nullable.secondary=
-org.eclipse.jdt.core.compiler.annotation.nonnull.secondary=
 org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionWhenOverriding=disabled
+org.eclipse.jdt.core.compiler.annotation.nonnull.secondary=
 org.eclipse.jdt.core.compiler.problem.suppressOptionalErrors=disabled
 org.eclipse.jdt.core.compiler.problem.unusedParameterWhenOverridingConcrete=disabled
 org.eclipse.jdt.core.compiler.problem.indirectStaticAccess=ignore
-org.eclipse.jdt.core.compiler.problem.nullAnnotationInferenceConflict=error
 org.eclipse.jdt.core.compiler.annotation.nonnullbydefault=org.eclipse.jdt.annotation.NonNullByDefault
+org.eclipse.jdt.core.compiler.problem.nullAnnotationInferenceConflict=error
 org.eclipse.jdt.core.compiler.problem.nullSpecViolation=error
 org.eclipse.jdt.core.compiler.problem.methodWithConstructorName=warning
 org.eclipse.jdt.core.compiler.problem.potentiallyUnclosedCloseable=ignore
@@ -40,7 +40,7 @@ org.eclipse.jdt.core.compiler.problem.syntacticNullAnalysisForFields=disabled
 org.eclipse.jdt.core.compiler.problem.rawTypeReference=ignore
 org.eclipse.jdt.core.compiler.problem.specialParameterHidingField=disabled
 org.eclipse.jdt.core.compiler.problem.staticAccessReceiver=warning
-org.eclipse.jdt.core.compiler.processAnnotations=disabled
+org.eclipse.jdt.core.compiler.processAnnotations=enabled
 org.eclipse.jdt.core.compiler.problem.unusedObjectAllocation=ignore
 org.eclipse.jdt.core.compiler.problem.unusedWarningToken=warning
 org.eclipse.jdt.core.compiler.problem.missingHashCodeMethod=ignore
