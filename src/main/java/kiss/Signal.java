@@ -256,7 +256,7 @@ public final class Signal<V> {
      * @param observer A value observer of this {@link Signal}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    private Disposable to(Observer<? super V> observer, Disposable disposer) {
+    public Disposable to(Observer<? super V> observer, Disposable disposer) {
         try {
             return subscriber.apply(observer, disposer);
         } catch (Throwable e) {
