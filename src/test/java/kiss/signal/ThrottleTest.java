@@ -11,14 +11,11 @@ package kiss.signal;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/03/11 16:03:18
- */
 class ThrottleTest extends SignalTester {
 
     @Test
     void throttle() {
-        monitor(1, signal -> signal.throttle(30, ms));
+        monitor(1, signal -> signal.throttle(35, ms));
 
         assert main.emit("success").value("success");
         await(10);
@@ -29,7 +26,7 @@ class ThrottleTest extends SignalTester {
         assert main.emit("success").value("success");
         await(15);
         assert main.emit("fail in 15 ms").value();
-        await(20);
+        await(30);
         assert main.emit("success").value("success");
     }
 }
