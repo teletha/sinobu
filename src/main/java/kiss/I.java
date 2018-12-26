@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -389,6 +390,28 @@ public class I {
      */
     public static <P, Q> BiPredicate<P, Q> accepţ() {
         return (p, q) -> true;
+    }
+
+    /**
+     * Merge two arrays.
+     * 
+     * @param one An array to merge.
+     * @param other An array to merge.
+     * @return A merged array.
+     */
+    public static <T> T[] array(T[] one, T... other) {
+        if (one == null) {
+            one = (T[]) Array.newInstance(other.getClass().getComponentType(), 0);
+        }
+
+        if (other == null) {
+            other = (T[]) Array.newInstance(one.getClass().getComponentType(), 0);
+        }
+
+        return I.signal(one)
+                .concat(I.signal(other))
+                .toList()
+                .toArray((T[]) Array.newInstance(one.getClass().getComponentType(), one.length + other.length));
     }
 
     /**
