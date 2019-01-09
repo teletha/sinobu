@@ -9,9 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.lang.Boolean.*;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2066,6 +2065,52 @@ public final class Signal<V> {
         }, () -> {
             scheduler.accept(observer::complete);
         }, disposer));
+    }
+
+    /**
+     * <p>
+     * Generates an {@link Signal} sequence that guarantee one item at least.
+     * </p>
+     *
+     * @return Chainable API.
+     */
+    public final Signal<V> or(V value) {
+        return or(I.signal(value));
+    }
+
+    /**
+     * <p>
+     * Generates an {@link Signal} sequence that guarantee one item at least.
+     * </p>
+     *
+     * @return Chainable API.
+     */
+    public final Signal<V> or(Supplier<V> value) {
+        return or(I.signal(value));
+    }
+
+    /**
+     * <p>
+     * Generates an {@link Signal} sequence that guarantee one item at least.
+     * </p>
+     *
+     * @return Chainable API.
+     */
+    public final Signal<V> or(Signal<V> values) {
+        return new Signal<>((observer, disposer) -> {
+            AtomicBoolean emitted = new AtomicBoolean();
+
+            return to(v -> {
+                emitted.set(true);
+                observer.accept(v);
+            }, observer::error, () -> {
+                if (emitted.get() == true) {
+                    observer.complete();
+                } else {
+                    values.to(observer, disposer);
+                }
+            }, disposer);
+        });
     }
 
     /**
