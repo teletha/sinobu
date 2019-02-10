@@ -9,8 +9,9 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -236,8 +237,12 @@ public final class Signal<V> {
             if (disposer.isNotDisposed()) next.accept(e);
         };
         subscriber.error = e -> {
-            if (error != null && disposer.isNotDisposed()) ((Consumer<Throwable>) error).accept(e);
-            if (auto) disposer.dispose();
+            if (error == null || disposer.isDisposed()) {
+                throw I.quiet(e);
+            } else {
+                ((Consumer<Throwable>) error).accept(e);
+                if (auto) disposer.dispose();
+            }
         };
         subscriber.complete = () -> {
             if (complete != null && disposer.isNotDisposed()) complete.run();
