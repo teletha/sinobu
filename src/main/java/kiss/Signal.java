@@ -238,11 +238,11 @@ public final class Signal<V> {
         };
         subscriber.error = e -> {
             if (error == null || disposer.isDisposed()) {
-                throw I.quiet(e);
+                // throw I.quiet(e);
             } else {
                 ((Consumer<Throwable>) error).accept(e);
-                if (auto) disposer.dispose();
             }
+            if (auto) disposer.dispose();
         };
         subscriber.complete = () -> {
             if (complete != null && disposer.isNotDisposed()) complete.run();
