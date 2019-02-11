@@ -9,13 +9,11 @@
  */
 package kiss.signal;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ThrottleTest extends SignalTester {
 
     @Test
-    @Disabled
     void throttle() {
         monitor(1, signal -> signal.throttle(35, ms));
 

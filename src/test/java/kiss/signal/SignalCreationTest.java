@@ -142,26 +142,6 @@ class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    void stream() {
-        monitor(1, () -> signal(stream(1, 2)));
-
-        assert main.value(1, 2);
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void streamNull() {
-        monitor(() -> signal((Stream<String>) null));
-
-        assert main.value();
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
     void supplier() {
         monitor(() -> signal(() -> 1));
 

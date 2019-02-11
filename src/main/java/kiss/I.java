@@ -1818,18 +1818,6 @@ public class I {
 
     /**
      * <p>
-     * Signal the specified values.
-     * </p>
-     *
-     * @param values A stream of values to emit.
-     * @return The {@link Signal} to emit sequencial values.
-     */
-    public static <V, S extends BaseStream<V, S>> Signal<V> signal(S values) {
-        return Signal.<V> empty().startWith(values);
-    }
-
-    /**
-     * <p>
      * {@link Signal} the specified values.
      * </p>
      *

@@ -25,7 +25,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 
 import antibug.Chronus;
@@ -284,16 +283,6 @@ public class SignalTester {
      * @return
      */
     protected <T> Signal<T> signal(Enumeration<T> values) {
-        return I.signal(values);
-    }
-
-    /**
-     * Shorthand method of {@link I#signal(BaseStream)}
-     * 
-     * @param values
-     * @return
-     */
-    protected <T, S extends BaseStream<T, S>> Signal<T> signal(S values) {
         return I.signal(values);
     }
 

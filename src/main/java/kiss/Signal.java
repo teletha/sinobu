@@ -47,7 +47,6 @@ import java.util.function.Function;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.BaseStream;
 import java.util.stream.Collector;
 
 /**
@@ -3162,31 +3161,6 @@ public final class Signal<V> {
             }
             return to(observer, disposer);
         });
-    }
-
-    /**
-     * <p>
-     * Emit a specified sequence of items before beginning to emit the items from the source
-     * {@link Signal}.
-     * </p>
-     * <p>
-     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
-     * the items normally expected from it, apply the StartWith operator to it.
-     * </p>
-     * <p>
-     * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
-     * </p>
-     *
-     * @param values The values that contains the items you want to emit first.
-     * @return Chainable API.
-     */
-    public final <S extends BaseStream<V, S>> Signal<V> startWith(S values) {
-        // ignore invalid parameter
-        if (values == null) {
-            return this;
-        }
-        return startWith((Iterable<V>) values::iterator);
     }
 
     /**
