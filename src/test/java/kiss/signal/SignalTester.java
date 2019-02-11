@@ -45,7 +45,7 @@ public class SignalTester {
     /** The complete state for {@link Observer#accept(Object)} . */
     protected static final Object Complete = new Object();
 
-    /** The error state for {@link  Observer#accept(Object)}. */
+    /** The error state for {@link Observer#accept(Object)}. */
     protected static final Class Error = Error.class;
 
     private static final Chronus clock = new Chronus(I.class);
@@ -493,7 +493,6 @@ public class SignalTester {
     /**
      * @version 2017/04/02 1:14:02
      */
-    @SuppressWarnings("serial")
     private static class Logger implements Log {
 
         private List values = new ArrayList();
@@ -592,7 +591,6 @@ public class SignalTester {
     /**
      * @version 2018/03/02 8:40:33
      */
-    @SuppressWarnings("serial")
     private static class LogDelegator implements Log {
 
         private Log log;

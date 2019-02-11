@@ -9,13 +9,12 @@
  */
 package kiss;
 
-import java.io.Serializable;
 import java.util.function.Function;
 
 /**
  * @version 2018/12/07 16:09:15
  */
-public interface WiseFunction<Param, Return> extends Function<Param, Return>, Serializable {
+public interface WiseFunction<Param, Return> extends Function<Param, Return> {
 
     /**
      * <p>

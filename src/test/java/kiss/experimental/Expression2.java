@@ -9,20 +9,19 @@
  */
 package kiss.experimental;
 
+import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import kiss.I;
-import kiss.WiseTriFunction;
 import kiss.model.Model;
 import kiss.model.Property;
 
 /**
  * Super minimum expression language.
  */
-public class Expression {
+public class Expression2 {
 
-    /** The expression syntax. */
     private static final Pattern expression = Pattern.compile("\\{([^}]+)\\}");
 
     /**
@@ -33,17 +32,6 @@ public class Expression {
      * @return A calculated text.
      */
     public static String express(String text, Object... models) {
-        return express(text, Model::get, models);
-    }
-
-    /**
-     * Calculate expression language in the specified text by using the given contexts.
-     * 
-     * @param text A text with {some} placefolder.
-     * @param models A list of value contexts.
-     * @return A calculated text.
-     */
-    public static String express(String text, WiseTriFunction<Model, Object, Property, Object> resolver, Object... models) {
         StringBuilder replaced = new StringBuilder();
         Matcher matcher = expression.matcher(text);
 
@@ -51,17 +39,8 @@ public class Expression {
             String[] expressions = matcher.group(1).split("\\.");
 
             if (models != null) {
-                model: for (Object o : models) {
-                    for (int i = 0; i < expressions.length; i++) {
-                        if (o == null) {
-                            continue model;
-                        }
-
-                        String expression = expressions[i].strip();
-                        Model model = Model.of(o);
-                        Property property = model.property(expression);
-                        o = resolver.apply(model, o, property == null ? new Property(model, expression) : property);
-                    }
+                for (Object model : models) {
+                    Object o = resolve(expressions, 0, model);
 
                     if (o != null) {
                         matcher.appendReplacement(replaced, I.transform(o, String.class));
@@ -74,5 +53,43 @@ public class Expression {
         matcher.appendTail(replaced);
 
         return replaced.toString();
+    }
+
+    /**
+     * <p>
+     * Compute the specified property variable.
+     * </p>
+     * 
+     * @param expressions
+     * @param index
+     * @param value
+     * @return
+     */
+    private static Object resolve(String[] expressions, int index, Object value) {
+        if (value == null || expressions.length == index) {
+            return value;
+        }
+
+        String expression = expressions[index].strip();
+
+        Model model = Model.of(value);
+        Property property = model.property(expression);
+
+        // find in property
+        if (property != null) {
+            return resolve(expressions, index + 1, model.get(value, property));
+        }
+
+        // property is not found, invoke method instead
+        try {
+            Method method = model.type.getMethod(expression);
+
+            if (method.getReturnType() != void.class) {
+                return resolve(expressions, index + 1, method.invoke(value));
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return null;
     }
 }

@@ -9,12 +9,10 @@
  */
 package kiss;
 
-import java.io.Serializable;
-
 /**
  * @version 2018/07/20 9:37:16
  */
-public interface WiseRunnable extends Runnable, Serializable {
+public interface WiseRunnable extends Runnable {
 
     /**
      * <p>

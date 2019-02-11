@@ -40,11 +40,7 @@ class ListModel<V> extends Model<List<V>> {
      */
     @Override
     public Property property(String name) {
-        try {
-            return new Property(itemModel, Integer.valueOf(name).toString());
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return new Property(itemModel, name);
     }
 
     /**
@@ -52,9 +48,13 @@ class ListModel<V> extends Model<List<V>> {
      */
     @Override
     public Object get(List object, Property property) {
-        int index = Integer.valueOf(property.name);
+        try {
+            int index = Integer.valueOf(property.name);
 
-        return object.size() <= index ? null : object.get(index);
+            return object.size() <= index ? null : object.get(index);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /**

@@ -121,7 +121,19 @@ class ExpressionTest {
         context.add("two");
         context.add("three");
 
-        assert Expression.express("list size is {size}", context).equals("list size is 3");
+        assert Expression.express("list size is {size}", (m, o, e) -> {
+            return m.type.getMethod(e.name).invoke(o);
+        }, context).equals("list size is 3");
+    }
+
+    @Test
+    void methodNotFound() {
+        StringList context = new StringList();
+        context.add("one");
+        context.add("two");
+        context.add("three");
+
+        assert Expression.express("unknown method is {ignored}", context).equals("unknown method is ");
     }
 
     @Test
@@ -139,6 +151,19 @@ class ExpressionTest {
         Object c2 = define("highPriority", "unused");
 
         assert Expression.express("first context has {highPriority}", c1, c2).equals("first context has value");
+    }
+
+    @Test
+    void userResolver() {
+        Person context = new Person();
+        context.setAge(15);
+        context.setLastName("Kahu");
+        context.setFirstName("Tino");
+
+        assert Expression.express("{nooo}", (m, o, e) -> {
+            System.out.println(m + "  " + e + "  " + o);
+            return "fail";
+        }, context).equals("fail");
     }
 
     /**
