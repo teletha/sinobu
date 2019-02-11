@@ -14,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import kiss.I;
-import kiss.Signal;
 import kiss.WiseTriFunction;
 import kiss.model.Model;
 import kiss.model.Property;
@@ -35,9 +34,7 @@ public class Expression {
      * @return A calculated text.
      */
     public static String express(String text, List models, WiseTriFunction<Model, Object, Property, Object>... resolvers) {
-        Signal<WiseTriFunction<Model, Object, Property, Object>> signal = I.signal(resolvers);
-        signal.startWith(Model::get);
-        resolvers = I.array(resolvers, Model::get);
+        resolvers = I.array(Model::get, resolvers);
 
         StringBuilder replaced = new StringBuilder();
         Matcher matcher = expression.matcher(text);

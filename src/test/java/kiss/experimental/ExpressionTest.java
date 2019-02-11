@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import kiss.sample.bean.Person;
@@ -65,7 +64,6 @@ class ExpressionTest {
     }
 
     @Test
-    @Disabled
     void contextNull() {
         assert Expression.express("null context is {ignored}", Collections.singletonList(null)).equals("null context is ");
         assert Expression.express("null context is {ignored}", (List) null).equals("null context is ");
