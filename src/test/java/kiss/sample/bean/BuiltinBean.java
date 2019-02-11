@@ -12,7 +12,6 @@ package kiss.sample.bean;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Date;
 
 /**
  * @version 2018/10/04 21:48:41
@@ -20,8 +19,6 @@ import java.util.Date;
 public class BuiltinBean {
 
     private SchoolEnum schoolEnum;
-
-    private Date date;
 
     private File file;
 

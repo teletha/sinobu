@@ -17,7 +17,7 @@ import kiss.I;
 import kiss.WiseTriConsumer;
 
 /**
- * @version 2016/09/09 16:51:16
+ * {@link Model} for general {@link Map}.
  */
 class MapModel<K, V> extends Model<Map<K, V>> {
 
@@ -48,8 +48,8 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      * {@inheritDoc}
      */
     @Override
-    public Property property(String propertyIName) {
-        return !key.attribute ? null : new Property(value, propertyIName);
+    public Property property(String name) {
+        return !key.attribute ? null : new Property(value, name);
     }
 
     /**
@@ -68,11 +68,11 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      * {@inheritDoc}
      */
     @Override
-    public void set(Map object, Property property, Object propertyValue) {
+    public void set(Map object, Property property, Object value) {
         if (!key.attribute) {
-            super.set(object, property, propertyValue);
+            super.set(object, property, value);
         } else {
-            object.put(I.transform(property.name, key.type), propertyValue);
+            object.put(I.transform(property.name, key.type), value);
         }
     }
 

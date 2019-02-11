@@ -15,7 +15,7 @@ import java.util.List;
 import kiss.WiseTriConsumer;
 
 /**
- * @version 2016/05/01 9:50:22
+ * {@link Model} for general {@link List}.
  */
 class ListModel<V> extends Model<List<V>> {
 
@@ -39,9 +39,9 @@ class ListModel<V> extends Model<List<V>> {
      * {@inheritDoc}
      */
     @Override
-    public Property property(String propertyIName) {
+    public Property property(String name) {
         try {
-            return new Property(itemModel, propertyIName);
+            return new Property(itemModel, Integer.valueOf(name).toString());
         } catch (NumberFormatException e) {
             return null;
         }
@@ -61,7 +61,7 @@ class ListModel<V> extends Model<List<V>> {
      * {@inheritDoc}
      */
     @Override
-    public void set(List object, Property property, Object propertyValue) {
+    public void set(List object, Property property, Object value) {
         List list = object;
         int id = Integer.valueOf(property.name);
 
@@ -71,7 +71,7 @@ class ListModel<V> extends Model<List<V>> {
                 list.add(null);
             }
         }
-        list.set(id, propertyValue);
+        list.set(id, value);
     }
 
     /**
