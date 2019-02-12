@@ -22,9 +22,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-/**
- * @version 2018/11/11 10:21:07
- */
 public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The modifier base. */
@@ -83,6 +80,29 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     @Override
     public V get() {
+        return v;
+    }
+
+    /**
+     * Exact value. If this {@link Variable} is empty, throw {@link Error}.
+     * 
+     * @return A current value.
+     */
+    public final V exact() {
+        return exact(Error::new);
+    }
+
+    /**
+     * Exact value. If this {@link Variable} is empty, throw error with message.
+     * 
+     * @param builder A error builder.
+     * @param message A error message.
+     * @return A current value.
+     */
+    public final <E extends Throwable> V exact(Function<String, E> builder, Object... message) {
+        if (v == null) {
+            throw I.quiet(builder.apply(I.join("", message)));
+        }
         return v;
     }
 

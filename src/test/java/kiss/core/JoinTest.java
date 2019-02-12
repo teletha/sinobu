@@ -11,43 +11,51 @@ package kiss.core;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2016/10/12 16:47:07
- */
-public class JoinTest {
+class JoinTest {
 
     @Test
-    public void items() throws Exception {
-        assert I.join(" ", Arrays.asList("a", "b")).equals("a b");
+    void items() {
+        assert I.join(" ", List.of("a", "b")).equals("a b");
     }
 
     @Test
-    public void single() throws Exception {
-        assert I.join(" ", Arrays.asList("a")).equals("a");
+    void single() {
+        assert I.join(" ", List.of("a")).equals("a");
     }
 
     @Test
-    public void nullItems() throws Exception {
+    void array() {
+        assert I.join(" ", "a", "b").equals("a b");
+    }
+
+    @Test
+    void nullArray() {
+        assert I.join(" ", (Object[]) null).equals("");
+    }
+
+    @Test
+    void nullItems() {
         I.join(null, (Iterable) null).equals("");
     }
 
     @Test
-    public void nullSeparator() throws Exception {
+    void nullSeparator() {
         assert I.join(null, Arrays.asList("a", "b")).equals("ab");
     }
 
     @Test
-    public void emptyItems() throws Exception {
+    void emptyItems() {
         assert I.join("", Collections.EMPTY_LIST).equals("");
     }
 
     @Test
-    public void emptySeparator() throws Exception {
+    void emptySeparator() {
         assert I.join("", Arrays.asList("a", "b")).equals("ab");
     }
 }
