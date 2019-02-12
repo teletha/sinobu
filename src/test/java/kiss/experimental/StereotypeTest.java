@@ -27,8 +27,7 @@ public class StereotypeTest {
 
     @Test
     public void stereotype() {
-        assert getAnnotation(Base.class, StereotypeAnnotation1.class).annotationType()
-                .equals(StereotypeAnnotation1.class);
+        assert getAnnotation(Base.class, StereotypeAnnotation1.class).annotationType().equals(StereotypeAnnotation1.class);
     }
 
     @Test

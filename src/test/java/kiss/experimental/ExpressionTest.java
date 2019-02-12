@@ -11,9 +11,9 @@ package kiss.experimental;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Consumer;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.sample.bean.Person;
@@ -29,44 +29,44 @@ class ExpressionTest {
     void variable() {
         Object context = define("item", "minimum language");
 
-        assert Expression.express("I want {item}.", List.of(context)).equals("I want minimum language.");
+        assert Expression.express("I want {item}.", context).equals("I want minimum language.");
     }
 
     @Test
     void variableNotFound() {
         Object context = define();
 
-        assert Expression.express("unknown variable is {ignored}", List.of(context)).equals("unknown variable is ");
+        assert Expression.express("unknown variable is {ignored}", context).equals("unknown variable is ");
     }
 
     @Test
     void variables() {
         Object context = define("multiple", "all").define("variable", "values");
 
-        assert Expression.express("{multiple} {variable} are accepted", List.of(context)).equals("all values are accepted");
+        assert Expression.express("{multiple} {variable} are accepted", context).equals("all values are accepted");
     }
 
     @Test
     void variableLocation() {
-        assert Expression.express("{variableOnly}", List.of(define("variableOnly", "ok"))).equals("ok");
-        assert Expression.express("{head} is accepted", List.of(define("head", "this"))).equals("this is accepted");
-        assert Expression.express("tail is {accepted}", List.of(define("accepted", "ok"))).equals("tail is ok");
-        assert Expression.express("middle {is} fine too", List.of(define("is", "is"))).equals("middle is fine too");
+        assert Expression.express("{variableOnly}", define("variableOnly", "ok")).equals("ok");
+        assert Expression.express("{head} is accepted", define("head", "this")).equals("this is accepted");
+        assert Expression.express("tail is {accepted}", define("accepted", "ok")).equals("tail is ok");
+        assert Expression.express("middle {is} fine too", define("is", "is")).equals("middle is fine too");
     }
 
     @Test
     void variableDescription() {
-        assert Expression.express("{ spaceAtHead}", List.of(define("spaceAtHead", "ok"))).equals("ok");
-        assert Expression.express("{spaceAtTail }", List.of(define("spaceAtTail", "ok"))).equals("ok");
-        assert Expression.express("{ space }", List.of(define("space", "ok"))).equals("ok");
-        assert Expression.express("{\t spaceLike　}", List.of(define("spaceLike", "ok"))).equals("ok");
-        assert Expression.express("{separator . withSpace}", List.of(define("separator", define("withSpace", "ok")))).equals("ok");
+        assert Expression.express("{ spaceAtHead}", define("spaceAtHead", "ok")).equals("ok");
+        assert Expression.express("{spaceAtTail }", define("spaceAtTail", "ok")).equals("ok");
+        assert Expression.express("{ space }", define("space", "ok")).equals("ok");
+        assert Expression.express("{\t spaceLike　}", define("spaceLike", "ok")).equals("ok");
+        assert Expression.express("{separator . withSpace}", define("separator", define("withSpace", "ok"))).equals("ok");
     }
 
     @Test
     void contextNull() {
         assert Expression.express("null context is {ignored}", Collections.singletonList(null)).equals("null context is ");
-        assert Expression.express("null context is {ignored}", (List) null).equals("null context is ");
+        Assertions.assertThrows(NullPointerException.class, () -> Expression.express("null context is {ignored}", (Object[]) null));
     }
 
     @Test
@@ -75,7 +75,7 @@ class ExpressionTest {
             $.define("value", "ok");
         });
 
-        assert Expression.express("nested variable is {acceptable.value}", List.of(context)).equals("nested variable is ok");
+        assert Expression.express("nested variable is {acceptable.value}", context).equals("nested variable is ok");
     }
 
     @Test
@@ -83,7 +83,7 @@ class ExpressionTest {
         Object context = define("is", $ -> {
         });
 
-        assert Expression.express("nested unknown variable {is.ignored}", List.of(context)).equals("nested unknown variable ");
+        assert Expression.express("nested unknown variable {is.ignored}", context).equals("nested unknown variable ");
     }
 
     @Test
@@ -93,7 +93,7 @@ class ExpressionTest {
         context.setLastName("Kahu");
         context.setFirstName("Tino");
 
-        assert Expression.express("{firstName}({age}) : It's noisy.", List.of(context)).equals("Tino(15) : It's noisy.");
+        assert Expression.express("{firstName}({age}) : It's noisy.", context).equals("Tino(15) : It's noisy.");
     }
 
     @Test
@@ -103,7 +103,7 @@ class ExpressionTest {
         context.add("two");
         context.add("three");
 
-        assert Expression.express("{0} {1} {2}", List.of(context)).equals("one two three");
+        assert Expression.express("{0} {1} {2}", context).equals("one two three");
     }
 
     @Test
@@ -113,7 +113,7 @@ class ExpressionTest {
         context.put("2", "two");
         context.put("3", "three");
 
-        assert Expression.express("{1} {2} {3}", List.of(context)).equals("one two three");
+        assert Expression.express("{1} {2} {3}", context).equals("one two three");
     }
 
     @Test
@@ -123,7 +123,7 @@ class ExpressionTest {
         context.add("two");
         context.add("three");
 
-        assert Expression.express("list size is {size}", List.of(context), (m, o, e) -> m.type.getMethod(e.name).invoke(o))
+        assert Expression.express("list size is {size}", new Object[] {context}, (m, o, e) -> m.type.getMethod(e).invoke(o))
                 .equals("list size is 3");
     }
 
@@ -134,7 +134,7 @@ class ExpressionTest {
         context.add("two");
         context.add("three");
 
-        assert Expression.express("unknown method is {ignored}", List.of(context)).equals("unknown method is ");
+        assert Expression.express("unknown method is {ignored}", context).equals("unknown method is ");
     }
 
     @Test
@@ -142,9 +142,8 @@ class ExpressionTest {
         Object c1 = define("first context", "will be ignored");
         Object c2 = define("value", "variable");
 
-        assert Expression.express("{value} is not found in first context", List.of(c1, c2))
-                .equals("variable is not found in first context");
-        assert Expression.express("{$} is not found in both contexts", List.of(c1, c2)).equals(" is not found in both contexts");
+        assert Expression.express("{value} is not found in first context", c1, c2).equals("variable is not found in first context");
+        assert Expression.express("{$} is not found in both contexts", c1, c2).equals(" is not found in both contexts");
     }
 
     @Test
@@ -152,7 +151,7 @@ class ExpressionTest {
         Object c1 = define("highPriority", "value");
         Object c2 = define("highPriority", "unused");
 
-        assert Expression.express("first context has {highPriority}", List.of(c1, c2)).equals("first context has value");
+        assert Expression.express("first context has {highPriority}", c1, c2).equals("first context has value");
     }
 
     @Test
@@ -162,7 +161,7 @@ class ExpressionTest {
         context.setLastName("Kahu");
         context.setFirstName("Tino");
 
-        assert Expression.express("{nooo}", List.of(context), (m, o, e) -> "fail").equals("fail");
+        assert Expression.express("{nooo}", new Object[] {context}, (m, o, e) -> "fail").equals("fail");
     }
 
     /**

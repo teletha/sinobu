@@ -18,13 +18,10 @@ import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.VariablePropertyAtField;
 
-/**
- * @version 2018/09/06 23:22:09
- */
-public class ModelLensTest {
+class ModelLensTest {
 
     @Test
-    public void getAtNonAccessibleInstance() {
+    void getAtNonAccessibleInstance() {
         Person person = new Person();
         person.setAge(1);
 
@@ -33,7 +30,7 @@ public class ModelLensTest {
     }
 
     @Test
-    public void getAtNonAccessibleGenericInstance() {
+    void getAtNonAccessibleGenericInstance() {
         GenericStringBean bean = new GenericStringBean();
         bean.setGeneric("value");
 
@@ -42,19 +39,19 @@ public class ModelLensTest {
     }
 
     @Test
-    public void getNullObject() throws Exception {
+    void getNullObject() throws Exception {
         Model model = Model.of(Person.class);
         assert model.get(null, model.property("firstName")) == null;
     }
 
     @Test
-    public void getNullProperty() throws Exception {
+    void getNullProperty() throws Exception {
         Model model = Model.of(Person.class);
-        assert model.get(new Person(), null) == null;
+        assert model.get(new Person(), (Property) null) == null;
     }
 
     @Test
-    public void setAtNonAccessibleInstance() {
+    void setAtNonAccessibleInstance() {
         Person person = new Person();
         Model model = Model.of(Person.class);
         model.set(person, model.property("age"), 1);
@@ -63,7 +60,7 @@ public class ModelLensTest {
     }
 
     @Test
-    public void setAtNonAccessibleGenericInstance() {
+    void setAtNonAccessibleGenericInstance() {
         GenericStringBean bean = new GenericStringBean();
         Model model = Model.of(GenericStringBean.class);
         model.set(bean, model.property("generic"), "value");
@@ -72,7 +69,7 @@ public class ModelLensTest {
     }
 
     @Test
-    public void setNullObject() {
+    void setNullObject() {
         Person person = new Person();
         Model model = Model.of(Person.class);
         model.set(null, model.property("firstName"), "ERROR");
@@ -81,7 +78,7 @@ public class ModelLensTest {
     }
 
     @Test
-    public void setNullProperty() {
+    void setNullProperty() {
         Person person = new Person();
         Model model = Model.of(Person.class);
         model.set(person, null, "ERROR");
@@ -90,7 +87,7 @@ public class ModelLensTest {
     }
 
     @Test
-    public void setNullValue() {
+    void setNullValue() {
         Person person = new Person();
         person.setFirstName("OK");
         Model model = Model.of(Person.class);
@@ -100,7 +97,7 @@ public class ModelLensTest {
     }
 
     @Test
-    public void setNullValueOnPrimitive() {
+    void setNullValueOnPrimitive() {
         Person person = new Person();
         person.setAge(10);
 
@@ -111,7 +108,7 @@ public class ModelLensTest {
     }
 
     @Test
-    public void setNullValueOnEnum() {
+    void setNullValueOnEnum() {
         EnumProperty instance = new EnumProperty();
 
         Model model = Model.of(instance);

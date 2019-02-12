@@ -9,14 +9,12 @@
  */
 package kiss.experimental;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import kiss.I;
 import kiss.WiseTriFunction;
 import kiss.model.Model;
-import kiss.model.Property;
 
 /**
  * Super minimum expression language.
@@ -30,47 +28,66 @@ public class Expression {
      * Calculate expression language in the specified text by using the given contexts.
      * 
      * @param text A text with {some} placefolder.
-     * @param models A list of value contexts.
+     * @param contexts A list of value contexts.
      * @return A calculated text.
      */
-    public static String express(String text, List models, WiseTriFunction<Model, Object, Property, Object>... resolvers) {
-        resolvers = I.array(Model::get, resolvers);
+    public static String express(String text, Object... contexts) {
+        return express(text, contexts, (WiseTriFunction[]) null);
+    }
 
-        StringBuilder replaced = new StringBuilder();
+    /**
+     * Calculate expression language in the specified text by using the given contexts.
+     * 
+     * @param text A text with {some} placefolder.
+     * @param contexts A list of value contexts.
+     * @return A calculated text.
+     */
+    public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
+        resolvers = I.array(new WiseTriFunction[] {(WiseTriFunction<Model, Object, String, Object>) Model::get}, resolvers);
+
+        StringBuilder str = new StringBuilder();
+
+        // find all expression placeholder
         Matcher matcher = expression.matcher(text);
 
-        root: while (matcher.find()) {
-            String[] expressions = matcher.group(1).split("\\.");
+        nextPlaceholder: while (matcher.find()) {
+            // normalize expression (remove all white space) and split it
+            String[] e = matcher.group(1).replaceAll("[\\s　]", "").split("\\.");
 
-            model: for (Object o : models) {
-                for (int i = 0; i < expressions.length; i++) {
-                    if (o == null) {
-                        continue model;
-                    }
+            // evaluate each model (first model has high priority)
+            nextContext: for (int i = 0; i < contexts.length; i++) {
+                Object c = contexts[i];
 
-                    String expression = expressions[i].strip();
-                    Model model = Model.of(o);
-                    Property property = model.property(expression);
-                    if (property == null) property = new Property(model, expression);
+                // evaluate expression from head
+                nextExpression: for (int j = 0; j < e.length; j++) {
+                    Model m = Model.of(c);
 
-                    for (WiseTriFunction resolver : resolvers) {
-                        o = resolver.apply(model, o, property);
+                    // evaluate expression by each resolvers
+                    for (int k = 0; k < resolvers.length; k++) {
+                        Object o = resolvers[k].apply(m, c, e[j]);
 
                         if (o != null) {
-                            break;
+                            // suitable value was found, step into next expression
+                            c = o;
+                            continue nextExpression;
                         }
                     }
+
+                    // any resolver can't find suitable value, try to next context
+                    continue nextContext;
                 }
 
-                if (o != null) {
-                    matcher.appendReplacement(replaced, I.transform(o, String.class));
-                    continue root;
-                }
+                // full expression was evaluated collectly, convert it to string
+                matcher.appendReplacement(str, I.transform(c, String.class));
+
+                continue nextPlaceholder;
             }
-            matcher.appendReplacement(replaced, "");
-        }
-        matcher.appendTail(replaced);
 
-        return replaced.toString();
+            // any context can't find suitable value, so use empty text
+            matcher.appendReplacement(str, "");
+        }
+        matcher.appendTail(str);
+
+        return str.toString();
     }
 }

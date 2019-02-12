@@ -9,7 +9,10 @@
  */
 package kiss.model;
 
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.FINAL;
+import static java.lang.reflect.Modifier.NATIVE;
+import static java.lang.reflect.Modifier.PRIVATE;
+import static java.lang.reflect.Modifier.STATIC;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
@@ -263,6 +266,18 @@ public class Model<M> {
      */
     public String encode(M value) {
         return I.find(Encoder.class, type).encode(value);
+    }
+
+    /**
+     * Returns the value of the given property in the given object.
+     * 
+     * @param object A object as source. This value must not be <code>null</code>.
+     * @param property A property. This value must not be <code>null</code>.
+     * @return A resolved property value. This value may be <code>null</code>.
+     * @throws IllegalArgumentException If the given object can't resolve the given property.
+     */
+    public Object get(M object, String property) {
+        return get(object, property(property));
     }
 
     /**
