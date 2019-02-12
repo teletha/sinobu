@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -71,7 +70,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
-import java.util.stream.BaseStream;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -400,17 +398,14 @@ public class I {
      */
     public static <T> T[] array(T[] one, T... other) {
         if (one == null) {
-            one = (T[]) Array.newInstance(other.getClass().getComponentType(), 0);
+            return other == null ? null : other;
+        } else if (other == null) {
+            return one;
         }
 
-        if (other == null) {
-            other = (T[]) Array.newInstance(one.getClass().getComponentType(), 0);
-        }
-
-        return I.signal(one)
-                .concat(I.signal(other))
-                .toList()
-                .toArray((T[]) Array.newInstance(one.getClass().getComponentType(), one.length + other.length));
+        T[] all = Arrays.copyOf(one, one.length + other.length);
+        System.arraycopy(other, 0, all, one.length, other.length);
+        return all;
     }
 
     /**

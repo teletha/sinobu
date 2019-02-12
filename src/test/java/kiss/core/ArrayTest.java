@@ -9,15 +9,13 @@
  */
 package kiss.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * 
- */
 class ArrayTest {
 
     @Test
@@ -33,5 +31,10 @@ class ArrayTest {
     @Test
     void appendNull() {
         assertArrayEquals(new String[] {"a", "b"}, I.array(new String[] {"a", "b"}, (String[]) null));
+    }
+
+    @Test
+    void bothNull() {
+        assertNull(I.array(null, (String[]) null));
     }
 }
