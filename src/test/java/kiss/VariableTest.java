@@ -248,29 +248,16 @@ public class VariableTest {
     }
 
     @Test
-    void or() throws Exception {
-        assert empty.or("text").is("text");
-        assert string.or("text").is("value");
+    void or() {
+        assert empty.or("text").equals("text");
+        assert string.or("text").equals("value");
     }
 
     @Test
-    void orNull() throws Exception {
+    void orNull() {
         String nill = null;
-        assert empty.or(nill).isAbsent();
-        assert string.or(nill).is("value");
-    }
-
-    @Test
-    void orVariable() throws Exception {
-        assert empty.or(string).is("value");
-        assert string.or(empty).is("value");
-    }
-
-    @Test
-    void orNullVariable() throws Exception {
-        Variable<String> nill = null;
-        assert empty.or(nill).isAbsent();
-        assert string.or(nill).is("value");
+        assert empty.or(nill) == null;
+        assert string.or(nill).equals("value");
     }
 
     @Test

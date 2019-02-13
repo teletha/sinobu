@@ -84,26 +84,14 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * Exact value. If this {@link Variable} is empty, throw {@link Error}.
+     * Exact value. If this {@link Variable} is empty, throw {@link NullPointerException}.
      * 
      * @return A current value.
      */
     public final V exact() {
-        return exact(Error::new);
-    }
-
-    /**
-     * Exact value. If this {@link Variable} is empty, throw error with message.
-     * 
-     * @param builder A error builder.
-     * @param message A error message.
-     * @return A current value.
-     */
-    public final <E extends Throwable> V exact(Function<String, E> builder, Object... message) {
-        if (v == null) {
-            throw I.quiet(builder.apply(I.join("", message)));
-        }
-        return v;
+        return or(() -> {
+            throw new NullPointerException();
+        });
     }
 
     /**
@@ -278,42 +266,23 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
-     * If the value is present, return this {@link Variable}. If the value is absent, return other
-     * {@link Variable}.
-     * </p>
+     * Return the value if present, otherwise return other.
      *
-     * @param other An other value.
-     * @return A {@link Variable}.
+     * @param other A value to be returned if there is no value present, may be null.
+     * @return A value, if present, otherwise other.
      */
-    public Variable<V> or(V other) {
-        return v != null ? this : of(other);
+    public V or(V other) {
+        return v != null ? v : other;
     }
 
     /**
-     * <p>
-     * If the value is present, return this {@link Variable}. If the value is absent, return other
-     * {@link Variable}.
-     * </p>
+     * Return the value if present, otherwise return other.
      *
-     * @param other An other value.
-     * @return A {@link Variable}.
+     * @param other A value to be returned if there is no value present, may be null.
+     * @return A value, if present, otherwise other.
      */
-    public Variable<V> or(Optional<V> other) {
-        return v != null ? this : of(other);
-    }
-
-    /**
-     * <p>
-     * If the value is present, return this {@link Variable}. If the value is absent, return other
-     * {@link Variable}.
-     * </p>
-     *
-     * @param other An other value.
-     * @return A {@link Variable}.
-     */
-    public Variable<V> or(Supplier<V> other) {
-        return v != null ? this : of(other);
+    public V or(Supplier<V> other) {
+        return v != null ? v : other == null ? null : other.get();
     }
 
     /**
