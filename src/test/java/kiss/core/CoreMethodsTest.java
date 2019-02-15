@@ -9,12 +9,13 @@
  */
 package kiss.core;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.Code;
 import kiss.I;
 import kiss.sample.bean.FinalBean;
 import kiss.sample.bean.Primitive;
@@ -133,14 +134,14 @@ public class CoreMethodsTest {
 
     @Test
     public void instatiateAbstract() throws Exception {
-        assert Code.catches(() -> I.make(Abstract.class)) instanceof InstantiationException;
+        assertThrows(InstantiationException.class, () -> I.make(Abstract.class));
     }
 
     @Test
     public void instatiateThrowable() throws Exception {
-        assert Code.catches(() -> I.make(ExceptionThrower.class)) instanceof ExceptionThrower.Bug;
-        assert Code.catches(() -> I.make(RuntimeThrower.class)) instanceof RuntimeThrower.Bug;
-        assert Code.catches(() -> I.make(ErrorThrower.class)) instanceof ErrorThrower.Bug;
+        assertThrows(ExceptionThrower.Bug.class, () -> I.make(ExceptionThrower.class));
+        assertThrows(RuntimeThrower.Bug.class, () -> I.make(RuntimeThrower.class));
+        assertThrows(ErrorThrower.Bug.class, () -> I.make(ErrorThrower.class));
     }
 
     /**
@@ -297,8 +298,8 @@ public class CoreMethodsTest {
 
     @Test
     public void testExceptionQuietly() {
-        assert Code.catches(() -> I.quiet(new ClassNotFoundException())) instanceof ClassNotFoundException;
-        assert Code.catches(() -> I.quiet(new UnsupportedOperationException())) instanceof UnsupportedOperationException;
-        assert Code.catches(() -> I.quiet(new LinkageError())) instanceof LinkageError;
+        assertThrows(ClassNotFoundException.class, () -> I.quiet(new ClassNotFoundException()));
+        assertThrows(UnsupportedOperationException.class, () -> I.quiet(new UnsupportedOperationException()));
+        assertThrows(LinkageError.class, () -> I.quiet(new LinkageError()));
     }
 }
