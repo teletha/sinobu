@@ -9,18 +9,16 @@
  */
 package kiss.xml;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-/**
- * @version 2014/07/31 23:05:55
- */
-public class XMLManipulationTest {
+class XMLManipulationTest {
 
     @Test
-    public void append() throws Exception {
+    void append() {
         String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
 
         XML e = I.xml(xml);
@@ -30,7 +28,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void appendText() throws Exception {
+    void appendText() {
         String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
 
         XML e = I.xml(xml);
@@ -39,7 +37,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void prepend() throws Exception {
+    void prepend() {
         String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
 
         XML e = I.xml(xml);
@@ -49,7 +47,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void prependText() throws Exception {
+    void prependText() {
         String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
 
         XML e = I.xml(xml);
@@ -58,7 +56,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void before() throws Exception {
+    void before() {
         String xml = "<m><P/><Q/></m>";
 
         XML e = I.xml(xml);
@@ -70,7 +68,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void beforeText() throws Exception {
+    void beforeText() {
         String xml = "<m><P/><Q/></m>";
 
         XML e = I.xml(xml);
@@ -81,7 +79,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void after() throws Exception {
+    void after() {
         String xml = "<m><P/><Q/></m>";
 
         XML e = I.xml(xml);
@@ -93,7 +91,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void afterText() throws Exception {
+    void afterText() {
         String xml = "<m><P/><Q/></m>";
 
         XML e = I.xml(xml);
@@ -104,7 +102,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void empty() throws Exception {
+    void empty() {
         String xml = "<Q><P/><P/></Q>";
 
         XML e = I.xml(xml);
@@ -114,7 +112,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void remove() throws Exception {
+    void remove() {
         String xml = "<Q><S/><T/><S/></Q>";
 
         XML e = I.xml(xml);
@@ -125,7 +123,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void wrap() throws Exception {
+    void wrap() {
         String xml = "<m><Q/><Q/></m>";
 
         XML e = I.xml(xml);
@@ -136,7 +134,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void wrapAll() throws Exception {
+    void wrapAll() {
         String xml = "<m><Q/><Q/></m>";
 
         XML e = I.xml(xml);
@@ -148,14 +146,14 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void textGet() throws Exception {
+    void textGet() {
         String xml = "<Q>ss<P>a<i>a</i>a</P><P> b </P><P>c c</P>ss</Q>";
 
         assert I.xml(xml).find("P").text().equals("aaa b c c");
     }
 
     @Test
-    public void textSet() throws Exception {
+    void textSet() {
         String xml = "<Q><P>aaa</P></Q>";
 
         XML e = I.xml(xml);
@@ -165,7 +163,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void attrGet() throws Exception {
+    void attrGet() {
         String xml = "<Q name='value' key='map'/>";
 
         assert I.xml(xml).attr("name").equals("value");
@@ -173,7 +171,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void attrGetNS() throws Exception {
+    void attrGetNS() {
         String xml = "<Q xmlns:P='p' xmlns:z='z' z:name='fail' P:name='value' name='fail'/>";
 
         XML e = I.xml(xml);
@@ -182,7 +180,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void attrSet() throws Exception {
+    void attrSet() {
         String xml = "<Q name='value' key='map'/>";
 
         XML e = I.xml(xml);
@@ -194,7 +192,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void attrSetNS() throws Exception {
+    void attrSetNS() {
         String xml = "<Q xmlns:P='p' xmlns:z='z' z:name='fail' P:name='value' name='fail'/>";
 
         XML e = I.xml(xml);
@@ -204,7 +202,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void attrCreate() throws Exception {
+    void attrCreate() {
         String xml = "<Q/>";
 
         XML e = I.xml(xml);
@@ -215,7 +213,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void attrCreateNs() throws Exception {
+    void attrCreateNs() {
         String xml = "<Q/>";
 
         XML e = I.xml(xml);
@@ -226,7 +224,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void attrNull() throws Exception {
+    void attrNull() {
         String xml = "<Q/>";
 
         XML e = I.xml(xml);
@@ -237,7 +235,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void attrInvalidName() throws Exception {
+    void attrInvalidName() {
         String xml = "<Q/>";
 
         XML e = I.xml(xml);
@@ -249,7 +247,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void addClass() throws Exception {
+    void addClass() {
         assert I.xml("<a/>").addClass("add").attr("class").equals("add");
         assert I.xml("<a class='base'/>").addClass("add").attr("class").equals("base add");
         assert I.xml("<a class='base'/>").addClass("base").attr("class").equals("base");
@@ -257,14 +255,14 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void removeClass() throws Exception {
+    void removeClass() {
         assert I.xml("<a class='base'/>").removeClass("base").attr("class").equals("");
         assert I.xml("<a class='one two'/>").removeClass("one").attr("class").equals("two");
         assert I.xml("<a class='one two'/>").removeClass("on two one").attr("class").equals("");
     }
 
     @Test
-    public void hasClass() throws Exception {
+    void hasClass() {
         assert I.xml("<a class='base'/>").hasClass("base");
         assert I.xml("<a class='one two'/>").hasClass("one");
         assert !I.xml("<a class='base'/>").hasClass("none");
@@ -272,14 +270,14 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void toggleClass() throws Exception {
+    void toggleClass() {
         assert I.xml("<a class='base'/>").toggleClass("base").attr("class").equals("");
         assert I.xml("<a class='one two'/>").toggleClass("one").attr("class").equals("two");
         assert I.xml("<a class='one two'/>").toggleClass("three").attr("class").equals("one two three");
     }
 
     @Test
-    public void child() throws Exception {
+    void child() {
         XML e = I.xml("<Q/>");
 
         assert e.find("child").size() == 0;
@@ -292,7 +290,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void childWithSameName() throws Exception {
+    void childWithSameName() {
         XML e = I.xml("<Q><child/></Q>");
 
         assert e.find("child").size() == 1;
@@ -305,7 +303,7 @@ public class XMLManipulationTest {
     }
 
     @Test
-    public void childWithSameNameRoot() throws Exception {
+    void childWithSameNameRoot() {
         XML e = I.xml("<Q><Q/><P/></Q>");
 
         assert e.find("Q").size() == 1;
@@ -316,5 +314,19 @@ public class XMLManipulationTest {
         assert e.find("Q.check").size() == 0;
         child.addClass("check");
         assert e.find("Q.check").size() == 1;
+    }
+
+    @Test
+    void effect() {
+        XML e = I.xml("<Q/>");
+
+        assert e.find("P").size() == 0;
+        e.effect(x -> x.append("<P/>"));
+        assert e.find("P").size() == 1;
+    }
+
+    @Test
+    void effectNull() {
+        Assertions.assertThrows(NullPointerException.class, () -> I.xml("Q").effect(null));
     }
 }

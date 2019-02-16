@@ -9,8 +9,7 @@
  */
 package kiss;
 
-import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
-import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
+import static javax.xml.XMLConstants.*;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -650,6 +649,17 @@ public class XML implements Iterable<XML> {
      */
     public int size() {
         return nodes.size();
+    }
+
+    /**
+     * Apply the specified process to this {@link XML}. This is helpful for fluent method chain to
+     * intercept your own operation.
+     * 
+     * @param process
+     * @return
+     */
+    public <R> R effect(WiseFunction<XML, R> process) {
+        return process.apply(this);
     }
 
     /**
