@@ -21,9 +21,6 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.Variable;
 
-/**
- * @version 2018/06/19 17:18:11
- */
 class ReceiverTest extends SignalTester {
 
     @Test
@@ -37,7 +34,7 @@ class ReceiverTest extends SignalTester {
 
     @Test
     void toCollection() {
-        ArrayDeque<Integer> set = I.signal(30, 20, 10).toCollection(new ArrayDeque(100));
+        ArrayDeque<Integer> set = I.signal(30, 20, 10).toCollection(new ArrayDeque<Integer>(100));
         Iterator<Integer> iterator = set.iterator();
         assert iterator.next() == 30;
         assert iterator.next() == 20;

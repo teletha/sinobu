@@ -353,7 +353,7 @@ public final class Signal<V> {
      *
      * @return A {@link Collection} as value receiver.
      */
-    public final <C extends Collection<V>> C toCollection(C collection) {
+    public final <C extends Collection<? super V>> C toCollection(C collection) {
         to(collection::add);
         return collection;
     }
@@ -954,6 +954,7 @@ public final class Signal<V> {
                 }, disposer.sub(), true);
             }, observer::error, end::complete, disposer);
         });
+
     }
 
     /**
