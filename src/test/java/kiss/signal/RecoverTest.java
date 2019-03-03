@@ -97,11 +97,11 @@ class RecoverTest extends SignalTester {
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.countObservers() == 1;
-        assert await().value("recover");
+        assert await(30).value("recover");
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.countObservers() == 1;
-        assert await().value("recover");
+        assert await(30).value("recover");
         assert main.countObservers() == 1;
     }
 
@@ -110,11 +110,11 @@ class RecoverTest extends SignalTester {
         monitor(signal -> signal.recoverWhen(fail -> fail.take(2).delay(10, ms).mapTo("recover")));
 
         assert main.emit(Error).value();
-        assert await().value("recover");
+        assert await(30).value("recover");
         assert main.emit(Error).value();
-        assert await().value("recover");
+        assert await(30).value("recover");
         assert main.emit(Error).value();
-        assert await().value();
+        assert await(30).value();
         assert main.isError();
         assert main.isDisposed();
     }

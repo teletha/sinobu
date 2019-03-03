@@ -24,10 +24,10 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(30, ms));
 
         assert main.emit("delay").value();
-        assert await().value("delay");
+        assert await(50).value("delay");
 
         assert main.emit("one", "more").value();
-        assert await().value("one", "more");
+        assert await(50).value("one", "more");
     }
 
     @Test
@@ -56,10 +56,10 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(Duration.ofMillis(30)));
 
         assert main.emit("delay").value();
-        assert await().value("delay");
+        assert await(50).value("delay");
 
         assert main.emit("one", "more").value();
-        assert await().value("one", "more");
+        assert await(50).value("one", "more");
     }
 
     @Test
@@ -88,10 +88,10 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(() -> Duration.ofMillis(30)));
 
         assert main.emit("delay").value();
-        assert await().value("delay");
+        assert await(50).value("delay");
 
         assert main.emit("one", "more").value();
-        assert await().value("one", "more");
+        assert await(50).value("one", "more");
     }
 
     @Test

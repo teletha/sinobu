@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -94,7 +94,7 @@ class ConcatMapTest extends SignalTester {
         monitor(Integer.class, signal -> signal.concatMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
 
         main.emit(60, 40, 20);
-        assert await().value(60, 61, 40, 41, 20, 21);
+        assert await(200).value(60, 61, 40, 41, 20, 21);
     }
 
     @Test

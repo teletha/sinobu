@@ -1701,19 +1701,14 @@ public class I {
      *            <code>false</code> will execute task in serial.
      * @param task A task to execute.
      */
-    public static Future<?> schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
+    public static CompletableFuture<?> schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
         task = error(task);
 
         if (delay <= 0) {
             task.run();
             return CompletableFuture.completedFuture(null);
         }
-
-        if (parallelExecution) {
-            return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, unit, parallel));
-        } else {
-            return serial.schedule(task, delay, unit);
-        }
+        return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, unit, parallelExecution ? parallel : serial));
     }
 
     /**

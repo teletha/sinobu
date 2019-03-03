@@ -94,7 +94,7 @@ class SwitchMapTest extends SignalTester {
         monitor(Integer.class, signal -> signal.switchMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
 
         main.emit(60, 40, 20);
-        assert await().value(20, 21);
+        assert await(200).value(20, 21);
     }
 
     @Test

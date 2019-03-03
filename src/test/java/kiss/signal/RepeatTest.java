@@ -155,11 +155,11 @@ class RepeatTest extends SignalTester {
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        assert await().value("repeat");
+        assert await(30).value("repeat");
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        assert await().value("repeat");
+        assert await(30).value("repeat");
         assert main.countObservers() == 1;
     }
 
@@ -169,11 +169,11 @@ class RepeatTest extends SignalTester {
 
         assert main.value("repeat");
         assert main.emit(Complete).value();
-        assert await().value("repeat");
+        assert await(30).value("repeat");
         assert main.emit(Complete).value();
-        assert await().value("repeat");
+        assert await(30).value("repeat");
         assert main.emit(Complete).value();
-        assert await().value();
+        assert await(30).value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -232,7 +232,7 @@ class RepeatTest extends SignalTester {
                 .repeatWhen(repeat -> repeat.take(3).delay(10, ms).effect(log("Repeat")))
                 .effect(log("End")));
 
-        assert await().isCompleted();
+        assert await(60).isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
         assert checkLog("Begin").size() == 4;

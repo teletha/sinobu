@@ -65,11 +65,11 @@ class RetryTest extends SignalTester {
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.hasNoObserver();
-        assert await().value("retry");
+        assert await(30).value("retry");
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.hasNoObserver();
-        assert await().value("retry");
+        assert await(30).value("retry");
         assert main.countObservers() == 1;
     }
 
@@ -79,11 +79,11 @@ class RetryTest extends SignalTester {
 
         assert main.value("retry");
         assert main.emit(Error).value();
-        assert await().value("retry");
+        assert await(30).value("retry");
         assert main.emit(Error).value();
-        assert await().value("retry");
+        assert await(30).value("retry");
         assert main.emit(Error).value();
-        assert await().value();
+        assert await(30).value();
         assert main.isError();
         assert main.isDisposed();
     }
@@ -144,7 +144,7 @@ class RetryTest extends SignalTester {
                 .effect(log("Unreached"))
                 .effectOnError(log("ErrorFinally")));
 
-        assert await().isNotCompleted();
+        assert await(60).isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
         assert checkLog("Begin").size() == 4;

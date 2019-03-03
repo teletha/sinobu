@@ -2073,6 +2073,26 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Switch event stream context.
+     * </p>
+     * 
+     * @param scheduler A new context
+     * @return Chainable API.
+     */
+    public final <R> Signal<List<R>> join(Function<V, R> scheduler) {
+        Objects.requireNonNull(scheduler);
+
+        return new Signal<>((observer, disposer) -> to(v -> {
+            scheduler.accept(() -> observer.accept(v));
+        }, e -> {
+            scheduler.accept(() -> observer.error(e));
+        }, () -> {
+            scheduler.accept(observer::complete);
+        }, disposer));
+    }
+
+    /**
+     * <p>
      * Generates an {@link Signal} sequence that guarantee one item at least.
      * </p>
      *
