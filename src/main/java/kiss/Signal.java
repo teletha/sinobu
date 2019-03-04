@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
@@ -1699,6 +1700,23 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
+    public final <R> Signal<R> flatMap2(WiseFunction<V, Signal<R>> function) {
+        return flatMap2(function.append());
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
     public final <R> Signal<R> flatMap(WiseBiFunction<V, Signal<V>, Signal<R>> function) {
         Objects.requireNonNull(function);
 
@@ -1710,6 +1728,60 @@ public final class Signal<V> {
                 function.apply(value, this).to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
             }, observer::error, end::complete, disposer);
         });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<R> flatMap2(WiseBiFunction<V, Signal<V>, Signal<R>> function) {
+        Objects.requireNonNull(function);
+
+        return new Signal<>((observer, disposer) -> {
+            Subscriber end = countable2(observer, 1);
+
+            return to(value -> {
+                end.index++;
+                function.apply(value, this).to(observer::accept, end::error, I.NoOP, disposer.sub().add(() -> {
+                    end.complete();
+                }), true);
+            }, observer::error, () -> {
+                end.complete();
+            }, disposer);
+        });
+    }
+
+    /**
+     * Create countable completer.
+     * 
+     * @param delgator A complete action.
+     * @param count A complete count.
+     * @return Chainable API.
+     */
+    private Subscriber countable2(Observer delgator, int count) {
+        Subscriber<?> completer = new Subscriber();
+        completer.index = count;
+        completer.error = e -> {
+            completer.index = -1;
+            delgator.error(e);
+        };
+        completer.complete = () -> {
+            completer.index--;
+            System.out.println("decrement " + completer.index);
+            if (completer.index == 0) {
+                delgator.complete();
+            }
+        };
+        return completer;
     }
 
     /**
@@ -2079,16 +2151,26 @@ public final class Signal<V> {
      * @param scheduler A new context
      * @return Chainable API.
      */
-    public final <R> Signal<List<R>> join(Function<V, R> scheduler) {
-        Objects.requireNonNull(scheduler);
+    public final Signal<V> join(Function<Runnable, CompletableFuture> scheduler) {
+        // ignore invalid parameters
+        if (scheduler == null) {
+            return this;
+        }
 
-        return new Signal<>((observer, disposer) -> to(v -> {
-            scheduler.accept(() -> observer.accept(v));
-        }, e -> {
-            scheduler.accept(() -> observer.error(e));
-        }, () -> {
-            scheduler.accept(observer::complete);
-        }, disposer));
+        return new Signal<>((observer, disposer) -> {
+            Subscriber end = countable(observer, 1);
+
+            return to(v -> {
+                end.index++;
+                System.out.println("start sub task " + v);
+                scheduler.apply(() -> observer.accept(v)).whenComplete((ret, e) -> {
+                    System.out.println("complete sub task " + v);
+                    end.complete();
+                });
+            }, e -> {
+                scheduler.apply(() -> observer.error(e));
+            }, end::complete, disposer);
+        });
     }
 
     /**
