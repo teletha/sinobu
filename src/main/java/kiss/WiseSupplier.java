@@ -9,12 +9,10 @@
  */
 package kiss;
 
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-/**
- * @version 2018/09/13 9:06:27
- */
-public interface WiseSupplier<Return> extends Supplier<Return> {
+public interface WiseSupplier<Return> extends Supplier<Return>, Callable<Return> {
 
     /**
      * <p>
@@ -36,6 +34,14 @@ public interface WiseSupplier<Return> extends Supplier<Return> {
         } catch (Throwable e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default Return call() throws Exception {
+        return get();
     }
 
     /**
