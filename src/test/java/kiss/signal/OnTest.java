@@ -9,8 +9,6 @@
  */
 package kiss.signal;
 
-import static java.util.concurrent.TimeUnit.*;
-
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -80,21 +78,4 @@ class OnTest extends SignalTester {
     private Consumer<Runnable> after20ms = runner -> {
         I.schedule(20, ms, true, runner);
     };
-
-    @Test
-    void syncComplete() {
-        monitor(1, () -> signal(50, 30, 10).on(task -> {
-            System.out.println("task start  " + Thread.currentThread());
-            I.schedule(10, MILLISECONDS, true, task);
-        }).map(v -> {
-            Thread.sleep(1000);
-            System.out.println(v + "  " + Thread.currentThread());
-            return v * 2;
-        }));
-
-        assert main.value();
-        assert main.isNotCompleted();
-        assert await(1500).value(100, 60, 20);
-        assert main.isCompleted();
-    }
 }

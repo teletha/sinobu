@@ -185,7 +185,7 @@ public class I {
     private static final Map<Class, Ⅱ> extensions = new HashMap<>();
 
     /** The parallel task manager. */
-    private static final ExecutorService parallel = Executors.newWorkStealingPool(16);
+    static final ExecutorService parallel = Executors.newWorkStealingPool(16);
 
     /** The serial task manager. */
     private static final ScheduledExecutorService serial = Executors.newSingleThreadScheduledExecutor(run -> {
@@ -1686,7 +1686,7 @@ public class I {
      *
      * @param task A task to execute.
      */
-    public static Future<?> schedule(Runnable task) {
+    public static CompletableFuture schedule(Runnable task) {
         return CompletableFuture.runAsync(error(task), parallel);
     }
 
@@ -1701,7 +1701,7 @@ public class I {
      *            <code>false</code> will execute task in serial.
      * @param task A task to execute.
      */
-    public static CompletableFuture<?> schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
+    public static CompletableFuture schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
         task = error(task);
 
         if (delay <= 0) {
@@ -1709,6 +1709,14 @@ public class I {
             return CompletableFuture.completedFuture(null);
         }
         return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, unit, parallelExecution ? parallel : serial));
+    }
+
+    public static <T> CompletableFuture<Void> scheduleAll(Iterable<? extends WiseSupplier<T>> tasks) {
+        return CompletableFuture.allOf(I.signal(tasks).map(CompletableFuture::supplyAsync).toList().toArray(CompletableFuture[]::new));
+    }
+
+    public static <T> CompletableFuture<Void> scheduleAll(WiseSupplier<T>... tasks) {
+        return scheduleAll(List.of(tasks));
     }
 
     /**
