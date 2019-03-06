@@ -1705,14 +1705,6 @@ public class I {
         return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, unit, parallelExecution ? parallel : serial));
     }
 
-    public static <T> CompletableFuture<Void> scheduleAll(Iterable<? extends WiseSupplier<T>> tasks) {
-        return CompletableFuture.allOf(I.signal(tasks).map(CompletableFuture::supplyAsync).toList().toArray(CompletableFuture[]::new));
-    }
-
-    public static <T> CompletableFuture<Void> scheduleAll(WiseSupplier<T>... tasks) {
-        return scheduleAll(List.of(tasks));
-    }
-
     /**
      * Decorate error handler.
      * 
