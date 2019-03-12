@@ -1701,7 +1701,13 @@ public class I {
      * @param task A task to execute.
      */
     public static CompletableFuture schedule(Executor executor, Runnable task) {
-        return CompletableFuture.runAsync(error(task), executor == null ? parallel : executor);
+        return CompletableFuture.runAsync(() -> {
+            try {
+                task.run();
+            } catch (Throwable e) {
+                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
+            }
+        }, executor == null ? parallel : executor);
     }
 
     /**
@@ -1717,22 +1723,6 @@ public class I {
      */
     public static CompletableFuture schedule(long delay, TimeUnit unit, Executor executor, Runnable task) {
         return schedule(delay <= 0 ? Runnable::run : CompletableFuture.delayedExecutor(delay, unit, executor), task);
-    }
-
-    /**
-     * Decorate error handler.
-     * 
-     * @param task A target task to decorate.
-     * @return A decorated task.
-     */
-    private static Runnable error(Runnable task) {
-        return () -> {
-            try {
-                task.run();
-            } catch (Throwable e) {
-                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
-            }
-        };
     }
 
     /**
