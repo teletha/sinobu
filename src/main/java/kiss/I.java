@@ -58,6 +58,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
@@ -183,11 +184,18 @@ public class I {
     /** The definitions of extensions. */
     private static final Map<Class, Ⅱ> extensions = new HashMap<>();
 
+    private static final ThreadFactory factory = run -> {
+        Thread thread = new Thread(run);
+        thread.setName("Sinobu Scheduler");
+        thread.setDaemon(true);
+        return thread;
+    };
+
     /** The parallel task manager. */
-    static final ExecutorService parallel = Executors.newWorkStealingPool(16);
+    static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
 
     /** The serial task manager. */
-    private static final ExecutorService serial = Executors.newSingleThreadExecutor();
+    private static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
 
     /** The list of primitive classes. (except for void type) */
     private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,

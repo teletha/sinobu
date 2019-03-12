@@ -15,7 +15,7 @@ class JoinAllTest extends SignalTester {
 
     @Test
     void joinAll() {
-        monitor(String.class, signal -> signal.joinAll(String::toUpperCase));
+        monitor(1, String.class, signal -> signal.joinAll(String::toUpperCase));
 
         assert main.emit("a", "b", "c").value();
         assert main.emit(Complete).value("A", "B", "C");

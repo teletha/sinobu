@@ -22,7 +22,7 @@ class OnTest extends SignalTester {
 
     @Test
     void on() {
-        monitor(1, signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName().contains("ForkJoinPool")));
+        monitor(1, signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName().contains("Sinobu")));
 
         main.emit("START");
         assert main.value();
