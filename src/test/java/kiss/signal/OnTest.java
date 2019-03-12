@@ -76,6 +76,6 @@ class OnTest extends SignalTester {
      * Scheduler.
      */
     private Consumer<Runnable> after20ms = runner -> {
-        I.schedule(20, ms, true, runner);
+        I.schedule(20, ms, I.parallel, runner);
     };
 }

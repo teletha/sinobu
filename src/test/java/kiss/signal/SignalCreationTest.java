@@ -181,7 +181,7 @@ class SignalCreationTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isNotDisposed();
 
-        assert await(20).value(0L);
+        assert await(40).value(0L);
         assert main.isCompleted();
         assert main.isDisposed();
     }
@@ -209,41 +209,6 @@ class SignalCreationTest extends SignalTester {
     @Test
     void futureDelay() {
         monitor(() -> I.signal((Future) CompletableFuture.supplyAsync(() -> "ok", CompletableFuture.delayedExecutor(10, ms))));
-
-        assert main.value();
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert await(30).value("ok");
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void completableFuture() {
-        monitor(() -> I.signal(CompletableFuture.completedFuture("ok")));
-
-        assert await().value("ok");
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void completableFutureError() {
-        monitor(() -> I.signal(CompletableFuture.failedFuture(new Error())));
-
-        assert await().value();
-        assert main.isNotCompleted();
-        assert main.isError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void completableFutureDelay() {
-        monitor(() -> I.signal(CompletableFuture.supplyAsync(() -> "ok", CompletableFuture.delayedExecutor(10, ms))));
 
         assert main.value();
         assert main.isNotCompleted();

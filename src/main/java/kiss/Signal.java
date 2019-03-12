@@ -1011,7 +1011,7 @@ public final class Signal<V> {
                     latest.set(null);
                     observer.accept(value);
                 };
-                latest.set(I.schedule(time, unit, true, task));
+                latest.set(I.schedule(time, unit, I.parallel, task));
             }, observer::error, observer::complete, disposer);
         });
     }
@@ -1092,14 +1092,14 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                Future<?> future = I.schedule(time.get().toNanos(), NANOSECONDS, false, () -> {
+                Future<?> future = I.schedule(time.get().toNanos(), NANOSECONDS, I.serial, () -> {
                     if (disposer.isNotDisposed()) {
                         observer.accept(value);
                     }
                 });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(time.get().toNanos(), NANOSECONDS, false, observer::complete), disposer);
+            }, observer::error, () -> I.schedule(time.get().toNanos(), NANOSECONDS, I.serial, observer::complete), disposer);
         });
     }
 
@@ -1782,16 +1782,16 @@ public final class Signal<V> {
                 }
 
                 if (!queue.isEmpty()) {
-                    I.schedule(time, NANOSECONDS, false, self);
+                    I.schedule(time, NANOSECONDS, I.serial, self);
                 }
             });
 
             return to(value -> {
                 queue.add(value);
-                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, false, sender);
+                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, I.serial, sender);
             }, observer::error, () -> {
                 queue.add(UNDEFINED);
-                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, false, sender);
+                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, I.serial, sender);
             }, disposer);
         });
     }
@@ -3643,10 +3643,10 @@ public final class Signal<V> {
                 disposer.dispose();
             };
 
-            AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(time, unit, true, timeout));
+            AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(time, unit, I.parallel, timeout));
 
             return to(v -> {
-                future.getAndSet(I.schedule(time, unit, true, timeout)).cancel(false);
+                future.getAndSet(I.schedule(time, unit, I.parallel, timeout)).cancel(false);
                 observer.accept(v);
             }, e -> {
                 future.get().cancel(false);

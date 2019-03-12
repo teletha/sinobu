@@ -54,6 +54,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -192,10 +193,10 @@ public class I {
     };
 
     /** The parallel task manager. */
-    static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
+    public static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
 
     /** The serial task manager. */
-    private static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
+    public static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
 
     /** The list of primitive classes. (except for void type) */
     private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
@@ -1689,7 +1690,18 @@ public class I {
      * @param task A task to execute.
      */
     public static CompletableFuture schedule(Runnable task) {
-        return CompletableFuture.runAsync(error(task), parallel);
+        return schedule(null, task);
+    }
+
+    /**
+     * <p>
+     * Execute the specified task in background {@link Thread}.
+     * </p>
+     *
+     * @param task A task to execute.
+     */
+    public static CompletableFuture schedule(Executor executor, Runnable task) {
+        return CompletableFuture.runAsync(error(task), executor == null ? parallel : executor);
     }
 
     /**
@@ -1703,14 +1715,8 @@ public class I {
      *            <code>false</code> will execute task in serial.
      * @param task A task to execute.
      */
-    public static CompletableFuture schedule(long delay, TimeUnit unit, boolean parallelExecution, Runnable task) {
-        task = error(task);
-
-        if (delay <= 0) {
-            task.run();
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, unit, parallelExecution ? parallel : serial));
+    public static CompletableFuture schedule(long delay, TimeUnit unit, Executor executor, Runnable task) {
+        return schedule(delay <= 0 ? Runnable::run : CompletableFuture.delayedExecutor(delay, unit, executor), task);
     }
 
     /**
@@ -1843,7 +1849,7 @@ public class I {
      */
     public static Signal<Long> signal(long delayTime, TimeUnit timeUnit) {
         return new Signal<>((observer, disposer) -> {
-            Future future = I.schedule(delayTime, timeUnit, true, () -> {
+            Future future = I.schedule(delayTime, timeUnit, parallel, () -> {
                 observer.accept(0L);
                 observer.complete();
             });
@@ -1867,10 +1873,10 @@ public class I {
             Future[] result = new Future[1];
             AtomicLong count = new AtomicLong();
 
-            result[0] = I.schedule(delayTime, timeUnit, true, I.recurseR(self -> () -> {
+            result[0] = I.schedule(delayTime, timeUnit, parallel, I.recurseR(self -> () -> {
                 observer.accept(count.getAndIncrement());
 
-                result[0] = I.schedule(intervalTime, timeUnit, true, self);
+                result[0] = I.schedule(intervalTime, timeUnit, parallel, self);
             }));
 
             return disposer.add(() -> result[0].cancel(true));
