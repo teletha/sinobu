@@ -190,7 +190,7 @@ class SignalCreationTest extends SignalTester {
     void future() {
         monitor(() -> I.signal((Future) CompletableFuture.completedFuture("ok")));
 
-        assert await().value("ok");
+        assert await(30).value("ok");
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -200,7 +200,7 @@ class SignalCreationTest extends SignalTester {
     void futureError() {
         monitor(() -> I.signal((Future) CompletableFuture.failedFuture(new Error())));
 
-        assert await().value();
+        assert await(30).value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
@@ -306,7 +306,7 @@ class SignalCreationTest extends SignalTester {
         AtomicInteger counter = new AtomicInteger();
 
         I.signal(false, 1, signal -> signal.map(i -> i + 1).delay(50, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
-        await();
+        await(300);
         assert counter.get() == count;
     }
 }

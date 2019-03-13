@@ -757,7 +757,7 @@ public class I {
      * @param extensionPoint A target extension point.
      * @return A extension definition.
      */
-    private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
+    private static synchronized <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
     }
 
@@ -2278,7 +2278,7 @@ public class I {
      * @param xml A xml expression.
      * @return A constructed {@link XML}.
      */
-    static XML xml(Document doc, Object xml) {
+    static synchronized XML xml(Document doc, Object xml) {
         try {
             // XML related types
             if (xml instanceof XML) {

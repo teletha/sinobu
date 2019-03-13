@@ -9,10 +9,7 @@
  */
 package kiss.model;
 
-import static java.lang.reflect.Modifier.FINAL;
-import static java.lang.reflect.Modifier.NATIVE;
-import static java.lang.reflect.Modifier.PRIVATE;
-import static java.lang.reflect.Modifier.STATIC;
+import static java.lang.reflect.Modifier.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
@@ -38,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.Decoder;
 import kiss.Encoder;
@@ -55,7 +53,7 @@ import kiss.WiseTriConsumer;
 public class Model<M> {
 
     /** The model repository. */
-    static final Map<Class, Model> models = new HashMap();
+    static final Map<Class, Model> models = new ConcurrentHashMap();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class<M> type;
@@ -89,50 +87,53 @@ public class Model<M> {
     /**
      * Initialize this {@link Model} only once.
      */
-    private void init() {
-        try {
-            // examine all methods without private, final, static or native
-            Map<String, Method[]> candidates = new HashMap();
+    private synchronized void init() {
+        if (initialized == false) {
+            initialized = true;
+            try {
+                // examine all methods without private, final, static or native
+                Map<String, Method[]> candidates = new HashMap();
 
-            for (Class clazz : Model.collectTypes(type)) {
-                if (!Proxy.isProxyClass(clazz)) {
-                    for (Method method : clazz.getDeclaredMethods()) {
-                        // exclude the method which modifier is final, static, private or native
-                        if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
-                            // exclude the method which is created by compiler
-                            if (!method.isBridge() && !method.isSynthetic()) {
-                                // if (method.getAnnotations().length != 0) {
-                                // intercepts.add(method);
-                                // }
+                for (Class clazz : Model.collectTypes(type)) {
+                    if (!Proxy.isProxyClass(clazz)) {
+                        for (Method method : clazz.getDeclaredMethods()) {
+                            // exclude the method which modifier is final, static, private or native
+                            if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
+                                // exclude the method which is created by compiler
+                                if (!method.isBridge() && !method.isSynthetic()) {
+                                    // if (method.getAnnotations().length != 0) {
+                                    // intercepts.add(method);
+                                    // }
 
-                                int length = 1;
-                                String prefix = "set";
-                                String name = method.getName();
+                                    int length = 1;
+                                    String prefix = "set";
+                                    String name = method.getName();
 
-                                if (method.getGenericReturnType() != Void.TYPE) {
-                                    length = 0;
-                                    prefix = name.charAt(0) == 'i' ? "is" : "get";
-                                }
+                                    if (method.getGenericReturnType() != Void.TYPE) {
+                                        length = 0;
+                                        prefix = name.charAt(0) == 'i' ? "is" : "get";
+                                    }
 
-                                // exclude the method (by name)
-                                if (prefix.length() < name.length() && name.startsWith(prefix) && !Character
-                                        .isLowerCase(name.charAt(prefix.length()))) {
-                                    // exclude the method (by parameter signature)
-                                    if (method.getGenericParameterTypes().length == length) {
-                                        // compute property name
-                                        name = name.substring(prefix.length());
-                                        name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+                                    // exclude the method (by name)
+                                    if (prefix.length() < name.length() && name.startsWith(prefix) && !Character
+                                            .isLowerCase(name.charAt(prefix.length()))) {
+                                        // exclude the method (by parameter signature)
+                                        if (method.getGenericParameterTypes().length == length) {
+                                            // compute property name
+                                            name = name.substring(prefix.length());
+                                            name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 
-                                        // store a candidate of property accessor
-                                        Method[] methods = candidates.get(name);
+                                            // store a candidate of property accessor
+                                            Method[] methods = candidates.get(name);
 
-                                        if (methods == null) {
-                                            methods = new Method[2];
-                                            candidates.put(name, methods);
-                                        }
+                                            if (methods == null) {
+                                                methods = new Method[2];
+                                                candidates.put(name, methods);
+                                            }
 
-                                        if (methods[length] == null) {
-                                            methods[length] = method;
+                                            if (methods[length] == null) {
+                                                methods[length] = method;
+                                            }
                                         }
                                     }
                                 }
@@ -140,79 +141,81 @@ public class Model<M> {
                         }
                     }
                 }
-            }
 
-            // build valid properties
-            ArrayList properties = new ArrayList(); // don't use type parameter to reduce footprint
+                // build valid properties
+                ArrayList properties = new ArrayList(); // don't use type parameter to reduce
+                                                        // footprint
 
-            for (Entry<String, Method[]> entry : candidates.entrySet()) {
-                Method[] methods = entry.getValue();
-                if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1].getModifiers()) & FINAL) == 0) {
-                    // create model for the property
-                    try {
-                        Model model = of(methods[0].getGenericReturnType(), type);
+                for (Entry<String, Method[]> entry : candidates.entrySet()) {
+                    Method[] methods = entry.getValue();
+                    if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1]
+                            .getModifiers()) & FINAL) == 0) {
+                        // create model for the property
+                        try {
+                            Model model = of(methods[0].getGenericReturnType(), type);
 
-                        if (of(methods[1].getGenericParameterTypes()[0], type).type.isAssignableFrom(model.type)) {
-                            methods[0].setAccessible(true);
-                            methods[1].setAccessible(true);
+                            if (of(methods[1].getGenericParameterTypes()[0], type).type.isAssignableFrom(model.type)) {
+                                methods[0].setAccessible(true);
+                                methods[1].setAccessible(true);
 
-                            // this property is valid
-                            Property property = new Property(model, entry.getKey(), methods);
-                            property.getter = m -> methods[0].invoke(m);
-                            property.setter = (m, v) -> methods[1].invoke(m, v);
+                                // this property is valid
+                                Property property = new Property(model, entry.getKey(), methods);
+                                property.getter = m -> methods[0].invoke(m);
+                                property.setter = (m, v) -> methods[1].invoke(m, v);
+
+                                // register it
+                                properties.add(property);
+                            }
+                        } catch (Exception e) {
+                            throw I.quiet(e);
+                        }
+                    }
+                }
+
+                // Search field properties.
+                for (Field field : type.getFields()) {
+                    // exclude the field which modifier is static, private or native
+                    int modifier = field.getModifiers();
+                    boolean notFinal = (FINAL & modifier) == 0;
+
+                    if (((STATIC | PRIVATE | NATIVE) & modifier) == 0) {
+                        field.setAccessible(true);
+                        Model fieldModel = of(field.getGenericType(), type);
+
+                        if (fieldModel.type == Variable.class) {
+                            // variable
+                            Property property = new Property(of(collectParameters(field
+                                    .getGenericType(), Variable.class)[0], Variable.class), field.getName());
+                            property.getter = m -> ((Variable) field.get(m)).v;
+                            property.setter = (m, v) -> ((Variable) field.get(m)).set(v);
+                            property.observer = m -> ((Variable) field.get(m)).observe();
+
+                            // register it
+                            properties.add(property);
+                        } else if ((fieldModel.attribute && notFinal) || !fieldModel.attribute) {
+                            // field
+                            field.setAccessible(true);
+
+                            Property property = new Property(fieldModel, field.getName(), field);
+                            property.getter = m -> field.get(m);
+                            property.setter = notFinal ? (m, v) -> field.set(m, v) : (m, v) -> {
+                            };
 
                             // register it
                             properties.add(property);
                         }
-                    } catch (Exception e) {
-                        throw I.quiet(e);
                     }
                 }
+
+                // trim and sort property list
+                properties.trimToSize();
+                Collections.sort(properties);
+
+                // exposed property list must be unmodifiable
+                this.properties = Collections.unmodifiableList(properties);
+            } catch (Exception e) {
+                throw I.quiet(e);
             }
-
-            // Search field properties.
-            for (Field field : type.getFields()) {
-                // exclude the field which modifier is static, private or native
-                int modifier = field.getModifiers();
-                boolean notFinal = (FINAL & modifier) == 0;
-
-                if (((STATIC | PRIVATE | NATIVE) & modifier) == 0) {
-                    field.setAccessible(true);
-                    Model fieldModel = of(field.getGenericType(), type);
-
-                    if (fieldModel.type == Variable.class) {
-                        // variable
-                        Property property = new Property(of(collectParameters(field
-                                .getGenericType(), Variable.class)[0], Variable.class), field.getName());
-                        property.getter = m -> ((Variable) field.get(m)).v;
-                        property.setter = (m, v) -> ((Variable) field.get(m)).set(v);
-                        property.observer = m -> ((Variable) field.get(m)).observe();
-
-                        // register it
-                        properties.add(property);
-                    } else if ((fieldModel.attribute && notFinal) || !fieldModel.attribute) {
-                        // field
-                        field.setAccessible(true);
-
-                        Property property = new Property(fieldModel, field.getName(), field);
-                        property.getter = m -> field.get(m);
-                        property.setter = notFinal ? (m, v) -> field.set(m, v) : (m, v) -> {
-                        };
-
-                        // register it
-                        properties.add(property);
-                    }
-                }
-            }
-
-            // trim and sort property list
-            properties.trimToSize();
-            Collections.sort(properties);
-
-            // exposed property list must be unmodifiable
-            this.properties = Collections.unmodifiableList(properties);
-        } catch (Exception e) {
-            throw I.quiet(e);
         }
     }
 
@@ -399,13 +402,8 @@ public class Model<M> {
         } else if (Map.class.isAssignableFrom(modelClass)) {
             model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
         } else {
-            synchronized (modelClass) {
-                model = models.computeIfAbsent(modelClass, Model::new);
-                if (model.initialized == false) {
-                    model.initialized = true;
-                    model.init();
-                }
-            }
+            model = models.computeIfAbsent(modelClass, Model::new);
+            model.init();
         }
 
         // API definition

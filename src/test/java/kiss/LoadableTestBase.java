@@ -11,10 +11,13 @@ package kiss;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * @version 2017/05/02 16:18:04
  */
+@Execution(ExecutionMode.SAME_THREAD)
 public abstract class LoadableTestBase {
 
     private final Class base;
