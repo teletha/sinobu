@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import kiss.Disposable;
 import kiss.I;
@@ -266,6 +268,7 @@ class SignalCreationTest extends SignalTester {
     }
 
     @Test
+    @Execution(ExecutionMode.CONCURRENT)
     void iterateDontThrowStackOverflowError() {
         int count = 1234567;
         AtomicInteger counter = new AtomicInteger();
@@ -284,29 +287,28 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void iterateSignalWithAsynchronusComputation() throws InterruptedException {
-        int count = 5;
+        int count = 3;
         AtomicInteger counter = new AtomicInteger();
 
-        I.signal(true, 1, signal -> signal.map(i -> i + 1).delay(50, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
+        I.signal(true, 1, signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
         assert counter.get() == count;
     }
 
     @Test
     void iterateSignalAsynchronusly() {
         monitor(() -> I.signal(false, 0, signal -> signal.map(x -> x + 1)).take(3));
-        await(30);
-        assert main.value(0, 1, 2);
+        assert await().value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
     }
 
     @Test
     void iterateSignalAsynchronuslyWithAsynchronusComputation() throws InterruptedException {
-        int count = 5;
+        int count = 3;
         AtomicInteger counter = new AtomicInteger();
 
-        I.signal(false, 1, signal -> signal.map(i -> i + 1).delay(50, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
-        await(300);
+        I.signal(false, 1, signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
+        await();
         assert counter.get() == count;
     }
 }

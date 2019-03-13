@@ -180,6 +180,12 @@ public class SignalTester {
         return I.signalError(new Error());
     }
 
+    protected final Log await() {
+        clock.await();
+
+        return main.result;
+    }
+
     protected final Log await(int ms) {
         clock.freeze(ms);
 
@@ -773,6 +779,8 @@ public class SignalTester {
         public boolean isError() {
             return result == null ? errored : result.isError();
         }
+        
+
 
         /**
          * {@inheritDoc}

@@ -1,3 +1,5 @@
+import bee.task.Test;
+
 /*
  * Copyright (C) 2019 Nameless Production Committee
  *
@@ -18,5 +20,9 @@ public class Project extends bee.api.Project {
         require("io.reactivex.rxjava2", "rxjava", "LATEST").atTest();
 
         versionControlSystem("https://github.com/teletha/Sinobu");
+    }
+
+    {
+        Test.showProlongedTest = 300;
     }
 }
