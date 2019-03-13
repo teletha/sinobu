@@ -439,8 +439,6 @@ public final class Signal<V> {
      *         satisfy the predicate; otherwise, false.
      */
     public final Signal<Boolean> all(Predicate<? super V> condition) {
-        Objects.requireNonNull(condition);
-
         return signal(condition.negate(), FALSE, false, FALSE, true, TRUE);
     }
 
