@@ -27,9 +27,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-
 import antibug.Chronus;
 import kiss.Disposable;
 import kiss.I;
@@ -42,7 +39,6 @@ import kiss.WiseFunction;
 /**
  * @version 2018/09/13 10:19:19
  */
-@Execution(ExecutionMode.SAME_THREAD)
 public class SignalTester {
 
     /** The complete state for {@link Observer#accept(Object)} . */

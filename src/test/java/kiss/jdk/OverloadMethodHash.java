@@ -14,13 +14,10 @@ import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2011/12/19 0:50:10
- */
-public class OverloadMethodHash {
+class OverloadMethodHash {
 
     @Test
-    public void hash() throws Exception {
+    void hash() throws Exception {
         Method method1 = Target.class.getMethod("test");
         Method method2 = Target.class.getMethod("test", int.class);
 
@@ -29,7 +26,7 @@ public class OverloadMethodHash {
     }
 
     /**
-     * @version 2011/12/19 0:51:07
+     * 
      */
     @SuppressWarnings("unused")
     private static class Target {
