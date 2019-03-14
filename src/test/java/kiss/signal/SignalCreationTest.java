@@ -19,17 +19,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
 import kiss.Signal;
 
-/**
- * @version 2018/09/13 10:19:13
- */
 class SignalCreationTest extends SignalTester {
 
     @Test
@@ -268,7 +263,6 @@ class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    @Execution(ExecutionMode.CONCURRENT)
     void iterateDontThrowStackOverflowError() {
         int count = 1234567;
         AtomicInteger counter = new AtomicInteger();
@@ -297,7 +291,7 @@ class SignalCreationTest extends SignalTester {
     @Test
     void iterateSignalAsynchronusly() {
         monitor(() -> I.signal(false, 0, signal -> signal.map(x -> x + 1)).take(3));
-        assert await().value(0, 1, 2);
+        assert await(100).value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
     }
@@ -308,7 +302,7 @@ class SignalCreationTest extends SignalTester {
         AtomicInteger counter = new AtomicInteger();
 
         I.signal(false, 1, signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
-        await();
+        await(300);
         assert counter.get() == count;
     }
 }

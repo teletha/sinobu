@@ -9,6 +9,7 @@
  */
 package kiss.signal;
 
+import java.util.concurrent.Phaser;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,8 @@ class OnTest extends SignalTester {
         monitor(signal -> signal.take(1).on(after20ms));
 
         assert main.emit("First value will be accepted", "Second will not!").value();
-        assert await(40).size(1);
+        await2();
+        assert main.value("First value will be accepted");
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -72,10 +74,21 @@ class OnTest extends SignalTester {
         assert main.isNotDisposed();
     }
 
+    private Phaser phaser = new Phaser(1);
+
+    private void await2() {
+        phaser.arriveAndAwaitAdvance();
+    }
+
     /**
      * Scheduler.
      */
     private Consumer<Runnable> after20ms = runner -> {
-        I.schedule(20, ms, I.parallel, runner);
+        phaser.register();
+
+        I.schedule(20, ms, I.parallel, () -> {
+            runner.run();
+            phaser.arrive();
+        });
     };
 }

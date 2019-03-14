@@ -11,7 +11,6 @@ package kiss.signal;
 
 import static java.util.stream.Collectors.*;
 
-import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -191,31 +190,6 @@ public class SignalTester {
         clock.freeze(ms);
 
         return main.result;
-    }
-
-    protected Log await(String name) {
-        Thread current = Thread.currentThread();
-        ThreadGroup group = current.getThreadGroup();
-        Thread[] children = new Thread[group.activeCount()];
-        group.enumerate(children);
-
-        for (Thread thread : children) {
-            if (thread.getName().contains(name)) {
-                await(thread);
-                break;
-            }
-        }
-        return main.result;
-    }
-
-    private void await(Thread thread) {
-        while (thread.getState() != State.WAITING) {
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                // skip
-            }
-        }
     }
 
     /**
