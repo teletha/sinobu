@@ -24,9 +24,9 @@ class ThrottleTest extends SignalTester {
         assert main.emit("fail in 20 ms").value();
         await(35);
         assert main.emit("success").value("success");
-        await(15);
-        assert main.emit("fail in 15 ms").value();
-        await(30);
+        await(10);
+        assert main.emit("fail in 10 ms").value();
+        await(35);
         assert main.emit("success").value("success");
     }
 }

@@ -91,10 +91,10 @@ class ConcatMapTest extends SignalTester {
 
     @Test
     void delayAndInterval() {
-        monitor(Integer.class, signal -> signal.concatMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
+        monitor(Integer.class, signal -> signal.concatMap(time -> signal(time, time + 1).delay(time, ms).interval(10, ms)));
 
         main.emit(60, 40, 20);
-        assert await(200).value(60, 61, 40, 41, 20, 21);
+        assert await(100).value(60, 61, 40, 41, 20, 21);
     }
 
     @Test
