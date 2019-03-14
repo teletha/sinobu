@@ -13,15 +13,15 @@ import java.io.Serializable;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import kiss.Disposable;
 import kiss.Extensible;
 import kiss.I;
 import kiss.model.Model;
 
-/**
- * @version 2018/03/31 23:13:29
- */
+@Execution(ExecutionMode.SAME_THREAD)
 public class RegistrationOrderTest {
 
     private Disposable disposer = Disposable.empty();
