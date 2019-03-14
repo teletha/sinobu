@@ -1722,7 +1722,8 @@ public class I {
      * @param task A task to execute.
      */
     public static CompletableFuture schedule(long delay, TimeUnit unit, Executor executor, Runnable task) {
-        return schedule(delay <= 0 ? Runnable::run : CompletableFuture.delayedExecutor(delay, unit, executor), task);
+        return schedule(delay <= 0 ? Runnable::run
+                : CompletableFuture.delayedExecutor(delay, unit, executor == null ? parallel : executor), task);
     }
 
     /**

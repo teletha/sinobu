@@ -31,11 +31,11 @@ class DebounceTest extends SignalTester {
         assert main.emit("D").value();
         await(10);
         assert main.emit("E").value();
-        await(40); // 40ms elapsed
+        await(60); // 60ms elapsed
         assert main.value("E");
 
         assert main.emit("F", "G", "H").value();
-        await(40); // 40ms elapsed
+        await(60); // 60ms elapsed
         assert main.value("H");
     }
 
