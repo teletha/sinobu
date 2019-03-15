@@ -37,9 +37,6 @@ import kiss.WiseBiFunction;
 import kiss.WiseConsumer;
 import kiss.WiseFunction;
 
-/**
- * @version 2018/09/13 10:19:19
- */
 public class SignalTester {
 
     /** The complete state for {@link Observer#accept(Object)} . */
@@ -469,14 +466,6 @@ public class SignalTester {
         boolean value(Object... expected);
 
         /**
-         * Validate the result values.
-         * 
-         * @param expected
-         * @return
-         */
-        boolean validate(Consumer<List> expected);
-
-        /**
          * Validate the size of result values.
          * 
          * @param expectedSize
@@ -576,16 +565,6 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
-        public boolean validate(Consumer expected) {
-            expected.accept(values);
-            values.clear();
-            return true;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
         public boolean size(int expectedSize) {
             assert values.size() == expectedSize;
             values.clear();
@@ -676,14 +655,6 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
-        public boolean validate(Consumer expected) {
-            return log.validate(expected);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
         public boolean size(int expectedSize) {
             return log.size(expectedSize);
         }
@@ -755,16 +726,6 @@ public class SignalTester {
          */
         public boolean value(Object... expected) {
             return result.value(expected);
-        }
-
-        /**
-         * Validate the result values and clear them from log.
-         * 
-         * @param expected
-         * @return
-         */
-        public boolean validate(Consumer expected) {
-            return result.validate(expected);
         }
 
         public boolean size(int size) {

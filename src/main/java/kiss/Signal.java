@@ -991,7 +991,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> debounce(long time, TimeUnit unit) {
-        return debounce(time, unit, I.scheduler);
+        return debounce(time, unit, null);
     }
 
     /**
@@ -1002,6 +1002,7 @@ public final class Signal<V> {
      *
      * @param time A time value. Zero or negative number will ignore this instruction.
      * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @param scheduler
      * @return Chainable API.
      */
     public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
@@ -1024,9 +1025,7 @@ public final class Signal<V> {
                     latest.set(null);
                     observer.accept(value);
                 };
-                latest.set(I.schedule(t -> {
-                    scheduler.schedule(t, time, unit);
-                }, task));
+                latest.set(I.schedule(time, unit, scheduler, task));
             }, observer::error, observer::complete, disposer);
         });
     }
@@ -1068,11 +1067,7 @@ public final class Signal<V> {
      * @see #wait(long, TimeUnit)
      */
     public final Signal<V> delay(long time, TimeUnit unit) {
-        // ignore invalid parameters
-        if (unit == null) {
-            return this;
-        }
-        return delay(Duration.of(time, unit.toChronoUnit()));
+        return delay(time, unit, null);
     }
 
     /**
@@ -1082,11 +1077,11 @@ public final class Signal<V> {
      *
      * @param time The delay to shift the source by.
      * @param unit The {@link TimeUnit} in which {@code period} is defined.
+     * @param scheduler An event scheduler.
      * @return The source {@link Signal} shifted in time by the specified delay.
      * @see #wait(long, TimeUnit)
      */
     public final Signal<V> delay(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
-        // ignore invalid parameters
         if (unit == null) {
             return this;
         }
@@ -1102,11 +1097,7 @@ public final class Signal<V> {
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
     public final Signal<V> delay(Duration time) {
-        // ignore invalid parameters
-        if (time == null || time.isNegative() || time.isZero()) {
-            return this;
-        }
-        return delay(Variable.of(time));
+        return delay(time, null);
     }
 
     /**
@@ -1134,22 +1125,7 @@ public final class Signal<V> {
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
     public final Signal<V> delay(Supplier<Duration> time) {
-        // ignore invalid parameters
-        if (time == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            return to(value -> {
-                Future<?> future = I.schedule(I.delaySerial(time.get().toNanos(), NANOSECONDS), () -> {
-                    if (disposer.isNotDisposed()) {
-                        observer.accept(value);
-                    }
-                });
-
-                disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(I.delaySerial(time.get().toNanos(), NANOSECONDS), observer::complete), disposer);
-        });
+        return delay(time, null);
     }
 
     /**
@@ -1168,14 +1144,14 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                Future<?> future = scheduler.schedule(() -> {
+                Future<?> future = I.schedule(time.get().toNanos(), NANOSECONDS, scheduler, () -> {
                     if (disposer.isNotDisposed()) {
                         observer.accept(value);
                     }
-                }, time.get().toNanos(), NANOSECONDS);
+                });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> scheduler.schedule(observer::complete, time.get().toNanos(), NANOSECONDS), disposer);
+            }, observer::error, () -> I.schedule(time.get().toNanos(), NANOSECONDS, scheduler, observer::complete), disposer);
         });
     }
 
@@ -1837,39 +1813,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> interval(long interval, TimeUnit unit) {
-        // ignore invalid parameters
-        if (interval <= 0 || unit == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            long time = unit.toNanos(interval);
-            LinkedList queue = new LinkedList();
-            AtomicLong next = new AtomicLong();
-
-            Runnable sender = I.recurseR(self -> () -> {
-                next.set(System.nanoTime() + time);
-                Object item = queue.pollFirst();
-
-                if (item == UNDEFINED) {
-                    observer.complete();
-                } else {
-                    observer.accept((V) item);
-                }
-
-                if (!queue.isEmpty()) {
-                    I.schedule(I.delaySerial(time, NANOSECONDS), self);
-                }
-            });
-
-            return to(value -> {
-                queue.add(value);
-                if (queue.size() == 1) I.schedule(I.delaySerial(next.get() - System.nanoTime(), NANOSECONDS), sender);
-            }, observer::error, () -> {
-                queue.add(UNDEFINED);
-                if (queue.size() == 1) I.schedule(I.delaySerial(next.get() - System.nanoTime(), NANOSECONDS), sender);
-            }, disposer);
-        });
+        return interval(interval, unit, null);
     }
 
     /**

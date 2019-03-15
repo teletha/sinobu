@@ -1720,7 +1720,7 @@ public class I {
      * @param task A task to execute.
      */
     public static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService scheduler, Runnable task) {
-        return schedule(t -> (scheduler == null ? I.scheduler : scheduler).schedule(t, Math.max(0, time), unit), task);
+        return schedule(time <= 0 ? Runnable::run : t -> (scheduler == null ? I.scheduler : scheduler).schedule(t, time, unit), task);
     }
 
     public static Executor delay(long delay, TimeUnit unit) {
