@@ -95,8 +95,9 @@ class FlatMapTest extends SignalTester {
     void delayAndInterval() {
         monitor(Integer.class, signal -> signal.flatMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
 
-        main.emit(60, 40, 20);
-        assert await(200).value(20, 40, 60, 21, 41, 61);
+        assert main.emit(60, 40, 20).value();
+        scheduler.mark().elapse(200, ms);
+        assert main.value(20, 40, 60, 21, 41, 61);
     }
 
     @Test

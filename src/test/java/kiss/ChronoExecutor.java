@@ -233,7 +233,7 @@ public class ChronoExecutor<E extends ExecutorService> implements ExecutorServic
      * @param end
      * @param unit
      */
-    public ChronoExecutor<E> elapseFromMark(int start, TimeUnit unit) {
+    public ChronoExecutor<E> elapse(int start, TimeUnit unit) {
         long startTime = marked + unit.toNanos(start);
 
         await(startTime - System.nanoTime(), NANOSECONDS);
@@ -247,7 +247,7 @@ public class ChronoExecutor<E extends ExecutorService> implements ExecutorServic
      * @param unit
      * @param within
      */
-    public ChronoExecutor withinFromMark(int end, TimeUnit unit, Runnable within) {
+    public ChronoExecutor within(int end, TimeUnit unit, Runnable within) {
         if (within != null && System.nanoTime() < marked + unit.toNanos(end)) {
             within.run();
         }

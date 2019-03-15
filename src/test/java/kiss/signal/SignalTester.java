@@ -184,12 +184,6 @@ public class SignalTester {
         return I.signalError(new Error());
     }
 
-    protected final Log await() {
-        clock.await();
-
-        return main.result;
-    }
-
     protected final Log await(int ms) {
         clock.freeze(ms);
 
@@ -771,6 +765,10 @@ public class SignalTester {
          */
         public boolean validate(Consumer expected) {
             return result.validate(expected);
+        }
+
+        public boolean size(int size) {
+            return result.size(size);
         }
 
         /**

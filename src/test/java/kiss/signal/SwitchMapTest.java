@@ -91,10 +91,12 @@ class SwitchMapTest extends SignalTester {
 
     @Test
     void delayAndInterval() {
-        monitor(Integer.class, signal -> signal.switchMap(time -> signal(time, time + 1).delay(time, ms).interval(50, ms)));
+        monitor(Integer.class, signal -> signal
+                .switchMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler)));
 
         main.emit(60, 40, 20);
-        assert await(200).value(20, 21);
+        scheduler.await();
+        assert main.value(20, 21);
     }
 
     @Test

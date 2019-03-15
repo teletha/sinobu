@@ -9,8 +9,6 @@
  */
 package kiss.signal;
 
-import static java.util.concurrent.TimeUnit.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,13 +69,14 @@ class BufferTest extends SignalTester {
 
     @Test
     void time() {
-        monitor(signal -> signal.buffer(30, MILLISECONDS).map(composer));
+        monitor(signal -> signal.buffer(30, ms).map(composer));
 
         assert main.emit("A", "B").value();
-        await(50);
+        scheduler.mark().elapse(60, ms);
         assert main.value("AB");
+
         assert main.emit("C", "D", "E").value();
-        await(50);
+        scheduler.mark().elapse(60, ms);
         assert main.value("CDE");
     }
 
