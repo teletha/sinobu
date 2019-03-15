@@ -17,23 +17,18 @@ class DebounceTest extends SignalTester {
     void debounce() {
         monitor(signal -> signal.debounce(50, ms, scheduler));
 
-        assert main.emit("A").value();
-        scheduler.mark().elapse(20, ms).within(60, ms, () -> {
-            assert main.emit("B").value();
-        });
-        scheduler.elapse(40, ms).within(80, ms, () -> {
-            assert main.emit("C").value();
-        });
-        scheduler.elapse(60, ms).within(100, ms, () -> {
-            assert main.emit("D").value();
-        });
-        assert main.emit("E").value();
+        assert main.emit("only", "last event", "will be", "accepted").value();
         scheduler.await();
-        assert main.value("E");
+        assert main.value("accepted");
+    }
 
-        assert main.emit("F", "G", "H").value();
+    @Test
+    void interval() {
+        monitor(signal -> signal.interval(10, ms, scheduler).debounce(50, ms, scheduler));
+
+        assert main.emit("only", "last event", "will be", "accepted").value();
         scheduler.await();
-        assert main.value("H");
+        assert main.value("accepted");
     }
 
     @Test

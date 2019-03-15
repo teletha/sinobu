@@ -159,9 +159,10 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void interval() {
-        monitor(() -> I.signal(0, 50, ms, scheduler).take(2));
+        monitor(() -> I.signal(0, 100, ms, scheduler).take(2));
 
-        assert await(10).value(0L);
+        scheduler.mark().elapse(50, ms);
+        assert main.value(0L);
         assert main.isNotCompleted();
         assert main.isNotDisposed();
 
@@ -246,7 +247,7 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void iterateSignal() {
-        monitor(() -> I.signal(true, 0, signal -> signal.map(x -> x + 1)).take(3));
+        monitor(() -> I.signal(true, I.signal(0), signal -> signal.map(x -> x + 1)).take(3));
         assert main.value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
@@ -257,13 +258,15 @@ class SignalCreationTest extends SignalTester {
         int count = 3;
         AtomicInteger counter = new AtomicInteger();
 
-        I.signal(true, 1, signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
+        I.signal(true, I.signal(1), signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS))
+                .take(count)
+                .to(counter::incrementAndGet);
         assert counter.get() == count;
     }
 
     @Test
     void iterateSignalAsynchronusly() {
-        monitor(() -> I.signal(false, 0, signal -> signal.map(x -> x + 1)).take(3));
+        monitor(() -> I.signal(false, I.signal(0), signal -> signal.map(x -> x + 1)).take(3));
         assert await(100).value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
@@ -274,7 +277,9 @@ class SignalCreationTest extends SignalTester {
         int count = 3;
         AtomicInteger counter = new AtomicInteger();
 
-        I.signal(false, 1, signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS)).take(count).to(counter::incrementAndGet);
+        I.signal(false, I.signal(1), signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS))
+                .take(count)
+                .to(counter::incrementAndGet);
         await(300);
         assert counter.get() == count;
     }

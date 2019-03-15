@@ -54,6 +54,6 @@ public class TreeWalkerTest {
     }
 
     private Signal<XML> parse(HTML html) {
-        return I.signal(true, I.xml(html.toString()), e -> e.flatIterable(XML::children));
+        return I.signal(true, I.signal(I.xml(html.toString())), e -> e.flatIterable(XML::children));
     }
 }

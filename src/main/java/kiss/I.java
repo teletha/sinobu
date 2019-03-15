@@ -62,7 +62,6 @@ import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -1075,7 +1074,7 @@ public class I {
             } else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
-                names = I.signal(true, file, entry -> entry.flatArray(File::listFiles))
+                names = I.signal(true, signal(file), entry -> entry.flatArray(File::listFiles))
                         .take(File::isFile)
                         .map(entry -> entry.getPath().substring(prefix).replace(File.separatorChar, '.'));
             }
@@ -1721,7 +1720,7 @@ public class I {
      * @param task A task to execute.
      */
     public static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService scheduler, Runnable task) {
-        return schedule(time <= 0 ? Runnable::run : t -> scheduler.schedule(t, time, unit), task);
+        return schedule(t -> scheduler.schedule(t, Math.max(0, time), unit), task);
     }
 
     public static Executor delay(long delay, TimeUnit unit) {
@@ -1862,20 +1861,8 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
-        return new Signal<>((observer, disposer) -> {
-            Future[] result = new Future[1];
-            AtomicLong count = new AtomicLong();
-
-            result[0] = schedule(delayTime, timeUnit, scheduler, I.recurseR(self -> () -> {
-                if (disposer.isNotDisposed()) {
-                    observer.accept(count.getAndIncrement());
-
-                    result[0] = schedule(intervalTime, timeUnit, scheduler, self);
-                }
-            }));
-
-            return disposer.add(() -> result[0].cancel(true));
-        });
+        return I.signal(false, signal(0L)
+                .delay(delayTime, timeUnit, scheduler), s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler));
     }
 
     /**
@@ -1888,7 +1875,7 @@ public class I {
      * @return {@link Signal} that emits values from initial to followings.
      */
     public static <T> Signal<T> signal(T init, WiseFunction<T, T> iterator) {
-        return signal(true, init, e -> e.map(iterator));
+        return signal(true, signal(init), e -> e.map(iterator));
     }
 
     /**
@@ -1901,14 +1888,14 @@ public class I {
      * @param iterator A function to navigate from a current to next.
      * @return {@link Signal} that emits values from initial to followings.
      */
-    public static <T> Signal<T> signal(boolean sync, T init, UnaryOperator<Signal<T>> iterator) {
+    public static <T> Signal<T> signal(boolean sync, Signal<T> init, UnaryOperator<Signal<T>> iterator) {
         // DON'T use the recursive call, it will throw StackOverflowError.
         return new Signal<T>((observer, disposer) -> {
             Runnable r = () -> {
                 try {
                     LinkedList<T> values = new LinkedList(); // LinkedList accepts null
                     LinkedTransferQueue<Signal<T>> signal = new LinkedTransferQueue();
-                    signal.put(I.signal(init));
+                    signal.put(init);
 
                     while (disposer.isNotDisposed()) {
                         signal.take().to(v -> {

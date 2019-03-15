@@ -1904,16 +1904,16 @@ public final class Signal<V> {
                 }
 
                 if (!queue.isEmpty()) {
-                    scheduler.schedule(() -> scheduler.execute(self), time, NANOSECONDS);
+                    I.schedule(time, NANOSECONDS, scheduler, self);
                 }
             });
 
             return to(value -> {
                 queue.add(value);
-                if (queue.size() == 1) scheduler.schedule(() -> scheduler.execute(sender), next.get() - System.nanoTime(), NANOSECONDS);
+                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, observer::error, () -> {
                 queue.add(UNDEFINED);
-                if (queue.size() == 1) scheduler.schedule(() -> scheduler.execute(sender), next.get() - System.nanoTime(), NANOSECONDS);
+                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, disposer);
         });
     }
