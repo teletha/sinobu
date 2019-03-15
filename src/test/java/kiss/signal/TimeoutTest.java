@@ -15,7 +15,7 @@ class TimeoutTest extends SignalTester {
 
     @Test
     void timeout() {
-        monitor(signal -> signal.timeout(50, ms));
+        monitor(signal -> signal.timeout(50, ms, scheduler));
 
         assert main.emit("success").value("success");
         assert main.isNotError();
@@ -41,7 +41,7 @@ class TimeoutTest extends SignalTester {
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        scheduler.mark().elapse(50, ms);
+        scheduler.await();
         assert main.emit("error").value();
         assert main.isError();
         assert main.isDisposed();

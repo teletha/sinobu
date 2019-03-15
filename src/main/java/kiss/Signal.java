@@ -3754,6 +3754,22 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> timeout(long time, TimeUnit unit) {
+        return timeout(time, unit, null);
+    }
+
+    /**
+     * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
+     * emitted item. If the next item isn't emitted within the specified timeout duration starting
+     * from its predecessor, the resulting Signal terminates and notifies observers of a
+     * {@link TimeoutException}.
+     * 
+     * @param time Time to take values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @param scheduler An event scheduler.
+     * @return Chainable API.
+     */
+    public final Signal<V> timeout(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -3765,10 +3781,10 @@ public final class Signal<V> {
                 disposer.dispose();
             };
 
-            AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(I.delay(time, unit), timeout));
+            AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(time, unit, scheduler, timeout));
 
             return to(v -> {
-                future.getAndSet(I.schedule(I.delay(time, unit), timeout)).cancel(false);
+                future.getAndSet(I.schedule(time, unit, scheduler, timeout)).cancel(false);
                 observer.accept(v);
             }, e -> {
                 future.get().cancel(false);
