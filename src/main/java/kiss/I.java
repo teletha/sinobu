@@ -1838,35 +1838,6 @@ public class I {
     }
 
     /**
-     * Returns an {@link Signal} that emits {@code 0L} after a specified delay, and then completes.
-     *
-     * @param delayTime The initial delay before emitting a single {@code 0L}.
-     * @param timeUnit Time units to use for {@code delay}.
-     * @return {@link Signal} that {@code 0L} after a specified delay, and then completes.
-     */
-    public static Signal<Long> signal(long delayTime, TimeUnit timeUnit) {
-        return signal(delayTime, timeUnit, scheduler);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits {@code 0L} after a specified delay, and then completes.
-     *
-     * @param delayTime The initial delay before emitting a single {@code 0L}.
-     * @param timeUnit Time units to use for {@code delay}.
-     * @return {@link Signal} that {@code 0L} after a specified delay, and then completes.
-     */
-    public static Signal<Long> signal(long delayTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
-        return new Signal<>((observer, disposer) -> {
-            Future future = scheduler.schedule(() -> {
-                observer.accept(0L);
-                observer.complete();
-            }, delayTime, timeUnit);
-
-            return disposer.add(() -> future.cancel(true));
-        });
-    }
-
-    /**
      * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
      * increasing numbers after each {@code intervalTime} of time thereafter.
      * 

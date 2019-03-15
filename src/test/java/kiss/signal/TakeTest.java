@@ -139,11 +139,13 @@ class TakeTest extends SignalTester {
     void takeUntilByTime() {
         monitor(signal -> signal.takeUntil(30, ms));
 
-        assert main.emit(1, 2).value(1, 2);
+        assert main.emit("accept", "values", "in", "30ms").value("accept", "values", "in", "30ms");
         assert main.isNotCompleted();
-        await(30);
-        assert main.emit(1, 2).value();
+
+        scheduler.mark().elapse(30, ms);
+        assert main.emit("drop all values", "because signal was already completed").value();
         assert main.isCompleted();
+        assert main.isNotError();
         assert main.isDisposed();
     }
 

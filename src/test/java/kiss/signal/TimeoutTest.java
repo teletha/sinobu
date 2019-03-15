@@ -11,46 +11,60 @@ package kiss.signal;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/02/27 13:35:47
- */
 class TimeoutTest extends SignalTester {
 
     @Test
-    void timeout() throws Exception {
+    void timeout() {
         monitor(signal -> signal.timeout(30, ms));
 
         assert main.emit("success").value("success");
         assert main.isNotError();
-        await(15);
-        assert main.emit("success").value("success");
-        assert main.isNotError();
-        await(15);
-        assert main.emit("success").value("success");
-        assert main.isNotError();
-        await(15);
-        assert main.emit("success").value("success");
-        assert main.isNotError();
-        await(15);
-        assert main.emit("success").value("success");
-        assert main.isNotError();
-        await(15);
-        assert main.emit("success").value("success");
-        assert main.isNotError();
-        await(15);
+        assert main.isNotDisposed();
+
+        scheduler.mark().elapse(10, ms);
         assert main.emit("success").value("success");
         assert main.isNotError();
         assert main.isNotDisposed();
-        await(50);
+
+        scheduler.mark().elapse(10, ms);
+        assert main.emit("success").value("success");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        scheduler.mark().elapse(10, ms);
+        assert main.emit("success").value("success");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        scheduler.mark().elapse(10, ms);
+        assert main.emit("success").value("success");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        scheduler.mark().elapse(50, ms);
         assert main.emit("error").value();
         assert main.isError();
         assert main.isDisposed();
     }
 
     @Test
-    void delayNegative() throws Exception {
+    void ignoreZeroTime() {
+        monitor(signal -> signal.timeout(0, ms));
+
+        assert main.emit("ignore zero time").value("ignore zero time");
+    }
+
+    @Test
+    void ignoreNegativeTime() {
         monitor(signal -> signal.timeout(-10, ms));
 
-        assert main.emit("success").value("success");
+        assert main.emit("ignore negative time").value("ignore negative time");
+    }
+
+    @Test
+    void ignoreNullTimeUnit() {
+        monitor(signal -> signal.timeout(40, null));
+
+        assert main.emit("ignore null time unit").value("ignore null time unit");
     }
 }

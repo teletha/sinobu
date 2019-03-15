@@ -92,29 +92,34 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithDelay() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.delay(10, ms).mapTo("recover")));
+        monitor(signal -> signal.recoverWhen(fail -> fail.delay(10, ms, scheduler).mapTo("recover")));
 
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.countObservers() == 1;
-        assert await(30).value("recover");
+        scheduler.await();
+        assert main.value("recover");
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.countObservers() == 1;
-        assert await(30).value("recover");
+        scheduler.await();
+        assert main.value("recover");
         assert main.countObservers() == 1;
     }
 
     @Test
     void recoverWhenWithDelayAndLimit() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.take(2).delay(10, ms).mapTo("recover")));
+        monitor(signal -> signal.recoverWhen(fail -> fail.take(2).delay(10, ms, scheduler).mapTo("recover")));
 
         assert main.emit(Error).value();
-        assert await(30).value("recover");
+        scheduler.await();
+        assert main.value("recover");
         assert main.emit(Error).value();
-        assert await(30).value("recover");
+        scheduler.await();
+        assert main.value("recover");
         assert main.emit(Error).value();
-        assert await(30).value();
+        scheduler.await();
+        assert main.value();
         assert main.isError();
         assert main.isDisposed();
     }

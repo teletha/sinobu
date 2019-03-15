@@ -67,7 +67,7 @@ class SkipTest extends SignalTester {
 
         assert main.emit(1, 2).value();
         assert main.isNotCompleted();
-        await(30);
+        scheduler.mark().elapse(30, ms);
         assert main.emit(1, 2).value(1, 2);
         assert main.isNotCompleted();
     }
@@ -76,7 +76,7 @@ class SkipTest extends SignalTester {
     void skipByTimeWithInitialDelay() {
         monitor(signal -> signal.skipUntil(30, ms));
 
-        await(40);
+        scheduler.mark().elapse(30, ms);
         assert main.emit(1, 2).value(1, 2);
     }
 
