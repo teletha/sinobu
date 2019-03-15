@@ -193,12 +193,12 @@ public class I {
     };
 
     /** The parallel task manager. */
-    public static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
+    static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
 
     /** The serial task manager. */
-    public static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
+    private static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
 
-    public static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0, factory);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0, factory);
 
     /** The list of primitive classes. (except for void type) */
     private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
@@ -1719,7 +1719,18 @@ public class I {
      *
      * @param task A task to execute.
      */
-    public static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService scheduler, Runnable task) {
+    public static CompletableFuture schedule(long time, TimeUnit unit, Runnable task) {
+        return schedule(time, unit, null, task);
+    }
+
+    /**
+     * <p>
+     * Execute the specified task in background {@link Thread}.
+     * </p>
+     *
+     * @param task A task to execute.
+     */
+    static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService scheduler, Runnable task) {
         return schedule(time <= 0 ? Runnable::run : t -> (scheduler == null ? I.scheduler : scheduler).schedule(t, time, unit), task);
     }
 

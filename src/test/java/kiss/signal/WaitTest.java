@@ -11,9 +11,6 @@ package kiss.signal;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/09/18 19:04:38
- */
 class WaitTest extends SignalTester {
 
     @Test
@@ -21,5 +18,46 @@ class WaitTest extends SignalTester {
         monitor(signal -> signal.wait(30, ms));
 
         assert main.emit("delay").value("delay");
+    }
+
+    @Test
+    void error() {
+        monitor(signal -> signal.wait(10, ms));
+
+        assert main.emit("dispose", "by", Error).value("dispose", "by");
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void complete() {
+        monitor(signal -> signal.wait(10, ms));
+
+        assert main.emit("dispose", "by", Complete).value("dispose", "by");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void zeroTime() {
+        monitor(signal -> signal.wait(0, ms));
+
+        assert main.emit("zero time", "makes", "no effect").value("zero time", "makes", "no effect");
+    }
+
+    @Test
+    void negativeTime() {
+        monitor(signal -> signal.wait(-30, ms));
+
+        assert main.emit("negative time", "makes", "no effect").value("negative time", "makes", "no effect");
+    }
+
+    @Test
+    void unitNull() {
+        monitor(signal -> signal.wait(10, null));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
     }
 }
