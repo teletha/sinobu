@@ -45,4 +45,35 @@ class DebounceTest extends SignalTester {
         scheduler.await();
         assert main.emit("I", "J").value("H");
     }
+
+    @Test
+    void error() {
+        monitor(signal -> signal.debounce(10, ms));
+
+        assert main.emit("dispose by error", Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void zeroTime() {
+        monitor(signal -> signal.debounce(0, ms));
+
+        assert main.emit("zero time", "makes", "no effect").value("zero time", "makes", "no effect");
+    }
+
+    @Test
+    void negativeTime() {
+        monitor(signal -> signal.debounce(-30, ms));
+
+        assert main.emit("negative time", "makes", "no effect").value("negative time", "makes", "no effect");
+    }
+
+    @Test
+    void unitNull() {
+        monitor(signal -> signal.debounce(10, null));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
 }

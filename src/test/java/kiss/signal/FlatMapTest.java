@@ -19,9 +19,6 @@ import kiss.I;
 import kiss.Signaling;
 import kiss.WiseFunction;
 
-/**
- * @version 2018/09/28 13:30:50
- */
 class FlatMapTest extends SignalTester {
 
     @Test
@@ -104,13 +101,13 @@ class FlatMapTest extends SignalTester {
     void detail() {
         monitor(String.class, signal -> signal.flatMap(x -> x.equals("start other") ? other.signal() : another.signal()));
 
-        assert main.emit("start other").size(0);
-        assert other.emit("other is connected").size(1);
-        assert another.emit("another is not connected yet").size(0);
+        assert main.emit("start other").value();
+        assert other.emit("other is connected").isEmmitted();
+        assert another.emit("another is not connected yet").value();
 
-        assert main.emit("start another").size(0);
-        assert another.emit("another is connected").size(1);
-        assert other.emit("other is also connected").size(1);
+        assert main.emit("start another").value();
+        assert another.emit("another is connected").isEmmitted();
+        assert other.emit("other is also connected").isEmmitted();
 
         assert main.isNotDisposed();
         assert other.isNotDisposed();

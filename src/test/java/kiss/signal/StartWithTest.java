@@ -107,9 +107,9 @@ class StartWithTest extends SignalTester {
     void signal() {
         monitor(signal -> signal.startWith(other.signal()));
 
-        assert main.emit("other is not completed, so this value will ignored").size(0);
-        assert other.emit("other is ", Complete).size(1);
-        assert main.emit("main can signal").size(1);
+        assert main.emit("other is not completed, so this value will ignored").value();
+        assert other.emit("other is ", Complete).isEmmitted();
+        assert main.emit("main can signal").isEmmitted();
         assert other.isCompleted();
         assert other.isDisposed();
         assert main.isNotCompleted();
@@ -121,9 +121,9 @@ class StartWithTest extends SignalTester {
     void signalError() {
         monitor(signal -> signal.startWith(other.signal()));
 
-        assert main.emit("other is not completed, so this value will ignored").size(0);
-        assert other.emit("other is ", Error).size(1);
-        assert main.emit("main can't signal").size(0);
+        assert main.emit("other is not completed, so this value will ignored").value();
+        assert other.emit("other is ", Error).isEmmitted();
+        assert main.emit("main can't signal").value();
         assert other.isNotCompleted();
         assert other.isError();
         assert other.isDisposed();

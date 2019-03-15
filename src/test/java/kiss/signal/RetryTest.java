@@ -228,9 +228,9 @@ class RetryTest extends SignalTester {
     void retryUntil() {
         monitor(signal -> signal.retryUntil(other.signal()));
 
-        assert main.emit(Error.class, "Retry any error type").size(1);
-        assert main.emit(Exception.class, "Retry any error type").size(1);
-        assert main.emit(Throwable.class, "Retry any error type").size(1);
+        assert main.emit(Error.class, "Retry any error type").isEmmitted();
+        assert main.emit(Exception.class, "Retry any error type").isEmmitted();
+        assert main.emit(Throwable.class, "Retry any error type").isEmmitted();
         assert main.isNotError();
         assert main.isNotDisposed();
     }
@@ -238,12 +238,12 @@ class RetryTest extends SignalTester {
     @Test
     void retryUntilByType() {
         monitor(signal -> signal.retryUntil(Error.class, other.signal()));
-        assert main.emit(Error.class, "Error can retry").size(1);
-        assert main.emit(IOError.class, "Sub type can retry").size(1);
+        assert main.emit(Error.class, "Error can retry").isEmmitted();
+        assert main.emit(IOError.class, "Sub type can retry").isEmmitted();
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        assert main.emit(Exception.class, "Exception can't retry").size(0);
+        assert main.emit(Exception.class, "Exception can't retry").value();
         assert main.isError();
         assert main.isDisposed();
     }
@@ -251,10 +251,10 @@ class RetryTest extends SignalTester {
     @Test
     void retryUntilByTypeNull() {
         monitor(signal -> signal.retryUntil(null, other.signal()));
-        assert main.emit(Error.class, "null means accepting any error type").size(1);
-        assert main.emit(Exception.class, "null means accepting any error type").size(1);
-        assert main.emit(IllegalSelectorException.class, "null means accepting any error type").size(1);
-        assert main.emit(UnknownFormatConversionException.class, "null means accepting any error type").size(1);
+        assert main.emit(Error.class, "null means accepting any error type").isEmmitted();
+        assert main.emit(Exception.class, "null means accepting any error type").isEmmitted();
+        assert main.emit(IllegalSelectorException.class, "null means accepting any error type").isEmmitted();
+        assert main.emit(UnknownFormatConversionException.class, "null means accepting any error type").isEmmitted();
         assert main.isNotError();
         assert main.isNotDisposed();
     }
@@ -262,11 +262,11 @@ class RetryTest extends SignalTester {
     @Test
     void retryUntilByTypeNullNotifier() {
         monitor(signal -> signal.retryUntil(Error.class, null));
-        assert main.emit(Error.class, IOError.class, ThreadDeath.class, "null notifier means unconditional").size(1);
+        assert main.emit(Error.class, IOError.class, ThreadDeath.class, "null notifier means unconditional").isEmmitted();
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        assert main.emit(Exception.class, "Exception can't retry").size(0);
+        assert main.emit(Exception.class, "Exception can't retry").value();
         assert main.isError();
         assert main.isDisposed();
     }

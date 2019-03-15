@@ -32,4 +32,35 @@ class ThrottleTest extends SignalTester {
         scheduler.elapse(50, ms);
         assert main.emit("success").value("success");
     }
+
+    @Test
+    void error() {
+        monitor(signal -> signal.throttle(10, ms));
+
+        assert main.emit("dispose", "by", Error).value("dispose");
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void zeroTime() {
+        monitor(signal -> signal.throttle(0, ms));
+
+        assert main.emit("zero time", "makes", "no effect").value("zero time", "makes", "no effect");
+    }
+
+    @Test
+    void negativeTime() {
+        monitor(signal -> signal.throttle(-30, ms));
+
+        assert main.emit("negative time", "makes", "no effect").value("negative time", "makes", "no effect");
+    }
+
+    @Test
+    void unitNull() {
+        monitor(signal -> signal.throttle(10, null));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
 }

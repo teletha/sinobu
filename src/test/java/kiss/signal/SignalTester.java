@@ -27,7 +27,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import antibug.Chronus;
 import kiss.ChronoScheduler;
 import kiss.Disposable;
 import kiss.I;
@@ -44,8 +43,6 @@ public class SignalTester {
 
     /** The error state for {@link Observer#accept(Object)}. */
     protected static final Class Error = Error.class;
-
-    private static final Chronus clock = new Chronus(I.class);
 
     /** default multiplicity */
     private static final int defaultMultiplicity = 2;
@@ -460,12 +457,11 @@ public class SignalTester {
         boolean value(Object... expected);
 
         /**
-         * Validate the size of result values.
+         * Validate the result values.
          * 
-         * @param expectedSize
-         * @return
+         * @return A result
          */
-        boolean size(int expectedSize);
+        boolean isEmmitted();
     }
 
     /**
@@ -559,8 +555,8 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
-        public boolean size(int expectedSize) {
-            assert values.size() == expectedSize;
+        public boolean isEmmitted() {
+            assert values.isEmpty() == false;
             values.clear();
             return true;
         }
@@ -649,8 +645,8 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
-        public boolean size(int expectedSize) {
-            return log.size(expectedSize);
+        public boolean isEmmitted() {
+            return log.isEmmitted();
         }
     }
 
@@ -720,10 +716,6 @@ public class SignalTester {
          */
         public boolean value(Object... expected) {
             return result.value(expected);
-        }
-
-        public boolean size(int size) {
-            return result.size(size);
         }
 
         /**

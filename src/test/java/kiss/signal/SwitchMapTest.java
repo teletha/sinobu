@@ -103,19 +103,19 @@ class SwitchMapTest extends SignalTester {
     void detail() {
         monitor(String.class, signal -> signal.switchMap(x -> x.equals("start other") ? other.signal() : another.signal()));
 
-        assert main.emit("start other").size(0);
-        assert other.emit("other is connected").size(1);
-        assert another.emit("another is not connected yet").size(0);
+        assert main.emit("start other").value();
+        assert other.emit("other is connected").isEmmitted();
+        assert another.emit("another is not connected yet").value();
 
-        assert main.emit("start another").size(0);
-        assert another.emit("another is connected").size(1);
-        assert other.emit("other is disconnected").size(0);
+        assert main.emit("start another").value();
+        assert another.emit("another is connected").isEmmitted();
+        assert other.emit("other is disconnected").value();
         assert other.isDisposed();
         assert another.isNotDisposed();
 
-        assert main.emit("start other").size(0);
-        assert other.emit("other is connected again").size(1);
-        assert another.emit("another is disconnected").size(0);
+        assert main.emit("start other").value();
+        assert other.emit("other is connected again").isEmmitted();
+        assert another.emit("another is disconnected").value();
         assert other.isNotDisposed();
         assert another.isDisposed();
 

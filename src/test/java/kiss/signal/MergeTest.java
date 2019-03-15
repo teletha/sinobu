@@ -50,7 +50,7 @@ class MergeTest extends SignalTester {
     void acceptNull() {
         monitor(signal -> signal.merge((Signal) null));
 
-        assert main.emit("accept null").size(1);
+        assert main.emit("accept null").isEmmitted();
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();

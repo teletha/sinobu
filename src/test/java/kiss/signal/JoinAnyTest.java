@@ -18,7 +18,7 @@ class JoinAnyTest extends SignalTester {
         monitor(String.class, signal -> signal.joinAny(String::toUpperCase));
 
         assert main.emit("a", "b", "c").value();
-        assert main.emit(Complete).size(1);
+        assert main.emit(Complete).isEmmitted();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
