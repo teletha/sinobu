@@ -16,9 +16,6 @@ import kiss.Encoder;
 import kiss.I;
 import kiss.LoadableTestBase;
 
-/**
- * @version 2017/12/26 9:59:02
- */
 public class EnumTest extends LoadableTestBase {
 
     @Test

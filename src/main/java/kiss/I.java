@@ -1074,7 +1074,7 @@ public class I {
             } else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
-                names = I.signal(true, signal(file), entry -> entry.flatArray(File::listFiles))
+                names = I.signal(Runnable::run, signal(file), entry -> entry.flatArray(File::listFiles))
                         .take(File::isFile)
                         .map(entry -> entry.getPath().substring(prefix).replace(File.separatorChar, '.'));
             }
@@ -1766,36 +1766,12 @@ public class I {
      */
     public static <V> Signal<V> signal(Future<V> value) {
         return new Signal<>((observer, disposer) -> {
-            I.schedule(() -> {
-                try {
-                    observer.accept(value.get());
-                    observer.complete();
-                } catch (Throwable e) {
-                    observer.error(e);
-                }
-            });
-            return disposer.add(() -> value.cancel(true));
-        });
-    }
-
-    /**
-     * Converts a {@link CompletableFuture} into a {@link Signal}.
-     *
-     * @param value The source {@link CompletableFuture}.
-     * @param <V> The type of object that the {@link CompletableFuture} returns, and also the type
-     *            of item to be emitted by the resulting {@link Signal}.
-     * @return {@link Signal} that emits the item from the source {@link CompletableFuture}.
-     */
-    public static <V> Signal<V> signal(CompletableFuture<V> value) {
-        return new Signal<>((observer, disposer) -> {
-            value.whenComplete((v, e) -> {
-                if (e == null) {
-                    observer.accept(v);
-                    observer.complete();
-                } else {
-                    observer.error(e);
-                }
-            });
+            try {
+                observer.accept(value.get());
+                observer.complete();
+            } catch (Throwable e) {
+                observer.error(e);
+            }
             return disposer.add(() -> value.cancel(true));
         });
     }
@@ -1861,7 +1837,7 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
-        return I.signal(false, signal(0L)
+        return I.signal(I.parallel, signal(0L)
                 .delay(delayTime, timeUnit, scheduler), s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler));
     }
 
@@ -1875,7 +1851,7 @@ public class I {
      * @return {@link Signal} that emits values from initial to followings.
      */
     public static <T> Signal<T> signal(T init, WiseFunction<T, T> iterator) {
-        return signal(true, signal(init), e -> e.map(iterator));
+        return signal(Runnable::run, signal(init), e -> e.map(iterator));
     }
 
     /**
@@ -1883,12 +1859,12 @@ public class I {
      * Traverse from initial value to followings.
      * </p>
      * 
-     * @param sync Compute iteration synchronusly or not.
+     * @param executor Compute iteration executor.
      * @param init An initial value to traverse.
      * @param iterator A function to navigate from a current to next.
      * @return {@link Signal} that emits values from initial to followings.
      */
-    public static <T> Signal<T> signal(boolean sync, Signal<T> init, UnaryOperator<Signal<T>> iterator) {
+    public static <T> Signal<T> signal(Executor executor, Signal<T> init, UnaryOperator<Signal<T>> iterator) {
         // DON'T use the recursive call, it will throw StackOverflowError.
         return new Signal<T>((observer, disposer) -> {
             Runnable r = () -> {
@@ -1914,11 +1890,7 @@ public class I {
                 }
             };
 
-            if (sync) {
-                r.run();
-            } else {
-                I.schedule(r);
-            }
+            I.schedule(executor, r);
             return disposer;
         });
     }

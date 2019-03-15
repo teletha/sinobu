@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -174,9 +173,9 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void future() {
-        monitor(() -> I.signal((Future) CompletableFuture.completedFuture("ok")));
+        monitor(() -> I.signal(CompletableFuture.completedFuture("ok")));
 
-        assert await(30).value("ok");
+        assert main.value("ok");
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -184,9 +183,9 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void futureError() {
-        monitor(() -> I.signal((Future) CompletableFuture.failedFuture(new Error())));
+        monitor(() -> I.signal(CompletableFuture.failedFuture(new Error())));
 
-        assert await(30).value();
+        assert main.value();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
@@ -247,18 +246,18 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void iterateSignal() {
-        monitor(() -> I.signal(true, I.signal(0), signal -> signal.map(x -> x + 1)).take(3));
+        monitor(() -> I.signal(Runnable::run, I.signal(0), signal -> signal.map(x -> x + 1)).take(3));
         assert main.value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
     }
 
     @Test
-    void iterateSignalWithAsynchronusComputation() throws InterruptedException {
+    void iterateSignalWithAsynchronusComputation() {
         int count = 3;
         AtomicInteger counter = new AtomicInteger();
 
-        I.signal(true, I.signal(1), signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS))
+        I.signal(Runnable::run, I.signal(1), signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS))
                 .take(count)
                 .to(counter::incrementAndGet);
         assert counter.get() == count;
@@ -266,21 +265,24 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void iterateSignalAsynchronusly() {
-        monitor(() -> I.signal(false, I.signal(0), signal -> signal.map(x -> x + 1)).take(3));
-        assert await(100).value(0, 1, 2);
+        monitor(() -> I.signal(scheduler, I.signal(0), signal -> signal.map(x -> x + 1)).take(3));
+
+        scheduler.await();
+        assert main.value(0, 1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
     }
 
     @Test
-    void iterateSignalAsynchronuslyWithAsynchronusComputation() throws InterruptedException {
+    void iterateSignalAsynchronuslyWithAsynchronusComputation() {
         int count = 3;
         AtomicInteger counter = new AtomicInteger();
 
-        I.signal(false, I.signal(1), signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS))
+        I.signal(scheduler, I.signal(1), signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS))
                 .take(count)
                 .to(counter::incrementAndGet);
-        await(300);
+
+        scheduler.await();
         assert counter.get() == count;
     }
 }

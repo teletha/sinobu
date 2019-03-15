@@ -181,12 +181,6 @@ public class SignalTester {
         return I.signalError(new Error());
     }
 
-    protected final Log await(int ms) {
-        clock.freeze(ms);
-
-        return main.result;
-    }
-
     /**
      * Create logging interface for the specified key. Use in {@link Signal#effect(WiseConsumer)}.
      * 
