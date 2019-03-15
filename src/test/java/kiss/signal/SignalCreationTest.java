@@ -206,21 +206,6 @@ class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    void futureDelay() {
-        monitor(() -> I.signal((Future) CompletableFuture.supplyAsync(() -> "ok", CompletableFuture.delayedExecutor(10, ms))));
-
-        assert main.value();
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert await(30).value("ok");
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
     void range() {
         monitor(() -> I.signalRange(0L, 5L));
 
