@@ -1723,14 +1723,6 @@ public class I {
         return schedule(time <= 0 ? Runnable::run : t -> (scheduler == null ? I.scheduler : scheduler).schedule(t, time, unit), task);
     }
 
-    public static Executor delay(long delay, TimeUnit unit) {
-        return delay <= 0 ? Runnable::run : CompletableFuture.delayedExecutor(delay, unit, parallel);
-    }
-
-    public static Executor delaySerial(long delay, TimeUnit unit) {
-        return delay <= 0 ? Runnable::run : CompletableFuture.delayedExecutor(delay, unit, serial);
-    }
-
     /**
      * <p>
      * Create {@link HashSet} with the specified items.
