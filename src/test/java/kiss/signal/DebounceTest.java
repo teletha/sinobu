@@ -9,48 +9,43 @@
  */
 package kiss.signal;
 
-import static java.util.concurrent.TimeUnit.*;
-
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/04/02 9:37:09
- */
 class DebounceTest extends SignalTester {
 
     @Test
     void debounce() {
-        monitor(signal -> signal.debounce(30, MILLISECONDS));
+        monitor(signal -> signal.debounce(50, ms, scheduler));
 
         assert main.emit("A").value();
-        await(10);
+        await(5);
         assert main.emit("B").value();
-        await(10);
+        await(5);
         assert main.emit("C").value();
-        await(10);
+        await(5);
         assert main.emit("D").value();
-        await(10);
+        await(5);
         assert main.emit("E").value();
-        await(60); // 60ms elapsed
+        scheduler.await();
         assert main.value("E");
 
         assert main.emit("F", "G", "H").value();
-        await(60); // 60ms elapsed
+        scheduler.await();
         assert main.value("H");
     }
 
     @Test
     void withRepeat() {
-        monitor(signal -> signal.debounce(10, MILLISECONDS).skip(1).take(1).repeat());
+        monitor(signal -> signal.debounce(10, ms, scheduler).skip(1).take(1).repeat());
 
         assert main.emit("A", "B").value();
-        await(15);
+        scheduler.await();
         assert main.emit("C", "D").value();
-        await(15);
+        scheduler.await();
         assert main.emit("E", "F").value("D");
-        await(15);
+        scheduler.await();
         assert main.emit("G", "H").value();
-        await(15);
+        scheduler.await();
         assert main.emit("I", "J").value("H");
     }
 }

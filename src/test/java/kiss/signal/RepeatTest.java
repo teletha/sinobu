@@ -16,9 +16,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/03/25 9:15:26
- */
 class RepeatTest extends SignalTester {
 
     @Test
@@ -149,31 +146,36 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatWhen() {
-        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.delay(10, ms)));
+        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.delay(10, ms, scheduler)));
 
         assert main.value("repeat");
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        assert await(30).value("repeat");
+        scheduler.await();
+        assert main.value("repeat");
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        assert await(30).value("repeat");
+        scheduler.await();
+        assert main.value("repeat");
         assert main.countObservers() == 1;
     }
 
     @Test
     void repeatWhenWithDelayAndLimit() {
-        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.take(2).delay(10, ms)));
+        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.take(2).delay(10, ms, scheduler)));
 
         assert main.value("repeat");
         assert main.emit(Complete).value();
-        assert await(30).value("repeat");
+        scheduler.await();
+        assert main.value("repeat");
         assert main.emit(Complete).value();
-        assert await(30).value("repeat");
+        scheduler.await();
+        assert main.value("repeat");
         assert main.emit(Complete).value();
-        assert await(30).value();
+        scheduler.await();
+        assert main.value();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
@@ -229,10 +231,11 @@ class RepeatTest extends SignalTester {
     void repeatWhenWithDelayImmediately() {
         monitor(1, () -> I.signal("start")
                 .effect(log("Begin"))
-                .repeatWhen(repeat -> repeat.take(3).delay(10, ms).effect(log("Repeat")))
+                .repeatWhen(repeat -> repeat.take(3).delay(10, ms, scheduler).effect(log("Repeat")))
                 .effect(log("End")));
 
-        assert await(60).isCompleted();
+        scheduler.await();
+        assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
         assert checkLog("Begin").size() == 4;

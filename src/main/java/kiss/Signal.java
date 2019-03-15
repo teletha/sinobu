@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -990,6 +991,20 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> debounce(long time, TimeUnit unit) {
+        return debounce(time, unit, I.scheduler);
+    }
+
+    /**
+     * <p>
+     * Drops values that are followed by newer values before a timeout. The timer resets on each
+     * value emission.
+     * </p>
+     *
+     * @param time A time value. Zero or negative number will ignore this instruction.
+     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -1009,7 +1024,9 @@ public final class Signal<V> {
                     latest.set(null);
                     observer.accept(value);
                 };
-                latest.set(I.schedule(time, unit, I.parallel, task));
+                latest.set(I.schedule(t -> {
+                    scheduler.schedule(t, time, unit);
+                }, task));
             }, observer::error, observer::complete, disposer);
         });
     }
@@ -1064,6 +1081,24 @@ public final class Signal<V> {
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
+     * @param unit The {@link TimeUnit} in which {@code period} is defined.
+     * @return The source {@link Signal} shifted in time by the specified delay.
+     * @see #wait(long, TimeUnit)
+     */
+    public final Signal<V> delay(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+        // ignore invalid parameters
+        if (unit == null) {
+            return this;
+        }
+        return delay(Duration.of(time, unit.toChronoUnit()), scheduler);
+    }
+
+    /**
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
+     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * {@link Signal} are not delayed.
+     *
+     * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
     public final Signal<V> delay(Duration time) {
@@ -1082,6 +1117,22 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
+    public final Signal<V> delay(Duration time, ScheduledExecutorService scheduler) {
+        // ignore invalid parameters
+        if (time == null || time.isNegative() || time.isZero()) {
+            return this;
+        }
+        return delay(Variable.of(time), scheduler);
+    }
+
+    /**
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
+     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * {@link Signal} are not delayed.
+     *
+     * @param time The delay to shift the source by.
+     * @return The source {@link Signal} shifted in time by the specified delay.
+     */
     public final Signal<V> delay(Supplier<Duration> time) {
         // ignore invalid parameters
         if (time == null) {
@@ -1090,14 +1141,41 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(value -> {
-                Future<?> future = I.schedule(time.get().toNanos(), NANOSECONDS, I.serial, () -> {
+                Future<?> future = I.schedule(I.delaySerial(time.get().toNanos(), NANOSECONDS), () -> {
                     if (disposer.isNotDisposed()) {
                         observer.accept(value);
                     }
                 });
 
                 disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(time.get().toNanos(), NANOSECONDS, I.serial, observer::complete), disposer);
+            }, observer::error, () -> I.schedule(I.delaySerial(time.get().toNanos(), NANOSECONDS), observer::complete), disposer);
+        });
+    }
+
+    /**
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
+     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * {@link Signal} are not delayed.
+     *
+     * @param time The delay to shift the source by.
+     * @return The source {@link Signal} shifted in time by the specified delay.
+     */
+    public final Signal<V> delay(Supplier<Duration> time, ScheduledExecutorService scheduler) {
+        // ignore invalid parameters
+        if (time == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            return to(value -> {
+                Future<?> future = scheduler.schedule(() -> {
+                    if (disposer.isNotDisposed()) {
+                        observer.accept(value);
+                    }
+                }, time.get().toNanos(), NANOSECONDS);
+
+                disposer.add(() -> future.cancel(true));
+            }, observer::error, () -> scheduler.schedule(observer::complete, time.get().toNanos(), NANOSECONDS), disposer);
         });
     }
 
@@ -1780,16 +1858,62 @@ public final class Signal<V> {
                 }
 
                 if (!queue.isEmpty()) {
-                    I.schedule(time, NANOSECONDS, I.serial, self);
+                    I.schedule(I.delaySerial(time, NANOSECONDS), self);
                 }
             });
 
             return to(value -> {
                 queue.add(value);
-                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, I.serial, sender);
+                if (queue.size() == 1) I.schedule(I.delaySerial(next.get() - System.nanoTime(), NANOSECONDS), sender);
             }, observer::error, () -> {
                 queue.add(UNDEFINED);
-                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, I.serial, sender);
+                if (queue.size() == 1) I.schedule(I.delaySerial(next.get() - System.nanoTime(), NANOSECONDS), sender);
+            }, disposer);
+        });
+    }
+
+    /**
+     * <p>
+     * Ensure the interval time for each values in {@link Signal} sequence.
+     * </p>
+     *
+     * @param interval Time to emit values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified interval. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
+        // ignore invalid parameters
+        if (interval <= 0 || unit == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            long time = unit.toNanos(interval);
+            LinkedList queue = new LinkedList();
+            AtomicLong next = new AtomicLong();
+
+            Runnable sender = I.recurseR(self -> () -> {
+                next.set(System.nanoTime() + time);
+                Object item = queue.pollFirst();
+
+                if (item == UNDEFINED) {
+                    observer.complete();
+                } else {
+                    observer.accept((V) item);
+                }
+
+                if (!queue.isEmpty()) {
+                    scheduler.schedule(() -> scheduler.execute(self), time, NANOSECONDS);
+                }
+            });
+
+            return to(value -> {
+                queue.add(value);
+                if (queue.size() == 1) scheduler.schedule(() -> scheduler.execute(sender), next.get() - System.nanoTime(), NANOSECONDS);
+            }, observer::error, () -> {
+                queue.add(UNDEFINED);
+                if (queue.size() == 1) scheduler.schedule(() -> scheduler.execute(sender), next.get() - System.nanoTime(), NANOSECONDS);
             }, disposer);
         });
     }
@@ -3641,10 +3765,10 @@ public final class Signal<V> {
                 disposer.dispose();
             };
 
-            AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(time, unit, I.parallel, timeout));
+            AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(I.delay(time, unit), timeout));
 
             return to(v -> {
-                future.getAndSet(I.schedule(time, unit, I.parallel, timeout)).cancel(false);
+                future.getAndSet(I.schedule(I.delay(time, unit), timeout)).cancel(false);
                 observer.accept(v);
             }, e -> {
                 future.get().cancel(false);

@@ -59,6 +59,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -197,6 +198,8 @@ public class I {
 
     /** The serial task manager. */
     public static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
+
+    public static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0, factory);
 
     /** The list of primitive classes. (except for void type) */
     private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
@@ -1690,7 +1693,7 @@ public class I {
      * @param task A task to execute.
      */
     public static CompletableFuture schedule(Runnable task) {
-        return schedule(null, task);
+        return schedule((Executor) null, task);
     }
 
     /**
@@ -1712,18 +1715,21 @@ public class I {
 
     /**
      * <p>
-     * Execute the specified task in background {@link Thread} with the specified delay.
+     * Execute the specified task in background {@link Thread}.
      * </p>
      *
-     * @param delay A initial delay time.
-     * @param unit A delay time unit.
-     * @param parallelExecution The <code>true</code> will execute task in parallel,
-     *            <code>false</code> will execute task in serial.
      * @param task A task to execute.
      */
-    public static CompletableFuture schedule(long delay, TimeUnit unit, Executor executor, Runnable task) {
-        return schedule(delay <= 0 ? Runnable::run
-                : CompletableFuture.delayedExecutor(delay, unit, executor == null ? parallel : executor), task);
+    public static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService scheduler, Runnable task) {
+        return schedule(time <= 0 ? Runnable::run : t -> scheduler.schedule(t, time, unit), task);
+    }
+
+    public static Executor delay(long delay, TimeUnit unit) {
+        return delay <= 0 ? Runnable::run : CompletableFuture.delayedExecutor(delay, unit, parallel);
+    }
+
+    public static Executor delaySerial(long delay, TimeUnit unit) {
+        return delay <= 0 ? Runnable::run : CompletableFuture.delayedExecutor(delay, unit, serial);
     }
 
     /**
@@ -1839,11 +1845,22 @@ public class I {
      * @return {@link Signal} that {@code 0L} after a specified delay, and then completes.
      */
     public static Signal<Long> signal(long delayTime, TimeUnit timeUnit) {
+        return signal(delayTime, timeUnit, scheduler);
+    }
+
+    /**
+     * Returns an {@link Signal} that emits {@code 0L} after a specified delay, and then completes.
+     *
+     * @param delayTime The initial delay before emitting a single {@code 0L}.
+     * @param timeUnit Time units to use for {@code delay}.
+     * @return {@link Signal} that {@code 0L} after a specified delay, and then completes.
+     */
+    public static Signal<Long> signal(long delayTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
         return new Signal<>((observer, disposer) -> {
-            Future future = I.schedule(delayTime, timeUnit, parallel, () -> {
+            Future future = scheduler.schedule(() -> {
                 observer.accept(0L);
                 observer.complete();
-            });
+            }, delayTime, timeUnit);
 
             return disposer.add(() -> future.cancel(true));
         });
@@ -1860,14 +1877,30 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit) {
+        return signal(delayTime, intervalTime, timeUnit, scheduler);
+    }
+
+    /**
+     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
+     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * 
+     * @param delayTime The initial delay time to wait before emitting the first value of 0L
+     * @param intervalTime The period of time between emissions of the subsequent numbers
+     * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
+     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
+     *         numbers after each {@code intervalTime} of time thereafter
+     */
+    public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
         return new Signal<>((observer, disposer) -> {
             Future[] result = new Future[1];
             AtomicLong count = new AtomicLong();
 
-            result[0] = I.schedule(delayTime, timeUnit, parallel, I.recurseR(self -> () -> {
-                observer.accept(count.getAndIncrement());
+            result[0] = schedule(delayTime, timeUnit, scheduler, I.recurseR(self -> () -> {
+                if (disposer.isNotDisposed()) {
+                    observer.accept(count.getAndIncrement());
 
-                result[0] = I.schedule(intervalTime, timeUnit, parallel, self);
+                    result[0] = schedule(intervalTime, timeUnit, scheduler, self);
+                }
             }));
 
             return disposer.add(() -> result[0].cancel(true));

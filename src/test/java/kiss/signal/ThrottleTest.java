@@ -15,18 +15,21 @@ class ThrottleTest extends SignalTester {
 
     @Test
     void throttle() {
-        monitor(1, signal -> signal.throttle(35, ms));
+        monitor(1, signal -> signal.throttle(50, ms));
 
+        assert main.emit("success", "skip", "skip").value("success");
+        scheduler.mark().elapseFromMark(10, ms).withinFromMark(50, ms, () -> {
+            assert main.emit("skip in 10 ms").value();
+        });
+        scheduler.elapseFromMark(20, ms).withinFromMark(50, ms, () -> {
+            assert main.emit("skip in 20 ms").value();
+        });
+        scheduler.elapseFromMark(50, ms);
         assert main.emit("success").value("success");
-        await(10);
-        assert main.emit("fail in 10 ms").value();
-        await(10);
-        assert main.emit("fail in 20 ms").value();
-        await(35);
-        assert main.emit("success").value("success");
-        await(10);
-        assert main.emit("fail in 10 ms").value();
-        await(35);
+        scheduler.mark().elapseFromMark(10, ms).withinFromMark(50, ms, () -> {
+            assert main.emit("skip in 10 ms").value();
+        });
+        scheduler.elapseFromMark(50, ms);
         assert main.emit("success").value("success");
     }
 }

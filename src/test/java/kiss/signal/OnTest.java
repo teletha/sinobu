@@ -9,25 +9,22 @@
  */
 package kiss.signal;
 
-import java.util.concurrent.Phaser;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.I;
-
-/**
- * @version 2018/09/01 11:59:24
- */
 class OnTest extends SignalTester {
+
+    private Consumer<Runnable> after20ms = runner -> scheduler.schedule(runner, 20, ms);
 
     @Test
     void on() {
-        monitor(1, signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName().contains("Sinobu")));
+        monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName().contains("pool")));
 
         main.emit("START");
         assert main.value();
-        assert await(40).value(true);
+        scheduler.await();
+        assert main.value(true);
     }
 
     @Test
@@ -37,7 +34,7 @@ class OnTest extends SignalTester {
         main.emit(Error.class);
         assert main.isNotError();
         assert main.isNotDisposed();
-        await(40);
+        scheduler.await();
         assert main.isError();
         assert main.isDisposed();
     }
@@ -48,7 +45,7 @@ class OnTest extends SignalTester {
 
         main.emit(Complete);
         assert main.isNotCompleted();
-        await(40);
+        scheduler.await();
         assert main.isCompleted();
     }
 
@@ -57,7 +54,7 @@ class OnTest extends SignalTester {
         monitor(signal -> signal.take(1).on(after20ms));
 
         assert main.emit("First value will be accepted", "Second will not!").value();
-        await2();
+        scheduler.await();
         assert main.value("First value will be accepted");
         assert main.isCompleted();
         assert main.isNotError();
@@ -73,22 +70,4 @@ class OnTest extends SignalTester {
         assert main.isNotError();
         assert main.isNotDisposed();
     }
-
-    private Phaser phaser = new Phaser(1);
-
-    private void await2() {
-        phaser.arriveAndAwaitAdvance();
-    }
-
-    /**
-     * Scheduler.
-     */
-    private Consumer<Runnable> after20ms = runner -> {
-        phaser.register();
-
-        I.schedule(20, ms, I.parallel, () -> {
-            runner.run();
-            phaser.arrive();
-        });
-    };
 }

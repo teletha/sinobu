@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import antibug.Chronus;
+import kiss.ChronoScheduler;
 import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
@@ -75,6 +76,9 @@ public class SignalTester {
 
     /** READ ONLY */
     protected final SignalSource another = new SignalSource();
+
+    /** The chrono scheduler. */
+    protected final ChronoScheduler scheduler = new ChronoScheduler();
 
     /** The log manager. */
     private Map<String, List> logs;
@@ -471,6 +475,14 @@ public class SignalTester {
         boolean value(Object... expected);
 
         /**
+         * Validate the result values.
+         * 
+         * @param expected
+         * @return
+         */
+        boolean validate(Consumer<List> expected);
+
+        /**
          * Validate the size of result values.
          * 
          * @param expectedSize
@@ -570,6 +582,16 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
+        public boolean validate(Consumer expected) {
+            expected.accept(values);
+            values.clear();
+            return true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean size(int expectedSize) {
             assert values.size() == expectedSize;
             values.clear();
@@ -660,6 +682,14 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
+        public boolean validate(Consumer expected) {
+            return log.validate(expected);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean size(int expectedSize) {
             return log.size(expectedSize);
         }
@@ -731,6 +761,16 @@ public class SignalTester {
          */
         public boolean value(Object... expected) {
             return result.value(expected);
+        }
+
+        /**
+         * Validate the result values and clear them from log.
+         * 
+         * @param expected
+         * @return
+         */
+        public boolean validate(Consumer expected) {
+            return result.validate(expected);
         }
 
         /**

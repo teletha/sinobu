@@ -59,31 +59,36 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryWhenWithDelay() {
-        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(10, ms)));
+        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(10, ms, scheduler)));
 
         assert main.value("retry");
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.hasNoObserver();
-        assert await(30).value("retry");
+        scheduler.await();
+        assert main.value("retry");
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.hasNoObserver();
-        assert await(30).value("retry");
+        scheduler.await();
+        assert main.value("retry");
         assert main.countObservers() == 1;
     }
 
     @Test
     void retryWhenWithDelayAndLimit() {
-        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.take(2).delay(10, ms)));
+        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.take(2).delay(10, ms, scheduler)));
 
         assert main.value("retry");
         assert main.emit(Error).value();
-        assert await(30).value("retry");
+        scheduler.await();
+        assert main.value("retry");
         assert main.emit(Error).value();
-        assert await(30).value("retry");
+        scheduler.await();
+        assert main.value("retry");
         assert main.emit(Error).value();
-        assert await(30).value();
+        scheduler.await();
+        assert main.value();
         assert main.isError();
         assert main.isDisposed();
     }
@@ -140,11 +145,12 @@ class RetryTest extends SignalTester {
         monitor(1, () -> I.signal("start")
                 .effect(log("Begin"))
                 .map(errorFunction())
-                .retryWhen(fail -> fail.take(3).delay(10, ms).effect(log("Retry")))
+                .retryWhen(fail -> fail.take(3).delay(10, ms, scheduler).effect(log("Retry")))
                 .effect(log("Unreached"))
                 .effectOnError(log("ErrorFinally")));
 
-        assert await(60).isNotCompleted();
+        scheduler.await();
+        assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
         assert checkLog("Begin").size() == 4;

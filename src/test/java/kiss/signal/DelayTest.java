@@ -14,20 +14,19 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/07/16 11:07:12
- */
 class DelayTest extends SignalTester {
 
     @Test
     void delay() {
-        monitor(signal -> signal.delay(30, ms));
+        monitor(signal -> signal.delay(30, ms, scheduler));
 
         assert main.emit("delay").value();
-        assert await(50).value("delay");
+        scheduler.await();
+        assert main.value("delay");
 
         assert main.emit("one", "more").value();
-        assert await(50).value("one", "more");
+        scheduler.await();
+        assert main.value("one", "more");
     }
 
     @Test
@@ -53,13 +52,15 @@ class DelayTest extends SignalTester {
 
     @Test
     void delayDuration() {
-        monitor(signal -> signal.delay(Duration.ofMillis(30)));
+        monitor(signal -> signal.delay(Duration.ofMillis(30), scheduler));
 
         assert main.emit("delay").value();
-        assert await(50).value("delay");
+        scheduler.await();
+        assert main.value("delay");
 
         assert main.emit("one", "more").value();
-        assert await(50).value("one", "more");
+        scheduler.await();
+        assert main.value("one", "more");
     }
 
     @Test
@@ -85,13 +86,15 @@ class DelayTest extends SignalTester {
 
     @Test
     void delaySupplier() {
-        monitor(signal -> signal.delay(() -> Duration.ofMillis(30)));
+        monitor(signal -> signal.delay(() -> Duration.ofMillis(30), scheduler));
 
         assert main.emit("delay").value();
-        assert await(50).value("delay");
+        scheduler.await();
+        assert main.value("delay");
 
         assert main.emit("one", "more").value();
-        assert await(50).value("one", "more");
+        scheduler.await();
+        assert main.value("one", "more");
     }
 
     @Test

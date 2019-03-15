@@ -9,31 +9,50 @@
  */
 package kiss.signal;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/03/01 12:02:57
- */
 class IntervalTest extends SignalTester {
 
     @Test
-    void interval() throws Exception {
-        monitor(signal -> signal.interval(20, ms));
+    void interval() {
+        monitor(signal -> signal.interval(10, ms, scheduler).map(v -> Instant.now()));
 
-        assert main.emit("A", "B", "C").value("A");
-        assert await(25).value("B");
-        assert await(25).value("C");
-        await(20);
-        assert main.emit("D").value("D");
+        assert main.emit("each", "events", "has", "enough", "interval", "time").value();
+        scheduler.await();
+        assert main.validate(intervalAtLeast(10, ms));
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
-    void complete() throws Exception {
-        monitor(signal -> signal.interval(20, ms));
+    void complete() {
+        monitor(signal -> signal.interval(10, ms, scheduler).map(v -> Instant.now()));
 
-        assert main.emit("A", "B", Complete).value("A");
-        assert await(25).value("B");
-        assert main.isNotCompleted();
-        assert await(25).isCompleted();
+        assert main.emit("complete", "event", "has", "interval", "time", "too", Complete).value();
+        scheduler.await();
+        assert main.validate(intervalAtLeast(10, ms));
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    private Consumer<List<Instant>> intervalAtLeast(long time, TimeUnit unit) {
+        return times -> {
+            assert 2 < times.size();
+
+            for (int i = 1; i < times.size(); i++) {
+                Instant prev = times.get(i - 1);
+                Instant next = times.get(i);
+
+                assert unit.toNanos(time) <= Duration.between(prev, next).toNanos();
+            }
+        };
     }
 }
