@@ -12,8 +12,10 @@ package kiss.codec;
 import org.junit.jupiter.api.Test;
 
 import kiss.Decoder;
+import kiss.Disposable;
 import kiss.Encoder;
 import kiss.I;
+import kiss.model.Model;
 
 class CodecTest {
 
@@ -63,5 +65,38 @@ class CodecTest {
         assert decoder.decode(encoder.encode(value)).equals(value);
 
         return true;
+    }
+
+    @Test
+    void loadAndUnload() {
+        Disposable unloader = I.load(UserDefinedCodec.class, true);
+
+        Model<Integer> model = Model.of(Integer.class);
+        assert model.encode(10).equals("UserDefinedCodec");
+        assert model.decode("10") == 0;
+
+        unloader.dispose();
+
+        assert model.encode(10).equals("10");
+        assert model.decode("10") == 10;
+    }
+
+    private static class UserDefinedCodec implements Encoder<Integer>, Decoder<Integer> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String encode(Integer value) {
+            return "UserDefinedCodec";
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Integer decode(String value) {
+            return 0;
+        }
     }
 }
