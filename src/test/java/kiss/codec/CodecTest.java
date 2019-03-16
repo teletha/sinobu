@@ -15,14 +15,46 @@ import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
 
-/**
- * @version 2017/04/01 0:16:34
- */
-public class CodecTest {
+class CodecTest {
 
     @Test
-    public void Boolean() throws Exception {
+    void Boolean() {
         assert codec(Boolean.TRUE);
+    }
+
+    @Test
+    void Integer() {
+        assert codec(Integer.valueOf(1234));
+    }
+
+    @Test
+    void Long() {
+        assert codec(Long.valueOf(1234));
+    }
+
+    @Test
+    void Float() {
+        assert codec(Float.valueOf(1.234f));
+    }
+
+    @Test
+    void Double() {
+        assert codec(Double.valueOf(1.234d));
+    }
+
+    @Test
+    void Byte() {
+        assert codec(Byte.valueOf((byte) 1));
+    }
+
+    @Test
+    void Short() {
+        assert codec(Short.valueOf((short) 1));
+    }
+
+    @Test
+    void Character() {
+        assert codec(Character.valueOf('c'));
     }
 
     private <T> boolean codec(T value) {

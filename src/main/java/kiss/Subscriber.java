@@ -110,7 +110,7 @@ class Subscriber<T> implements Observer<T>, Disposable {
 
     private static Map<Disposable, Subscriber> cache = new WeakHashMap();
 
-    static Subscriber of(Disposable disposable) {
+    static synchronized Subscriber of(Disposable disposable) {
         if (disposable instanceof Subscriber) {
             return (Subscriber) disposable;
         } else {

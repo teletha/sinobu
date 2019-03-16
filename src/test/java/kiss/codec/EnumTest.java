@@ -16,10 +16,10 @@ import kiss.Encoder;
 import kiss.I;
 import kiss.LoadableTestBase;
 
-public class EnumTest extends LoadableTestBase {
+class EnumTest extends LoadableTestBase {
 
     @Test
-    public void codec() throws Exception {
+    void codec() {
         Decoder<OverrideToString> decoder = I.find(Decoder.class, OverrideToString.class);
         Encoder<OverrideToString> encoder = I.find(Encoder.class, OverrideToString.class);
         assert decoder.decode("A") == OverrideToString.A;
@@ -27,7 +27,7 @@ public class EnumTest extends LoadableTestBase {
     }
 
     @Test
-    public void custom() throws Exception {
+    void custom() {
         loadClasses();
 
         Decoder<Custom> decoder = I.find(Decoder.class, Custom.class);
@@ -39,7 +39,7 @@ public class EnumTest extends LoadableTestBase {
     }
 
     /**
-     * @version 2015/10/20 17:47:47
+     * 
      */
     private static enum OverrideToString {
 
@@ -64,14 +64,14 @@ public class EnumTest extends LoadableTestBase {
     }
 
     /**
-     * @version 2017/12/26 9:54:55
+     * 
      */
     private static enum Custom {
         OK, NG;
     }
 
     /**
-     * @version 2017/12/26 9:55:31
+     * 
      */
     @SuppressWarnings("unused")
     private static class CustomCodec implements Decoder<Custom>, Encoder<Custom> {

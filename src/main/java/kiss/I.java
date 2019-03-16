@@ -54,6 +54,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -688,7 +689,7 @@ public class I {
      *            otherwise this method will return empty list.
      * @return All Extensions of the given Extension Point or empty list.
      */
-    public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
+    public static synchronized <E extends Extensible> List<E> find(Class<E> extensionPoint) {
         return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).skip(e -> Modifier.isAbstract(e.getModifiers())).map(I::make).toList();
     }
 
@@ -706,7 +707,7 @@ public class I {
      * @return A associated Extension of the given Extension Point and the given Extension Key or
      *         <code>null</code>.
      */
-    public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
+    public static synchronized <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
         if (extensionPoint != null && key != null) {
             Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> extensions = findBy(extensionPoint);
 
@@ -747,7 +748,7 @@ public class I {
      * @return All Extension classes of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
-    public static <E extends Extensible> List<Class<E>> findAs(Class<E> extensionPoint) {
+    public static synchronized <E extends Extensible> List<Class<E>> findAs(Class<E> extensionPoint) {
         return new ArrayList(findBy(extensionPoint).ⅰ);
     }
 
@@ -760,7 +761,7 @@ public class I {
      * @return A extension definition.
      */
     private static synchronized <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
-        return extensions.computeIfAbsent(extensionPoint, p -> pair(new ArrayList(), new HashMap()));
+        return extensions.computeIfAbsent(extensionPoint, p -> pair(new CopyOnWriteArrayList(), new ConcurrentHashMap()));
     }
 
     /**
@@ -1057,7 +1058,7 @@ public class I {
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    public static <E extends Extensible> Disposable load(Class<E> source, boolean filter) {
+    public static synchronized <E extends Extensible> Disposable load(Class<E> source, boolean filter) {
         // =======================================
         // List up extension class names
         // =======================================
@@ -1174,7 +1175,7 @@ public class I {
      * @param extension A extension to register.
      * @return A disposer to unregister.
      */
-    public static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Supplier<E> extension) {
+    public static synchronized <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Supplier<E> extension) {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
