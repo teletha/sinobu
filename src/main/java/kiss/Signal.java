@@ -30,7 +30,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -2203,6 +2205,89 @@ public final class Signal<V> {
                 }
             }, disposer);
         });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     * 
+     * @param recurse A mapper function to enumerate values recursively.
+     * @return Chainable API.
+     */
+    public final Signal<V> recurse(WiseFunction<V, V> recurse) {
+        return recurse(recurse, Runnable::run);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     * 
+     * @param recurse A mapper function to enumerate values recursively.
+     * @param executor An execution context.
+     * @return Chainable API.
+     */
+    public final Signal<V> recurse(WiseFunction<V, V> recurse, Executor executor) {
+        return recurseMap(e -> e.map(recurse), executor);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     * 
+     * @param recurse A mapper function to enumerate values recursively.
+     * @return Chainable API.
+     */
+    public final Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse) {
+        return recurseMap(recurse, Runnable::run);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     * </p>
+     * 
+     * @param recurse A mapper function to enumerate values recursively.
+     * @param executor An execution context.
+     * @return Chainable API.
+     */
+    public final Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor executor) {
+        // DON'T use the recursive call, it will throw StackOverflowError.
+        return flatMap(init -> new Signal<V>((observer, disposer) -> {
+            I.schedule(executor, () -> {
+                try {
+                    LinkedList<V> values = new LinkedList(); // LinkedList accepts null
+                    LinkedTransferQueue<Signal<V>> signal = new LinkedTransferQueue();
+                    signal.put(I.signal(init));
+
+                    while (disposer.isNotDisposed()) {
+                        signal.take().to(v -> {
+                            values.addLast(v);
+                            observer.accept(v);
+                        }, observer::error, () -> {
+                            if (values.isEmpty()) {
+                                observer.complete();
+                            } else {
+                                signal.put(recurse.apply(I.signal(values.pollFirst())));
+                            }
+                        });
+                    }
+                } catch (Throwable e) {
+                    observer.error(e);
+                }
+            });
+            return disposer;
+        }));
     }
 
     /**

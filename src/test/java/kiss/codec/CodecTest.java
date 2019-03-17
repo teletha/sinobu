@@ -74,7 +74,7 @@ class CodecTest {
         assert model.encode(10).equals("10");
         assert model.decode("10") == 10;
 
-        Disposable unloader = I.load(UserDefinedCodec.class, true);
+        Disposable unloader = I.load(UserDefinedCodec.class);
 
         assert model.encode(10).equals("UserDefinedCodec");
         assert model.decode("10") == 0;

@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
@@ -225,64 +223,5 @@ class SignalCreationTest extends SignalTester {
 
         observers.forEach(e -> e.accept("Disposed signal doesn't propagate event."));
         assert results.size() == 2;
-    }
-
-    @Test
-    void iterate() {
-        monitor(() -> I.signal(0, v -> v + 1).take(3));
-        assert main.value(0, 1, 2);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void iterateDontThrowStackOverflowError() {
-        int count = 1234567;
-        AtomicInteger counter = new AtomicInteger();
-
-        I.signal(1, v -> v + 1).take(count).to(counter::incrementAndGet);
-        assert counter.get() == count;
-    }
-
-    @Test
-    void iterateSignal() {
-        monitor(() -> I.signal(Runnable::run, I.signal(0), signal -> signal.map(x -> x + 1)).take(3));
-        assert main.value(0, 1, 2);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void iterateSignalWithAsynchronusComputation() {
-        int count = 3;
-        AtomicInteger counter = new AtomicInteger();
-
-        I.signal(Runnable::run, I.signal(1), signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS))
-                .take(count)
-                .to(counter::incrementAndGet);
-        assert counter.get() == count;
-    }
-
-    @Test
-    void iterateSignalAsynchronusly() {
-        monitor(() -> I.signal(scheduler, I.signal(0), signal -> signal.map(x -> x + 1)).take(3));
-
-        scheduler.await();
-        assert main.value(0, 1, 2);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void iterateSignalAsynchronuslyWithAsynchronusComputation() {
-        int count = 3;
-        AtomicInteger counter = new AtomicInteger();
-
-        I.signal(scheduler, I.signal(1), signal -> signal.map(i -> i + 1).delay(10, TimeUnit.MILLISECONDS))
-                .take(count)
-                .to(counter::incrementAndGet);
-
-        scheduler.await();
-        assert counter.get() == count;
     }
 }

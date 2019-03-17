@@ -45,7 +45,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,7 +58,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -70,7 +68,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipFile;
@@ -1075,7 +1072,8 @@ public class I {
             } else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
-                names = I.signal(Runnable::run, signal(file), entry -> entry.flatArray(File::listFiles))
+                names = I.signal(file)
+                        .recurseMap(entry -> entry.flatArray(File::listFiles))
                         .take(File::isFile)
                         .map(entry -> entry.getPath().substring(prefix).replace(File.separatorChar, '.'));
             }
@@ -1899,62 +1897,7 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
-        return I.signal(I.parallel, signal(0L)
-                .delay(delayTime, timeUnit, scheduler), s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler));
-    }
-
-    /**
-     * <p>
-     * Traverse from initial value to followings.
-     * </p>
-     * 
-     * @param init An initial value to traverse.
-     * @param iterator A function to navigate from a current to next.
-     * @return {@link Signal} that emits values from initial to followings.
-     */
-    public static <T> Signal<T> signal(T init, WiseFunction<T, T> iterator) {
-        return signal(Runnable::run, signal(init), e -> e.map(iterator));
-    }
-
-    /**
-     * <p>
-     * Traverse from initial value to followings.
-     * </p>
-     * 
-     * @param executor Compute iteration executor.
-     * @param init An initial value to traverse.
-     * @param iterator A function to navigate from a current to next.
-     * @return {@link Signal} that emits values from initial to followings.
-     */
-    public static <T> Signal<T> signal(Executor executor, Signal<T> init, UnaryOperator<Signal<T>> iterator) {
-        // DON'T use the recursive call, it will throw StackOverflowError.
-        return new Signal<T>((observer, disposer) -> {
-            Runnable r = () -> {
-                try {
-                    LinkedList<T> values = new LinkedList(); // LinkedList accepts null
-                    LinkedTransferQueue<Signal<T>> signal = new LinkedTransferQueue();
-                    signal.put(init);
-
-                    while (disposer.isNotDisposed()) {
-                        signal.take().to(v -> {
-                            values.addLast(v);
-                            observer.accept(v);
-                        }, observer::error, () -> {
-                            if (values.isEmpty()) {
-                                observer.complete();
-                            } else {
-                                signal.put(iterator.apply(I.signal(values.pollFirst())));
-                            }
-                        });
-                    }
-                } catch (Throwable e) {
-                    observer.error(e);
-                }
-            };
-
-            I.schedule(executor, r);
-            return disposer;
-        });
+        return I.signal(0L).delay(delayTime, timeUnit, scheduler).recurse(v -> v + 1, parallel).delay(intervalTime, timeUnit, scheduler);
     }
 
     /**
@@ -1993,7 +1936,7 @@ public class I {
      * @return A {@link Signal} that emits a range of sequential longs
      */
     public static Signal<Long> signalRange(long start, long count, long step) {
-        return signal(start, v -> v + step).take(count);
+        return signal(start).recurse(v -> v + step).take(count);
     }
 
     /**
