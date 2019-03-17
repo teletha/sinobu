@@ -69,9 +69,13 @@ class CodecTest {
 
     @Test
     void loadAndUnload() {
+        // built-in codec
+        Model<Integer> model = Model.of(Integer.class);
+        assert model.encode(10).equals("10");
+        assert model.decode("10") == 10;
+
         Disposable unloader = I.load(UserDefinedCodec.class, true);
 
-        Model<Integer> model = Model.of(Integer.class);
         assert model.encode(10).equals("UserDefinedCodec");
         assert model.decode("10") == 0;
 

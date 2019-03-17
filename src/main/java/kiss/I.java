@@ -1165,6 +1165,64 @@ public class I {
         return disposer;
     }
 
+    public static synchronized <E extends Extensible> Disposable load(Class<E> extension) {
+        Disposable disposer = Disposable.empty();
+
+        // fast check : exclude non-initializable class
+        if (extension.isEnum() || extension.isAnonymousClass()) {
+            return disposer;
+        }
+
+        // slow check : exclude non-extensible class
+        if (!Extensible.class.isAssignableFrom(extension)) {
+            return disposer;
+        }
+
+        // search and collect information for all extension points
+        for (Class<E> extensionPoint : Model.collectTypes(extension)) {
+            if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
+                // register as new extension
+                Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> extensions = findBy(extensionPoint);
+
+                // exclude duplication
+                if (extensions.ⅰ.contains(extension)) {
+                    return disposer;
+                }
+
+                // register extension
+                extensions.ⅰ.add(extension);
+                disposer.add(() -> extensions.ⅰ.remove(extension));
+
+                // register extension key
+                Type[] params = Model.collectParameters(extension, extensionPoint);
+
+                if (params.length != 0 && params[0] != Object.class) {
+                    Class clazz = (Class) params[0];
+
+                    // register extension by key
+                    disposer.add(load(extensionPoint, clazz, () -> I.make(extension)));
+
+                    // The user has registered a newly custom lifestyle, so we
+                    // should update lifestyle for this extension key class.
+                    // Normally, when we update some data, it is desirable to store
+                    // the previous data to be able to restore it later.
+                    // But, in this case, the contextual sensitive instance that
+                    // the lifestyle emits changes twice on "load" and "unload"
+                    // event from the point of view of the user.
+                    // So the previous data becomes all but meaningless for a
+                    // cacheable lifestyles (e.g. Singleton and ThreadSpecifiec).
+                    // Therefore we we completely refresh lifestyles associated with
+                    // this extension key class.
+                    if (extensionPoint == Lifestyle.class) {
+                        lifestyles.remove(clazz);
+                        disposer.add(() -> lifestyles.remove(clazz));
+                    }
+                }
+            }
+        }
+        return disposer;
+    }
+
     /**
      * <p>
      * Register extension with key.
