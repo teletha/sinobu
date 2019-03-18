@@ -9,48 +9,42 @@
  */
 package kiss.codec;
 
+import java.lang.annotation.RetentionPolicy;
+
 import org.junit.jupiter.api.Test;
 
-import kiss.Decoder;
-import kiss.Encoder;
-import kiss.I;
 import kiss.LoadableTestBase;
+import kiss.model.Model;
 
 class EnumTest extends LoadableTestBase {
 
     @Test
-    void codec() {
-        Decoder<OverrideToString> decoder = I.find(Decoder.class, OverrideToString.class);
-        Encoder<OverrideToString> encoder = I.find(Encoder.class, OverrideToString.class);
-        assert decoder.decode("A") == OverrideToString.A;
-        assert encoder.encode(OverrideToString.A).equals("A");
+    void builtin() {
+        Model<RetentionPolicy> model = Model.of(RetentionPolicy.class);
+        assert model.encode(RetentionPolicy.CLASS) == "CLASS";
+        assert model.decode("RUNTIME") == RetentionPolicy.RUNTIME;
     }
 
     @Test
-    void custom() {
-        loadClasses();
-
-        Decoder<Custom> decoder = I.find(Decoder.class, Custom.class);
-        Encoder<Custom> encoder = I.find(Encoder.class, Custom.class);
-        assert decoder.decode("OK") == Custom.OK;
-        assert decoder.decode("Ok") == Custom.OK;
-        assert decoder.decode("ok") == Custom.OK;
-        assert encoder.encode(Custom.OK).equals("ok");
+    void overrideToString() {
+        Model<EnumUseNameMethod> model = Model.of(EnumUseNameMethod.class);
+        assert model.decode("DontUseToStringMethod") == EnumUseNameMethod.DontUseToStringMethod;
+        assert model.encode(EnumUseNameMethod.DontUseToStringMethod) == "DontUseToStringMethod";
     }
 
     /**
      * 
      */
-    private static enum OverrideToString {
+    private static enum EnumUseNameMethod {
 
-        A("Modify toString");
+        DontUseToStringMethod("#toString is overridden");
 
         private final String name;
 
         /**
          * @param name
          */
-        private OverrideToString(String name) {
+        private EnumUseNameMethod(String name) {
             this.name = name;
         }
 
@@ -60,45 +54,6 @@ class EnumTest extends LoadableTestBase {
         @Override
         public String toString() {
             return name;
-        }
-    }
-
-    /**
-     * 
-     */
-    private static enum Custom {
-        OK, NG;
-    }
-
-    /**
-     * 
-     */
-    @SuppressWarnings("unused")
-    private static class CustomCodec implements Decoder<Custom>, Encoder<Custom> {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String encode(Custom value) {
-            return value.toString().toLowerCase();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Custom decode(String value) {
-            switch (value.toLowerCase()) {
-            case "ok":
-                return Custom.OK;
-
-            case "ng":
-                return Custom.NG;
-            }
-            // If this exception will be thrown, it is bug of this program. So we must rethrow the
-            // wrapped error in here.
-            throw new Error();
         }
     }
 }
