@@ -22,7 +22,6 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -34,6 +33,7 @@ import java.net.URLConnection;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -212,9 +212,6 @@ public class I {
     /** XML literal pattern. */
     private static final Pattern xmlLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
 
-    /** The submarine {@link Encoder} / {@link Decoder} support for java.nio.file.Path. */
-    private static Method path;
-
     /** The cached environment variables. */
     private static final Properties env = new Properties();
 
@@ -241,12 +238,6 @@ public class I {
             xpath = XPathFactory.newInstance().newXPath();
         } catch (Exception e) {
             throw I.quiet(e);
-        }
-
-        try {
-            path = Class.forName("java.nio.file.Paths").getMethod("get", String.class, String[].class);
-        } catch (Exception e) {
-            // ignore
         }
 
         // built-in encoders
@@ -320,13 +311,7 @@ public class I {
                 return Locale::forLanguageTag;
             case 1464606545: // java.nio.file.Path
             case -2015077501: // sun.nio.fs.WindowsPath
-                return value -> {
-                    try {
-                        return path.invoke(null, value, new String[0]);
-                    } catch (Exception e) {
-                        throw I.quiet(e);
-                    }
-                };
+                return Path::of;
             case -1023498007: // java.time.Duration
             case 1296075756: // java.time.Instant
             case -1246518012: // java.time.LocalDate
@@ -709,7 +694,7 @@ public class I {
      */
     public static synchronized <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
         if (extensionPoint != null && key != null) {
-            Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> extensions = findBy(extensionPoint);
+            Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> extensions = findBy(extensionPoint);
 
             for (Class type : Model.collectTypes(key)) {
                 Supplier<E> supplier = extensions.ⅱ.get(type);
@@ -760,7 +745,7 @@ public class I {
      * @param extensionPoint A target extension point.
      * @return A extension definition.
      */
-    private static synchronized <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> findBy(Class<E> extensionPoint) {
+    private static synchronized <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new CopyOnWriteArrayList(), new ConcurrentHashMap()));
     }
 
@@ -1129,7 +1114,7 @@ public class I {
         for (Class<E> extensionPoint : Model.collectTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register as new extension
-                Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> extensions = findBy(extensionPoint);
+                Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> extensions = findBy(extensionPoint);
 
                 // exclude duplication
                 if (extensions.ⅰ.contains(extension)) {
@@ -1147,7 +1132,7 @@ public class I {
                     Class clazz = (Class) params[0];
 
                     // register extension by key
-                    disposer.add(load(extensionPoint, clazz, () -> I.make(extension)));
+                    disposer.add(load(extensionPoint, clazz, I.makeLifestyle(extension)));
 
                     // The user has registered a newly custom lifestyle, so we
                     // should update lifestyle for this extension key class.
@@ -1180,7 +1165,7 @@ public class I {
      * @param extension A extension to register.
      * @return A disposer to unregister.
      */
-    public static synchronized <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Supplier<E> extension) {
+    public static synchronized <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Lifestyle<E> extension) {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
