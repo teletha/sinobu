@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  * </pre>
  * <p>
  * The other is defining custom {@link Lifestyle}. Sinobu recognizes it automatically if your custom
- * lifestyle class is loaded or unloaded by {@link I#load(java.nio.file.Path)} and
+ * lifestyle class is loaded or unloaded by {@link I#loadE(java.nio.file.Path)} and
  * {@link I#unload(java.nio.file.Path)} methods. The following is example.
  * </p>
  * <pre>

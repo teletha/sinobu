@@ -55,4 +55,13 @@ public abstract class LoadableTestBase {
             loaded = null;
         }
     }
+
+    /**
+     * Load the specified extension. Expose for test.
+     * 
+     * @param extension
+     */
+    public static final <E extends Extensible> Disposable load(Class<E> extension) {
+        return I.loadE(extension);
+    }
 }

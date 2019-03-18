@@ -50,6 +50,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.ServiceLoader;
+import java.util.ServiceLoader.Provider;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +72,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -1044,8 +1047,8 @@ public class I {
      * Load all {@link Extensible} typs from the specified source.
      * </p>
      * <p>
-     * You can define the special class "kiss.Index" which defines pre-scanned class names.
-     * "kiss.Index" must implement List<Set<String>>.
+     * You can create the special service loader file "META-INF/services/kiss.Extensible" which
+     * enumerates pre-scanned class names.
      * </p>
      *
      * @param source A source class to indicate the class set which are loaded.
@@ -1079,18 +1082,8 @@ public class I {
             }
             candidates = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6)).toSet();
         } catch (Throwable e) {
-            // Fallback for Android or Booton.
-            // Try to read from pre-scanned index class.
-            // If there is no "kiss.Index" class, Sinobu will throw ClassNotFoundException.
-            List<Set<String>> list = (List) I.make(type("kiss.Index"));
-            String name = source.getName();
-
-            for (Set<String> names : list) {
-                if (names.contains(name)) {
-                    candidates = names;
-                    break;
-                }
-            }
+            // FALLBACK : Try to read from pre-scanned file "kiss.Extensible" as service loader.
+            candidates = ServiceLoader.load(Extensible.class).stream().map(Provider::type).map(Class::getName).collect(Collectors.toSet());
         }
 
         // =======================================
@@ -1099,82 +1092,34 @@ public class I {
         Disposable disposer = Disposable.empty();
         String pattern = filter ? source.getPackage().getName() : "";
 
-        root: for (String name : candidates) {
+        for (String name : candidates) {
             // exclude out of the specified package
             if (!name.startsWith(pattern)) {
                 continue;
             }
-
-            Class extension = I.type(name);
-
-            // fast check : exclude non-initializable class
-            if (extension.isEnum() || extension.isAnonymousClass()) {
-                continue;
-            }
-
-            // slow check : exclude non-extensible class
-            if (!Extensible.class.isAssignableFrom(extension)) {
-                continue;
-            }
-
-            // search and collect information for all extension points
-            for (Class<E> extensionPoint : Model.collectTypes(extension)) {
-                if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
-                    // register as new extension
-                    Ⅱ<List<Class<E>>, Map<Class, Supplier<E>>> extensions = findBy(extensionPoint);
-
-                    // exclude duplication
-                    if (extensions.ⅰ.contains(extension)) {
-                        continue root;
-                    }
-
-                    // register extension
-                    extensions.ⅰ.add(extension);
-                    disposer.add(() -> extensions.ⅰ.remove(extension));
-
-                    // register extension key
-                    Type[] params = Model.collectParameters(extension, extensionPoint);
-
-                    if (params.length != 0 && params[0] != Object.class) {
-                        Class clazz = (Class) params[0];
-
-                        // register extension by key
-                        disposer.add(load(extensionPoint, clazz, () -> (E) I.make(extension)));
-
-                        // The user has registered a newly custom lifestyle, so we
-                        // should update lifestyle for this extension key class.
-                        // Normally, when we update some data, it is desirable to store
-                        // the previous data to be able to restore it later.
-                        // But, in this case, the contextual sensitive instance that
-                        // the lifestyle emits changes twice on "load" and "unload"
-                        // event from the point of view of the user.
-                        // So the previous data becomes all but meaningless for a
-                        // cacheable lifestyles (e.g. Singleton and ThreadSpecifiec).
-                        // Therefore we we completely refresh lifestyles associated with
-                        // this extension key class.
-                        if (extensionPoint == Lifestyle.class) {
-                            lifestyles.remove(clazz);
-                            disposer.add(() -> lifestyles.remove(clazz));
-                        }
-                    }
-                }
-            }
+            disposer.add(loadE(type(name)));
         }
         return disposer;
     }
 
-    public static synchronized <E extends Extensible> Disposable load(Class<E> extension) {
-        Disposable disposer = Disposable.empty();
-
+    /**
+     * Load the specified extension, all implemented extension points are recognized automatically.
+     * 
+     * @param extension A target extension.
+     * @return Call {@link Disposable#dispose()} to unload the registered extension.
+     */
+    static synchronized <E extends Extensible> Disposable loadE(Class<E> extension) {
         // fast check : exclude non-initializable class
         if (extension.isEnum() || extension.isAnonymousClass()) {
-            return disposer;
+            return null;
         }
 
         // slow check : exclude non-extensible class
         if (!Extensible.class.isAssignableFrom(extension)) {
-            return disposer;
+            return null;
         }
+
+        Disposable disposer = Disposable.empty();
 
         // search and collect information for all extension points
         for (Class<E> extensionPoint : Model.collectTypes(extension)) {
@@ -1184,7 +1129,7 @@ public class I {
 
                 // exclude duplication
                 if (extensions.ⅰ.contains(extension)) {
-                    return disposer;
+                    return null;
                 }
 
                 // register extension

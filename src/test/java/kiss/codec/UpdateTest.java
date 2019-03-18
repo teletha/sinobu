@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import kiss.Decoder;
 import kiss.Disposable;
 import kiss.Encoder;
-import kiss.I;
+import kiss.LoadableTestBase;
 import kiss.model.Model;
 
 class UpdateTest {
@@ -29,7 +29,7 @@ class UpdateTest {
         assert model.decode("BuiltIn") == Code.BuiltIn;
 
         // load codec dynamically
-        Disposable unload = I.load(DynamicCodec.class);
+        Disposable unload = LoadableTestBase.load(DynamicCodec.class);
         assert model.encode(Code.BuiltIn) == "Updated";
         assert model.decode("Replaced codec accepts any word") == Code.BuiltIn;
 
