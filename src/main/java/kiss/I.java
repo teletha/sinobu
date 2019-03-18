@@ -1042,8 +1042,9 @@ public class I {
      * </p>
      *
      * @param source A source class to indicate the class set which are loaded.
-     * @return The unloader.
-     * @see {@link Extensible}
+     * @return Call {@link Disposable#dispose()} to unload the registered extension.
+     * @see Extensible
+     * @see ExtensionFactory
      * @see #find(Class)
      * @see #find(Class, Class)
      * @see #findAs(Class)
