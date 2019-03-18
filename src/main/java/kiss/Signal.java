@@ -2441,6 +2441,18 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Recover the source {@link Signal} on any error by the specified value.
+     * </p>
+     * 
+     * @param value A value to replace error.
+     * @return Chainable API
+     */
+    public final Signal<V> recover(Signal<V> value) {
+        return recover(null, value);
+    }
+
+    /**
+     * <p>
      * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
      * error types will pass through the source {@link Signal}.
      * </p>
@@ -2451,6 +2463,20 @@ public final class Signal<V> {
      */
     public final Signal<V> recover(Class<? extends Throwable> type, V value) {
         return recoverWhen(type, fail -> fail.mapTo(value));
+    }
+
+    /**
+     * <p>
+     * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
+     * error types will pass through the source {@link Signal}.
+     * </p>
+     * 
+     * @param type An error type that you want to recover.
+     * @param value A value to replace error.
+     * @return Chainable API
+     */
+    public final Signal<V> recover(Class<? extends Throwable> type, Signal<V> value) {
+        return recoverWhen(type, fail -> value);
     }
 
     /**

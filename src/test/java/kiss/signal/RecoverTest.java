@@ -15,6 +15,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.Signal;
 
 /**
  * @version 2018/03/25 11:20:57
@@ -66,13 +67,26 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverByNull() {
-        monitor(signal -> signal.recover(null));
-        assert main.emit(NoSuchFieldError.class).value((Object) null);
+        monitor(signal -> signal.recover((String) null));
+        assert main.emit(NoSuchFieldError.class).value((String) null);
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        monitor(signal -> signal.recover(IOException.class, null));
-        assert main.emit(IOException.class).value((Object) null);
+        monitor(signal -> signal.recover(IOException.class, (String) null));
+        assert main.emit(IOException.class).value((String) null);
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void recoverByNullSignal() {
+        monitor(signal -> signal.recover((Signal) null));
+        assert main.emit(NoSuchFieldError.class).value();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        monitor(signal -> signal.recover(IOException.class, (Signal) null));
+        assert main.emit(IOException.class).value();
         assert main.isNotError();
         assert main.isNotDisposed();
     }

@@ -39,7 +39,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -72,7 +71,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -1053,11 +1051,10 @@ public class I {
         // =======================================
         // List up extension class names
         // =======================================
-        Set<String> candidates = Collections.EMPTY_SET;
+        Signal<String> names;
 
         try {
             // Scan at runtime
-            Signal<String> names;
             File file = new File(source.getProtectionDomain().getCodeSource().getLocation().toURI());
 
             if (file.isFile()) {
@@ -1071,10 +1068,11 @@ public class I {
                         .take(File::isFile)
                         .map(entry -> entry.getPath().substring(prefix).replace(File.separatorChar, '.'));
             }
-            candidates = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6)).toSet();
+            names = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6));
         } catch (Throwable e) {
-            // FALLBACK : Try to read from pre-scanned file "kiss.Extensible" as service loader.
-            candidates = ServiceLoader.load(Extensible.class).stream().map(Provider::type).map(Class::getName).collect(Collectors.toSet());
+            // FALLBACK
+            // Read from pre-scanned file "kiss.Extensible" as service provider interface.
+            names = I.signal(ServiceLoader.load(Extensible.class).stream()::iterator).map(Provider::type).map(Class::getName);
         }
 
         // =======================================
@@ -1083,7 +1081,7 @@ public class I {
         Disposable disposer = Disposable.empty();
         String pattern = source.getPackage().getName();
 
-        for (String name : candidates) {
+        for (String name : names.toSet()) {
             // exclude out of the specified package
             if (name.startsWith(pattern)) {
                 disposer.add(loadE(type(name)));
