@@ -1897,7 +1897,9 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
-        return I.signal(0L).delay(delayTime, timeUnit, scheduler).recurse(v -> v + 1, parallel).delay(intervalTime, timeUnit, scheduler);
+        return I.signal(0L)
+                .delay(delayTime, timeUnit, scheduler)
+                .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), parallel);
     }
 
     /**
@@ -1914,29 +1916,6 @@ public class I {
             observer.error(error);
             return disposer;
         });
-    }
-
-    /**
-     * Signal a sequence of logns within a specified range.
-     * 
-     * @param start A value of the first long in the sequence.
-     * @param count A number of sequential longs to generate.
-     * @return A {@link Signal} that emits a range of sequential longs
-     */
-    public static Signal<Long> signalRange(long start, long count) {
-        return signalRange(start, count, 1L);
-    }
-
-    /**
-     * Signal a sequence of logns within a specified range.
-     * 
-     * @param start A value of the first long in the sequence.
-     * @param count A number of sequential longs to generate.
-     * @param step A step value for each sequential longs to generate.
-     * @return A {@link Signal} that emits a range of sequential longs
-     */
-    public static Signal<Long> signalRange(long start, long count, long step) {
-        return signal(start).recurse(v -> v + step).take(count);
     }
 
     /**

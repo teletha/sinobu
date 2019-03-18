@@ -190,23 +190,6 @@ class SignalCreationTest extends SignalTester {
     }
 
     @Test
-    void range() {
-        monitor(() -> I.signalRange(0L, 5L));
-
-        assert main.value(0L, 1L, 2L, 3L, 4L);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void rangeWithStep() {
-        monitor(() -> I.signalRange(0L, 3L, 2L));
-        assert main.value(0L, 2L, 4L);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
     void constructWithObserverCollection() {
         List<Observer<String>> observers = new ArrayList();
 
