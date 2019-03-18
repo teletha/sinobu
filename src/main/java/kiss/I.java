@@ -1042,6 +1042,11 @@ public class I {
         return collect(ArrayList.class, items);
     }
 
+    @Deprecated
+    public static synchronized <E extends Extensible> Disposable load(Class<E> source, boolean filter) {
+        return load(source);
+    }
+
     /**
      * <p>
      * Load all {@link Extensible} typs from the specified source.
@@ -1058,7 +1063,7 @@ public class I {
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    public static synchronized <E extends Extensible> Disposable load(Class<E> source, boolean filter) {
+    public static synchronized Disposable load(Class source) {
         // =======================================
         // List up extension class names
         // =======================================
@@ -1090,14 +1095,13 @@ public class I {
         // Register class as extension
         // =======================================
         Disposable disposer = Disposable.empty();
-        String pattern = filter ? source.getPackage().getName() : "";
+        String pattern = source.getPackage().getName();
 
         for (String name : candidates) {
             // exclude out of the specified package
-            if (!name.startsWith(pattern)) {
-                continue;
+            if (name.startsWith(pattern)) {
+                disposer.add(loadE(type(name)));
             }
-            disposer.add(loadE(type(name)));
         }
         return disposer;
     }

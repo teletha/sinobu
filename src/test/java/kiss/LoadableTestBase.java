@@ -40,7 +40,7 @@ public abstract class LoadableTestBase {
         if (loaded == null) {
             loaded = Disposable.empty();
         }
-        loaded.add(I.load(base, true));
+        loaded.add(I.load(base));
     }
 
     /**

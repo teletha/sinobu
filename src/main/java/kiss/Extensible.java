@@ -15,8 +15,8 @@ package kiss;
  * </p>
  * <p>
  * All Extension Points are recognized automatically by Sinobu if you use
- * {@link I#loadE(java.nio.file.Path)} and {@link I#unload(java.nio.file.Path)} methods properly. And
- * an Extension Point will provide some Extensions.
+ * {@link I#load(java.nio.file.Path, boolean)} methods properly. And an Extension Point will provide
+ * some Extensions.
  * </p>
  * <h2 id="ExtensionPoint">What is Extension Point?</h2>
  * <p>
