@@ -1165,7 +1165,7 @@ public class I {
      * @param extension A extension to register.
      * @return A disposer to unregister.
      */
-    public static synchronized <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Lifestyle<E> extension) {
+    private static synchronized <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Lifestyle<E> extension) {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }

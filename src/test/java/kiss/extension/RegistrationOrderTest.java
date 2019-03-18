@@ -19,7 +19,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import kiss.Disposable;
 import kiss.Extensible;
 import kiss.I;
-import kiss.model.Model;
+import kiss.LoadableTestBase;
 
 @Execution(ExecutionMode.SAME_THREAD)
 public class RegistrationOrderTest {
@@ -35,7 +35,7 @@ public class RegistrationOrderTest {
     public void root_parent_child() throws Exception {
         register(Root.class, Parent.class, Child.class);
 
-        assert I.find(ExtensionPoint.class, Object.class) instanceof Root;
+        assert I.find(ExtensionPoint.class, Object.class) == null;
         assert I.find(ExtensionPoint.class, Number.class) instanceof Parent;
         assert I.find(ExtensionPoint.class, Integer.class) instanceof Child;
     }
@@ -44,7 +44,7 @@ public class RegistrationOrderTest {
     public void child_parent_root() throws Exception {
         register(Child.class, Parent.class, Root.class);
 
-        assert I.find(ExtensionPoint.class, Object.class) instanceof Root;
+        assert I.find(ExtensionPoint.class, Object.class) == null;
         assert I.find(ExtensionPoint.class, Number.class) instanceof Parent;
         assert I.find(ExtensionPoint.class, Integer.class) instanceof Child;
     }
@@ -53,7 +53,7 @@ public class RegistrationOrderTest {
     public void parent_root() throws Exception {
         register(Parent.class, Root.class);
 
-        assert I.find(ExtensionPoint.class, Object.class) instanceof Root;
+        assert I.find(ExtensionPoint.class, Object.class) == null;
         assert I.find(ExtensionPoint.class, Number.class) instanceof Parent;
         assert I.find(ExtensionPoint.class, Integer.class) instanceof Parent;
     }
@@ -80,8 +80,7 @@ public class RegistrationOrderTest {
 
     private void register(Class<? extends ExtensionPoint>... e) {
         for (Class<? extends ExtensionPoint> extension : e) {
-            Class type = (Class) Model.collectParameters(extension, ExtensionPoint.class)[0];
-            disposer.add(I.load(ExtensionPoint.class, type, () -> I.make(extension)));
+            disposer.add(LoadableTestBase.load(extension));
         }
     }
 
