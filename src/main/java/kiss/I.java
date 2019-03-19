@@ -1025,11 +1025,6 @@ public class I {
         return collect(ArrayList.class, items);
     }
 
-    @Deprecated
-    public static synchronized <E extends Extensible> Disposable load(Class<E> source, boolean filter) {
-        return load(source);
-    }
-
     /**
      * <p>
      * Load all {@link Extensible} typs from the specified source.
