@@ -1,4 +1,3 @@
-import bee.task.Test;
 
 /*
  * Copyright (C) 2019 Nameless Production Committee
@@ -9,17 +8,19 @@ import bee.task.Test;
  *
  *          https://opensource.org/licenses/MIT
  */
+import bee.task.Test;
+
 public class Project extends bee.api.Project {
 
     {
-        product("com.github.teletha", "sinobu", "1.2");
+        product("com.github.teletha", "sinobu", "1.3");
         producer("Nameless Production Committee");
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
 
-        require("com.github.teletha", "antibug", "LATEST").atTest();
-        require("io.reactivex.rxjava2", "rxjava", "LATEST").atTest();
+        require("com.github.teletha", "antibug").atTest();
+        require("io.reactivex.rxjava2", "rxjava").atTest();
 
-        versionControlSystem("https://github.com/teletha/Sinobu");
+        versionControlSystem("https://github.com/teletha/sinobu");
     }
 
     {
