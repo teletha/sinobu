@@ -27,7 +27,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import kiss.ChronoScheduler;
+import antibug.Chronus;
 import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
@@ -72,7 +72,7 @@ public class SignalTester {
     protected final SignalSource another = new SignalSource();
 
     /** The chrono scheduler. */
-    protected final ChronoScheduler scheduler = new ChronoScheduler();
+    protected final Chronus scheduler = new Chronus();
 
     /** The log manager. */
     private Map<String, List> logs;
