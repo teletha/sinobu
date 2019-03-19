@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Signaling<T> implements Observer<T> {
 
     /** The internal listeners. */
-    private final CopyOnWriteArrayList<Observer<? super T>> observers = new CopyOnWriteArrayList();
+    final CopyOnWriteArrayList<Observer<? super T>> observers = new CopyOnWriteArrayList();
 
     /** The exposed interface. */
     public final Signal<T> expose = new Signal<>((observer, disposer) -> {

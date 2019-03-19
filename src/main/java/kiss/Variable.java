@@ -12,10 +12,8 @@ package kiss;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -47,8 +45,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /** The immutability. */
     private boolean fix;
 
-    /** The observers. */
-    private volatile List<Observer> observers;
+    /** The observer */
+    Signaling<V> signaling;
 
     /** The adjuster. */
     private volatile Function<V, V> adjuster;
@@ -238,20 +236,10 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return
      */
     public Signal<V> observe() {
-        return new Signal<>((observer, disposer) -> {
-            if (observers == null) {
-                observers = new CopyOnWriteArrayList();
-            }
-            observers.add(observer);
-
-            return disposer.add(() -> {
-                observers.remove(observer);
-
-                if (observers.isEmpty()) {
-                    observers = null;
-                }
-            });
-        });
+        if (signaling == null) {
+            signaling = new Signaling();
+        }
+        return signaling.expose;
     }
 
     /**
@@ -511,10 +499,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
                 throw I.quiet(e);
             }
 
-            if (observers != null) {
-                for (Observer observer : observers) {
-                    observer.accept(v);
-                }
+            if (signaling != null) {
+                signaling.accept(v);
             }
         }
         return prev;
