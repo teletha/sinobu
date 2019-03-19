@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -72,7 +73,7 @@ public class SignalTester {
     protected final SignalSource another = new SignalSource();
 
     /** The chrono scheduler. */
-    protected final Chronus scheduler = new Chronus();
+    protected final Chronus scheduler = new Chronus(() -> Executors.newSingleThreadScheduledExecutor());
 
     /** The log manager. */
     private Map<String, List> logs;
