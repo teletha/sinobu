@@ -17,9 +17,6 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.Signal;
 
-/**
- * @version 2018/03/25 11:20:57
- */
 class RecoverTest extends SignalTester {
 
     @Test
@@ -79,7 +76,50 @@ class RecoverTest extends SignalTester {
     }
 
     @Test
-    void recoverByNullSignal() {
+    void recoverSignal() {
+        monitor(signal -> signal.recover(I.signal("recover")));
+
+        assert main.emit(Error).value("recover");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void recoverSignalByType() {
+        monitor(signal -> signal.recover(IOException.class, I.signal("IO")));
+
+        assert main.emit(IOException.class).value("IO");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(Error.class).value();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void recoverSignalByNullType() {
+        monitor(signal -> signal.recover(null, I.signal("Any")));
+
+        assert main.emit(IOException.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(Exception.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(RuntimeException.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(Error.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void recoverSignalByNull() {
         monitor(signal -> signal.recover((Signal) null));
         assert main.emit(NoSuchFieldError.class).value();
         assert main.isNotError();

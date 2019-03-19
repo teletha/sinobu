@@ -2462,7 +2462,7 @@ public final class Signal<V> {
      * @return Chainable API
      */
     public final Signal<V> recover(Class<? extends Throwable> type, V value) {
-        return recoverWhen(type, fail -> fail.mapTo(value));
+        return recover(type, I.signal(value));
     }
 
     /**
@@ -2476,7 +2476,7 @@ public final class Signal<V> {
      * @return Chainable API
      */
     public final Signal<V> recover(Class<? extends Throwable> type, Signal<V> value) {
-        return recoverWhen(type, fail -> value);
+        return recoverWhen(type, fail -> fail.flatMap(e -> value == null ? empty() : value));
     }
 
     /**
@@ -3086,7 +3086,7 @@ public final class Signal<V> {
      * @return {@link Signal} which ignores the specified error.
      */
     public final Signal<V> skipError(Class<? extends Throwable> type) {
-        return recoverWhen(type, fail -> never());
+        return recover(type, (Signal) null);
     }
 
     /**
