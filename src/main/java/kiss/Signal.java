@@ -409,31 +409,6 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Receive values as {@link Table} from this {@link Signal}.
-     * </p>
-     * 
-     * @param keyGenerator A {@link Table} key generator.
-     * @return A {@link Table} as value receiver.
-     */
-    public final <Key> Table<Key, V> toTable(Function<V, Key> keyGenerator) {
-        return toTable(keyGenerator, Function.identity());
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Table} from this {@link Signal}.
-     * </p>
-     *
-     * @param keyGenerator A {@link Table} key generator.
-     * @param valueGenerator A {@link Table} value generator.
-     * @return A {@link Table} as value receiver.
-     */
-    public final <Key, Value> Table<Key, Value> toTable(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        return to(Table.class, (table, v) -> table.push(keyGenerator.apply(v), valueGenerator.apply(v)));
-    }
-
-    /**
      * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
      * by the source {@link Signal} satisfy a condition.
      * 

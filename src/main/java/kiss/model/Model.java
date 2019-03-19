@@ -41,7 +41,6 @@ import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
 import kiss.Signal;
-import kiss.Table;
 import kiss.Variable;
 import kiss.WiseTriConsumer;
 
@@ -506,8 +505,8 @@ public class Model<M> {
      * @param clazz A target class.
      * @return A table of method and annnotations.
      */
-    public static Table<Method, Annotation> collectAnnotatedMethods(Class clazz) {
-        Table<Method, Annotation> table = new Table();
+    public static Map<Method, List<Annotation>> collectAnnotatedMethods(Class clazz) {
+        Map<Method, List<Annotation>> table = new HashMap();
 
         for (Class type : collectTypes(clazz)) {
             if (type != Object.class) {
@@ -556,16 +555,16 @@ public class Model<M> {
 
                             add: for (Annotation annotation : list) {
                                 Class annotationType = annotation.annotationType();
+                                List<Annotation> items = table.computeIfAbsent(method, m -> new ArrayList());
 
                                 if (!annotationType.isAnnotationPresent(Repeatable.class)) {
-                                    for (Annotation item : table.get(method)) {
+                                    for (Annotation item : items) {
                                         if (item.annotationType() == annotationType) {
                                             continue add;
                                         }
                                     }
                                 }
-
-                                table.push(method, annotation);
+                                items.add(annotation);
                             }
                         }
                     }

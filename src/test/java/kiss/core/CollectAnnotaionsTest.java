@@ -16,22 +16,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.Table;
 import kiss.model.Model;
 import kiss.sample.annotation.RepeatableAnnotation;
 
-/**
- * @version 2016/05/04 2:26:16
- */
-public class CollectAnnotaionsTest {
+class CollectAnnotaionsTest {
 
     @Test
-    public void collect() throws Exception {
-        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Root.class);
+    void collect() throws Exception {
+        Map<Method, List<Annotation>> table = Model.collectAnnotatedMethods(Root.class);
 
         List<Annotation> annotations = filter("marked", table);
         assert annotations.size() == 1;
@@ -42,8 +39,8 @@ public class CollectAnnotaionsTest {
     }
 
     @Test
-    public void privateMethodShouldntInheritFromSameSignatureMethod() throws Exception {
-        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Child.class);
+    void privateMethodShouldntInheritFromSameSignatureMethod() throws Exception {
+        Map<Method, List<Annotation>> table = Model.collectAnnotatedMethods(Child.class);
 
         List<Annotation> annotations = filter("collectable", table);
         assert annotations.size() == 1;
@@ -54,8 +51,8 @@ public class CollectAnnotaionsTest {
     }
 
     @Test
-    public void overrideMethodHasSameAnnotation() throws Exception {
-        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Child.class);
+    void overrideMethodHasSameAnnotation() throws Exception {
+        Map<Method, List<Annotation>> table = Model.collectAnnotatedMethods(Child.class);
 
         List<Annotation> annotations = filter("marked", table);
         assert annotations.size() == 1;
@@ -66,8 +63,8 @@ public class CollectAnnotaionsTest {
     }
 
     @Test
-    public void overrideMethodHasSameRepetableAnnotation() throws Exception {
-        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Child.class);
+    void overrideMethodHasSameRepetableAnnotation() throws Exception {
+        Map<Method, List<Annotation>> table = Model.collectAnnotatedMethods(Child.class);
 
         List<Annotation> annotations = filter("rootMultipleMarked", table);
         assert annotations.size() == 3;
@@ -86,8 +83,8 @@ public class CollectAnnotaionsTest {
     }
 
     @Test
-    public void overrideMethodHasSameAnnotationWhichIsRepetableInChild() throws Exception {
-        Table<Method, Annotation> table = Model.collectAnnotatedMethods(Child.class);
+    void overrideMethodHasSameAnnotationWhichIsRepetableInChild() throws Exception {
+        Map<Method, List<Annotation>> table = Model.collectAnnotatedMethods(Child.class);
 
         List<Annotation> annotations = filter("childMultipleMarked", table);
         assert annotations.size() == 3;
@@ -110,7 +107,7 @@ public class CollectAnnotaionsTest {
      * Filter by method name.
      * </p>
      */
-    private List<Annotation> filter(String methodName, Table<Method, Annotation> table) {
+    private List<Annotation> filter(String methodName, Map<Method, List<Annotation>> table) {
         for (Entry<Method, List<Annotation>> entry : table.entrySet()) {
             if (methodName.equals(entry.getKey().getName())) {
                 return entry.getValue();
