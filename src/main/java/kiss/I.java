@@ -1825,7 +1825,7 @@ public class I {
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
         return I.signal(0L)
                 .delay(delayTime, timeUnit, scheduler)
-                .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), scheduler);
+                .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), parallel);
     }
 
     /**

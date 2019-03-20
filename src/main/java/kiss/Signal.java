@@ -526,7 +526,23 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<List<V>> buffer(long time, TimeUnit unit) {
-        return buffer(I.signal(time, time, unit));
+        return buffer(time, unit, null);
+    }
+
+    /**
+     * <p>
+     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
+     * produced based on time count information.
+     * </p>
+     *
+     * @param time Time to collect values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @param scheduler An event scheduler.
+     * @return Chainable API.
+     */
+    public final Signal<List<V>> buffer(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+        return buffer(I.signal(time, time, unit, scheduler));
     }
 
     /**
