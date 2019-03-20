@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Delayed;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
@@ -1131,21 +1132,65 @@ public final class Signal<V> {
      */
     public final Signal<V> delay(Supplier<Duration> time, ScheduledExecutorService scheduler) {
         // ignore invalid parameters
-        if (time == null) {
+        if (time == null || time.get().toNanos() <= 0) {
             return this;
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to(value -> {
-                Future<?> future = I.schedule(time.get().toNanos(), NANOSECONDS, scheduler, () -> {
-                    if (disposer.isNotDisposed()) {
-                        observer.accept(value);
-                    }
-                });
+            long delay = time.get().toNanos();
+            LinkedList<AA> queue = new LinkedList();
 
-                disposer.add(() -> future.cancel(true));
-            }, observer::error, () -> I.schedule(time.get().toNanos(), NANOSECONDS, scheduler, observer::complete), disposer);
+            Runnable sender = I.recurseR(self -> () -> {
+                AA item = queue.pollFirst();
+
+                if (item.value == queue) {
+                    observer.complete();
+                } else {
+                    observer.accept((V) item.value);
+
+                    if (!queue.isEmpty()) {
+                        I.schedule(queue.peekFirst().time - System.nanoTime(), NANOSECONDS, scheduler, self);
+                    }
+                }
+            });
+
+            return to(value -> {
+                queue.add(new AA(value, time));
+                if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
+            }, observer::error, () -> {
+                queue.add(new AA(queue, time));
+                if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
+            }, disposer);
         });
+    }
+
+    private static class AA implements Delayed {
+
+        private Object value;
+
+        private long time;
+
+        private AA(Object value, Supplier<Duration> delay) {
+            this.value = value;
+            this.time = System.nanoTime() + Math.max(0, delay.get().toNanos());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int compareTo(Delayed o) {
+            long diff = time - ((AA) o).time;
+            return diff == 0 ? 0 : diff > 0 ? 1 : -1;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public long getDelay(TimeUnit unit) {
+            return unit.convert(time - System.nanoTime(), TimeUnit.NANOSECONDS);
+        }
     }
 
     /**

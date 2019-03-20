@@ -230,7 +230,9 @@ public class Chronus implements ScheduledExecutorService {
      */
     @Override
     public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-        return executor().scheduleAtFixedRate(command, initialDelay, period, unit);
+        Task task = new Task(command);
+
+        return task.connect(executor().scheduleAtFixedRate(task, initialDelay, period, unit));
     }
 
     /**
@@ -238,7 +240,9 @@ public class Chronus implements ScheduledExecutorService {
      */
     @Override
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-        return executor().scheduleWithFixedDelay(command, initialDelay, delay, unit);
+        Task task = new Task(command);
+
+        return task.connect(executor().scheduleWithFixedDelay(task, initialDelay, delay, unit));
     }
 
     private long marked;

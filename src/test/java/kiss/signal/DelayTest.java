@@ -18,14 +18,14 @@ class DelayTest extends SignalTester {
 
     @Test
     void delay() {
-        monitor(signal -> signal.delay(30, ms, serial));
+        monitor(signal -> signal.delay(30, ms, scheduler));
 
         assert main.emit("delay").value();
-        serial.await();
+        scheduler.await();
         assert main.value("delay");
 
         assert main.emit("one", "more").value();
-        serial.await();
+        scheduler.await();
         assert main.value("one", "more");
     }
 
@@ -52,14 +52,14 @@ class DelayTest extends SignalTester {
 
     @Test
     void delayDuration() {
-        monitor(signal -> signal.delay(Duration.ofMillis(30), serial));
+        monitor(signal -> signal.delay(Duration.ofMillis(30), scheduler));
 
         assert main.emit("delay").value();
-        serial.await();
+        scheduler.await();
         assert main.value("delay");
 
         assert main.emit("one", "more").value();
-        serial.await();
+        scheduler.await();
         assert main.value("one", "more");
     }
 

@@ -66,11 +66,10 @@ class RecurseTest extends SignalTester {
 
     @Test
     void recurseMapAsynchronuslyWithAsynchronusComputation() {
-        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1).delay(10, ms, serial), scheduler).take(5));
+        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1).delay(10, ms, scheduler), scheduler).take(5));
 
         assert main.emit(1).value();
         scheduler.await();
-        serial.await();
         assert main.value(1, 2, 3, 4, 5);
         assert main.isCompleted();
         assert main.isNotError();

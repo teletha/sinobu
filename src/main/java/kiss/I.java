@@ -192,6 +192,9 @@ public class I {
     };
 
     /** The parallel task manager. */
+    static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
+
+    /** The parallel task manager. */
     static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
 
     /** The parallel task scheduler. */
@@ -1719,6 +1722,31 @@ public class I {
 
     /**
      * <p>
+     * Execute the specified task in background {@link Thread}.
+     * </p>
+     *
+     * @param task A task to execute.
+     */
+    public static Future schedule(long time, TimeUnit unit, Runnable task, WiseTriFunction<Runnable, Long, TimeUnit, Future> scheduler) {
+        if (time <= 0) {
+            scheduler = (t, d, u) -> CompletableFuture.runAsync(t, Runnable::run);
+        }
+
+        if (scheduler == null) {
+            scheduler = (t, d, u) -> CompletableFuture.runAsync(t, CompletableFuture.delayedExecutor(d, u, parallel));
+        }
+
+        return scheduler.apply(() -> {
+            try {
+                task.run();
+            } catch (Throwable e) {
+                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
+            }
+        }, time, unit);
+    }
+
+    /**
+     * <p>
      * Create {@link HashSet} with the specified items.
      * </p>
      * 
@@ -1825,7 +1853,7 @@ public class I {
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
         return I.signal(0L)
                 .delay(delayTime, timeUnit, scheduler)
-                .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), parallel);
+                .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), scheduler);
     }
 
     /**

@@ -20,18 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class ZZZ {
 
     public static void main(String[] args) throws InterruptedException {
-        for (int i = 0; i < 30; i++) {
-            int x = i;
-            CompletableFuture future = I.schedule(1000, TimeUnit.MILLISECONDS, null, () -> {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    throw I.quiet(e);
-                }
-                System.out.println("ok" + x);
-            });
-        }
-        Thread.sleep(2000);
+        byCachedThreadPoolWithCompletableFuture(args);
     }
 
     public static void byCachedThreadPoolWithCompletableFuture(String[] args) throws InterruptedException {
@@ -50,7 +39,7 @@ public class ZZZ {
                     throw I.quiet(e);
                 }
                 System.out.println("ok" + x);
-            }, CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS, s));
+            }, CompletableFuture.delayedExecutor(1000, TimeUnit.MILLISECONDS, s));
         }
         Thread.sleep(2000);
     }

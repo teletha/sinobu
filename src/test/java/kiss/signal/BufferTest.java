@@ -69,14 +69,14 @@ class BufferTest extends SignalTester {
 
     @Test
     void time() {
-        monitor(signal -> signal.buffer(30, ms, scheduler).map(composer));
+        monitor(1, signal -> signal.buffer(100, ms, scheduler).map(composer));
 
         assert main.emit("A", "B").value();
-        scheduler.mark().elapse(200, ms);
+        scheduler.await();
         assert main.value("AB");
 
         assert main.emit("C", "D", "E").value();
-        scheduler.mark().elapse(200, ms);
+        scheduler.await();
         assert main.value("CDE");
     }
 
