@@ -194,10 +194,8 @@ public class I {
     /** The parallel task manager. */
     static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
 
-    /** The serial task manager. */
-    private static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
-
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0, factory);
+    /** The parallel task scheduler. */
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8, factory);
 
     /** The list of primitive classes. (except for void type) */
     private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
