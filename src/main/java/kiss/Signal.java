@@ -33,7 +33,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -526,7 +525,22 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<List<V>> buffer(long time, TimeUnit unit) {
-        return buffer(I.signal(time, time, unit));
+        return buffer(time, unit, null);
+    }
+
+    /**
+     * <p>
+     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
+     * produced based on time count information.
+     * </p>
+     *
+     * @param time Time to collect values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<List<V>> buffer(long time, TimeUnit unit, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler) {
+        return buffer(I.signal(time, time, unit, scheduler));
     }
 
     /**
@@ -982,7 +996,7 @@ public final class Signal<V> {
      * @param scheduler
      * @return Chainable API.
      */
-    public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> debounce(long time, TimeUnit unit, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -1058,7 +1072,7 @@ public final class Signal<V> {
      * @return The source {@link Signal} shifted in time by the specified delay.
      * @see #wait(long, TimeUnit)
      */
-    public final Signal<V> delay(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> delay(long time, TimeUnit unit, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler) {
         if (unit == null) {
             return this;
         }
@@ -1085,7 +1099,7 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
-    public final Signal<V> delay(Duration time, ScheduledExecutorService scheduler) {
+    public final Signal<V> delay(Duration time, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler) {
         // ignore invalid parameters
         if (time == null || time.isNegative() || time.isZero()) {
             return this;
@@ -1113,7 +1127,7 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
-    public final Signal<V> delay(Supplier<Duration> time, ScheduledExecutorService scheduler) {
+    public final Signal<V> delay(Supplier<Duration> time, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler) {
         // ignore invalid parameters
         if (time == null) {
             return this;
@@ -1803,7 +1817,7 @@ public final class Signal<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> interval(long interval, TimeUnit unit, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler) {
         // ignore invalid parameters
         if (interval <= 0 || unit == null) {
             return this;
@@ -2239,7 +2253,7 @@ public final class Signal<V> {
     public final Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor executor) {
         // DON'T use the recursive call, it will throw StackOverflowError.
         return flatMap(init -> new Signal<V>((observer, disposer) -> {
-            I.schedule(executor, () -> {
+            executor.execute(() -> {
                 try {
                     LinkedList<V> values = new LinkedList(); // LinkedList accepts null
                     LinkedTransferQueue<Signal<V>> signal = new LinkedTransferQueue();
@@ -3799,7 +3813,7 @@ public final class Signal<V> {
      * @param scheduler An event scheduler.
      * @return Chainable API.
      */
-    public final Signal<V> timeout(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> timeout(long time, TimeUnit unit, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;

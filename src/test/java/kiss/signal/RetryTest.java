@@ -65,12 +65,12 @@ class RetryTest extends SignalTester {
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.hasNoObserver();
-        scheduler.await();
+        chronus.await();
         assert main.value("retry");
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
         assert main.hasNoObserver();
-        scheduler.await();
+        chronus.await();
         assert main.value("retry");
         assert main.countObservers() == 1;
     }
@@ -81,13 +81,13 @@ class RetryTest extends SignalTester {
 
         assert main.value("retry");
         assert main.emit(Error).value();
-        scheduler.await();
+        chronus.await();
         assert main.value("retry");
         assert main.emit(Error).value();
-        scheduler.await();
+        chronus.await();
         assert main.value("retry");
         assert main.emit(Error).value();
-        scheduler.await();
+        chronus.await();
         assert main.value();
         assert main.isError();
         assert main.isDisposed();
@@ -149,7 +149,7 @@ class RetryTest extends SignalTester {
                 .effect(log("Unreached"))
                 .effectOnError(log("ErrorFinally")));
 
-        scheduler.await();
+        chronus.await();
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();

@@ -18,7 +18,7 @@ class DebounceTest extends SignalTester {
         monitor(signal -> signal.debounce(50, ms, scheduler));
 
         assert main.emit("only", "last event", "will be", "accepted").value();
-        scheduler.await();
+        chronus.await();
         assert main.value("accepted");
     }
 
@@ -27,7 +27,7 @@ class DebounceTest extends SignalTester {
         monitor(signal -> signal.interval(10, ms, scheduler).debounce(50, ms, scheduler));
 
         assert main.emit("only", "last event", "will be", "accepted").value();
-        scheduler.await();
+        chronus.await();
         assert main.value("accepted");
     }
 
@@ -36,13 +36,13 @@ class DebounceTest extends SignalTester {
         monitor(signal -> signal.debounce(10, ms, scheduler).skip(1).take(1).repeat());
 
         assert main.emit("A", "B").value();
-        scheduler.await();
+        chronus.await();
         assert main.emit("C", "D").value();
-        scheduler.await();
+        chronus.await();
         assert main.emit("E", "F").value("D");
-        scheduler.await();
+        chronus.await();
         assert main.emit("G", "H").value();
-        scheduler.await();
+        chronus.await();
         assert main.emit("I", "J").value("H");
     }
 

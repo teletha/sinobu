@@ -95,7 +95,7 @@ class ConcatMapTest extends SignalTester {
                 .concatMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(10, ms, scheduler)));
 
         main.emit(60, 40, 20);
-        scheduler.await();
+        chronus.await();
         assert main.value(60, 61, 40, 41, 20, 21);
     }
 

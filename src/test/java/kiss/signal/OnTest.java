@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 class OnTest extends SignalTester {
 
-    private Consumer<Runnable> after20ms = runner -> scheduler.schedule(runner, 20, ms);
+    private Consumer<Runnable> after20ms = runner -> chronus.schedule(runner, 20, ms);
 
     @Test
     void on() {
@@ -23,7 +23,7 @@ class OnTest extends SignalTester {
 
         main.emit("START");
         assert main.value();
-        scheduler.await();
+        chronus.await();
         assert main.value(true);
     }
 
@@ -34,7 +34,7 @@ class OnTest extends SignalTester {
         main.emit(Error.class);
         assert main.isNotError();
         assert main.isNotDisposed();
-        scheduler.await();
+        chronus.await();
         assert main.isError();
         assert main.isDisposed();
     }
@@ -45,7 +45,7 @@ class OnTest extends SignalTester {
 
         main.emit(Complete);
         assert main.isNotCompleted();
-        scheduler.await();
+        chronus.await();
         assert main.isCompleted();
     }
 
@@ -54,7 +54,7 @@ class OnTest extends SignalTester {
         monitor(signal -> signal.take(1).on(after20ms));
 
         assert main.emit("First value will be accepted", "Second will not!").value();
-        scheduler.await();
+        chronus.await();
         assert main.value("First value will be accepted");
         assert main.isCompleted();
         assert main.isNotError();

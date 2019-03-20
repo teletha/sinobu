@@ -142,7 +142,7 @@ class TakeTest extends SignalTester {
         assert main.emit("accept", "values", "in", "30ms").value("accept", "values", "in", "30ms");
         assert main.isNotCompleted();
 
-        scheduler.mark().elapse(30, ms);
+        chronus.mark().elapse(30, ms);
         assert main.emit("drop all values", "because signal was already completed").value();
         assert main.isCompleted();
         assert main.isNotError();
