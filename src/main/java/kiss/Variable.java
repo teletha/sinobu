@@ -229,13 +229,11 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Observe this {@link Variable}.
-     * </p>
      *
-     * @return
+     * @return The {@link Signal} which notifies value modification.
      */
-    public Signal<V> observe() {
+    public synchronized Signal<V> observe() {
         if (signaling == null) {
             signaling = new Signaling();
         }
@@ -243,11 +241,9 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Observe this {@link Variable} with the current value.
-     * </p>
      *
-     * @return
+     * @return The {@link Signal} which notifies value modification.
      */
     public Signal<V> observeNow() {
         return observe().startWith(this::get);
