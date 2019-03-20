@@ -55,9 +55,11 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -189,11 +191,11 @@ public class I {
         return thread;
     };
 
-    /** The serial task manager. */
-    static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
-
     /** The parallel task manager. */
     static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
+
+    /** The parallel task scheduler. */
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8, factory);
 
     /** The list of primitive classes. (except for void type) */
     private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
@@ -1672,8 +1674,8 @@ public class I {
      *
      * @param task A task to execute.
      */
-    public static Future schedule(Runnable task) {
-        return schedule(1, TimeUnit.MILLISECONDS, task);
+    public static CompletableFuture schedule(Runnable task) {
+        return schedule((Executor) null, task);
     }
 
     /**
@@ -1683,7 +1685,24 @@ public class I {
      *
      * @param task A task to execute.
      */
-    public static Future schedule(long time, TimeUnit unit, Runnable task) {
+    public static CompletableFuture schedule(Executor executor, Runnable task) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                task.run();
+            } catch (Throwable e) {
+                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
+            }
+        }, executor == null ? parallel : executor);
+    }
+
+    /**
+     * <p>
+     * Execute the specified task in background {@link Thread}.
+     * </p>
+     *
+     * @param task A task to execute.
+     */
+    public static CompletableFuture schedule(long time, TimeUnit unit, Runnable task) {
         return schedule(time, unit, null, task);
     }
 
@@ -1694,30 +1713,8 @@ public class I {
      *
      * @param task A task to execute.
      */
-    public static Future schedule(long time, TimeUnit unit, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler, Runnable task) {
-        if (time <= 0) {
-            task.run();
-            return CompletableFuture.completedFuture(null);
-        }
-
-        if (scheduler == null) {
-            scheduler = (delay, u, run) -> {
-                if (delay <= 0) {
-                    run.run();
-                    return CompletableFuture.completedFuture(null);
-                } else {
-                    return CompletableFuture.runAsync(task, CompletableFuture.delayedExecutor(delay, u, parallel));
-                }
-            };
-        }
-
-        return scheduler.apply(time, unit, () -> {
-            try {
-                task.run();
-            } catch (Throwable e) {
-                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
-            }
-        });
+    static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService scheduler, Runnable task) {
+        return schedule(time <= 0 ? Runnable::run : t -> (scheduler == null ? I.scheduler : scheduler).schedule(t, time, unit), task);
     }
 
     /**
@@ -1812,7 +1809,7 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit) {
-        return signal(delayTime, intervalTime, timeUnit, null);
+        return signal(delayTime, intervalTime, timeUnit, scheduler);
     }
 
     /**
@@ -1825,10 +1822,10 @@ public class I {
      * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
      *         numbers after each {@code intervalTime} of time thereafter
      */
-    public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler) {
+    public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
         return I.signal(0L)
                 .delay(delayTime, timeUnit, scheduler)
-                .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), parallel);
+                .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), scheduler);
     }
 
     /**

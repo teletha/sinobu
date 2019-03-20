@@ -19,10 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -38,7 +36,6 @@ import kiss.Signal;
 import kiss.WiseBiFunction;
 import kiss.WiseConsumer;
 import kiss.WiseFunction;
-import kiss.WiseTriFunction;
 
 public class SignalTester {
 
@@ -76,15 +73,7 @@ public class SignalTester {
     protected final SignalSource another = new SignalSource();
 
     /** The chrono scheduler. */
-    protected final Chronus chronus = new Chronus(() -> Executors.newSingleThreadScheduledExecutor());
-
-    protected final WiseTriFunction<Long, TimeUnit, Runnable, Future> scheduler = (delay, unit, task) -> {
-        if (delay <= 0) {
-            task.run();
-            return CompletableFuture.completedFuture(null);
-        }
-        return chronus.schedule(task, delay, unit);
-    };
+    protected final Chronus scheduler = new Chronus(() -> Executors.newSingleThreadScheduledExecutor());
 
     /** The log manager. */
     private Map<String, List> logs;

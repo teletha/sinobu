@@ -72,11 +72,11 @@ class BufferTest extends SignalTester {
         monitor(signal -> signal.buffer(30, ms).map(composer));
 
         assert main.emit("A", "B").value();
-        chronus.await(200, ms);
+        scheduler.mark().elapse(200, ms);
         assert main.value("AB");
 
         assert main.emit("C", "D", "E").value();
-        chronus.await(200, ms);
+        scheduler.mark().elapse(200, ms);
         assert main.value("CDE");
     }
 

@@ -21,27 +21,27 @@ class TimeoutTest extends SignalTester {
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        chronus.mark().elapse(10, ms);
+        scheduler.mark().elapse(10, ms);
         assert main.emit("success").value("success");
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        chronus.mark().elapse(10, ms);
+        scheduler.mark().elapse(10, ms);
         assert main.emit("success").value("success");
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        chronus.mark().elapse(10, ms);
+        scheduler.mark().elapse(10, ms);
         assert main.emit("success").value("success");
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        chronus.mark().elapse(10, ms);
+        scheduler.mark().elapse(10, ms);
         assert main.emit("success").value("success");
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        chronus.await();
+        scheduler.await();
         assert main.emit("error").value();
         assert main.isError();
         assert main.isDisposed();

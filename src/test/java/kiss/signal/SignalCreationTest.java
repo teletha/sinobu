@@ -158,12 +158,12 @@ class SignalCreationTest extends SignalTester {
     void interval() {
         monitor(() -> I.signal(0, 100, ms, scheduler).take(2));
 
-        chronus.mark().elapse(50, ms);
+        scheduler.mark().elapse(50, ms);
         assert main.value(0L);
         assert main.isNotCompleted();
         assert main.isNotDisposed();
 
-        chronus.await();
+        scheduler.await();
         assert main.value(1L);
         assert main.isCompleted();
         assert main.isDisposed();

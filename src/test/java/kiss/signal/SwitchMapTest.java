@@ -95,7 +95,7 @@ class SwitchMapTest extends SignalTester {
                 .switchMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler)));
 
         main.emit(60, 40, 20);
-        chronus.await();
+        scheduler.await();
         assert main.value(20, 21);
     }
 

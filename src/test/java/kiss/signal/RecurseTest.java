@@ -32,10 +32,10 @@ class RecurseTest extends SignalTester {
 
     @Test
     void recurseAsynchronus() {
-        monitor(Integer.class, signal -> signal.recurse(v -> v + 1, chronus).take(5));
+        monitor(Integer.class, signal -> signal.recurse(v -> v + 1, scheduler).take(5));
 
         assert main.emit(1).value();
-        chronus.await();
+        scheduler.await();
         assert main.value(1, 2, 3, 4, 5);
         assert main.isCompleted();
         assert main.isNotError();
@@ -54,10 +54,10 @@ class RecurseTest extends SignalTester {
 
     @Test
     void recurseMapAsynchronus() {
-        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1), chronus).take(5));
+        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1), scheduler).take(5));
 
         assert main.emit(1).value();
-        chronus.await();
+        scheduler.await();
         assert main.value(1, 2, 3, 4, 5);
         assert main.isCompleted();
         assert main.isNotError();
@@ -66,10 +66,10 @@ class RecurseTest extends SignalTester {
 
     @Test
     void recurseMapAsynchronuslyWithAsynchronusComputation() {
-        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1).delay(10, ms, scheduler), chronus).take(5));
+        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1).delay(10, ms), scheduler).take(5));
 
         assert main.emit(1).value();
-        chronus.await();
+        scheduler.await();
         assert main.value(1, 2, 3, 4, 5);
         assert main.isCompleted();
         assert main.isNotError();

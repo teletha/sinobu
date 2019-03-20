@@ -18,18 +18,18 @@ class ThrottleTest extends SignalTester {
         monitor(1, signal -> signal.throttle(50, ms));
 
         assert main.emit("success", "skip", "skip").value("success");
-        chronus.mark().elapse(10, ms).within(50, ms, () -> {
+        scheduler.mark().elapse(10, ms).within(50, ms, () -> {
             assert main.emit("skip in 10 ms").value();
         });
-        chronus.elapse(20, ms).within(50, ms, () -> {
+        scheduler.elapse(20, ms).within(50, ms, () -> {
             assert main.emit("skip in 20 ms").value();
         });
-        chronus.elapse(50, ms);
+        scheduler.elapse(50, ms);
         assert main.emit("success").value("success");
-        chronus.mark().elapse(10, ms).within(50, ms, () -> {
+        scheduler.mark().elapse(10, ms).within(50, ms, () -> {
             assert main.emit("skip in 10 ms").value();
         });
-        chronus.elapse(50, ms);
+        scheduler.elapse(50, ms);
         assert main.emit("success").value("success");
     }
 

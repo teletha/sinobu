@@ -18,7 +18,7 @@ class IntervalTest extends SignalTester {
         monitor(signal -> signal.interval(10, ms, scheduler));
 
         assert main.emit("each", "events", "has", "enough", "interval", "time").value("each");
-        chronus.await();
+        scheduler.await();
         assert main.value("events", "has", "enough", "interval", "time");
         assert main.isNotCompleted();
         assert main.isNotError();
@@ -30,7 +30,7 @@ class IntervalTest extends SignalTester {
         monitor(signal -> signal.interval(10, ms, scheduler));
 
         assert main.emit("complete", "event", "has", "interval", "time", "too", Complete).value("complete");
-        chronus.await();
+        scheduler.await();
         assert main.value("event", "has", "interval", "time", "too");
         assert main.isCompleted();
         assert main.isNotError();

@@ -152,12 +152,12 @@ class RepeatTest extends SignalTester {
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        chronus.await();
+        scheduler.await();
         assert main.value("repeat");
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        chronus.await();
+        scheduler.await();
         assert main.value("repeat");
         assert main.countObservers() == 1;
     }
@@ -168,13 +168,13 @@ class RepeatTest extends SignalTester {
 
         assert main.value("repeat");
         assert main.emit(Complete).value();
-        chronus.await();
+        scheduler.await();
         assert main.value("repeat");
         assert main.emit(Complete).value();
-        chronus.await();
+        scheduler.await();
         assert main.value("repeat");
         assert main.emit(Complete).value();
-        chronus.await();
+        scheduler.await();
         assert main.value();
         assert main.isCompleted();
         assert main.isNotError();
@@ -234,7 +234,7 @@ class RepeatTest extends SignalTester {
                 .repeatWhen(repeat -> repeat.take(3).delay(10, ms, scheduler).effect(log("Repeat")))
                 .effect(log("End")));
 
-        chronus.await();
+        scheduler.await();
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();

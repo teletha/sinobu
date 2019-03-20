@@ -21,11 +21,11 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(30, ms, scheduler));
 
         assert main.emit("delay").value();
-        chronus.await();
+        scheduler.await();
         assert main.value("delay");
 
         assert main.emit("one", "more").value();
-        chronus.await();
+        scheduler.await();
         assert main.value("one", "more");
     }
 
@@ -55,11 +55,11 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(Duration.ofMillis(30), scheduler));
 
         assert main.emit("delay").value();
-        chronus.await();
+        scheduler.await();
         assert main.value("delay");
 
         assert main.emit("one", "more").value();
-        chronus.await();
+        scheduler.await();
         assert main.value("one", "more");
     }
 
@@ -89,11 +89,11 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(() -> Duration.ofMillis(30), scheduler));
 
         assert main.emit("delay").value();
-        chronus.await();
+        scheduler.await();
         assert main.value("delay");
 
         assert main.emit("one", "more").value();
-        chronus.await();
+        scheduler.await();
         assert main.value("one", "more");
     }
 
