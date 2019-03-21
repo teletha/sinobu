@@ -12,7 +12,6 @@ package kiss.signal;
 import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -457,6 +456,14 @@ public class SignalTester {
         boolean value(Object... expected);
 
         /**
+         * Validate the result values. (ignore order)
+         * 
+         * @param expected
+         * @return
+         */
+        boolean valueInNoParticularOrder(Object... expected);
+
+        /**
          * Validate the result values.
          * 
          * @return A result
@@ -545,7 +552,21 @@ public class SignalTester {
             assert values.size() == expected.length;
 
             for (int i = 0; i < expected.length; i++) {
-                assert Objects.equals(values.get(i), expected[i]) : values + " " + Arrays.toString(expected);
+                assert Objects.equals(values.get(i), expected[i]);
+            }
+            values.clear();
+            return true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean valueInNoParticularOrder(Object... expected) {
+            assert values.size() == expected.length;
+
+            for (int i = 0; i < expected.length; i++) {
+                assert values.contains(expected[i]);
             }
             values.clear();
             return true;
@@ -645,6 +666,14 @@ public class SignalTester {
          * {@inheritDoc}
          */
         @Override
+        public boolean valueInNoParticularOrder(Object... expected) {
+            return log.valueInNoParticularOrder(expected);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean isEmmitted() {
             return log.isEmmitted();
         }
@@ -716,6 +745,16 @@ public class SignalTester {
          */
         public boolean value(Object... expected) {
             return result.value(expected);
+        }
+
+        /**
+         * Validate the result values. (ignore order)
+         * 
+         * @param expected
+         * @return
+         */
+        public boolean valueInNoParticularOrder(Object... expected) {
+            return result.valueInNoParticularOrder(expected);
         }
 
         /**

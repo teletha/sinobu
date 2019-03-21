@@ -95,7 +95,10 @@ class FlatMapTest extends SignalTester {
 
         assert main.emit(60, 40, 20).value();
         scheduler.await();
-        assert main.value(20, 40, 60, 21, 41, 61);
+        assert main.valueInNoParticularOrder(20, 21, 40, 41, 60, 61);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
