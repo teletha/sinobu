@@ -11,8 +11,6 @@ package kiss.codec;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
-
 import kiss.Decoder;
 import kiss.Disposable;
 import kiss.Encoder;
@@ -21,7 +19,6 @@ import kiss.model.Model;
 
 class UpdateTest {
 
-    @Test
     void updateCodecDynamically() {
         // check built-in enum codec
         Model<Code> model = Model.of(Code.class);

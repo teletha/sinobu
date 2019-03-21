@@ -231,7 +231,7 @@ class RepeatTest extends SignalTester {
     void repeatWhenWithDelayImmediately() {
         monitor(1, () -> I.signal("start")
                 .effect(log("Begin"))
-                .repeatWhen(repeat -> repeat.take(3).delay(10, ms, scheduler).effect(log("Repeat")))
+                .repeatWhen(repeat -> repeat.delay(10, ms, scheduler).take(3).effect(log("Repeat")))
                 .effect(log("End")));
 
         scheduler.await();

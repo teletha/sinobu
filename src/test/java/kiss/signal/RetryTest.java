@@ -145,7 +145,7 @@ class RetryTest extends SignalTester {
         monitor(1, () -> I.signal("start")
                 .effect(log("Begin"))
                 .map(errorFunction())
-                .retryWhen(fail -> fail.take(3).delay(10, ms, scheduler).effect(log("Retry")))
+                .retryWhen(fail -> fail.delay(10, ms, scheduler).take(3).effect(log("Retry")))
                 .effect(log("Unreached"))
                 .effectOnError(log("ErrorFinally")));
 
@@ -153,7 +153,7 @@ class RetryTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
-        assert checkLog("Begin").size() == 4;
+        assert checkLog("Begin").size() == 4 : checkLog("Begin");
         assert checkLog("Unreached").size() == 0;
         assert checkLog("Retry").size() == 3;
         assert checkLog("ErrorFinally").size() == 1;
