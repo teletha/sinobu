@@ -51,6 +51,10 @@ class OnTest extends SignalTester {
 
     @Test
     void dispose() {
+        // Signal#on doesn't guarantee the execution order of events (including COMPLETE)
+        // Single thread executor will arrange all events in serial. (FIFO)
+        scheduler.configExecutionLimit(1);
+
         monitor(signal -> signal.take(1).on(after20ms));
 
         assert main.emit("First value will be accepted", "Second will not!").value();
