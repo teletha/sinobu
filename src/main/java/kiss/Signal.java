@@ -1158,7 +1158,7 @@ public final class Signal<V> {
             Runnable sender = I.recurseR(self -> () -> {
                 Ⅱ<Object, Long> item = queue.pollFirst();
 
-                if (item.ⅰ == disposer) {
+                if (item.ⅰ == this) {
                     observer.complete();
                 } else {
                     observer.accept((V) item.ⅰ);
@@ -1172,47 +1172,13 @@ public final class Signal<V> {
             return to(value -> {
                 long delay = time.apply(value).toNanos();
                 queue.add(I.pair(value, delay + System.nanoTime()));
-                if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
+                if (queue.size() == 1) I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, observer::error, () -> {
-                long t = queue.last().ⅱ + 1;
-                queue.add(I.pair(disposer, t));
-                if (queue.size() == 1) I.schedule(t - System.nanoTime(), NANOSECONDS, scheduler, sender);
+                long delay = queue.last().ⅱ + 1;
+                queue.add(I.pair(this, delay));
+                if (queue.size() == 1) I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, disposer);
         });
-    }
-
-    private static class AA implements Comparable<AA> {
-
-        private Object value;
-
-        private long time;
-
-        private AA(Object value, Duration delay) {
-            this.value = value;
-            this.time = System.nanoTime() + Math.max(0, delay.toNanos());
-        }
-
-        private AA(Object value, long delay) {
-            this.value = value;
-            this.time = delay;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int compareTo(AA o) {
-            long diff = time - o.time;
-            return diff == 0 ? 0 : diff > 0 ? 1 : -1;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            return "AA[" + value + " " + time + "]";
-        }
     }
 
     /**
@@ -1901,7 +1867,7 @@ public final class Signal<V> {
                 next.set(System.nanoTime() + time);
                 Object item = queue.pollFirst();
 
-                if (item == UNDEFINED) {
+                if (item == this) {
                     observer.complete();
                 } else {
                     observer.accept((V) item);
@@ -1916,7 +1882,7 @@ public final class Signal<V> {
                 queue.add(value);
                 if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, observer::error, () -> {
-                queue.add(UNDEFINED);
+                queue.add(this);
                 if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, disposer);
         });
