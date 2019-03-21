@@ -27,6 +27,9 @@ class DelayTest extends SignalTester {
         assert main.emit("one", "more").value();
         scheduler.await();
         assert main.value("one", "more");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -34,6 +37,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(0, ms));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -41,6 +47,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(-10, ms));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -48,6 +57,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(10, null));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -61,6 +73,9 @@ class DelayTest extends SignalTester {
         assert main.emit("one", "more").value();
         scheduler.await();
         assert main.value("one", "more");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -68,6 +83,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(Duration.ofMillis(-30)));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -75,6 +93,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(Duration.ofMillis(0)));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -82,6 +103,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay((Duration) null));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -95,6 +119,9 @@ class DelayTest extends SignalTester {
         assert main.emit("one", "more").value();
         scheduler.await();
         assert main.value("one", "more");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -102,6 +129,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(() -> Duration.ofMillis(-30)));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -109,6 +139,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay(() -> Duration.ofMillis(0)));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -116,6 +149,9 @@ class DelayTest extends SignalTester {
         monitor(signal -> signal.delay((Supplier<Duration>) null));
 
         assert main.emit("no delay").value("no delay");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -125,6 +161,9 @@ class DelayTest extends SignalTester {
         assert main.emit("1").value();
         assert main.emit("2").value("1");
         assert main.emit("3").value("2");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
@@ -135,5 +174,8 @@ class DelayTest extends SignalTester {
         assert main.emit("2").value();
         assert main.emit("3").value("1");
         assert main.emit("4").value("2");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 }
