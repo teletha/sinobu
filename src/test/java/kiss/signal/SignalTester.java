@@ -72,9 +72,6 @@ public class SignalTester {
     protected final SignalSource another = new SignalSource();
 
     /** The chrono scheduler. */
-    protected final Chronus serial = new Chronus(() -> Executors.newSingleThreadScheduledExecutor());
-
-    /** The chrono scheduler. */
     protected final Chronus scheduler = new Chronus(() -> Executors.newScheduledThreadPool(16));
 
     /** The log manager. */
