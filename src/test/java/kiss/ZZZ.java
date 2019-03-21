@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
@@ -20,7 +21,27 @@ import java.util.concurrent.TimeUnit;
 public class ZZZ {
 
     public static void main(String[] args) throws InterruptedException {
-        byCachedThreadPoolWithCompletableFuture(args);
+        I.signal(60, 40, 20).delay(x -> {
+            return Duration.ofMillis(x);
+        }, null).to(v -> {
+            System.out.println(v);
+        });
+
+        // PublishSubject<Integer> s = PublishSubject.create();
+        // s.delay(v -> Observable.timer(v, TimeUnit.MILLISECONDS)).subscribe(v -> {
+        // System.out.println(v);
+        // }, e -> {
+        //
+        // }, () -> {
+        // System.out.println("COMPLETE");
+        // });
+        //
+        // s.onNext(560);
+        // s.onNext(540);
+        // s.onNext(520);
+        // s.onComplete();
+
+        Thread.sleep(1000);
     }
 
     public static void byCachedThreadPoolWithCompletableFuture(String[] args) throws InterruptedException {

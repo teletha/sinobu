@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Delayed;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
@@ -1135,52 +1135,74 @@ public final class Signal<V> {
         if (time == null || time.get().toNanos() <= 0) {
             return this;
         }
+        return delay(x -> time.get(), scheduler);
+    }
+
+    /**
+     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
+     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * {@link Signal} are not delayed.
+     *
+     * @param time The delay to shift the source by.
+     * @return The source {@link Signal} shifted in time by the specified delay.
+     */
+    public final Signal<V> delay(Function<V, Duration> time, ScheduledExecutorService scheduler) {
+        // ignore invalid parameters
+        if (time == null) {
+            return this;
+        }
 
         return new Signal<>((observer, disposer) -> {
-            long delay = time.get().toNanos();
-            LinkedList<AA> queue = new LinkedList();
+            ConcurrentSkipListSet<Ⅱ<Object, Long>> queue = new ConcurrentSkipListSet<>(Comparator.comparingLong(Ⅱ::ⅱ));
 
             Runnable sender = I.recurseR(self -> () -> {
-                AA item = queue.pollFirst();
+                Ⅱ<Object, Long> item = queue.pollFirst();
 
-                if (item.value == queue) {
+                if (item.ⅰ == disposer) {
                     observer.complete();
                 } else {
-                    observer.accept((V) item.value);
+                    observer.accept((V) item.ⅰ);
 
                     if (!queue.isEmpty()) {
-                        I.schedule(queue.peekFirst().time - System.nanoTime(), NANOSECONDS, scheduler, self);
+                        I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler, self);
                     }
                 }
             });
 
             return to(value -> {
-                queue.add(new AA(value, time));
+                long delay = time.apply(value).toNanos();
+                queue.add(I.pair(value, delay + System.nanoTime()));
                 if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
             }, observer::error, () -> {
-                queue.add(new AA(queue, time));
-                if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
+                long t = queue.last().ⅱ + 1;
+                queue.add(I.pair(disposer, t));
+                if (queue.size() == 1) I.schedule(t - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, disposer);
         });
     }
 
-    private static class AA implements Delayed {
+    private static class AA implements Comparable<AA> {
 
         private Object value;
 
         private long time;
 
-        private AA(Object value, Supplier<Duration> delay) {
+        private AA(Object value, Duration delay) {
             this.value = value;
-            this.time = System.nanoTime() + Math.max(0, delay.get().toNanos());
+            this.time = System.nanoTime() + Math.max(0, delay.toNanos());
+        }
+
+        private AA(Object value, long delay) {
+            this.value = value;
+            this.time = delay;
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public int compareTo(Delayed o) {
-            long diff = time - ((AA) o).time;
+        public int compareTo(AA o) {
+            long diff = time - o.time;
             return diff == 0 ? 0 : diff > 0 ? 1 : -1;
         }
 
@@ -1188,8 +1210,8 @@ public final class Signal<V> {
          * {@inheritDoc}
          */
         @Override
-        public long getDelay(TimeUnit unit) {
-            return unit.convert(time - System.nanoTime(), TimeUnit.NANOSECONDS);
+        public String toString() {
+            return "AA[" + value + " " + time + "]";
         }
     }
 
