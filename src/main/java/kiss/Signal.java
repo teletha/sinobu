@@ -1852,7 +1852,7 @@ public final class Signal<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> interval2(long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
         // ignore invalid parameters
         if (interval <= 0 || unit == null) {
             return this;
@@ -1885,6 +1885,29 @@ public final class Signal<V> {
                 queue.add(this);
                 if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, disposer);
+        });
+    }
+
+    public final Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
+        // ignore invalid parameters
+        if (interval <= 0 || unit == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            long intervalTime = unit.toNanos(interval);
+            LinkedList queue = new LinkedList();
+            AtomicLong next = new AtomicLong();
+
+            Signaling<Duration> timer = new Signaling();
+
+            return effect(v -> {
+                queue.add(v);
+                timer.accept(Duration.ofNanos(next.get() - System.nanoTime()));
+                next.set(next.get() + intervalTime);
+            }).effectOnComplete(timer::complete).combine(timer.expose.delay(x -> x, scheduler)).map(Ⅱ::ⅰ).to(v -> {
+                queue.remove();
+            }, observer::error, observer::complete);
         });
     }
 
