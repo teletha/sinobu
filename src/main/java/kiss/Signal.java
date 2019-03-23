@@ -696,6 +696,53 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
+     * combinations of two items emitted, in sequence, by this {@link Signal} and the other
+     * specified {@link Signal}.
+     * </p>
+     *
+     * @param other An other {@link Signal} to combine.
+     * @param combiner An aggregation function used to combine the items emitted by the source
+     *            {@link Signal}.
+     * @return A {@link Signal} that emits items that are the result of combining the items emitted
+     *         by source {@link Signal} by means of the given aggregation function.
+     */
+    public final <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> combiner, boolean waitCompleteUntilConsumeRemainings) {
+        return new Signal<>((observer, disposer) -> {
+            LinkedList<V> baseValue = new LinkedList();
+            LinkedList<O> otherValue = new LinkedList();
+            Subscriber completer = countable(observer, 2);
+
+            return to(value -> {
+                if (otherValue.isEmpty()) {
+                    baseValue.add(value);
+                } else {
+                    observer.accept(combiner.apply(value, otherValue.pollFirst()));
+                }
+            }, observer::error, () -> {
+                if (baseValue.isEmpty()) {
+                    observer.complete();
+                } else {
+                    completer.complete();
+                }
+            }, disposer).add(other.to(value -> {
+                if (baseValue.isEmpty()) {
+                    otherValue.add(value);
+                } else {
+                    observer.accept(combiner.apply(baseValue.pollFirst(), value));
+                }
+            }, observer::error, () -> {
+                if (otherValue.isEmpty()) {
+                    observer.complete();
+                } else {
+                    completer.complete();
+                }
+            }, disposer));
+        });
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits the results of a function of your choosing applied to
      * combinations of several items emitted, in sequence, by this {@link Signal} and the other
      * specified {@link Signal}.
      * </p>
@@ -1896,18 +1943,15 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             long intervalTime = unit.toNanos(interval);
-            LinkedList queue = new LinkedList();
-            AtomicLong next = new AtomicLong();
-
             Signaling<Duration> timer = new Signaling();
+            Subscriber countable = countable(timer, 1);
 
-            return effect(v -> {
-                queue.add(v);
-                timer.accept(Duration.ofNanos(next.get() - System.nanoTime()));
-                next.set(next.get() + intervalTime);
-            }).effectOnComplete(timer::complete).combine(timer.expose.delay(x -> x, scheduler)).map(Ⅱ::ⅰ).to(v -> {
-                queue.remove();
-            }, observer::error, observer::complete);
+            return effect(v -> countable.index++).effectOnComplete(() -> {
+                countable.complete();
+            }).combine(timer.expose.startWith(Duration.ZERO).delay(x -> x, scheduler)).map(Ⅱ::ⅰ).effect(v -> {
+                timer.accept(Duration.ofNanos(intervalTime));
+                countable.complete();
+            }).to(observer);
         });
     }
 

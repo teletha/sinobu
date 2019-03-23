@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 class Subscriber<T> implements Observer<T>, Disposable {
 
     /** Generic counter. */
-    long index;
+    volatile long index;
 
     /** Generic list. */
     List<T> list;

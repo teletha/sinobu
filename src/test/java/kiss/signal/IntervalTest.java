@@ -26,6 +26,18 @@ class IntervalTest extends SignalTester {
     }
 
     @Test
+    void interval2() {
+        monitor(signal -> signal.interval(20, ms, scheduler));
+
+        assert main.emit("each", "events", "has", "enough", "interval", "time").value("each");
+        scheduler.mark().await(20, ms);
+        assert main.value("events", "has", "enough", "interval", "time");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
     void complete() {
         monitor(signal -> signal.interval(10, ms, scheduler));
 
