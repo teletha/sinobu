@@ -9,7 +9,12 @@
  */
 package kiss.signal;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
+
+import kiss.I;
 
 class IntervalTest extends SignalTester {
 
@@ -27,14 +32,12 @@ class IntervalTest extends SignalTester {
 
     @Test
     void interval2() {
-        monitor(signal -> signal.interval(20, ms, scheduler));
+        List<Duration> durations = I.signal(1, 2, 3, 4, 5)
+                .interval(20, ms, scheduler)
+                .scanWith(Duration.ZERO, (p, v) -> Duration.ofNanos(System.nanoTime()).minus(p))
+                .toList();
 
-        assert main.emit("each", "events", "has", "enough", "interval", "time").value("each");
-        scheduler.mark().await(20, ms);
-        assert main.value("events", "has", "enough", "interval", "time");
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
+        assert durations.stream().allMatch(d -> 20 <= d.toMillis());
     }
 
     @Test
