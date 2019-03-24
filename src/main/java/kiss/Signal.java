@@ -1862,14 +1862,11 @@ public final class Signal<V> {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> {
-            Signaling<Long> next = new Signaling();
+        Signaling<Duration> next = new Signaling();
 
-            return combine(next.expose.startWith(0L).delay(x -> Duration.ofNanos(x - System.nanoTime()), scheduler)) //
-                    .map(Ⅱ::ⅰ)
-                    .effectAfter(v -> next.accept(System.nanoTime() + unit.toNanos(interval)))
-                    .to(observer);
-        });
+        return combine(next.expose.startWith(Duration.ZERO).delay(Function.identity(), scheduler)) //
+                .map(Ⅱ::ⅰ)
+                .effectAfter(((WiseConsumer<Duration>) next::accept).with(Duration.ofNanos(unit.toNanos(interval))));
     }
 
     /**
