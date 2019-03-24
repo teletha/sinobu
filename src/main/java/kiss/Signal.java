@@ -2014,6 +2014,15 @@ public final class Signal<V> {
      * Returns an {@link Signal} that applies the given function to each value emitted by an
      * {@link Signal} and emits the result.
      * </p>
+     * <pre class="marble-diagram">
+     * ───①───②───③───④───⑤──┼
+     *    ↓   ↓   ↓   ↓   ↓
+     *  ┌────────────────────┐
+     *   map ○→●
+     *  └────────────────────┘
+     *    ↓   ↓   ↓   ↓   ↓  ↓
+     * ───❶───❷───❸───❹───❺──┼
+     * </pre>
      *
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
      *            <code>null</code> will ignore this instruction.
@@ -2026,7 +2035,18 @@ public final class Signal<V> {
     }
 
     /**
+     * <p>
      * {@link #map(WiseFunction)} with context.
+     * </p>
+     * <pre class="marble-diagram">
+     * ───①───②───③───④───⑤──┼
+     *    ↓   ↓   ↓   ↓   ↓
+     *  ┌────────────────────┐
+     *   map ○→●
+     *  └────────────────────┘
+     *    ↓   ↓   ↓   ↓   ↓  ↓
+     * ───❶───❷───❸───❹───❺──┼
+     * </pre>
      * 
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
@@ -2091,6 +2111,17 @@ public final class Signal<V> {
      * Flattens a sequence of {@link Signal} emitted by an {@link Signal} into one {@link Signal},
      * without any transformation.
      * </p>
+     * <pre class="marble-diagram">
+     * ───①───②───③───④───⑤──┼
+     *    ↓   ↓   ↓   ↓   ↓
+     * ─────❶────❷────❸────┼
+     *      ↓    ↓    ↓
+     *  ┌────────────────────┐
+     *   merge
+     *  └────────────────────┘
+     *    ↓ ↓ ↓  ↓↓   ↓   ↓  ↓
+     * ───①─❶─②──❷③───④❸──⑤──┼
+     * </pre>
      *
      * @param others A target {@link Signal} to merge. <code>null</code> will be ignored.
      * @return Chainable API.
@@ -2147,6 +2178,15 @@ public final class Signal<V> {
      * <p>
      * Switch event stream context.
      * </p>
+     * <pre class="marble-diagram">
+    * ───①───②───③───④───⑤──┼
+    *    ↓   ↓   ↓   ↓   ↓
+    *  ┌────────────────────┐
+    *   on ━
+    *  └────────────────────┘
+    *    ↓   ↓   ↓   ↓   ↓  ↓
+    * ━━━❶━━━❷━━━❸━━━❹━━━❺━━╋
+    * </pre>
      * 
      * @param scheduler A new context
      * @return Chainable API.
