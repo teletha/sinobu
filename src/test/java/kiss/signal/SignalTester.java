@@ -538,7 +538,7 @@ public class SignalTester {
          */
         @Override
         public boolean isNotError() {
-            assert error == null;
+            assert error == null : error;
             return true;
         }
 

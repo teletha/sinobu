@@ -663,78 +663,35 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             LinkedList<V> baseValue = new LinkedList();
             LinkedList<O> otherValue = new LinkedList();
-            Subscriber completer = countable(observer, 2);
+            boolean[] completes = new boolean[2];
 
             return to(value -> {
-                if (otherValue.isEmpty()) {
-                    baseValue.add(value);
-                } else {
-                    observer.accept(combiner.apply(value, otherValue.pollFirst()));
+                if (completes[0] == false) {
+                    if (otherValue.isEmpty()) {
+                        baseValue.add(value);
+                    } else {
+                        observer.accept(combiner.apply(value, otherValue.pollFirst()));
+                        if (completes[1] && otherValue.isEmpty()) observer.complete();
+                    }
                 }
             }, observer::error, () -> {
-                if (baseValue.isEmpty()) {
+                completes[0] = true;
+                if (baseValue.isEmpty() || completes[1]) {
                     observer.complete();
-                } else {
-                    completer.complete();
                 }
             }, disposer).add(other.to(value -> {
-                if (baseValue.isEmpty()) {
-                    otherValue.add(value);
-                } else {
-                    observer.accept(combiner.apply(baseValue.pollFirst(), value));
+                if (completes[1] == false) {
+                    if (baseValue.isEmpty()) {
+                        otherValue.add(value);
+                    } else {
+                        observer.accept(combiner.apply(baseValue.pollFirst(), value));
+                        if (completes[0] && baseValue.isEmpty()) observer.complete();
+                    }
                 }
             }, observer::error, () -> {
-                if (otherValue.isEmpty()) {
+                completes[1] = true;
+                if (otherValue.isEmpty() || completes[0]) {
                     observer.complete();
-                } else {
-                    completer.complete();
-                }
-            }, disposer));
-        });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits the results of a function of your choosing applied to
-     * combinations of two items emitted, in sequence, by this {@link Signal} and the other
-     * specified {@link Signal}.
-     * </p>
-     *
-     * @param other An other {@link Signal} to combine.
-     * @param combiner An aggregation function used to combine the items emitted by the source
-     *            {@link Signal}.
-     * @return A {@link Signal} that emits items that are the result of combining the items emitted
-     *         by source {@link Signal} by means of the given aggregation function.
-     */
-    public final <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> combiner, boolean waitCompleteUntilConsumeRemainings) {
-        return new Signal<>((observer, disposer) -> {
-            LinkedList<V> baseValue = new LinkedList();
-            LinkedList<O> otherValue = new LinkedList();
-            Subscriber completer = countable(observer, 2);
-
-            return to(value -> {
-                if (otherValue.isEmpty()) {
-                    baseValue.add(value);
-                } else {
-                    observer.accept(combiner.apply(value, otherValue.pollFirst()));
-                }
-            }, observer::error, () -> {
-                if (baseValue.isEmpty()) {
-                    observer.complete();
-                } else {
-                    completer.complete();
-                }
-            }, disposer).add(other.to(value -> {
-                if (baseValue.isEmpty()) {
-                    otherValue.add(value);
-                } else {
-                    observer.accept(combiner.apply(baseValue.pollFirst(), value));
-                }
-            }, observer::error, () -> {
-                if (otherValue.isEmpty()) {
-                    observer.complete();
-                } else {
-                    completer.complete();
                 }
             }, disposer));
         });
@@ -1219,11 +1176,11 @@ public final class Signal<V> {
             return to(value -> {
                 long delay = time.apply(value).toNanos();
                 queue.add(I.pair(value, delay + System.nanoTime()));
-                if (queue.size() == 1) I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler, sender);
+                if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
             }, observer::error, () -> {
                 long delay = queue.last().ⅱ + 1;
                 queue.add(I.pair(this, delay));
-                if (queue.size() == 1) I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler, sender);
+                if (queue.size() == 1) I.schedule(delay - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, disposer);
         });
     }
@@ -1899,42 +1856,6 @@ public final class Signal<V> {
      *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> interval2(long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
-        // ignore invalid parameters
-        if (interval <= 0 || unit == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            long time = unit.toNanos(interval);
-            LinkedList queue = new LinkedList();
-            AtomicLong next = new AtomicLong();
-
-            Runnable sender = I.recurseR(self -> () -> {
-                next.set(System.nanoTime() + time);
-                Object item = queue.pollFirst();
-
-                if (item == this) {
-                    observer.complete();
-                } else {
-                    observer.accept((V) item);
-                }
-
-                if (!queue.isEmpty()) {
-                    I.schedule(time, NANOSECONDS, scheduler, self);
-                }
-            });
-
-            return to(value -> {
-                queue.add(value);
-                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, scheduler, sender);
-            }, observer::error, () -> {
-                queue.add(this);
-                if (queue.size() == 1) I.schedule(next.get() - System.nanoTime(), NANOSECONDS, scheduler, sender);
-            }, disposer);
-        });
-    }
-
     public final Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
         // ignore invalid parameters
         if (interval <= 0 || unit == null) {
@@ -1942,16 +1863,12 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            long intervalTime = unit.toNanos(interval);
-            Signaling<Duration> timer = new Signaling();
-            Subscriber countable = countable(timer, 1);
+            Signaling<Long> next = new Signaling();
 
-            return effect(v -> countable.index++).effectOnComplete(() -> {
-                countable.complete();
-            }).combine(timer.expose.startWith(Duration.ZERO).delay(x -> x, scheduler)).map(Ⅱ::ⅰ).effect(v -> {
-                timer.accept(Duration.ofNanos(intervalTime));
-                countable.complete();
-            }).to(observer);
+            return combine(next.expose.startWith(0L).delay(x -> Duration.ofNanos(x - System.nanoTime()), scheduler)) //
+                    .map(Ⅱ::ⅰ)
+                    .effectAfter(v -> next.accept(System.nanoTime() + unit.toNanos(interval)))
+                    .to(observer);
         });
     }
 

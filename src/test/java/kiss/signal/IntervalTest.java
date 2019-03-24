@@ -28,16 +28,19 @@ class IntervalTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();
+
+        scheduler.mark().await(20, ms); // elapse interval time
+        assert main.emit("next event is emitted immediately").value("next event is emitted immediately");
     }
 
     @Test
-    void interval2() {
+    void checkIntervalTime() {
         List<Duration> durations = I.signal(1, 2, 3, 4, 5)
-                .interval(20, ms, scheduler)
-                .scanWith(Duration.ZERO, (p, v) -> Duration.ofNanos(System.nanoTime()).minus(p))
+                .interval(50, ms, scheduler)
+                .scanWith(Duration.ZERO, (duration, value) -> Duration.ofNanos(System.nanoTime()).minus(duration))
                 .toList();
 
-        assert durations.stream().allMatch(d -> 20 <= d.toMillis());
+        assert durations.stream().allMatch(d -> 50 <= d.toMillis());
     }
 
     @Test
