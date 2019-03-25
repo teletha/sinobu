@@ -156,9 +156,9 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void interval() {
-        monitor(() -> I.signal(0, 60, ms, scheduler).take(5));
+        monitor(() -> I.signal(0, 50, ms, scheduler).take(5));
 
-        scheduler.mark().elapse(30, ms);
+        scheduler.mark().elapse(10, ms);
         assert main.value(0L);
         assert main.isNotCompleted();
         assert main.isNotDisposed();

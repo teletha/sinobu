@@ -431,9 +431,7 @@ public final class Signal<V> {
      *         source {@link Signal} satisfies the predicate.
      */
     public final Signal<Boolean> any(Predicate<? super V> condition) {
-        Objects.requireNonNull(condition);
-
-        return signal(condition, TRUE, false, FALSE, true, FALSE);
+        return signal(Objects.requireNonNull(condition), TRUE, false, FALSE, true, FALSE);
     }
 
     /**
@@ -975,7 +973,7 @@ public final class Signal<V> {
      *         {@link Signal} as a 64-bit Long item
      */
     public final Signal<Long> count() {
-        return map(AtomicLong::new, (context, value) -> context.incrementAndGet());
+        return map(AtomicLong::new, ((WiseFunction<AtomicLong, Long>) AtomicLong::incrementAndGet).append());
     }
 
     /**
