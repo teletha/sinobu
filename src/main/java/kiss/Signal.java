@@ -2250,18 +2250,11 @@ public final class Signal<V> {
      */
     public final Signal<V> or(Signal<V> values) {
         return new Signal<>((observer, disposer) -> {
-            AtomicBoolean emitted = new AtomicBoolean();
+            Subscriber sub = new Subscriber();
+            sub.observer = observer;
+            if (values != null) sub.complete = () -> values.to(observer, disposer);
 
-            return to(v -> {
-                emitted.set(true);
-                observer.accept(v);
-            }, observer::error, () -> {
-                if (emitted.get() == true) {
-                    observer.complete();
-                } else {
-                    values.to(observer, disposer);
-                }
-            }, disposer);
+            return effectOnce(() -> sub.complete = null).to(sub, disposer);
         });
     }
 
