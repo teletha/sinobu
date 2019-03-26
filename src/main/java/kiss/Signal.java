@@ -2210,13 +2210,13 @@ public final class Signal<V> {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> to(v -> {
-            scheduler.accept(() -> observer.accept(v));
-        }, e -> {
-            scheduler.accept(() -> observer.error(e));
-        }, () -> {
-            scheduler.accept(observer::complete);
-        }, disposer));
+        return new Signal<>((observer, disposer) -> {
+            return to(v -> {
+                scheduler.accept(I.wise(observer::accept).with(v));
+            }, e -> {
+                scheduler.accept(I.wise(observer::error).with(e));
+            }, I.wise(scheduler).with(observer::complete), disposer);
+        });
     }
 
     /**
@@ -3899,10 +3899,7 @@ public final class Signal<V> {
             WiseConsumer effect = v -> {
                 future.getAndSet(v == null ? null : I.schedule(time, unit, scheduler, timeout)).cancel(false);
             };
-
-            return effect(effect.with(this)) //
-                    .effectOnTerminate(effect.with(null))
-                    .to(observer, disposer);
+            return effect(effect.with(this)).effectOnTerminate(effect.with(null)).to(observer, disposer);
         });
     }
 
