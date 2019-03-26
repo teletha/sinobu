@@ -128,7 +128,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next) {
-        return to(I.wise(next).asConsumer(), null, null);
+        return to(I.wise(next).append(), null, null);
     }
 
     /**
@@ -180,7 +180,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next, Consumer<Throwable> error, Runnable complete) {
-        return to(I.wise(next).asConsumer(), error, complete);
+        return to(I.wise(next).append(), error, complete);
     }
 
     /**
@@ -1312,7 +1312,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effect(effect.asConsumer());
+        return effect(effect.append());
     }
 
     /**
@@ -1359,7 +1359,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effectAfter(effect.asConsumer());
+        return effectAfter(effect.append());
     }
 
     /**
@@ -1430,7 +1430,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effectOnce(effect.asConsumer());
+        return effectOnce(effect.append());
     }
 
     /**
@@ -1560,6 +1560,28 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
+    public final Signal<V> effectOnError(WiseRunnable effect) {
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+        return effectOnError(effect.append());
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * {@link Observer#error(Throwable)}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#error(Throwable)}
+     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
+     */
     public final Signal<V> effectOnError(WiseConsumer<Throwable> effect) {
         // ignore invalid parameter
         if (effect == null) {
@@ -1588,7 +1610,7 @@ public final class Signal<V> {
      * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnObserve(WiseRunnable effect) {
-        return effectOnObserve(effect == null ? null : effect.asConsumer());
+        return effectOnObserve(effect == null ? null : effect.append());
     }
 
     /**
@@ -1634,14 +1656,7 @@ public final class Signal<V> {
      * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnTerminate(WiseRunnable effect) {
-        // ignore invalid parameter
-        if (effect == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, I.bundle(effect.asConsumer(), observer::error), I.bundle(effect, observer::complete), disposer);
-        });
+        return effectOnError(effect).effectOnComplete(effect);
     }
 
     /**
@@ -2454,7 +2469,7 @@ public final class Signal<V> {
                 if (immediate) {
                     observer.complete();
                 } else {
-                    subscriber.next = I.wise(observer::complete).asConsumer();
+                    subscriber.next = I.wise(observer::complete).append();
 
                     // Since there is a complete in processing, but this complete flow has ended,
                     // the processing complete is passed to the source signal.
@@ -3886,8 +3901,7 @@ public final class Signal<V> {
             };
 
             return effect(effect.with(this)) //
-                    .effectOnError(effect.with(null).asConsumer())
-                    .effectOnComplete(effect.with(null))
+                    .effectOnTerminate(effect.with(null))
                     .to(observer, disposer);
         });
     }

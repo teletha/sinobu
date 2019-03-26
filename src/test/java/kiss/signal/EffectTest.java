@@ -157,7 +157,8 @@ class EffectTest extends SignalTester {
         assert from == from.effect((WiseRunnable) null);
         assert from == from.effect((WiseConsumer) null);
         assert from == from.effectOnComplete((WiseRunnable) null);
-        assert from == from.effectOnError(null);
+        assert from == from.effectOnError((WiseRunnable) null);
+        assert from == from.effectOnError((WiseConsumer) null);
     }
 
     @Test

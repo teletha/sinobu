@@ -9,9 +9,6 @@
  */
 package kiss;
 
-/**
- * @version 2018/07/20 9:37:16
- */
 public interface WiseRunnable extends Runnable {
 
     /**
@@ -36,13 +33,11 @@ public interface WiseRunnable extends Runnable {
     }
 
     /**
-     * <p>
-     * Convert to {@link WiseConsumer}.
-     * </p>
+     * Convert to {@link WiseConsumer} which will ignore any parameter.
      * 
      * @return A converted {@link WiseConsumer}.
      */
-    default <P> WiseConsumer<P> asConsumer() {
+    default <P> WiseConsumer<P> append() {
         return p -> RUN();
     }
 
