@@ -48,6 +48,26 @@ class TimeoutTest extends SignalTester {
     }
 
     @Test
+    void complete() {
+        monitor(signal -> signal.timeout(50, ms, scheduler));
+
+        assert main.emit("success", Complete).value("success");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void error() {
+        monitor(signal -> signal.timeout(50, ms, scheduler));
+
+        assert main.emit("success", Error).value("success");
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
     void ignoreZeroTime() {
         monitor(signal -> signal.timeout(0, ms));
 

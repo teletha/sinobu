@@ -3881,16 +3881,14 @@ public final class Signal<V> {
 
             AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(time, unit, scheduler, timeout));
 
-            return to(v -> {
-                future.getAndSet(I.schedule(time, unit, scheduler, timeout)).cancel(false);
-                observer.accept(v);
-            }, e -> {
-                future.get().cancel(false);
-                observer.error(e);
-            }, () -> {
-                future.get().cancel(false);
-                observer.complete();
-            }, disposer);
+            WiseConsumer effect = v -> {
+                future.getAndSet(v == null ? null : I.schedule(time, unit, scheduler, timeout)).cancel(false);
+            };
+
+            return effect(effect.with(this)) //
+                    .effectOnError(effect.with(null).asConsumer())
+                    .effectOnComplete(effect.with(null))
+                    .to(observer, disposer);
         });
     }
 
