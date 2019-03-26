@@ -1667,7 +1667,7 @@ public class I {
      * @return A operation result.
      */
     public static <R> R run(WiseSupplier<R> operation, WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
-        return I.signal("").map(operation.asFunction()).retryWhen(notifier).to().v;
+        return I.signal("").map(operation.append()).retryWhen(notifier).to().v;
     }
 
     /**

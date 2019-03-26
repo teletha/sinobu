@@ -1137,7 +1137,7 @@ public final class Signal<V> {
         if (time == null || time.get().toNanos() <= 0) {
             return this;
         }
-        return delay(x -> time.get(), scheduler);
+        return delay(I.wise(time).append(), scheduler);
     }
 
     /**
@@ -1864,7 +1864,7 @@ public final class Signal<V> {
 
         return combine(next.expose.startWith(Duration.ZERO).delay(Function.identity(), scheduler)) //
                 .map(Ⅱ::ⅰ)
-                .effectAfter(((WiseConsumer<Duration>) next::accept).with(Duration.ofNanos(unit.toNanos(interval))));
+                .effectAfter(I.wise(next).with(Duration.of(interval, unit.toChronoUnit())));
     }
 
     /**

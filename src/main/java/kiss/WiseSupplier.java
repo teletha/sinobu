@@ -45,13 +45,11 @@ public interface WiseSupplier<Return> extends Supplier<Return>, Callable<Return>
     }
 
     /**
-     * <p>
-     * Convert to {@link WiseFunction}.
-     * </p>
+     * Convert to {@link WiseFunction} which will ignore any parameter.
      * 
      * @return A converted {@link WiseFunction}.
      */
-    default WiseFunction<Object, Return> asFunction() {
+    default <P> WiseFunction<P, Return> append() {
         return p -> GET();
     }
 }
