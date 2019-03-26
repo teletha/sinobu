@@ -21,15 +21,12 @@ import kiss.I;
 import kiss.Manageable;
 import kiss.ThreadSpecific;
 
-/**
- * @version 2018/03/30 10:52:30
- */
-public class ThreadSpecificTest {
+class ThreadSpecificTest {
 
     private ExecutorService executor = Executors.newCachedThreadPool();
 
     @Test
-    public void resolve1() {
+    void resolve1() {
         ThreadSpecificClass instance1 = I.make(ThreadSpecificClass.class);
         assert instance1 != null;
 
@@ -39,7 +36,7 @@ public class ThreadSpecificTest {
     }
 
     @Test
-    public void resolve2() throws Exception {
+    void resolve2() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         // container

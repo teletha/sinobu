@@ -4014,7 +4014,7 @@ public final class Signal<V> {
         if (time <= 0 || unit == null) {
             return this;
         }
-        return effect(() -> Thread.sleep(unit.toMillis(time)));
+        return effect(((WiseConsumer<Long>) Thread::sleep).with(unit.toMillis(time)));
     }
 
     /**
