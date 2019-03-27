@@ -3949,29 +3949,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Ensures that all values of the {@link Signal} are the specified type. If an unspecified typed
-     * value flows, {@link Signal} will be completed immediately.
-     *
-     * @param types A list of types you want.
-     * @return Chainable API.
-     */
-    public final Signal<V> type(Class... types) {
-        // ignore invalid parameters
-        if (types == null) {
-            return this;
-        }
-
-        return takeWhile(v -> {
-            for (Class type : types) {
-                if (I.wrap(type).isInstance(v)) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    }
-
-    /**
      * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
      * forward in time by a specified delay at current thread. Error notifications from the source
      * {@link Signal} are not delayed.
