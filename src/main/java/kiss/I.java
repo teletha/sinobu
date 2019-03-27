@@ -1647,28 +1647,30 @@ public class I {
         return (p, q) -> false;
     }
 
-    /**
-     * Perform recoverable operation. If some recoverable error will occur, this method perform
-     * recovery operation automatically.
-     * 
-     * @param operation A original user operation.
-     * @param recoveries A list of recovery operations.
-     */
-    public static void run(WiseRunnable opereation, WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
-        I.signal("").effect(opereation).retryWhen(notifier).to();
-    }
-
-    /**
-     * Perform recoverable operation. If some recoverable error will occur, this method perform
-     * recovery operation automatically.
-     * 
-     * @param operation A original user operation.
-     * @param recoveries A list of recovery operations.
-     * @return A operation result.
-     */
-    public static <R> R run(WiseSupplier<R> operation, WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
-        return I.signal("").map(operation.append()).retryWhen(notifier).to().v;
-    }
+    // /**
+    // * Perform recoverable operation. If some recoverable error will occur, this method perform
+    // * recovery operation automatically.
+    // *
+    // * @param operation A original user operation.
+    // * @param recoveries A list of recovery operations.
+    // */
+    // public static void run(WiseRunnable opereation, WiseFunction<Signal<? extends Throwable>,
+    // Signal<?>> notifier) {
+    // I.signal("").effect(opereation).retryWhen(notifier).to();
+    // }
+    //
+    // /**
+    // * Perform recoverable operation. If some recoverable error will occur, this method perform
+    // * recovery operation automatically.
+    // *
+    // * @param operation A original user operation.
+    // * @param recoveries A list of recovery operations.
+    // * @return A operation result.
+    // */
+    // public static <R> R run(WiseSupplier<R> operation, WiseFunction<Signal<? extends Throwable>,
+    // Signal<?>> notifier) {
+    // return I.signal("").map(operation.append()).retryWhen(notifier).to().v;
+    // }
 
     /**
      * <p>
