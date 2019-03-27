@@ -2361,23 +2361,6 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that repeats the sequence of items emitted by the source
-     * {@link Signal} until the provided condition function returns false.
-     * </p>
-     * 
-     * @param condition A condition supplier that is called when the current {@link Signal}
-     *            completes and unless it returns false, the current {@link Signal} is resubscribed.
-     * @return Chainable API.
-     */
-    public final Signal<V> repeatIf(BooleanSupplier condition) {
-        if (condition == null) {
-            return this;
-        }
-        return repeatWhen(complete -> complete.takeWhile(v -> condition.getAsBoolean()), true);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that repeats the sequence of items emitted by the source
      * {@link Signal} until a stopper {@link Signal} emits an item.
      * </p>
      * 
@@ -2612,36 +2595,14 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that retry the sequence of items emitted by the source
-     * {@link Signal} until the provided condition function returns false.
+     * Retry the source {@link Signal} whenever the specified error type is occured.
      * </p>
      * 
-     * @param condition A condition supplier that is called when the current {@link Signal}
-     *            completes and unless it returns false, the current {@link Signal} is resubscribed.
+     * @param type An error type that you want to retry. The null value accepts any types.
      * @return Chainable API.
      */
-    public final Signal<V> retryIf(BooleanSupplier condition) {
-        return retryIf(null, condition);
-    }
-
-    /**
-     * <p>
-     * Retry the source {@link Signal} whenever the specified error is occured if the stopper is
-     * signaled.
-     * </p>
-     * 
-     * @param type An error type that you want to retry.
-     * @param condition A {@link Signal} whose first emitted item will stop retrying.
-     * @return Chainable API.
-     */
-    public final Signal<V> retryIf(Class<? extends Throwable> type, BooleanSupplier condition) {
-        return retryWhen(type, fail -> fail.map(v -> {
-            if (condition == null || condition.getAsBoolean()) {
-                return v;
-            } else {
-                throw v;
-            }
-        }));
+    public final Signal<V> retry(Class<? extends Throwable> type) {
+        return retryUntil(type, never());
     }
 
     /**
@@ -2662,7 +2623,7 @@ public final class Signal<V> {
      * signaled.
      * </p>
      * 
-     * @param type An error type that you want to retry.
+     * @param type An error type that you want to retry. The null value accepts any types.
      * @param stopper A {@link Signal} whose first emitted item will stop retrying.
      * @return Chainable API.
      */
@@ -2700,7 +2661,7 @@ public final class Signal<V> {
      * <li>Complete - Terminate notifier signal. Souce signal will never retry errors.</li>
      * </ul>
      * 
-     * @param type An error type that you want to retry.
+     * @param type An error type that you want to retry. The null value accepts any types.
      * @param flow An error notifier to define retrying flow.
      * @return Chainable API
      */

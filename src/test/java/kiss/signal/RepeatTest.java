@@ -9,9 +9,6 @@
  */
 package kiss.signal;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BooleanSupplier;
-
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -105,31 +102,6 @@ class RepeatTest extends SignalTester {
         assert main.isDisposed();
         assert other.isNotCompleted();
         assert other.isDisposed();
-    }
-
-    @Test
-    void repeatIf() {
-        AtomicBoolean canRepeat = new AtomicBoolean(true);
-        monitor(signal -> signal.repeatIf(canRepeat::get));
-
-        assert main.emit(1, Complete).value(1);
-        assert main.emit(2, Complete).value(2);
-        assert main.emit(3, Complete).value(3);
-        assert main.isNotCompleted();
-
-        canRepeat.set(false);
-        assert main.emit(1, Complete).value(1);
-        assert main.emit(2, Complete).value();
-        assert main.emit(3, Complete).value();
-        assert main.isCompleted();
-    }
-
-    @Test
-    void repeatIfNull() {
-        monitor(() -> signal(1).effect(log1).repeatIf((BooleanSupplier) null));
-        assert log1.value(1);
-        assert main.value(1);
-        assert main.isCompleted();
     }
 
     @Test

@@ -12,8 +12,6 @@ package kiss.signal;
 import java.io.IOError;
 import java.nio.channels.IllegalSelectorException;
 import java.util.UnknownFormatConversionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BooleanSupplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -200,28 +198,46 @@ class RetryTest extends SignalTester {
     }
 
     @Test
-    void retryIf() {
-        AtomicBoolean canRetry = new AtomicBoolean(true);
-        monitor(signal -> signal.startWith("retry").retryIf(canRetry::get));
+    void retryIfType() {
+        monitor(signal -> signal.startWith("retry").retry(IllegalAccessError.class));
 
         assert main.value("retry");
-        assert main.emit(Error).value("retry");
-        assert main.emit(Error).value("retry");
-        assert main.emit(Error).value("retry");
+        assert main.emit(IllegalAccessError.class).value("retry");
+        assert main.emit(IllegalAccessError.class).value("retry");
+        assert main.emit(IllegalAccessError.class).value("retry");
         assert main.isNotError();
-
-        canRetry.set(false);
-        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.emit(Error, "will fail").value();
         assert main.isError();
+        assert main.isNotCompleted();
         assert main.isDisposed();
     }
 
     @Test
-    void retryIfNull() {
-        monitor(() -> signal(1).effect(log1).retryIf((BooleanSupplier) null));
-        assert log1.value(1);
-        assert main.value(1);
-        assert main.isCompleted();
+    void retryIfSuperType() {
+        monitor(signal -> signal.startWith("retry").retry(Error.class));
+
+        assert main.value("retry");
+        assert main.emit(Error.class).value("retry");
+        assert main.emit(IllegalAccessError.class).value("retry");
+        assert main.emit(IOError.class).value("retry");
+        assert main.isNotError();
+        assert main.emit(Exception.class, "will fail").value();
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void retryIfNullTypeAcceptsAnyType() {
+        monitor(signal -> signal.startWith("retry").retry((Class) null));
+
+        assert main.value("retry");
+        assert main.emit(Error.class).value("retry");
+        assert main.emit(Exception.class).value("retry");
+        assert main.emit(RuntimeException.class).value("retry");
+        assert main.isNotError();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
     }
 
     @Test
