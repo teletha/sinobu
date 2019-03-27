@@ -2202,7 +2202,7 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(v -> {
-                scheduler.accept(I.wise(observer::accept).with(v));
+                scheduler.accept(I.wise(observer).with(v));
             }, e -> {
                 scheduler.accept(I.wise(observer::error).with(e));
             }, I.wise(scheduler).with(observer::complete), disposer);
