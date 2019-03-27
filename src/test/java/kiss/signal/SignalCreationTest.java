@@ -46,7 +46,7 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void empty() {
-        monitor(() -> Signal.empty());
+        monitor(() -> I.signal());
 
         assert main.value();
         assert main.isCompleted();

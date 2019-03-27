@@ -1767,7 +1767,10 @@ public class I {
      */
     @SafeVarargs
     public static <V> Signal<V> signal(V... values) {
-        return Signal.<V> empty().startWith(values);
+        return new Signal<V>((observer, disposer) -> {
+            if (disposer.isNotDisposed()) observer.complete();
+            return disposer;
+        }).startWith(values);
     }
 
     /**
@@ -1799,7 +1802,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Iterable<V> values) {
-        return Signal.<V> empty().startWith(values);
+        return I.<V> signal().startWith(values);
     }
 
     /**
@@ -1811,7 +1814,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Enumeration<V> values) {
-        return Signal.<V> empty().startWith(values);
+        return I.<V> signal().startWith(values);
     }
 
     /**
@@ -1823,7 +1826,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Supplier<V> value) {
-        return Signal.<V> empty().startWith(value);
+        return I.<V> signal().startWith(value);
     }
 
     /**

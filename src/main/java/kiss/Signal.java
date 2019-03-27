@@ -61,16 +61,6 @@ public final class Signal<V> {
     /**
      * For reuse.
      */
-    public static final <R> Signal<R> empty() {
-        return new Signal<>((observer, disposer) -> {
-            if (disposer.isNotDisposed()) observer.complete();
-            return disposer;
-        });
-    }
-
-    /**
-     * For reuse.
-     */
     public static final <R> Signal<R> never() {
         return new Signal<>((observer, disposer) -> disposer);
     }
@@ -2527,7 +2517,7 @@ public final class Signal<V> {
      * @return Chainable API
      */
     public final Signal<V> recover(Class<? extends Throwable> type, Signal<V> value) {
-        return recoverWhen(type, fail -> fail.flatMap(e -> value == null ? empty() : value));
+        return recoverWhen(type, fail -> fail.flatMap(e -> value == null ? I.signal() : value));
     }
 
     /**
@@ -2930,7 +2920,7 @@ public final class Signal<V> {
      */
     public final Signal<List<V>> size(int size) {
         if (size < 0) {
-            return empty();
+            return I.signal();
         }
 
         return new Signal<>((observer, disposer) -> {
