@@ -2453,7 +2453,7 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Recover the source {@link Signal} on any error by the specified value.
+     * Recover the source {@link Signal} infinitly on any error by the specified value.
      * </p>
      * 
      * @param value A value to replace error.
@@ -2465,7 +2465,7 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Recover the source {@link Signal} on any error by the specified value.
+     * Recover the source {@link Signal} infinitly on any error by the specified value.
      * </p>
      * 
      * @param value A value to replace error.
@@ -2473,6 +2473,23 @@ public final class Signal<V> {
      */
     public final Signal<V> recover(Signal<V> value) {
         return recover(null, value);
+    }
+
+    /**
+     * <p>
+     * Recover the source {@link Signal} finitly on any error by the specified value.
+     * </p>
+     *
+     * @param count A number of recovery. Zero or negative number will ignore this instruction.
+     * @param value A value to replace error.
+     * @return Chainable API
+     */
+    public final Signal<V> recover(int count, V value) {
+        // ignore invalid parameter
+        if (count < 1) {
+            return this;
+        }
+        return recoverWhen(null, fail -> fail.take(count).mapTo(value));
     }
 
     /**
@@ -2568,7 +2585,7 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Generates an {@link Signal} sequence that retry the given value infinitely.
+     * Retry the source {@link Signal} infinitely whenever any error is occured.
      * </p>
      *
      * @return Chainable API.
@@ -2579,7 +2596,7 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Generates an {@link Signal} sequence that retry the given value finitely.
+     * Retry the source {@link Signal} finitely whenever any error is occured.
      * </p>
      *
      * @param count A number of retry. Zero or negative number will ignore this instruction.
@@ -2628,7 +2645,9 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> retryUntil(Class<? extends Throwable> type, Signal stopper) {
-        return retryWhen(type, fail -> fail.takeUntil(stopper));
+        // Use partial applied function to reduce code size.
+        // return retryWhen(type, fail -> fail.takeUntil(stopper));
+        return retryWhen(type, (WiseFunction) ((WiseBiFunction<Signal, Signal, Signal>) Signal::takeUntil).witħ(stopper));
     }
 
     /**

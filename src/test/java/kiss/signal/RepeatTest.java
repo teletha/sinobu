@@ -16,7 +16,7 @@ import kiss.I;
 class RepeatTest extends SignalTester {
 
     @Test
-    void repeat() {
+    void repeatLimit() {
         monitor(signal -> signal.repeat(3));
 
         assert main.emit("success to repeat 1", Complete).value("success to repeat 1");
@@ -28,6 +28,26 @@ class RepeatTest extends SignalTester {
         assert main.isNotError();
         assert main.isDisposed();
         assert main.emit("fail to repeat").value();
+    }
+
+    @Test
+    void repeatLimitZero() {
+        monitor(signal -> signal.repeat(0));
+
+        assert main.emit(Complete).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void repeatLimitNegative() {
+        monitor(signal -> signal.repeat(-1));
+
+        assert main.emit(Complete).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 
     @Test

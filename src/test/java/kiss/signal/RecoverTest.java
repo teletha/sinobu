@@ -132,6 +132,38 @@ class RecoverTest extends SignalTester {
     }
 
     @Test
+    void recoverLimit() {
+        monitor(signal -> signal.recover(2, "recover"));
+
+        assert main.emit(Error.class).value("recover");
+        assert main.emit(Error.class).value("recover");
+        assert main.emit(Error.class).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void recoverLimitZero() {
+        monitor(signal -> signal.recover(0, "don't recover"));
+
+        assert main.emit(Error.class).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void recoverLimitNegative() {
+        monitor(signal -> signal.recover(-1, "don't recover"));
+
+        assert main.emit(Error.class).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
     void recoverWhenType() {
         monitor(signal -> signal.recoverWhen(IOError.class, fail -> fail.mapTo("recover")));
 

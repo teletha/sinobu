@@ -40,7 +40,7 @@ class RetryTest extends SignalTester {
     }
 
     @Test
-    void retryWithLimit() {
+    void retryLimit() {
         monitor(signal -> signal.startWith("retry").retry(3));
 
         assert main.value("retry");
@@ -51,6 +51,28 @@ class RetryTest extends SignalTester {
         assert main.emit(Error).value("retry");
         assert main.isNotError();
         assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void retryLimitZero() {
+        monitor(signal -> signal.startWith("retry").retry(0));
+
+        assert main.value("retry");
+        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void retryLimitNegative() {
+        monitor(signal -> signal.startWith("retry").retry(-1));
+
+        assert main.value("retry");
+        assert main.emit("next will fail", Error).value("next will fail");
+        assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
     }
