@@ -606,7 +606,7 @@ public final class Signal<V> {
             AtomicReference<B> buffer = new AtomicReference(supplier.get());
 
             WiseRunnable transfer = () -> observer.accept(buffer.getAndSet(supplier.get()));
-            WiseRunnable completer = ignoreRemaining ? observer::complete : transfer.then(observer::complete);
+            WiseRunnable completer = ignoreRemaining ? observer::complete : I.bundle(transfer, observer::complete);
 
             return to(v -> assigner.accept(buffer.get(), v), observer::error, completer, disposer)
                     .add(boundary.to(transfer, observer::error, completer));
@@ -1727,7 +1727,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatArray(WiseFunction<V, R[]> function) {
-        return flatMap(function.andThen(I::signal));
+        return flatMap(I.wise(function.andThen(I::signal)));
     }
 
     /**
@@ -1744,7 +1744,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatEnum(WiseFunction<V, ? extends Enumeration<R>> function) {
-        return flatMap(function.andThen(I::signal));
+        return flatMap(I.wise(function.andThen(I::signal)));
     }
 
     /**
@@ -1761,7 +1761,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatIterable(WiseFunction<V, ? extends Iterable<R>> function) {
-        return flatMap(function.andThen(I::signal));
+        return flatMap(I.wise(function.andThen(I::signal)));
     }
 
     /**

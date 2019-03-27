@@ -69,20 +69,4 @@ public interface WiseFunction<Param, Return> extends Function<Param, Return> {
     default <Prepend> WiseBiFunction<Prepend, Param, Return> prepend() {
         return (p, q) -> apply(q);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default <V> WiseFunction<V, Return> compose(Function<? super V, ? extends Param> before) {
-        return I.wise((Function) Function.super.compose(before));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default <V> WiseFunction<Param, V> andThen(Function<? super Return, ? extends V> after) {
-        return I.wise((Function) Function.super.andThen(after));
-    }
 }

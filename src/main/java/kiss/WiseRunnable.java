@@ -40,25 +40,4 @@ public interface WiseRunnable extends Runnable {
     default <P> WiseConsumer<P> append() {
         return p -> RUN();
     }
-
-    /**
-     * Returns a composed {@link WiseRunnable} that performs, in sequence, this operation followed
-     * by the after operation. If performing either operation throws an exception, it is relayed to
-     * the caller of the composed operation. If performing this operation throws an exception, the
-     * after operation will not be performed.
-     * 
-     * @param after The operation to perform after this operation.
-     * @return A composed {@link WiseRunnable} that performs in sequence this operation followed by
-     *         the after operation.
-     */
-    default WiseRunnable then(Runnable after) {
-        if (after == null) {
-            return this;
-        } else {
-            return () -> {
-                run();
-                after.run();
-            };
-        }
-    }
 }
