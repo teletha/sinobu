@@ -1007,11 +1007,10 @@ public final class Signal<V> {
                     future.cancel(true);
                 }
 
-                Runnable task = () -> {
+                latest.set(I.schedule(time, unit, scheduler, () -> {
                     latest.set(null);
                     observer.accept(value);
-                };
-                latest.set(I.schedule(time, unit, scheduler, task));
+                }));
             }, observer::error, observer::complete, disposer);
         });
     }
