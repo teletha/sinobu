@@ -1466,7 +1466,7 @@ public class I {
      * Define recursive {@link BiConsumer}.
      * </p>
      * <pre>
-     * I.recurBC(self -> (param1, param2) -> {
+     * I.recurse((self, param1, param2) -> {
      *   // your function code
      * });
      * </pre>
@@ -1474,7 +1474,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2> BiConsumer<Param1, Param2> recurseBC(WiseTriConsumer<BiConsumer<Param1, Param2>, Param1, Param2> function) {
+    public static <Param1, Param2> BiConsumer<Param1, Param2> recurse(WiseTriConsumer<BiConsumer<Param1, Param2>, Param1, Param2> function) {
         BiConsumer<Param1, Param2>[] holder = new BiConsumer[1];
         return holder[0] = (p1, p2) -> function.accept(holder[0], p1, p2);
     }
@@ -1484,7 +1484,7 @@ public class I {
      * Define recursive {@link BiFunction}.
      * </p>
      * <pre>
-     * I.recurBF(self -> (param1, param2) -> {
+     * I.recurse((self, param1, param2) -> {
      *   // your function code
      * });
      * </pre>
@@ -1492,7 +1492,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurseBF(WiseTriFunction<BiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
+    public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurse(WiseTriFunction<BiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
         BiFunction<Param1, Param2, Return>[] holder = new BiFunction[1];
         return holder[0] = (p1, p2) -> function.apply(holder[0], p1, p2);
     }
@@ -1502,7 +1502,7 @@ public class I {
      * Define recursive {@link Consumer}.
      * </p>
      * <pre>
-     * I.recurC(self -> param1 -> {
+     * I.recurse((self, param) -> {
      *   // your function code
      * });
      * </pre>
@@ -1512,7 +1512,7 @@ public class I {
      * @param function A target function to convert.
      * @return A converted recursive function.
      */
-    public static <Param> Consumer<Param> recurseC(WiseBiConsumer<Consumer<Param>, Param> function) {
+    public static <Param> Consumer<Param> recurse(WiseBiConsumer<Consumer<Param>, Param> function) {
         Consumer<Param>[] holder = new Consumer[1];
         return holder[0] = p -> function.accept(holder[0], p);
     }
@@ -1522,7 +1522,7 @@ public class I {
      * Define recursive {@link Function}.
      * </p>
      * <pre>
-     * I.recurF(self -> param -> {
+     * I.recurse((self, param) -> {
      *   // your function code
      * });
      * </pre>
@@ -1530,7 +1530,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param, Return> Function<Param, Return> recurseF(WiseBiFunction<Function<Param, Return>, Param, Return> function) {
+    public static <Param, Return> Function<Param, Return> recurse(WiseBiFunction<Function<Param, Return>, Param, Return> function) {
         Function<Param, Return>[] holder = new Function[1];
         return holder[0] = p -> function.apply(holder[0], p);
     }
@@ -1540,7 +1540,7 @@ public class I {
      * Define recursive {@link Runnable}.
      * </p>
      * <pre>
-     * I.recurR(self -> () -> {
+     * I.recurse(self -> {
      *   // your function code
      * });
      * </pre>
@@ -1548,7 +1548,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static Runnable recurseR(WiseConsumer<Runnable> function) {
+    public static Runnable recurse(WiseConsumer<Runnable> function) {
         Runnable[] holder = new Runnable[1];
         return holder[0] = () -> function.accept(holder[0]);
     }
@@ -1558,7 +1558,7 @@ public class I {
      * Define recursive {@link Supplier}.
      * </p>
      * <pre>
-     * I.recurS(self -> () -> {
+     * I.recurse(self -> {
      *   // your function code
      * });
      * </pre>
@@ -1566,7 +1566,7 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Result> Supplier<Result> recurseS(WiseFunction<Supplier<Result>, Result> function) {
+    public static <Result> Supplier<Result> recurse(WiseFunction<Supplier<Result>, Result> function) {
         Supplier<Result>[] holder = new Supplier[1];
         return holder[0] = () -> function.apply(holder[0]);
     }
