@@ -853,7 +853,7 @@ public final class Signal<V> {
         return new Signal<V>((observer, disposer) -> {
             Iterator<Signal<? extends V>> signals = I.signal(others).skipNull().startWith(this).toList().iterator();
 
-            I.recurseR(self -> () -> {
+            I.recurseR(self -> {
                 if (signals.hasNext()) {
                     signals.next().to(observer::accept, observer::error, self, disposer.sub(), true);
                 } else {
@@ -898,7 +898,7 @@ public final class Signal<V> {
             AtomicLong processing = new AtomicLong();
             Map<Long, Ⅱ<AtomicBoolean, LinkedList<R>>> buffer = new ConcurrentHashMap();
 
-            Consumer<Long> complete = I.recurseC(self -> index -> {
+            Consumer<Long> complete = I.recurseC((self, index) -> {
                 if (processing.get() == index) {
                     Ⅱ<AtomicBoolean, LinkedList<R>> next = buffer.remove(processing.incrementAndGet());
 
@@ -1146,7 +1146,7 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             ConcurrentSkipListSet<Ⅱ<Object, Long>> queue = new ConcurrentSkipListSet<>(Comparator.comparingLong(Ⅱ::ⅱ));
 
-            Runnable sender = I.recurseR(self -> () -> {
+            Runnable sender = I.recurseR(self -> {
                 Ⅱ<Object, Long> item = queue.pollFirst();
 
                 if (item.ⅰ == this) {
