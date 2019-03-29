@@ -10,12 +10,11 @@
 package kiss;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * @version 2018/04/02 8:35:45
  */
-public interface WiseConsumer<Param> extends Consumer<Param> {
+public interface WiseConsumer<Param> extends Consumer<Param>, Assignable<WiseRunnable, Param, WiseRunnable, Param> {
 
     /**
      * <p>
@@ -37,31 +36,5 @@ public interface WiseConsumer<Param> extends Consumer<Param> {
         } catch (Throwable e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * <p>
-     * Apply parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseRunnable with(Param param) {
-        return with(Variable.of(param));
-    }
-
-    /**
-     * <p>
-     * Apply parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseRunnable with(Supplier<Param> param) {
-        return () -> ACCEPT(param.get());
     }
 }

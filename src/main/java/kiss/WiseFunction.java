@@ -10,12 +10,12 @@
 package kiss;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * @version 2018/12/07 16:09:15
  */
-public interface WiseFunction<Param, Return> extends Function<Param, Return> {
+public interface WiseFunction<Param, Return>
+        extends Function<Param, Return>, Assignable<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param> {
 
     /**
      * <p>
@@ -38,32 +38,6 @@ public interface WiseFunction<Param, Return> extends Function<Param, Return> {
         } catch (Throwable e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * <p>
-     * Apply parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseSupplier<Return> with(Param param) {
-        return with(Variable.of(param));
-    }
-
-    /**
-     * <p>
-     * Apply parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseSupplier<Return> with(Supplier<Param> param) {
-        return () -> APPLY(param.get());
     }
 
     /**

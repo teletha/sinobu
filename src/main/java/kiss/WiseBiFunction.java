@@ -10,12 +10,12 @@
 package kiss;
 
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 /**
  * @version 2018/04/02 8:35:58
  */
-public interface WiseBiFunction<Param1, Param2, Return> extends BiFunction<Param1, Param2, Return> {
+public interface WiseBiFunction<Param1, Param2, Return>
+        extends BiFunction<Param1, Param2, Return>, Assignable<WiseFunction<Param1, Return>, Param2, WiseFunction<Param2, Return>, Param1> {
 
     /**
      * <p>
@@ -39,44 +39,5 @@ public interface WiseBiFunction<Param1, Param2, Return> extends BiFunction<Param
         } catch (Throwable e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * <p>
-     * Apply head parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseFunction<Param2, Return> with(Param1 param1) {
-        return with(Variable.of(param1));
-    }
-
-    /**
-     * <p>
-     * Apply head parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseFunction<Param2, Return> with(Supplier<Param1> param1) {
-        return param2 -> APPLY(param1.get(), param2);
-    }
-
-    /**
-     * <p>
-     * Apply tail parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseFunction<Param1, Return> witħ(Param2 param2) {
-        return param1 -> APPLY(param1, param2);
     }
 }

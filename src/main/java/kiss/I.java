@@ -1476,7 +1476,7 @@ public class I {
      */
     public static <Param1, Param2> BiConsumer<Param1, Param2> recurse(WiseTriConsumer<BiConsumer<Param1, Param2>, Param1, Param2> function) {
         Variable<BiConsumer<Param1, Param2>> ref = Variable.empty();
-        ref.let(function.with(ref));
+        ref.let(function.preassign(ref));
         return ref.v;
     }
 
@@ -1495,7 +1495,7 @@ public class I {
      */
     public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurse(WiseTriFunction<BiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
         Variable<BiFunction<Param1, Param2, Return>> ref = Variable.empty();
-        ref.let(function.with(ref));
+        ref.let(function.preassign(ref));
         return ref.v;
     }
 
@@ -1516,7 +1516,7 @@ public class I {
      */
     public static <Param> Consumer<Param> recurse(WiseBiConsumer<Consumer<Param>, Param> function) {
         Variable<Consumer<Param>> ref = Variable.empty();
-        ref.let(function.with(ref));
+        ref.let(function.preassign(ref));
         return ref.v;
     }
 
@@ -1535,7 +1535,7 @@ public class I {
      */
     public static <Param, Return> Function<Param, Return> recurse(WiseBiFunction<Function<Param, Return>, Param, Return> function) {
         Variable<Function<Param, Return>> ref = Variable.empty();
-        ref.let(function.with(ref));
+        ref.let(function.preassign(ref));
         return ref.v;
     }
 
@@ -1554,7 +1554,7 @@ public class I {
      */
     public static Runnable recurse(WiseConsumer<Runnable> function) {
         Variable<Runnable> ref = Variable.empty();
-        ref.let(function.with(ref));
+        ref.let(function.preassign(ref));
         return ref.v;
     }
 
@@ -1573,7 +1573,7 @@ public class I {
      */
     public static <Result> Supplier<Result> recurse(WiseFunction<Supplier<Result>, Result> function) {
         Variable<Supplier<Result>> ref = Variable.empty();
-        ref.let(function.with(ref));
+        ref.let(function.preassign(ref));
         return ref.v;
     }
 

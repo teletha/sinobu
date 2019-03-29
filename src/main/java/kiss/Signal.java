@@ -2,7 +2,7 @@
  * Copyright (C) 2019 Nameless Production Committee
  *
  * Licensed under the MIT License (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this file except in compliance preassign the License.
  * You may obtain a copy of the License at
  *
  *          https://opensource.org/licenses/MIT
@@ -77,8 +77,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Create {@link Signal} with the specified subscriber {@link Collection} which will be invoked
-     * whenever you calls {@link #to(Observer)} related methods.
+     * Create {@link Signal} preassign the specified subscriber {@link Collection} which will be
+     * invoked whenever you calls {@link #to(Observer)} related methods.
      * </p>
      *
      * @param observers A subscriber {@link Function}.
@@ -96,8 +96,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Create {@link Signal} with the specified subscriber {@link BiFunction} which will be invoked
-     * whenever you calls {@link #to(Observer)} related methods.
+     * Create {@link Signal} preassign the specified subscriber {@link BiFunction} which will be
+     * invoked whenever you calls {@link #to(Observer)} related methods.
      * </p>
      *
      * @param subscriber A subscriber {@link Function}.
@@ -821,7 +821,7 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
-     * other, without interleaving them.
+     * other, preassignout interleaving them.
      * </p>
      * 
      * @param others A sequence of {@link Signal}s to concat.
@@ -838,7 +838,7 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
-     * other, without interleaving them.
+     * other, preassignout interleaving them.
      * </p>
      * 
      * @param others A sequence of {@link Signal}s to concat.
@@ -948,8 +948,8 @@ public final class Signal<V> {
      * 
      * @param value An item to search for in the emissions from the source {@link Signal}.
      * @return A {@link Signal} that emits true if the specified item is emitted by the source
-     *         {@link Signal}, or false if the source {@link Signal} completes without emitting that
-     *         item.
+     *         {@link Signal}, or false if the source {@link Signal} completes preassignout emitting
+     *         that item.
      */
     public final Signal<Boolean> contains(Object value) {
         return any(v -> Objects.equals(v, value));
@@ -1017,7 +1017,7 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Indicates the {@link Signal} sequence by item count with the specified source and time.
+     * Indicates the {@link Signal} sequence by item count preassign the specified source and time.
      * </p>
      *
      * @param count The positive time used to shift the {@link Signal} sequence. Zero or negative
@@ -1182,8 +1182,8 @@ public final class Signal<V> {
      * {@code Object.equals()} to provide meaningful comparison between items as the default Java
      * implementation only considers reference equivalence. Alternatively, use the
      * {@link #diff(BiPredicate)} overload and provide a comparison function in case the class
-     * {@code V} can't be overridden with custom {@code equals()} or the comparison itself should
-     * happen on different terms or properties of the class {@code V}.
+     * {@code V} can't be overridden preassign custom {@code equals()} or the comparison itself
+     * should happen on different terms or properties of the class {@code V}.
      * <p>
      *
      * @return {@link Signal} that emits those items from the source {@link Signal} that are
@@ -1206,9 +1206,10 @@ public final class Signal<V> {
      * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} to
      * provide meaningful comparison between the key objects as the default Java implementation only
      * considers reference equivalence. Alternatively, use the {@link #diff(BiPredicate)} overload
-     * and provide a comparison function in case the class {@code K} can't be overridden with custom
-     * {@code equals()} or the comparison itself should happen on different terms or properties of
-     * the item class {@code V} (for which the keys can be derived via a similar selector).
+     * and provide a comparison function in case the class {@code K} can't be overridden preassign
+     * custom {@code equals()} or the comparison itself should happen on different terms or
+     * properties of the item class {@code V} (for which the keys can be derived via a similar
+     * selector).
      * </p>
      *
      * @param <K> the key type
@@ -1230,8 +1231,8 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that emits all items emitted by the source {@link Signal} that are
-     * distinct from their immediate predecessors when compared with each other via the provided
-     * comparator function.
+     * distinct from their immediate predecessors when compared preassign each other via the
+     * provided comparator function.
      * </p>
      *
      * @param comparer The function that receives the previous item and the current item and is
@@ -1288,7 +1289,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1310,7 +1311,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1335,7 +1336,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1357,7 +1358,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1382,7 +1383,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1406,7 +1407,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke only once when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1428,7 +1429,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke only once when the source {@link Signal} calls
      *            {@link Observer#accept(Object)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1460,7 +1461,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#complete()}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1483,7 +1484,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#complete()}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1516,7 +1517,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Disposable#dispose()}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1541,7 +1542,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#error(Throwable)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1563,7 +1564,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#error(Throwable)}
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1590,7 +1591,7 @@ public final class Signal<V> {
      *
      * @param effect The {@link Runnable} that gets called when an {@link Observer} subscribes to
      *            the current {@link Signal}.
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1610,7 +1611,7 @@ public final class Signal<V> {
      *
      * @param effect The {@link Consumer} that gets called when an {@link Observer} subscribes to
      *            the current {@link Signal}.
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1636,7 +1637,7 @@ public final class Signal<V> {
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#error(Throwable)} or {@link Observer#complete()}.
-     * @return The source {@link Signal} with the side-effecting behavior applied.
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
      * @see #effect(WiseConsumer)
      * @see #effectOnError(WiseConsumer)
      * @see #effectOnComplete(WiseRunnable)
@@ -1868,7 +1869,7 @@ public final class Signal<V> {
 
         return combine(next.expose.startWith(Duration.ZERO).delay(Function.identity(), scheduler)) //
                 .map(Ⅱ::ⅰ)
-                .effectAfter(I.wise(next).with(Duration.of(interval, unit.toChronoUnit())));
+                .effectAfter(I.wise(next).preassign(Duration.of(interval, unit.toChronoUnit())));
     }
 
     /**
@@ -1927,10 +1928,10 @@ public final class Signal<V> {
 
     /**
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is completed without any value emitted.
+     * {@link Signal} is completed preassignout any value emitted.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
-     *         completed without any value emitted.
+     *         completed preassignout any value emitted.
      */
     public final Signal<Boolean> isEmpty() {
         return signal(I.accept(), FALSE, true, FALSE, true, TRUE);
@@ -1977,7 +1978,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAll(WiseFunction<V, R> mapper) {
-        return map(mapper::with).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
+        return map(mapper::preassign).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
     }
 
     /**
@@ -1988,7 +1989,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAny(WiseFunction<V, R> mapper) {
-        return map(mapper::with).buffer().map(I.parallel::invokeAny);
+        return map(mapper::preassign).buffer().map(I.parallel::invokeAny);
     }
 
     /**
@@ -2003,7 +2004,7 @@ public final class Signal<V> {
 
     /**
      * Returns a {@link Signal} that emits only the last item emitted by this {@link Signal}, or a
-     * default item if this {@link Signal} completes without emitting any items.
+     * default item if this {@link Signal} completes preassignout emitting any items.
      * 
      * @return Chainable API.
      */
@@ -2038,7 +2039,7 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * {@link #map(WiseFunction)} with context.
+     * {@link #map(WiseFunction)} preassign context.
      * </p>
      * <pre class="marble-diagram">
      * ───①───②───③───④───⑤──┼
@@ -2082,7 +2083,7 @@ public final class Signal<V> {
     }
 
     /**
-     * {@link #map(WiseFunction)} with previuos value.
+     * {@link #map(WiseFunction)} preassign previuos value.
      *
      * @param init A initial previous value.
      * @param converter A converter function to apply to each value emitted by this {@link Signal} .
@@ -2111,7 +2112,7 @@ public final class Signal<V> {
     /**
      * <p>
      * Flattens a sequence of {@link Signal} emitted by an {@link Signal} into one {@link Signal},
-     * without any transformation.
+     * preassignout any transformation.
      * </p>
      * <pre class="marble-diagram">
      * ───①───②───③───④───⑤──┼
@@ -2136,7 +2137,7 @@ public final class Signal<V> {
     /**
      * <p>
      * Flattens a sequence of {@link Signal} emitted by an {@link Signal} into one {@link Signal},
-     * without any transformation.
+     * preassignout any transformation.
      * </p>
      *
      * @param others A target {@link Signal} set to merge. <code>null</code> will be ignored.
@@ -2201,10 +2202,10 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(v -> {
-                scheduler.accept(I.wise(observer).with(v));
+                scheduler.accept(I.wise(observer).preassign(v));
             }, e -> {
-                scheduler.accept(I.wise(observer::error).with(e));
-            }, I.wise(scheduler).with(observer::complete), disposer);
+                scheduler.accept(I.wise(observer::error).preassign(e));
+            }, I.wise(scheduler).preassign(observer::complete), disposer);
         });
     }
 
@@ -2371,16 +2372,16 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the same values as the source signal with the exception
-     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
-     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
-     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * Returns an {@link Signal} that emits the same values as the source signal preassign the
+     * exception of an {@link Observer#error(Throwable)}. An error notification from the source will
+     * result in the emission of a Throwable item to the {@link Signal} provided as an argument to
+     * the notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
      * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
      * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
      * will resubscribe to the source {@link Signal}.
      * 
-     * @param notifier A receives an {@link Signal} of notifications with which a user can complete
-     *            or error, aborting the retry.
+     * @param notifier A receives an {@link Signal} of notifications preassign which a user can
+     *            complete or error, aborting the retry.
      * @return Chainable API
      */
     public final Signal<V> repeatWhen(WiseFunction<Signal<? extends Object>, Signal<?>> notifier) {
@@ -2388,16 +2389,16 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the same values as the source signal with the exception
-     * of an {@link Observer#error(Throwable)}. An error notification from the source will result in
-     * the emission of a Throwable item to the {@link Signal} provided as an argument to the
-     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * Returns an {@link Signal} that emits the same values as the source signal preassign the
+     * exception of an {@link Observer#error(Throwable)}. An error notification from the source will
+     * result in the emission of a Throwable item to the {@link Signal} provided as an argument to
+     * the notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
      * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
      * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
      * will resubscribe to the source {@link Signal}.
      * 
-     * @param notifier A receives an {@link Signal} of notifications with which a user can complete
-     *            or error, aborting the retry.
+     * @param notifier A receives an {@link Signal} of notifications preassign which a user can
+     *            complete or error, aborting the retry.
      * @return Chainable API
      */
     private Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notifier, boolean immediate) {
@@ -2442,7 +2443,7 @@ public final class Signal<V> {
                 }
             });
 
-            // connect with complete handling flow
+            // connect preassign complete handling flow
             previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
 
             // API difinition
@@ -2646,7 +2647,7 @@ public final class Signal<V> {
     public final Signal<V> retryUntil(Class<? extends Throwable> type, Signal stopper) {
         // Use partial applied function to reduce code size.
         // return retryWhen(type, fail -> fail.takeUntil(stopper));
-        return retryWhen(type, (WiseFunction) ((WiseBiFunction<Signal, Signal, Signal>) Signal::takeUntil).witħ(stopper));
+        return retryWhen(type, (WiseFunction) ((WiseBiFunction<Signal, Signal, Signal>) Signal::takeUntil).assign(stopper));
     }
 
     /**
@@ -2729,7 +2730,7 @@ public final class Signal<V> {
                 if (processing[0] != null) observer.error(processing[0]);
             });
 
-            // connect with error handling flow
+            // connect preassign error handling flow
             previous[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
 
             // API definition
@@ -2766,9 +2767,9 @@ public final class Signal<V> {
      * <p>
      * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
      * by a source {@link Signal} and a seed value, then feeds the result of that function along
-     * with the second item emitted by the source {@link Signal} into the same function, and so on
-     * until all items have been emitted by the source {@link Signal}, emitting the result of each
-     * of these iterations.
+     * preassign the second item emitted by the source {@link Signal} into the same function, and so
+     * on until all items have been emitted by the source {@link Signal}, emitting the result of
+     * each of these iterations.
      * </p>
      *
      * @param collector An accumulator function to be invoked on each item emitted by the source
@@ -2792,9 +2793,9 @@ public final class Signal<V> {
      * <p>
      * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
      * by a source {@link Signal} and a seed value, then feeds the result of that function along
-     * with the second item emitted by the source {@link Signal} into the same function, and so on
-     * until all items have been emitted by the source {@link Signal}, emitting the result of each
-     * of these iterations.
+     * preassign the second item emitted by the source {@link Signal} into the same function, and so
+     * on until all items have been emitted by the source {@link Signal}, emitting the result of
+     * each of these iterations.
      * </p>
      *
      * @param first An accumulator which process only first value.
@@ -2818,9 +2819,9 @@ public final class Signal<V> {
      * <p>
      * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
      * by a source {@link Signal} and a seed value, then feeds the result of that function along
-     * with the second item emitted by the source {@link Signal} into the same function, and so on
-     * until all items have been emitted by the source {@link Signal}, emitting the result of each
-     * of these iterations.
+     * preassign the second item emitted by the source {@link Signal} into the same function, and so
+     * on until all items have been emitted by the source {@link Signal}, emitting the result of
+     * each of these iterations.
      * </p>
      *
      * @param init An initial (seed) accumulator item.
@@ -2983,7 +2984,7 @@ public final class Signal<V> {
     }
 
     /**
-     * {@link #skip(Predicate)} with context.
+     * {@link #skip(Predicate)} preassign context.
      * 
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param condition A condition function to apply to each value emitted by this {@link Signal} .
@@ -3602,7 +3603,7 @@ public final class Signal<V> {
     }
 
     /**
-     * {@link #take(Predicate)} with context.
+     * {@link #take(Predicate)} preassign context.
      * 
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param condition A condition function to apply to each value emitted by this {@link Signal} .
@@ -3819,8 +3820,8 @@ public final class Signal<V> {
 
     /**
      * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
-     * emitted item. If the next item isn't emitted within the specified timeout duration starting
-     * from its predecessor, the resulting Signal terminates and notifies observers of a
+     * emitted item. If the next item isn't emitted preassignin the specified timeout duration
+     * starting from its predecessor, the resulting Signal terminates and notifies observers of a
      * {@link TimeoutException}.
      * 
      * @param time Time to take values. Zero or negative number will ignore this instruction.
@@ -3834,8 +3835,8 @@ public final class Signal<V> {
 
     /**
      * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
-     * emitted item. If the next item isn't emitted within the specified timeout duration starting
-     * from its predecessor, the resulting Signal terminates and notifies observers of a
+     * emitted item. If the next item isn't emitted preassignin the specified timeout duration
+     * starting from its predecessor, the resulting Signal terminates and notifies observers of a
      * {@link TimeoutException}.
      * 
      * @param time Time to take values. Zero or negative number will ignore this instruction.
@@ -3858,10 +3859,10 @@ public final class Signal<V> {
 
             AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(time, unit, scheduler, timeout));
 
-            WiseConsumer effect = v -> {
+            WiseConsumer<Object> effect = v -> {
                 future.getAndSet(v == null ? null : I.schedule(time, unit, scheduler, timeout)).cancel(false);
             };
-            return effect(effect.with(this)).effectOnTerminate(effect.with((V) null)).to(observer, disposer);
+            return effect(effect.preassign(this)).effectOnTerminate(effect.preassign((V) null)).to(observer, disposer);
         });
     }
 
@@ -3920,7 +3921,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * Ignores the values from an {@link Signal} sequence which are followed by another value before
-     * due time with the specified source and time.
+     * due time preassign the specified source and time.
      * </p>
      *
      * @param time Time to wait before sending another item after emitting the last item. Zero or
@@ -3962,7 +3963,7 @@ public final class Signal<V> {
         if (time <= 0 || unit == null) {
             return this;
         }
-        return effect(((WiseConsumer<Long>) Thread::sleep).with(unit.toMillis(time)));
+        return effect(((WiseConsumer<Long>) Thread::sleep).preassign(unit.toMillis(time)));
     }
 
     /**

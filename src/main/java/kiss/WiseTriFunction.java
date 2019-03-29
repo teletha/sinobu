@@ -9,12 +9,11 @@
  */
 package kiss;
 
-import java.util.function.Supplier;
-
 /**
  * @version 2018/04/02 8:34:59
  */
-public interface WiseTriFunction<Param1, Param2, Param3, Return> {
+public interface WiseTriFunction<Param1, Param2, Param3, Return>
+        extends Assignable<WiseBiFunction<Param1, Param2, Return>, Param3, WiseBiFunction<Param2, Param3, Return>, Param1> {
 
     /**
      * <p>
@@ -43,44 +42,5 @@ public interface WiseTriFunction<Param1, Param2, Param3, Return> {
         } catch (Throwable e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * <p>
-     * Apply head parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseBiFunction<Param2, Param3, Return> with(Param1 param1) {
-        return with(Variable.of(param1));
-    }
-
-    /**
-     * <p>
-     * Apply head parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseBiFunction<Param2, Param3, Return> with(Supplier<Param1> param1) {
-        return (param2, param3) -> APPLY(param1.get(), param2, param3);
-    }
-
-    /**
-     * <p>
-     * Apply tail parameter partialy.
-     * </p>
-     * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
-     * @return A partial applied function.
-     */
-    default WiseBiFunction<Param1, Param2, Return> witħ(Param3 param3) {
-        return (param1, param2) -> APPLY(param1, param2, param3);
     }
 }
