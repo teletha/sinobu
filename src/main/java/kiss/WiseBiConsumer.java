@@ -10,6 +10,7 @@
 package kiss;
 
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * @version 2018/04/02 8:36:04
@@ -49,6 +50,19 @@ public interface WiseBiConsumer<Param1, Param2> extends BiConsumer<Param1, Param
      * @return A partial applied function.
      */
     default WiseConsumer<Param2> with(Param1 param1) {
-        return param2 -> ACCEPT(param1, param2);
+        return with(Variable.of(param1));
+    }
+
+    /**
+     * <p>
+     * Apply parameter partialy.
+     * </p>
+     * 
+     * @param function A target function to apply parameter.
+     * @param param1 A fixed parameter.
+     * @return A partial applied function.
+     */
+    default WiseConsumer<Param2> with(Supplier<Param1> param1) {
+        return param2 -> ACCEPT(param1.get(), param2);
     }
 }

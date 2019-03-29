@@ -10,10 +10,8 @@
 package kiss.lambda;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,75 +36,5 @@ public class LambdaTest {
         consumer.accept(I.pair(1, 2));
 
         assert value.get() == 12;
-    }
-
-    @Test
-    public void recursiveRunnable() {
-        AtomicInteger value = new AtomicInteger();
-        Runnable function = I.recurse(self -> {
-            if (value.get() < 10) {
-                value.incrementAndGet();
-                self.run();
-            }
-        });
-        function.run();
-
-        assert value.get() == 10;
-    }
-
-    @Test
-    public void recursiveConsumer() {
-        AtomicInteger value = new AtomicInteger();
-        Consumer<Integer> function = I.recurse((self, p) -> {
-            value.set(p);
-
-            if (p < 10) {
-                self.accept(p + 1);
-            }
-        });
-        function.accept(0);
-
-        assert value.get() == 10;
-    }
-
-    @Test
-    public void recursiveSupplier() {
-        AtomicInteger value = new AtomicInteger();
-        Supplier<Integer> function = I.recurse(self -> {
-            if (value.get() < 10) {
-                value.incrementAndGet();
-                return self.get();
-            } else {
-                return value.get();
-            }
-        });
-
-        assert function.get() == 10;
-    }
-
-    @Test
-    public void recursiveFunction() {
-        Function<Integer, Integer> function = I.recurse((self, param) -> {
-            if (param < 10) {
-                return self.apply(param + 1);
-            } else {
-                return param;
-            }
-        });
-
-        assert function.apply(0) == 10;
-    }
-
-    @Test
-    public void recursiveBiFunction() {
-        BiFunction<Integer, Integer, Integer> function = I.recurse((self, param1, param2) -> {
-            if (param1 < 10) {
-                return self.apply(param1 + 1, param2 + 2);
-            } else {
-                return param2;
-            }
-        });
-
-        assert function.apply(0, 10) == 30;
     }
 }

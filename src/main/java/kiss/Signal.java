@@ -3861,7 +3861,7 @@ public final class Signal<V> {
             WiseConsumer effect = v -> {
                 future.getAndSet(v == null ? null : I.schedule(time, unit, scheduler, timeout)).cancel(false);
             };
-            return effect(effect.with(this)).effectOnTerminate(effect.with(null)).to(observer, disposer);
+            return effect(effect.with(this)).effectOnTerminate(effect.with((V) null)).to(observer, disposer);
         });
     }
 

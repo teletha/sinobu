@@ -1475,8 +1475,9 @@ public class I {
      * @return A created function.
      */
     public static <Param1, Param2> BiConsumer<Param1, Param2> recurse(WiseTriConsumer<BiConsumer<Param1, Param2>, Param1, Param2> function) {
-        BiConsumer<Param1, Param2>[] holder = new BiConsumer[1];
-        return holder[0] = (p1, p2) -> function.accept(holder[0], p1, p2);
+        Variable<BiConsumer<Param1, Param2>> ref = Variable.empty();
+        ref.let(function.with(ref));
+        return ref.v;
     }
 
     /**
@@ -1493,8 +1494,9 @@ public class I {
      * @return A created function.
      */
     public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurse(WiseTriFunction<BiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
-        BiFunction<Param1, Param2, Return>[] holder = new BiFunction[1];
-        return holder[0] = (p1, p2) -> function.apply(holder[0], p1, p2);
+        Variable<BiFunction<Param1, Param2, Return>> ref = Variable.empty();
+        ref.let(function.with(ref));
+        return ref.v;
     }
 
     /**
@@ -1513,8 +1515,9 @@ public class I {
      * @return A converted recursive function.
      */
     public static <Param> Consumer<Param> recurse(WiseBiConsumer<Consumer<Param>, Param> function) {
-        Consumer<Param>[] holder = new Consumer[1];
-        return holder[0] = p -> function.accept(holder[0], p);
+        Variable<Consumer<Param>> ref = Variable.empty();
+        ref.let(function.with(ref));
+        return ref.v;
     }
 
     /**
@@ -1531,8 +1534,9 @@ public class I {
      * @return A created function.
      */
     public static <Param, Return> Function<Param, Return> recurse(WiseBiFunction<Function<Param, Return>, Param, Return> function) {
-        Function<Param, Return>[] holder = new Function[1];
-        return holder[0] = p -> function.apply(holder[0], p);
+        Variable<Function<Param, Return>> ref = Variable.empty();
+        ref.let(function.with(ref));
+        return ref.v;
     }
 
     /**
@@ -1549,8 +1553,9 @@ public class I {
      * @return A created function.
      */
     public static Runnable recurse(WiseConsumer<Runnable> function) {
-        Runnable[] holder = new Runnable[1];
-        return holder[0] = () -> function.accept(holder[0]);
+        Variable<Runnable> ref = Variable.empty();
+        ref.let(function.with(ref));
+        return ref.v;
     }
 
     /**
@@ -1567,8 +1572,9 @@ public class I {
      * @return A created function.
      */
     public static <Result> Supplier<Result> recurse(WiseFunction<Supplier<Result>, Result> function) {
-        Supplier<Result>[] holder = new Supplier[1];
-        return holder[0] = () -> function.apply(holder[0]);
+        Variable<Supplier<Result>> ref = Variable.empty();
+        ref.let(function.with(ref));
+        return ref.v;
     }
 
     /**

@@ -10,6 +10,7 @@
 package kiss;
 
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 /**
  * @version 2018/04/02 8:35:58
@@ -50,7 +51,20 @@ public interface WiseBiFunction<Param1, Param2, Return> extends BiFunction<Param
      * @return A partial applied function.
      */
     default WiseFunction<Param2, Return> with(Param1 param1) {
-        return param2 -> APPLY(param1, param2);
+        return with(Variable.of(param1));
+    }
+
+    /**
+     * <p>
+     * Apply head parameter partialy.
+     * </p>
+     * 
+     * @param function A target function to apply parameter.
+     * @param param1 A fixed parameter.
+     * @return A partial applied function.
+     */
+    default WiseFunction<Param2, Return> with(Supplier<Param1> param1) {
+        return param2 -> APPLY(param1.get(), param2);
     }
 
     /**
