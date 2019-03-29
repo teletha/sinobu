@@ -22,56 +22,52 @@ import kiss.model.Model;
 /**
  * 
  */
-public interface Assignable<Assigned, HeadParam, Preassigned, TailParam> {
+public interface Assignable<Assigned, Assigner, Preassigned, Preassigner> {
     /**
      * <p>
-     * Apply parameter partialy.
+     * Apply head parameter partialy.
      * </p>
      * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
+     * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Assigned assign(HeadParam param) {
+    default Assigned assign(Assigner param) {
         return assign(Variable.of(param));
     }
 
     /**
      * <p>
-     * Apply parameter partialy.
+     * Apply head parameter partialy.
      * </p>
      * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
+     * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Assigned assign(Supplier<HeadParam> param) {
+    default Assigned assign(Supplier<Assigner> param) {
         return create(args -> args.add(param.get()));
     }
 
     /**
      * <p>
-     * Apply parameter partialy.
+     * Apply tail parameter partialy.
      * </p>
      * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
+     * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Preassigned preassign(TailParam param) {
+    default Preassigned preassign(Preassigner param) {
         return preassign(Variable.of(param));
     }
 
     /**
      * <p>
-     * Apply parameter partialy.
+     * Apply tail parameter partialy.
      * </p>
      * 
-     * @param function A target function to apply parameter.
-     * @param param1 A fixed parameter.
+     * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Preassigned preassign(Supplier<TailParam> param) {
+    default Preassigned preassign(Supplier<Preassigner> param) {
         return create(args -> args.add(0, param.get()));
     }
 
