@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @version 2018/12/07 16:09:15
  */
 public interface WiseFunction<Param, Return>
-        extends Function<Param, Return>, Assignable<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param> {
+        extends Function<Param, Return>, Narrow<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param> {
 
     /**
      * <p>

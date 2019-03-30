@@ -20,9 +20,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -1205,6 +1208,34 @@ public class I {
             throw new IllegalArgumentException("Type must be interface.");
         }
         return (T) Proxy.newProxyInstance(I.class.getClassLoader(), new Class[] {type}, handler);
+    }
+
+    static <F> F make(Object thiz, Class target, int index, Consumer<List<Object>> converter) {
+        Class baseType = thiz.getClass().getInterfaces()[0];
+        Class<F> type;
+        Type proxyType = Model.collectParameters(baseType, target)[index];
+
+        if (proxyType instanceof ParameterizedType) {
+            type = (Class) ((ParameterizedType) proxyType).getRawType();
+        } else {
+            type = (Class) proxyType;
+        }
+
+        Method baseMethod = I.signal(baseType.getMethods()).skip(Method::isDefault).to().v;
+
+        return I.make(type, (proxy, method, args) -> {
+            if (method.isDefault()) {
+                return MethodHandles.privateLookupIn(type, MethodHandles.lookup())
+                        .unreflectSpecial(method, type)
+                        .bindTo(proxy)
+                        .invokeWithArguments(args);
+            } else {
+                List list = I.list(args);
+                converter.accept(list);
+
+                return baseMethod.invoke(thiz, list.toArray(new Object[list.size()]));
+            }
+        });
     }
 
     /**

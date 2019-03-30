@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * @version 2018/04/02 8:35:09
  */
 public interface WiseTriConsumer<Param1, Param2, Param3>
-        extends Assignable<WiseBiConsumer<Param1, Param2>, Param3, WiseBiConsumer<Param2, Param3>, Param1> {
+        extends Narrow<WiseBiConsumer<Param1, Param2>, Param3, WiseBiConsumer<Param2, Param3>, Param1> {
 
     /**
      * Performs this operation on the given argument.
