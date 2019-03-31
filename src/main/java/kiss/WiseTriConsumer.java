@@ -25,4 +25,21 @@ public interface WiseTriConsumer<Param1, Param2, Param3>
      * @param param3 The input argument
      */
     void accept(Param1 param1, Param2 param2, Param3 param3);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default WiseBiConsumer<Param1, Param2> assign(Supplier<Param3> param) {
+        return (p, q) -> accept(p, q, param.get());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default WiseBiConsumer<Param2, Param3> preassign(Supplier<Param1> param) {
+        return (p, q) -> accept(param.get(), p, q);
+    }
+
 }

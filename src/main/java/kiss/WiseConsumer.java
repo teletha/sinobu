@@ -10,11 +10,12 @@
 package kiss;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @version 2018/04/02 8:35:45
  */
-public interface WiseConsumer<Param> extends Consumer<Param>, Narrow<WiseRunnable, Param, WiseRunnable, Param>, Widen<WiseBiConsumer> {
+public interface WiseConsumer<Param> extends Consumer<Param>, Narrow<WiseRunnable, Param, WiseRunnable, Param> {
 
     /**
      * <p>
@@ -36,5 +37,39 @@ public interface WiseConsumer<Param> extends Consumer<Param>, Narrow<WiseRunnabl
         } catch (Throwable e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * Widen parameter at last (appended parameter will be ignored).
+     * 
+     * @return A widen function.
+     */
+    default <Added> WiseBiConsumer<Param, Added> append() {
+        return (p, q) -> accept(p);
+    }
+
+    /**
+     * Widen parameter at first (appended parameter will be ignored).
+     * 
+     * @return A widen function.
+     */
+    default <Added> WiseBiConsumer<Added, Param> prepend() {
+        return (p, q) -> accept(q);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default WiseRunnable assign(Supplier<Param> param) {
+        return () -> accept(param.get());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default WiseRunnable preassign(Supplier<Param> param) {
+        return assign(param);
     }
 }

@@ -12,7 +12,7 @@ package kiss;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-public interface WiseSupplier<Return> extends Supplier<Return>, Callable<Return>, Widen<WiseFunction> {
+public interface WiseSupplier<Return> extends Supplier<Return>, Callable<Return> {
 
     /**
      * <p>
@@ -42,5 +42,14 @@ public interface WiseSupplier<Return> extends Supplier<Return>, Callable<Return>
     @Override
     default Return call() throws Exception {
         return get();
+    }
+
+    /**
+     * Widen parameter at last (appended parameter will be ignored).
+     * 
+     * @return A widen function.
+     */
+    default <Added> WiseFunction<Added, Return> append() {
+        return (p) -> get();
     }
 }

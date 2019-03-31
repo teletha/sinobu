@@ -35,9 +35,7 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Assigned assign(Supplier<Assigner> param) {
-        return I.make(this, Narrow.class, 0, args -> args.add(param.get()));
-    }
+    Assigned assign(Supplier<Assigner> param);
 
     /**
      * <p>
@@ -59,7 +57,5 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Preassigned preassign(Supplier<Preassigner> param) {
-        return I.make(this, Narrow.class, 0, args -> args.add(0, param.get()));
-    }
+    Preassigned preassign(Supplier<Preassigner> param);
 }

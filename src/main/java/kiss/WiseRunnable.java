@@ -9,7 +9,7 @@
  */
 package kiss;
 
-public interface WiseRunnable extends Runnable, Widen<WiseConsumer> {
+public interface WiseRunnable extends Runnable {
 
     /**
      * <p>
@@ -30,5 +30,14 @@ public interface WiseRunnable extends Runnable, Widen<WiseConsumer> {
         } catch (Throwable e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * Widen parameter at last (appended parameter will be ignored).
+     * 
+     * @return A widen function.
+     */
+    default <Added> WiseConsumer<Added> append() {
+        return (p) -> run();
     }
 }
