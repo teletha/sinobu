@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.lambda;
+package kiss.function;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;

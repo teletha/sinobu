@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.core;
+package kiss.function;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;

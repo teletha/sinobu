@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.lambda;
+package kiss.function;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.lambda;
+package kiss.function;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
