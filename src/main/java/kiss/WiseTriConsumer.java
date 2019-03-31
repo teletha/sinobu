@@ -18,13 +18,28 @@ public interface WiseTriConsumer<Param1, Param2, Param3>
         extends Narrow<WiseBiConsumer<Param1, Param2>, Param3, WiseBiConsumer<Param2, Param3>, Param1> {
 
     /**
+     * Internal API.
+     *
+     * @param param1 The input argument
+     * @param param2 The input argument
+     * @param param3 The input argument
+     */
+    void ACCEPT(Param1 param1, Param2 param2, Param3 param3) throws Throwable;
+
+    /**
      * Performs this operation on the given argument.
      *
      * @param param1 The input argument
      * @param param2 The input argument
      * @param param3 The input argument
      */
-    void accept(Param1 param1, Param2 param2, Param3 param3);
+    default void accept(Param1 param1, Param2 param2, Param3 param3) {
+        try {
+            ACCEPT(param1, param2, param3);
+        } catch (Throwable e) {
+            throw I.quiet(e);
+        }
+    }
 
     /**
      * {@inheritDoc}
