@@ -20,9 +20,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -1269,6 +1273,45 @@ public class I {
             }
         } finally {
             dependency.pollLast();
+        }
+    }
+
+    static <F> F make2(Object thiz, Class target, BiFunction<Method, MethodHandle, MethodHandle> converter) {
+        Class baseType = thiz.getClass().getInterfaces()[0];
+        Class<F> type;
+        Type proxyType = Model.collectParameters(baseType, target)[0];
+
+        if (proxyType instanceof ParameterizedType) {
+            type = (Class) ((ParameterizedType) proxyType).getRawType();
+        } else {
+            type = (Class) proxyType;
+        }
+
+        Method baseMethod = I.signal(baseType.getMethods()).skip(Method::isDefault).to().v;
+        try {
+            return make(type, converter.apply(baseMethod, MethodHandles.lookup().unreflect(baseMethod)).bindTo(thiz));
+        } catch (IllegalAccessException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    static <F> F make(Class<F> type, MethodHandle handle) {
+        if (type == WiseSupplier.class) {
+            return (F) (WiseSupplier) handle::invokeWithArguments;
+        } else if (type == WiseRunnable.class) {
+            return (F) (WiseRunnable) handle::invokeWithArguments;
+        } else if (type == WiseFunction.class) {
+            return (F) (WiseFunction) handle::invokeWithArguments;
+        } else if (type == WiseConsumer.class) {
+            return (F) (WiseConsumer) handle::invokeWithArguments;
+        } else if (type == WiseBiFunction.class) {
+            return (F) (WiseBiFunction) handle::invokeWithArguments;
+        } else if (type == WiseBiConsumer.class) {
+            return (F) (WiseBiConsumer) handle::invokeWithArguments;
+        } else if (type == WiseTriFunction.class) {
+            return (F) (WiseTriFunction) handle::invokeWithArguments;
+        } else {
+            return (F) (WiseTriConsumer) handle::invokeWithArguments;
         }
     }
 

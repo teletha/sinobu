@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.util.function.Supplier;
-
 /**
  * @version 2018/04/02 8:35:09
  */
@@ -39,22 +37,6 @@ public interface WiseTriConsumer<Param1, Param2, Param3>
         } catch (Throwable e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default WiseBiConsumer<Param1, Param2> assign(Supplier<Param3> param) {
-        return (p, q) -> accept(p, q, param.get());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default WiseBiConsumer<Param2, Param3> preassign(Supplier<Param1> param) {
-        return (p, q) -> accept(param.get(), p, q);
     }
 
 }

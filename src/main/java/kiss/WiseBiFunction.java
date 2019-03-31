@@ -10,7 +10,6 @@
 package kiss;
 
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 /**
  * @version 2018/04/02 8:35:58
@@ -58,21 +57,5 @@ public interface WiseBiFunction<Param1, Param2, Return>
      */
     default <Added> WiseTriFunction<Added, Param1, Param2, Return> prepend() {
         return (p, q, r) -> apply(q, r);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default WiseFunction<Param1, Return> assign(Supplier<Param2> param) {
-        return p -> apply(p, param.get());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default WiseFunction<Param2, Return> preassign(Supplier<Param1> param) {
-        return p -> apply(param.get(), p);
     }
 }

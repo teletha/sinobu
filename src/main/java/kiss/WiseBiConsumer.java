@@ -10,7 +10,6 @@
 package kiss;
 
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 public interface WiseBiConsumer<Param1, Param2>
         extends BiConsumer<Param1, Param2>, Narrow<WiseConsumer<Param1>, Param2, WiseConsumer<Param2>, Param1> {
@@ -54,21 +53,5 @@ public interface WiseBiConsumer<Param1, Param2>
      */
     default <Added> WiseTriConsumer<Added, Param1, Param2> prepend() {
         return (p, q, r) -> accept(q, r);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default WiseConsumer<Param1> assign(Supplier<Param2> param) {
-        return p -> accept(p, param.get());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default WiseConsumer<Param2> preassign(Supplier<Param1> param) {
-        return p -> accept(param.get(), p);
     }
 }
