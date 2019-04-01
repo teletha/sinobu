@@ -23,20 +23,20 @@ class WiseTriConsumerTest {
 
     @Test
     void narrowHead() {
-        concat.preassign("fix").accept("this", "value");
+        concat.hide("fix").accept("this", "value");
         assert value.equals("fix this value");
     }
 
     @Test
     void narrowHeadNull() {
-        concat.preassign(null).accept("this", "value");
+        concat.hide(null).accept("this", "value");
         assert value.equals("null this value");
     }
 
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseBiConsumer<String, String> created = concat.preassignLazy(variable);
+        WiseBiConsumer<String, String> created = concat.hideLazy(variable);
 
         created.accept("this", "value");
         assert value.equals("init this value");
@@ -47,26 +47,26 @@ class WiseTriConsumerTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        concat.preassignLazy(null).accept("this", "value");
+        concat.hideLazy(null).accept("this", "value");
         assert value.equals("null this value");
     }
 
     @Test
     void narrowTail() {
-        concat.assign("fixed").accept("value", "is");
+        concat.hideEnd("fixed").accept("value", "is");
         assert value.equals("value is fixed");
     }
 
     @Test
     void narrowTailNull() {
-        concat.assign(null).accept("value", "is");
+        concat.hideEnd(null).accept("value", "is");
         assert value.equals("value is null");
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseBiConsumer<String, String> created = concat.assignLazy(variable);
+        WiseBiConsumer<String, String> created = concat.hideEndLazy(variable);
 
         created.accept("value", "is");
         assert value.equals("value is init");
@@ -77,7 +77,7 @@ class WiseTriConsumerTest {
 
     @Test
     void narrowTailLazilyNull() {
-        concat.assignLazy(null).accept("value", "is");
+        concat.hideEndLazy(null).accept("value", "is");
         assert value.equals("value is null");
     }
 }

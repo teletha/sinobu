@@ -13,7 +13,8 @@ package kiss;
  * @version 2018/04/02 8:34:59
  */
 public interface WiseTriFunction<Param1, Param2, Param3, Return>
-        extends Narrow<WiseBiFunction<Param1, Param2, Return>, Param3, WiseBiFunction<Param2, Param3, Return>, Param1> {
+        extends
+        Narrow<WiseBiFunction<Param1, Param2, Return>, Param3, WiseBiFunction<Param2, Param3, Return>, Param1, WiseTriFunction<Param1, Param2, Param3, Return>> {
 
     /**
      * <p>

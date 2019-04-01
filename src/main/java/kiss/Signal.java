@@ -118,7 +118,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next) {
-        return to(I.wise(next).append(), null, null);
+        return to(I.wiseR(next).append(), null, null);
     }
 
     /**
@@ -170,7 +170,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next, Consumer<Throwable> error, Runnable complete) {
-        return to(I.wise(next).append(), error, complete);
+        return to(I.wiseR(next).append(), error, complete);
     }
 
     /**
@@ -1126,7 +1126,7 @@ public final class Signal<V> {
         if (time == null || time.get().toNanos() <= 0) {
             return this;
         }
-        return delay(I.wise(time).append(), scheduler);
+        return delay(I.wiseS(time).append(), scheduler);
     }
 
     /**
@@ -1268,7 +1268,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> distinct() {
-        return distinct(I.wise(Function.identity()));
+        return distinct(I.wiseF(Function.identity()));
     }
 
     /**
@@ -1717,7 +1717,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatArray(WiseFunction<V, R[]> function) {
-        return flatMap(I.wise(function.andThen(I::signal)));
+        return flatMap(I.wiseF(function.andThen(I::signal)));
     }
 
     /**
@@ -1734,7 +1734,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatEnum(WiseFunction<V, ? extends Enumeration<R>> function) {
-        return flatMap(I.wise(function.andThen(I::signal)));
+        return flatMap(I.wiseF(function.andThen(I::signal)));
     }
 
     /**
@@ -1751,7 +1751,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatIterable(WiseFunction<V, ? extends Iterable<R>> function) {
-        return flatMap(I.wise(function.andThen(I::signal)));
+        return flatMap(I.wiseF(function.andThen(I::signal)));
     }
 
     /**
@@ -1869,7 +1869,7 @@ public final class Signal<V> {
 
         return combine(next.expose.startWith(Duration.ZERO).delay(Function.identity(), scheduler)) //
                 .map(Ⅱ::ⅰ)
-                .effectAfter(I.wise(next).preassign(Duration.of(interval, unit.toChronoUnit())));
+                .effectAfter(I.wiseC(next).hide(Duration.of(interval, unit.toChronoUnit())));
     }
 
     /**
@@ -1978,7 +1978,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAll(WiseFunction<V, R> mapper) {
-        return map(mapper::preassign).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
+        return map(mapper::hide).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
     }
 
     /**
@@ -1989,7 +1989,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAny(WiseFunction<V, R> mapper) {
-        return map(mapper::preassign).buffer().map(I.parallel::invokeAny);
+        return map(mapper::hide).buffer().map(I.parallel::invokeAny);
     }
 
     /**
@@ -2202,10 +2202,10 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(v -> {
-                scheduler.accept(I.wise(observer).preassign(v));
+                scheduler.accept(I.wiseC(observer).hide(v));
             }, e -> {
-                scheduler.accept(I.wise(observer::error).preassign(e));
-            }, I.wise(scheduler).preassign(observer::complete), disposer);
+                scheduler.accept(I.wiseC(observer::error).hide(e));
+            }, I.wiseC(scheduler).hide(observer::complete), disposer);
         });
     }
 
@@ -2435,7 +2435,7 @@ public final class Signal<V> {
                 if (immediate) {
                     observer.complete();
                 } else {
-                    subscriber.next = I.wise(observer::complete).append();
+                    subscriber.next = I.wiseR(observer::complete).append();
 
                     // Since there is a complete in processing, but this complete flow has ended,
                     // the processing complete is passed to the source signal.
@@ -2647,7 +2647,7 @@ public final class Signal<V> {
     public final Signal<V> retryUntil(Class<? extends Throwable> type, Signal stopper) {
         // Use partial applied function to reduce code size.
         // return retryWhen(type, fail -> fail.takeUntil(stopper));
-        return retryWhen(type, (WiseFunction) ((WiseBiFunction<Signal, Signal, Signal>) Signal::takeUntil).assign(stopper));
+        return retryWhen(type, (WiseFunction) ((WiseBiFunction<Signal, Signal, Signal>) Signal::takeUntil).hideEnd(stopper));
     }
 
     /**
@@ -2746,7 +2746,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> reverse() {
-        return buffer(never(), LinkedList<V>::new, Deque::addFirst).flatIterable(I.wise(Function.identity()));
+        return buffer(never(), LinkedList<V>::new, Deque::addFirst).flatIterable(I.wiseF(Function.identity()));
     }
 
     /**
@@ -3862,7 +3862,7 @@ public final class Signal<V> {
             WiseConsumer<Object> effect = v -> {
                 future.getAndSet(v == null ? null : I.schedule(time, unit, scheduler, timeout)).cancel(false);
             };
-            return effect(effect.preassign(this)).effectOnTerminate(effect.preassign((V) null)).to(observer, disposer);
+            return effect(effect.hide(this)).effectOnTerminate(effect.hide((V) null)).to(observer, disposer);
         });
     }
 
@@ -3963,7 +3963,7 @@ public final class Signal<V> {
         if (time <= 0 || unit == null) {
             return this;
         }
-        return effect(((WiseConsumer<Long>) Thread::sleep).preassign(unit.toMillis(time)));
+        return effect(((WiseConsumer<Long>) Thread::sleep).hide(unit.toMillis(time)));
     }
 
     /**

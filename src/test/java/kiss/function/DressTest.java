@@ -34,16 +34,16 @@ class DressTest {
     void runnable() {
         Runnable lambda = () -> {
         };
-        WiseRunnable dressed = I.wise(lambda);
+        WiseRunnable dressed = I.wiseR(lambda);
         assert dressed != lambda;
 
         lambda = (WiseRunnable) () -> {
         };
-        dressed = I.wise(lambda);
+        dressed = I.wiseR(lambda);
         assert dressed == lambda;
 
         lambda = null;
-        dressed = I.wise(lambda);
+        dressed = I.wiseR(lambda);
         assert dressed != lambda;
         dressed.run();
     }
@@ -52,12 +52,12 @@ class DressTest {
     void consumer() {
         Consumer lambda = v -> {
         };
-        WiseConsumer dressed = I.wise(lambda);
+        WiseConsumer dressed = I.wiseC(lambda);
         assert dressed != lambda;
 
         lambda = (WiseConsumer) v -> {
         };
-        dressed = I.wise(lambda);
+        dressed = I.wiseC(lambda);
         assert dressed == lambda;
     }
 
@@ -65,45 +65,45 @@ class DressTest {
     void biconsumer() {
         BiConsumer lambda = (p1, p2) -> {
         };
-        WiseBiConsumer dressed = I.wise(lambda);
+        WiseBiConsumer dressed = I.wiseBC(lambda);
         assert dressed != lambda;
 
         lambda = (WiseBiConsumer) (p1, p2) -> {
         };
-        dressed = I.wise(lambda);
+        dressed = I.wiseBC(lambda);
         assert dressed == lambda;
     }
 
     @Test
     void supplier() {
         Supplier lambda = () -> "";
-        WiseSupplier dressed = I.wise(lambda);
+        WiseSupplier dressed = I.wiseS(lambda);
         assert dressed != lambda;
 
         lambda = (WiseSupplier) () -> "";
-        dressed = I.wise(lambda);
+        dressed = I.wiseS(lambda);
         assert dressed == lambda;
     }
 
     @Test
     void function() {
         Function lambda = p -> "";
-        WiseFunction dressed = I.wise(lambda);
+        WiseFunction dressed = I.wiseF(lambda);
         assert dressed != lambda;
 
         lambda = (WiseFunction) p -> "";
-        dressed = I.wise(lambda);
+        dressed = I.wiseF(lambda);
         assert dressed == lambda;
     }
 
     @Test
     void bifunction() {
         BiFunction lambda = (p1, p2) -> "";
-        WiseBiFunction dressed = I.wise(lambda);
+        WiseBiFunction dressed = I.wiseBF(lambda);
         assert dressed != lambda;
 
         lambda = (WiseBiFunction) (p1, p2) -> "";
-        dressed = I.wise(lambda);
+        dressed = I.wiseBF(lambda);
         assert dressed == lambda;
     }
 }

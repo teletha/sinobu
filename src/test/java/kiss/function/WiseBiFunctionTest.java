@@ -24,18 +24,18 @@ class WiseBiFunctionTest {
 
     @Test
     void narrowHead() {
-        assert concat.preassign("fixed").apply("value").equals("fixed value");
+        assert concat.hide("fixed").apply("value").equals("fixed value");
     }
 
     @Test
     void narrowHeadNull() {
-        assert concat.preassign((String) null).apply("value").equals("null value");
+        assert concat.hide((String) null).apply("value").equals("null value");
     }
 
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseFunction<String, String> created = concat.preassignLazy(variable);
+        WiseFunction<String, String> created = concat.hideLazy(variable);
 
         assert created.apply("var").equals("init var");
         variable.set("change");
@@ -44,23 +44,23 @@ class WiseBiFunctionTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        assert concat.preassignLazy((Supplier) null).apply("var").equals("null var");
+        assert concat.hideLazy((Supplier) null).apply("var").equals("null var");
     }
 
     @Test
     void narrowTail() {
-        assert concat.assign("fixed").apply("value").equals("value fixed");
+        assert concat.hideEnd("fixed").apply("value").equals("value fixed");
     }
 
     @Test
     void narrowTailNull() {
-        assert concat.assign((String) null).apply("value").equals("value null");
+        assert concat.hideEnd((String) null).apply("value").equals("value null");
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseFunction<String, String> created = concat.assignLazy(variable);
+        WiseFunction<String, String> created = concat.hideEndLazy(variable);
 
         assert created.apply("var").equals("var init");
         variable.set("change");
@@ -69,7 +69,7 @@ class WiseBiFunctionTest {
 
     @Test
     void narrowTailLazilyNull() {
-        assert concat.assignLazy((Supplier) null).apply("var").equals("var null");
+        assert concat.hideEndLazy((Supplier) null).apply("var").equals("var null");
     }
 
     @Test

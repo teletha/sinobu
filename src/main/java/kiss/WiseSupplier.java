@@ -12,7 +12,7 @@ package kiss;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-public interface WiseSupplier<Return> extends Supplier<Return>, Callable<Return>, Widen<WiseFunction> {
+public interface WiseSupplier<Return> extends Supplier<Return>, Callable<Return>, Widen<WiseFunction, WiseSupplier<Return>> {
 
     /**
      * <p>

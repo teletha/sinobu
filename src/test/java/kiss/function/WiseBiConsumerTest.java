@@ -24,20 +24,20 @@ class WiseBiConsumerTest {
 
     @Test
     void narrowHead() {
-        concat.preassign("fixed").accept("value");
+        concat.hide("fixed").accept("value");
         assert value.equals("fixed value");
     }
 
     @Test
     void narrowHeadNull() {
-        concat.preassign(null).accept("value");
+        concat.hide(null).accept("value");
         assert value.equals("null value");
     }
 
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseConsumer<String> created = concat.preassignLazy(variable);
+        WiseConsumer<String> created = concat.hideLazy(variable);
 
         created.accept("value");
         assert value.equals("init value");
@@ -48,26 +48,26 @@ class WiseBiConsumerTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        concat.preassignLazy(null).accept("value");
+        concat.hideLazy(null).accept("value");
         assert value.equals("null value");
     }
 
     @Test
     void narrowTail() {
-        concat.assign("fixed").accept("value");
+        concat.hideEnd("fixed").accept("value");
         assert value.equals("value fixed");
     }
 
     @Test
     void narrowTailNull() {
-        concat.assign(null).accept("value");
+        concat.hideEnd(null).accept("value");
         assert value.equals("value null");
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseConsumer<String> created = concat.assignLazy(variable);
+        WiseConsumer<String> created = concat.hideEndLazy(variable);
 
         created.accept("value");
         assert value.equals("value init");
@@ -78,7 +78,7 @@ class WiseBiConsumerTest {
 
     @Test
     void narrowTailLazilyNull() {
-        concat.assignLazy(null).accept("value");
+        concat.hideEndLazy(null).accept("value");
         assert value.equals("value null");
     }
 

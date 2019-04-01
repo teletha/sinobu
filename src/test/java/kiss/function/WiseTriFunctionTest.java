@@ -23,18 +23,18 @@ class WiseTriFunctionTest {
 
     @Test
     void narrowHead() {
-        assert concat.preassign("fixed").apply("this", "value").equals("fixed this value");
+        assert concat.hide("fixed").apply("this", "value").equals("fixed this value");
     }
 
     @Test
     void narrowHeadNull() {
-        assert concat.preassign((String) null).apply("this", "value").equals("null this value");
+        assert concat.hide((String) null).apply("this", "value").equals("null this value");
     }
 
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseBiFunction<String, String, String> created = concat.preassignLazy(variable);
+        WiseBiFunction<String, String, String> created = concat.hideLazy(variable);
 
         assert created.apply("this", "var").equals("init this var");
         variable.set("change");
@@ -43,23 +43,23 @@ class WiseTriFunctionTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        assert concat.preassignLazy((Supplier) null).apply("this", "var").equals("null this var");
+        assert concat.hideLazy((Supplier) null).apply("this", "var").equals("null this var");
     }
 
     @Test
     void narrowTail() {
-        assert concat.assign("fixed").apply("value", "is").equals("value is fixed");
+        assert concat.hideEnd("fixed").apply("value", "is").equals("value is fixed");
     }
 
     @Test
     void narrowTailNull() {
-        assert concat.assign((String) null).apply("value", "is").equals("value is null");
+        assert concat.hideEnd((String) null).apply("value", "is").equals("value is null");
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseBiFunction<String, String, String> created = concat.assignLazy(variable);
+        WiseBiFunction<String, String, String> created = concat.hideEndLazy(variable);
 
         assert created.apply("var", "is").equals("var is init");
         variable.set("changed");
@@ -68,6 +68,6 @@ class WiseTriFunctionTest {
 
     @Test
     void narrowTailLazilyNull() {
-        assert concat.assignLazy((Supplier) null).apply("var", "is").equals("var is null");
+        assert concat.hideEndLazy((Supplier) null).apply("var", "is").equals("var is null");
     }
 }

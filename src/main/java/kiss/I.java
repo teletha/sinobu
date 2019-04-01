@@ -1511,7 +1511,7 @@ public class I {
      */
     public static <Param1, Param2> BiConsumer<Param1, Param2> recurse(WiseTriConsumer<BiConsumer<Param1, Param2>, Param1, Param2> function) {
         Variable<BiConsumer<Param1, Param2>> ref = Variable.empty();
-        ref.let(function.preassignLazy(ref));
+        ref.let(function.hideLazy(ref));
         return ref.v;
     }
 
@@ -1530,7 +1530,7 @@ public class I {
      */
     public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurse(WiseTriFunction<BiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
         Variable<BiFunction<Param1, Param2, Return>> ref = Variable.empty();
-        ref.let(function.preassignLazy(ref));
+        ref.let(function.hideLazy(ref));
         return ref.v;
     }
 
@@ -1551,7 +1551,7 @@ public class I {
      */
     public static <Param> Consumer<Param> recurse(WiseBiConsumer<Consumer<Param>, Param> function) {
         Variable<Consumer<Param>> ref = Variable.empty();
-        ref.let(function.preassignLazy(ref));
+        ref.let(function.hideLazy(ref));
         return ref.v;
     }
 
@@ -1570,7 +1570,7 @@ public class I {
      */
     public static <Param, Return> Function<Param, Return> recurse(WiseBiFunction<Function<Param, Return>, Param, Return> function) {
         Variable<Function<Param, Return>> ref = Variable.empty();
-        ref.let(function.preassignLazy(ref));
+        ref.let(function.hideLazy(ref));
         return ref.v;
     }
 
@@ -1589,7 +1589,7 @@ public class I {
      */
     public static Runnable recurse(WiseConsumer<Runnable> function) {
         Variable<Runnable> ref = Variable.empty();
-        ref.let(function.preassignLazy(ref));
+        ref.let(function.hideLazy(ref));
         return ref.v;
     }
 
@@ -1608,7 +1608,7 @@ public class I {
      */
     public static <Result> Supplier<Result> recurse(WiseFunction<Supplier<Result>, Result> function) {
         Variable<Supplier<Result>> ref = Variable.empty();
-        ref.let(function.preassignLazy(ref));
+        ref.let(function.hideLazy(ref));
         return ref.v;
     }
 
@@ -1897,7 +1897,7 @@ public class I {
      * @return A casted function.
      * @see #quiet(WiseRunnable)
      */
-    public static WiseRunnable wise(Runnable lambda) {
+    public static WiseRunnable wiseR(Runnable lambda) {
         return lambda == null ? NoOP : lambda instanceof WiseRunnable ? (WiseRunnable) lambda : lambda::run;
     }
 
@@ -1910,7 +1910,7 @@ public class I {
      * @return A casted function.
      * @see #quiet(WiseConsumer)
      */
-    public static <P> WiseConsumer<P> wise(Consumer<P> lambda) {
+    public static <P> WiseConsumer<P> wiseC(Consumer<P> lambda) {
         return lambda == null || lambda instanceof WiseConsumer ? (WiseConsumer) lambda : lambda::accept;
     }
 
@@ -1923,7 +1923,7 @@ public class I {
      * @return A casted function.
      * @see #quiet(WiseBiConsumer)
      */
-    public static <P1, P2> WiseBiConsumer<P1, P2> wise(BiConsumer<P1, P2> lambda) {
+    public static <P1, P2> WiseBiConsumer<P1, P2> wiseBC(BiConsumer<P1, P2> lambda) {
         return lambda == null || lambda instanceof WiseBiConsumer ? (WiseBiConsumer) lambda : lambda::accept;
     }
 
@@ -1936,7 +1936,7 @@ public class I {
      * @return A casted function.
      * @see #quiet(WiseSupplier)
      */
-    public static <R> WiseSupplier<R> wise(Supplier<R> lambda) {
+    public static <R> WiseSupplier<R> wiseS(Supplier<R> lambda) {
         return lambda == null || lambda instanceof WiseSupplier ? (WiseSupplier) lambda : lambda::get;
     }
 
@@ -1949,7 +1949,7 @@ public class I {
      * @return A casted function.
      * @see #quiet(WiseFunction)
      */
-    public static <P, R> WiseFunction<P, R> wise(Function<P, R> lambda) {
+    public static <P, R> WiseFunction<P, R> wiseF(Function<P, R> lambda) {
         return lambda == null || lambda instanceof WiseFunction ? (WiseFunction) lambda : lambda::apply;
     }
 
@@ -1962,7 +1962,7 @@ public class I {
      * @return A casted function.
      * @see #quiet(WiseBiFunction)
      */
-    public static <P1, P2, R> WiseBiFunction<P1, P2, R> wise(BiFunction<P1, P2, R> lambda) {
+    public static <P1, P2, R> WiseBiFunction<P1, P2, R> wiseBF(BiFunction<P1, P2, R> lambda) {
         return lambda == null || lambda instanceof WiseBiFunction ? (WiseBiFunction) lambda : lambda::apply;
     }
 

@@ -9,10 +9,14 @@
  */
 package kiss;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * General purpose flexible and invokable function interface.
  */
-public interface Flexible {
+public interface Flexible<Self> {
 
     /**
      * Invoke method with the specified parameters and return some value (may be null). This method
@@ -22,4 +26,12 @@ public interface Flexible {
      * @return A some value (may be null).
      */
     Object invoke(Object... params);
+
+    default Self memoize() {
+        Map cache = new ConcurrentHashMap();
+
+        return I.make(this, Flexible.class, args -> {
+            return cache.computeIfAbsent(Objects.hash(args), I.wiseF(this::invoke).fixEnd(args));
+        });
+    }
 }
