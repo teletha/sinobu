@@ -12,7 +12,8 @@ package kiss;
 import java.util.function.BiConsumer;
 
 public interface WiseBiConsumer<Param1, Param2>
-        extends BiConsumer<Param1, Param2>, Narrow<WiseConsumer<Param1>, Param2, WiseConsumer<Param2>, Param1> {
+        extends BiConsumer<Param1, Param2>, Narrow<WiseConsumer<Param1>, Param2, WiseConsumer<Param2>, Param1>, Flexible<Void>,
+        Widen<WiseTriConsumer> {
 
     /**
      * <p>
@@ -38,20 +39,11 @@ public interface WiseBiConsumer<Param1, Param2>
     }
 
     /**
-     * Widen parameter at last (appended parameter will be ignored).
-     * 
-     * @return A widen function.
+     * {@inheritDoc}
      */
-    default <Added> WiseTriConsumer<Param1, Param2, Added> append() {
-        return (p, q, r) -> accept(p, q);
-    }
-
-    /**
-     * Widen parameter at first (appended parameter will be ignored).
-     * 
-     * @return A widen function.
-     */
-    default <Added> WiseTriConsumer<Added, Param1, Param2> prepend() {
-        return (p, q, r) -> accept(q, r);
+    @Override
+    default Void invoke(Object... params) {
+        accept((Param1) params[0], (Param2) params[1]);
+        return null;
     }
 }

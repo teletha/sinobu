@@ -13,7 +13,7 @@ package kiss;
  * @version 2018/04/02 8:34:59
  */
 public interface WiseTriFunction<Param1, Param2, Param3, Return>
-        extends Narrow<WiseBiFunction<Param1, Param2, Return>, Param3, WiseBiFunction<Param2, Param3, Return>, Param1> {
+        extends Narrow<WiseBiFunction<Param1, Param2, Return>, Param3, WiseBiFunction<Param2, Param3, Return>, Param1>, Flexible<Return> {
 
     /**
      * <p>
@@ -42,5 +42,13 @@ public interface WiseTriFunction<Param1, Param2, Param3, Return>
         } catch (Throwable e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default Return invoke(Object... params) {
+        return apply((Param1) params[0], (Param2) params[1], (Param3) params[2]);
     }
 }

@@ -15,7 +15,8 @@ import java.util.function.BiFunction;
  * @version 2018/04/02 8:35:58
  */
 public interface WiseBiFunction<Param1, Param2, Return>
-        extends BiFunction<Param1, Param2, Return>, Narrow<WiseFunction<Param1, Return>, Param2, WiseFunction<Param2, Return>, Param1> {
+        extends BiFunction<Param1, Param2, Return>, Narrow<WiseFunction<Param1, Return>, Param2, WiseFunction<Param2, Return>, Param1>,
+        Flexible<Return>, Widen<WiseTriFunction> {
 
     /**
      * <p>
@@ -42,20 +43,10 @@ public interface WiseBiFunction<Param1, Param2, Return>
     }
 
     /**
-     * Widen parameter at last (appended parameter will be ignored).
-     * 
-     * @return A widen function.
+     * {@inheritDoc}
      */
-    default <Added> WiseTriFunction<Param1, Param2, Added, Return> append() {
-        return (p, q, r) -> apply(p, q);
-    }
-
-    /**
-     * Widen parameter at first (appended parameter will be ignored).
-     * 
-     * @return A widen function.
-     */
-    default <Added> WiseTriFunction<Added, Param1, Param2, Return> prepend() {
-        return (p, q, r) -> apply(q, r);
+    @Override
+    default Return invoke(Object... params) {
+        return apply((Param1) params[0], (Param2) params[1]);
     }
 }

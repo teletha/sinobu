@@ -13,7 +13,7 @@ package kiss;
  * @version 2018/04/02 8:35:09
  */
 public interface WiseTriConsumer<Param1, Param2, Param3>
-        extends Narrow<WiseBiConsumer<Param1, Param2>, Param3, WiseBiConsumer<Param2, Param3>, Param1> {
+        extends Narrow<WiseBiConsumer<Param1, Param2>, Param3, WiseBiConsumer<Param2, Param3>, Param1>, Flexible<Void> {
 
     /**
      * Internal API.
@@ -39,4 +39,12 @@ public interface WiseTriConsumer<Param1, Param2, Param3>
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default Void invoke(Object... params) {
+        accept((Param1) params[0], (Param2) params[1], (Param3) params[2]);
+        return null;
+    }
 }

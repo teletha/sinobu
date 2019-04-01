@@ -15,7 +15,8 @@ import java.util.function.Function;
  * @version 2018/12/07 16:09:15
  */
 public interface WiseFunction<Param, Return>
-        extends Function<Param, Return>, Narrow<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param> {
+        extends Function<Param, Return>, Narrow<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param>, Flexible<Return>,
+        Widen<WiseBiFunction> {
 
     /**
      * <p>
@@ -41,20 +42,10 @@ public interface WiseFunction<Param, Return>
     }
 
     /**
-     * Widen parameter at last (appended parameter will be ignored).
-     * 
-     * @return A widen function.
+     * {@inheritDoc}
      */
-    default <Added> WiseBiFunction<Param, Added, Return> append() {
-        return (p, q) -> apply(p);
-    }
-
-    /**
-     * Widen parameter at first (appended parameter will be ignored).
-     * 
-     * @return A widen function.
-     */
-    default <Added> WiseBiFunction<Added, Param, Return> prepend() {
-        return (p, q) -> apply(q);
+    @Override
+    default Return invoke(Object... params) {
+        return apply((Param) params[0]);
     }
 }

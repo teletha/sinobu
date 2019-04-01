@@ -14,7 +14,8 @@ import java.util.function.Consumer;
 /**
  * @version 2018/04/02 8:35:45
  */
-public interface WiseConsumer<Param> extends Consumer<Param>, Narrow<WiseRunnable, Param, WiseRunnable, Param> {
+public interface WiseConsumer<Param>
+        extends Consumer<Param>, Narrow<WiseRunnable, Param, WiseRunnable, Param>, Flexible<Void>, Widen<WiseBiConsumer> {
 
     /**
      * <p>
@@ -39,20 +40,11 @@ public interface WiseConsumer<Param> extends Consumer<Param>, Narrow<WiseRunnabl
     }
 
     /**
-     * Widen parameter at last (appended parameter will be ignored).
-     * 
-     * @return A widen function.
+     * {@inheritDoc}
      */
-    default <Added> WiseBiConsumer<Param, Added> append() {
-        return (p, q) -> accept(p);
-    }
-
-    /**
-     * Widen parameter at first (appended parameter will be ignored).
-     * 
-     * @return A widen function.
-     */
-    default <Added> WiseBiConsumer<Added, Param> prepend() {
-        return (p, q) -> accept(q);
+    @Override
+    default Void invoke(Object... params) {
+        accept((Param) params[0]);
+        return null;
     }
 }

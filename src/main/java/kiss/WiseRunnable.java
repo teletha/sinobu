@@ -9,7 +9,7 @@
  */
 package kiss;
 
-public interface WiseRunnable extends Runnable {
+public interface WiseRunnable extends Runnable, Flexible<Void>, Widen<WiseConsumer> {
 
     /**
      * <p>
@@ -33,11 +33,11 @@ public interface WiseRunnable extends Runnable {
     }
 
     /**
-     * Widen parameter at last (appended parameter will be ignored).
-     * 
-     * @return A widen function.
+     * {@inheritDoc}
      */
-    default <Added> WiseConsumer<Added> append() {
-        return (p) -> run();
+    @Override
+    default Void invoke(Object... params) {
+        run();
+        return null;
     }
 }
