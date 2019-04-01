@@ -11,7 +11,8 @@ package kiss;
 
 import java.util.Arrays;
 
-public interface Widen<F, Return> extends Flexible<Return> {
+public interface Widen<F> extends Flexible {
+
     /**
      * Widen parameter at last (appended parameter will be ignored).
      * 

@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * 
  */
-public interface Narrow<Assigned, Assigner, Preassigned, Preassigner, Return> extends Flexible<Return> {
+public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> extends Flexible {
     /**
      * <p>
      * Apply head parameter partialy.

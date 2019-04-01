@@ -9,7 +9,17 @@
  */
 package kiss;
 
-public interface Flexible<R> {
+/**
+ * General purpose flexible and invokable function interface.
+ */
+public interface Flexible {
 
-    R invoke(Object... params);
+    /**
+     * General purpose to invoke method with the specified parameters and return some value (may be
+     * null).
+     * 
+     * @param params A list of parameters.
+     * @return A some value (may be null).
+     */
+    Object invoke(Object... params);
 }
