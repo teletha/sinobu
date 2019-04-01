@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * 
  */
-public interface Narrow<Assigned, Assigner, Preassigned, Preassigner, Self> extends Flexible<Self> {
+public interface Narrow<ApplyTail, Tail, ApplyHead, Head, Self> extends Flexible<Self> {
     /**
      * <p>
      * Apply tail parameter partialy.
@@ -23,8 +23,8 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner, Self> exte
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Assigned hideEnd(Assigner param) {
-        return hideEndLazy(Variable.of(param));
+    default ApplyTail dump(Tail param) {
+        return dumpBy(Variable.of(param));
     }
 
     /**
@@ -35,7 +35,7 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner, Self> exte
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Assigned hideEndLazy(Supplier<Assigner> param) {
+    default ApplyTail dumpBy(Supplier<Tail> param) {
         return I.make(this, Narrow.class, args -> {
             return invoke(I.array(args, param == null ? null : param.get()));
         });
@@ -49,8 +49,8 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner, Self> exte
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Preassigned hide(Preassigner param) {
-        return hideLazy(Variable.of(param));
+    default ApplyHead hide(Head param) {
+        return hideBy(Variable.of(param));
     }
 
     /**
@@ -61,20 +61,9 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner, Self> exte
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Preassigned hideLazy(Supplier<Preassigner> param) {
+    default ApplyHead hideBy(Supplier<Head> param) {
         return I.make(this, Narrow.class, args -> {
             return invoke(I.array(new Object[] {param == null ? null : param.get()}, args));
-        });
-    }
-
-    default Self fixEnd(Assigner value) {
-        return fixEndLazy(Variable.of(value));
-    }
-
-    default Self fixEndLazy(Supplier<Assigner> value) {
-        return I.make(this, Flexible.class, args -> {
-            args[args.length - 1] = value.get();
-            return invoke(args);
         });
     }
 }

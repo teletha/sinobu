@@ -9,7 +9,6 @@
  */
 package kiss.function;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ class WiseFunctionTest {
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseSupplier<String> created = identity.hideLazy(variable);
+        WiseSupplier<String> created = identity.hideBy(variable);
 
         assert created.get() == "init";
         variable.set("change");
@@ -45,23 +44,23 @@ class WiseFunctionTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        assert identity.hideLazy((Supplier) null).get() == null;
+        assert identity.hideBy((Supplier) null).get() == null;
     }
 
     @Test
     void narrowTail() {
-        assert identity.hideEnd("fixed").get() == "fixed";
+        assert identity.dump("fixed").get() == "fixed";
     }
 
     @Test
     void narrowTailNull() {
-        assert identity.hideEnd((String) null).get() == null;
+        assert identity.dump((String) null).get() == null;
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseSupplier<String> created = identity.hideEndLazy(variable);
+        WiseSupplier<String> created = identity.dumpBy(variable);
 
         assert created.get() == "init";
         variable.set("change");
@@ -70,7 +69,7 @@ class WiseFunctionTest {
 
     @Test
     void narrowTailLazilyNull() {
-        assert identity.hideEndLazy((Supplier) null).get() == null;
+        assert identity.dumpBy((Supplier) null).get() == null;
     }
 
     @Test
@@ -89,20 +88,20 @@ class WiseFunctionTest {
         assert created.apply(null, null) == null;
     }
 
-    @Test
-    void memo() {
-        AtomicInteger called = new AtomicInteger();
-
-        WiseFunction<Integer, Integer> calc = v -> {
-            called.incrementAndGet();
-            return v * 2;
-        };
-        WiseFunction<Integer, Integer> memoize = calc.memoize();
-        assert memoize.apply(10) == 20;
-        assert called.get() == 1;
-        assert memoize.apply(10) == 20;
-        assert called.get() == 1;
-        assert memoize.apply(20) == 40;
-        assert called.get() == 2;
-    }
+    // @Test
+    // void memo() {
+    // AtomicInteger called = new AtomicInteger();
+    //
+    // WiseFunction<Integer, Integer> calc = v -> {
+    // called.incrementAndGet();
+    // return v * 2;
+    // };
+    // WiseFunction<Integer, Integer> memoize = calc.memoize();
+    // assert memoize.apply(10) == 20;
+    // assert called.get() == 1;
+    // assert memoize.apply(10) == 20;
+    // assert called.get() == 1;
+    // assert memoize.apply(20) == 40;
+    // assert called.get() == 2;
+    // }
 }

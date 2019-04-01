@@ -35,7 +35,7 @@ class WiseBiFunctionTest {
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseFunction<String, String> created = concat.hideLazy(variable);
+        WiseFunction<String, String> created = concat.hideBy(variable);
 
         assert created.apply("var").equals("init var");
         variable.set("change");
@@ -44,23 +44,23 @@ class WiseBiFunctionTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        assert concat.hideLazy((Supplier) null).apply("var").equals("null var");
+        assert concat.hideBy((Supplier) null).apply("var").equals("null var");
     }
 
     @Test
     void narrowTail() {
-        assert concat.hideEnd("fixed").apply("value").equals("value fixed");
+        assert concat.dump("fixed").apply("value").equals("value fixed");
     }
 
     @Test
     void narrowTailNull() {
-        assert concat.hideEnd((String) null).apply("value").equals("value null");
+        assert concat.dump((String) null).apply("value").equals("value null");
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseFunction<String, String> created = concat.hideEndLazy(variable);
+        WiseFunction<String, String> created = concat.dumpBy(variable);
 
         assert created.apply("var").equals("var init");
         variable.set("change");
@@ -69,7 +69,7 @@ class WiseBiFunctionTest {
 
     @Test
     void narrowTailLazilyNull() {
-        assert concat.hideEndLazy((Supplier) null).apply("var").equals("var null");
+        assert concat.dumpBy((Supplier) null).apply("var").equals("var null");
     }
 
     @Test

@@ -898,7 +898,7 @@ public final class Signal<V> {
             AtomicLong processing = new AtomicLong();
             Map<Long, Ⅱ<AtomicBoolean, LinkedList<R>>> buffer = new ConcurrentHashMap();
 
-            Consumer<Long> complete = I.recurse((self, index) -> {
+            Consumer<Long> complete = I.recurse((index, self) -> {
                 if (processing.get() == index) {
                     Ⅱ<AtomicBoolean, LinkedList<R>> next = buffer.remove(processing.incrementAndGet());
 
@@ -1869,7 +1869,7 @@ public final class Signal<V> {
 
         return combine(next.expose.startWith(Duration.ZERO).delay(Function.identity(), scheduler)) //
                 .map(Ⅱ::ⅰ)
-                .effectAfter(I.wiseC(next).hide(Duration.of(interval, unit.toChronoUnit())));
+                .effectAfter(I.wiseC(next).dump(Duration.of(interval, unit.toChronoUnit())));
     }
 
     /**
@@ -1978,7 +1978,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAll(WiseFunction<V, R> mapper) {
-        return map(mapper::hide).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
+        return map(mapper::dump).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
     }
 
     /**
@@ -1989,7 +1989,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAny(WiseFunction<V, R> mapper) {
-        return map(mapper::hide).buffer().map(I.parallel::invokeAny);
+        return map(mapper::dump).buffer().map(I.parallel::invokeAny);
     }
 
     /**
@@ -2202,10 +2202,10 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(v -> {
-                scheduler.accept(I.wiseC(observer).hide(v));
+                scheduler.accept(I.wiseC(observer).dump(v));
             }, e -> {
-                scheduler.accept(I.wiseC(observer::error).hide(e));
-            }, I.wiseC(scheduler).hide(observer::complete), disposer);
+                scheduler.accept(I.wiseC(observer::error).dump(e));
+            }, I.wiseC(scheduler).dump(observer::complete), disposer);
         });
     }
 
@@ -2647,7 +2647,7 @@ public final class Signal<V> {
     public final Signal<V> retryUntil(Class<? extends Throwable> type, Signal stopper) {
         // Use partial applied function to reduce code size.
         // return retryWhen(type, fail -> fail.takeUntil(stopper));
-        return retryWhen(type, (WiseFunction) ((WiseBiFunction<Signal, Signal, Signal>) Signal::takeUntil).hideEnd(stopper));
+        return retryWhen(type, (WiseFunction) ((WiseBiFunction<Signal, Signal, Signal>) Signal::takeUntil).dump(stopper));
     }
 
     /**
@@ -3862,7 +3862,7 @@ public final class Signal<V> {
             WiseConsumer<Object> effect = v -> {
                 future.getAndSet(v == null ? null : I.schedule(time, unit, scheduler, timeout)).cancel(false);
             };
-            return effect(effect.hide(this)).effectOnTerminate(effect.hide((V) null)).to(observer, disposer);
+            return effect(effect.dump(this)).effectOnTerminate(effect.dump((V) null)).to(observer, disposer);
         });
     }
 
@@ -3963,7 +3963,7 @@ public final class Signal<V> {
         if (time <= 0 || unit == null) {
             return this;
         }
-        return effect(((WiseConsumer<Long>) Thread::sleep).hide(unit.toMillis(time)));
+        return effect(((WiseConsumer<Long>) Thread::sleep).dump(unit.toMillis(time)));
     }
 
     /**

@@ -9,10 +9,6 @@
  */
 package kiss;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * General purpose flexible and invokable function interface.
  */
@@ -27,11 +23,11 @@ public interface Flexible<Self> {
      */
     Object invoke(Object... params);
 
-    default Self memoize() {
-        Map cache = new ConcurrentHashMap();
-
-        return I.make(this, Flexible.class, args -> {
-            return cache.computeIfAbsent(Objects.hash(args), I.wiseF(this::invoke).fixEnd(args));
-        });
-    }
+    // default Self memoize() {
+    // Map cache = new ConcurrentHashMap();
+    //
+    // return I.make(this, Flexible.class, args -> {
+    // return cache.computeIfAbsent(Objects.hash(args), k -> invoke(args));
+    // });
+    // }
 }

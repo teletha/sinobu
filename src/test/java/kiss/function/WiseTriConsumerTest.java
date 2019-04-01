@@ -36,7 +36,7 @@ class WiseTriConsumerTest {
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseBiConsumer<String, String> created = concat.hideLazy(variable);
+        WiseBiConsumer<String, String> created = concat.hideBy(variable);
 
         created.accept("this", "value");
         assert value.equals("init this value");
@@ -47,26 +47,26 @@ class WiseTriConsumerTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        concat.hideLazy(null).accept("this", "value");
+        concat.hideBy(null).accept("this", "value");
         assert value.equals("null this value");
     }
 
     @Test
     void narrowTail() {
-        concat.hideEnd("fixed").accept("value", "is");
+        concat.dump("fixed").accept("value", "is");
         assert value.equals("value is fixed");
     }
 
     @Test
     void narrowTailNull() {
-        concat.hideEnd(null).accept("value", "is");
+        concat.dump(null).accept("value", "is");
         assert value.equals("value is null");
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseBiConsumer<String, String> created = concat.hideEndLazy(variable);
+        WiseBiConsumer<String, String> created = concat.dumpBy(variable);
 
         created.accept("value", "is");
         assert value.equals("value is init");
@@ -77,7 +77,7 @@ class WiseTriConsumerTest {
 
     @Test
     void narrowTailLazilyNull() {
-        concat.hideEndLazy(null).accept("value", "is");
+        concat.dumpBy(null).accept("value", "is");
         assert value.equals("value is null");
     }
 }
