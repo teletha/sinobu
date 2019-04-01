@@ -24,7 +24,7 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
      * @return A partial applied function.
      */
     default Assigned assign(Assigner param) {
-        return assign(Variable.of(param));
+        return assignLazy(Variable.of(param));
     }
 
     /**
@@ -35,9 +35,9 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Assigned assign(Supplier<Assigner> param) {
+    default Assigned assignLazy(Supplier<Assigner> param) {
         return I.make(this, Narrow.class, 0, args -> {
-            return ((Flexible) this).invoke(I.array(args, param.get()));
+            return ((Flexible) this).invoke(I.array(args, param == null ? null : param.get()));
         });
     }
 
@@ -50,7 +50,7 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
      * @return A partial applied function.
      */
     default Preassigned preassign(Preassigner param) {
-        return preassign(Variable.of(param));
+        return preassignLazy(Variable.of(param));
     }
 
     /**
@@ -61,22 +61,9 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
      * @param param A fixed parameter.
      * @return A partial applied function.
      */
-    default Preassigned preassign(Supplier<Preassigner> param) {
+    default Preassigned preassignLazy(Supplier<Preassigner> param) {
         return I.make(this, Narrow.class, 0, args -> {
-            return ((Flexible) this).invoke(I.array(new Object[] {param.get()}, args));
+            return ((Flexible) this).invoke(I.array(new Object[] {param == null ? null : param.get()}, args));
         });
     }
-
-    // public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException {
-    // WiseBiConsumer<String, String> base = (p, q) -> {
-    // System.out.println("Consume " + p + " " + q);
-    // };
-    //
-    // WiseConsumer<String> consumer = base.preassign("ok");
-    // consumer.accept("kokok");
-    // Variable<String> vari = Variable.of("def");
-    // WiseRunnable run = consumer.preassign(vari);
-    // vari.set("change");
-    // run.run();
-    // }
 }
