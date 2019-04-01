@@ -11,7 +11,7 @@ package kiss;
 
 import java.util.Arrays;
 
-public interface Widen<F> {
+public interface Widen<F, Return> extends Flexible<Return> {
     /**
      * Widen parameter at last (appended parameter will be ignored).
      * 
@@ -19,7 +19,7 @@ public interface Widen<F> {
      */
     default F append() {
         return I.make(this, Widen.class, 0, args -> {
-            return ((Flexible) this).invoke(Arrays.copyOfRange(args, 0, args.length - 1));
+            return invoke(Arrays.copyOfRange(args, 0, args.length - 1));
         });
     }
 
@@ -30,7 +30,7 @@ public interface Widen<F> {
      */
     default F prepend() {
         return I.make(this, Widen.class, 0, args -> {
-            return ((Flexible) this).invoke(Arrays.copyOfRange(args, 1, args.length));
+            return invoke(Arrays.copyOfRange(args, 1, args.length));
         });
     }
 }

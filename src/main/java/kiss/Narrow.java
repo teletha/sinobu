@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * 
  */
-public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
+public interface Narrow<Assigned, Assigner, Preassigned, Preassigner, Return> extends Flexible<Return> {
     /**
      * <p>
      * Apply head parameter partialy.
@@ -37,7 +37,7 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
      */
     default Assigned assignLazy(Supplier<Assigner> param) {
         return I.make(this, Narrow.class, 0, args -> {
-            return ((Flexible) this).invoke(I.array(args, param == null ? null : param.get()));
+            return invoke(I.array(args, param == null ? null : param.get()));
         });
     }
 
@@ -63,7 +63,7 @@ public interface Narrow<Assigned, Assigner, Preassigned, Preassigner> {
      */
     default Preassigned preassignLazy(Supplier<Preassigner> param) {
         return I.make(this, Narrow.class, 0, args -> {
-            return ((Flexible) this).invoke(I.array(new Object[] {param == null ? null : param.get()}, args));
+            return invoke(I.array(new Object[] {param == null ? null : param.get()}, args));
         });
     }
 }
