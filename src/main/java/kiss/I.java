@@ -1208,29 +1208,37 @@ public class I {
         return (T) Proxy.newProxyInstance(I.class.getClassLoader(), new Class[] {type}, handler);
     }
 
-    static <F> F make(Object o, Class target, int index, Flexible delegate) {
-        Type type = Model.collectParameters(o.getClass().getInterfaces()[0], target)[index];
+    /**
+     * Create wise function interface.
+     * 
+     * @param o
+     * @param target
+     * @param handler
+     * @return
+     */
+    static <F> F make(Object o, Class target, Flexible handler) {
+        Type type = Model.collectParameters(o.getClass().getInterfaces()[0], target)[0];
 
         if (type instanceof ParameterizedType) {
             type = ((ParameterizedType) type).getRawType();
         }
 
-        if (type == WiseSupplier.class) {
-            return (F) (WiseSupplier) delegate::invoke;
-        } else if (type == WiseRunnable.class) {
-            return (F) (WiseRunnable) delegate::invoke;
-        } else if (type == WiseFunction.class) {
-            return (F) (WiseFunction) delegate::invoke;
+        if (type == WiseRunnable.class) {
+            return (F) (WiseRunnable) handler::invoke;
+        } else if (type == WiseSupplier.class) {
+            return (F) (WiseSupplier) handler::invoke;
         } else if (type == WiseConsumer.class) {
-            return (F) (WiseConsumer) delegate::invoke;
-        } else if (type == WiseBiFunction.class) {
-            return (F) (WiseBiFunction) delegate::invoke;
+            return (F) (WiseConsumer) handler::invoke;
+        } else if (type == WiseFunction.class) {
+            return (F) (WiseFunction) handler::invoke;
         } else if (type == WiseBiConsumer.class) {
-            return (F) (WiseBiConsumer) delegate::invoke;
-        } else if (type == WiseTriFunction.class) {
-            return (F) (WiseTriFunction) delegate::invoke;
+            return (F) (WiseBiConsumer) handler::invoke;
+        } else if (type == WiseBiFunction.class) {
+            return (F) (WiseBiFunction) handler::invoke;
+        } else if (type == WiseTriConsumer.class) {
+            return (F) (WiseTriConsumer) handler::invoke;
         } else {
-            return (F) (WiseTriConsumer) delegate::invoke;
+            return (F) (WiseTriFunction) handler::invoke;
         }
     }
 

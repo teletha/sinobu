@@ -11,15 +11,15 @@ package kiss;
 
 import java.util.Arrays;
 
-public interface Widen<F> extends Flexible {
+public interface Widen<Wide> extends Flexible {
 
     /**
      * Widen parameter at last (appended parameter will be ignored).
      * 
-     * @return A widen function.
+     * @return A wide function.
      */
-    default F append() {
-        return I.make(this, Widen.class, 0, args -> {
+    default Wide append() {
+        return I.make(this, Widen.class, args -> {
             return invoke(Arrays.copyOfRange(args, 0, args.length - 1));
         });
     }
@@ -27,10 +27,10 @@ public interface Widen<F> extends Flexible {
     /**
      * Widen parameter at first (appended parameter will be ignored).
      * 
-     * @return A widen function.
+     * @return A wide function.
      */
-    default F prepend() {
-        return I.make(this, Widen.class, 0, args -> {
+    default Wide prepend() {
+        return I.make(this, Widen.class, args -> {
             return invoke(Arrays.copyOfRange(args, 1, args.length));
         });
     }
