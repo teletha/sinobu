@@ -83,66 +83,6 @@ class WiseBiConsumerTest {
     }
 
     @Test
-    void fixHead() {
-        concat.fix("fixed").accept("this arg will be ignored", "value");
-        assert value.equals("fixed value");
-    }
-
-    @Test
-    void fixHeadNull() {
-        concat.fix(null).accept("this arg will be ignored", "value");
-        assert value.equals("null value");
-    }
-
-    @Test
-    void fixHeadLazily() {
-        Variable<String> variable = Variable.of("init");
-        WiseBiConsumer<String, String> created = concat.fixLazily(variable);
-
-        created.accept("this arg will be ignored", "value");
-        assert value.equals("init value");
-        variable.set("change");
-        created.accept("this arg will be ignored", "value");
-        assert value.equals("change value");
-    }
-
-    @Test
-    void fixHeadLazilyNull() {
-        concat.fixLazily(null).accept("this arg will be ignored", "value");
-        assert value.equals("null value");
-    }
-
-    @Test
-    void fixTail() {
-        concat.fixLast("fixed").accept("value", "this arg will be ignored");
-        assert value.equals("value fixed");
-    }
-
-    @Test
-    void fixTailNull() {
-        concat.fixLast(null).accept("value", "this arg will be ignored");
-        assert value.equals("value null");
-    }
-
-    @Test
-    void fixTailLazily() {
-        Variable<String> variable = Variable.of("init");
-        WiseBiConsumer<String, String> created = concat.fixLastLazily(variable);
-
-        created.accept("value", "this arg will be ignored");
-        assert value.equals("value init");
-        variable.set("change");
-        created.accept("value", "this arg will be ignored");
-        assert value.equals("value change");
-    }
-
-    @Test
-    void fixTailLazilyNull() {
-        concat.fixLastLazily(null).accept("value", "this arg will be ignored");
-        assert value.equals("value null");
-    }
-
-    @Test
     void widenHead() {
         WiseTriConsumer<String, String, String> created = concat.widen();
         created.accept("ignore", "this is", "used");

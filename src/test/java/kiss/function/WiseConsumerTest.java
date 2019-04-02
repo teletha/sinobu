@@ -83,66 +83,6 @@ class WiseConsumerTest {
     }
 
     @Test
-    void fixHead() {
-        setter.fix("fixed").accept("this arg will be ignored");
-        assert value.equals("fixed");
-    }
-
-    @Test
-    void fixHeadNull() {
-        setter.fix(null).accept("this arg will be ignored");
-        assert value == null;
-    }
-
-    @Test
-    void fixHeadLazily() {
-        Variable<String> variable = Variable.of("init");
-        WiseConsumer<String> created = setter.fixLazily(variable);
-
-        created.accept("this arg will be ignored");
-        assert value.equals("init");
-        variable.set("change");
-        created.accept("this arg will be ignored");
-        assert value.equals("change");
-    }
-
-    @Test
-    void fixHeadLazilyNull() {
-        setter.fixLazily(null).accept("this arg will be ignored");
-        assert value == null;
-    }
-
-    @Test
-    void fixTail() {
-        setter.fixLast("fixed").accept("this arg will be ignored");
-        assert value.equals("fixed");
-    }
-
-    @Test
-    void fixTailNull() {
-        setter.fixLast(null).accept("this arg will be ignored");
-        assert value == null;
-    }
-
-    @Test
-    void fixTailLazily() {
-        Variable<String> variable = Variable.of("init");
-        WiseConsumer<String> created = setter.fixLastLazily(variable);
-
-        created.accept("this arg will be ignored");
-        assert value.equals("init");
-        variable.set("change");
-        created.accept("this arg will be ignored");
-        assert value.equals("change");
-    }
-
-    @Test
-    void fixTailLazilyNull() {
-        setter.fixLastLazily(null).accept("this arg will be ignored");
-        assert value == null;
-    }
-
-    @Test
     void widenHead() {
         WiseBiConsumer<String, String> created = setter.widen();
         created.accept("ignore", "use");

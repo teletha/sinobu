@@ -9,9 +9,6 @@
  */
 package kiss;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -63,66 +60,66 @@ public interface Narrow<FirstBinded, First, LastBinded, Last, Self> extends Flex
         });
     }
 
-    /**
-     * Fix first parameter partialy. The actual argument from the caller will be ignored.
-     * 
-     * @param param A fixed parameter.
-     * @return A partial fixed function.
-     */
-    default Self fix(First param) {
-        return fixLazily(Variable.of(param));
-    }
-
-    /**
-     * Fix first parameter partialy. The actual argument from the caller will be ignored. The null
-     * {@link Supplier} will be treated as null value.
-     * 
-     * @param param A fixed parameter.
-     * @return A partial fixed function.
-     */
-    default Self fixLazily(Supplier<First> param) {
-        return I.make(this, Flexible.class, args -> {
-            args[0] = param == null ? null : param.get();
-            return invoke(args);
-        });
-    }
-
-    /**
-     * Fix last parameter partialy. The actual argument from the caller will be ignored.
-     * 
-     * @param param A fixed parameter.
-     * @return A partial fixed function.
-     */
-    default Self fixLast(Last param) {
-        return fixLastLazily(Variable.of(param));
-    }
-
-    /**
-     * Fix last parameter partialy. The actual argument from the caller will be ignored. The null
-     * {@link Supplier} will be treated as null value.
-     * 
-     * @param param A fixed parameter.
-     * @return A partial fixed function.
-     */
-    default Self fixLastLazily(Supplier<Last> param) {
-        return I.make(this, Flexible.class, args -> {
-            args[args.length - 1] = param == null ? null : param.get();
-            return invoke(args);
-        });
-    }
-
-    /**
-     * Create memoized function.
-     *
-     * @return The created memoized function.
-     */
-    default Self memo() {
-        Map cache = new ConcurrentHashMap();
-
-        return I.make(this, Flexible.class, args -> {
-            synchronized (cache) {
-                return cache.computeIfAbsent(Objects.hash(args), k -> invoke(args));
-            }
-        });
-    }
+    // /**
+    // * Fix first parameter partialy. The actual argument from the caller will be ignored.
+    // *
+    // * @param param A fixed parameter.
+    // * @return A partial fixed function.
+    // */
+    // default Self fix(First param) {
+    // return fixLazily(Variable.of(param));
+    // }
+    //
+    // /**
+    // * Fix first parameter partialy. The actual argument from the caller will be ignored. The null
+    // * {@link Supplier} will be treated as null value.
+    // *
+    // * @param param A fixed parameter.
+    // * @return A partial fixed function.
+    // */
+    // default Self fixLazily(Supplier<First> param) {
+    // return I.make(this, Flexible.class, args -> {
+    // args[0] = param == null ? null : param.get();
+    // return invoke(args);
+    // });
+    // }
+    //
+    // /**
+    // * Fix last parameter partialy. The actual argument from the caller will be ignored.
+    // *
+    // * @param param A fixed parameter.
+    // * @return A partial fixed function.
+    // */
+    // default Self fixLast(Last param) {
+    // return fixLastLazily(Variable.of(param));
+    // }
+    //
+    // /**
+    // * Fix last parameter partialy. The actual argument from the caller will be ignored. The null
+    // * {@link Supplier} will be treated as null value.
+    // *
+    // * @param param A fixed parameter.
+    // * @return A partial fixed function.
+    // */
+    // default Self fixLastLazily(Supplier<Last> param) {
+    // return I.make(this, Flexible.class, args -> {
+    // args[args.length - 1] = param == null ? null : param.get();
+    // return invoke(args);
+    // });
+    // }
+    //
+    // /**
+    // * Create memoized function.
+    // *
+    // * @return The created memoized function.
+    // */
+    // default Self memo() {
+    // Map cache = new ConcurrentHashMap();
+    //
+    // return I.make(this, Flexible.class, args -> {
+    // synchronized (cache) {
+    // return cache.computeIfAbsent(Objects.hash(args), k -> invoke(args));
+    // }
+    // });
+    // }
 }
