@@ -1217,7 +1217,7 @@ public class I {
      * @return
      */
     static <F> F make(Object o, Class target, Flexible handler) {
-        Type type = o == null ? target : Model.collectParameters(o.getClass().getInterfaces()[0], target)[0];
+        Type type = Model.collectParameters(o.getClass().getInterfaces()[0], target)[0];
 
         if (type instanceof ParameterizedType) {
             type = ((ParameterizedType) type).getRawType();

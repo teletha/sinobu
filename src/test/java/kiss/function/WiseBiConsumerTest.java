@@ -144,28 +144,28 @@ class WiseBiConsumerTest {
 
     @Test
     void widenHead() {
-        WiseTriConsumer<String, String, String> created = concat.up();
+        WiseTriConsumer<String, String, String> created = concat.widen();
         created.accept("ignore", "this is", "used");
         assert value.equals("this is used");
     }
 
     @Test
     void widenHeadNull() {
-        WiseTriConsumer<String, String, String> created = concat.up();
+        WiseTriConsumer<String, String, String> created = concat.widen();
         created.accept(null, "this is", "used");
         assert value.equals("this is used");
     }
 
     @Test
     void widenTail() {
-        WiseTriConsumer<String, String, String> created = concat.as();
+        WiseTriConsumer<String, String, String> created = concat.widenLast();
         created.accept("this is", "used", "ignore");
         assert value.equals("this is used");
     }
 
     @Test
     void widenTailNull() {
-        WiseTriConsumer<String, String, String> created = concat.as();
+        WiseTriConsumer<String, String, String> created = concat.widenLast();
         created.accept("this is", "used", null);
         assert value.equals("this is used");
     }

@@ -21,7 +21,7 @@ public interface Widen<Wide, Self> extends Flexible<Self> {
      * 
      * @return An expanded function.
      */
-    default Wide up() {
+    default Wide widen() {
         return I.make(this, Widen.class, args -> {
             return invoke(Arrays.copyOfRange(args, 1, args.length));
         });
@@ -32,9 +32,7 @@ public interface Widen<Wide, Self> extends Flexible<Self> {
      * 
      * @return An expanded function.
      */
-    default Wide as() {
-        return I.make(this, Widen.class, args -> {
-            return invoke(Arrays.copyOfRange(args, 0, args.length - 1));
-        });
+    default Wide widenLast() {
+        return I.make(this, Widen.class, this);
     }
 }

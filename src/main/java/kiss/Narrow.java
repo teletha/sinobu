@@ -113,7 +113,7 @@ public interface Narrow<FirstBinded, First, LastBinded, Last, Self> extends Flex
 
     /**
      * Create memoized function.
-     * 
+     *
      * @return The created memoized function.
      */
     default Self memo() {

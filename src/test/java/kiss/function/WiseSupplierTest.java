@@ -20,14 +20,14 @@ class WiseSupplierTest {
 
     @Test
     void widenHead() {
-        WiseFunction<String, String> created = constant.up();
+        WiseFunction<String, String> created = constant.widen();
         assert created.apply("ignore").equals("constant");
         assert created.apply(null).equals("constant");
     }
 
     @Test
     void widenTail() {
-        WiseFunction<String, String> created = constant.as();
+        WiseFunction<String, String> created = constant.widenLast();
         assert created.apply("ignore").equals("constant");
         assert created.apply(null).equals("constant");
     }

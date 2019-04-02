@@ -109,7 +109,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(Name name, WiseRunnable writer) {
-        $(name, new Consumer[] {writer.as()});
+        $(name, new Consumer[] {writer.widen()});
     }
 
     /**
@@ -125,7 +125,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(Name name, Consumer<Node> one, WiseRunnable writer) {
-        $(name, new Consumer[] {one, writer.as()});
+        $(name, new Consumer[] {one, writer.widen()});
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, WiseRunnable writer) {
-        $(name, new Consumer[] {one, two, writer.as()});
+        $(name, new Consumer[] {one, two, writer.widen()});
     }
 
     /**
@@ -160,7 +160,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Consumer<Node> three, WiseRunnable writer) {
-        $(name, new Consumer[] {one, two, three, writer.as()});
+        $(name, new Consumer[] {one, two, three, writer.widen()});
     }
 
     /**
@@ -179,7 +179,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
      * @param writer A content writer that lambda expression make us readable on nested structure.
      */
     protected final void $(Name name, Consumer<Node> one, Consumer<Node> two, Consumer<Node> three, Consumer<Node> four, WiseRunnable writer) {
-        $(name, new Consumer[] {one, two, three, four, writer.as()});
+        $(name, new Consumer[] {one, two, three, four, writer.widen()});
     }
 
     /**

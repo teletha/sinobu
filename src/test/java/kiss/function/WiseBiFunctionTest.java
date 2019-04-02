@@ -74,7 +74,7 @@ class WiseBiFunctionTest {
 
     @Test
     void widenHead() {
-        WiseTriFunction<String, String, String, String> created = concat.up();
+        WiseTriFunction<String, String, String, String> created = concat.widen();
         assert created.apply("ignore", "use", "value").equals("use value");
         assert created.apply(null, "use", "value").equals("use value");
         assert created.apply(null, null, null).equals("null null");
@@ -82,7 +82,7 @@ class WiseBiFunctionTest {
 
     @Test
     void widenTail() {
-        WiseTriFunction<String, String, String, String> created = concat.as();
+        WiseTriFunction<String, String, String, String> created = concat.widenLast();
         assert created.apply("use", "value", "ignore").equals("use value");
         assert created.apply("use", "value", null).equals("use value");
         assert created.apply(null, null, null).equals("null null");

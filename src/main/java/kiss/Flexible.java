@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.util.Objects;
-
 /**
  * General purpose flexible and invokable function interface.
  */
@@ -24,8 +22,4 @@ public interface Flexible<Self> {
      * @return A some value (may be null).
      */
     Object invoke(Object... params);
-
-    default <F extends Flexible> F as(Class<F> type) {
-        return I.make(null, Objects.requireNonNull(type), args -> invoke(I.array(args, null, null, null)));
-    }
 }
