@@ -16,13 +16,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 
  * @version 2018/04/28 1:58:42
  */
-public class Signaling<T> implements Observer<T> {
+public class Signaling<V> implements Observer<V> {
 
     /** The internal listeners. */
-    final CopyOnWriteArrayList<Observer<? super T>> observers = new CopyOnWriteArrayList();
+    final CopyOnWriteArrayList<Observer<? super V>> observers = new CopyOnWriteArrayList();
 
     /** The exposed interface. */
-    public final Signal<T> expose = new Signal<>((observer, disposer) -> {
+    public final Signal<V> expose = new Signal<>((observer, disposer) -> {
         observers.add(observer);
 
         return disposer.add(() -> {
@@ -34,8 +34,8 @@ public class Signaling<T> implements Observer<T> {
      * {@inheritDoc}
      */
     @Override
-    public void accept(T value) {
-        for (Observer<? super T> observer : observers) {
+    public void accept(V value) {
+        for (Observer<? super V> observer : observers) {
             observer.accept(value);
         }
     }
@@ -45,7 +45,7 @@ public class Signaling<T> implements Observer<T> {
      */
     @Override
     public void complete() {
-        for (Observer<? super T> observer : observers) {
+        for (Observer<? super V> observer : observers) {
             observer.complete();
         }
     }
@@ -55,7 +55,7 @@ public class Signaling<T> implements Observer<T> {
      */
     @Override
     public void error(Throwable error) {
-        for (Observer<? super T> observer : observers) {
+        for (Observer<? super V> observer : observers) {
             observer.error(error);
         }
     }

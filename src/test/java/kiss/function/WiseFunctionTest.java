@@ -74,7 +74,7 @@ class WiseFunctionTest {
 
     @Test
     void widenHead() {
-        WiseBiFunction<String, String, String> created = identity.head();
+        WiseBiFunction<String, String, String> created = identity.up();
         assert created.apply("ignore", "use") == "use";
         assert created.apply(null, "use") == "use";
         assert created.apply(null, null) == null;
@@ -82,7 +82,7 @@ class WiseFunctionTest {
 
     @Test
     void widenTail() {
-        WiseBiFunction<String, String, String> created = identity.tail();
+        WiseBiFunction<String, String, String> created = identity.as();
         assert created.apply("use", "ignore") == "use";
         assert created.apply("use", null) == "use";
         assert created.apply(null, null) == null;

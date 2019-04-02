@@ -22,7 +22,7 @@ class WiseRunnableTest {
 
     @Test
     void widenHead() {
-        WiseConsumer<String> created = constant.head();
+        WiseConsumer<String> created = constant.up();
         assert value == null;
         created.accept("ignore");
         assert value.equals("constant");
@@ -30,7 +30,7 @@ class WiseRunnableTest {
 
     @Test
     void widenHeadNull() {
-        WiseConsumer<String> created = constant.head();
+        WiseConsumer<String> created = constant.up();
         assert value == null;
         created.accept(null);
         assert value.equals("constant");
@@ -38,7 +38,7 @@ class WiseRunnableTest {
 
     @Test
     void widenTail() {
-        WiseConsumer<String> created = constant.tail();
+        WiseConsumer<String> created = constant.as();
         assert value == null;
         created.accept("ignore");
         assert value.equals("constant");
@@ -46,7 +46,7 @@ class WiseRunnableTest {
 
     @Test
     void widenTailNull() {
-        WiseConsumer<String> created = constant.tail();
+        WiseConsumer<String> created = constant.as();
         assert value == null;
         created.accept(null);
         assert value.equals("constant");
