@@ -11,27 +11,30 @@ package kiss;
 
 import java.util.Arrays;
 
+/**
+ * Provide the signature morphing functionality.
+ */
 public interface Widen<Wide, Self> extends Flexible<Self> {
 
     /**
-     * Widen parameter at last (appended parameter will be ignored).
+     * Insert parameter at first (appended parameter will be ignored).
      * 
-     * @return A wide function.
+     * @return An expanded function.
      */
-    default Wide append() {
+    default Wide head() {
         return I.make(this, Widen.class, args -> {
-            return invoke(Arrays.copyOfRange(args, 0, args.length - 1));
+            return invoke(Arrays.copyOfRange(args, 1, args.length));
         });
     }
 
     /**
-     * Widen parameter at first (appended parameter will be ignored).
+     * Insert parameter at last (appended parameter will be ignored).
      * 
-     * @return A wide function.
+     * @return An expanded function.
      */
-    default Wide prepend() {
+    default Wide tail() {
         return I.make(this, Widen.class, args -> {
-            return invoke(Arrays.copyOfRange(args, 1, args.length));
+            return invoke(Arrays.copyOfRange(args, 0, args.length - 1));
         });
     }
 }

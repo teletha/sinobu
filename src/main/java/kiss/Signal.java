@@ -118,7 +118,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next) {
-        return to(I.wiseR(next).append(), null, null);
+        return to(I.wiseR(next).tail(), null, null);
     }
 
     /**
@@ -170,7 +170,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next, Consumer<Throwable> error, Runnable complete) {
-        return to(I.wiseR(next).append(), error, complete);
+        return to(I.wiseR(next).tail(), error, complete);
     }
 
     /**
@@ -877,7 +877,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> concatMap(WiseFunction<V, Signal<R>> function) {
-        return concatMap(function.append());
+        return concatMap(function.tail());
     }
 
     /**
@@ -963,7 +963,7 @@ public final class Signal<V> {
      *         {@link Signal} as a 64-bit Long item
      */
     public final Signal<Long> count() {
-        return map(AtomicLong::new, ((WiseFunction<AtomicLong, Long>) AtomicLong::incrementAndGet).append());
+        return map(AtomicLong::new, ((WiseFunction<AtomicLong, Long>) AtomicLong::incrementAndGet).tail());
     }
 
     /**
@@ -1126,7 +1126,7 @@ public final class Signal<V> {
         if (time == null || time.get().toNanos() <= 0) {
             return this;
         }
-        return delay(I.wiseS(time).append(), scheduler);
+        return delay(I.wiseS(time).tail(), scheduler);
     }
 
     /**
@@ -1302,7 +1302,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effect(effect.append());
+        return effect(effect.tail());
     }
 
     /**
@@ -1349,7 +1349,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effectAfter(effect.append());
+        return effectAfter(effect.tail());
     }
 
     /**
@@ -1420,7 +1420,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effectOnce(effect.append());
+        return effectOnce(effect.tail());
     }
 
     /**
@@ -1555,7 +1555,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effectOnError(effect.append());
+        return effectOnError(effect.tail());
     }
 
     /**
@@ -1600,7 +1600,7 @@ public final class Signal<V> {
      * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnObserve(WiseRunnable effect) {
-        return effectOnObserve(effect == null ? null : effect.append());
+        return effectOnObserve(effect == null ? null : effect.tail());
     }
 
     /**
@@ -1768,7 +1768,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
-        return flatMap(function.append());
+        return flatMap(function.tail());
     }
 
     /**
@@ -2435,7 +2435,7 @@ public final class Signal<V> {
                 if (immediate) {
                     observer.complete();
                 } else {
-                    subscriber.next = I.wiseR(observer::complete).append();
+                    subscriber.next = I.wiseR(observer::complete).tail();
 
                     // Since there is a complete in processing, but this complete flow has ended,
                     // the processing complete is passed to the source signal.
@@ -3432,7 +3432,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> switchMap(WiseFunction<V, Signal<R>> function) {
-        return switchMap(function.append());
+        return switchMap(function.tail());
     }
 
     /**

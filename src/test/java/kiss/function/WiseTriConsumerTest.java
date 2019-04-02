@@ -80,4 +80,64 @@ class WiseTriConsumerTest {
         concat.bindLastLazily(null).accept("value", "is");
         assert value.equals("value is null");
     }
+
+    @Test
+    void fixHead() {
+        concat.fix("fixed").accept("this arg will be ignored", "this", "value");
+        assert value.equals("fixed this value");
+    }
+
+    @Test
+    void fixHeadNull() {
+        concat.fix(null).accept("this arg will be ignored", "is", "accepted");
+        assert value.equals("null is accepted");
+    }
+
+    @Test
+    void fixHeadLazily() {
+        Variable<String> variable = Variable.of("current value");
+        WiseTriConsumer<String, String, String> created = concat.fixLazily(variable);
+
+        created.accept("this arg will be ignored", "is", "used");
+        assert value.equals("current value is used");
+        variable.set("modified value");
+        created.accept("this arg will be ignored", "is", "used");
+        assert value.equals("modified value is used");
+    }
+
+    @Test
+    void fixHeadLazilyNull() {
+        concat.fixLazily(null).accept("this arg will be ignored", "is", "acceptable");
+        assert value.equals("null is acceptable");
+    }
+
+    @Test
+    void fixTail() {
+        concat.fixLast("fixed").accept("value", "is", "this arg will be ignored");
+        assert value.equals("value is fixed");
+    }
+
+    @Test
+    void fixTailNull() {
+        concat.fixLast(null).accept("it", "accepts", "this arg will be ignored");
+        assert value.equals("it accepts null");
+    }
+
+    @Test
+    void fixTailLazily() {
+        Variable<String> variable = Variable.of("init");
+        WiseTriConsumer<String, String, String> created = concat.fixLastLazily(variable);
+
+        created.accept("value", "is", "this arg will be ignored");
+        assert value.equals("value is init");
+        variable.set("modified");
+        created.accept("value", "is", "this arg will be ignored");
+        assert value.equals("value is modified");
+    }
+
+    @Test
+    void fixTailLazilyNull() {
+        concat.fixLastLazily(null).accept("it", "accepts", "this arg will be ignored");
+        assert value.equals("it accepts null");
+    }
 }
