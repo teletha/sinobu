@@ -22,12 +22,4 @@ public interface Flexible<Self> {
      * @return A some value (may be null).
      */
     Object invoke(Object... params);
-
-    // default Self memoize() {
-    // Map cache = new ConcurrentHashMap();
-    //
-    // return I.make(this, Flexible.class, args -> {
-    // return cache.computeIfAbsent(Objects.hash(args), k -> invoke(args));
-    // });
-    // }
 }
