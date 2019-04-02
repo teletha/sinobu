@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * @version 2018/04/02 8:35:45
  */
 public interface WiseConsumer<Param>
-        extends Consumer<Param>, Narrow<WiseRunnable, Param, WiseRunnable, Param, WiseConsumer<Param>>,
-        Widen<WiseBiConsumer, WiseConsumer<Param>> {
+        extends Consumer<Param>, Widen<WiseBiConsumer, WiseConsumer<Param>>,
+        Narrow<WiseRunnable, Param, WiseRunnable, Param, WiseConsumer<Param>> {
 
     /**
      * <p>

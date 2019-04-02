@@ -24,18 +24,18 @@ class WiseFunctionTest {
 
     @Test
     void narrowHead() {
-        assert identity.hide("fixed").get() == "fixed";
+        assert identity.bind("fixed").get() == "fixed";
     }
 
     @Test
     void narrowHeadNull() {
-        assert identity.hide((String) null).get() == null;
+        assert identity.bind((String) null).get() == null;
     }
 
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseSupplier<String> created = identity.hideBy(variable);
+        WiseSupplier<String> created = identity.bindLazily(variable);
 
         assert created.get() == "init";
         variable.set("change");
@@ -44,23 +44,23 @@ class WiseFunctionTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        assert identity.hideBy((Supplier) null).get() == null;
+        assert identity.bindLazily((Supplier) null).get() == null;
     }
 
     @Test
     void narrowTail() {
-        assert identity.dump("fixed").get() == "fixed";
+        assert identity.bindLast("fixed").get() == "fixed";
     }
 
     @Test
     void narrowTailNull() {
-        assert identity.dump((String) null).get() == null;
+        assert identity.bindLast((String) null).get() == null;
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseSupplier<String> created = identity.dumpBy(variable);
+        WiseSupplier<String> created = identity.bindLastLazily(variable);
 
         assert created.get() == "init";
         variable.set("change");
@@ -69,7 +69,7 @@ class WiseFunctionTest {
 
     @Test
     void narrowTailLazilyNull() {
-        assert identity.dumpBy((Supplier) null).get() == null;
+        assert identity.bindLastLazily((Supplier) null).get() == null;
     }
 
     @Test

@@ -24,20 +24,20 @@ class WiseConsumerTest {
 
     @Test
     void narrowHead() {
-        setter.hide("fixed").run();
+        setter.bind("fixed").run();
         assert value.equals("fixed");
     }
 
     @Test
     void narrowHeadNull() {
-        setter.hide(null).run();
+        setter.bind(null).run();
         assert value == null;
     }
 
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseRunnable created = setter.hideBy(variable);
+        WiseRunnable created = setter.bindLazily(variable);
 
         created.run();
         assert value.equals("init");
@@ -48,26 +48,26 @@ class WiseConsumerTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        setter.hideBy(null).run();
+        setter.bindLazily(null).run();
         assert value == null;
     }
 
     @Test
     void narrowTail() {
-        setter.dump("fixed").run();
+        setter.bindLast("fixed").run();
         assert value.equals("fixed");
     }
 
     @Test
     void narrowTailNull() {
-        setter.dump(null).run();
+        setter.bindLast(null).run();
         assert value == null;
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseRunnable created = setter.dumpBy(variable);
+        WiseRunnable created = setter.bindLastLazily(variable);
 
         created.run();
         assert value.equals("init");
@@ -78,7 +78,7 @@ class WiseConsumerTest {
 
     @Test
     void narrowTailLazilyNull() {
-        setter.dumpBy(null).run();
+        setter.bindLastLazily(null).run();
         assert value == null;
     }
 

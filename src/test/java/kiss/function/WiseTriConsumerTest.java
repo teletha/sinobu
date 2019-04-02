@@ -23,20 +23,20 @@ class WiseTriConsumerTest {
 
     @Test
     void narrowHead() {
-        concat.hide("fix").accept("this", "value");
+        concat.bind("fix").accept("this", "value");
         assert value.equals("fix this value");
     }
 
     @Test
     void narrowHeadNull() {
-        concat.hide(null).accept("this", "value");
+        concat.bind(null).accept("this", "value");
         assert value.equals("null this value");
     }
 
     @Test
     void narrowHeadLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseBiConsumer<String, String> created = concat.hideBy(variable);
+        WiseBiConsumer<String, String> created = concat.bindLazily(variable);
 
         created.accept("this", "value");
         assert value.equals("init this value");
@@ -47,26 +47,26 @@ class WiseTriConsumerTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        concat.hideBy(null).accept("this", "value");
+        concat.bindLazily(null).accept("this", "value");
         assert value.equals("null this value");
     }
 
     @Test
     void narrowTail() {
-        concat.dump("fixed").accept("value", "is");
+        concat.bindLast("fixed").accept("value", "is");
         assert value.equals("value is fixed");
     }
 
     @Test
     void narrowTailNull() {
-        concat.dump(null).accept("value", "is");
+        concat.bindLast(null).accept("value", "is");
         assert value.equals("value is null");
     }
 
     @Test
     void narrowTailLazily() {
         Variable<String> variable = Variable.of("init");
-        WiseBiConsumer<String, String> created = concat.dumpBy(variable);
+        WiseBiConsumer<String, String> created = concat.bindLastLazily(variable);
 
         created.accept("value", "is");
         assert value.equals("value is init");
@@ -77,7 +77,7 @@ class WiseTriConsumerTest {
 
     @Test
     void narrowTailLazilyNull() {
-        concat.dumpBy(null).accept("value", "is");
+        concat.bindLastLazily(null).accept("value", "is");
         assert value.equals("value is null");
     }
 }

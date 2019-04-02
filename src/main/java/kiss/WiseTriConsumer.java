@@ -14,7 +14,7 @@ package kiss;
  */
 public interface WiseTriConsumer<Param1, Param2, Param3>
         extends
-        Narrow<WiseBiConsumer<Param1, Param2>, Param3, WiseBiConsumer<Param2, Param3>, Param1, WiseTriConsumer<Param1, Param2, Param3>> {
+        Narrow<WiseBiConsumer<Param2, Param3>, Param1, WiseBiConsumer<Param1, Param2>, Param3, WiseTriConsumer<Param1, Param2, Param3>> {
 
     /**
      * Internal API.
