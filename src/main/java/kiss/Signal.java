@@ -1869,7 +1869,7 @@ public final class Signal<V> {
 
         return combine(next.expose.startWith(Duration.ZERO).delay(Function.identity(), scheduler)) //
                 .map(Ⅱ::ⅰ)
-                .effectAfter(I.wiseC(next).bindLast(Duration.of(interval, unit.toChronoUnit())));
+                .effectAfter(I.wiseC(next).bind(Duration.of(interval, unit.toChronoUnit())));
     }
 
     /**
@@ -1978,7 +1978,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAll(WiseFunction<V, R> mapper) {
-        return map(mapper::bindLast).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
+        return map(mapper::bind).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
     }
 
     /**
@@ -1989,7 +1989,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAny(WiseFunction<V, R> mapper) {
-        return map(mapper::bindLast).buffer().map(I.parallel::invokeAny);
+        return map(mapper::bind).buffer().map(I.parallel::invokeAny);
     }
 
     /**
@@ -2202,10 +2202,10 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             return to(v -> {
-                scheduler.accept(I.wiseC(observer).bindLast(v));
+                scheduler.accept(I.wiseC(observer).bind(v));
             }, e -> {
-                scheduler.accept(I.wiseC(observer::error).bindLast(e));
-            }, I.wiseC(scheduler).bindLast(observer::complete), disposer);
+                scheduler.accept(I.wiseC(observer::error).bind(e));
+            }, I.wiseC(scheduler).bind(observer::complete), disposer);
         });
     }
 
@@ -3862,7 +3862,7 @@ public final class Signal<V> {
             WiseConsumer<Object> effect = v -> {
                 future.getAndSet(v == null ? null : I.schedule(time, unit, scheduler, timeout)).cancel(false);
             };
-            return effect(effect.bindLast(this)).effectOnTerminate(effect.bindLast((V) null)).to(observer, disposer);
+            return effect(effect.bind(this)).effectOnTerminate(effect.bind((V) null)).to(observer, disposer);
         });
     }
 
@@ -3963,7 +3963,7 @@ public final class Signal<V> {
         if (time <= 0 || unit == null) {
             return this;
         }
-        return effect(((WiseConsumer<Long>) Thread::sleep).bindLast(unit.toMillis(time)));
+        return effect(((WiseConsumer<Long>) Thread::sleep).bind(unit.toMillis(time)));
     }
 
     /**
