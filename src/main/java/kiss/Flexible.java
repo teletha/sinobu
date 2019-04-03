@@ -22,4 +22,8 @@ public interface Flexible<Self> {
      * @return A some value (may be null).
      */
     Object invoke(Object... params);
+
+    // default <F extends Flexible> F as(Class<F> type) {
+    // return I.make(null, type, args -> invoke(I.array(args, null, null, null)));
+    // }
 }

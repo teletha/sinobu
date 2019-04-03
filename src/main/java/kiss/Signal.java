@@ -877,21 +877,6 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> concatMap(WiseFunction<V, Signal<R>> function) {
-        return concatMap(function.widenLast());
-    }
-
-    /**
-     * Maps a sequence of values into {@link Signal} and concatenates these {@link Signal} eagerly
-     * into a single {@link Signal}. Eager concatenation means that once a subscriber subscribes,
-     * this operator subscribes to all of the source {@link Signal}. The operator buffers the values
-     * emitted by these {@link Signal} and then drains them in order, each one after the previous
-     * one completes.
-     * 
-     * @param function A function that maps a sequence of values into a sequence of {@link Signal}
-     *            that will be eagerly concatenated.
-     * @return Chainable API.
-     */
-    public final <R> Signal<R> concatMap(WiseBiFunction<V, Signal<V>, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -918,15 +903,13 @@ public final class Signal<V> {
 
             Subscriber end = countable(observer, 1);
 
-            return
-
-            index().to(indexed -> {
+            return index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
                 end.index++;
 
-                function.apply(indexed.ⅰ, this).to(v -> {
+                function.apply(indexed.ⅰ).to(v -> {
                     if (processing.get() == indexed.ⅱ) {
                         observer.accept(v);
                     } else {
@@ -1768,23 +1751,6 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
-        return flatMap(function.widenLast());
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to
-     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
-     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
-     * </p>
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal}
-     *            , returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Signal} and merging the results of the
-     *         {@link Signal} obtained from this transformation.
-     */
-    public final <R> Signal<R> flatMap(WiseBiFunction<V, Signal<V>, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -1792,7 +1758,7 @@ public final class Signal<V> {
 
             return to(value -> {
                 end.index++;
-                function.apply(value, this).to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
+                function.apply(value).to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
             }, observer::error, end::complete, disposer);
         });
     }
@@ -1813,7 +1779,8 @@ public final class Signal<V> {
     public final <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
         Objects.requireNonNull(function);
 
-        return flatMap((v, self) -> function.apply(v).observeNow().takeUntil(self.isCompleted()));
+        Signal<V> share = share();
+        return share.flatMap(v -> function.apply(v).observeNow().takeUntil(share.isCompleted()));
     }
 
     /**
@@ -3432,24 +3399,6 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> switchMap(WiseFunction<V, Signal<R>> function) {
-        return switchMap(function.widenLast());
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to
-     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
-     * , and then merging the latest resulting {@link Signal} and emitting the results of this
-     * merger.
-     * </p>
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal}
-     *            , returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Signal} and merging the results of the
-     *         {@link Signal} obtained from this transformation.
-     */
-    public final <R> Signal<R> switchMap(WiseBiFunction<V, Signal<V>, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -3459,8 +3408,7 @@ public final class Signal<V> {
             disposables[0] = to(value -> {
                 end.index++;
                 disposables[1].dispose();
-                disposables[1] = function.apply(value, this)
-                        .to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
+                disposables[1] = function.apply(value).to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
             }, observer::error, end::complete, disposer.sub());
             return disposer.add(() -> {
                 disposables[0].dispose();
@@ -3486,7 +3434,8 @@ public final class Signal<V> {
     public final <R> Signal<R> switchVariable(WiseFunction<V, Variable<R>> function) {
         Objects.requireNonNull(function);
 
-        return switchMap((v, self) -> function.apply(v).observeNow().takeUntil(self.isCompleted()));
+        Signal<V> share = share();
+        return share.switchMap(v -> function.apply(v).observeNow().takeUntil(share.isCompleted()));
     }
 
     /**

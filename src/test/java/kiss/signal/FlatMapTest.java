@@ -304,22 +304,4 @@ class FlatMapTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isDisposed();
     }
-
-    @Test
-    void fromInfinitToInfinitWithSourceCompleteForceToCompleteSubSources() {
-        monitor(Host.class, String.class, signal -> signal.flatMap((v, source) -> v.signal.expose.takeUntil(source.isCompleted())));
-
-        Host host1 = new Host();
-        Host host2 = new Host();
-        assert main.emit(host1, host2, Complete).value();
-
-        host1.signal.accept("This value will be ignored");
-        assert main.value();
-        host2.signal.accept("This value will be ignored");
-        assert main.value();
-
-        assert main.isNotError();
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
 }
