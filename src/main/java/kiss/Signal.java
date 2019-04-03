@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
@@ -2814,32 +2813,20 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> share() {
+        Signaling<V> share = new Signaling();
         Disposable[] root = new Disposable[1];
-        List<Observer<? super V>> observers = new CopyOnWriteArrayList();
 
         return new Signal<>((observer, disposer) -> {
-            observers.add(observer);
+            share.observers.add(observer);
 
-            if (observers.size() == 1) {
-                root[0] = to(v -> {
-                    for (Observer<? super V> o : observers) {
-                        o.accept(v);
-                    }
-                }, e -> {
-                    for (Observer<? super V> o : observers) {
-                        o.error(e);
-                    }
-                }, () -> {
-                    for (Observer<? super V> o : observers) {
-                        o.complete();
-                    }
-                });
+            if (share.observers.size() == 1) {
+                root[0] = to(share);
             }
 
             return disposer.add(() -> {
-                observers.remove(observer);
+                share.observers.remove(observer);
 
-                if (observers.isEmpty() && root[0] != null) {
+                if (share.observers.isEmpty() && root[0] != null) {
                     root[0].dispose();
                     root[0] = null;
                 }
