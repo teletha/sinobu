@@ -41,11 +41,6 @@ class DressTest {
         };
         dressed = I.wiseR(lambda);
         assert dressed == lambda;
-
-        lambda = null;
-        dressed = I.wiseR(lambda);
-        assert dressed != lambda;
-        dressed.run();
     }
 
     @Test
