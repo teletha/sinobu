@@ -81,32 +81,4 @@ class WiseConsumerTest {
         setter.bindLastLazily(null).run();
         assert value == null;
     }
-
-    @Test
-    void widenHead() {
-        WiseBiConsumer<String, String> created = setter.widen();
-        created.accept("ignore", "use");
-        assert value.equals("use");
-    }
-
-    @Test
-    void widenHeadNull() {
-        WiseBiConsumer<String, String> created = setter.widen();
-        created.accept(null, null);
-        assert value == null;
-    }
-
-    @Test
-    void widenTail() {
-        WiseBiConsumer<String, String> created = setter.widenLast();
-        created.accept("use", "ignore");
-        assert value.equals("use");
-    }
-
-    @Test
-    void widenTailNull() {
-        WiseBiConsumer<String, String> created = setter.widenLast();
-        created.accept(null, null);
-        assert value == null;
-    }
 }

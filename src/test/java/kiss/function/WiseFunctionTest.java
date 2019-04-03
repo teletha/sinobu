@@ -72,22 +72,6 @@ class WiseFunctionTest {
         assert identity.bindLastLazily((Supplier) null).get() == null;
     }
 
-    @Test
-    void widenHead() {
-        WiseBiFunction<String, String, String> created = identity.widen();
-        assert created.apply("ignore", "use") == "use";
-        assert created.apply(null, "use") == "use";
-        assert created.apply(null, null) == null;
-    }
-
-    @Test
-    void widenTail() {
-        WiseBiFunction<String, String, String> created = identity.widenLast();
-        assert created.apply("use", "ignore") == "use";
-        assert created.apply("use", null) == "use";
-        assert created.apply(null, null) == null;
-    }
-
     // @Test
     // void memo() {
     // AtomicInteger called = new AtomicInteger();

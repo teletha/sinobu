@@ -117,7 +117,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next) {
-        return to(I.wiseR(next).widen(), null, null);
+        return to(I.wiseC(next), null, null);
     }
 
     /**
@@ -169,7 +169,7 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Runnable next, Consumer<Throwable> error, Runnable complete) {
-        return to(I.wiseR(next).widen(), error, complete);
+        return to(I.wiseC(next), error, complete);
     }
 
     /**
@@ -945,7 +945,7 @@ public final class Signal<V> {
      *         {@link Signal} as a 64-bit Long item
      */
     public final Signal<Long> count() {
-        return map(AtomicLong::new, ((WiseFunction<AtomicLong, Long>) AtomicLong::incrementAndGet).widenLast());
+        return map(AtomicLong::new, I.wiseBF(AtomicLong::incrementAndGet));
     }
 
     /**
@@ -1108,7 +1108,7 @@ public final class Signal<V> {
         if (time == null || time.get().toNanos() <= 0) {
             return this;
         }
-        return delay(I.wiseS(time).widen(), scheduler);
+        return delay(I.wiseF(time), scheduler);
     }
 
     /**
@@ -1284,7 +1284,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effect(effect.widen());
+        return effect(I.wiseC(effect));
     }
 
     /**
@@ -1331,7 +1331,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effectAfter(effect.widen());
+        return effectAfter(I.wiseC(effect));
     }
 
     /**
@@ -1402,7 +1402,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effectOnce(effect.widen());
+        return effectOnce(I.wiseC(effect));
     }
 
     /**
@@ -1537,7 +1537,7 @@ public final class Signal<V> {
         if (effect == null) {
             return this;
         }
-        return effectOnError(effect.widen());
+        return effectOnError(I.wiseC(effect));
     }
 
     /**
@@ -1582,7 +1582,7 @@ public final class Signal<V> {
      * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnObserve(WiseRunnable effect) {
-        return effectOnObserve(effect == null ? null : effect.widen());
+        return effectOnObserve(effect == null ? null : I.wiseC(effect));
     }
 
     /**
@@ -2401,7 +2401,7 @@ public final class Signal<V> {
                 if (immediate) {
                     observer.complete();
                 } else {
-                    subscriber.next = I.wiseR(observer::complete).widen();
+                    subscriber.next = I.wiseC(observer::complete);
 
                     // Since there is a complete in processing, but this complete flow has ended,
                     // the processing complete is passed to the source signal.

@@ -1217,7 +1217,7 @@ public class I {
      * @return
      */
     static <F> F make(Object o, Class target, Flexible handler) {
-        Type type = Model.collectParameters(o.getClass().getInterfaces()[0], target)[0];
+        Type type = o == null ? target : Model.collectParameters(o.getClass().getInterfaces()[0], target)[0];
 
         if (type instanceof ParameterizedType) {
             type = ((ParameterizedType) type).getRawType();
@@ -1916,6 +1916,19 @@ public class I {
 
     /**
      * <p>
+     * Down cast from {@link Consumer} to {@link WiseConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseConsumer)
+     */
+    public static <P> WiseConsumer<P> wiseC(Runnable lambda) {
+        return make(null, WiseConsumer.class, I.wiseR(lambda));
+    }
+
+    /**
+     * <p>
      * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
      * </p>
      * 
@@ -1925,6 +1938,32 @@ public class I {
      */
     public static <P1, P2> WiseBiConsumer<P1, P2> wiseBC(BiConsumer<P1, P2> lambda) {
         return lambda == null || lambda instanceof WiseBiConsumer ? (WiseBiConsumer) lambda : lambda::accept;
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiConsumer)
+     */
+    public static <P1, P2> WiseBiConsumer<P1, P2> wiseBC(Consumer<P1> lambda) {
+        return make(null, WiseBiConsumer.class, I.wiseC(lambda));
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiConsumer)
+     */
+    public static <P1, P2> WiseBiConsumer<P1, P2> wiseBC(Runnable lambda) {
+        return make(null, WiseBiConsumer.class, I.wiseR(lambda));
     }
 
     /**
@@ -1955,6 +1994,19 @@ public class I {
 
     /**
      * <p>
+     * Down cast from {@link Function} to {@link WiseFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseFunction)
+     */
+    public static <P, R> WiseFunction<P, R> wiseF(Supplier<R> lambda) {
+        return make(null, WiseFunction.class, I.wiseS(lambda));
+    }
+
+    /**
+     * <p>
      * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
      * </p>
      * 
@@ -1964,6 +2016,32 @@ public class I {
      */
     public static <P1, P2, R> WiseBiFunction<P1, P2, R> wiseBF(BiFunction<P1, P2, R> lambda) {
         return lambda == null || lambda instanceof WiseBiFunction ? (WiseBiFunction) lambda : lambda::apply;
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiFunction)
+     */
+    public static <P1, P2, R> WiseBiFunction<P1, P2, R> wiseBF(Function<P1, R> lambda) {
+        return make(null, WiseBiFunction.class, I.wiseF(lambda));
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiFunction)
+     */
+    public static <P1, P2, R> WiseBiFunction<P1, P2, R> wiseBF(Supplier<R> lambda) {
+        return make(null, WiseBiFunction.class, I.wiseS(lambda));
     }
 
     /**

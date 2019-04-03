@@ -71,20 +71,4 @@ class WiseBiFunctionTest {
     void narrowTailLazilyNull() {
         assert concat.bindLastLazily((Supplier) null).apply("var").equals("var null");
     }
-
-    @Test
-    void widenHead() {
-        WiseTriFunction<String, String, String, String> created = concat.widen();
-        assert created.apply("ignore", "use", "value").equals("use value");
-        assert created.apply(null, "use", "value").equals("use value");
-        assert created.apply(null, null, null).equals("null null");
-    }
-
-    @Test
-    void widenTail() {
-        WiseTriFunction<String, String, String, String> created = concat.widenLast();
-        assert created.apply("use", "value", "ignore").equals("use value");
-        assert created.apply("use", "value", null).equals("use value");
-        assert created.apply(null, null, null).equals("null null");
-    }
 }

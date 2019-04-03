@@ -9,12 +9,15 @@
  */
 package kiss;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
  * Provide the partial application functionality.
  */
-public interface Narrow<FirstBinded, First, LastBinded, Last, Self> extends Flexible<Self> {
+public interface Narrow<FirstBinded, First, LastBinded, Last, Self> extends Flexible {
 
     /**
      * Apply first parameter partialy.
@@ -107,19 +110,19 @@ public interface Narrow<FirstBinded, First, LastBinded, Last, Self> extends Flex
     // return invoke(args);
     // });
     // }
-    //
-    // /**
-    // * Create memoized function.
-    // *
-    // * @return The created memoized function.
-    // */
-    // default Self memo() {
-    // Map cache = new ConcurrentHashMap();
-    //
-    // return I.make(this, Flexible.class, args -> {
-    // synchronized (cache) {
-    // return cache.computeIfAbsent(Objects.hash(args), k -> invoke(args));
-    // }
-    // });
-    // }
+
+    /**
+     * Create memoized function.
+     *
+     * @return The created memoized function.
+     */
+    default Self memo() {
+        Map cache = new ConcurrentHashMap();
+
+        return I.make(this, Flexible.class, args -> {
+            synchronized (cache) {
+                return cache.computeIfAbsent(Objects.hash(args), k -> invoke(args));
+            }
+        });
+    }
 }

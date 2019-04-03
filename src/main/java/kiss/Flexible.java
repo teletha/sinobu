@@ -12,7 +12,7 @@ package kiss;
 /**
  * General purpose flexible and invokable function interface.
  */
-public interface Flexible<Self> {
+public interface Flexible {
 
     /**
      * Invoke method with the specified parameters and return some value (may be null). This method
