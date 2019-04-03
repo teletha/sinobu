@@ -9,9 +9,6 @@
  */
 package kiss.function;
 
-import org.junit.jupiter.api.Test;
-
-import kiss.WiseFunction;
 import kiss.WiseSupplier;
 
 class WiseSupplierTest {

@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import kiss.Variable;
 import kiss.WiseBiFunction;
 import kiss.WiseFunction;
-import kiss.WiseTriFunction;
 
 class WiseBiFunctionTest {
 

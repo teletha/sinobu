@@ -12,7 +12,6 @@ package kiss.function;
 import org.junit.jupiter.api.Test;
 
 import kiss.Variable;
-import kiss.WiseBiConsumer;
 import kiss.WiseConsumer;
 import kiss.WiseRunnable;
 

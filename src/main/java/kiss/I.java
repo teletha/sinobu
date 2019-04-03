@@ -1968,6 +1968,45 @@ public class I {
 
     /**
      * <p>
+     * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiConsumer)
+     */
+    public static <P1, P2, P3> WiseTriConsumer<P1, P2, P3> wiseTC(BiConsumer<P1, P2> lambda) {
+        return make(null, WiseTriConsumer.class, I.wiseBC(lambda));
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiConsumer)
+     */
+    public static <P1, P2, P3> WiseTriConsumer<P1, P2, P3> wiseTC(Consumer<P1> lambda) {
+        return make(null, WiseTriConsumer.class, I.wiseC(lambda));
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiConsumer} to {@link WiseBiConsumer}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiConsumer)
+     */
+    public static <P1, P2, P3> WiseTriConsumer<P1, P2, P3> wiseTC(Runnable lambda) {
+        return make(null, WiseTriConsumer.class, I.wiseR(lambda));
+    }
+
+    /**
+     * <p>
      * Down cast from {@link Supplier} to {@link WiseSupplier}.
      * </p>
      * 
@@ -2042,6 +2081,45 @@ public class I {
      */
     public static <P1, P2, R> WiseBiFunction<P1, P2, R> wiseBF(Supplier<R> lambda) {
         return make(null, WiseBiFunction.class, I.wiseS(lambda));
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiFunction)
+     */
+    public static <P1, P2, P3, R> WiseTriFunction<P1, P2, P3, R> wiseTF(BiFunction<P1, P2, R> lambda) {
+        return make(null, WiseTriFunction.class, I.wiseBF(lambda));
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiFunction)
+     */
+    public static <P1, P2, P3, R> WiseTriFunction<P1, P2, P3, R> wiseTF(Function<P1, R> lambda) {
+        return make(null, WiseTriFunction.class, I.wiseF(lambda));
+    }
+
+    /**
+     * <p>
+     * Down cast from {@link BiFunction} to {@link WiseBiFunction}.
+     * </p>
+     * 
+     * @param lambda A target function.
+     * @return A casted function.
+     * @see #quiet(WiseBiFunction)
+     */
+    public static <P1, P2, P3, R> WiseTriFunction<P1, P2, P3, R> wiseTF(Supplier<R> lambda) {
+        return make(null, WiseTriFunction.class, I.wiseS(lambda));
     }
 
     /**
