@@ -15,7 +15,7 @@ import java.util.function.BiFunction;
  * @version 2018/04/02 8:35:58
  */
 public interface WiseBiFunction<Param1, Param2, Return>
-        extends BiFunction<Param1, Param2, Return>,
+        extends BiFunction<Param1, Param2, Return>, Widen<WiseTriFunction>,
         Wise<WiseFunction<Param2, Return>, Param1, WiseFunction<Param1, Return>, Param2, WiseBiFunction<Param1, Param2, Return>, WiseBiFunction<Param2, Param1, Return>> {
 
     /**
@@ -49,4 +49,12 @@ public interface WiseBiFunction<Param1, Param2, Return>
     default Return invoke(Object... params) {
         return apply((Param1) params[0], (Param2) params[1]);
     }
+
+    // default <P> WiseTriFunction<Param1, Param2, P, Return> postfix() {
+    // return I.make(null, WiseTriFunction.class, this);
+    // }
+
+    // default <P> WiseTriFunction<P, Param1, Param2, Return> prefix() {
+    // return this.<P> postfix().shift();
+    // }
 }

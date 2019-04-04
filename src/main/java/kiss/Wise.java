@@ -78,28 +78,31 @@ public interface Wise<FirstBinded, First, LastBinded, Last, Self, Spined> extend
         });
     }
 
-    /**
-     * <p>
-     * Rotates the parameters of this interface. After calling this method, the parameter at index i
-     * will be the parameter previously at index (i - 1). The last parameter moves to the beginning.
-     * This method has no effect on the size of parameters.
-     * </p>
-     * <p>
-     * For example, suppose interface <code>Some&lt;Param1, Param2, Pram3&gt;</code>. After invoking
-     * {@link #shift()}, the interface will be <code>Some&lt;Param3, Param2, Param1%gt;</code>.
-     * </p>
-     * 
-     * @return The parameter-shifted function.
-     */
-    default Spined shift() {
-        // "rotate" is not used because it suffers from the first character of "Runnable#run".
-        return I.make(this, null, args -> {
-            for (int i = 0; i < args.length - 1; i++) {
-                Object o = args[i];
-                args[i] = args[i + 1];
-                args[i + 1] = o;
-            }
-            return invoke(args);
-        });
-    }
+    // /**
+    // * <p>
+    // * Rotates the parameters of this interface. After calling this method, the parameter at index
+    // i
+    // * will be the parameter previously at index (i - 1). The last parameter moves to the
+    // beginning.
+    // * This method has no effect on the size of parameters.
+    // * </p>
+    // * <p>
+    // * For example, suppose interface <code>Some&lt;Param1, Param2, Pram3&gt;</code>. After
+    // invoking
+    // * {@link #shift()}, the interface will be <code>Some&lt;Param3, Param2, Param1%gt;</code>.
+    // * </p>
+    // *
+    // * @return The parameter-shifted function.
+    // */
+    // default Spined shift() {
+    // // "rotate" is not used because it suffers from the first character of "Runnable#run".
+    // return I.make(this, null, args -> {
+    // for (int i = 0; i < args.length - 1; i++) {
+    // Object o = args[i];
+    // args[i] = args[i + 1];
+    // args[i + 1] = o;
+    // }
+    // return invoke(args);
+    // });
+    // }
 }

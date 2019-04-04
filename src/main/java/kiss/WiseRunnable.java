@@ -9,7 +9,7 @@
  */
 package kiss;
 
-public interface WiseRunnable extends Runnable, Flexible {
+public interface WiseRunnable extends Runnable, Widen<WiseConsumer> {
 
     /**
      * <p>
@@ -40,4 +40,8 @@ public interface WiseRunnable extends Runnable, Flexible {
         run();
         return null;
     }
+
+    // default <P> WiseConsumer<P> postfix() {
+    // return I.make(null, WiseConsumer.class, this);
+    // }
 }

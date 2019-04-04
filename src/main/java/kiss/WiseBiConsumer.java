@@ -13,7 +13,8 @@ import java.util.function.BiConsumer;
 
 public interface WiseBiConsumer<Param1, Param2>
         extends BiConsumer<Param1, Param2>,
-        Wise<WiseConsumer<Param2>, Param1, WiseConsumer<Param1>, Param2, WiseBiConsumer<Param1, Param2>, WiseBiConsumer<Param2, Param1>> {
+        Wise<WiseConsumer<Param2>, Param1, WiseConsumer<Param1>, Param2, WiseBiConsumer<Param1, Param2>, WiseBiConsumer<Param2, Param1>>,
+        Widen<WiseTriConsumer> {
 
     /**
      * <p>
@@ -46,4 +47,12 @@ public interface WiseBiConsumer<Param1, Param2>
         accept((Param1) params[0], (Param2) params[1]);
         return null;
     }
+
+    // default <P> WiseTriConsumer<Param1, Param2, P> postfix() {
+    // return I.make(null, WiseTriConsumer.class, this);
+    // }
+
+    // default <P> WiseTriConsumer<P, Param1, Param2> prefix() {
+    // return this.<P> postfix().shift();
+    // }
 }
