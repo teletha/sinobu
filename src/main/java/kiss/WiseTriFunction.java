@@ -9,12 +9,9 @@
  */
 package kiss;
 
-/**
- * @version 2018/04/02 8:34:59
- */
 public interface WiseTriFunction<Param1, Param2, Param3, Return>
         extends
-        Narrow<WiseBiFunction<Param2, Param3, Return>, Param1, WiseBiFunction<Param1, Param2, Return>, Param3, WiseTriFunction<Param3, Param1, Param2, Return>, WiseTriFunction<Param1, Param2, Param3, Return>> {
+        Wise<WiseBiFunction<Param2, Param3, Return>, Param1, WiseBiFunction<Param1, Param2, Return>, Param3, WiseTriFunction<Param1, Param2, Param3, Return>, WiseTriFunction<Param3, Param1, Param2, Return>> {
 
     /**
      * <p>

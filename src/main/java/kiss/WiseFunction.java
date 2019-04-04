@@ -16,7 +16,7 @@ import java.util.function.Function;
  */
 public interface WiseFunction<Param, Return>
         extends Function<Param, Return>,
-        Narrow<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param, WiseFunction<Param, Return>, WiseFunction<Param, Return>> {
+        Wise<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param, WiseFunction<Param, Return>, WiseFunction<Param, Return>> {
 
     /**
      * <p>

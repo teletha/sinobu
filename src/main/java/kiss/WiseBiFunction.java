@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
  */
 public interface WiseBiFunction<Param1, Param2, Return>
         extends BiFunction<Param1, Param2, Return>,
-        Narrow<WiseFunction<Param2, Return>, Param1, WiseFunction<Param1, Return>, Param2, WiseBiFunction<Param2, Param1, Return>, WiseBiFunction<Param1, Param2, Return>> {
+        Wise<WiseFunction<Param2, Return>, Param1, WiseFunction<Param1, Return>, Param2, WiseBiFunction<Param1, Param2, Return>, WiseBiFunction<Param2, Param1, Return>> {
 
     /**
      * <p>

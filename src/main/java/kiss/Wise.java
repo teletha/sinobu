@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
- * Provide the partial application functionality.
+ * Provide the strongly-typed parameter manipulation functionality.
  */
-public interface Narrow<FirstBinded, First, LastBinded, Last, Spined, Self> extends Flexible {
+public interface Wise<FirstBinded, First, LastBinded, Last, Self, Spined> extends Flexible {
 
     /**
      * Apply first parameter partialy.
@@ -36,7 +36,7 @@ public interface Narrow<FirstBinded, First, LastBinded, Last, Spined, Self> exte
      * @return A partial applied function.
      */
     default FirstBinded bindLazily(Supplier<First> param) {
-        return I.make(this, Narrow.class, args -> {
+        return I.make(this, Wise.class, args -> {
             return invoke(I.array(new Object[] {param == null ? null : param.get()}, args));
         });
     }
@@ -58,58 +58,10 @@ public interface Narrow<FirstBinded, First, LastBinded, Last, Spined, Self> exte
      * @return A partial applied function.
      */
     default LastBinded bindLastLazily(Supplier<Last> param) {
-        return I.make(this, Narrow.class, args -> {
+        return I.make(this, Wise.class, args -> {
             return invoke(I.array(args, param == null ? null : param.get()));
         });
     }
-
-    // /**
-    // * Fix first parameter partialy. The actual argument from the caller will be ignored.
-    // *
-    // * @param param A fixed parameter.
-    // * @return A partial fixed function.
-    // */
-    // default Self fix(First param) {
-    // return fixLazily(Variable.of(param));
-    // }
-    //
-    // /**
-    // * Fix first parameter partialy. The actual argument from the caller will be ignored. The null
-    // * {@link Supplier} will be treated as null value.
-    // *
-    // * @param param A fixed parameter.
-    // * @return A partial fixed function.
-    // */
-    // default Self fixLazily(Supplier<First> param) {
-    // return I.make(this, Flexible.class, args -> {
-    // args[0] = param == null ? null : param.get();
-    // return invoke(args);
-    // });
-    // }
-    //
-    // /**
-    // * Fix last parameter partialy. The actual argument from the caller will be ignored.
-    // *
-    // * @param param A fixed parameter.
-    // * @return A partial fixed function.
-    // */
-    // default Self fixLast(Last param) {
-    // return fixLastLazily(Variable.of(param));
-    // }
-    //
-    // /**
-    // * Fix last parameter partialy. The actual argument from the caller will be ignored. The null
-    // * {@link Supplier} will be treated as null value.
-    // *
-    // * @param param A fixed parameter.
-    // * @return A partial fixed function.
-    // */
-    // default Self fixLastLazily(Supplier<Last> param) {
-    // return I.make(this, Flexible.class, args -> {
-    // args[args.length - 1] = param == null ? null : param.get();
-    // return invoke(args);
-    // });
-    // }
 
     /**
      * Create memoized function.
@@ -137,7 +89,7 @@ public interface Narrow<FirstBinded, First, LastBinded, Last, Spined, Self> exte
      * {@link #shift()}, the interface will be <code>Some&lt;Param3, Param2, Param1%gt;</code>.
      * </p>
      * 
-     * @return
+     * @return The parameter-shifted function.
      */
     default Spined shift() {
         // "rotate" is not used because it suffers from the first character of "Runnable#run".
