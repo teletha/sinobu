@@ -17,7 +17,16 @@ import java.util.function.Supplier;
 /**
  * Provide the strongly-typed parameter manipulation functionality.
  */
-public interface Wise<FirstBinded, First, LastBinded, Last, Self, Spined> extends Flexible {
+public interface Wise<FirstBinded, First, LastBinded, Last, Self> {
+
+    /**
+     * Invoke method with the specified parameters and return some value (may be null). This method
+     * doesn't check type correctness, so runtime may be going to throw {@link ClassCastException}.
+     * 
+     * @param params A list of parameters.
+     * @return A some value (may be null).
+     */
+    Object invoke(Object... params);
 
     /**
      * Apply first parameter partialy.

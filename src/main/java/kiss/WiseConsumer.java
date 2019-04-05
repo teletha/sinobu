@@ -14,9 +14,7 @@ import java.util.function.Consumer;
 /**
  * @version 2018/04/02 8:35:45
  */
-public interface WiseConsumer<Param>
-        extends Consumer<Param>, Widen<WiseBiConsumer>,
-        Wise<WiseRunnable, Param, WiseRunnable, Param, WiseConsumer<Param>, WiseConsumer<Param>> {
+public interface WiseConsumer<Param> extends Consumer<Param>, Wise<WiseRunnable, Param, WiseRunnable, Param, WiseConsumer<Param>> {
 
     /**
      * <p>
@@ -48,12 +46,4 @@ public interface WiseConsumer<Param>
         accept((Param) params[0]);
         return null;
     }
-
-    // default <P> WiseBiConsumer<Param, P> postfix() {
-    // return I.make(null, WiseBiConsumer.class, this);
-    // }
-
-    // default <P> WiseBiConsumer<P, Param> prefix() {
-    // return this.<P> postfix().shift();
-    // }
 }

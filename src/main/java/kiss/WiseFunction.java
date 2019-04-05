@@ -15,8 +15,7 @@ import java.util.function.Function;
  * @version 2018/12/07 16:09:15
  */
 public interface WiseFunction<Param, Return>
-        extends Function<Param, Return>, Widen<WiseBiFunction>,
-        Wise<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param, WiseFunction<Param, Return>, WiseFunction<Param, Return>> {
+        extends Function<Param, Return>, Wise<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param, WiseFunction<Param, Return>> {
 
     /**
      * <p>
@@ -48,12 +47,4 @@ public interface WiseFunction<Param, Return>
     default Return invoke(Object... params) {
         return apply((Param) params[0]);
     }
-
-    // default <P> WiseBiFunction<Param, P, Return> postfix() {
-    // return I.make(null, WiseBiFunction.class, this);
-    // }
-
-    // default <P> WiseBiFunction<P, Param, Return> prefix() {
-    // return this.<P> postfix().shift();
-    // }
 }
