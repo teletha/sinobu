@@ -12,8 +12,7 @@ package kiss;
 import java.util.function.BiConsumer;
 
 public interface WiseBiConsumer<Param1, Param2>
-        extends BiConsumer<Param1, Param2>,
-        Wise<WiseConsumer<Param2>, Param1, WiseConsumer<Param1>, Param2, WiseBiConsumer<Param1, Param2>> {
+        extends BiConsumer<Param1, Param2>, Narrow<WiseConsumer<Param2>, Param1, WiseConsumer<Param1>, Param2> {
 
     /**
      * <p>

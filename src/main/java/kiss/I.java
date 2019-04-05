@@ -1216,18 +1216,8 @@ public class I {
      * @param handler
      * @return
      */
-    static <F> F make(Object o, Class target, Wise handler) {
-        Type type;
-
-        if (o == null) {
-            type = target;
-        } else {
-            type = o.getClass().getInterfaces()[0];
-
-            if (target != null) {
-                type = Model.collectParameters(type, target)[0];
-            }
-        }
+    static <F> F make(Object o, Class target, Flexible handler) {
+        Type type = o == null ? target : Model.collectParameters(o.getClass().getInterfaces()[0], target)[0];
 
         if (type instanceof ParameterizedType) {
             type = ((ParameterizedType) type).getRawType();
