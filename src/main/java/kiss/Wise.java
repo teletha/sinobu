@@ -12,7 +12,7 @@ package kiss;
 /**
  * General purpose flexible and invokable function interface.
  */
-public interface Flexible {
+public interface Wise {
 
     /**
      * Invoke method with the specified parameters and return some value (may be null). This method
@@ -22,8 +22,4 @@ public interface Flexible {
      * @return A some value (may be null).
      */
     Object invoke(Object... params);
-
-    // default <F extends Flexible> F as(Class<F> type) {
-    // return I.make(null, type, args -> invoke(I.array(args, null, null, null)));
-    // }
 }

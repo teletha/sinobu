@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * Provide the partial application functionality.
  */
-public interface Narrow<FirstBinded, First, LastBinded, Last> extends Flexible {
+public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
 
     /**
      * Apply first parameter partialy.

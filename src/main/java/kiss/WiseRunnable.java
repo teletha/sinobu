@@ -9,7 +9,7 @@
  */
 package kiss;
 
-public interface WiseRunnable extends Runnable, Flexible {
+public interface WiseRunnable extends Runnable, Wise {
 
     /**
      * <p>
