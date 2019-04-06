@@ -1509,8 +1509,8 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2> BiConsumer<Param1, Param2> recurse(WiseTriConsumer<BiConsumer<Param1, Param2>, Param1, Param2> function) {
-        Variable<BiConsumer<Param1, Param2>> ref = Variable.empty();
+    public static <Param1, Param2> WiseBiConsumer<Param1, Param2> recurse(WiseTriConsumer<WiseBiConsumer<Param1, Param2>, Param1, Param2> function) {
+        Variable<WiseBiConsumer<Param1, Param2>> ref = Variable.empty();
         ref.let(function.bindLazily(ref));
         return ref.v;
     }
@@ -1528,8 +1528,8 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2, Return> BiFunction<Param1, Param2, Return> recurse(WiseTriFunction<BiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
-        Variable<BiFunction<Param1, Param2, Return>> ref = Variable.empty();
+    public static <Param1, Param2, Return> WiseBiFunction<Param1, Param2, Return> recurse(WiseTriFunction<WiseBiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
+        Variable<WiseBiFunction<Param1, Param2, Return>> ref = Variable.empty();
         ref.let(function.bindLazily(ref));
         return ref.v;
     }
@@ -1549,8 +1549,8 @@ public class I {
      * @param function A target function to convert.
      * @return A converted recursive function.
      */
-    public static <Param> Consumer<Param> recurse(WiseBiConsumer<Consumer<Param>, Param> function) {
-        Variable<Consumer<Param>> ref = Variable.empty();
+    public static <Param> WiseConsumer<Param> recurse(WiseBiConsumer<WiseConsumer<Param>, Param> function) {
+        Variable<WiseConsumer<Param>> ref = Variable.empty();
         ref.let(function.bindLazily(ref));
         return ref.v;
     }
@@ -1568,8 +1568,8 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param, Return> Function<Param, Return> recurse(WiseBiFunction<Function<Param, Return>, Param, Return> function) {
-        Variable<Function<Param, Return>> ref = Variable.empty();
+    public static <Param, Return> WiseFunction<Param, Return> recurse(WiseBiFunction<WiseFunction<Param, Return>, Param, Return> function) {
+        Variable<WiseFunction<Param, Return>> ref = Variable.empty();
         ref.let(function.bindLazily(ref));
         return ref.v;
     }
@@ -1587,8 +1587,8 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static Runnable recurse(WiseConsumer<Runnable> function) {
-        Variable<Runnable> ref = Variable.empty();
+    public static WiseRunnable recurse(WiseConsumer<WiseRunnable> function) {
+        Variable<WiseRunnable> ref = Variable.empty();
         ref.let(function.bindLazily(ref));
         return ref.v;
     }
@@ -1606,8 +1606,8 @@ public class I {
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Result> Supplier<Result> recurse(WiseFunction<Supplier<Result>, Result> function) {
-        Variable<Supplier<Result>> ref = Variable.empty();
+    public static <Result> WiseSupplier<Result> recurse(WiseFunction<WiseSupplier<Result>, Result> function) {
+        Variable<WiseSupplier<Result>> ref = Variable.empty();
         ref.let(function.bindLazily(ref));
         return ref.v;
     }
