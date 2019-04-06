@@ -2610,10 +2610,10 @@ public final class Signal<V> {
      * @param stopper A {@link Signal} whose first emitted item will stop retrying.
      * @return Chainable API.
      */
-    public final Signal<V> retryUntil(Class<? extends Throwable> type, Signal stopper) {
+    public final <E extends Throwable> Signal<V> retryUntil(Class<E> type, Signal stopper) {
         // Use partial applied function to reduce code size.
         // return retryWhen(type, fail -> fail.takeUntil(stopper));
-        return retryWhen(type, (WiseFunction) ((WiseBiFunction<Signal, Signal, Signal>) Signal::takeUntil).bindLast(stopper));
+        return retryWhen(type, ((WiseBiFunction<Signal<E>, Signal, Signal<?>>) Signal::takeUntil).bindLast(stopper));
     }
 
     /**
@@ -2630,7 +2630,7 @@ public final class Signal<V> {
      * @param notifier An error notifier to define retrying flow.
      * @return Chainable API
      */
-    public final Signal<V> retryWhen(WiseFunction<Signal<? extends Throwable>, Signal<?>> notifier) {
+    public final <E extends Throwable> Signal<V> retryWhen(WiseFunction<Signal<E>, Signal<?>> notifier) {
         return retryWhen(null, notifier);
     }
 
@@ -2650,7 +2650,7 @@ public final class Signal<V> {
      * @param flow An error notifier to define retrying flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, WiseFunction<Signal<? extends E>, Signal<?>> flow) {
+    public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, WiseFunction<Signal<E>, Signal<?>> flow) {
         return new Signal<>((observer, disposer) -> {
             // recorder for the processing error
             Throwable[] processing = new Throwable[1];
