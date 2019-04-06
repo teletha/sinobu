@@ -1910,7 +1910,7 @@ public class I {
 
     /**
      * Cast from {@link Runnable} to {@link WiseConsumer}. All missing parameters will be added on
-     * the right side. All caller arguments are ignored.
+     * the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -1931,7 +1931,7 @@ public class I {
 
     /**
      * Cast from {@link Consumer} to {@link WiseBiConsumer}. All missing parameters will be added on
-     * the right side. All caller arguments are ignored.
+     * the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -1942,7 +1942,7 @@ public class I {
 
     /**
      * Cast from {@link Runnable} to {@link WiseBiConsumer}. All missing parameters will be added on
-     * the right side. All caller arguments are ignored.
+     * the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -1953,7 +1953,7 @@ public class I {
 
     /**
      * Cast from {@link BiConsumer} to {@link WiseTriConsumer}. All missing parameters will be added
-     * on the right side. All caller arguments are ignored.
+     * on the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -1964,7 +1964,7 @@ public class I {
 
     /**
      * Cast from {@link Consumer} to {@link WiseTriConsumer}. All missing parameters will be added
-     * on the right side. All caller arguments are ignored.
+     * on the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -1975,7 +1975,7 @@ public class I {
 
     /**
      * Cast from {@link Runnable} to {@link WiseTriConsumer}. All missing parameters will be added
-     * on the right side. All caller arguments are ignored.
+     * on the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -2006,7 +2006,7 @@ public class I {
 
     /**
      * Cast from {@link Supplier} to {@link WiseFunction}. All missing parameters will be added on
-     * the right side. All caller arguments are ignored.
+     * the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -2027,7 +2027,7 @@ public class I {
 
     /**
      * Cast from {@link Function} to {@link WiseBiFunction}. All missing parameters will be added on
-     * the right side. All caller arguments are ignored.
+     * the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -2038,7 +2038,7 @@ public class I {
 
     /**
      * Cast from {@link Supplier} to {@link WiseBiFunction}. All missing parameters will be added on
-     * the right side. All caller arguments are ignored.
+     * the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -2049,7 +2049,7 @@ public class I {
 
     /**
      * Cast from {@link BiFunction} to {@link WiseTriFunction}. All missing parameters will be added
-     * on the right side. All caller arguments are ignored.
+     * on the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -2060,7 +2060,7 @@ public class I {
 
     /**
      * Cast from {@link Function} to {@link WiseTriFunction}. All missing parameters will be added
-     * on the right side. All caller arguments are ignored.
+     * on the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
@@ -2071,7 +2071,7 @@ public class I {
 
     /**
      * Cast from {@link Supplier} to {@link WiseTriFunction}. All missing parameters will be added
-     * on the right side. All caller arguments are ignored.
+     * on the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
      * @return A casted function.
