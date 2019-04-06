@@ -882,7 +882,7 @@ public final class Signal<V> {
             AtomicLong processing = new AtomicLong();
             Map<Long, Ⅱ<AtomicBoolean, LinkedList<R>>> buffer = new ConcurrentHashMap();
 
-            Consumer<Long> complete = I.recurse((index, self) -> {
+            Consumer<Long> complete = I.recurse((self, index) -> {
                 if (processing.get() == index) {
                     Ⅱ<AtomicBoolean, LinkedList<R>> next = buffer.remove(processing.incrementAndGet());
 

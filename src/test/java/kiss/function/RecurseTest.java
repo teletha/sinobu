@@ -52,7 +52,7 @@ class RecurseTest {
     @Test
     void Consumer() {
         AtomicInteger value = new AtomicInteger();
-        Consumer<Integer> function = I.recurse((p, self) -> {
+        Consumer<Integer> function = I.recurse((self, p) -> {
             value.set(p);
 
             if (p < 10) {
@@ -72,7 +72,7 @@ class RecurseTest {
     @Test
     void BiConsumer() {
         AtomicInteger value = new AtomicInteger();
-        BiConsumer<Integer, Integer> function = I.recurse((p, q, self) -> {
+        BiConsumer<Integer, Integer> function = I.recurse((self, p, q) -> {
             value.set(p + q);
 
             if (p < 10) {
@@ -111,7 +111,7 @@ class RecurseTest {
 
     @Test
     void Function() {
-        Function<Integer, Integer> function = I.recurse((param, self) -> {
+        Function<Integer, Integer> function = I.recurse((self, param) -> {
             if (param < 10) {
                 return self.apply(param + 1);
             } else {
@@ -129,7 +129,7 @@ class RecurseTest {
 
     @Test
     void BiFunction() {
-        BiFunction<Integer, Integer, Integer> function = I.recurse((param1, param2, self) -> {
+        BiFunction<Integer, Integer, Integer> function = I.recurse((self, param1, param2) -> {
             if (param1 < 10) {
                 return self.apply(param1 + 1, param2 + 2);
             } else {
