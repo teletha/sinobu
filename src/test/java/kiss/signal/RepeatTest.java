@@ -138,35 +138,35 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatWhen() {
-        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.delay(10, ms, scheduler)));
+        monitor(signal -> signal.startWith("first").repeatWhen(repeat -> repeat.sample(other.signal())));
 
-        assert main.value("repeat");
+        assert main.value("first");
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        scheduler.await();
-        assert main.value("repeat");
+        other.emit("repeat observing");
+        assert main.value("first");
         assert main.countObservers() == 1;
         assert main.emit(Complete).value();
         assert main.hasNoObserver();
-        scheduler.await();
-        assert main.value("repeat");
+        other.emit("repeat observing");
+        assert main.value("first");
         assert main.countObservers() == 1;
     }
 
     @Test
     void repeatWhenWithDelayAndLimit() {
-        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.take(2).delay(10, ms, scheduler)));
+        monitor(signal -> signal.startWith("first").repeatWhen(repeat -> repeat.delay(10, ms).sample(other.signal()).take(2)));
 
-        assert main.value("repeat");
+        assert main.value("first");
         assert main.emit(Complete).value();
-        scheduler.await();
-        assert main.value("repeat");
+        other.emit("repeat observing");
+        assert main.value("first");
         assert main.emit(Complete).value();
-        scheduler.await();
-        assert main.value("repeat");
+        other.emit("repeat observing");
+        assert main.value("first");
         assert main.emit(Complete).value();
-        scheduler.await();
+        other.emit("repeat observing");
         assert main.value();
         assert main.isCompleted();
         assert main.isNotError();
