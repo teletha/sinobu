@@ -9,11 +9,19 @@
  */
 package kiss.function;
 
+import org.junit.jupiter.api.Test;
+
 import kiss.WiseRunnable;
 
 class WiseRunnableTest {
 
-    private String value = null;
+    String value = null;
 
     WiseRunnable constant = () -> value = "constant";
+
+    @Test
+    void invoke() {
+        constant.invoke("parameter", "will", "be", "ignored");
+        assert value.equals("constant");
+    }
 }
