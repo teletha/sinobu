@@ -643,7 +643,7 @@ public class I {
                     continue nextContext;
                 }
 
-                // full expression was evaluated collectly, convert it to string
+                // full expression was evaluated correctly, convert it to string
                 matcher.appendReplacement(str, I.transform(c, String.class));
 
                 continue nextPlaceholder;
