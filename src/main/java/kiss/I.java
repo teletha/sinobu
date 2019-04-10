@@ -1591,31 +1591,6 @@ public class I {
 
     /**
      * <p>
-     * Execute the specified task in background {@link Thread}.
-     * </p>
-     *
-     * @param task A task to execute.
-     */
-    public static Future schedule(long time, TimeUnit unit, Runnable task, WiseTriFunction<Runnable, Long, TimeUnit, Future> scheduler) {
-        if (time <= 0) {
-            scheduler = (t, d, u) -> CompletableFuture.runAsync(t, Runnable::run);
-        }
-
-        if (scheduler == null) {
-            scheduler = (t, d, u) -> CompletableFuture.runAsync(t, CompletableFuture.delayedExecutor(d, u, parallel));
-        }
-
-        return scheduler.apply(() -> {
-            try {
-                task.run();
-            } catch (Throwable e) {
-                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
-            }
-        }, time, unit);
-    }
-
-    /**
-     * <p>
      * Create {@link HashSet} with the specified items.
      * </p>
      * 
@@ -1634,7 +1609,6 @@ public class I {
      * @param values A list of values to emit.
      * @return The {@link Signal} to emit sequencial values.
      */
-    @SafeVarargs
     public static <V> Signal<V> signal(V... values) {
         return new Signal<V>((observer, disposer) -> {
             if (disposer.isNotDisposed()) observer.complete();

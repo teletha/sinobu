@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2095,7 +2095,6 @@ public final class Signal<V> {
      * @param others A target {@link Signal} to merge. <code>null</code> will be ignored.
      * @return Chainable API.
      */
-    @SafeVarargs
     public final Signal<V> merge(Signal<? extends V>... others) {
         return merge(I.list(others));
     }
@@ -3237,7 +3236,6 @@ public final class Signal<V> {
      * @param values The values that contains the items you want to emit first.
      * @return Chainable API.
      */
-    @SafeVarargs
     public final Signal<V> startWith(V... values) {
         return values == null || values.length == 0 ? this : startWith(Arrays.asList(values));
     }
@@ -3836,7 +3834,6 @@ public final class Signal<V> {
      * @param values A list of constants to apply to each value emitted by this {@link Signal}.
      * @return Chainable API.
      */
-    @SafeVarargs
     public final <E> Signal<E> toggle(E... values) {
         if (values.length == 0) {
             return never();
