@@ -193,9 +193,6 @@ public class I {
     };
 
     /** The parallel task manager. */
-    static final ExecutorService serial = Executors.newSingleThreadExecutor(factory);
-
-    /** The parallel task manager. */
     static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
 
     /** The parallel task scheduler. */
