@@ -1537,24 +1537,27 @@ public class I {
     }
 
     /**
-     * <p>
-     * Execute the specified task in background {@link Thread}.
-     * </p>
+     * Execute the specified task in the sinobu managed background thread pool.
      *
      * @param task A task to execute.
+     * @return A result of the executing task.
      */
     public static CompletableFuture schedule(Runnable task) {
-        return schedule((Executor) null, task);
+        return schedule(null, task);
     }
 
     /**
-     * <p>
-     * Execute the specified task in background {@link Thread}.
-     * </p>
-     *
+     * Internal API : Execute the task on the specified {@link Executor}.
+     * 
+     * @param executor A task executor.
      * @param task A task to execute.
+     * @return A result of the executing task.
      */
-    public static CompletableFuture schedule(Executor executor, Runnable task) {
+    static CompletableFuture schedule(Executor executor, Runnable task) {
+        if (task == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+
         return CompletableFuture.runAsync(() -> {
             try {
                 task.run();
@@ -1565,25 +1568,29 @@ public class I {
     }
 
     /**
-     * <p>
-     * Execute the specified task in background {@link Thread}.
-     * </p>
+     * Execute the specified task lazily in the sinobu managed background thread pool.
      *
+     * @param time A delay time.
+     * @param unit A delay time unit.
      * @param task A task to execute.
+     * @return A result of the executing task.
      */
     public static CompletableFuture schedule(long time, TimeUnit unit, Runnable task) {
         return schedule(time, unit, null, task);
     }
 
     /**
-     * <p>
-     * Execute the specified task in background {@link Thread}.
-     * </p>
+     * Internal API : Execute the specified task lazily in the sinobu managed background thread
+     * pool.
      *
+     * @param time A delay time.
+     * @param unit A delay time unit.
+     * @param executor A task executor.
      * @param task A task to execute.
+     * @return A result of the executing task.
      */
-    static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService scheduler, Runnable task) {
-        return schedule(time <= 0 ? Runnable::run : t -> (scheduler == null ? I.scheduler : scheduler).schedule(t, time, unit), task);
+    static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService executor, Runnable task) {
+        return schedule(time <= 0 ? Runnable::run : t -> (executor == null ? I.scheduler : executor).schedule(t, time, unit), task);
     }
 
     /**
