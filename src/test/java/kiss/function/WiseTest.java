@@ -28,7 +28,7 @@ import kiss.WiseSupplier;
 /**
  * @version 2018/07/22 20:06:49
  */
-class DressTest {
+class WiseTest {
 
     @Test
     void runnable() {

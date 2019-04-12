@@ -18,10 +18,7 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.Ⅱ;
 
-/**
- * @version 2018/03/01 20:55:59
- */
-public class LambdaTest {
+public class PairTest {
 
     @Test
     public void pairFunction() {
