@@ -240,11 +240,11 @@ public class I {
         // built-in encoders
         load(ExtensionFactory.class, Encoder.class, () -> (ExtensionFactory<Encoder>) type -> {
             if (type.isEnum()) {
-                return value -> ((Enum) value).name();
+                return (Encoder<Enum>) Enum::name;
             }
             switch (type.getName().hashCode()) {
             case -530663260: // java.lang.Class
-                return value -> ((Class) value).getName();
+                return (Encoder<Class>) Class::getName;
             default:
                 return String::valueOf;
             }
