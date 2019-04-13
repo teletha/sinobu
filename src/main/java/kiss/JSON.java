@@ -20,9 +20,6 @@ import java.util.Map;
 import kiss.model.Model;
 import kiss.model.Property;
 
-/**
- * @version 2017/05/02 16:58:50
- */
 public class JSON {
 
     /** The root object. */
@@ -571,7 +568,7 @@ public class JSON {
 
                 // all properties need the properly indents
                 if (0 < current) {
-                    indent();
+                    out.append("\r\n").append("\t".repeat(current)); // indent
 
                     // property key (List node doesn't need key)
                     if (model.type != List.class) {
@@ -592,7 +589,7 @@ public class JSON {
                     walker.current = current + 1;
                     out.append(property.model.type == List.class ? '[' : '{');
                     ((Model<Object>) property.model).walk(value, walker::write);
-                    if (walker.index != 0) indent();
+                    if (walker.index != 0) out.append("\r\n").append("\t".repeat(current)); // indent
                     out.append(property.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
@@ -655,21 +652,6 @@ public class JSON {
                 }
             }
             if (!primitive) out.append('"');
-        }
-    }
-
-    /**
-     * <p>
-     * Helper method to write line and indent.
-     * </p>
-     * 
-     * @throws IOException
-     */
-    private void indent() throws IOException {
-        out.append("\r\n");
-
-        for (int i = 0; i < current; i++) {
-            out.append('\t');
         }
     }
 }
