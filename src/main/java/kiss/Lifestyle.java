@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.util.function.Supplier;
-
 /**
  * <p>
  * Lifestyle manages the instance in the specific context. Sinobu provides three commonly used
@@ -50,5 +48,5 @@ import java.util.function.Supplier;
  * @see Manageable#lifestyle()
  * @version 2017/03/29 11:16:17
  */
-public interface Lifestyle<M> extends Supplier<M>, Extensible {
+public interface Lifestyle<M> extends WiseSupplier<M>, Extensible {
 }

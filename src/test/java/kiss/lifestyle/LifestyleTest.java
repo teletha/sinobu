@@ -118,7 +118,7 @@ public class LifestyleTest extends LoadableTestBase {
          * {@inheritDoc}
          */
         @Override
-        public Without get() {
+        public Without GET() throws Throwable {
             return object;
         }
     }
@@ -145,7 +145,7 @@ public class LifestyleTest extends LoadableTestBase {
              * @see kiss.Lifestyle#get()
              */
             @Override
-            public HasCustomLifestyleInPrivateModule get() {
+            public HasCustomLifestyleInPrivateModule GET() throws Throwable {
                 return new HasCustomLifestyleInPrivateModule();
             }
         }
@@ -162,7 +162,7 @@ public class LifestyleTest extends LoadableTestBase {
              * @see kiss.Lifestyle#get()
              */
             @Override
-            public HasCustomLifestyleInPrivateModule get() {
+            public HasCustomLifestyleInPrivateModule GET() throws Throwable {
                 return new HasCustomLifestyleInPrivateModule();
             }
         }
@@ -267,7 +267,7 @@ public class LifestyleTest extends LoadableTestBase {
          * @see kiss.Lifestyle#get()
          */
         @Override
-        public Interface get() {
+        public Interface GET() throws Throwable {
             return implementation;
         }
     }

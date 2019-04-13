@@ -21,56 +21,25 @@ import kiss.model.Model;
  * @param <M> A {@link Manageable} class.
  * @see Singleton
  * @see ThreadSpecific
- * @version 2018/10/04 21:21:47
  */
 public class Prototype<M> implements Lifestyle<M> {
 
     /** The cache for instantiator. */
-    protected final WiseSupplier<M> instantiator;
+    protected final Constructor<M> constructor;
 
     /**
-     * Create Prototype instance.
+     * Create a prototype instance.
      * 
      * @param modelClass A target class.
      */
     protected Prototype(Class<M> modelClass) {
         // find default constructor as instantiator
-        Constructor<M>[] constructors = Model.collectConstructors(modelClass);
+        constructor = Model.collectConstructors(modelClass)[0];
 
-        if (constructors.length == 0) {
-            throw new Error(modelClass + " is invalid model.");
-        }
-        Constructor<M> constructor = constructors[0];
-
-        Class[] types = constructor.getParameterTypes();
         // We can safely call the method 'newInstance()' because the generated class has
         // only one public constructor without arguments. But we should make this
         // instantiator accessible because it makes the creation speed faster.
         constructor.setAccessible(true);
-
-        this.instantiator = () -> {
-            // constructor injection
-            Object[] params = null;
-
-            // We should use lazy initialization of parameter array to avoid that the constructor
-            // without parameters doesn't create futile array instance.
-            if (types.length != 0) {
-                params = new Object[types.length];
-
-                for (int i = 0; i < params.length; i++) {
-                    if (types[i] == Lifestyle.class) {
-                        params[i] = I.makeLifestyle((Class) Model
-                                .collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
-                    } else if (types[i] == Class.class) {
-                        params[i] = I.dependencies.get().peekLast();
-                    } else {
-                        params[i] = I.make(types[i]);
-                    }
-                }
-            }
-            // create new instance
-            return constructor.newInstance(params);
-        };
     }
 
     /**
@@ -86,7 +55,29 @@ public class Prototype<M> implements Lifestyle<M> {
      * @see kiss.Lifestyle#get()
      */
     @Override
-    public M get() {
-        return instantiator.get();
+    public M GET() throws Throwable {
+        Class[] types = constructor.getParameterTypes();
+
+        // constructor injection
+        Object[] params = null;
+
+        // We should use lazy initialization of parameter array to avoid that the constructor
+        // without parameters doesn't create futile array instance.
+        if (types.length != 0) {
+            params = new Object[types.length];
+
+            for (int i = 0; i < params.length; i++) {
+                if (types[i] == Lifestyle.class) {
+                    params[i] = I
+                            .makeLifestyle((Class) Model.collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
+                } else if (types[i] == Class.class) {
+                    params[i] = I.dependencies.get().peekLast();
+                } else {
+                    params[i] = I.make(types[i]);
+                }
+            }
+        }
+        // create new instance
+        return constructor.newInstance(params);
     }
 }
