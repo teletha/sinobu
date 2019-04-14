@@ -773,25 +773,7 @@ public class I {
      * @return A concat expression.
      */
     public static String join(CharSequence delimiter, Iterable items) {
-        if (items == null) {
-            return "";
-        }
-
-        if (delimiter == null) {
-            delimiter = "";
-        }
-
-        StringBuilder builder = new StringBuilder();
-        Iterator iterator = items.iterator();
-
-        if (iterator.hasNext()) {
-            builder.append(iterator.next());
-
-            while (iterator.hasNext()) {
-                builder.append(delimiter).append(iterator.next());
-            }
-        }
-        return builder.toString();
+        return String.join(delimiter == null ? "" : delimiter, I.signal(items).map(String::valueOf).toList());
     }
 
     /**
