@@ -12,7 +12,6 @@ package kiss;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 /**
@@ -102,10 +101,9 @@ class Subscriber<T> implements Observer<T>, Disposable {
      * @return
      */
     Signal<T> signal() {
-        CopyOnWriteArrayList<Observer<T>> observers = new CopyOnWriteArrayList();
-        observer = I.bundle(Observer.class, observers);
-
-        return new Signal<>(observers);
+        Signaling<T> signal = new Signaling();
+        observer = signal;
+        return signal.expose;
     }
 
     private static Map<Disposable, Subscriber> cache = new WeakHashMap();
