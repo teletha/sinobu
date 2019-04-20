@@ -16,6 +16,7 @@ import java.util.UnknownFormatConversionException;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.Signal;
 
 /**
  * @version 2018/03/25 18:53:59
@@ -177,6 +178,13 @@ class RetryTest extends SignalTester {
         assert checkLog("Unreached").size() == 0;
         assert checkLog("Retry").size() == 3;
         assert checkLog("ErrorFinally").size() == 1;
+    }
+
+    @Test
+    void retryWhenNullNotifier() {
+        Signal<Object> signal = I.signal();
+        Signal<Object> retryWhen = signal.retryWhen(null);
+        assert signal == retryWhen;
     }
 
     @Test

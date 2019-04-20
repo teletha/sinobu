@@ -12,6 +12,7 @@ package kiss.signal;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.Signal;
 
 class RepeatTest extends SignalTester {
 
@@ -233,5 +234,12 @@ class RepeatTest extends SignalTester {
         assert checkLog("Begin").size() == 4;
         assert checkLog("Repeat").size() == 3;
         assert checkLog("End").size() == 4;
+    }
+
+    @Test
+    void repeatWhenNullNotifier() {
+        Signal<Object> signal = I.signal();
+        Signal<Object> repeat = signal.repeatWhen(null);
+        assert signal == repeat;
     }
 }

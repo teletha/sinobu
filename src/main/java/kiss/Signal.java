@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2367,6 +2367,11 @@ public final class Signal<V> {
      * @return Chainable API
      */
     private Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notifier, boolean immediate) {
+        // ignore invalid parameter
+        if (notifier == null) {
+            return this;
+        }
+
         return new Signal<>((observer, disposer) -> {
             // recorder for the processing complete
             Object[] processing = new Object[1];
@@ -2650,6 +2655,11 @@ public final class Signal<V> {
      * @return Chainable API
      */
     public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, WiseFunction<Signal<E>, Signal<?>> flow) {
+        // ignore invalid parameter
+        if (flow == null) {
+            return this;
+        }
+
         return new Signal<>((observer, disposer) -> {
             // recorder for the processing error
             Throwable[] processing = new Throwable[1];

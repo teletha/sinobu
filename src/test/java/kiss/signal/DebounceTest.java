@@ -9,7 +9,6 @@
  */
 package kiss.signal;
 
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 class DebounceTest extends SignalTester {
@@ -23,7 +22,7 @@ class DebounceTest extends SignalTester {
         assert main.value("accepted");
     }
 
-    @RepeatedTest(100)
+    @Test
     void interval() {
         monitor(signal -> signal.interval(5, ms, scheduler).debounce(100, ms, scheduler));
 

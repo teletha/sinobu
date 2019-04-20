@@ -252,4 +252,11 @@ class RecoverTest extends SignalTester {
         assert checkLog("Recover").size() == 1;
         assert checkLog("End").size() == 1;
     }
+
+    @Test
+    void recoverWhenNullNotifier() {
+        Signal<Object> signal = I.signal();
+        Signal<Object> recover = signal.recoverWhen(null);
+        assert signal == recover;
+    }
 }
