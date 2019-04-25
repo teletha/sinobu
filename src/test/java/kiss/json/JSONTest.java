@@ -112,6 +112,7 @@ class JSONTest {
         VariablePropertyAtField bean = I.make(VariablePropertyAtField.class);
         bean.string.set("value");
         bean.integer.set(10);
+        bean.sub.set(20D);
         bean.list.get().add("first");
         bean.list.get().add("second");
         bean.map.get().put("one", 11L);
@@ -122,6 +123,7 @@ class JSONTest {
         "{",
         "  'integer': '10',",
         "  'string': 'value',",
+        "  'sub': '20.0',",
         "  'list': [",
         "    'first',",
         "    'second'",

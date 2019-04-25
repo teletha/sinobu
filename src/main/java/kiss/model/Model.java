@@ -181,7 +181,7 @@ public class Model<M> {
                         field.setAccessible(true);
                         Model fieldModel = of(field.getGenericType(), type);
 
-                        if (fieldModel.type == Variable.class) {
+                        if (Variable.class.isAssignableFrom(fieldModel.type)) {
                             // variable
                             Property property = new Property(of(collectParameters(field
                                     .getGenericType(), Variable.class)[0], Variable.class), field.getName());

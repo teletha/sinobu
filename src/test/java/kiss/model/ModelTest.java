@@ -44,9 +44,6 @@ import kiss.sample.bean.invalid.OverrideFinalAccessor;
 import kiss.sample.bean.invalid.ProtectedAccessor;
 import kiss.sample.bean.invalid.StaticAccessor;
 
-/**
- * @version 2018/09/28 13:29:28
- */
 class ModelTest {
 
     static {
@@ -174,16 +171,18 @@ class ModelTest {
     @Test
     void variableAtFieldProperty() {
         Model<VariablePropertyAtField> model = Model.of(VariablePropertyAtField.class);
-        assert model.properties().size() == 4;
+        assert model.properties().size() == 5;
 
-        Property integer = model.properties().get(0);
-        Property string = model.properties().get(1);
-        Property list = model.properties().get(2);
-        Property map = model.properties().get(3);
+        Property integer = model.property("integer");
+        Property string = model.property("string");
+        Property list = model.property("list");
+        Property map = model.property("map");
+        Property sub = model.property("sub");
         assert integer.model.type == Integer.class;
         assert string.model.type == String.class;
         assert list.model.type == List.class;
         assert map.model.type == Map.class;
+        assert sub.model.type == Double.class;
 
         VariablePropertyAtField bean = I.make(VariablePropertyAtField.class);
         assert bean.integer.get() == 0;
@@ -196,6 +195,10 @@ class ModelTest {
         model.set(bean, string, "value");
         assert bean.string.get().equals("value");
         assert model.get(bean, string).equals("value");
+
+        model.set(bean, sub, 20D);
+        assert bean.sub.get() == 20D;
+        assert (Double) model.get(bean, sub) == 20D;
     }
 
     @Test

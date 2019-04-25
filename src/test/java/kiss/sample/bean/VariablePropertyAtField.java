@@ -28,4 +28,16 @@ public class VariablePropertyAtField {
     public final Variable<List<String>> list = Variable.of(new ArrayList());
 
     public final Variable<Map<String, Long>> map = Variable.of(new HashMap());
+
+    public final DoubleVariable sub = new DoubleVariable(10D);
+
+    public static class DoubleVariable extends Variable<Double> {
+
+        /**
+         * @param value
+         */
+        public DoubleVariable(Double value) {
+            super(value);
+        }
+    }
 }
