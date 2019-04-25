@@ -54,7 +54,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /**
      * Hide constructor.
      */
-    private Variable(V value) {
+    protected Variable(V value) {
         this.v = value;
         this.set = base.bindTo(this);
     }
@@ -205,7 +205,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param then An action to perform.
      * @return The computed {@link Variable}.
      */
-    public <R> Variable<R> map(Function<? super V, ? extends R> then) {
+    public final <R> Variable<R> map(Function<? super V, ? extends R> then) {
         if (v != null && then != null) {
             try {
                 return of(then.apply(v));
@@ -224,7 +224,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param action An action to perform.
      * @return The computed {@link Variable}.
      */
-    public <R> Variable<R> flatMap(Function<V, Variable<R>> converter) {
+    public final <R> Variable<R> flatMap(Function<V, Variable<R>> converter) {
         return v == null || converter == null ? new Variable(null) : converter.apply(v);
     }
 
@@ -233,7 +233,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      *
      * @return The {@link Signal} which notifies value modification.
      */
-    public synchronized Signal<V> observe() {
+    public final synchronized Signal<V> observe() {
         if (signaling == null) {
             signaling = new Signaling();
         }
@@ -245,7 +245,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      *
      * @return The {@link Signal} which notifies value modification.
      */
-    public Signal<V> observeNow() {
+    public final Signal<V> observeNow() {
         return observe().startWith(this::get);
     }
 
@@ -255,7 +255,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param other A value to be returned if there is no value present, may be null.
      * @return A value, if present, otherwise other.
      */
-    public V or(V other) {
+    public final V or(V other) {
         return v != null ? v : other;
     }
 
@@ -265,7 +265,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param other A value to be returned if there is no value present, may be null.
      * @return A value, if present, otherwise other.
      */
-    public V or(Supplier<V> other) {
+    public final V or(Supplier<V> other) {
         return v != null ? v : other == null ? null : other.get();
     }
 
@@ -277,7 +277,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V set(V value) {
+    public final V set(V value) {
         return setIf(null, value);
     }
 
@@ -289,7 +289,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V set(Optional<V> value) {
+    public final V set(Optional<V> value) {
         return setIf(null, value);
     }
 
@@ -301,7 +301,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value generator.
      * @return A previous value.
      */
-    public V set(Supplier<V> value) {
+    public final V set(Supplier<V> value) {
         return setIf(null, value);
     }
 
@@ -313,7 +313,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value generator.
      * @return A previous value.
      */
-    public V set(UnaryOperator<V> value) {
+    public final V set(UnaryOperator<V> value) {
         return setIf(null, value);
     }
 
@@ -326,7 +326,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V setIf(Predicate<V> condition, V value) {
+    public final V setIf(Predicate<V> condition, V value) {
         return assign(condition, value, false);
     }
 
@@ -339,7 +339,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V setIf(Predicate<V> condition, Optional<V> value) {
+    public final V setIf(Predicate<V> condition, Optional<V> value) {
         return setIf(condition, of(value));
     }
 
@@ -352,7 +352,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V setIf(Predicate<V> condition, Supplier<V> value) {
+    public final V setIf(Predicate<V> condition, Supplier<V> value) {
         return assign(condition, of(value).v, false);
     }
 
@@ -365,7 +365,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V setIf(Predicate<V> condition, UnaryOperator<V> value) {
+    public final V setIf(Predicate<V> condition, UnaryOperator<V> value) {
         return setIf(condition, value == null ? null : value.apply(v));
     }
 
@@ -377,7 +377,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V let(V value) {
+    public final V let(V value) {
         return letIf(null, value);
     }
 
@@ -389,7 +389,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V let(Optional<V> value) {
+    public final V let(Optional<V> value) {
         return letIf(null, value);
     }
 
@@ -401,7 +401,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value generator.
      * @return A previous value.
      */
-    public V let(Supplier<V> value) {
+    public final V let(Supplier<V> value) {
         return letIf(null, value);
     }
 
@@ -413,7 +413,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value generator.
      * @return A previous value.
      */
-    public V let(UnaryOperator<V> value) {
+    public final V let(UnaryOperator<V> value) {
         return letIf(null, value);
     }
 
@@ -426,7 +426,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V letIf(Predicate<V> condition, V value) {
+    public final V letIf(Predicate<V> condition, V value) {
         return assign(condition, value, true);
     }
 
@@ -439,7 +439,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V letIf(Predicate<V> condition, Optional<V> value) {
+    public final V letIf(Predicate<V> condition, Optional<V> value) {
         return letIf(condition, of(value));
     }
 
@@ -452,7 +452,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V letIf(Predicate<V> condition, Supplier<V> value) {
+    public final V letIf(Predicate<V> condition, Supplier<V> value) {
         return letIf(condition, of(value).v);
     }
 
@@ -465,7 +465,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public V letIf(Predicate<V> condition, UnaryOperator<V> value) {
+    public final V letIf(Predicate<V> condition, UnaryOperator<V> value) {
         return letIf(condition, value == null ? null : value.apply(v));
     }
 
@@ -508,7 +508,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param adjuster
      * @return Chainable API.
      */
-    public Variable<V> adjust(Function<V, V> adjuster) {
+    public final Variable<V> adjust(Function<V, V> adjuster) {
         this.adjuster = adjuster;
         return this;
     }
@@ -519,7 +519,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param requirement
      * @return Chainable API.
      */
-    public Variable<V> require(Predicate<V> requirement) {
+    public final Variable<V> require(Predicate<V> requirement) {
         if (requirement != null) {
             adjust(v -> requirement.test(v) ? v : this.v);
         }
@@ -533,7 +533,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * 
      * @param some A user action.
      */
-    public void to(Consumer<V> some) {
+    public final void to(Consumer<V> some) {
         to(some, null);
     }
 
@@ -542,7 +542,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * 
      * @param some A user action.
      */
-    public void to(Consumer<V> some, Runnable none) {
+    public final void to(Consumer<V> some, Runnable none) {
         if (v != null) {
             if (some != null) {
                 some.accept(v);
@@ -558,7 +558,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * {@inheritDoc}
      */
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(v);
     }
 
@@ -566,7 +566,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (obj instanceof Variable == false) {
             return false;
         }
