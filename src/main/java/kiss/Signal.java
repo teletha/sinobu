@@ -228,7 +228,9 @@ public final class Signal<V> {
             if (disposer.isNotDisposed()) next.accept(e);
         };
         subscriber.error = e -> {
-            if (error == null || disposer.isDisposed()) {
+            if (error == null) {
+                throw I.quiet(e);
+            } else if (disposer.isDisposed()) {
                 // throw I.quiet(e);
             } else {
                 ((Consumer<Throwable>) error).accept(e);

@@ -14,13 +14,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/07/20 18:58:16
- */
 class ErrorTest extends SignalTester {
 
     @Test
@@ -61,5 +59,23 @@ class ErrorTest extends SignalTester {
         assert values.size() == 2;
         assert error.get() instanceof IllegalStateException;
         assert complete.get() == 0;
+    }
+
+    @Test
+    void throwingErrorInObserverSubscriberWillRethrowError() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            I.signal("rethrow error").to(e -> {
+                throw new RuntimeException();
+            });
+        });
+    }
+
+    @Test
+    void throwingErrorInRunnableSubscriberWillRethrowError() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            I.signal("rethrow error").to(() -> {
+                throw new RuntimeException();
+            });
+        });
     }
 }

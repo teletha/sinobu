@@ -11,6 +11,7 @@ package kiss.signal;
 
 import java.util.Enumeration;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.Disposable;
@@ -140,8 +141,7 @@ class StartWithTest extends SignalTester {
 
     @Test
     void signalChildErrorWillAffectMain() {
-        Disposable disposable = Signal.never().startWith(I.signalError(new Error())).to(I.NoOP);
-        assert disposable.isDisposed();
+        Assertions.assertThrows(Error.class, () -> Signal.never().startWith(I.signalError(new Error())).to(I.NoOP));
     }
 
     @Test
