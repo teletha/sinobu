@@ -23,14 +23,14 @@ import java.util.function.UnaryOperator;
 public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The modifier base. */
-    private static final MethodHandle base;
+    private static final MethodHandle set;
 
     static {
         try {
             Field modify = Variable.class.getField("v");
             modify.setAccessible(true);
 
-            base = MethodHandles.lookup().unreflectSetter(modify);
+            set = MethodHandles.lookup().unreflectSetter(modify);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -38,9 +38,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The current value. This value is not final but read-only. */
     public transient final V v;
-
-    /** The binded modifier. */
-    private final MethodHandle set;
 
     /** The immutability. */
     private boolean fix;
@@ -56,7 +53,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     protected Variable(V value) {
         this.v = value;
-        this.set = base.bindTo(this);
     }
 
     /**
@@ -490,7 +486,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
             if (let) fix = true;
 
             try {
-                set.invoke(value);
+                set.invoke(this, value);
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
