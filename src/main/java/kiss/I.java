@@ -1571,7 +1571,7 @@ public class I {
      * @param task A task to execute.
      * @return A result of the executing task.
      */
-    static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService executor, Runnable task) {
+    public static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService executor, Runnable task) {
         return schedule(time <= 0 ? Runnable::run : t -> (executor == null ? I.scheduler : executor).schedule(t, time, unit), task);
     }
 
