@@ -55,6 +55,8 @@ public interface Observer<V> extends Consumer<V> {
         UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
         if (handler != null) {
             handler.uncaughtException(Thread.currentThread(), e);
+        } else {
+            e.printStackTrace();
         }
         throw I.quiet(e);
     }
