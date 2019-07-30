@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.function.Consumer;
 
 /**
@@ -51,6 +52,10 @@ public interface Observer<V> extends Consumer<V> {
      * @param e An object that provides additional information about the error.
      */
     public default void error(Throwable e) {
+        UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
+        if (handler != null) {
+            handler.uncaughtException(Thread.currentThread(), e);
+        }
         throw I.quiet(e);
     }
 }
