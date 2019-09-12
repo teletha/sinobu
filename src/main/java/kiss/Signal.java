@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1107,7 +1107,7 @@ public final class Signal<V> {
      */
     public final Signal<V> delay(Supplier<Duration> time, ScheduledExecutorService scheduler) {
         // ignore invalid parameters
-        if (time == null || time.get().toNanos() <= 0) {
+        if (time == null) {
             return this;
         }
         return delay(I.wiseF(time), scheduler);
