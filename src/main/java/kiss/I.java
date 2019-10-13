@@ -31,6 +31,9 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -818,6 +821,21 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(InputStream input) {
+        return json((Object) input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
+     */
+    public static JSON json(HttpRequest input) {
         return json((Object) input);
     }
 
@@ -2064,6 +2082,18 @@ public class I {
      * @param source A xml expression.
      * @return A constructed {@link XML}.
      */
+    public static XML xml(HttpRequest source) {
+        return I.xml(null, source);
+    }
+
+    /**
+     * <p>
+     * Parse as xml fragment.
+     * </p>
+     *
+     * @param source A xml expression.
+     * @return A constructed {@link XML}.
+     */
     public static XML xml(URL source) {
         return I.xml(null, source);
     }
@@ -2181,6 +2211,8 @@ public class I {
                 input = connection.getInputStream();
             } else if (input instanceof File) {
                 input = new FileInputStream((File) input);
+            } else if (input instanceof HttpRequest) {
+                input = HttpClient.newHttpClient().send((HttpRequest) input, BodyHandlers.ofByteArray()).body();
             }
 
             // stream to byte

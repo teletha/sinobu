@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ import java.util.StringJoiner;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.JSON;
 import kiss.model.Model;
 import kiss.model.Property;
 import kiss.sample.bean.BuiltinBean;
@@ -362,6 +363,33 @@ class JSONTest {
             chain.setNext(chain);
             validate(chain);
         });
+    }
+
+    @Test
+    void valueString() {
+        Person person = new Person();
+        person.setFirstName("name");
+
+        JSON json = I.json(I.write(person));
+        assert json.value("firstName").equals("name");
+    }
+
+    @Test
+    void valueInteger() {
+        Person person = new Person();
+        person.setFirstName("name");
+
+        JSON json = I.json(I.write(person));
+        assert json.value("age").equals("0");
+    }
+
+    @Test
+    void valueUnknown() {
+        Person person = new Person();
+        person.setFirstName("name");
+
+        JSON json = I.json(I.write(person));
+        assert json.value("invalid") == null;
     }
 
     /**

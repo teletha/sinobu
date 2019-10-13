@@ -16,11 +16,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import kiss.model.Model;
 import kiss.model.Property;
 
 public class JSON {
+
+    /** The reusable selector separator pattern. */
+    private static final Pattern P = Pattern.compile("\\.");
 
     /** The root object. */
     private Object root;
@@ -35,15 +39,16 @@ public class JSON {
     }
 
     /**
-     * <p>
-     * Find values by the specified name path.
-     * </p>
+     * Get the direct child value as {@link String} with the specified key. Unknown key and object
+     * key will return null.
      * 
-     * @param path A name path.
-     * @return
+     * @param key A key for value to find.
+     * @return An associated value.
      */
-    public Signal<String> find(String path) {
-        return find(path, String.class);
+    public String value(String key) {
+        Object value = ((Map) root).get(key);
+
+        return value instanceof String ? (String) value : null;
     }
 
     /**
@@ -55,7 +60,7 @@ public class JSON {
      * @return
      */
     public <M> Signal<M> find(String path, Class<M> type) {
-        return select(path).map(v -> v.to(type));
+        return find(path).map(v -> v.to(type));
     }
 
     /**
@@ -66,10 +71,10 @@ public class JSON {
      * @param path A name path.
      * @return
      */
-    private Signal<JSON> select(String path) {
+    public Signal<JSON> find(String path) {
         Signal<Object> current = I.signal(root);
 
-        for (String name : path.split("\\.")) {
+        for (String name : P.split(path)) {
             current = current.flatMap(v -> {
                 if (v instanceof Map) {
                     if (name.equals("*")) {

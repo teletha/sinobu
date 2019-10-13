@@ -46,7 +46,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("name").toList();
+        List<String> values = json.find("name", String.class).toList();
         assert values.size() == 1;
         assert values.get(0).equals("Jill");
     }
@@ -60,7 +60,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("name").toList();
+        List<String> values = json.find("name", String.class).toList();
         assert values.size() == 1;
         assert values.get(0) == null;
     }
@@ -76,7 +76,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("city.id").toList();
+        List<String> values = json.find("city.id", String.class).toList();
         assert values.size() == 1;
         assert values.get(0).equals("NY");
     }
@@ -94,7 +94,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names").toList();
+        List<String> values = json.find("names", String.class).toList();
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
@@ -114,7 +114,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names[1]").toList();
+        List<String> values = json.find("names[1]", String.class).toList();
         assert values.size() == 1;
         assert values.get(0).equals("Bell");
     }
@@ -132,7 +132,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names.name").toList();
+        List<String> values = json.find("names.name", String.class).toList();
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
@@ -152,7 +152,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names[1].name").toList();
+        List<String> values = json.find("names[1].name", String.class).toList();
         assert values.size() == 1;
         assert values.get(0).equals("Bell");
     }
