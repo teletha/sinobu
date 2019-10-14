@@ -30,6 +30,13 @@ public class JSON {
     private Object root;
 
     /**
+     * Create empty JSON object.
+     */
+    public JSON() {
+        this(new HashMap());
+    }
+
+    /**
      * Hide constructor.
      * 
      * @param root A root json object.
@@ -45,10 +52,23 @@ public class JSON {
      * @param key A key for value to find.
      * @return An associated value.
      */
-    public String value(String key) {
+    public String get(String key) {
         Object value = ((Map) root).get(key);
 
         return value instanceof String ? (String) value : null;
+    }
+
+    /**
+     * Set the direct child value with the specified key.
+     * 
+     * @param key A key.
+     * @param value A value.
+     * @return Chainable API.
+     */
+    public JSON set(String key, Object value) {
+        ((Map) root).put(key, value);
+
+        return this;
     }
 
     /**
