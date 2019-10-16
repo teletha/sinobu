@@ -30,7 +30,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -2209,6 +2211,8 @@ public class I {
 
             if (input instanceof File) {
                 input = new FileInputStream((File) input);
+            } else if (input instanceof HttpRequest) {
+                input = HttpClient.newHttpClient().send((HttpRequest) input, BodyHandlers.ofByteArray()).body();
             }
 
             // stream to byte
