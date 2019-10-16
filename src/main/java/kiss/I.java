@@ -30,10 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -2201,18 +2198,17 @@ public class I {
         // skip character data
         if (input instanceof CharSequence == false) {
             // object to stream
-            if (input instanceof URI) {
-                input = ((URI) input).toURL();
-            }
             if (input instanceof URL) {
-                URL url = (URL) input;
-                URLConnection connection = url.openConnection();
-                connection.setRequestProperty("User-Agent", "");
-                input = connection.getInputStream();
-            } else if (input instanceof File) {
+                input = ((URL) input).toURI();
+            }
+
+            if (input instanceof URI) {
+                URI uri = (URI) input;
+                input = uri.getScheme().equals("file") ? new File(uri) : HttpRequest.newBuilder(uri);
+            }
+
+            if (input instanceof File) {
                 input = new FileInputStream((File) input);
-            } else if (input instanceof HttpRequest) {
-                input = HttpClient.newHttpClient().send((HttpRequest) input, BodyHandlers.ofByteArray()).body();
             }
 
             // stream to byte
