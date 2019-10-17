@@ -371,7 +371,7 @@ class JSONTest {
         person.setFirstName("name");
 
         JSON json = I.json(I.write(person));
-        assert json.get("firstName").equals("name");
+        assert json.get("firstName", String.class).equals("name");
     }
 
     @Test
@@ -380,7 +380,7 @@ class JSONTest {
         person.setFirstName("name");
 
         JSON json = I.json(I.write(person));
-        assert json.get("age").equals("0");
+        assert json.get("age", int.class) == 0;
     }
 
     @Test
@@ -389,7 +389,7 @@ class JSONTest {
         person.setFirstName("name");
 
         JSON json = I.json(I.write(person));
-        assert json.get("invalid") == null;
+        assert json.get("invalid", String.class) == null;
     }
 
     /**
@@ -413,6 +413,7 @@ class JSONTest {
 
         // validate serialized text
         assert joiner.toString().equals(serialized);
+        System.out.println(serialized);
 
         // validate model and properties
         Model model = Model.of(object.getClass());
@@ -431,7 +432,25 @@ class JSONTest {
      * @param other
      */
     private static void validate(Model<Object> model, Object one, Object other) {
-        for (Property property : model.properties()) {
+        List<Property> properties = new ArrayList(model.properties());
+
+        if (model.type.isAssignableFrom(List.class) && one != null) {
+            List list = (List) one;
+
+            for (int i = 0; i < list.size(); i++) {
+                properties.add(model.property(String.valueOf(i)));
+            }
+        }
+
+        if (model.type.isAssignableFrom(Map.class) && one != null) {
+            Map<String, Object> map = (Map) one;
+
+            for (String key : map.keySet()) {
+                properties.add(model.property(key));
+            }
+        }
+
+        for (Property property : properties) {
             Object oneValue = model.get(one, property);
             Object otherValue = model.get(other, property);
 

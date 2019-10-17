@@ -46,16 +46,15 @@ public class JSON {
     }
 
     /**
-     * Get the direct child value as {@link String} with the specified key. Unknown key and object
-     * key will return null.
+     * Get the direct child value as your type with the specified key. Unknown key and object key
+     * will return null.
      * 
      * @param key A key for value to find.
+     * @param type A value type to find.
      * @return An associated value.
      */
-    public String get(String key) {
-        Object value = ((Map) root).get(key);
-
-        return value instanceof String ? (String) value : null;
+    public <T> T get(String key, Class<T> type) {
+        return root instanceof Map ? I.transform(((Map) root).get(key), type) : null;
     }
 
     /**
@@ -66,59 +65,46 @@ public class JSON {
      * @return Chainable API.
      */
     public JSON set(String key, Object value) {
-        ((Map) root).put(key, value);
-
+        if (root instanceof Map) {
+            ((Map) root).put(key, value);
+        }
         return this;
     }
 
     /**
-     * <p>
-     * Find values by the specified name path.
-     * </p>
+     * Find values by the specified property path.
      * 
-     * @param path A name path.
-     * @return
-     */
-    public <M> Signal<M> find(String path, Class<M> type) {
-        return find(path).map(v -> v.to(type));
-    }
-
-    /**
-     * <p>
-     * Find values by the specified name path.
-     * </p>
-     * 
-     * @param path A name path.
-     * @return
+     * @param path A property path.
+     * @return A traversed {@link JSON} stream.
      */
     public Signal<JSON> find(String path) {
         Signal<Object> current = I.signal(root);
 
         for (String name : P.split(path)) {
             current = current.flatMap(v -> {
-                if (v instanceof Map) {
-                    if (name.equals("*")) {
-                        return I.signal(((Map) v).values());
-                    } else if (name.equals("^")) {
-                        return I.signal(((Map) v).values()).reverse();
-                    } else {
-                        int i = name.lastIndexOf('[');
-                        String main = i == -1 ? name : name.substring(0, i);
-                        Object value = ((Map) v).get(main);
-
-                        if (i != -1) {
-                            return I.signal(((Map) value).get(name.substring(i + 1, name.length() - 1)));
-                        } else if (value instanceof LinkedHashMap) {
-                            return I.signal(((Map) value).values());
-                        }
-                        return I.signal(value);
-                    }
-                } else {
+                if (v instanceof Map == false) {
                     return Signal.never();
+                } else if (name.equals("*")) {
+                    return I.signal(((Map) v).values());
+                } else if (name.equals("^")) {
+                    return I.signal(((Map) v).values()).reverse();
+                } else {
+                    return I.signal(((Map) v).get(name));
                 }
             });
         }
         return current.map(JSON::new);
+    }
+
+    /**
+     * Find values by the specified property path.
+     * 
+     * @param path A property path.
+     * @param type A property type you want.
+     * @return A traversed {@link JSON} stream.
+     */
+    public <T> Signal<T> find(String path, Class<T> type) {
+        return find(path).map(v -> v.to(type));
     }
 
     /**
@@ -177,7 +163,6 @@ public class JSON {
                 if (!property.isTransient) {
                     if (map.containsKey(property.name)) {
                         // calculate value
-                        map.containsKey(property.name);
                         Object value = map.get(property.name);
                         Class type = property.model.type;
 
@@ -199,6 +184,14 @@ public class JSON {
 
         // API definition
         return java;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return root.toString();
     }
 
     // ===========================================================

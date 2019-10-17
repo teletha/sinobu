@@ -94,7 +94,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names", String.class).toList();
+        List<String> values = json.find("names.*", String.class).toList();
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
@@ -114,7 +114,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names[1]", String.class).toList();
+        List<String> values = json.find("names.1", String.class).toList();
         assert values.size() == 1;
         assert values.get(0).equals("Bell");
     }
@@ -132,7 +132,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names.name", String.class).toList();
+        List<String> values = json.find("names.*.name", String.class).toList();
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
@@ -152,7 +152,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names[1].name", String.class).toList();
+        List<String> values = json.find("names.1.name", String.class).toList();
         assert values.size() == 1;
         assert values.get(0).equals("Bell");
     }
@@ -170,7 +170,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<Person> values = json.find("names", Person.class).toList();
+        List<Person> values = json.find("names.*", Person.class).toList();
         assert values.size() == 3;
         assert values.get(0).getFirstName().equals("Jill");
         assert values.get(1).getFirstName().equals("Bell");
