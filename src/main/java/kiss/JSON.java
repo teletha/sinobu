@@ -145,23 +145,19 @@ public class JSON {
      */
     private <M> M to(Model<M> model, M java, Object js) {
         if (js instanceof Map) {
-            Map<String, Object> map = (Map) js;
-
-            for (Entry<String, Object> e : map.entrySet()) {
+            for (Entry<String, Object> e : ((Map<String, Object>) js).entrySet()) {
                 Property p = model.property(e.getKey());
 
                 if (p != null && !p.isTransient) {
-                    // calculate value
                     Object value = e.getValue();
-                    Class type = p.model.type;
 
                     // convert value
                     if (p.isAttribute()) {
-                        value = I.transform(value, type);
+                        value = I.transform(value, p.model.type);
                     } else {
                         Object nest = model.get(java, p);
 
-                        value = to(p.model, nest == null ? I.make(type) : nest, value);
+                        value = to(p.model, nest == null ? I.make(p.model.type) : nest, value);
                     }
 
                     // assign value
