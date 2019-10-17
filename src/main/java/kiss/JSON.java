@@ -11,11 +11,11 @@ package kiss;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import kiss.model.Model;
@@ -147,51 +147,31 @@ public class JSON {
         if (js instanceof Map) {
             Map<String, Object> map = (Map) js;
 
-            List<Property> properties = new ArrayList(model.properties());
+            for (Entry<String, Object> e : map.entrySet()) {
+                Property p = model.property(e.getKey());
 
-            if (properties.isEmpty()) {
-                for (String id : map.keySet()) {
-                    Property property = model.property(id);
+                if (p != null && !p.isTransient) {
+                    // calculate value
+                    Object value = e.getValue();
+                    Class type = p.model.type;
 
-                    if (property != null) {
-                        properties.add(property);
+                    // convert value
+                    if (p.isAttribute()) {
+                        value = I.transform(value, type);
+                    } else {
+                        Object nest = model.get(java, p);
+
+                        value = to(p.model, nest == null ? I.make(type) : nest, value);
                     }
-                }
-            }
 
-            for (Property property : properties) {
-                if (!property.isTransient) {
-                    if (map.containsKey(property.name)) {
-                        // calculate value
-                        Object value = map.get(property.name);
-                        Class type = property.model.type;
-
-                        // convert value
-                        if (property.isAttribute()) {
-                            value = I.transform(value, type);
-                        } else {
-                            Object nest = model.get(java, property);
-
-                            value = to(property.model, nest == null ? I.make(type) : nest, value);
-                        }
-
-                        // assign value
-                        model.set(java, property, value);
-                    }
+                    // assign value
+                    model.set(java, p, value);
                 }
             }
         }
 
         // API definition
         return java;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return root.toString();
     }
 
     // ===========================================================

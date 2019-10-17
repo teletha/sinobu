@@ -413,7 +413,6 @@ class JSONTest {
 
         // validate serialized text
         assert joiner.toString().equals(serialized);
-        System.out.println(serialized);
 
         // validate model and properties
         Model model = Model.of(object.getClass());
