@@ -366,7 +366,7 @@ class JSONTest {
     }
 
     @Test
-    void valueString() {
+    void getString() {
         Person person = new Person();
         person.setFirstName("name");
 
@@ -375,16 +375,16 @@ class JSONTest {
     }
 
     @Test
-    void valueInteger() {
+    void getInteger() {
         Person person = new Person();
-        person.setFirstName("name");
+        person.setAge(15);
 
         JSON json = I.json(I.write(person));
-        assert json.get("age", int.class) == 0;
+        assert json.get("age", int.class) == 15;
     }
 
     @Test
-    void valueUnknown() {
+    void getInvalid() {
         Person person = new Person();
         person.setFirstName("name");
 
