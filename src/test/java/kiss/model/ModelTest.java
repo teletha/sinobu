@@ -238,6 +238,37 @@ class ModelTest {
         assert accessor.getSetter().equals("aaa");
     }
 
+    @Test
+    void finalAccessor() {
+        Model model = Model.of(FinalAccessor.class);
+        assert model != null;
+
+        List<Property> list = model.properties();
+        assert 3 == list.size();
+
+        FinalAccessor accessor = I.make(FinalAccessor.class);
+        Property property = model.property("getter");
+        model.set(accessor, property, "access by final getter");
+        assert model.get(accessor, property).equals("access by final getter");
+
+        property = model.property("setter");
+        model.set(accessor, property, "access by final setter");
+        assert model.get(accessor, property).equals("access by final setter");
+
+        property = model.property("both");
+        model.set(accessor, property, "access by final accessors");
+        assert model.get(accessor, property).equals("access by final accessors");
+    }
+
+    @Test
+    void overrideFinalAccessor() {
+        Model model = Model.of(OverrideFinalAccessor.class);
+        assert model != null;
+
+        List<Property> list = model.properties();
+        assert 3 == list.size();
+    }
+
     /**
      * Test {@link Map} model with the key which can convert to string.
      */
@@ -501,30 +532,6 @@ class ModelTest {
     @Test
     void testInvalidBean03() {
         Model model = Model.of(OnlySetter.class);
-        assert model != null;
-
-        List<Property> list = model.properties();
-        assert 0 == list.size();
-    }
-
-    /**
-     * Test the class which has no property.
-     */
-    @Test
-    void testInvalidBean04() {
-        Model model = Model.of(FinalAccessor.class);
-        assert model != null;
-
-        List<Property> list = model.properties();
-        assert 0 == list.size();
-    }
-
-    /**
-     * Test the class which has no property.
-     */
-    @Test
-    void testInvalidBean07() {
-        Model model = Model.of(OverrideFinalAccessor.class);
         assert model != null;
 
         List<Property> list = model.properties();

@@ -9,12 +9,6 @@
  */
 package kiss.sample.bean.invalid;
 
-/**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.NPC@gmail.com">Teletha Testarossa</a>
- * @version $ Id: FinalAccessor.java,v 1.0 2007/04/04 11:03:54 Teletha Exp $
- */
 public class FinalAccessor {
 
     private String both;
