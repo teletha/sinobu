@@ -7,9 +7,10 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.sample.bean.invalid;
+package kiss.sample.bean.modifiers;
 
-public class FinalAccessor {
+@SuppressWarnings("unused")
+public class PrivateAccessor {
 
     private String both;
 
@@ -18,34 +19,34 @@ public class FinalAccessor {
     private String setter;
 
     /**
-     * Get the both property of this {@link FinalAccessor}.
+     * Get the both property of this {@link PrivateAccessor}.
      * 
      * @return The both prperty.
      */
-    public final String getBoth() {
+    private String getBoth() {
         return both;
     }
 
     /**
-     * Set the both property of this {@link FinalAccessor}.
+     * Set the both property of this {@link PrivateAccessor}.
      * 
      * @param both The both value to set.
      */
-    public final void setBoth(String both) {
+    private void setBoth(String both) {
         this.both = both;
     }
 
     /**
-     * Get the getter property of this {@link FinalAccessor}.
+     * Get the getter property of this {@link PrivateAccessor}.
      * 
      * @return The getter prperty.
      */
-    public final String getGetter() {
+    private String getGetter() {
         return getter;
     }
 
     /**
-     * Set the getter property of this {@link FinalAccessor}.
+     * Set the getter property of this {@link PrivateAccessor}.
      * 
      * @param getter The getter value to set.
      */
@@ -54,7 +55,7 @@ public class FinalAccessor {
     }
 
     /**
-     * Get the setter property of this {@link FinalAccessor}.
+     * Get the setter property of this {@link PrivateAccessor}.
      * 
      * @return The setter prperty.
      */
@@ -63,11 +64,12 @@ public class FinalAccessor {
     }
 
     /**
-     * Set the setter property of this {@link FinalAccessor}.
+     * Set the setter property of this {@link PrivateAccessor}.
      * 
      * @param setter The setter value to set.
      */
-    public final void setSetter(String setter) {
+    private void setSetter(String setter) {
         this.setter = setter;
     }
+
 }

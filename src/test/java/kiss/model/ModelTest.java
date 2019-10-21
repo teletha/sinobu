@@ -28,7 +28,6 @@ import kiss.sample.bean.GenericGetterBean;
 import kiss.sample.bean.GenericSetterBean;
 import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.IncompatibleKeyMap;
-import kiss.sample.bean.InheritanceBean;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
@@ -37,12 +36,15 @@ import kiss.sample.bean.Student;
 import kiss.sample.bean.VariablePropertyAtField;
 import kiss.sample.bean.WildcardBean;
 import kiss.sample.bean.WildcardTypeSetter;
-import kiss.sample.bean.invalid.FinalAccessor;
-import kiss.sample.bean.invalid.OnlyGetter;
-import kiss.sample.bean.invalid.OnlySetter;
-import kiss.sample.bean.invalid.OverrideFinalAccessor;
-import kiss.sample.bean.invalid.ProtectedAccessor;
-import kiss.sample.bean.invalid.StaticAccessor;
+import kiss.sample.bean.modifiers.FinalAccessor;
+import kiss.sample.bean.modifiers.InheritanceBean;
+import kiss.sample.bean.modifiers.OnlyGetter;
+import kiss.sample.bean.modifiers.OnlySetter;
+import kiss.sample.bean.modifiers.OverrideFinalAccessor;
+import kiss.sample.bean.modifiers.PackagePrivateAccessor;
+import kiss.sample.bean.modifiers.PrivateAccessor;
+import kiss.sample.bean.modifiers.ProtectedAccessor;
+import kiss.sample.bean.modifiers.StaticAccessor;
 
 class ModelTest {
 
@@ -230,12 +232,60 @@ class ModelTest {
 
         ProtectedAccessor accessor = I.make(ProtectedAccessor.class);
         Property property = model.property("getter");
-        accessor.setGetter("test");
-        assert model.get(accessor, property).equals("test");
+        model.set(accessor, property, "access by protected getter");
+        assert model.get(accessor, property).equals("access by protected getter");
 
         property = model.property("setter");
-        model.set(accessor, property, "aaa");
-        assert accessor.getSetter().equals("aaa");
+        model.set(accessor, property, "access by protected setter");
+        assert model.get(accessor, property).equals("access by protected setter");
+
+        property = model.property("both");
+        model.set(accessor, property, "access by protected accessors");
+        assert model.get(accessor, property).equals("access by protected accessors");
+    }
+
+    @Test
+    void packagePrivateAccessor() {
+        Model model = Model.of(PackagePrivateAccessor.class);
+        assert model != null;
+
+        List<Property> list = model.properties();
+        assert 3 == list.size();
+
+        PackagePrivateAccessor accessor = I.make(PackagePrivateAccessor.class);
+        Property property = model.property("getter");
+        model.set(accessor, property, "access by package-private getter");
+        assert model.get(accessor, property).equals("access by package-private getter");
+
+        property = model.property("setter");
+        model.set(accessor, property, "access by package-private setter");
+        assert model.get(accessor, property).equals("access by package-private setter");
+
+        property = model.property("both");
+        model.set(accessor, property, "access by package-private accessors");
+        assert model.get(accessor, property).equals("access by package-private accessors");
+    }
+
+    @Test
+    void privateAccessor() {
+        Model model = Model.of(PrivateAccessor.class);
+        assert model != null;
+
+        List<Property> list = model.properties();
+        assert 3 == list.size();
+
+        PrivateAccessor accessor = I.make(PrivateAccessor.class);
+        Property property = model.property("getter");
+        model.set(accessor, property, "access by private getter");
+        assert model.get(accessor, property).equals("access by private getter");
+
+        property = model.property("setter");
+        model.set(accessor, property, "access by private setter");
+        assert model.get(accessor, property).equals("access by private setter");
+
+        property = model.property("both");
+        model.set(accessor, property, "access by private accessors");
+        assert model.get(accessor, property).equals("access by private accessors");
     }
 
     @Test

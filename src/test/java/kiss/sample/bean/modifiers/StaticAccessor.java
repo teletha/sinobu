@@ -7,14 +7,8 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.sample.bean.invalid;
+package kiss.sample.bean.modifiers;
 
-/**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.NPC@gmail.com">Teletha Testarossa</a>
- * @version $ Id: StaticAccessor.java,v 1.0 2007/04/25 18:30:43 Teletha Exp $
- */
 public class StaticAccessor {
 
     private static String name;

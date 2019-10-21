@@ -7,14 +7,8 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.sample.bean.invalid;
+package kiss.sample.bean.modifiers;
 
-/**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.NPC@gmail.com">Teletha Testarossa</a>
- * @version $ Id: ProtectedAccessor.java,v 1.0 2007/04/04 11:14:45 Teletha Exp $
- */
 public class ProtectedAccessor {
 
     private String both;

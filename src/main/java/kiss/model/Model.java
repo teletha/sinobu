@@ -97,7 +97,7 @@ public class Model<M> {
                     if (!Proxy.isProxyClass(clazz)) {
                         for (Method method : clazz.getDeclaredMethods()) {
                             // exclude the method which modifier is final, static, private or native
-                            if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
+                            if (((STATIC | NATIVE) & method.getModifiers()) == 0) {
                                 // exclude the method which is created by compiler
                                 if (!method.isBridge() && !method.isSynthetic()) {
                                     // if (method.getAnnotations().length != 0) {
