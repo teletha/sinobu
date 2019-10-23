@@ -7,15 +7,9 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.sample.bean.invalid;
+package kiss.sample.bean.modifiers;
 
-/**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: PackagePrivateAccessor.java,v 1.0 2006/12/21 17:50:57 Teletha Exp $
- */
-public interface PackagePrivateAccessor {
+public interface GetterAndSetter {
 
     /**
      * Non accessor method.

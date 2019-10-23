@@ -97,7 +97,7 @@ public class Model<M> {
                     if (!Proxy.isProxyClass(clazz)) {
                         for (Method method : clazz.getDeclaredMethods()) {
                             // exclude the method which modifier is final, static, private or native
-                            if (((STATIC | PRIVATE | NATIVE) & method.getModifiers()) == 0) {
+                            if (((STATIC | NATIVE) & method.getModifiers()) == 0) {
                                 // exclude the method which is created by compiler
                                 if (!method.isBridge() && !method.isSynthetic()) {
                                     // if (method.getAnnotations().length != 0) {
@@ -147,8 +147,7 @@ public class Model<M> {
 
                 for (Entry<String, Method[]> entry : candidates.entrySet()) {
                     Method[] methods = entry.getValue();
-                    if (methods[0] != null && methods[1] != null && ((methods[0].getModifiers() | methods[1]
-                            .getModifiers()) & FINAL) == 0) {
+                    if (methods[0] != null && methods[1] != null) {
                         // create model for the property
                         try {
                             Model model = of(methods[0].getGenericReturnType(), type);

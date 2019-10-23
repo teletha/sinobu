@@ -7,15 +7,9 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.sample.bean.invalid;
+package kiss.sample.bean.modifiers;
 
-/**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.NPC@gmail.com">Teletha Testarossa</a>
- * @version $ Id: FinalAccessor.java,v 1.0 2007/04/04 11:03:54 Teletha Exp $
- */
-public class FinalAccessor {
+public class ProtectedAccessor {
 
     private String both;
 
@@ -24,34 +18,34 @@ public class FinalAccessor {
     private String setter;
 
     /**
-     * Get the both property of this {@link FinalAccessor}.
+     * Get the both property of this {@link ProtectedAccessor}.
      * 
      * @return The both prperty.
      */
-    public final String getBoth() {
+    protected String getBoth() {
         return both;
     }
 
     /**
-     * Set the both property of this {@link FinalAccessor}.
+     * Set the both property of this {@link ProtectedAccessor}.
      * 
      * @param both The both value to set.
      */
-    public final void setBoth(String both) {
+    protected void setBoth(String both) {
         this.both = both;
     }
 
     /**
-     * Get the getter property of this {@link FinalAccessor}.
+     * Get the getter property of this {@link ProtectedAccessor}.
      * 
      * @return The getter prperty.
      */
-    public final String getGetter() {
+    protected String getGetter() {
         return getter;
     }
 
     /**
-     * Set the getter property of this {@link FinalAccessor}.
+     * Set the getter property of this {@link ProtectedAccessor}.
      * 
      * @param getter The getter value to set.
      */
@@ -60,7 +54,7 @@ public class FinalAccessor {
     }
 
     /**
-     * Get the setter property of this {@link FinalAccessor}.
+     * Get the setter property of this {@link ProtectedAccessor}.
      * 
      * @return The setter prperty.
      */
@@ -69,11 +63,12 @@ public class FinalAccessor {
     }
 
     /**
-     * Set the setter property of this {@link FinalAccessor}.
+     * Set the setter property of this {@link ProtectedAccessor}.
      * 
      * @param setter The setter value to set.
      */
-    public final void setSetter(String setter) {
+    protected void setSetter(String setter) {
         this.setter = setter;
     }
+
 }

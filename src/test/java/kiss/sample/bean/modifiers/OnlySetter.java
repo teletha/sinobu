@@ -7,14 +7,8 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.sample.bean.invalid;
+package kiss.sample.bean.modifiers;
 
-/**
- * DOCUMENT.
- * 
- * @author <a href="mailto:Teletha.T@gmail.com">Teletha Testarossa</a>
- * @version $ Id: OnlySetter.java,v 1.0 2006/12/21 17:34:25 Teletha Exp $
- */
 public interface OnlySetter {
 
     /**
