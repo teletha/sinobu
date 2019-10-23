@@ -2206,7 +2206,7 @@ public class I {
 
             if (input instanceof URI) {
                 URI uri = (URI) input;
-                input = uri.getScheme().equals("file") ? new File(uri) : HttpRequest.newBuilder(uri);
+                input = uri.getScheme().equals("file") ? new File(uri) : HttpRequest.newBuilder(uri).build();
             }
 
             if (input instanceof File) {
