@@ -46,16 +46,22 @@ class Subscriber<T> implements Observer<T>, Disposable {
     /** The delegation. */
     Runnable complete;
 
+    /** The delegation. */
+    Disposable disposer;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void complete() {
-        if (complete != null) {
-            complete.run();
-        } else if (observer != null) {
-            observer.complete();
+        if (disposer == null || disposer.isDisposed() == false) {
+            if (complete != null) {
+                complete.run();
+            } else if (observer != null) {
+                observer.complete();
+            }
         }
+        if (disposer != null && index == 1) disposer.dispose();
     }
 
     /**
@@ -63,13 +69,16 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void error(Throwable e) {
-        if (error != null) {
-            error.accept(e);
-        } else if (observer != null) {
-            observer.error(e);
-        } else {
-            Observer.super.error(e);
+        if (disposer == null || disposer.isDisposed() == false) {
+            if (error != null) {
+                error.accept(e);
+            } else if (observer != null) {
+                observer.error(e);
+            } else {
+                Observer.super.error(e);
+            }
         }
+        if (disposer != null && index == 1) disposer.dispose();
     }
 
     /**
@@ -77,14 +86,16 @@ class Subscriber<T> implements Observer<T>, Disposable {
      */
     @Override
     public void accept(T value) {
-        try {
-            if (next != null) {
-                next.accept(value);
-            } else if (observer != null) {
-                observer.accept(value);
+        if (disposer == null || disposer.isDisposed() == false) {
+            try {
+                if (next != null) {
+                    next.accept(value);
+                } else if (observer != null) {
+                    observer.accept(value);
+                }
+            } catch (Throwable e) {
+                error(e);
             }
-        } catch (Throwable e) {
-            error(e);
         }
     }
 

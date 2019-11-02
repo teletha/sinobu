@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -195,7 +195,12 @@ public final class Signal<V> {
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
     public final Disposable to(Observer<? super V> observer) {
-        return to(observer::accept, observer::error, observer::complete, Disposable.empty(), true);
+        Subscriber subscriber = new Subscriber();
+        subscriber.index = 1;
+        subscriber.disposer = Disposable.empty();
+        subscriber.observer = observer;
+
+        return to(subscriber, subscriber.disposer);
     }
 
     /**
@@ -224,23 +229,11 @@ public final class Signal<V> {
      */
     private Disposable to(Consumer<? super V> next, Consumer<? extends Throwable> error, Runnable complete, Disposable disposer, boolean auto) {
         Subscriber<V> subscriber = new Subscriber();
-        subscriber.next = e -> {
-            if (disposer.isNotDisposed()) next.accept(e);
-        };
-        subscriber.error = e -> {
-            if (error == null) {
-                throw I.quiet(e);
-            } else if (disposer.isDisposed()) {
-                // throw I.quiet(e);
-            } else {
-                ((Consumer<Throwable>) error).accept(e);
-            }
-            if (auto) disposer.dispose();
-        };
-        subscriber.complete = () -> {
-            if (complete != null && disposer.isNotDisposed()) complete.run();
-            if (auto) disposer.dispose();
-        };
+        subscriber.index = auto ? 1 : 0;
+        subscriber.disposer = disposer;
+        subscriber.next = next;
+        subscriber.error = (Consumer<Throwable>) error;
+        subscriber.complete = complete;
 
         return to(subscriber, disposer);
     }
@@ -2668,6 +2661,7 @@ public final class Signal<V> {
 
             // build the actual error handler
             Subscriber<E> error = new Subscriber();
+            error.disposer = disposer;
             error.next = e -> {
                 if (e instanceof UndeclaredThrowableException) {
                     e = (E) e.getCause();
@@ -3340,7 +3334,7 @@ public final class Signal<V> {
             Iterator<V> iterator = values.iterator();
 
             if (iterator != null) {
-                while (iterator.hasNext() && disposer.isNotDisposed()) {
+                while (iterator.hasNext() && disposer.isDisposed() == false) {
                     observer.accept(iterator.next());
                 }
             }
