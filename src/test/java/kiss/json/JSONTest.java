@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -390,6 +390,55 @@ class JSONTest {
 
         JSON json = I.json(I.write(person));
         assert json.get("invalid", String.class) == null;
+    }
+
+    @Test
+    void storeImplementation() {
+        Dog dog = new Dog();
+        dog.name = "pochi";
+        dog.size = 3;
+
+        Cat cat = new Cat();
+        cat.name = "mike";
+        cat.weight = 4;
+
+        Animals animals = new Animals();
+        animals.member.add(dog);
+        animals.member.add(cat);
+
+        // @formatter:off
+        validate(animals,
+        "{",
+        "  'member': [",
+        "    {",
+        "      '#': 'kiss.json.JSONTest$Dog',",
+        "      'name': 'pochi',",
+        "      'size': 3",
+        "    },",
+        "    {",
+        "      '#': 'kiss.json.JSONTest$Cat',",
+        "      'name': 'mike',",
+        "      'weight': 4",
+        "    }",
+        "  ]",
+        "}");
+        // @formatter:on
+    }
+
+    private static class Animals {
+        public List<Animal> member = new ArrayList();
+    }
+
+    private static abstract class Animal {
+        public String name;
+    }
+
+    private static class Dog extends Animal {
+        public int size;
+    }
+
+    private static class Cat extends Animal {
+        public int weight;
     }
 
     /**

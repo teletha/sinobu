@@ -11,6 +11,7 @@ package kiss;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -156,8 +157,9 @@ public class JSON {
                         value = I.transform(value, p.model.type);
                     } else {
                         Object nest = model.get(java, p);
-
-                        value = to(p.model, nest == null ? I.make(p.model.type) : nest, value);
+                        String impl = (String) ((Map) value).get("#");
+                        Model m = impl == null ? p.model : Model.of(I.type(impl));
+                        value = to(m, nest == null ? I.make(m.type) : nest, value);
                     }
 
                     // assign value
@@ -582,7 +584,12 @@ public class JSON {
                     JSON walker = new JSON(out);
                     walker.current = current + 1;
                     out.append(property.model.type == List.class ? '[' : '{');
-                    ((Model<Object>) property.model).walk(value, walker::write);
+                    Model<Object> m = property.model;
+                    if (Modifier.isAbstract(m.type.getModifiers()) && m.getClass() == Model.class) {
+                        m = Model.of(value);
+                        out.append("\r\n").append("\t".repeat(current + 1)).append("\"#\": \"").append(m.type.getName()).append("\",");
+                    }
+                    m.walk(value, walker::write);
                     if (walker.index != 0) out.append("\r\n").append("\t".repeat(current)); // indent
                     out.append(property.model.type == List.class ? ']' : '}');
                 }
