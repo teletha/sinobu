@@ -178,4 +178,31 @@ class DelayTest extends SignalTester {
         assert main.isNotError();
         assert main.isNotDisposed();
     }
+
+    @Test
+    void delayComplete() {
+        monitor(signal -> signal.delay(30, ms, scheduler));
+
+        assert main.emit("1", "2").value();
+        scheduler.await();
+        assert main.value("1", "2");
+        assert main.isNotCompleted();
+        assert main.emit("3", Complete).value();
+        scheduler.await();
+        assert main.value("3");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void delayCompleteWithoutValues() {
+        monitor(signal -> signal.delay(30, ms, scheduler));
+
+        assert main.emit(Complete).value();
+        scheduler.await();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
 }

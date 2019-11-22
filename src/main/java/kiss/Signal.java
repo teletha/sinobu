@@ -1142,9 +1142,13 @@ public final class Signal<V> {
                 queue.add(I.pair(value, delay + System.nanoTime()));
                 if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
             }, observer::error, () -> {
-                long delay = queue.last().ⅱ + 1;
-                queue.add(I.pair(this, delay));
-                if (queue.size() == 1) I.schedule(delay - System.nanoTime(), NANOSECONDS, scheduler, sender);
+                if (queue.isEmpty()) {
+                    observer.complete();
+                } else {
+                    long delay = queue.last().ⅱ + 1;
+                    queue.add(I.pair(this, delay));
+                    if (queue.size() == 1) I.schedule(delay - System.nanoTime(), NANOSECONDS, scheduler, sender);
+                }
             }, disposer);
         });
     }
