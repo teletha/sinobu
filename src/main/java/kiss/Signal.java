@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1137,18 +1137,15 @@ public final class Signal<V> {
                 }
             });
 
+            long[] lastDelay = new long[1];
+
             return to(value -> {
                 long delay = time.apply(value).toNanos();
-                queue.add(I.pair(value, delay + System.nanoTime()));
+                queue.add(I.pair(value, lastDelay[0] = delay + System.nanoTime()));
                 if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
             }, observer::error, () -> {
-                if (queue.isEmpty()) {
-                    observer.complete();
-                } else {
-                    long delay = queue.last().ⅱ + 1;
-                    queue.add(I.pair(this, delay));
-                    if (queue.size() == 1) I.schedule(delay - System.nanoTime(), NANOSECONDS, scheduler, sender);
-                }
+                queue.add(I.pair(this, lastDelay[0] + 1));
+                if (queue.size() == 1) I.schedule(lastDelay[0] + 1 - System.nanoTime(), NANOSECONDS, scheduler, sender);
             }, disposer);
         });
     }
@@ -2702,7 +2699,11 @@ public final class Signal<V> {
 
                 // Since there is an error in processing, but this error flow has ended,
                 // the processing error is passed to the source signal.
-                if (processing[0] != null) observer.error(processing[0]);
+
+                // The following code is not used as it may send null.
+                // if (processing[0] != null) observer.error(processing[0]);
+                Throwable t = processing[0];
+                if (t != null) observer.error(t);
             });
 
             // connect preassign error handling flow
