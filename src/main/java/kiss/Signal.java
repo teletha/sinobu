@@ -2210,6 +2210,17 @@ public final class Signal<V> {
     }
 
     /**
+     * Helps to insert {@link Signal} chain from outside.
+     * 
+     * @param <O> An output type.
+     * @param plug A chain builder to insert.
+     * @return A chained {@link Signal}.
+     */
+    public final <O> Signal<O> plug(Function<Signal<V>, Signal<O>> plug) {
+        return Objects.requireNonNull(plug).apply(this);
+    }
+
+    /**
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
