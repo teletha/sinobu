@@ -9,11 +9,6 @@
  */
 package kiss;
 
-import java.util.Objects;
-
-/**
- * @version 2016/03/26 21:14:51
- */
 public class Ⅲ<Param1, Param2, Param3> extends Ⅱ<Param1, Param2> {
 
     /** The third parameter. */
@@ -84,20 +79,7 @@ public class Ⅲ<Param1, Param2, Param3> extends Ⅱ<Param1, Param2> {
      * {@inheritDoc}
      */
     @Override
-    public int hashCode() {
-        return Objects.hash(ⅰ, ⅱ, ⅲ);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Ⅲ) {
-            Ⅲ other = (Ⅲ) obj;
-
-            return Objects.equals(ⅰ, other.ⅰ) && Objects.equals(ⅱ, other.ⅱ) && Objects.equals(ⅲ, other.ⅲ);
-        }
-        return false;
+    protected Object[] values() {
+        return new Object[] {ⅰ, ⅱ, ⅲ};
     }
 }

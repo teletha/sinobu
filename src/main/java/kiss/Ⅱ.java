@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import java.util.Objects;
+import java.util.Arrays;
 
 public class Ⅱ<Param1, Param2> {
 
@@ -48,7 +48,7 @@ public class Ⅱ<Param1, Param2> {
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <Additional> Ⅲ<Param1, Param2, Additional> ⅲ(Additional param) {
+    public <New> Ⅲ<Param1, Param2, New> ⅲ(New param) {
         return I.pair(ⅰ, ⅱ, param);
     }
 
@@ -100,20 +100,24 @@ public class Ⅱ<Param1, Param2> {
      * {@inheritDoc}
      */
     @Override
-    public int hashCode() {
-        return Objects.hash(ⅰ, ⅱ);
+    public final int hashCode() {
+        return Arrays.hashCode(values());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Ⅱ) {
-            Ⅱ other = (Ⅱ) obj;
+    public final boolean equals(Object obj) {
+        return obj instanceof Ⅱ ? Arrays.equals(values(), ((Ⅱ) obj).values()) : false;
+    }
 
-            return Objects.equals(ⅰ, other.ⅰ) && Objects.equals(ⅱ, other.ⅱ);
-        }
-        return false;
+    /**
+     * Collect all values.
+     * 
+     * @return
+     */
+    protected Object[] values() {
+        return new Object[] {ⅰ, ⅱ};
     }
 }

@@ -44,4 +44,22 @@ class Tuple2Test {
         assert added.ⅱ.equals("value");
         assert added.ⅲ.equals("add");
     }
+
+    @Test
+    void equality() {
+        Ⅱ<String, String> value = I.pair("test", "value");
+        Ⅱ<String, String> other = I.pair("test", "value");
+        Ⅱ<String, String> inverse = I.pair("value", "test");
+        assert value.equals(other);
+        assert value.equals(inverse) == false;
+    }
+
+    @Test
+    void hash() {
+        Ⅱ<String, String> value = I.pair("test", "value");
+        Ⅱ<String, String> other = I.pair("test", "value");
+        Ⅱ<String, String> inverse = I.pair("value", "test");
+        assert value.hashCode() == other.hashCode();
+        assert value.hashCode() != inverse.hashCode();
+    }
 }
