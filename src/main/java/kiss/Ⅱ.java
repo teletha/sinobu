@@ -113,6 +113,14 @@ public class Ⅱ<Param1, Param2> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String toString() {
+        return Arrays.toString(values());
+    }
+
+    /**
      * Collect all values.
      * 
      * @return
