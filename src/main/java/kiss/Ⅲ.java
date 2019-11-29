@@ -10,19 +10,11 @@
 package kiss;
 
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * @version 2016/03/26 21:14:51
  */
-public class Ⅲ<Param1, Param2, Param3> {
-
-    /** The first parameter. */
-    public final Param1 ⅰ;
-
-    /** The second parameter. */
-    public final Param2 ⅱ;
+public class Ⅲ<Param1, Param2, Param3> extends Ⅱ<Param1, Param2> {
 
     /** The third parameter. */
     public final Param3 ⅲ;
@@ -33,33 +25,12 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @param param3
      */
     Ⅲ(Param1 param1, Param2 param2, Param3 param3) {
-        this.ⅰ = param1;
-        this.ⅱ = param2;
+        super(param1, param2);
         this.ⅲ = param3;
     }
 
     /**
-     * <p>
-     * Method access to {@link #ⅰ}.
-     * </p>
-     */
-    public Param1 ⅰ() {
-        return ⅰ;
-    }
-
-    /**
-     * <p>
-     * Method access to {@link #ⅱ}.
-     * </p>
-     */
-    public Param2 ⅱ() {
-        return ⅱ;
-    }
-
-    /**
-     * <p>
      * Method access to {@link #ⅲ}.
-     * </p>
      */
     public Param3 ⅲ() {
         return ⅲ;
@@ -75,7 +46,7 @@ public class Ⅲ<Param1, Param2, Param3> {
      * </p>
      * <pre>
      *  // Original parameter names (ⅰ, ⅱ and ⅲ) are confusing.
-     * context.with(name -> age -> gender -> {
+     * context.with((name, age, gender) -> {
      *      // Named parameter (name, age and gender) are comprehensible.
      *      return name + "(" + age + " : " + gender + ")";
      * });
@@ -84,8 +55,8 @@ public class Ⅲ<Param1, Param2, Param3> {
      * @param params A list of named parameters.
      * @return A calculated value.
      */
-    public <Result> Result map(Function<Param1, Function<Param2, Function<Param3, Result>>> params) {
-        return params.apply(ⅰ).apply(ⅱ).apply(ⅲ);
+    public <Result> Result map(WiseTriFunction<Param1, Param2, Param3, Result> params) {
+        return params.apply(ⅰ, ⅱ, ⅲ);
     }
 
     /**
@@ -98,25 +69,15 @@ public class Ⅲ<Param1, Param2, Param3> {
      * </p>
      * <pre>
      *  // Original parameter names (ⅰ, ⅱ and ⅲ) are confusing.
-     * context.with(name -> age  -> gender -> {
+     * context.with((name, age, gender) -> {
      *      // Named parameter (name, age and gender) are comprehensible.
      * });
      * </pre>
      * 
      * @param params A list of named parameters.
      */
-    public void with(Function<Param1, Function<Param2, Consumer<Param3>>> params) {
-        if (params != null) {
-            Function<Param2, Consumer<Param3>> second = params.apply(ⅰ);
-
-            if (second != null) {
-                Consumer<Param3> consumer = second.apply(ⅱ);
-
-                if (consumer != null) {
-                    consumer.accept(ⅲ);
-                }
-            }
-        }
+    public void to(WiseTriConsumer<Param1, Param2, Param3> params) {
+        params.accept(ⅰ, ⅱ, ⅲ);
     }
 
     /**

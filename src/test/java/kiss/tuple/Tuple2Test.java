@@ -13,14 +13,12 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.Ⅱ;
+import kiss.Ⅲ;
 
-/**
- * @version 2016/03/27 13:21:47
- */
-public class Tuple2Test {
+class Tuple2Test {
 
     @Test
-    public void instance() {
+    void instance() {
         Ⅱ<String, String> value = I.pair("test", "value");
         assert value != null;
         assert value.ⅰ.equals("test");
@@ -28,13 +26,22 @@ public class Tuple2Test {
     }
 
     @Test
-    public void map() {
+    void map() {
         Ⅱ<String, String> value = I.pair("test", "value");
-        Ⅱ<String, String> upper = value.map(one -> other -> {
+        Ⅱ<String, String> upper = value.map((one, other) -> {
             return I.pair(one.toUpperCase(), other.toUpperCase());
         });
         assert upper != null;
         assert upper.ⅰ.equals("TEST");
         assert upper.ⅱ.equals("VALUE");
+    }
+
+    @Test
+    void append() {
+        Ⅱ<String, String> value = I.pair("test", "value");
+        Ⅲ<String, String, String> added = value.ⅲ("add");
+        assert added.ⅰ.equals("test");
+        assert added.ⅱ.equals("value");
+        assert added.ⅲ.equals("add");
     }
 }

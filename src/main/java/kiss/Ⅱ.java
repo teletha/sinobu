@@ -10,8 +10,6 @@
 package kiss;
 
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Ⅱ<Param1, Param2> {
 
@@ -31,39 +29,27 @@ public class Ⅱ<Param1, Param2> {
     }
 
     /**
-     * <p>
      * Method access to {@link #ⅰ}.
-     * </p>
      */
     public Param1 ⅰ() {
         return ⅰ;
     }
 
     /**
-     * <p>
      * Method access to {@link #ⅱ}.
-     * </p>
      */
     public Param2 ⅱ() {
         return ⅱ;
     }
 
     /**
-     * Create new tuple which add the third parameter.
+     * Create new tuple which set the third parameter.
      * 
      * @param param New third parameter.
      * @return A created new tuple.
      */
-    public <AdditionalParam> Ⅲ<Param1, Param2, AdditionalParam> append(AdditionalParam param) {
+    public <Additional> Ⅲ<Param1, Param2, Additional> ⅲ(Additional param) {
         return I.pair(ⅰ, ⅱ, param);
-    }
-
-    /**
-     * @param value
-     * @return
-     */
-    public <AdditionalParam> Ⅲ<AdditionalParam, Param1, Param2> prepend(AdditionalParam value) {
-        return I.pair(value, ⅰ, ⅱ);
     }
 
     /**
@@ -76,7 +62,7 @@ public class Ⅱ<Param1, Param2> {
      * </p>
      * <pre>
      *  // Original parameter names (ⅰ and ⅱ) are confusing.
-     * context.with(name -> age  -> {
+     * context.with((name, age)  -> {
      *      // Named parameter (name and age) are comprehensible.
      *      return name + "(" + age + ")";
      * });
@@ -85,8 +71,8 @@ public class Ⅱ<Param1, Param2> {
      * @param params A list of named parameters.
      * @return A calculated value.
      */
-    public <Result> Result map(Function<Param1, Function<Param2, Result>> params) {
-        return params.apply(ⅰ).apply(ⅱ);
+    public <Result> Result map(WiseBiFunction<Param1, Param2, Result> params) {
+        return params.apply(ⅰ, ⅱ);
     }
 
     /**
@@ -99,21 +85,15 @@ public class Ⅱ<Param1, Param2> {
      * </p>
      * <pre>
      *  // Original parameter names (ⅰ and ⅱ) are confusing.
-     * context.with(name -> age  -> {
+     * context.with((name, age)  -> {
      *      // Named parameter (name and age) are comprehensible.
      * });
      * </pre>
      * 
      * @param params A list of named parameters.
      */
-    public void with(Function<Param1, Consumer<Param2>> params) {
-        if (params != null) {
-            Consumer<Param2> consumer = params.apply(ⅰ);
-
-            if (consumer != null) {
-                consumer.accept(ⅱ);
-            }
-        }
+    public void to(WiseBiConsumer<Param1, Param2> params) {
+        params.accept(ⅰ, ⅱ);
     }
 
     /**
