@@ -3314,13 +3314,7 @@ public final class Signal<V> {
         if (values == null) {
             return this;
         }
-
-        return new Signal<>((observer, disposer) -> {
-            while (values.hasMoreElements() && disposer.isNotDisposed()) {
-                observer.accept(values.nextElement());
-            }
-            return to(observer, disposer);
-        });
+        return startWith(values::asIterator);
     }
 
     /**
