@@ -18,9 +18,6 @@ import java.util.function.Function;
 
 import kiss.model.Model;
 
-/**
- * @version 2018/09/07 10:21:25
- */
 public interface Storable<Self> {
 
     /**

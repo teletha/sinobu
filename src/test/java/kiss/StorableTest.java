@@ -14,7 +14,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -169,15 +171,47 @@ class StorableTest {
     }
 
     @Test
-    void autoMapProperty() throws Exception {
+    void autoMapProperty() {
         AutoRoot root = new AutoRoot();
 
-        Auto child1 = new Auto();
-        child1.text.set("child1");
-        root.put("1", child1);
+        Auto child = new Auto();
+        child.text.set("save automatically");
+        root.putAndSave("1", child);
 
+        // restore saved data
         AutoRoot other = new AutoRoot();
-        assert other.children.size() == 1;
+        Auto otherChild = other.map.get("1");
+        assert otherChild.text.is("save automatically");
+
+        // update and save
+        otherChild.text.set("restored child can save automatically too");
+
+        // restore saved data
+        AutoRoot another = new AutoRoot();
+        Auto anotherChild = another.map.get("1");
+        assert anotherChild.text.is("restored child can save automatically too");
+    }
+
+    @Test
+    void autoListProperty() {
+        AutoRoot root = new AutoRoot();
+
+        Auto child = new Auto();
+        child.text.set("save automatically");
+        root.addAndSave(child);
+
+        // restore saved data
+        AutoRoot other = new AutoRoot();
+        Auto otherChild = other.list.get(0);
+        assert otherChild.text.is("save automatically");
+
+        // update and save
+        otherChild.text.set("restored child can save automatically too");
+
+        // restore saved data
+        AutoRoot another = new AutoRoot();
+        Auto anotherChild = another.list.get(0);
+        assert anotherChild.text.is("restored child can save automatically too");
     }
 
     /**
@@ -185,14 +219,21 @@ class StorableTest {
      */
     private class AutoRoot implements Storable<AutoRoot> {
 
-        public Map<String, Auto> children = new HashMap();
+        public Map<String, Auto> map = new HashMap();
+
+        public List<Auto> list = new ArrayList();
 
         private AutoRoot() {
             restore().auto();
         }
 
-        private void put(String key, Auto child) {
-            children.put(key, child);
+        private void putAndSave(String key, Auto child) {
+            map.put(key, child);
+            store().auto();
+        }
+
+        private void addAndSave(Auto child) {
+            list.add(child);
             store().auto();
         }
 
