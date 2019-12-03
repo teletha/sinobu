@@ -98,11 +98,11 @@ public interface Storable<Self> {
     private Signal auto(Model<Object> model, Object object) {
         Signal[] signal = {Signal.never()};
 
-        model.walk(object, (m, property, o) -> {
-            if (property.isAttribute()) {
-                signal[0] = signal[0].merge(m.observe(object, property).diff());
+        model.walk(object, (m, p, o) -> {
+            if (p.isAttribute()) {
+                signal[0] = signal[0].merge(m.observe(object, p).diff());
             } else {
-                signal[0] = signal[0].merge(auto(property.model, property.model.get(o, property)));
+                signal[0] = signal[0].merge(auto(p.model, p.model.get(o, p)));
             }
         });
         return signal[0];
