@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -64,20 +64,19 @@ public interface Storable<Self> {
     /**
      * Make this {@link Storable} save automatically.
      * 
-     * @return Chainable API.
+     * @return Call {@link Disposable#dispose()} to stop automatic save.
      */
-    default Self auto() {
+    default Disposable auto() {
         return auto(timing -> timing.debounce(1, SECONDS));
     }
 
     /**
      * Make this {@link Storable} save automatically.
      * 
-     * @return Chainable API.
+     * @return Call {@link Disposable#dispose()} to stop automatic save.
      */
-    default Self auto(Function<Signal, Signal> timing) {
-        timing.apply(auto(Model.of(this), this)).to(this::store);
-        return (Self) this;
+    default Disposable auto(Function<Signal, Signal> timing) {
+        return timing.apply(auto(Model.of(this), this)).to(this::store);
     }
 
     /**

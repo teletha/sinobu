@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,9 +21,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import antibug.CleanRoom;
 
-/**
- * @version 2018/09/07 9:32:21
- */
 class StorableTest {
 
     @RegisterExtension
@@ -123,6 +120,26 @@ class StorableTest {
         assert instance.count.get() == 2;
     }
 
+    @Test
+    void stopAutoSave() throws Exception {
+        Auto instance = new Auto();
+        Path path = Paths.get(instance.locate());
+        assert Files.notExists(path);
+
+        instance.text.set("OK");
+        instance.integer.set(20);
+        Thread.sleep(100);
+        assert instance.count.get() == 1;
+
+        instance.disposer.dispose();
+        instance.text.set("Change");
+        instance.integer.set(30);
+        Thread.sleep(100);
+        assert instance.count.get() == 1;
+        assert instance.text.is("Change");
+        assert instance.integer.is(30);
+    }
+
     /**
      * @version 2018/09/07 9:29:53
      */
@@ -134,11 +151,13 @@ class StorableTest {
 
         private AtomicInteger count = new AtomicInteger();
 
+        private Disposable disposer;
+
         /**
          * 
          */
         private Auto() {
-            auto(timing -> timing.debounce(50, MILLISECONDS).effect(() -> count.incrementAndGet()));
+            disposer = auto(timing -> timing.debounce(50, MILLISECONDS).effect(() -> count.incrementAndGet()));
         }
 
         /**
