@@ -102,7 +102,7 @@ public interface Storable<Self> {
             if (p.isAttribute()) {
                 signal[0] = signal[0].merge(m.observe(object, p).diff());
             } else {
-                signal[0] = signal[0].merge(auto(p.model, p.model.get(o, p)));
+                signal[0] = signal[0].merge(auto(p.model, o));
             }
         });
         return signal[0];
