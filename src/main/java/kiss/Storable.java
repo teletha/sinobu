@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.function.Function;
 
 import kiss.model.Model;
-import kiss.model.Property;
 
 /**
  * @version 2018/09/07 10:21:25
@@ -76,7 +75,18 @@ public interface Storable<Self> {
      * @return Call {@link Disposable#dispose()} to stop automatic save.
      */
     default Disposable auto(Function<Signal, Signal> timing) {
-        return timing.apply(auto(Model.of(this), this)).to(this::store);
+        synchronized (this) {
+            // dispose previous saver
+            Disposable disposer = I.autosaver.get(this);
+            if (disposer != null) disposer.dispose();
+
+            // build new saver and store it
+            disposer = timing.apply(auto(Model.of(this), this)).to(this::store);
+            I.autosaver.put(this, disposer);
+
+            // API definition
+            return disposer;
+        }
     }
 
     /**
@@ -86,16 +96,16 @@ public interface Storable<Self> {
      * @param object
      */
     private Signal auto(Model<Object> model, Object object) {
-        Signal signal = Signal.never();
+        Signal[] signal = {Signal.never()};
 
-        for (Property property : model.properties()) {
+        model.walk(object, (m, property, o) -> {
             if (property.isAttribute()) {
-                signal = signal.merge(model.observe(object, property).diff());
+                signal[0] = signal[0].merge(m.observe(object, property).diff());
             } else {
-                signal = signal.merge(auto(property.model, model.get(object, property)));
+                signal[0] = signal[0].merge(auto(property.model, property.model.get(o, property)));
             }
-        }
-        return signal;
+        });
+        return signal[0];
     }
 
     /**

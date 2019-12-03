@@ -14,7 +14,10 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -101,8 +104,6 @@ class StorableTest {
     @Test
     void auto() throws Exception {
         Auto instance = new Auto();
-        Path path = Paths.get(instance.locate());
-        assert Files.notExists(path);
 
         instance.text.set("OK");
         instance.integer.set(20);
@@ -123,8 +124,6 @@ class StorableTest {
     @Test
     void stopAutoSave() throws Exception {
         Auto instance = new Auto();
-        Path path = Paths.get(instance.locate());
-        assert Files.notExists(path);
 
         instance.text.set("OK");
         instance.integer.set(20);
@@ -141,7 +140,7 @@ class StorableTest {
     }
 
     /**
-     * @version 2018/09/07 9:29:53
+     * 
      */
     private class Auto implements Storable<Auto> {
 
@@ -166,6 +165,51 @@ class StorableTest {
         @Override
         public String locate() {
             return room.locate(Auto.class.getSimpleName()).toString();
+        }
+    }
+
+    @Test
+    void autoMapProperty() throws Exception {
+        AutoRoot root = new AutoRoot();
+
+        Auto child1 = new Auto();
+        child1.text.set("child1");
+        root.put("1", child1);
+
+        AutoRoot other = new AutoRoot();
+        assert other.children.size() == 1;
+    }
+
+    /**
+     * 
+     */
+    private class AutoRoot implements Storable<AutoRoot> {
+
+        public Map<String, Auto> children = new HashMap();
+
+        private AutoRoot() {
+            restore().auto();
+        }
+
+        private void put(String key, Auto child) {
+            children.put(key, child);
+            store().auto();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Disposable auto() {
+            return auto(Function.identity());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String locate() {
+            return room.locate(AutoRoot.class.getSimpleName()).toString();
         }
     }
 }

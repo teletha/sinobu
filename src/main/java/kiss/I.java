@@ -55,6 +55,7 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -171,6 +172,9 @@ public class I {
     /** No Operation */
     public static final WiseRunnable NoOP = () -> {
     };
+
+    /** The automatic saver references. */
+    static final WeakHashMap<Object, Disposable> autosaver = new WeakHashMap();
 
     /** The circularity dependency graph per thread. */
     static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
