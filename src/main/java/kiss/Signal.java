@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1126,14 +1126,15 @@ public final class Signal<V> {
             Runnable sender = I.recurse(self -> {
                 Ⅱ<Object, Long> item = queue.pollFirst();
 
-                if (item.ⅰ == this) {
-                    observer.complete();
-                } else {
-                    observer.accept((V) item.ⅰ);
-
-                    if (!queue.isEmpty()) {
-                        I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler, self);
+                if (item != null) {
+                    if (item.ⅰ == this) {
+                        observer.complete();
+                    } else {
+                        observer.accept((V) item.ⅰ);
                     }
+                }
+                if (!queue.isEmpty()) {
+                    I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler, self);
                 }
             });
 
