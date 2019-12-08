@@ -237,6 +237,75 @@ class FieldVariablePropertyTest {
         }
     }
 
+    @Test
+    void Generic() {
+        class Declare<T> {
+            public Variable<T> property = Variable.empty();
+        }
+
+        assert validatePropertyAccess(new Declare(), null, new Object());
+    }
+
+    @Test
+    void GenericSpecialized() {
+        class Generic<T> {
+            public Variable<T> property = Variable.empty();
+        }
+
+        class Declare extends Generic<String> {
+        }
+
+        assert validatePropertyAccess(new Declare(), null, "specialized");
+    }
+
+    @Test
+    void GenericSpecializedList() {
+        class Generic<T> {
+            public Variable<T> property = Variable.empty();
+        }
+
+        class Declare extends Generic<List<String>> {
+        }
+
+        assert validatePropertyAccess(new Declare(), null, List.of("string"));
+    }
+
+    @Test
+    void GenericSpecializedGenericList() {
+        class Generic<T> {
+            public Variable<T> property = Variable.empty();
+        }
+
+        class Declare<E> extends Generic<List<E>> {
+        }
+
+        assert validatePropertyAccess(new Declare(), null, List.of("string"));
+    }
+
+    @Test
+    void GenericSpecializedMap() {
+        class Generic<T> {
+            public Variable<T> property = Variable.empty();
+        }
+
+        class Declare extends Generic<Map<String, String>> {
+        }
+
+        assert validatePropertyAccess(new Declare(), null, Map.of("key", "value"));
+    }
+
+    @Test
+    void GenericSpecializedGenericMap() {
+        class Generic<T> {
+            public Variable<T> property = Variable.empty();
+        }
+
+        class Declare<K, V> extends Generic<Map<K, V>> {
+        }
+
+        assert validatePropertyAccess(new Declare(), null, Map.of("key", "value"));
+    }
+
     /**
      * Test property access. (Getter and Setter)
      * 
