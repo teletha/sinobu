@@ -18,7 +18,7 @@ import kiss.model.Model;
  * If you want to create new lifestyle in your application, you can extend this class and override
  * the method {@link #get()}.
  * 
- * @param <M> A {@link Manageable} class.
+ * @param <M> A {@link Managed} class.
  * @see Singleton
  * @see ThreadSpecific
  */

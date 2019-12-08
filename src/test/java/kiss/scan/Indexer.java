@@ -34,7 +34,7 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
-import kiss.Manageable;
+import kiss.Managed;
 
 public class Indexer extends AbstractProcessor {
 
@@ -161,7 +161,7 @@ public class Indexer extends AbstractProcessor {
      * @param target A fully qualified class name to register.
      */
     private void checkIndexableType(TypeElement current, TypeElement target) {
-        Manageable indexable = current.getAnnotation(Manageable.class);
+        Managed indexable = current.getAnnotation(Managed.class);
 
         if (indexable == null) {
             // check super types

@@ -31,7 +31,7 @@ package kiss;
  * };
  * </pre>
  * 
- * @param <M> A {@link Manageable} class.
+ * @param <M> A {@link Managed} class.
  * @see Prototype
  * @see Singleton
  * @version 2018/10/04 21:22:00

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
-import kiss.Manageable;
+import kiss.Managed;
 import kiss.ThreadSpecific;
 import kiss.WiseFunction;
 
@@ -51,7 +51,7 @@ class ThreadSpecificTest {
         assert results.size() == 2;
     }
 
-    @Manageable(lifestyle = ThreadSpecific.class)
+    @Managed(value = ThreadSpecific.class)
     private static class ThreadSpecificClass {
     }
 }

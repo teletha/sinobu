@@ -16,17 +16,31 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import kiss.model.Model;
+import kiss.model.Property;
+
 /**
- * DOCUMENT.
+ * <p>
+ * Annotation that is managed by some domain.
+ * </p>
+ * <p>
+ * When used for any {@link Class}, it means that the instance of that {@link Class} is managed by
+ * the lifestyle specified by {@link #value()}.
+ * </p>
+ * <p>
+ * When used for any field, it means that the field is managed as {@link Property}. Specifying a
+ * {@link Lifestyle} is meaningless.
+ * </p>
  * 
  * @see Lifestyle
- * @version 2008/12/07 08:47:29
+ * @see Model
+ * @see Property
  */
 @Inherited
 @Documented
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Manageable {
+public @interface Managed {
 
     /**
      * Configure the lifestyle of the instance which is annotated class. The default value is
@@ -34,5 +48,5 @@ public @interface Manageable {
      * 
      * @see Prototype
      */
-    Class<? extends Lifestyle> lifestyle() default Prototype.class;
+    Class<? extends Lifestyle> value() default Prototype.class;
 }

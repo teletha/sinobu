@@ -9,12 +9,12 @@
  */
 package kiss.module.external;
 
-import kiss.Manageable;
+import kiss.Managed;
 import kiss.Singleton;
 
 /**
  * @version 2010/11/15 0:29:59
  */
-@Manageable(lifestyle = Singleton.class)
+@Managed(value = Singleton.class)
 public class SingletonClass {
 }

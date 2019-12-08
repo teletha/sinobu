@@ -9,12 +9,12 @@
  */
 package kiss.sample.dependency;
 
-import kiss.Manageable;
+import kiss.Managed;
 import kiss.Singleton;
 
 /**
  * @version 2009/07/01 18:04:56
  */
-@Manageable(lifestyle = Singleton.class)
+@Managed(value = Singleton.class)
 public class NoDependencySingleton {
 }

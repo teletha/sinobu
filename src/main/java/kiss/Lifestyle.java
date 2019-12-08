@@ -18,7 +18,7 @@ package kiss;
  * There are two ways to specify {@link Lifestyle} for the class.
  * </p>
  * <p>
- * The one is {@link Manageable} annotation. This way is useful if the target class is under your
+ * The one is {@link Managed} annotation. This way is useful if the target class is under your
  * control. If the lifestyle is not specified, Sinobu uses {@link Prototype} lifestyle as default.
  * The following is example.
  * </p>
@@ -41,11 +41,11 @@ package kiss;
  * }
  * </pre>
  * 
- * @param <M> A {@link Manageable} class.
+ * @param <M> A {@link Managed} class.
  * @see Prototype
  * @see Singleton
  * @see ThreadSpecific
- * @see Manageable#lifestyle()
+ * @see Managed#value()
  * @version 2017/03/29 11:16:17
  */
 public interface Lifestyle<M> extends WiseSupplier<M>, Extensible {

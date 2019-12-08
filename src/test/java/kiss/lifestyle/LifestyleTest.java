@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.LoadableTestBase;
-import kiss.Manageable;
+import kiss.Managed;
 import kiss.Prototype;
 import kiss.Singleton;
 import kiss.sample.bean.Person;
@@ -97,7 +97,7 @@ public class LifestyleTest extends LoadableTestBase {
 
     /**
      * <p>
-     * External class without {@link Manageable} annotation.
+     * External class without {@link Managed} annotation.
      * </p>
      * 
      * @version 2010/01/15 18:55:45
@@ -125,12 +125,12 @@ public class LifestyleTest extends LoadableTestBase {
 
     /**
      * <p>
-     * External class with {@link Manageable} annotation.
+     * External class with {@link Managed} annotation.
      * </p>
      * 
      * @version 2010/01/15 18:55:45
      */
-    @Manageable(lifestyle = Singleton.class)
+    @Managed(value = Singleton.class)
     private static class HasCustomLifestyleInPrivateModule {
 
         /**
@@ -239,7 +239,7 @@ public class LifestyleTest extends LoadableTestBase {
         }
     }
 
-    @Manageable(lifestyle = CustomLifestyle.class)
+    @Managed(value = CustomLifestyle.class)
     private static class CustomClass {
 
     }

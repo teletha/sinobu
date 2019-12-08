@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.Lifestyle;
-import kiss.Manageable;
+import kiss.Managed;
 import kiss.Singleton;
 
 /**
@@ -121,7 +121,7 @@ public class ConstructorInjectionTest {
     /**
      * @version 2010/02/09 20:39:04
      */
-    @Manageable(lifestyle = Singleton.class)
+    @Managed(value = Singleton.class)
     private static class SingletonInjected {
     }
 

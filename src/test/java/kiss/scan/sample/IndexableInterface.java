@@ -9,8 +9,8 @@
  */
 package kiss.scan.sample;
 
-import kiss.Manageable;
+import kiss.Managed;
 
-@Manageable
+@Managed
 public interface IndexableInterface {
 }

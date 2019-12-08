@@ -12,7 +12,7 @@ package kiss.core;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
-import kiss.Manageable;
+import kiss.Managed;
 import kiss.Singleton;
 
 /**
@@ -47,7 +47,7 @@ public class MakeCircularReferenceTest {
     /**
      * @version 2016/10/13 9:42:50
      */
-    @Manageable(lifestyle = Singleton.class)
+    @Managed(value = Singleton.class)
     private static class SingletonSelfCircularReference {
 
         static SingletonSelfCircularReference instance = I.make(SingletonSelfCircularReference.class);

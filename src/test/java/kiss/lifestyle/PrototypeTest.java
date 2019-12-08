@@ -10,7 +10,7 @@
 package kiss.lifestyle;
 
 import kiss.I;
-import kiss.Manageable;
+import kiss.Managed;
 import kiss.Prototype;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class PrototypeTest {
     /**
      * @version 2011/03/22 16:30:07
      */
-    @Manageable(lifestyle = Prototype.class)
+    @Managed(value = Prototype.class)
     private static class PrototypeClass {
     }
 }
