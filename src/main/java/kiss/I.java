@@ -1195,10 +1195,10 @@ public class I {
             if (lifestyle == null) {
                 // If the actual model class doesn't provide its lifestyle explicitly, we use
                 // Prototype lifestyle which is default lifestyle in Sinobu.
-                Managed manageable = modelClass.getAnnotation(Managed.class);
+                Managed managed = modelClass.getAnnotation(Managed.class);
 
                 // Create new lifestyle for the actual model class
-                lifestyle = (Lifestyle) make((Class) (manageable == null ? Prototype.class : manageable.value()));
+                lifestyle = (Lifestyle) make((Class) (managed == null ? Prototype.class : managed.value()));
             }
 
             if (lifestyles.containsKey(modelClass)) {

@@ -20,7 +20,7 @@ import kiss.Managed;
 import kiss.Variable;
 
 @SuppressWarnings("unused")
-class AccessVariableFieldPropertyTest {
+class FieldVariablePropertyTest {
 
     @Test
     void Public() {
@@ -29,6 +29,36 @@ class AccessVariableFieldPropertyTest {
         }
 
         assert validatePropertyAccess(new Declare(), null, 10);
+    }
+
+    @Test
+    void Protected() {
+        class Declare {
+            protected Variable<String> notProperty;
+        }
+
+        Model model = Model.of(Declare.class);
+        assert model.properties().size() == 0;
+    }
+
+    @Test
+    void PackagePrivate() {
+        class Declare {
+            Variable<String> notProperty;
+        }
+
+        Model model = Model.of(Declare.class);
+        assert model.properties().size() == 0;
+    }
+
+    @Test
+    void Private() {
+        class Declare {
+            private Variable<String> notProperty;
+        }
+
+        Model model = Model.of(Declare.class);
+        assert model.properties().size() == 0;
     }
 
     @Test

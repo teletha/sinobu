@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import kiss.Managed;
 
 @SuppressWarnings("unused")
-class AccessFieldPropertyTest {
+class FieldPropertyTest {
 
     @Test
     void Public() {
@@ -28,6 +28,36 @@ class AccessFieldPropertyTest {
         }
 
         assert validatePropertyAccess(new Declare(), 0, 10);
+    }
+
+    @Test
+    void Protected() {
+        class Declare {
+            protected int notProperty;
+        }
+
+        Model model = Model.of(Declare.class);
+        assert model.properties().size() == 0;
+    }
+
+    @Test
+    void PackagePrivate() {
+        class Declare {
+            int notProperty;
+        }
+
+        Model model = Model.of(Declare.class);
+        assert model.properties().size() == 0;
+    }
+
+    @Test
+    void Private() {
+        class Declare {
+            private int notProperty;
+        }
+
+        Model model = Model.of(Declare.class);
+        assert model.properties().size() == 0;
     }
 
     @Test
