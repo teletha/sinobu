@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import kiss.Decoder;
 import kiss.Encoder;
 import kiss.I;
+import kiss.Managed;
 import kiss.Signal;
 import kiss.Variable;
 import kiss.WiseTriConsumer;
@@ -171,36 +172,39 @@ public class Model<M> {
                 }
 
                 // Search field properties.
-                for (Field field : type.getFields()) {
-                    // exclude the field which modifier is static, private or native
+                for (Field field : I.signal((Class) type).recurse(Class::getSuperclass).flatArray(Class::getDeclaredFields).toList()) {
                     int modifier = field.getModifiers();
                     boolean notFinal = (FINAL & modifier) == 0;
 
-                    if (((STATIC | PRIVATE | NATIVE) & modifier) == 0) {
-                        field.setAccessible(true);
-                        Model fieldModel = of(field.getGenericType(), type);
-
-                        if (Variable.class.isAssignableFrom(fieldModel.type)) {
-                            // variable
-                            Property property = new Property(of(collectParameters(field
-                                    .getGenericType(), Variable.class)[0], Variable.class), field.getName());
-                            property.getter = m -> ((Variable) field.get(m)).v;
-                            property.setter = (m, v) -> ((Variable) field.get(m)).set(v);
-                            property.observer = m -> ((Variable) field.get(m)).observe();
-
-                            // register it
-                            properties.add(property);
-                        } else if ((fieldModel.attribute && notFinal) || !fieldModel.attribute) {
-                            // field
+                    // exclude the field which modifier is static or native
+                    if (((STATIC | NATIVE) & modifier) == 0) {
+                        // include the field which modifier is public or is annotated by Managed
+                        if ((PUBLIC & modifier) == PUBLIC || field.isAnnotationPresent(Managed.class)) {
                             field.setAccessible(true);
+                            Model fieldModel = of(field.getGenericType(), type);
 
-                            Property property = new Property(fieldModel, field.getName(), field);
-                            property.getter = m -> field.get(m);
-                            property.setter = notFinal ? (m, v) -> field.set(m, v) : (m, v) -> {
-                            };
+                            if (Variable.class.isAssignableFrom(fieldModel.type)) {
+                                // variable
+                                Property property = new Property(of(collectParameters(field
+                                        .getGenericType(), Variable.class)[0], Variable.class), field.getName());
+                                property.getter = m -> ((Variable) field.get(m)).v;
+                                property.setter = (m, v) -> ((Variable) field.get(m)).set(v);
+                                property.observer = m -> ((Variable) field.get(m)).observe();
 
-                            // register it
-                            properties.add(property);
+                                // register it
+                                properties.add(property);
+                            } else if ((fieldModel.attribute && notFinal) || !fieldModel.attribute) {
+                                // field
+                                field.setAccessible(true);
+
+                                Property property = new Property(fieldModel, field.getName(), field);
+                                property.getter = m -> field.get(m);
+                                property.setter = notFinal ? (m, v) -> field.set(m, v) : (m, v) -> {
+                                };
+
+                                // register it
+                                properties.add(property);
+                            }
                         }
                     }
                 }

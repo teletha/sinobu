@@ -37,7 +37,6 @@ import kiss.sample.bean.StringListProperty;
 import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
-import kiss.sample.bean.VariablePropertyAtField;
 
 /**
  * @version 2018/10/04 21:48:35
@@ -104,35 +103,6 @@ class JSONTest {
         validate(bean,
         "{",
         "  'noneField': 'serializable'",
-        "}");
-        // @formatter:on
-    }
-
-    @Test
-    void variableProperty() {
-        VariablePropertyAtField bean = I.make(VariablePropertyAtField.class);
-        bean.string.set("value");
-        bean.integer.set(10);
-        bean.sub.set(20D);
-        bean.list.get().add("first");
-        bean.list.get().add("second");
-        bean.map.get().put("one", 11L);
-        bean.map.get().put("two", 222L);
-
-        // @formatter:off
-        validate(bean,
-        "{",
-        "  'integer': '10',",
-        "  'string': 'value',",
-        "  'sub': '20.0',",
-        "  'list': [",
-        "    'first',",
-        "    'second'",
-        "  ],",
-        "  'map': {",
-        "    'one': '11',",
-        "    'two': '222'",
-        "  }",
         "}");
         // @formatter:on
     }

@@ -16,7 +16,6 @@ import kiss.sample.bean.EnumProperty;
 import kiss.sample.bean.EnumProperty.Value;
 import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.Person;
-import kiss.sample.bean.VariablePropertyAtField;
 
 class ModelLensTest {
 
@@ -117,18 +116,6 @@ class ModelLensTest {
 
         assert instance.field == null;
         assert instance.fieldWithDefault == Value.One;
-    }
-
-    @Test
-    void observeVariableProperty() {
-        VariablePropertyAtField instance = new VariablePropertyAtField();
-
-        Model model = Model.of(instance);
-        Variable variable = model.observe(instance, model.property("string")).to();
-        assert variable.isAbsent();
-
-        instance.string.set("update");
-        assert variable.is("update");
     }
 
     @Test

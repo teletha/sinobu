@@ -19,11 +19,9 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
-import kiss.sample.bean.FieldProperty;
 import kiss.sample.bean.FinalFieldProperty;
 import kiss.sample.bean.GenericBean;
 import kiss.sample.bean.GenericBoundedTypedBean;
-import kiss.sample.bean.GenericFieldProperty;
 import kiss.sample.bean.GenericGetterBean;
 import kiss.sample.bean.GenericSetterBean;
 import kiss.sample.bean.GenericStringBean;
@@ -33,7 +31,6 @@ import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
-import kiss.sample.bean.VariablePropertyAtField;
 import kiss.sample.bean.WildcardBean;
 import kiss.sample.bean.WildcardTypeSetter;
 import kiss.sample.bean.modifiers.FinalAccessor;
@@ -146,61 +143,6 @@ class ModelTest {
         model = property.model;
         assert model != null;
         assert String.class == model.type;
-    }
-
-    @Test
-    void fieldProperty() {
-        Model<FieldProperty> model = Model.of(FieldProperty.class);
-        assert 2 == model.properties().size();
-
-        Property string = model.properties().get(0);
-        Property generic = model.properties().get(1);
-        assert string.model.type == String.class;
-        assert generic.model.type == Object.class;
-    }
-
-    @Test
-    void fieldGenericProperty() {
-        Model<GenericFieldProperty> model = Model.of(GenericFieldProperty.class);
-        assert 2 == model.properties().size();
-
-        Property string = model.properties().get(0);
-        Property generic = model.properties().get(1);
-        assert string.model.type == String.class;
-        assert generic.model.type == List.class;
-    }
-
-    @Test
-    void variableAtFieldProperty() {
-        Model<VariablePropertyAtField> model = Model.of(VariablePropertyAtField.class);
-        assert model.properties().size() == 5;
-
-        Property integer = model.property("integer");
-        Property string = model.property("string");
-        Property list = model.property("list");
-        Property map = model.property("map");
-        Property sub = model.property("sub");
-        assert integer.model.type == Integer.class;
-        assert string.model.type == String.class;
-        assert list.model.type == List.class;
-        assert map.model.type == Map.class;
-        assert sub.model.type == Double.class;
-
-        VariablePropertyAtField bean = I.make(VariablePropertyAtField.class);
-        assert bean.integer.get() == 0;
-        assert bean.string.get() == null;
-
-        model.set(bean, integer, 10);
-        assert bean.integer.get() == 10;
-        assert (Integer) model.get(bean, integer) == 10;
-
-        model.set(bean, string, "value");
-        assert bean.string.get().equals("value");
-        assert model.get(bean, string).equals("value");
-
-        model.set(bean, sub, 20D);
-        assert bean.sub.get() == 20D;
-        assert (Double) model.get(bean, sub) == 20D;
     }
 
     @Test
