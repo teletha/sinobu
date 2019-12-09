@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -112,15 +112,91 @@ public class VariableTest {
     @Test
     void isCondition() {
         Predicate<String> condition = value -> value == null;
-        assert empty.is(condition) == true;
-        assert string.is(condition) == false;
+        assert empty.isNot(condition) == false;
+        assert string.isNot(condition) == true;
     }
 
     @Test
     void isNullCondition() {
         Predicate<String> condition = null;
-        assert empty.is(condition) == false;
-        assert string.is(condition) == false;
+        assert empty.isNot(condition) == true;
+        assert string.isNot(condition) == true;
+    }
+
+    @Test
+    void isNot() {
+        assert empty.is("") == false;
+        assert string.is("") == false;
+        assert string.is("value");
+    }
+
+    @Test
+    void isNotNull() {
+        String value = null;
+        assert empty.isNot(value) == false;
+        assert string.isNot(value) == true;
+    }
+
+    @Test
+    void isNotCondition() {
+        Predicate<String> condition = value -> value == null;
+        assert empty.isNot(condition) == false;
+        assert string.isNot(condition) == true;
+    }
+
+    @Test
+    void isNotNullCondition() {
+        Predicate<String> condition = null;
+        assert empty.isNot(condition) == true;
+        assert string.isNot(condition) == true;
+    }
+
+    @Test
+    void isToBe() {
+        Variable<Boolean> result = string.isToBe("value").to();
+        assert result.is(true);
+
+        string.set("change");
+        assert result.is(false);
+    }
+
+    @Test
+    void isToBeNull() {
+        Variable<Boolean> result = string.isToBe((String) null).to();
+        assert result.is(false);
+    }
+
+    @Test
+    void isToBeCondition() {
+        Variable<Boolean> result = string.isToBe(o -> o.equals("value")).to();
+        assert result.is(true);
+
+        string.set("change");
+        assert result.is(false);
+    }
+
+    @Test
+    void isNotToBe() {
+        Variable<Boolean> result = string.isNotToBe("value").to();
+        assert result.is(false);
+
+        string.set("change");
+        assert result.is(true);
+    }
+
+    @Test
+    void isNotToBeNull() {
+        Variable<Boolean> result = string.isNotToBe((String) null).to();
+        assert result.is(true);
+    }
+
+    @Test
+    void isNotToBeCondition() {
+        Variable<Boolean> result = string.isNotToBe(o -> o.equals("value")).to();
+        assert result.is(false);
+
+        string.set("change");
+        assert result.is(true);
     }
 
     @Test

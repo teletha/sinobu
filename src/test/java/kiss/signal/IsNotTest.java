@@ -9,18 +9,13 @@
  */
 package kiss.signal;
 
-import java.util.function.Predicate;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import kiss.I;
-
-class IsNotPredicateTest extends SignalTester {
+class IsNotTest extends SignalTester {
 
     @Test
     void value() {
-        monitor(Integer.class, Boolean.class, signal -> signal.isNot(v -> v % 2 == 0));
+        monitor(Integer.class, Boolean.class, signal -> signal.isNot(2));
 
         assert main.emit(1, 2, 3).value(true, false, true);
         assert main.isNotCompleted();
@@ -30,7 +25,7 @@ class IsNotPredicateTest extends SignalTester {
 
     @Test
     void error() {
-        monitor(Integer.class, Boolean.class, signal -> signal.isNot(v -> v % 2 == 0));
+        monitor(Integer.class, Boolean.class, signal -> signal.isNot(2));
 
         assert main.emit(Error.class).value();
         assert main.isNotCompleted();
@@ -40,7 +35,7 @@ class IsNotPredicateTest extends SignalTester {
 
     @Test
     void complete() {
-        monitor(Integer.class, Boolean.class, signal -> signal.isNot(v -> v % 2 == 0));
+        monitor(Integer.class, Boolean.class, signal -> signal.isNot(2));
 
         assert main.emit(Complete).value();
         assert main.isCompleted();
@@ -50,14 +45,9 @@ class IsNotPredicateTest extends SignalTester {
 
     @Test
     void nill() {
-        Assertions.assertThrows(NullPointerException.class, () -> I.signal(1, 2, 3).isNot((Predicate) null));
-    }
+        monitor(Integer.class, Boolean.class, signal -> signal.isNot((Integer) null));
 
-    @Test
-    void valuePredicate() {
-        monitor(Integer.class, Boolean.class, signal -> signal.is(v -> v % 2 == 0));
-
-        assert main.emit(1, 2, 3).value(false, true, false);
+        assert main.emit(1, 2, 3).value(true, true, true);
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();

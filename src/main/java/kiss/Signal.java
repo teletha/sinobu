@@ -1875,7 +1875,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<Boolean> isNot(V value) {
-        return isNot(v -> !Objects.equals(v, value));
+        return isNot(v -> Objects.equals(v, value));
     }
 
     /**
