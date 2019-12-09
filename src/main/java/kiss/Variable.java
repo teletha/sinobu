@@ -123,7 +123,22 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to check the equality.
      * @return A result {@link Signal}.
      */
-    public final Signal<Boolean> iŝ(Predicate<V> condition) {
+    public final Signal<Boolean> isToBe(V value) {
+        return observeNow().is(value);
+    }
+
+    /**
+     * <p>
+     * Test whether the value fulfills the specified condition or not. This method is shortcut for
+     * </p>
+     * <pre>
+     * variable.observeNow().is(condition);
+     * </pre>
+     * 
+     * @param value A value to check the equality.
+     * @return A result {@link Signal}.
+     */
+    public final Signal<Boolean> isToBe(Predicate<V> condition) {
         return observeNow().is(condition);
     }
 
@@ -162,7 +177,22 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to check the equality.
      * @return A result {@link Signal}.
      */
-    public final Signal<Boolean> iŝNot(Predicate<V> condition) {
+    public final Signal<Boolean> isNotToBe(V value) {
+        return observeNow().isNot(value);
+    }
+
+    /**
+     * <p>
+     * Test whether the value fulfills the specified condition or not. This method is shortcut for
+     * </p>
+     * <pre>
+     * variable.observeNow().isNot(condition);
+     * </pre>
+     * 
+     * @param value A value to check the equality.
+     * @return A result {@link Signal}.
+     */
+    public final Signal<Boolean> isNotToBe(Predicate<V> condition) {
         return observeNow().isNot(condition);
     }
 
