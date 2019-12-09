@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-class IsNotTest extends SignalTester {
+class IsNotPredicateTest extends SignalTester {
 
     @Test
     void value() {
