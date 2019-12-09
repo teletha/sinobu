@@ -1846,7 +1846,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<Boolean> is(V value) {
-        return map(v -> Objects.equals(v, value));
+        return is(value == null ? Objects::isNull : value::equals);
     }
 
     /**
@@ -1860,8 +1860,6 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<Boolean> is(Predicate<? super V> condition) {
-        Objects.requireNonNull(condition);
-
         return map(condition::test);
     }
 
@@ -1875,7 +1873,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<Boolean> isNot(V value) {
-        return isNot(v -> Objects.equals(v, value));
+        return isNot(value == null ? Objects::isNull : value::equals);
     }
 
     /**
@@ -1889,8 +1887,6 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<Boolean> isNot(Predicate<? super V> condition) {
-        Objects.requireNonNull(condition);
-
         return is(condition.negate());
     }
 
