@@ -1845,10 +1845,37 @@ public final class Signal<V> {
      *            {@link Signal}.
      * @return Chainable API.
      */
+    public final Signal<Boolean> is(V value) {
+        return map(v -> Objects.equals(v, value));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
+     * emitted by an {@link Signal} and emits the result.
+     * </p>
+     *
+     * @param condition A conditional function to apply to each value emitted by this
+     *            {@link Signal}.
+     * @return Chainable API.
+     */
     public final Signal<Boolean> is(Predicate<? super V> condition) {
         Objects.requireNonNull(condition);
 
         return map(condition::test);
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
+     * emitted by an {@link Signal} and emits the result.
+     * </p>
+     *
+     * @param value An expected value.
+     * @return Chainable API.
+     */
+    public final Signal<Boolean> isNot(V value) {
+        return isNot(v -> !Objects.equals(v, value));
     }
 
     /**

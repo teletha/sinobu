@@ -9,14 +9,13 @@
  */
 package kiss.signal;
 
+import java.util.function.Predicate;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/09/11 20:36:14
- */
 class IsNotTest extends SignalTester {
 
     @Test
@@ -51,6 +50,6 @@ class IsNotTest extends SignalTester {
 
     @Test
     void nill() {
-        Assertions.assertThrows(NullPointerException.class, () -> I.signal(1, 2, 3).isNot(null));
+        Assertions.assertThrows(NullPointerException.class, () -> I.signal(1, 2, 3).isNot((Predicate) null));
     }
 }
