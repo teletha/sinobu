@@ -20,10 +20,7 @@ import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/11/11 10:21:13
- */
-public class VariableTest {
+class VariableTest {
 
     private Variable<String> empty;
 
@@ -149,54 +146,6 @@ public class VariableTest {
         Predicate<String> condition = null;
         assert empty.isNot(condition) == true;
         assert string.isNot(condition) == true;
-    }
-
-    @Test
-    void isToBe() {
-        Variable<Boolean> result = string.isToBe("value").to();
-        assert result.is(true);
-
-        string.set("change");
-        assert result.is(false);
-    }
-
-    @Test
-    void isToBeNull() {
-        Variable<Boolean> result = string.isToBe((String) null).to();
-        assert result.is(false);
-    }
-
-    @Test
-    void isToBeCondition() {
-        Variable<Boolean> result = string.isToBe(o -> o.equals("value")).to();
-        assert result.is(true);
-
-        string.set("change");
-        assert result.is(false);
-    }
-
-    @Test
-    void isNotToBe() {
-        Variable<Boolean> result = string.isNotToBe("value").to();
-        assert result.is(false);
-
-        string.set("change");
-        assert result.is(true);
-    }
-
-    @Test
-    void isNotToBeNull() {
-        Variable<Boolean> result = string.isNotToBe((String) null).to();
-        assert result.is(true);
-    }
-
-    @Test
-    void isNotToBeCondition() {
-        Variable<Boolean> result = string.isNotToBe(o -> o.equals("value")).to();
-        assert result.is(false);
-
-        string.set("change");
-        assert result.is(true);
     }
 
     @Test
