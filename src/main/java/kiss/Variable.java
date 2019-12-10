@@ -211,7 +211,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      *
      * @return The {@link Signal} which notifies value modification.
      */
-    public final Signal<V> observeNow() {
+    public final Signal<V> observing() {
         return observe().startWith(this::get);
     }
 

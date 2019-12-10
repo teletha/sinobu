@@ -1776,7 +1776,7 @@ public final class Signal<V> {
         Objects.requireNonNull(function);
 
         Signal<V> share = share();
-        return share.flatMap(v -> function.apply(v).observeNow().takeUntil(share.isCompleted()));
+        return share.flatMap(v -> function.apply(v).observing().takeUntil(share.isCompleted()));
     }
 
     /**
@@ -3460,7 +3460,7 @@ public final class Signal<V> {
         Objects.requireNonNull(function);
 
         Signal<V> share = share();
-        return share.switchMap(v -> function.apply(v).observeNow().takeUntil(share.isCompleted()));
+        return share.switchMap(v -> function.apply(v).observing().takeUntil(share.isCompleted()));
     }
 
     /**
