@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
@@ -949,7 +950,50 @@ public class I {
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    public static synchronized Disposable load(Class source) {
+    public static Disposable load(URL source) {
+        URLClassLoader loader = URLClassLoader.newInstance(new URL[] {source});
+        return load(source, "", loader).add(((WiseRunnable) loader::close)::run);
+    }
+
+    /**
+     * <p>
+     * Load all {@link Extensible} typs from the specified source.
+     * </p>
+     * <p>
+     * You can create the special service loader file "META-INF/services/kiss.Extensible" which
+     * enumerates pre-scanned class names.
+     * </p>
+     *
+     * @param source A source class to indicate the class set which are loaded.
+     * @return Call {@link Disposable#dispose()} to unload the registered extension.
+     * @see Extensible
+     * @see ExtensionFactory
+     * @see #find(Class)
+     * @see #find(Class, Class)
+     * @see #findAs(Class)
+     */
+    public static Disposable load(Class source) {
+        return load(source.getProtectionDomain().getCodeSource().getLocation(), source.getPackage().getName(), source.getClassLoader());
+    }
+
+    /**
+     * <p>
+     * Load all {@link Extensible} typs from the specified source.
+     * </p>
+     * <p>
+     * You can create the special service loader file "META-INF/services/kiss.Extensible" which
+     * enumerates pre-scanned class names.
+     * </p>
+     *
+     * @param source A source class to indicate the class set which are loaded.
+     * @return Call {@link Disposable#dispose()} to unload the registered extension.
+     * @see Extensible
+     * @see ExtensionFactory
+     * @see #find(Class)
+     * @see #find(Class, Class)
+     * @see #findAs(Class)
+     */
+    private static Disposable load(URL source, String pattern, ClassLoader loader) {
         // =======================================
         // List up extension class names
         // =======================================
@@ -957,7 +1001,7 @@ public class I {
 
         try {
             // Scan at runtime
-            File file = new File(source.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File file = new File(source.toURI());
 
             if (file.isFile()) {
                 // from jar file
@@ -981,12 +1025,15 @@ public class I {
         // Register class as extension
         // =======================================
         Disposable disposer = Disposable.empty();
-        String pattern = source.getPackage().getName();
 
         for (String name : names.toSet()) {
             // exclude out of the specified package
             if (name.startsWith(pattern)) {
-                disposer.add(loadE(type(name)));
+                try {
+                    disposer.add(loadE((Class) loader.loadClass(name)));
+                } catch (Throwable e) {
+                    throw I.quiet(e);
+                }
             }
         }
         return disposer;
@@ -998,7 +1045,7 @@ public class I {
      * @param extension A target extension.
      * @return Call {@link Disposable#dispose()} to unload the registered extension.
      */
-    static synchronized <E extends Extensible> Disposable loadE(Class<E> extension) {
+    static <E extends Extensible> Disposable loadE(Class<E> extension) {
         // fast check : exclude non-initializable class
         if (extension.isEnum() || extension.isAnonymousClass()) {
             return null;
@@ -1066,7 +1113,7 @@ public class I {
      * @param extension A extension to register.
      * @return A disposer to unregister.
      */
-    private static synchronized <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Lifestyle<E> extension) {
+    private static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Lifestyle<E> extension) {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
