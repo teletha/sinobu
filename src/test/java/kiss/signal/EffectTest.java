@@ -14,8 +14,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Disposable;
 import kiss.I;
 import kiss.Signal;
+import kiss.Signaling;
 import kiss.WiseConsumer;
 import kiss.WiseRunnable;
 
@@ -137,6 +139,32 @@ class EffectTest extends SignalTester {
     }
 
     @Test
+    void effectOnObserveUsingDisposer() {
+        List<String> list = new ArrayList();
+        Signaling<String> signaling = new Signaling();
+        Signal<String> signal = signaling.expose.effectOnObserve(disposer -> {
+            list.add("subscribe");
+            disposer.add(() -> {
+                list.add("dispose");
+            });
+        });
+
+        assert list.isEmpty();
+        Disposable disposer = signal.to(I.NoOP);
+        assert list.size() == 1; // effect on subscribe
+        signaling.accept("value");
+        assert list.size() == 1; // no-effect on value signal
+
+        disposer.dispose(); // effect on dispose
+        assert list.size() == 2;
+        disposer.dispose(); // no-effect on duplicated operation
+        assert list.size() == 2;
+
+        disposer = signal.to(I.NoOP);
+        assert list.size() == 3; // effect on subscribe
+    }
+
+    @Test
     void effectOnObserveByNullConsumer() {
         Signal<String> signal = I.signal("1");
         assert signal == signal.effectOnObserve((WiseConsumer) null);
@@ -195,5 +223,34 @@ class EffectTest extends SignalTester {
 
         assert main.emit(1).value(1);
         assert main.emit(2, 3).value(2, 3);
+    }
+
+    @Test
+    void effectOnLifecycle() {
+        List<String> list = new ArrayList();
+        Signaling<String> signaling = new Signaling();
+        Signal<String> signal = signaling.expose.effectOnLifecycle(disposer -> {
+            list.add("subscribe");
+            disposer.add(() -> {
+                list.add("dispose");
+            });
+            return list::add;
+        });
+
+        assert list.isEmpty();
+        Disposable disposer = signal.to(I.NoOP);
+        assert list.size() == 1; // effect on subscribe
+        signaling.accept("value");
+        assert list.size() == 2; // effect on value stream
+
+        disposer.dispose(); // effect on dispose
+        assert list.size() == 3;
+        disposer.dispose(); // no-effect on duplicated operation
+        assert list.size() == 3;
+
+        disposer = signal.to(I.NoOP);
+        assert list.size() == 4; // effect on subscribe
+        signaling.accept("value");
+        assert list.size() == 5; // effect on value stream
     }
 }
