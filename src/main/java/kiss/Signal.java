@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -3226,22 +3226,6 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Alias for take(condition.map(value -> !value).
-     * </p>
-     *
-     * @param condition A skip condition.
-     * @return Chainable API.
-     */
-    public final Signal<V> skipWhile(Signal<Boolean> condition) {
-        // ignore invalid parameter
-        if (condition == null) {
-            return this;
-        }
-        return take(condition.startWith(false).map(value -> !value));
-    }
-
-    /**
-     * <p>
      * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long
      * as a specified condition holds true, but emits all further source items as soon as the
      * condition becomes false.
@@ -3420,7 +3404,7 @@ public final class Signal<V> {
         if (scheduler == null) {
             return this;
         }
-    
+
         return new Signal<>((observer, disposer) -> {
             Disposable e = Disposable.empty();
             scheduler.accept(() -> {

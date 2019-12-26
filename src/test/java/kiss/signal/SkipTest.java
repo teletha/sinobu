@@ -263,10 +263,11 @@ class SkipTest extends SignalTester {
 
     @Test
     void skipWhileValueCondition() {
-        monitor(int.class, signal -> signal.skipWhile(value -> value != 3));
+        monitor(int.class, signal -> signal.skipWhile(value -> value == 3));
 
-        assert main.emit(1, 2).value();
-        assert main.emit(3, 4).value(3, 4);
+        assert main.emit(3, 3).value();
+        assert main.emit(3, 1, 2, 3).value(1, 2, 3);
         assert main.isNotCompleted();
+        assert main.isNotDisposed();
     }
 }
