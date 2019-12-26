@@ -137,7 +137,7 @@ class TakeTest extends SignalTester {
 
     @Test
     void takeUntilByTime() {
-        monitor(signal -> signal.takeUntil(30, ms));
+        monitor(signal -> signal.take(30, ms));
 
         assert main.emit("accept", "values", "in", "30ms").value("accept", "values", "in", "30ms");
         assert main.isNotCompleted();

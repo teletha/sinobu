@@ -53,7 +53,50 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * @version 2018/08/01 13:38:16
+ * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
+ * <p>
+ * The {@link Signal} class that implements the Reactive Pattern. This class provides methods for
+ * subscribing to the {@link Signal} as well as delegate methods to the various observers.
+ * </p>
+ * 
+ * <p>
+ * In Reactive Pattern an observer subscribes to a {@link Signal}. Then that observer reacts to
+ * whatever item or sequence of items the {@link Signal} emits. This pattern facilitates concurrent
+ * operations because it does not need to block while waiting for the {@link Signal} to emit
+ * objects, but instead it creates a sentry in the form of an observer that stands ready to react
+ * appropriately at whatever future time the {@link Signal} does so.
+ * </p>
+ * 
+ * <p>
+ * The subscribe method is how you connect an {@link Observer} to a {@link Signal}. Your
+ * {@link Observer} implements some subset of the following methods:
+ * </p>
+ * 
+ * <dl>
+ * <dt>{@link Observer#accept(Object)}</dt>
+ * <dd>A {@link Signal} calls this method whenever the {@link Signal} emits an item. This method
+ * takes as a parameter the item emitted by the {@link Signal}.</dd>
+ * <dt>{@link Observer#error(Throwable)}</dt>
+ * <dd>A {@link Signal} calls this method to indicate that it has failed to generate the expected
+ * data or has encountered some other error. It will not make further calls to
+ * <code> {@link Observer#error(Throwable)} </code> or <code> {@link Observer#complete()} </code>.
+ * The <code> {@link Observer#error(Throwable)} </code> method takes as its parameter an indication
+ * of what caused the error.</dd>
+ * <dt>{@link Observer#complete()}</dt>
+ * <dd>A {@link Signal} calls this method after it has called
+ * <code> {@link Observer#accept(Object)}</code> for the final time, if it has not encountered any
+ * errors.</dd>
+ * </dl>
+ * <p>
+ * By the terms of the {@link Signal} contract, it may call
+ * <code> {@link Observer#accept(Object)} </code> zero or more times, and then may follow those
+ * calls with a call to either <code> {@link Observer#complete()}</code> or
+ * <code> {@link Observer#error(Throwable)}</code> but not both, which will be its last call. By
+ * convention, in this document, calls to <code> {@link Observer#accept(Object)}</code> are usually
+ * called &ldquo;emissions&rdquo; of items, whereas calls to
+ * <code> {@link Observer#complete()}</code> or <code> {@link Observer#error(Throwable)}</code> are
+ * called &ldquo;notifications.&rdquo;
+ * </p>
  */
 public final class Signal<V> {
 
@@ -75,6 +118,7 @@ public final class Signal<V> {
     private final BiFunction<Observer<? super V>, Disposable, Disposable> subscriber;
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Create {@link Signal} preassign the specified subscriber {@link Collection} which will be
      * invoked whenever you calls {@link #to(Observer)} related methods.
@@ -94,6 +138,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Create {@link Signal} preassign the specified subscriber {@link BiFunction} which will be
      * invoked whenever you calls {@link #to(Observer)} related methods.
@@ -109,6 +154,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
@@ -121,6 +167,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
@@ -133,6 +180,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
@@ -146,6 +194,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
@@ -159,6 +208,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values from this {@link Signal}.
      * </p>
@@ -173,6 +223,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values from this {@link Signal}.
      * </p>
@@ -187,6 +238,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values from this {@link Signal}.
      * </p>
@@ -204,6 +256,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values from this {@link Signal}.
      * </p>
@@ -218,6 +271,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values from this {@link Signal}.
      * </p>
@@ -239,6 +293,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values from this {@link Signal}.
      * </p>
@@ -256,6 +311,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as {@link Variable} from this {@link Signal}.
      * </p>
@@ -269,6 +325,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as {@link Collection} type from this {@link Signal}.
      * </p>
@@ -280,6 +337,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values from this {@link Signal}.
      * </p>
@@ -300,6 +358,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as {@link Set} from this {@link Signal}. Each value alternates between In and
      * Out.
@@ -316,6 +375,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as boolean {@link Variable} from this {@link Signal}. Each value alternates
      * between true and false.
@@ -335,6 +395,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as {@link Collection} from this {@link Signal}.
      * </p>
@@ -347,6 +408,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as {@link List} from this {@link Signal}.
      * </p>
@@ -358,6 +420,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as {@link Map} from this {@link Signal}.
      * </p>
@@ -370,6 +433,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as {@link Map} from this {@link Signal}.
      * </p>
@@ -383,6 +447,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Receive values as {@link Set} from this {@link Signal}.
      * </p>
@@ -394,8 +459,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
-     * by the source {@link Signal} satisfy a condition.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits a Boolean that indicates whether all of the items emitted by the
+     * source {@link Signal} satisfy a condition.
      * 
      * @param condition A condition that evaluates an item and returns a Boolean.
      * @return A {@link Signal} that emits true if all items emitted by the source {@link Signal}
@@ -406,8 +472,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a {@link Signal} that emits true if any item emitted by the source {@link Signal}
-     * satisfies a specified condition, otherwise false. Note: this always emits false if the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns a
+     * {@link Signal} that emits true if any item emitted by the source {@link Signal} satisfies a
+     * specified condition, otherwise false. Note: this always emits false if the source
      * {@link Signal} is empty.
      * 
      * @param condition A condition to test items emitted by the source {@link Signal}.
@@ -419,6 +486,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Filters the values of an {@link Signal} sequence based on the specified type.
      * </p>
@@ -432,6 +500,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Indicates each value of an {@link Signal} sequence into consecutive non-overlapping buffers
      * which are produced based on value count information.
@@ -444,6 +513,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Indicates each value of an {@link Signal} sequence into consecutive non-overlapping buffers
      * which are produced based on value count information.
@@ -457,6 +527,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
      * produced based on value count information.
@@ -498,6 +569,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
      * produced based on time count information.
@@ -513,6 +585,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
      * produced based on time count information.
@@ -529,6 +602,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits non-overlapping buffered items from the source
      * {@link Signal} each time the specified boundary {@link Signal} emits an item.
@@ -542,6 +616,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits non-overlapping buffered items from the source
      * {@link Signal} each time the specified boundary {@link Signal} emits an item.
@@ -557,6 +632,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits non-overlapping buffered items from the source
      * {@link Signal} each time the specified boundary {@link Signal} emits an item.
@@ -573,6 +649,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits non-overlapping buffered items from the source
      * {@link Signal} each time the specified boundary {@link Signal} emits an item.
@@ -598,6 +675,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
      * combinations of two items emitted, in sequence, by this {@link Signal} and the other
@@ -613,6 +691,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
      * combinations of two items emitted, in sequence, by this {@link Signal} and the other
@@ -629,6 +708,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
      * combinations of two items emitted, in sequence, by this {@link Signal} and the other
@@ -680,6 +760,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
      * combinations of several items emitted, in sequence, by this {@link Signal} and the other
@@ -705,6 +786,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
      * each of the source {@link Signal} each time an item is received from either of the source
@@ -720,6 +802,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
      * each of the source {@link Signal} each time an item is received from either of the source
@@ -735,6 +818,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
      * each of the source {@link Signal} each time an item is received from either of the source
@@ -751,6 +835,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
      * each of the source {@link Signal} each time an item is received from either of the source
@@ -789,6 +874,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Combines several source {@link Signal} by emitting an item that aggregates the latest values
      * of each of the source {@link Signal} each time an item is received from either of the source
@@ -813,6 +899,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
      * other, preassignout interleaving them.
@@ -830,6 +917,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
      * other, preassignout interleaving them.
@@ -860,11 +948,12 @@ public final class Signal<V> {
     }
 
     /**
-     * Maps a sequence of values into {@link Signal} and concatenates these {@link Signal} eagerly
-     * into a single {@link Signal}. Eager concatenation means that once a subscriber subscribes,
-     * this operator subscribes to all of the source {@link Signal}. The operator buffers the values
-     * emitted by these {@link Signal} and then drains them in order, each one after the previous
-     * one completes.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Maps a sequence
+     * of values into {@link Signal} and concatenates these {@link Signal} eagerly into a single
+     * {@link Signal}. Eager concatenation means that once a subscriber subscribes, this operator
+     * subscribes to all of the source {@link Signal}. The operator buffers the values emitted by
+     * these {@link Signal} and then drains them in order, each one after the previous one
+     * completes.
      * 
      * @param function A function that maps a sequence of values into a sequence of {@link Signal}
      *            that will be eagerly concatenated.
@@ -920,8 +1009,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a {@link Signal} that emits a Boolean that indicates whether the source
-     * {@link Signal} emitted a specified item.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns a
+     * {@link Signal} that emits a Boolean that indicates whether the source {@link Signal} emitted
+     * a specified item.
      * 
      * @param value An item to search for in the emissions from the source {@link Signal}.
      * @return A {@link Signal} that emits true if the specified item is emitted by the source
@@ -933,8 +1023,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a {@link Signal} that counts the total number of items emitted by the source
-     * {@link Signal} and emits this count as a 64-bit Long.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns a
+     * {@link Signal} that counts the total number of items emitted by the source {@link Signal} and
+     * emits this count as a 64-bit Long.
      * 
      * @return {@link Signal} that emits a single item: the number of items emitted by the source
      *         {@link Signal} as a 64-bit Long item
@@ -944,6 +1035,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Drops values that are followed by newer values before a timeout. The timer resets on each
      * value emission.
@@ -958,6 +1050,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Drops values that are followed by newer values before a timeout. The timer resets on each
      * value emission.
@@ -993,6 +1086,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Indicates the {@link Signal} sequence by item count preassign the specified source and time.
      * </p>
@@ -1019,8 +1113,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} shifted forward in
+     * time by a specified delay at parallel thread. Error notifications from the source
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
@@ -1033,8 +1128,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} shifted forward in
+     * time by a specified delay at parallel thread. Error notifications from the source
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
@@ -1051,8 +1147,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} shifted forward in
+     * time by a specified delay at parallel thread. Error notifications from the source
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
@@ -1063,8 +1160,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} shifted forward in
+     * time by a specified delay at parallel thread. Error notifications from the source
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
@@ -1079,8 +1177,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} shifted forward in
+     * time by a specified delay at parallel thread. Error notifications from the source
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
@@ -1091,8 +1190,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} shifted forward in
+     * time by a specified delay at parallel thread. Error notifications from the source
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
@@ -1107,8 +1207,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} shifted forward in
+     * time by a specified delay at parallel thread. Error notifications from the source
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
@@ -1152,6 +1253,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits all items emitted by the source {@link Signal} that are
      * distinct from their immediate predecessors based on {@link Object#equals(Object)} comparison.
@@ -1175,6 +1277,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits all items emitted by the source {@link Signal} that are
      * distinct from their immediate predecessors, according to a key selector function and based on
@@ -1208,6 +1311,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits all items emitted by the source {@link Signal} that are
      * distinct from their immediate predecessors when compared preassign each other via the
@@ -1239,6 +1343,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
@@ -1251,6 +1356,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
@@ -1263,7 +1369,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#accept(Object)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1285,7 +1392,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#accept(Object)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1310,7 +1418,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#accept(Object)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1332,7 +1441,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#accept(Object)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1357,7 +1467,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#accept(Object)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1381,7 +1492,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect only once when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect only once when it calls
      * {@link Observer#accept(Object)}.
      *
      * @param effect The action to invoke only once when the source {@link Signal} calls
@@ -1403,7 +1515,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect only once when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect only once when it calls
      * {@link Observer#accept(Object)}.
      *
      * @param effect The action to invoke only once when the source {@link Signal} calls
@@ -1435,8 +1548,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
-     * {@link Observer#complete()}.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls {@link Observer#complete()}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#complete()}
@@ -1458,8 +1571,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
-     * {@link Observer#complete()}.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls {@link Observer#complete()}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
      *            {@link Observer#complete()}
@@ -1491,7 +1604,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Disposable#dispose()}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1516,7 +1630,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#error(Throwable)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1538,7 +1653,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#error(Throwable)}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1563,10 +1679,11 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes the given effect when it is observed
-     * from its observers. Each observation will result in an invocation of the given action except
-     * when the source {@link Signal} is reference counted, in which case the source {@link Signal}
-     * will invoke the given action for the first observation.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes the given effect when it is observed from its
+     * observers. Each observation will result in an invocation of the given action except when the
+     * source {@link Signal} is reference counted, in which case the source {@link Signal} will
+     * invoke the given action for the first observation.
      *
      * @param effect The {@link Runnable} that gets called when an {@link Observer} subscribes to
      *            the current {@link Signal}.
@@ -1583,10 +1700,11 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes the given effect when it is observed
-     * from its observers. Each observation will result in an invocation of the given action except
-     * when the source {@link Signal} is reference counted, in which case the source {@link Signal}
-     * will invoke the given action for the first observation.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes the given effect when it is observed from its
+     * observers. Each observation will result in an invocation of the given action except when the
+     * source {@link Signal} is reference counted, in which case the source {@link Signal} will
+     * invoke the given action for the first observation.
      *
      * @param effect The {@link Consumer} that gets called when an {@link Observer} subscribes to
      *            the current {@link Signal}.
@@ -1611,7 +1729,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Modifies the
+     * source {@link Signal} so that it invokes an effect when it calls
      * {@link Observer#error(Throwable)} or {@link Observer#complete()}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
@@ -1629,6 +1748,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Instructs an {@link Signal} to emit an item (returned by a specified function) rather than
      * invoking onError if it encounters an error.
@@ -1645,6 +1765,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Instructs an {@link Signal} to emit an item (returned by a specified function) rather than
      * invoking onError if it encounters an error.
@@ -1663,8 +1784,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits only the very first item emitted by the source
-     * {@link Signal}, or completes if the source {@link Signal} is empty.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits only the very first item emitted by the source {@link Signal}, or
+     * completes if the source {@link Signal} is empty.
      * 
      * @return Chainable API.
      */
@@ -1673,8 +1795,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits only the very first item emitted by the source
-     * {@link Signal}, or completes if the source {@link Signal} is empty.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits only the very first item emitted by the source {@link Signal}, or
+     * completes if the source {@link Signal} is empty.
      * 
      * @return Chainable API.
      */
@@ -1683,6 +1806,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -1700,6 +1824,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -1717,6 +1842,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -1734,6 +1860,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -1760,6 +1887,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -1780,7 +1908,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Append index (starting from 0).
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Append index
+     * (starting from 0).
      * 
      * @return Chainable API.
      */
@@ -1789,7 +1918,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Append index (starting from the specified value).
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Append index
+     * (starting from the specified value).
      * 
      * @param start A starting index number.
      * @return Chainable API.
@@ -1799,6 +1929,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Ensure the interval time for each values in {@link Signal} sequence.
      * </p>
@@ -1813,6 +1944,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Ensure the interval time for each values in {@link Signal} sequence.
      * </p>
@@ -1836,6 +1968,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
      * emitted by an {@link Signal} and emits the result.
@@ -1850,6 +1983,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
      * emitted by an {@link Signal} and emits the result.
@@ -1864,6 +1998,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
      * emitted by an {@link Signal} and emits the result.
@@ -1877,6 +2012,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
      * emitted by an {@link Signal} and emits the result.
@@ -1891,8 +2027,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is completed.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits <code>true</code> that indicates whether the source {@link Signal}
+     * is completed.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         completed.
@@ -1902,8 +2039,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} emits any value.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits <code>true</code> that indicates whether the source {@link Signal}
+     * emits any value.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} emits
      *         any value.
@@ -1913,8 +2051,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is completed preassignout any value emitted.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits <code>true</code> that indicates whether the source {@link Signal}
+     * is completed preassignout any value emitted.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         completed preassignout any value emitted.
@@ -1924,8 +2063,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is errored.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits <code>true</code> that indicates whether the source {@link Signal}
+     * is errored.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         errored.
@@ -1935,8 +2075,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is emitted, errored or completed.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits <code>true</code> that indicates whether the source {@link Signal}
+     * is emitted, errored or completed.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         emitted, errored or completed.
@@ -1946,8 +2087,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is errored or completed.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits <code>true</code> that indicates whether the source {@link Signal}
+     * is errored or completed.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         errored or completed.
@@ -1957,8 +2099,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a new {@link Signal} that invokes the mapper action in parallel thread and waits all
-     * of them until all actions are completed.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns a new
+     * {@link Signal} that invokes the mapper action in parallel thread and waits all of them until
+     * all actions are completed.
      *
      * @param mapper A mapper function.
      * @return Chainable API.
@@ -1968,8 +2111,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a new {@link Signal} that invokes the mapper action in parallel thread and waits
-     * until any single action is completed. All other actions will be cancelled.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns a new
+     * {@link Signal} that invokes the mapper action in parallel thread and waits until any single
+     * action is completed. All other actions will be cancelled.
      * 
      * @param mapper A mapper function.
      * @return Chainable API.
@@ -1979,8 +2123,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a {@link Signal} that emits the last item emitted by this {@link Signal} or completes
-     * if this {@link Signal} is empty.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns a
+     * {@link Signal} that emits the last item emitted by this {@link Signal} or completes if this
+     * {@link Signal} is empty.
      * 
      * @return Chainable API.
      */
@@ -1989,8 +2134,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a {@link Signal} that emits only the last item emitted by this {@link Signal}, or a
-     * default item if this {@link Signal} completes preassignout emitting any items.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns a
+     * {@link Signal} that emits only the last item emitted by this {@link Signal}, or a default
+     * item if this {@link Signal} completes preassignout emitting any items.
      * 
      * @return Chainable API.
      */
@@ -1999,6 +2145,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the given function to each value emitted by an
      * {@link Signal} and emits the result.
@@ -2024,6 +2171,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * {@link #map(WiseFunction)} preassign context.
      * </p>
@@ -2053,6 +2201,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the given function to each value emitted by an
      * {@link Signal} and emits the result.
@@ -2069,6 +2218,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * {@link #map(WiseFunction)} preassign previuos value.
      *
      * @param init A initial previous value.
@@ -2083,6 +2233,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the given constant to each item emitted by an
      * {@link Signal} and emits the result.
@@ -2096,6 +2247,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Flattens a sequence of {@link Signal} emitted by an {@link Signal} into one {@link Signal},
      * preassignout any transformation.
@@ -2120,6 +2272,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Flattens a sequence of {@link Signal} emitted by an {@link Signal} into one {@link Signal},
      * preassignout any transformation.
@@ -2149,8 +2302,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
-     * by the source {@link Signal} unsatisfy a condition.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits a Boolean that indicates whether all of the items emitted by the
+     * source {@link Signal} unsatisfy a condition.
      * 
      * @param condition A condition that evaluates an item and returns a Boolean.
      * @return A {@link Signal} that emits false if all items emitted by the source {@link Signal}
@@ -2163,10 +2317,12 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
+     * <link rel="stylesheet" href="main.css" type="text/css">
      * <p>
      * Switch event stream context.
      * </p>
-     * <pre class="marble-diagram">
+     * <pre class="marble">
     * ───①───②───③───④───⑤──┼
     *    ↓   ↓   ↓   ↓   ↓
     *  ┌────────────────────┐
@@ -2195,6 +2351,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Generates an {@link Signal} sequence that guarantee one item at least.
      * </p>
@@ -2206,6 +2363,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Generates an {@link Signal} sequence that guarantee one item at least.
      * </p>
@@ -2217,6 +2375,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Generates an {@link Signal} sequence that guarantee one item at least.
      * </p>
@@ -2234,7 +2393,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Helps to insert {@link Signal} chain from outside.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Helps to insert
+     * {@link Signal} chain from outside.
      * 
      * @param <O> An output type.
      * @param plug A chain builder to insert.
@@ -2245,6 +2405,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -2259,6 +2420,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -2274,6 +2436,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -2288,6 +2451,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -2328,6 +2492,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Generates an {@link Signal} sequence that repeats the given value infinitely.
      * </p>
@@ -2339,6 +2504,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Generates an {@link Signal} sequence that repeats the given value finitely.
      * </p>
@@ -2355,6 +2521,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that repeats the sequence of items emitted by the source
      * {@link Signal} until a stopper {@link Signal} emits an item.
@@ -2368,10 +2535,11 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the same values as the source signal preassign the
-     * exception of an {@link Observer#error(Throwable)}. An error notification from the source will
-     * result in the emission of a Throwable item to the {@link Signal} provided as an argument to
-     * the notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns an
+     * {@link Signal} that emits the same values as the source signal preassign the exception of an
+     * {@link Observer#error(Throwable)}. An error notification from the source will result in the
+     * emission of a Throwable item to the {@link Signal} provided as an argument to the
+     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
      * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
      * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
      * will resubscribe to the source {@link Signal}.
@@ -2385,10 +2553,11 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the same values as the source signal preassign the
-     * exception of an {@link Observer#error(Throwable)}. An error notification from the source will
-     * result in the emission of a Throwable item to the {@link Signal} provided as an argument to
-     * the notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns an
+     * {@link Signal} that emits the same values as the source signal preassign the exception of an
+     * {@link Observer#error(Throwable)}. An error notification from the source will result in the
+     * emission of a Throwable item to the {@link Signal} provided as an argument to the
+     * notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
      * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
      * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
      * will resubscribe to the source {@link Signal}.
@@ -2453,6 +2622,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Recover the source {@link Signal} infinitly on any error by the specified value.
      * </p>
@@ -2465,6 +2635,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Recover the source {@link Signal} infinitly on any error by the specified value.
      * </p>
@@ -2477,6 +2648,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Recover the source {@link Signal} finitly on any error by the specified value.
      * </p>
@@ -2494,6 +2666,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
      * error types will pass through the source {@link Signal}.
@@ -2508,6 +2681,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
      * error types will pass through the source {@link Signal}.
@@ -2522,6 +2696,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Recover the source {@link Signal} on any error by the notifier emitting values.
      * </p>
@@ -2540,6 +2715,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Recover the source {@link Signal} on the specified error by the notifier emitting values.
      * Unspecified errors will pass through the source {@link Signal}.
@@ -2585,6 +2761,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Retry the source {@link Signal} infinitely whenever any error is occured.
      * </p>
@@ -2596,6 +2773,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Retry the source {@link Signal} finitely whenever any error is occured.
      * </p>
@@ -2612,6 +2790,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Retry the source {@link Signal} whenever the specified error type is occured.
      * </p>
@@ -2624,6 +2803,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Retry the source {@link Signal} whenever any error is occured until the stopper is signaled.
      * </p>
@@ -2636,6 +2816,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Retry the source {@link Signal} whenever the specified error is occured until the stopper is
      * signaled.
@@ -2652,6 +2833,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Retry the source {@link Signal} whenever any error is occured.
      * </p>
@@ -2670,6 +2852,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Retry the source {@link Signal} when the specified error is occured. Unspecified errors will
      * pass through the source {@link Signal}.
@@ -2750,6 +2933,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Buffer all values until complete, then all buffered values are emitted in descending order.
      * </p>
@@ -2761,6 +2945,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that, when the specified sampler {@link Signal} emits an item,
      * emits the most recently emitted item (if any) emitted by the source {@link Signal} since the
@@ -2775,6 +2960,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
      * by a source {@link Signal} and a seed value, then feeds the result of that function along
@@ -2801,6 +2987,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
      * by a source {@link Signal} and a seed value, then feeds the result of that function along
@@ -2827,6 +3014,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
      * by a source {@link Signal} and a seed value, then feeds the result of that function along
@@ -2849,6 +3037,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns a new {@link Signal} that multicasts (shares) the original {@link Signal}. As long as
      * there is at least one {@link Observer} this {@link Signal} will be subscribed and emitting
@@ -2880,8 +3069,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the single element only. If this {@link Signal} has no
-     * element or too many elements, signal will complete immediately.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the single element only. If this {@link Signal} has no element or
+     * too many elements, signal will complete immediately.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         emitted, errored or completed.
@@ -2891,8 +3081,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a {@link Signal} that counts the total number of items emitted by the source
-     * {@link Signal} and emits this count as a 32-bit Integer.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns a
+     * {@link Signal} that counts the total number of items emitted by the source {@link Signal} and
+     * emits this count as a 32-bit Integer.
      * 
      * @return {@link Signal} that emits a single item: the number of items emitted by the source
      *         {@link Signal} as a 32-bit Integer item
@@ -2919,22 +3110,34 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
-     * Alias for take(condition.negate()).
+     * Bypasses a specified number of values in an {@link Signal} sequence and then returns the
+     * remaining values.
      * </p>
      *
-     * @param condition A skip condition.
+     * @param count A number of values to skip. Zero or negative number will ignore this
+     *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> skip(Predicate<? super V> condition) {
+    public final Signal<V> skip(long count) {
         // ignore invalid parameter
-        if (condition == null) {
+        if (count <= 0) {
             return this;
         }
-        return take(condition.negate());
+        return new Signal<>((observer, disposer) -> {
+            AtomicLong counter = new AtomicLong();
+
+            return to(value -> {
+                if (count < counter.incrementAndGet()) {
+                    observer.accept(value);
+                }
+            }, observer::error, observer::complete, disposer);
+        });
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Alias for skip(I.set(excludes)).
      * </p>
@@ -2951,6 +3154,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Alias for skip(v -> excludes.contains(v)).
      * </p>
@@ -2967,6 +3171,24 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
+     * <p>
+     * Alias for take(condition.negate()).
+     * </p>
+     *
+     * @param condition A skip condition.
+     * @return Chainable API.
+     */
+    public final Signal<V> skip(Predicate<? super V> condition) {
+        // ignore invalid parameter
+        if (condition == null) {
+            return this;
+        }
+        return take(condition.negate());
+    }
+
+    /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Alias for take(init, condition.negate()).
      * </p>
@@ -2983,6 +3205,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * {@link #skip(Predicate)} preassign context.
      * 
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
@@ -2999,32 +3222,22 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
-     * Bypasses a specified number of values in an {@link Signal} sequence and then returns the
-     * remaining values.
+     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
+     * given predicate.
      * </p>
      *
-     * @param count A number of values to skip. Zero or negative number will ignore this
+     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
      *            instruction.
      * @return Chainable API.
      */
-    public final Signal<V> skip(int count) {
-        // ignore invalid parameter
-        if (count <= 0) {
-            return this;
-        }
-        return new Signal<>((observer, disposer) -> {
-            AtomicInteger counter = new AtomicInteger();
-
-            return to(value -> {
-                if (count < counter.incrementAndGet()) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
-        });
+    public final Signal<V> skip(Signal<Boolean> condition) {
+        return take(condition.map(v -> !v), true);
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Bypasses a specified duration in an {@link Signal} sequence and then returns the remaining
      * values.
@@ -3040,10 +3253,10 @@ public final class Signal<V> {
         if (time <= 0 || unit == null) {
             return this;
         }
-
+    
         return new Signal<>((observer, disposer) -> {
             long timing = System.nanoTime() + unit.toNanos(time);
-
+    
             return to(value -> {
                 if (timing < System.nanoTime()) {
                     observer.accept(value);
@@ -3053,22 +3266,9 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
-     * given predicate.
-     * </p>
-     *
-     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Signal<V> skip(Signal<Boolean> condition) {
-        return take(condition.map(v -> !v), true);
-    }
-
-    /**
-     * Skip all items emitted by the source {@link Signal} and only calls
-     * {@link Observer#complete()} or {@link Observer#error(Throwable)}.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Skip all items
+     * emitted by the source {@link Signal} and only calls {@link Observer#complete()} or
+     * {@link Observer#error(Throwable)}.
      * 
      * @return An empty {@link Signal} that only calls {@link Observer#complete()} or
      *         {@link Observer#error(Throwable)}, based on which one is called by the
@@ -3079,6 +3279,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns a specified index values from the start of an {@link Signal} sequence.
      * </p>
@@ -3091,7 +3292,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Return the {@link Signal} which ignores all errors.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Return the
+     * {@link Signal} which ignores all errors.
      * 
      * @return {@link Signal} which ignores all errors.
      */
@@ -3100,7 +3302,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Return the {@link Signal} which ignores the specified error.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Return the
+     * {@link Signal} which ignores the specified error.
      * 
      * @param type A error type to ignore.
      * @return {@link Signal} which ignores the specified error.
@@ -3110,7 +3313,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Return the {@link Signal} which ignores complete event.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Return the
+     * {@link Signal} which ignores complete event.
      * 
      * @return {@link Signal} which ignores complete event.
      */
@@ -3121,6 +3325,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Alias for skip(Objects::isNull).
      * </p>
@@ -3132,33 +3337,7 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Returns an {@link Signal} sequence while the specified duration.
-     * </p>
-     *
-     * @param time Time to skip values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Signal<V> skipUntil(long time, TimeUnit unit) {
-        // ignore invalid parameters
-        if (time <= 0 || unit == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            long timing = System.nanoTime() + unit.toNanos(time);
-
-            return to(value -> {
-                if (System.nanoTime() > timing) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer);
-        });
-    }
-
-    /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * This method is equivalent to the following code.
      * </p>
@@ -3175,6 +3354,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long
      * as a specified condition holds true, but emits all further source items as soon as the
@@ -3206,6 +3386,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns the values from the source {@link Signal} sequence only after the other
      * {@link Signal} sequence produces a value.
@@ -3225,6 +3406,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long
      * as a specified condition holds true, but emits all further source items as soon as the
@@ -3240,7 +3422,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Buffer all items until complete event and then soted items will be emitted sequentially.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Buffer all items
+     * until complete event and then soted items will be emitted sequentially.
      * 
      * @param comparator
      * @return Chainable API.
@@ -3250,6 +3433,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
@@ -3271,6 +3455,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
@@ -3301,6 +3486,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
@@ -3326,6 +3512,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
@@ -3361,6 +3548,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
@@ -3382,6 +3570,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Emit <code>null</code> item before beginning to emit the items from the source
      * {@link Signal}.
@@ -3394,7 +3583,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Asynchronously subscribes {@link Observer} to this {@link Signal} on the specified scheduler.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Asynchronously
+     * subscribes {@link Observer} to this {@link Signal} on the specified scheduler.
      * 
      * @param scheduler You specify which scheduler this operator will use.
      * @return Chainable API.
@@ -3415,6 +3605,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -3448,6 +3639,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items based on applying a function that you supply to
      * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
@@ -3469,9 +3661,10 @@ public final class Signal<V> {
     }
 
     /**
-     * Return an {@link Signal} that is observed as long as the specified timing {@link Signal}
-     * indicates true. When the timing {@link Signal} returns false, the currently subscribed
-     * {@link Signal} is immediately disposed.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Return an
+     * {@link Signal} that is observed as long as the specified timing {@link Signal} indicates
+     * true. When the timing {@link Signal} returns false, the currently subscribed {@link Signal}
+     * is immediately disposed.
      *
      * @param timing A timing whether the {@link Signal} is observed or not.
      * @return Chainable API.
@@ -3495,6 +3688,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns a specified number of contiguous values from the start of an {@link Signal} sequence.
      * </p>
@@ -3512,6 +3706,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Alias for take(I.set(includes)).
      * </p>
@@ -3528,6 +3723,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Alias for take(v -> includes.contains(v)).
      * </p>
@@ -3544,6 +3740,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
      * given predicate.
@@ -3563,6 +3760,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
      * given predicate.
@@ -3582,6 +3780,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * {@link #take(Predicate)} preassign context.
      * 
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
@@ -3602,6 +3801,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
      * given predicate.
@@ -3616,6 +3816,26 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
+     * <p>
+     * Returns an {@link Signal} sequence while the specified duration.
+     * </p>
+     *
+     * @param time Time to take values. Zero or negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @return Chainable API.
+     */
+    public final Signal<V> take(long time, TimeUnit unit) {
+        // ignore invalid parameters
+        if (time <= 0 || unit == null) {
+            return this;
+        }
+        return take(() -> System.nanoTime() + unit.toNanos(time), (limit, value) -> System.nanoTime() < limit, true, true, false);
+    }
+
+    /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} consisting of the values of this {@link Signal} that match the
      * given predicate.
@@ -3643,6 +3863,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns a specified index values from the start of an {@link Signal} sequence.
      * </p>
@@ -3659,24 +3880,7 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Returns an {@link Signal} sequence while the specified duration.
-     * </p>
-     *
-     * @param time Time to take values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
-     * @return Chainable API.
-     */
-    public final Signal<V> takeUntil(long time, TimeUnit unit) {
-        // ignore invalid parameters
-        if (time <= 0 || unit == null) {
-            return this;
-        }
-        return take(() -> System.nanoTime() + unit.toNanos(time), (limit, value) -> System.nanoTime() < limit, true, true, false);
-    }
-
-    /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * This method is equivalent to the following code.
      * </p>
@@ -3694,6 +3898,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items emitted by the source {@link Signal}, checks the
      * specified predicate for each item, and then completes if the condition is satisfied.
@@ -3710,8 +3915,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} until a
-     * second {@link Signal} emits an item.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} until a second
+     * {@link Signal} emits an item.
      *
      * @param timing A {@link Signal} whose first emitted item will cause takeUntil to stop emitting
      *            items from the source {@link Signal}. <code>null</code> will ignore this.
@@ -3731,6 +3937,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that emits items emitted by the source {@link Signal}, checks the
      * specified predicate for each item, and then completes if the condition is satisfied.
@@ -3747,7 +3954,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Take operator helper.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Take operator
+     * helper.
      * 
      * @param contextSupplier
      * @param condition
@@ -3798,9 +4006,10 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
-     * emitted item. If the next item isn't emitted preassignin the specified timeout duration
-     * starting from its predecessor, the resulting Signal terminates and notifies observers of a
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns an
+     * Signal that mirrors the source Signal but applies a timeout policy for each emitted item. If
+     * the next item isn't emitted preassignin the specified timeout duration starting from its
+     * predecessor, the resulting Signal terminates and notifies observers of a
      * {@link TimeoutException}.
      * 
      * @param time Time to take values. Zero or negative number will ignore this instruction.
@@ -3813,9 +4022,10 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
-     * emitted item. If the next item isn't emitted preassignin the specified timeout duration
-     * starting from its predecessor, the resulting Signal terminates and notifies observers of a
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns an
+     * Signal that mirrors the source Signal but applies a timeout policy for each emitted item. If
+     * the next item isn't emitted preassignin the specified timeout duration starting from its
+     * predecessor, the resulting Signal terminates and notifies observers of a
      * {@link TimeoutException}.
      * 
      * @param time Time to take values. Zero or negative number will ignore this instruction.
@@ -3846,6 +4056,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by
      * an {@link Signal} and emits the result. Initial value is true.
@@ -3858,6 +4069,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by
      * an {@link Signal} and emits the result.
@@ -3871,6 +4083,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} that applies the given two constants alternately to each item
      * emitted by an {@link Signal} and emits the result.
@@ -3893,6 +4106,7 @@ public final class Signal<V> {
     }
 
     /**
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/>
      * <p>
      * Throttles by skipping values until "skipDuration" passes and then emits the next received
      * value.
@@ -3927,8 +4141,9 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at current thread. Error notifications from the source
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Returns
+     * {@link Signal} that emits the items emitted by the source {@link Signal} shifted forward in
+     * time by a specified delay at current thread. Error notifications from the source
      * {@link Signal} are not delayed.
      *
      * @param time The delay to shift the source by.
@@ -3945,7 +4160,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Create countable completer.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Create countable
+     * completer.
      * 
      * @param delgator A complete action.
      * @param count A complete count.
@@ -3968,7 +4184,8 @@ public final class Signal<V> {
     }
 
     /**
-     * Signal detection operator helper.
+     * <link rel="stylesheet" href= "http://teletha.github.io/Sinobu/javadoc.css"/> Signal detection
+     * operator helper.
      * 
      * @param emitCondition A value condition.
      * @param emitOutput A required condition output.
