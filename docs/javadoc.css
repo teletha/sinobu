@@ -1,9 +1,9 @@
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}
 
 body {
-	font-size: 11px;
+	font-size: 12px;
   font-family: 'Yu Gothic UI',sans-serif;
-  line-height: 1;
+  line-height: 1.35;
 	padding: 5px 10px;
 	margin: 0;
 	background-color: white;
@@ -15,44 +15,63 @@ img, h5 {
 }
 
 p {
-  line-height: 1.2;
 	margin: 2px 0;
 	padding: 6px 10px 6px 10px;
 	border-left: 3px solid #1f8dd6;
 }
-p:empty {
-	display: none;
+
+dl:not(dl:last-child) {
+	margin: 2px 0;
+	padding: 6px 20px;
+	border-left: 3px solid  rgb(250, 210, 50);
+	background-color: rgba(250, 210, 50, 0.1);
+}
+
+dt:not(dl:last-child dt) {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+}
+
+dd:not(dl:last-child dd) {
+  margin: 0px 0px 20px 0;
+}
+
+dd:last-child {
+	margin: 0;
 }
 
 pre {
-	font-family: 'Yu Gothic UI';
-	background-color: #f6f8fa;
 	white-space: pre;
 	margin: 2px 0;
 	padding: 12px 10px 5px 10px;
-	border-left: 3px solid #338618;
+	border-left: 3px solid rgba(250, 210, 50, 1);
+	background-color: rgba(250, 210, 50, 0.1);
 }
 
-dl {
+dl:last-child {
 	margin: 2px 0;
 	padding: 12px 0 5px 10px;
 	border-left: 3px solid #dd514c;
+	background-color: transparent;
 }
 
-dt{
+dl:last-child dt {
   float: left;
   display: block;
-  width: 75px;
-  font-weight: bold;
+  width: 70px;
   text-transform: uppercase;
+  font-size: 9px;
+  font-weight: bold;
   color: #8c3a2b;
+  padding-top: 2px;
 }
 
-dd{
-  margin: 0px 0px 15px 75px;
+dl:last-child dd {
+  margin: 0px 0px 15px 70px;
 }
 
-b {
+dl:last-child b {
 	display: block;
   border-bottom: 1px solid #ddd;
   padding-bottom: 3px;
