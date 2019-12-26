@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -3407,6 +3407,27 @@ public final class Signal<V> {
      */
     public final Signal<V> startWithNull() {
         return startWith((V) null);
+    }
+
+    /**
+     * Asynchronously subscribes {@link Observer} to this {@link Signal} on the specified scheduler.
+     * 
+     * @param scheduler You specify which scheduler this operator will use.
+     * @return Chainable API.
+     */
+    public final Signal<V> subscribeOn(Consumer<Runnable> scheduler) {
+        // ignore invalid parameters
+        if (scheduler == null) {
+            return this;
+        }
+    
+        return new Signal<>((observer, disposer) -> {
+            Disposable e = Disposable.empty();
+            scheduler.accept(() -> {
+                e.add(to(observer, disposer));
+            });
+            return e;
+        });
     }
 
     /**
