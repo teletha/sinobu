@@ -1,90 +1,12 @@
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-article,
-aside,
-canvas,
-details,
-embed,
-figure,
-figcaption,
-footer,
-header,
-hgroup,
-menu,
-nav,
-output,
-ruby,
-section,
-summary,
-time,
-mark,
-audio,
-video {
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+@import url("https://fonts.googleapis.com/css?family=Oswald:300|Teko:500&display=swap");
+
+* {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	vertical-align: baseline;
-	font-size: 12px !important; /* override default javadoc style */
-	font-family: "Yu Gothic UI", sans-serif !important; /* override default javadoc style */
+	font-size: 12px;
+	font-family: "Yu Gothic UI", sans-serif;
 	line-height: 1.35;
 }
 
@@ -94,18 +16,15 @@ body {
 	background-color: white;
 }
 
-img,
-h5 {
-	display: none;
-}
-
 p {
 	padding: 6px 10px 6px 10px;
 	margin: 2px 0;
 	border-left: 3px solid #1f8dd6;
 }
 
-dl {
+dl,
+ol,
+ul {
 	margin: 2px 0;
 	padding: 6px 20px;
 	border-left: 3px solid rgb(250, 210, 50);
@@ -115,11 +34,11 @@ dl {
 dt {
 	border-bottom: 1px solid #ddd;
 	padding-bottom: 3px;
-	margin-bottom: 3px !important; /* override default javadoc style */
+	margin-bottom: 3px;
 }
 
 dd {
-	margin: 0px 0px 20px 0 !important; /* override default javadoc style */
+	margin: 0px 0px 20px 0;
 }
 
 pre {
@@ -130,11 +49,56 @@ pre {
 	background-color: rgba(250, 210, 50, 0.1);
 }
 
+a {
+	text-decoration: none;
+}
+
+ul li {
+	list-style-type: none;
+	padding: 6px 0;
+}
+
+ul li:before {
+	font-family: Material Icons;
+	font-size: 11px;
+	content: "\e876";
+	margin: 0 4px 0 -10px;
+	display: inline-block;
+	vertical-align: bottom;
+	color: rgb(200, 160, 40);
+}
+
+h,
+h1,
+h2,
+h3,
+h4,
+h5 {
+	font-size: 18px;
+	font-family: "Oswald", sans-serif;
+	padding: 20px 0 10px 0;
+	display: block;
+}
+
+/* ==================================================== 
+ * Signature Block
+ * ==================================================== */
+dl:last-child:before {
+	font-size: 18px;
+	font-family: "Oswald", sans-serif;
+	display: block;
+	content: "Signature";
+	position: absolute;
+	top: -36px;
+	left: -3px;
+}
+
 dl:last-child {
-	margin: 2px 0;
+	margin: 58px 0;
 	padding: 12px 0 5px 10px;
 	border-left: 3px solid #dd514c;
 	background-color: transparent;
+	position: relative;
 }
 
 dl:last-child dt {
@@ -160,8 +124,4 @@ dl:last-child b {
 	margin-bottom: 3px;
 	font-weight: bold;
 	text-transform: capitalize;
-}
-
-a {
-	text-decoration: none;
 }
