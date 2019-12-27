@@ -83,8 +83,8 @@ video {
 	padding: 0;
 	border: 0;
 	vertical-align: baseline;
-	font-size: 12px;
-	font-family: "Yu Gothic UI", sans-serif !important;
+	font-size: 12px !important; /* override default javadoc style */
+	font-family: "Yu Gothic UI", sans-serif !important; /* override default javadoc style */
 	line-height: 1.35;
 }
 
@@ -115,11 +115,11 @@ dl {
 dt {
 	border-bottom: 1px solid #ddd;
 	padding-bottom: 3px;
-	margin-bottom: 3px;
+	margin-bottom: 3px !important; /* override default javadoc style */
 }
 
 dd {
-	margin: 0px 0px 20px 0;
+	margin: 0px 0px 20px 0 !important; /* override default javadoc style */
 }
 
 pre {
