@@ -16,32 +16,32 @@ body {
 	background-color: white;
 }
 
-p {
+p:not([class]) {
 	padding: 6px 10px 6px 10px;
 	margin: 2px 0;
 	border-left: 3px solid #1f8dd6;
 }
 
-dl:not(dl[class]),
-ol:not(ol[class]),
-ul:not(ul[class]) {
+dl:not([class]),
+ol:not([class]),
+ul:not([class]) {
 	margin: 2px 0;
 	padding: 6px 20px;
 	border-left: 3px solid rgb(250, 210, 50);
 	background-color: rgba(250, 210, 50, 0.1);
 }
 
-dt {
+dt:not([class]) {
 	border-bottom: 1px solid #ddd;
 	padding-bottom: 3px;
 	margin-bottom: 3px;
 }
 
-dd {
+dd:not([class]) {
 	margin: 0px 0px 20px 0;
 }
 
-pre {
+pre:not([class]) {
 	white-space: pre;
 	margin: 2px 0;
 	padding: 12px 10px 5px 10px;
@@ -49,16 +49,16 @@ pre {
 	background-color: rgba(250, 210, 50, 0.1);
 }
 
-a {
+a:not([class]) {
 	text-decoration: none;
 }
 
-ul li {
+ul:not([class]) li {
 	list-style-type: none;
 	padding: 6px 0;
 }
 
-ul li:before {
+ul:not([class]) li:before {
 	font-family: Material Icons;
 	font-size: 11px;
 	content: "\e876";
