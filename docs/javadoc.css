@@ -22,9 +22,9 @@ p {
 	border-left: 3px solid #1f8dd6;
 }
 
-dl,
-ol,
-ul {
+dl:not(dl[class]),
+ol:not(ol[class]),
+ul:not(ul[class]) {
 	margin: 2px 0;
 	padding: 6px 20px;
 	border-left: 3px solid rgb(250, 210, 50);
