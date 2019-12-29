@@ -91,6 +91,16 @@ class XMLManipulationTest {
     }
 
     @Test
+    void afterRoot() {
+        String xml = "<m/>";
+
+        XML e = I.xml(xml);
+        e.after("<after/>");
+
+        assert e.next().name().equals("after");
+    }
+
+    @Test
     void afterText() {
         String xml = "<m><P/><Q/></m>";
 
