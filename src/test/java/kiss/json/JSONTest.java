@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -38,9 +38,6 @@ import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
 
-/**
- * @version 2018/10/04 21:48:35
- */
 class JSONTest {
 
     @Test
@@ -399,15 +396,15 @@ class JSONTest {
         public List<Animal> member = new ArrayList();
     }
 
-    private static abstract class Animal {
+    static abstract class Animal {
         public String name;
     }
 
-    private static class Dog extends Animal {
+    static class Dog extends Animal {
         public int size;
     }
 
-    private static class Cat extends Animal {
+    static class Cat extends Animal {
         public int weight;
     }
 
