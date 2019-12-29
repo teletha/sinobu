@@ -1159,6 +1159,7 @@ public class XML implements Iterable<XML> {
                 // =====================
                 // ignore doctype and pi
                 next(">");
+                nextSpace();
             } else if (test("</")) {
                 // =====================
                 // End Element
@@ -1280,7 +1281,6 @@ public class XML implements Iterable<XML> {
                     pos--;
                 }
             }
-            nextSpace();
         }
 
         this.nodes = convert(xml.doc.getChildNodes());
