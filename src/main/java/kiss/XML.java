@@ -696,6 +696,17 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
+     * Write this element to the specified output with the simple format option.
+     * </p>
+     * 
+     * @param output An output channel.
+     */
+    public void to(Appendable output) {
+        to(output, "\t");
+    }
+
+    /**
+     * <p>
      * Write this element to the specified output with your format settings.
      * </p>
      * 
@@ -808,7 +819,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        to(builder, "\t");
+        to(builder);
 
         return builder.toString().trim();
     }
