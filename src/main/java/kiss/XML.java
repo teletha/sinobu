@@ -735,7 +735,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     private boolean to(Node node, Appendable output, String indent, int level, boolean block, Set<String> inlines) {
         try {
             if (node.getNodeType() != Node.ELEMENT_NODE) {
-                output.append(node.getTextContent());
+                output.append(escape(node.getTextContent()));
                 return false;
             }
 
@@ -750,7 +750,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             NamedNodeMap attrs = node.getAttributes();
             for (int i = 0; i < attrs.getLength(); i++) {
                 Attr attr = (Attr) attrs.item(i);
-                output.append(' ').append(attr.getName()).append("=\"").append(attr.getValue()).append('"');
+                output.append(' ').append(attr.getName()).append("=\"").append(escape(attr.getValue())).append('"');
             }
 
             NodeList children = node.getChildNodes();
@@ -773,6 +773,32 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         } catch (Exception e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * Escape XML special characters.
+     * 
+     * @param s A target literal.
+     * @return
+     */
+    private String escape(String s) {
+        StringBuilder o = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+            case '"':
+            case '\'':
+            case '<':
+            case '>':
+            case '&':
+                o.append("&#").append((int) c).append(';');
+                break;
+            default:
+                o.append(c);
+                break;
+            }
+        }
+        return o.toString();
     }
 
     /**
