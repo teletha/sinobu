@@ -18,9 +18,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import antibug.CleanRoom;
 import kiss.I;
 
-/**
- * @version 2018/11/11 10:35:38
- */
 class WriteTest {
 
     @RegisterExtension
@@ -29,7 +26,7 @@ class WriteTest {
     @Test
     void xml() throws Exception {
         Path file = room.locateFile("test.xml");
-        I.xml("root").to(Files.newBufferedWriter(file));
+        I.xml("root").to(Files.newBufferedWriter(file), "");
 
         assert Files.exists(file);
         assert Files.size(file) != 0;

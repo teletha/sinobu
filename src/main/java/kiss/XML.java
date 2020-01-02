@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -29,16 +30,14 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.w3c.dom.DOMConfiguration;
+import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
 
 public class XML implements Iterable<XML>, Consumer<XML> {
 
@@ -697,26 +696,82 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
-     * Write this elements to the specified output.
+     * Write this element to the specified output with your format settings.
      * </p>
-     *
-     * @param output A output channel.
+     * 
+     * @param output An output channel.
+     * @param indent Specify the indentation string to use when formatting. If null is specified,
+     *            formatting will not be performed.
+     * @param inlineAndNonEmpty At the time of formatting, the element with the specified name is
+     *            regarded as an inline element, and line breaks and indentation are not performed
+     *            on the surrounding elements. Also, if an element whose name starts with "&" is
+     *            specified, it will not be treated as an empty element and will always have a start
+     *            tag and end tag.
      */
-    public void to(Appendable output) {
+    public void to(Appendable output, String indent, String... inlineAndNonEmpty) {
+        for (Node node : nodes) {
+            to(node, output, indent, 0, true, Set.of(inlineAndNonEmpty));
+        }
+        I.quiet(output);
+    }
+
+    /**
+     * Serialize DOM with your pretty format.
+     * 
+     * 
+     * @param node A target {@link Node} to serialize.
+     * @param output An output channel.
+     * @param indent Specify the indentation string to use when formatting. If null is specified,
+     *            formatting will not be performed.
+     * @param level A current indent level.
+     * @param block Indicates whether the previous element is a block element.
+     * @param inlines At the time of formatting, the element with the specified name is regarded as
+     *            an inline element, and line breaks and indentation are not performed on the
+     *            surrounding elements. Also, if an element whose name starts with "&" is specified,
+     *            it will not be treated as an empty element and will always have a start tag and
+     *            end tag.
+     * @return Indicates whether the current element is a block element.
+     */
+    private boolean to(Node node, Appendable output, String indent, int level, boolean block, Set<String> inlines) {
         try {
-            LSSerializer writer = ((DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS"))
-                    .createLSSerializer();
-
-            DOMConfiguration config = writer.getDomConfig();
-            config.setParameter("format-pretty-print", Boolean.TRUE);
-            config.setParameter("xml-declaration", Boolean.FALSE);
-
-            for (Node node : nodes) {
-                output.append(writer.writeToString(node));
+            if (node.getNodeType() != Node.ELEMENT_NODE) {
+                output.append(node.getTextContent());
+                return false;
             }
 
-            // flush and close if needed
-            I.quiet(output);
+            Element e = (Element) node;
+            String name = e.getTagName();
+            boolean isBlock = !inlines.contains(name);
+
+            if (block && isBlock) {
+                output.append("\r\n").append(indent.repeat(level));
+            }
+            output.append("<").append(name);
+
+            NamedNodeMap attrs = node.getAttributes();
+            for (int i = 0; i < attrs.getLength(); i++) {
+                Attr attr = (Attr) attrs.item(i);
+                output.append(" ").append(attr.getName()).append("=\"").append(attr.getValue()).append("\"");
+            }
+
+            NodeList children = node.getChildNodes();
+
+            if (children.getLength() == 0 && !inlines.contains("#" + name)) {
+                output.append("/>");
+            } else {
+                output.append(">");
+
+                for (int i = 0; i < children.getLength(); i++) {
+                    Node child = children.item(i);
+                    block = to(child, output, indent, level + 1, isBlock, inlines);
+                }
+
+                if (block) {
+                    output.append("\r\n").append(indent.repeat(level));
+                }
+                output.append("</").append(name).append(">");
+            }
+            return isBlock;
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -729,7 +784,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        to(builder);
+        to(builder, "\t");
 
         return builder.toString().trim();
     }
@@ -978,12 +1033,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                                     .append("']");
                             break;
 
-                        case '|':
-                            // [att|=val]
-                            //
-                            // Represents an element with the att attribute, its value either
-                            // being exactly "val" or beginning with "val" immediately followed
-                            // by "-" (U+002D).
+                        case '|':// [att|=val]//// Represents an element with the att attribute, its
+                                 // value either// being exactly "val" or beginning with "val"
+                                 // immediately followed// by "-" (U+002D).
                             break;
                         }
                     }
