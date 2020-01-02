@@ -74,7 +74,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * {@inheritDoc}
+     * Inserts this XML as a child element for the specified parent element.
+     * 
+     * @param parent A parent element.
      */
     @Override
     public void accept(XML parent) {
