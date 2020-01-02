@@ -710,7 +710,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      */
     public void to(Appendable output, String indent, String... inlineAndNonEmpty) {
         for (Node node : nodes) {
-            to(node, output, indent, 0, true, Set.of(inlineAndNonEmpty));
+            to(node, output, indent, 0, false, Set.of(inlineAndNonEmpty));
         }
         I.quiet(output);
     }
@@ -744,7 +744,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             boolean isBlock = !inlines.contains(name);
 
             if (block && isBlock) {
-                output.append("\r\n").append(indent.repeat(level));
+                if (indent != null) output.append("\r\n").append(indent.repeat(level));
             }
             output.append("<").append(name);
 
@@ -756,7 +756,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
             NodeList children = node.getChildNodes();
 
-            if (children.getLength() == 0 && !inlines.contains("#" + name)) {
+            if (children.getLength() == 0 && !inlines.contains("&" + name)) {
                 output.append("/>");
             } else {
                 output.append(">");
@@ -767,7 +767,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 }
 
                 if (block) {
-                    output.append("\r\n").append(indent.repeat(level));
+                    if (indent != null) output.append("\r\n").append(indent.repeat(level));
                 }
                 output.append("</").append(name).append(">");
             }
