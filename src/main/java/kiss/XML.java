@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +40,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
-public class XML implements Iterable<XML> {
+public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * Original pattern.
@@ -74,6 +75,14 @@ public class XML implements Iterable<XML> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void accept(XML parent) {
+        parent.append(this);
+    }
+
+    /**
      * <p>
      * Insert content, specified by the parameter, to the end of each element in the set of matched
      * elements.
@@ -86,7 +95,7 @@ public class XML implements Iterable<XML> {
         Node n = convert(I.xml(doc, xml));
 
         for (Node node : nodes) {
-            node.appendChild(n.cloneNode(true));
+            node.appendChild(nodes.size() == 1 ? n : n.cloneNode(true));
         }
 
         // API definition
@@ -106,7 +115,7 @@ public class XML implements Iterable<XML> {
         Node n = convert(I.xml(doc, xml));
 
         for (Node node : nodes) {
-            node.insertBefore(n.cloneNode(true), node.getFirstChild());
+            node.insertBefore(nodes.size() == 1 ? n : n.cloneNode(true), node.getFirstChild());
         }
 
         // API definition
@@ -126,7 +135,7 @@ public class XML implements Iterable<XML> {
         Node n = convert(I.xml(doc, xml));
 
         for (Node node : nodes) {
-            node.getParentNode().insertBefore(n.cloneNode(true), node);
+            node.getParentNode().insertBefore(nodes.size() == 1 ? n : n.cloneNode(true), node);
         }
 
         // API definition
@@ -146,7 +155,7 @@ public class XML implements Iterable<XML> {
         Node n = convert(I.xml(doc, xml));
 
         for (Node node : nodes) {
-            node.getParentNode().insertBefore(n.cloneNode(true), node.getNextSibling());
+            node.getParentNode().insertBefore(nodes.size() == 1 ? n : n.cloneNode(true), node.getNextSibling());
         }
 
         // API definition
@@ -204,7 +213,7 @@ public class XML implements Iterable<XML> {
         XML element = I.xml(doc, xml);
 
         for (XML e : this) {
-            e.wrapAll(element);
+            e.wrapAll(element.clone());
         }
 
         // API definition
