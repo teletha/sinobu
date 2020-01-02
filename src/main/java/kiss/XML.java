@@ -739,37 +739,35 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 return false;
             }
 
-            Element e = (Element) node;
-            String name = e.getTagName();
+            String name = ((Element) node).getTagName();
             boolean isBlock = !inlines.contains(name);
 
             if (block && isBlock) {
                 if (indent != null) output.append("\r\n").append(indent.repeat(level));
             }
-            output.append("<").append(name);
+            output.append('<').append(name);
 
             NamedNodeMap attrs = node.getAttributes();
             for (int i = 0; i < attrs.getLength(); i++) {
                 Attr attr = (Attr) attrs.item(i);
-                output.append(" ").append(attr.getName()).append("=\"").append(attr.getValue()).append("\"");
+                output.append(' ').append(attr.getName()).append("=\"").append(attr.getValue()).append('"');
             }
 
             NodeList children = node.getChildNodes();
 
-            if (children.getLength() == 0 && !inlines.contains("&" + name)) {
+            if (children.getLength() == 0 && !inlines.contains("&".concat(name))) {
                 output.append("/>");
             } else {
-                output.append(">");
+                output.append('>');
 
                 for (int i = 0; i < children.getLength(); i++) {
-                    Node child = children.item(i);
-                    block = to(child, output, indent, level + 1, isBlock, inlines);
+                    block = to(children.item(i), output, indent, level + 1, isBlock, inlines);
                 }
 
-                if (block) {
-                    if (indent != null) output.append("\r\n").append(indent.repeat(level));
+                if (block && indent != null) {
+                    output.append("\r\n").append(indent.repeat(level));
                 }
-                output.append("</").append(name).append(">");
+                output.append("</").append(name).append('>');
             }
             return isBlock;
         } catch (Exception e) {
