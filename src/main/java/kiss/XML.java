@@ -731,7 +731,6 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     /**
      * Serialize DOM with your pretty format.
      * 
-     * 
      * @param node A target {@link Node} to serialize.
      * @param output An output channel.
      * @param indent Specify the indentation string to use when formatting. If null is specified,
@@ -1371,7 +1370,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 // =====================
                 // Text
                 // =====================
-                xml.append(xml.doc.createTextNode(next("<")));
+                String text = next("<");
+
+                if (xml.nodes.size() == 1 && xml.nodes.get(0).getNodeType() == Node.DOCUMENT_NODE) {
+                    // Ignore the text node directly below the document.
+                } else {
+                    xml.append(xml.doc.createTextNode(text));
+                }
 
                 // If the current positon is not end of document, we should continue to parse
                 // next elements. So rollback position(1) for the "<" next start element.

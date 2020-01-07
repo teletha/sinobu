@@ -189,6 +189,22 @@ class XMLParserTest {
     }
 
     @Test
+    void doctypeWithComment() {
+        XML xml = I.xml("<!DOCTYPE html><!-- comment --><html><head/></html>");
+
+        assert xml.find("head").size() == 1;
+        assert xml.parent().text().length() == 0;
+    }
+
+    @Test
+    void doctypeWithCommentAndWhitespace() {
+        XML xml = I.xml("<!DOCTYPE html> <!-- comment --> <html><head/></html>");
+
+        assert xml.find("head").size() == 1;
+        assert xml.parent().text().length() == 0;
+    }
+
+    @Test
     void doctypeWith() {
         XML xml = I.xml("<!DOCTYPE html  \"-//W3C//DTD XHTML 1.0 Transitional//EN\"><html><head/></html>");
 
