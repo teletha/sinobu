@@ -371,11 +371,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @param names Space separated class name list.
      * @return Chainable API.
      */
-    public XML addClass(String names) {
+    public XML addClass(String... names) {
         for (XML e : this) {
             String value = " ".concat(e.attr("class")).concat(" ");
 
-            for (String name : names.split(" ")) {
+            for (String name : names) {
                 if (!value.contains(" ".concat(name).concat(" "))) {
                     value = value.concat(name).concat(" ");
                 }
@@ -402,11 +402,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @param names Space separated class name list.
      * @return Chainable API.
      */
-    public XML removeClass(String names) {
+    public XML removeClass(String... names) {
         for (XML e : this) {
             String value = " ".concat(e.attr("class")).concat(" ");
 
-            for (String name : names.split(" ")) {
+            for (String name : names) {
                 value = value.replace(" ".concat(name).concat(" "), " ");
             }
             e.attr("class", value.trim());

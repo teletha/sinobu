@@ -261,14 +261,14 @@ class XMLManipulationTest {
         assert I.xml("<a/>").addClass("add").attr("class").equals("add");
         assert I.xml("<a class='base'/>").addClass("add").attr("class").equals("base add");
         assert I.xml("<a class='base'/>").addClass("base").attr("class").equals("base");
-        assert I.xml("<a class='base'/>").addClass("add base ad").attr("class").equals("base add ad");
+        assert I.xml("<a class='base'/>").addClass("add", "base", "ad").attr("class").equals("base add ad");
     }
 
     @Test
     void removeClass() {
         assert I.xml("<a class='base'/>").removeClass("base").attr("class").equals("");
         assert I.xml("<a class='one two'/>").removeClass("one").attr("class").equals("two");
-        assert I.xml("<a class='one two'/>").removeClass("on two one").attr("class").equals("");
+        assert I.xml("<a class='one two'/>").removeClass("on", "two", "one").attr("class").equals("");
     }
 
     @Test
