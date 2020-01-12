@@ -2547,7 +2547,7 @@ public final class Signal<V> {
      *            complete or error, aborting the retry.
      * @return Chainable API
      */
-    public final Signal<V> repeatWhen(WiseFunction<Signal<? extends Object>, Signal<?>> notifier) {
+    public final Signal<V> repeatWhen(WiseFunction<Signal<?>, Signal<?>> notifier) {
         return repeatWhen(notifier, false);
     }
 
@@ -2565,7 +2565,7 @@ public final class Signal<V> {
      *            complete or error, aborting the retry.
      * @return Chainable API
      */
-    private Signal<V> repeatWhen(Function<Signal<? extends Object>, Signal<?>> notifier, boolean immediate) {
+    private Signal<V> repeatWhen(Function<Signal<?>, Signal<?>> notifier, boolean immediate) {
         // ignore invalid parameter
         if (notifier == null) {
             return this;
