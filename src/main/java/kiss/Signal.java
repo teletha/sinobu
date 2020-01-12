@@ -58,7 +58,6 @@ import java.util.stream.Collector;
  * The {@link Signal} class that implements the Reactive Pattern. This class provides methods for
  * subscribing to the {@link Signal} as well as delegate methods to the various observers.
  * </p>
- * 
  * <p>
  * In Reactive Pattern an observer subscribes to a {@link Signal}. Then that observer reacts to
  * whatever item or sequence of items the {@link Signal} emits. This pattern facilitates concurrent
@@ -66,12 +65,10 @@ import java.util.stream.Collector;
  * objects, but instead it creates a sentry in the form of an observer that stands ready to react
  * appropriately at whatever future time the {@link Signal} does so.
  * </p>
- * 
  * <p>
  * The subscribe method is how you connect an {@link Observer} to a {@link Signal}. Your
  * {@link Observer} implements some subset of the following methods:
  * </p>
- * 
  * <dl>
  * <dt>{@link Observer#accept(Object)}</dt>
  * <dd>A {@link Signal} calls this method whenever the {@link Signal} emits an item. This method
@@ -986,7 +983,9 @@ public final class Signal<V> {
 
             Subscriber end = countable(observer, 1);
 
-            return index().to(indexed -> {
+            return
+
+            index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
@@ -2710,7 +2709,7 @@ public final class Signal<V> {
      * @param notifier An error notifier to define recovering flow.
      * @return Chainable API
      */
-    public final Signal<V> recoverWhen(WiseFunction<Signal<? extends Throwable>, Signal<V>> notifier) {
+    public final <E extends Throwable> Signal<V> recoverWhen(WiseFunction<Signal<E>, Signal<V>> notifier) {
         return recoverWhen(null, notifier);
     }
 
@@ -2731,7 +2730,7 @@ public final class Signal<V> {
      * @param notifier An error notifier to define recovering flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> recoverWhen(Class<E> type, WiseFunction<Signal<? extends E>, Signal<V>> notifier) {
+    public final <E extends Throwable> Signal<V> recoverWhen(Class<E> type, WiseFunction<Signal<E>, Signal<V>> notifier) {
         // ignore invalid parameter
         if (notifier == null) {
             return this;
