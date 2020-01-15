@@ -771,12 +771,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 output.append("/>");
             } else {
                 output.append('>');
+                int s = children.getLength();
 
-                for (int i = 0; i < children.getLength(); i++) {
+                for (int i = 0; i < s; i++) {
                     block = to(children.item(i), output, indent, level + 1, isBlock, inlines);
                 }
 
-                if (block && indent != null) {
+                if (block && indent != null && s != 0) {
                     output.append("\r\n").append(indent.repeat(level));
                 }
                 output.append("</").append(name).append('>');
