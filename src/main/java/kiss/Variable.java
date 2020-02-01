@@ -164,6 +164,16 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
+     * Fix this value as immutable.
+     * 
+     * @return Chainable API.
+     */
+    public final Variable<V> fix() {
+        fix = true;
+        return this;
+    }
+
+    /**
      * <p>
      * Perform the specified action if the value is present.
      * </p>
@@ -292,8 +302,25 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public final V setIf(Predicate<V> condition, V value) {
-        return assign(condition, value, false);
+    public synchronized final V setIf(Predicate<V> condition, V value) {
+        V prev = v;
+
+        if (fix == false && (condition == null || is(condition))) {
+            if (adjuster != null) {
+                value = adjuster.apply(value);
+            }
+
+            try {
+                set.invoke(this, value);
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+
+            if (signaling != null) {
+                signaling.accept(v);
+            }
+        }
+        return prev;
     }
 
     /**
@@ -319,7 +346,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public final V setIf(Predicate<V> condition, Supplier<V> value) {
-        return assign(condition, of(value).v, false);
+        return setIf(condition, of(value).v);
     }
 
     /**
@@ -333,139 +360,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     public final V setIf(Predicate<V> condition, UnaryOperator<V> value) {
         return setIf(condition, value == null ? null : value.apply(v));
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V let(V value) {
-        return letIf(null, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value.
-     * </p>
-     *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V let(Optional<V> value) {
-        return letIf(null, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value.
-     * </p>
-     *
-     * @param value A value generator.
-     * @return A previous value.
-     */
-    public final V let(Supplier<V> value) {
-        return letIf(null, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value.
-     * </p>
-     *
-     * @param value A value generator.
-     * @return A previous value.
-     */
-    public final V let(UnaryOperator<V> value) {
-        return letIf(null, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V letIf(Predicate<V> condition, V value) {
-        return assign(condition, value, true);
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V letIf(Predicate<V> condition, Optional<V> value) {
-        return letIf(condition, of(value));
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V letIf(Predicate<V> condition, Supplier<V> value) {
-        return letIf(condition, of(value).v);
-    }
-
-    /**
-     * <p>
-     * Assign the new immutable value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V letIf(Predicate<V> condition, UnaryOperator<V> value) {
-        return letIf(condition, value == null ? null : value.apply(v));
-    }
-
-    /**
-     * <p>
-     * Assign the new value if we can.
-     * </p>
-     * 
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @param let A state of let or set.
-     * @return A previous value.
-     */
-    private synchronized V assign(Predicate<V> condition, V value, boolean let) {
-        V prev = v;
-
-        if (fix == false && (condition == null || is(condition))) {
-            if (adjuster != null) {
-                value = adjuster.apply(value);
-            }
-
-            if (let) fix = true;
-
-            try {
-                set.invoke(this, value);
-            } catch (Throwable e) {
-                throw I.quiet(e);
-            }
-
-            if (signaling != null) {
-                signaling.accept(v);
-            }
-        }
-        return prev;
     }
 
     /**

@@ -222,55 +222,6 @@ class VariableTest {
     }
 
     @Test
-    void let() {
-        assert string.let("immutable").equals("value");
-        assert string.set("failed").equals("immutable");
-        assert string.let("failed").equals("immutable");
-    }
-
-    @Test
-    void letNull() {
-        assert string.let((String) null).equals("value");
-        assert string.set("failed") == null;
-        assert string.let("failed") == null;
-    }
-
-    @Test
-    void letIf() {
-        assert string.letIf(I.reject(), "rejected").equals("value");
-
-        assert string.letIf(I.accept(), "accepted").equals("value");
-        assert string.letIf(I.accept(), "failed").equals("accepted");
-        assert string.letIf(I.accept(), "failed").equals("accepted");
-    }
-
-    @Test
-    void letIfNull() {
-        assert string.letIf(I.reject(), (String) null).equals("value");
-        assert string.setIf(I.reject(), "rejected").equals("value");
-        assert string.letIf(I.reject(), "rejected").equals("value");
-
-        assert string.letIf(I.accept(), (String) null).equals("value");
-        assert string.setIf(I.accept(), "failed") == null;
-        assert string.letIf(I.accept(), "failed") == null;
-    }
-
-    @Test
-    void letSupplier() {
-        Supplier<String> updater = () -> "supplied";
-        assert string.let(updater).equals("value");
-        assert string.let(updater).equals("supplied");
-    }
-
-    @Test
-    void letNullSupplier() {
-        Supplier<String> updater = null;
-        assert string.let(updater).equals("value");
-        assert string.let(() -> "failed") == null;
-        assert string.let(() -> "failed") == null;
-    }
-
-    @Test
     void or() {
         assert empty.or("text").equals("text");
         assert string.or("text").equals("value");
@@ -378,5 +329,16 @@ class VariableTest {
 
         // reject null
         assertThrows(NullPointerException.class, () -> min.set((String) null));
+    }
+
+    @Test
+    void fix() {
+        Variable<String> var = Variable.empty();
+        var.set("change");
+        assert var.is("change");
+
+        var.fix();
+        var.set("fail");
+        assert var.is("change");
     }
 }

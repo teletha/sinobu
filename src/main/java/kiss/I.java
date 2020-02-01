@@ -1463,7 +1463,7 @@ public class I {
      */
     public static <Param1, Param2> WiseBiConsumer<Param1, Param2> recurse(WiseTriConsumer<WiseBiConsumer<Param1, Param2>, Param1, Param2> function) {
         Variable<WiseBiConsumer<Param1, Param2>> ref = Variable.empty();
-        ref.let(function.bindLazily(ref));
+        ref.set(function.bindLazily(ref));
         return ref.v;
     }
 
@@ -1482,7 +1482,7 @@ public class I {
      */
     public static <Param1, Param2, Return> WiseBiFunction<Param1, Param2, Return> recurse(WiseTriFunction<WiseBiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
         Variable<WiseBiFunction<Param1, Param2, Return>> ref = Variable.empty();
-        ref.let(function.bindLazily(ref));
+        ref.set(function.bindLazily(ref));
         return ref.v;
     }
 
@@ -1503,7 +1503,7 @@ public class I {
      */
     public static <Param> WiseConsumer<Param> recurse(WiseBiConsumer<WiseConsumer<Param>, Param> function) {
         Variable<WiseConsumer<Param>> ref = Variable.empty();
-        ref.let(function.bindLazily(ref));
+        ref.set(function.bindLazily(ref));
         return ref.v;
     }
 
@@ -1522,7 +1522,7 @@ public class I {
      */
     public static <Param, Return> WiseFunction<Param, Return> recurse(WiseBiFunction<WiseFunction<Param, Return>, Param, Return> function) {
         Variable<WiseFunction<Param, Return>> ref = Variable.empty();
-        ref.let(function.bindLazily(ref));
+        ref.set(function.bindLazily(ref));
         return ref.v;
     }
 
@@ -1541,7 +1541,7 @@ public class I {
      */
     public static WiseRunnable recurse(WiseConsumer<WiseRunnable> function) {
         Variable<WiseRunnable> ref = Variable.empty();
-        ref.let(function.bindLazily(ref));
+        ref.set(function.bindLazily(ref));
         return ref.v;
     }
 
@@ -1560,7 +1560,7 @@ public class I {
      */
     public static <Result> WiseSupplier<Result> recurse(WiseFunction<WiseSupplier<Result>, Result> function) {
         Variable<WiseSupplier<Result>> ref = Variable.empty();
-        ref.let(function.bindLazily(ref));
+        ref.set(function.bindLazily(ref));
         return ref.v;
     }
 
