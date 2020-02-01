@@ -11,16 +11,14 @@ package kiss;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2014/07/19 0:51:19
- */
-public class DisposableTest {
+class DisposableTest {
 
     @Test
-    public void and() throws Exception {
+    void disposeAnd() {
         Task task1 = new Task();
         Task task2 = new Task();
         Disposable composed = task1.add(task2);
+        assert task1 == composed;
 
         assert task1.executed == false;
         assert task2.executed == false;
@@ -30,8 +28,38 @@ public class DisposableTest {
         assert task2.executed == true;
     }
 
+    @Test
+    void disposeSub() {
+        Task task1 = new Task();
+        Task task2 = new Task();
+        Disposable child = task1.sub().add(task2);
+        assert task1 != child;
+
+        assert task1.executed == false;
+        assert task2.executed == false;
+
+        task1.dispose();
+        assert task1.executed == true;
+        assert task2.executed == true;
+    }
+
+    @Test
+    void disposeSubOnly() {
+        Task task1 = new Task();
+        Task task2 = new Task();
+        Disposable child = task1.sub().add(task2);
+        assert task1 != child;
+
+        assert task1.executed == false;
+        assert task2.executed == false;
+
+        child.dispose();
+        assert task1.executed == false;
+        assert task2.executed == true;
+    }
+
     /**
-     * @version 2014/01/31 16:41:02
+     * 
      */
     private static class Task implements Disposable {
 
