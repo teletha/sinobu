@@ -935,7 +935,7 @@ public class I {
 
     /**
      * <p>
-     * Load all {@link Extensible} typs from the specified source.
+     * Load all {@link Extensible} types from the specified source.
      * </p>
      * <p>
      * You can create the special service loader file "META-INF/services/kiss.Extensible" which
@@ -957,7 +957,7 @@ public class I {
 
     /**
      * <p>
-     * Load all {@link Extensible} typs from the specified source.
+     * Load all {@link Extensible} types from the specified source.
      * </p>
      * <p>
      * You can create the special service loader file "META-INF/services/kiss.Extensible" which
