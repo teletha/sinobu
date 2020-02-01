@@ -45,8 +45,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /** The observer */
     Signaling<V> signaling;
 
-    /** The adjuster. */
-    private volatile Function<V, V> adjuster;
+    /** The value interceptor. */
+    private volatile WiseBiFunction<V, V, V> interceptor;
 
     /**
      * Hide constructor.
@@ -306,8 +306,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
         V prev = v;
 
         if (fix == false && (condition == null || is(condition))) {
-            if (adjuster != null) {
-                value = adjuster.apply(value);
+            if (interceptor != null) {
+                value = interceptor.apply(this.v, value);
             }
 
             try {
@@ -363,26 +363,14 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * Set requirment of this {@link Variable}.
+     * Intercept the value modification.
      * 
-     * @param adjuster
+     * @param interceptor A interceptor for value modification. First parameter is the current
+     *            value, Second parameter is the new value.
      * @return Chainable API.
      */
-    public final Variable<V> adjust(Function<V, V> adjuster) {
-        this.adjuster = adjuster;
-        return this;
-    }
-
-    /**
-     * Set requirment of this {@link Variable}.
-     * 
-     * @param requirement
-     * @return Chainable API.
-     */
-    public final Variable<V> require(Predicate<V> requirement) {
-        if (requirement != null) {
-            adjust(v -> requirement.test(v) ? v : this.v);
-        }
+    public final Variable<V> intercept(WiseBiFunction<V, V, V> interceptor) {
+        this.interceptor = interceptor;
         return this;
     }
 

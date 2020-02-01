@@ -306,8 +306,8 @@ class VariableTest {
     }
 
     @Test
-    void adjust() {
-        Variable<String> upper = Variable.<String> empty().adjust(String::toUpperCase);
+    void intercept() {
+        Variable<String> upper = Variable.<String> empty().intercept((o, n) -> n.toUpperCase());
         upper.set("lower");
         assert upper.get().equals("LOWER");
 
@@ -317,7 +317,9 @@ class VariableTest {
 
     @Test
     void require() {
-        Variable<String> min = Variable.<String> empty().require(v -> v.length() <= 4);
+        Variable<String> min = Variable.<String> empty().intercept((o, n) -> {
+            return n.length() <= 4 ? n : o;
+        });
         min.set("ok");
         assert min.get().equals("ok");
 
