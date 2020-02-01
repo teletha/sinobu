@@ -22,13 +22,7 @@ public class Signaling<V> implements Observer<V> {
     final CopyOnWriteArrayList<Observer<? super V>> observers = new CopyOnWriteArrayList();
 
     /** The exposed interface. */
-    public final Signal<V> expose = new Signal<>((observer, disposer) -> {
-        observers.add(observer);
-
-        return disposer.add(() -> {
-            observers.remove(observer);
-        });
-    });
+    public final Signal<V> expose = new Signal(observers);
 
     /**
      * {@inheritDoc}
