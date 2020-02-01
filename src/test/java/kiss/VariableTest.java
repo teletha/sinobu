@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -195,33 +193,6 @@ class VariableTest {
     }
 
     @Test
-    void setIf() {
-        assert string.setIf(I.reject(), "change").equals("value");
-        assert string.setIf(I.reject(), () -> "supply").equals("value");
-        assert string.setIf(I.reject(), current -> current + " update").equals("value");
-        assert string.setIf(I.reject(), Optional.of("optional")).equals("value");
-        assert string.setIf(I.reject(), Variable.of("variable")).equals("value");
-        assert string.is("value");
-
-        assert string.setIf(I.accept(), "change").equals("value");
-        assert string.setIf(I.accept(), () -> "supply").equals("change");
-        assert string.setIf(I.accept(), current -> current + " update").equals("supply");
-        assert string.setIf(I.accept(), Optional.of("optional")).equals("supply update");
-        assert string.setIf(I.accept(), Variable.of("variable")).equals("optional");
-        assert string.is("variable");
-    }
-
-    @Test
-    void setIfNullCondition() {
-        assert string.setIf(null, "change").equals("value");
-        assert string.setIf(null, () -> "supply").equals("change");
-        assert string.setIf(null, current -> current + " update").equals("supply");
-        assert string.setIf(null, Optional.of("optional")).equals("supply update");
-        assert string.setIf(null, Variable.of("variable")).equals("optional");
-        assert string.is("variable");
-    }
-
-    @Test
     void or() {
         assert empty.or("text").equals("text");
         assert string.or("text").equals("value");
@@ -310,9 +281,6 @@ class VariableTest {
         Variable<String> upper = Variable.<String> empty().intercept((o, n) -> n.toUpperCase());
         upper.set("lower");
         assert upper.get().equals("LOWER");
-
-        // reject null
-        assertThrows(NullPointerException.class, () -> upper.set((String) null));
     }
 
     @Test
@@ -328,9 +296,6 @@ class VariableTest {
 
         min.set("non-qualified");
         assert min.get().equals("pass");
-
-        // reject null
-        assertThrows(NullPointerException.class, () -> min.set((String) null));
     }
 
     @Test

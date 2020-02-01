@@ -253,8 +253,27 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @param value A value to assign.
      * @return A previous value.
      */
-    public final V set(V value) {
-        return setIf(null, value);
+    public synchronized final V set(V value) {
+        V prev = v;
+
+        if (fix == false) {
+            try {
+                if (interceptor != null) {
+                    value = interceptor.apply(this.v, value);
+                }
+
+                set.invoke(this, value);
+
+                if (signaling != null) {
+                    signaling.accept(v);
+                }
+            } catch (RuntimeException e) {
+                // ignore
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        }
+        return prev;
     }
 
     /**
@@ -266,7 +285,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public final V set(Optional<V> value) {
-        return setIf(null, value);
+        return set(of(value));
     }
 
     /**
@@ -278,7 +297,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public final V set(Supplier<V> value) {
-        return setIf(null, value);
+        return set(of(value).v);
     }
 
     /**
@@ -290,76 +309,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public final V set(UnaryOperator<V> value) {
-        return setIf(null, value);
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public synchronized final V setIf(Predicate<V> condition, V value) {
-        V prev = v;
-
-        if (fix == false && (condition == null || is(condition))) {
-            if (interceptor != null) {
-                value = interceptor.apply(this.v, value);
-            }
-
-            try {
-                set.invoke(this, value);
-            } catch (Throwable e) {
-                throw I.quiet(e);
-            }
-
-            if (signaling != null) {
-                signaling.accept(v);
-            }
-        }
-        return prev;
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V setIf(Predicate<V> condition, Optional<V> value) {
-        return setIf(condition, of(value));
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V setIf(Predicate<V> condition, Supplier<V> value) {
-        return setIf(condition, of(value).v);
-    }
-
-    /**
-     * <p>
-     * Assign the new value when the specified condition is valid.
-     * </p>
-     *
-     * @param condition A condition for value assign.
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V setIf(Predicate<V> condition, UnaryOperator<V> value) {
-        return setIf(condition, value == null ? null : value.apply(v));
+        return set(value == null ? null : value.apply(v));
     }
 
     /**
