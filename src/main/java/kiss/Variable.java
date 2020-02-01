@@ -281,18 +281,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * Assign the new value.
      * </p>
      *
-     * @param value A value to assign.
-     * @return A previous value.
-     */
-    public final V set(Optional<V> value) {
-        return set(of(value));
-    }
-
-    /**
-     * <p>
-     * Assign the new value.
-     * </p>
-     *
      * @param value A value generator.
      * @return A previous value.
      */
@@ -401,18 +389,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     public static <T> Variable<T> of(Supplier<T> value) {
         return of(value == null ? null : value.get());
-    }
-
-    /**
-     * <p>
-     * Create {@link Variable} with the specified value.
-     * </p>
-     *
-     * @param value An actual value, <code>null</code> will be acceptable.
-     * @return A created {@link Variable}.
-     */
-    public static <T> Variable<T> of(Optional<T> value) {
-        return of(value == null ? null : value.orElse(null));
     }
 
     /**

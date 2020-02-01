@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -41,25 +40,6 @@ class VariableTest {
     @Test
     void ofNull() {
         Variable<String> var = Variable.of((String) null);
-        assert var != null;
-        assert var.v == null;
-    }
-
-    @Test
-    void ofOptional() {
-        Variable<String> var = Variable.of(Optional.of("A"));
-        assert var != null;
-        assert var.v != null;
-        assert var.v.equals("A");
-
-        var = Variable.of(Optional.empty());
-        assert var != null;
-        assert var.v == null;
-    }
-
-    @Test
-    void ofNullOptional() {
-        Variable<String> var = Variable.of((Optional) null);
         assert var != null;
         assert var.v == null;
     }
@@ -157,8 +137,7 @@ class VariableTest {
         assert string.set("change").equals("value");
         assert string.set(() -> "supply").equals("change");
         assert string.set(current -> current + " update").equals("supply");
-        assert string.set(Optional.of("optional")).equals("supply update");
-        assert string.set(Variable.of("variable")).equals("optional");
+        assert string.set(Variable.of("variable")).equals("supply update");
         assert string.is("variable");
     }
 
@@ -177,12 +156,6 @@ class VariableTest {
     @Test
     void setNullOperator() {
         assert string.set((UnaryOperator<String>) null).equals("value");
-        assert string.isAbsent();
-    }
-
-    @Test
-    void setNullOptional() {
-        assert string.set((Optional) null).equals("value");
         assert string.isAbsent();
     }
 
