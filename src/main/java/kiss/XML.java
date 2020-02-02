@@ -461,59 +461,44 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     // ===============================================
 
     /**
-     * <p>
      * Reduce the set of matched elements to the first in the set.
-     * </p>
      *
      * @return Chainable API.
      */
-    public XML first() {
+    public final XML first() {
         return nodes.isEmpty() ? this : new XML(doc, nodes.subList(0, 1));
     }
 
     /**
-     * <p>
      * Reduce the set of matched elements to the final one in the set.
-     * </p>
      *
      * @return Chainable API.
      */
-    public XML last() {
+    public final XML last() {
         return nodes.isEmpty() ? this : new XML(doc, nodes.subList(nodes.size() - 1, nodes.size()));
     }
 
     /**
-     * <p>
      * Append new child element with the specified name and traverse into them.
-     * </p>
      *
      * @param name A child element name.
      * @return A created child elements.
      */
-    public XML child(String name) {
+    public final XML child(String name) {
         return append("<" + name + "/>").lastChild();
     }
 
     /**
-     * <p>
      * Get the children of each element in the current set of matched elements.
-     * </p>
      *
      * @return A set of children elements.
      */
-    public XML children() {
-        CopyOnWriteArrayList list = new CopyOnWriteArrayList();
-
-        for (Node node : nodes) {
-            list.addAllAbsent(convert(node.getChildNodes()));
-        }
-        return new XML(doc, list);
+    public final XML children() {
+        return find(">*");
     }
 
     /**
-     * <p>
      * Get the first child element of each element in the current set of matched elements.
-     * </p>
      * 
      * @return A set of fisrt elements.
      */
@@ -522,9 +507,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
      * Get the last child element of each element in the current set of matched elements.
-     * </p>
      * 
      * @return A set of last elements.
      */
@@ -533,9 +516,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
      * Get the parent of each element in the current set of matched elements.
-     * </p>
      *
      * @return A set of parent elements.
      */
@@ -553,9 +534,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
      * Get the previous sibling element of each element in the current set of matched elements.
-     * </p>
      *
      * @return A set of previous elements.
      */
@@ -564,9 +543,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
      * Get the next sibling element of each element in the current set of matched elements.
-     * </p>
      *
      * @return A set of next elements.
      */
@@ -575,10 +552,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
      * Get the descendants of each element in the current set of matched elements, filtered by a css
      * selector.
-     * </p>
      *
      * @param selector A string containing a css selector expression to match elements against.
      * @return Chainable API.

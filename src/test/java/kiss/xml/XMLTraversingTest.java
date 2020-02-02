@@ -61,10 +61,17 @@ class XMLTraversingTest {
 
     @Test
     void children() {
-        XML xml = I.xml("<m><Q><P/><R><T/></R></Q><Q><P/></Q></m>");
+        // traverse to child elements
+        XML root = I.xml("<root><first/><center/><last/></root>");
+        assert root.children().size() == 3;
 
-        assert xml.find("Q").size() == 2;
-        assert xml.find("Q").children().size() == 3;
+        // skip text node
+        root = I.xml("<root>text<first/>is<child><center/></child>ignored<last/>!!</root>");
+        assert root.children().size() == 3;
+
+        // can't traverse
+        root = I.xml("<root/>");
+        assert root.children().size() == 0;
     }
 
     @Test
