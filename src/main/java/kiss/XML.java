@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -513,22 +512,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
-     * Get the last child element of each element in the current set of matched elements.
+     * Get the first child element of each element in the current set of matched elements.
      * </p>
      * 
      * @return A set of fisrt elements.
      */
-    public XML firstChild() {
-        return find(n -> {
-            Node child = n.getFirstChild();
-            while (child != null) {
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    return child;
-                }
-                child = child.getNextSibling();
-            }
-            return null;
-        });
+    public final XML firstChild() {
+        return find(">*:first-child");
     }
 
     /**
@@ -538,17 +528,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * 
      * @return A set of last elements.
      */
-    public XML lastChild() {
-        return find(n -> {
-            Node child = n.getLastChild();
-            while (child != null) {
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    return child;
-                }
-                child = child.getPreviousSibling();
-            }
-            return null;
-        });
+    public final XML lastChild() {
+        return find(">*:last-child");
     }
 
     /**
@@ -558,11 +539,17 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      *
      * @return A set of parent elements.
      */
-    public XML parent() {
-        return find(n -> {
-            Node parent = n.getParentNode();
-            return parent instanceof Element ? parent : n;
-        });
+    public final XML parent() {
+        CopyOnWriteArrayList<Node> list = new CopyOnWriteArrayList();
+
+        for (Node node : nodes) {
+            Node p = node.getParentNode();
+
+            if (p != null) {
+                list.addIfAbsent(p instanceof Element ? p : node);
+            }
+        }
+        return new XML(doc, list);
     }
 
     /**
@@ -572,17 +559,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      *
      * @return A set of previous elements.
      */
-    public XML prev() {
-        return find(n -> {
-            Node sibling = n.getPreviousSibling();
-            while (sibling != null) {
-                if (sibling.getNodeType() == Node.ELEMENT_NODE) {
-                    return sibling;
-                }
-                sibling = sibling.getPreviousSibling();
-            }
-            return null;
-        });
+    public final XML prev() {
+        return find("-*");
     }
 
     /**
@@ -592,39 +570,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      *
      * @return A set of next elements.
      */
-    public XML next() {
-        return find(n -> {
-            Node sibling = n.getNextSibling();
-            while (sibling != null) {
-                if (sibling.getNodeType() == Node.ELEMENT_NODE) {
-                    return sibling;
-                }
-                sibling = sibling.getNextSibling();
-            }
-            return null;
-        });
-    }
-
-    /**
-     * <p>
-     * Get the descendants of each element in the current set of matched elements, filtered by
-     * {@link UnaryOperator} selector.
-     * </p>
-     * 
-     * @param selector
-     * @return Chainable API.
-     */
-    private XML find(UnaryOperator<Node> selector) {
-        CopyOnWriteArrayList<Node> list = new CopyOnWriteArrayList();
-
-        for (Node node : nodes) {
-            Node found = selector.apply(node);
-
-            if (found != null) {
-                list.addIfAbsent(found);
-            }
-        }
-        return new XML(doc, list);
+    public final XML next() {
+        return find("+*");
     }
 
     /**
@@ -642,7 +589,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
         try {
             for (Node node : nodes) {
-                result.addAll(convert((NodeList) xpath.evaluate(node, XPathConstants.NODESET)));
+                result.addAllAbsent(convert((NodeList) xpath.evaluate(node, XPathConstants.NODESET)));
             }
             return new XML(doc, result);
         } catch (XPathExpressionException e) {
@@ -912,6 +859,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return A xpath.
      */
     private static String convert(String selector) {
+        if (selector.startsWith("xpath:")) return selector.substring(6);
+
         StringBuilder xpath = new StringBuilder();
         Matcher matcher = SELECTOR.matcher(selector.trim());
 

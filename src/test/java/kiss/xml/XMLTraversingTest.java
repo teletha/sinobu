@@ -14,20 +14,17 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.XML;
 
-/**
- * @version 2017/03/30 16:11:07
- */
-public class XMLTraversingTest {
+class XMLTraversingTest {
 
     @Test
-    public void first() throws Exception {
+    void first() {
         String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
         assert I.xml(xml).find("Q").first().attr("class").equals("first");
     }
 
     @Test
-    public void firstAtEmpty() throws Exception {
+    void firstAtEmpty() {
         XML xml = I.xml("<m/>");
 
         assert xml.find("Q").size() == 0;
@@ -35,14 +32,14 @@ public class XMLTraversingTest {
     }
 
     @Test
-    public void last() throws Exception {
+    void last() {
         String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
         assert I.xml(xml).find("Q").last().attr("class").equals("last");
     }
 
     @Test
-    public void lastAtEmpty() throws Exception {
+    void lastAtEmpty() {
         XML xml = I.xml("<m/>");
 
         assert xml.find("Q").size() == 0;
@@ -50,17 +47,20 @@ public class XMLTraversingTest {
     }
 
     @Test
-    public void parent() throws Exception {
-        XML xml = I.xml("<m><Q><P/></Q><Q><P/></Q></m>");
+    void parent() {
+        // traverse to parent element
+        XML root = I.xml("<root><first/><center/><last/></root>");
+        assert root.find("first").parent().name() == "root";
+        assert root.find("center").parent().name() == "root";
+        assert root.find("last").parent().name() == "root";
 
-        assert xml.find("P").parent().size() == 2;
-        assert xml.find("P").parent().parent().size() == 1;
-        assert xml.find("P").parent().parent().parent().size() == 1;
-        assert xml.find("P").parent().parent().parent().parent().size() == 1;
+        // traverse to parent element from nested element
+        root = I.xml("<root><child><grand/></child></root>");
+        assert root.find("grand").parent().name() == "child";
     }
 
     @Test
-    public void children() throws Exception {
+    void children() {
         XML xml = I.xml("<m><Q><P/><R><T/></R></Q><Q><P/></Q></m>");
 
         assert xml.find("Q").size() == 2;
@@ -68,38 +68,66 @@ public class XMLTraversingTest {
     }
 
     @Test
-    public void firstChild() throws Exception {
-        XML xml = I.xml("<m><Q><p/><q/><r/></Q></m>");
+    void firstChild() {
+        // traverse to first child element
+        XML root = I.xml("<root><first/><center/><last/></root>");
+        assert root.firstChild().name() == "first";
 
-        assert xml.find("Q").size() == 1;
-        assert xml.find("Q").firstChild().size() == 1;
-        assert xml.find("Q").firstChild().name() == "p";
+        // skip text node
+        root = I.xml("<root>text is ignored<first/><center/><last/></root>");
+        assert root.firstChild().name() == "first";
+
+        // can't traverse
+        root = I.xml("<root/>");
+        assert root.firstChild().size() == 0;
     }
 
     @Test
-    public void lastChild() throws Exception {
-        XML xml = I.xml("<m><Q><p/><q/><r/></Q></m>");
+    void lastChild() {
+        // traverse to last child element
+        XML root = I.xml("<root><first/><center/><last/></root>");
+        assert root.lastChild().name() == "last";
 
-        assert xml.find("Q").size() == 1;
-        assert xml.find("Q").lastChild().size() == 1;
-        assert xml.find("Q").lastChild().name() == "r";
+        // skip text node
+        root = I.xml("<root><first/><center/><last/>text is ignored</root>");
+        assert root.lastChild().name() == "last";
+
+        // can't traverse
+        root = I.xml("<root/>");
+        assert root.lastChild().size() == 0;
     }
 
     @Test
-    public void prev() throws Exception {
-        XML xml = I.xml("<m><Q><p/><q/><r/></Q></m>");
-    
-        assert xml.find("q").size() == 1;
-        assert xml.find("q").prev().size() == 1;
-        assert xml.find("q").prev().name() == "p";
+    void prev() {
+        XML root = I.xml("<root><first/>text is ignored<center/><last/></root>");
+
+        // traverse to previous element
+        XML next = root.find("last").prev();
+        assert next.name() == "center";
+
+        // skip previous text node
+        next = root.find("center").prev();
+        assert next.name() == "first";
+
+        // can't traverse
+        next = root.find("first").prev();
+        assert next.size() == 0;
     }
 
     @Test
-    public void next() throws Exception {
-        XML xml = I.xml("<m><Q><p/><q/><r/></Q></m>");
+    void next() {
+        XML root = I.xml("<root><first/><center/>text is ignored<last/></root>");
 
-        assert xml.find("q").size() == 1;
-        assert xml.find("q").next().size() == 1;
-        assert xml.find("q").next().name() == "r";
+        // traverse to next element
+        XML next = root.find("first").next();
+        assert next.name() == "center";
+
+        // skip next text node
+        next = root.find("center").next();
+        assert next.name() == "last";
+
+        // can't traverse
+        next = root.find("last").next();
+        assert next.size() == 0;
     }
 }
