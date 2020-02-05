@@ -485,7 +485,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return A created child elements.
      */
     public final XML child(String name) {
-        return append("<" + name + "/>").lastChild();
+        // don't use the following code because of building xml performance
+        // return append("<" + name + "/>").lastChild();
+        XML xml = I.xml("<" + name + "/>");
+        append(xml);
+        return xml;
     }
 
     /**
