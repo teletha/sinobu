@@ -9,6 +9,9 @@
  */
 package kiss;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+
 import org.junit.jupiter.api.Test;
 
 class DisposableTest {
@@ -26,6 +29,45 @@ class DisposableTest {
         composed.dispose();
         assert task1.executed == true;
         assert task2.executed == true;
+    }
+
+    @Test
+    void disposeAndNullDisposable() {
+        Task task1 = new Task();
+        Disposable composed = task1.add((Disposable) null);
+        assert task1 == composed;
+
+        assert task1.executed == false;
+
+        composed.dispose();
+        assert task1.executed == true;
+    }
+
+    @Test
+    void disposeAndFuture() {
+        Task task1 = new Task();
+        FuturedTask task2 = new FuturedTask();
+        Disposable composed = task1.add(task2);
+        assert task1 == composed;
+
+        assert task1.executed == false;
+        assert task2.canceled == false;
+
+        composed.dispose();
+        assert task1.executed == true;
+        assert task2.canceled == true;
+    }
+
+    @Test
+    void disposeAndNullFuture() {
+        Task task1 = new Task();
+        Disposable composed = task1.add((Future) null);
+        assert task1 == composed;
+
+        assert task1.executed == false;
+
+        composed.dispose();
+        assert task1.executed == true;
     }
 
     @Test
@@ -71,6 +113,30 @@ class DisposableTest {
         @Override
         public void vandalize() {
             executed = true;
+        }
+    }
+
+    /**
+     * 
+     */
+    private static class FuturedTask extends FutureTask {
+
+        private boolean canceled;
+
+        /**
+         * 
+         */
+        public FuturedTask() {
+            super(() -> "don't used");
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            canceled = true;
+            return true;
         }
     }
 }

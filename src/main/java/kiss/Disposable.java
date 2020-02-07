@@ -10,6 +10,7 @@
 package kiss;
 
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 
 /**
  * <p>
@@ -79,11 +80,9 @@ public interface Disposable {
     }
 
     /**
-     * <p>
-     * Append child {@link Disposable}.
-     * </p>
+     * Append companion {@link Disposable}.
      * 
-     * @param next An next {@link Disposable} to execute.
+     * @param next A next {@link Disposable} to execute.
      * @return A composed {@link Disposable}.
      */
     default Disposable add(Disposable next) {
@@ -96,6 +95,16 @@ public interface Disposable {
             subscriber.list.add(next);
         }
         return this;
+    }
+
+    /**
+     * Append as companion {@link Disposable}. {@link Future} will be canceled.
+     * 
+     * @param next A next {@link Disposable} to execute.
+     * @return A composed {@link Disposable}.
+     */
+    default Disposable add(Future next) {
+        return add(next == null ? null : () -> next.cancel(true));
     }
 
     /**
