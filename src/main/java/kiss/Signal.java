@@ -1342,16 +1342,6 @@ public final class Signal<V> {
     }
 
     /**
-     * This {@link Signal} is disposed when the specified {@link Disposable} is executed.
-     * 
-     * @param disposer A parent disposer.
-     * @return Chainable API.
-     */
-    public final Signal<V> disposedBy(Disposable disposer) {
-        return disposer == null ? this : effectOnObserve(disposer::add);
-    }
-
-    /**
      * <link rel="stylesheet" href= "http://teletha.github.io/Antibug/javadoc.css"/>
      * <p>
      * Returns an {@link Signal} consisting of the distinct values (according to

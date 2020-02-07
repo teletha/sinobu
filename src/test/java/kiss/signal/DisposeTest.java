@@ -11,8 +11,6 @@ package kiss.signal;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.Disposable;
-
 class DisposeTest extends SignalTester {
 
     @Test
@@ -33,21 +31,5 @@ class DisposeTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
-    }
-
-    @Test
-    void disposedBy() {
-        Disposable parent = Disposable.empty();
-        monitor(signal -> signal.disposedBy(parent));
-        assert main.isNotDisposed();
-
-        parent.dispose();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void disposedByNull() {
-        monitor(signal -> signal.disposedBy(null));
-        assert main.isNotDisposed();
     }
 }
