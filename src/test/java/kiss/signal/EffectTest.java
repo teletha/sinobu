@@ -101,6 +101,15 @@ class EffectTest extends SignalTester {
     }
 
     @Test
+    void effectOnTerminateObserver() {
+        // by complete
+        monitor(signal -> signal.effectOnTerminate(log1));
+        assert log1.isNotCompleted();
+        main.emit(Complete);
+        assert log1.isCompleted();
+    }
+
+    @Test
     void effectOnObserveByRunnable() {
         List<String> list = new ArrayList();
         Signal<String> signal = I.signal("1").effectOnObserve(() -> {
