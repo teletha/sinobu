@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1667,24 +1667,6 @@ public final class Signal<V> {
      */
     public final Signal<V> effectOnTerminate(WiseRunnable effect) {
         return effectOnError(effect).effectOnComplete(effect);
-    }
-
-    /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
-     * {@link Observer#error(Throwable)} or {@link Observer#complete()}.
-     *
-     * @param effect The action to invoke when the source {@link Signal} calls
-     *            {@link Observer#error(Throwable)} or {@link Observer#complete()}.
-     * @return The source {@link Signal} preassign the side-effecting behavior applied.
-     * @see #effect(WiseConsumer)
-     * @see #effectOnError(WiseConsumer)
-     * @see #effectOnComplete(WiseRunnable)
-     * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(WiseRunnable)
-     * @see #effectOnObserve(WiseConsumer)
-     */
-    public final Signal<V> effectOnTerminate(Observer effect) {
-        return effectOnError(effect::error).effectOnComplete(effect::complete);
     }
 
     /**
