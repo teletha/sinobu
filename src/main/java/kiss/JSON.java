@@ -155,7 +155,7 @@ public class JSON {
                     // convert value
                     if (p.isAttribute()) {
                         value = I.transform(value, p.model.type);
-                    } else {
+                    } else if (value != null) {
                         Object nest = model.get(java, p);
                         String impl = (String) ((Map) value).get("#");
                         Model m = impl == null ? p.model : Model.of(I.type(impl));
@@ -576,6 +576,8 @@ public class JSON {
                 // property value
                 if (property.isAttribute()) {
                     write(I.transform(value, String.class), property.model.type);
+                } else if (value == null) {
+                    out.append("null");
                 } else {
                     if (64 < current) {
                         throw new ClassCircularityError();

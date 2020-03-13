@@ -126,7 +126,7 @@ class JSONTest {
         validate(instant,
         "{",
         "  'value': null,",
-        "  'items': []",
+        "  'items': null",
         "}");
         // @formatter:on
     }
@@ -308,7 +308,7 @@ class JSONTest {
         "  'school': {",
         "    'name': 'Sakura High School',",
         "    'students': [],",
-        "    'teachers': {}",
+        "    'teachers': null",
         "  }",
         "}");
         // @formatter:on
@@ -390,6 +390,22 @@ class JSONTest {
         "  ]",
         "}");
         // @formatter:on
+    }
+
+    @Test
+    void storeImplementationForNull() {
+        AnimalRef animals = new AnimalRef();
+
+        // @formatter:off
+        validate(animals,
+        "{",
+        "  'animal': null",
+        "}");
+        // @formatter:on
+    }
+
+    private static class AnimalRef {
+        public Animal animal;
     }
 
     private static class Animals {
