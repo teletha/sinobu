@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1011,15 +1011,46 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+        return debounceAll(time, unit, scheduler).map(list -> list.get(list.size() - 1));
+    }
+
+    /**
+     * <p>
+     * Collect values that are followed by newer values before a timeout. The timer resets on each
+     * value emission.
+     * </p>
+     *
+     * @param time A time value. Zero or negative number will ignore this instruction.
+     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @return Chainable API.
+     */
+    public final Signal<List<V>> debounceAll(long time, TimeUnit unit) {
+        return debounceAll(time, unit, null);
+    }
+
+    /**
+     * <p>
+     * Collect values that are followed by newer values before a timeout. The timer resets on each
+     * value emission.
+     * </p>
+     *
+     * @param time A time value. Zero or negative number will ignore this instruction.
+     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @param scheduler
+     * @return Chainable API.
+     */
+    public final Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
-            return this;
+            return map(List::of);
         }
 
-        return new Signal<V>((observer, disposer) -> {
+        return new Signal<List<V>>((observer, disposer) -> {
             AtomicReference<Future> latest = new AtomicReference();
+            AtomicReference<List<V>> list = new AtomicReference(new ArrayList());
 
             return to(value -> {
+                list.get().add(value);
                 Future future = latest.get();
 
                 if (future != null) {
@@ -1028,7 +1059,7 @@ public final class Signal<V> {
 
                 latest.set(I.schedule(time, unit, scheduler, () -> {
                     latest.set(null);
-                    observer.accept(value);
+                    observer.accept(list.getAndSet(new ArrayList()));
                 }));
             }, observer::error, observer::complete, disposer);
         });
