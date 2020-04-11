@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -48,6 +48,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.LongPredicate;
+import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -3925,14 +3926,35 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> throttle(long time, TimeUnit unit) {
+        return throttle(time, unit, System::nanoTime);
+    }
+
+    /**
+     * <p>
+     * Throttles by skipping values until "skipDuration" passes and then emits the next received
+     * value.
+     * </p>
+     * <p>
+     * Ignores the values from an {@link Signal} sequence which are followed by another value before
+     * due time preassign the specified source and time.
+     * </p>
+     *
+     * @param time Time to wait before sending another item after emitting the last item. Zero or
+     *            negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     *            instruction.
+     * @param nanoClock A nano-time stamp provider.
+     * @return Chainable API.
+     */
+    public final Signal<V> throttle(long time, TimeUnit unit, LongSupplier nanoClock) {
         // ignore invalid parameters
-        if (time <= 0 || unit == null) {
+        if (time <= 0 || unit == null || nanoClock == null) {
             return this;
         }
 
         long delay = unit.toNanos(time);
         return take(AtomicLong::new, (context, value) -> {
-            long now = System.nanoTime();
+            long now = nanoClock.getAsLong();
 
             if (context.get() + delay <= now) {
                 context.set(now);
