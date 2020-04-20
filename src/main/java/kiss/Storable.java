@@ -18,6 +18,11 @@ import java.util.function.Function;
 
 import kiss.model.Model;
 
+/**
+ * There are two main ways to change the default save location. One is specified by overriding the
+ * {@link #locate()} method. The other is to specify a value for "PreferenceDirectory" in global
+ * application environment (see {@link I#env(String)}).
+ */
 public interface Storable<Self> {
 
     /**
@@ -113,6 +118,6 @@ public interface Storable<Self> {
      * @return An identifier of persistence location.
      */
     default String locate() {
-        return ".preferences/" + Model.of(this).type.getName() + ".json";
+        return I.env("PreferenceDirectory", ".preferences") + "/" + Model.of(this).type.getName() + ".json";
     }
 }
