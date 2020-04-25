@@ -588,10 +588,22 @@ public class I {
      * </ol>
      * 
      * @param key A environment variable name.
+     * @param defaults If the specified key is not found, return this default value.
      * @return
      */
     public static String env(String key, String defaults) {
         return env.getProperty(key, defaults);
+    }
+
+    /**
+     * If a value is not set for the specified key, register it as an environment variable on
+     * runtime.
+     * 
+     * @param key A environment variable name.
+     * @param value A value to set.
+     */
+    public static void envy(String key, String defaults) {
+        env.putIfAbsent(key, defaults);
     }
 
     /**
