@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -170,6 +170,23 @@ public final class Signal<V> {
      */
     public final Disposable to(Consumer<? super V> next) {
         return to(next, null, null);
+    }
+
+    /**
+     * <p>
+     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
+     * items and notifications from the Observable.
+     *
+     * @param next A delegator method of {@link Observer#accept(Object)}.
+     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
+     */
+    public final Disposable to(BiConsumer<? super V, Disposable> next) {
+        Subscriber<V> subscriber = new Subscriber();
+        subscriber.index = 1;
+        subscriber.disposer = Disposable.empty();
+        subscriber.next = e -> next.accept(e, subscriber.disposer);
+
+        return to(subscriber, subscriber.disposer);
     }
 
     /**

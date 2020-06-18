@@ -195,7 +195,7 @@ class SignalCreationTest extends SignalTester {
         List<Observer<String>> observers = new ArrayList();
 
         List<String> results = new ArrayList();
-        Disposable disposer = new Signal<String>(observers).map(String::toUpperCase).to(results::add);
+        Disposable disposer = new Signal<String>(observers).map(String::toUpperCase).to(e -> results.add(e));
 
         observers.forEach(e -> e.accept("one"));
         assert results.get(0).equals("ONE");
