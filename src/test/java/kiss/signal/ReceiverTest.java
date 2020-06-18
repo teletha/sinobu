@@ -15,13 +15,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.Disposable;
 import kiss.I;
-import kiss.Signaling;
 import kiss.Variable;
 
 class ReceiverTest extends SignalTester {
@@ -33,29 +30,6 @@ class ReceiverTest extends SignalTester {
         assert main.emit(1).value(1);
         assert main.emit(2).value(2);
         assert main.isNotDisposed();
-    }
-
-    @Test
-    void toWithDisposer() {
-        AtomicInteger value = new AtomicInteger();
-
-        Signaling<Integer> signaling = new Signaling();
-        Disposable disposable = signaling.expose.to((v, disposer) -> {
-            if (v == 3) disposer.dispose();
-            value.set(v);
-        });
-
-        signaling.accept(1);
-        assert value.get() == 1;
-        assert disposable.isNotDisposed();
-
-        signaling.accept(3);
-        assert value.get() == 3;
-        assert disposable.isDisposed();
-
-        signaling.accept(5);
-        assert value.get() == 3;
-        assert disposable.isDisposed();
     }
 
     @Test

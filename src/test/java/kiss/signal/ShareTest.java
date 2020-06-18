@@ -12,7 +12,6 @@ package kiss.signal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +31,8 @@ class ShareTest extends SignalTester {
         List<String> result2 = new ArrayList();
 
         Signal<String> source = new Signal(observers);
-        Disposable disposable1 = source.to((Consumer<String>) result1::add);
-        Disposable disposable2 = source.to((Consumer<String>) result2::add);
+        Disposable disposable1 = source.to(result1::add);
+        Disposable disposable2 = source.to(result2::add);
 
         // publish
         observers.stream().forEach(o -> o.accept("ONE"));
@@ -63,8 +62,8 @@ class ShareTest extends SignalTester {
         List<String> result2 = new ArrayList();
 
         Signal<String> source = new Signal(observers).share();
-        Disposable disposable1 = source.to((Consumer<String>) result1::add);
-        Disposable disposable2 = source.to((Consumer<String>) result2::add);
+        Disposable disposable1 = source.to(result1::add);
+        Disposable disposable2 = source.to(result2::add);
 
         // publish
         observers.stream().forEach(o -> o.accept("ONE"));
@@ -93,7 +92,7 @@ class ShareTest extends SignalTester {
         List<String> result1 = new ArrayList();
 
         Signal<String> source = new Signal(observers).share();
-        Disposable disposable1 = source.to((Consumer<String>) result1::add);
+        Disposable disposable1 = source.to(result1::add);
 
         // publish
         observers.stream().forEach(o -> o.accept("Success"));
@@ -107,7 +106,7 @@ class ShareTest extends SignalTester {
         assert result1.size() == 1;
 
         // restart
-        Disposable disposable2 = source.to((Consumer<String>) result1::add);
+        Disposable disposable2 = source.to(result1::add);
         observers.stream().forEach(o -> o.accept("Success"));
         assert observers.size() == 1;
         assert result1.size() == 2;
@@ -125,7 +124,7 @@ class ShareTest extends SignalTester {
         List<String> result1 = new ArrayList();
 
         Signal<String> source = new Signal(observers).share();
-        Disposable disposable1 = source.to((Consumer<String>) result1::add);
+        Disposable disposable1 = source.to(result1::add);
 
         // publish
         observers.stream().forEach(o -> o.accept("Success"));
@@ -141,7 +140,7 @@ class ShareTest extends SignalTester {
         assert disposable1.isDisposed();
 
         // restart
-        Disposable disposable2 = source.to((Consumer<String>) result1::add);
+        Disposable disposable2 = source.to(result1::add);
         observers.stream().forEach(o -> o.accept("Success"));
         assert observers.size() == 1;
         assert result1.size() == 2;
