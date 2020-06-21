@@ -223,6 +223,9 @@ public class I {
     /** The expression placeholder syntax. */
     private static final Pattern express = Pattern.compile("\\{([^}]+)\\}");
 
+    /** The mixined class holder. */
+    private static final Map<String, Class> wised = new ConcurrentHashMap();
+
     // initialization
     static {
         // built-in lifestyles
@@ -942,47 +945,21 @@ public class I {
      * @param items A list of itmes.
      * @return The new created {@link ArrayList}.
      */
-    public static <V> List<V> list(V... items) {
-        return collect(ArrayList.class, items);
+    public static <V> WiseList<V> list(V... items) {
+        WiseList<V> list = list(ArrayList.class);
+        list.addAll(List.of(items));
+        return list;
     }
-
-    private static final Map<Class, Class> wised = new ConcurrentHashMap();
 
     /**
-     * Create {@link WiseList} by the specified list type.
+     * Create {@link WiseList} based on the specified {@link List} implementation.
      * 
      * @param <E>
-     * @param list
+     * @param base A base implementation.
      * @return
      */
-    public static <E> WiseList<E> list(Class<? extends List> list) {
-        return make((Class<WiseList>) wised.computeIfAbsent(list, key -> {
-            if (Modifier.isAbstract(list.getModifiers()) || list.isEnum()) {
-                throw new IllegalArgumentException("Class must be concrete public normal class.");
-            }
-
-            try {
-                String[] raw = "-54,-2,-70,-66,0,0,0,58,0,12,1,0,24,107,105,115,115,47,U,7,0,1,1,0,19,S,7,0,3,1,0,13,I,7,0,5,1,0,6,60,105,110,105,116,62,1,0,3,40,41,86,12,0,7,0,8,10,0,4,0,9,1,0,4,67,111,100,101,0,1,0,2,0,4,0,1,0,6,0,0,0,1,0,1,0,7,0,8,0,1,0,11,0,0,0,17,0,2,0,1,0,0,0,5,42,-73,0,10,-79,0,0,0,0,0,0"
-                        .replace("U", dump("kiss/".concat(list.getName())))
-                        .replace("S", dump(list.getName()))
-                        .replace("I", dump(WiseList.class.getName()))
-                        .split(",");
-                byte[] bytes = new byte[raw.length];
-                for (int i = 0; i < bytes.length; i++) {
-                    bytes[i] = Byte.valueOf(raw[i]);
-                }
-                System.out.println(Arrays.toString(bytes));
-
-                return MethodHandles.lookup().defineClass(bytes);
-            } catch (IllegalAccessException e) {
-                throw I.quiet(e);
-            }
-        }));
-    }
-
-    private static String dump(String name) {
-        String v = Arrays.toString(name.replace('.', '/').getBytes());
-        return v.substring(1, v.length() - 1).replaceAll(" ", "");
+    public static <E> WiseList<E> list(Class<? extends List> base) {
+        return wise(base, WiseList.class);
     }
 
     /**
@@ -1871,6 +1848,44 @@ public class I {
         } catch (ClassNotFoundException e) {
             throw quiet(e);
         }
+    }
+
+    /**
+     * Create mixined class.
+     * 
+     * @param <MIX>
+     * @param base A base implementation.
+     * @param mixin A mixin interface.
+     * @return
+     */
+    public static <MIX> MIX wise(Class base, Class<MIX> mixin) {
+        return (MIX) make(wised.computeIfAbsent(base.getName() + mixin.getName(), k -> {
+            try {
+                String[] raw = "-54,-2,-70,-66,0,0,0,58,0,12,1,0,U,7,0,1,1,0,S,7,0,3,1,0,I,7,0,5,1,0,6,60,105,110,105,116,62,1,0,3,40,41,86,12,0,7,0,8,10,0,4,0,9,1,0,4,67,111,100,101,0,1,0,2,0,4,0,1,0,6,0,0,0,1,0,1,0,7,0,8,0,1,0,11,0,0,0,17,0,2,0,1,0,0,0,5,42,-73,0,10,-79,0,0,0,0,0,0"
+                        .replace("U", b("kiss/".concat(base.getName().replace('.', '_'))))
+                        .replace("S", b(base.getName()))
+                        .replace("I", b(mixin.getName()))
+                        .split(",");
+                byte[] bytes = new byte[raw.length];
+                for (int i = 0; i < bytes.length; i++) {
+                    bytes[i] = Byte.valueOf(raw[i]);
+                }
+                return (Class<MIX>) MethodHandles.lookup().defineClass(bytes);
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }));
+    }
+
+    /**
+     * Build binary code.
+     * 
+     * @param name
+     * @return
+     */
+    private static String b(String name) {
+        String v = Arrays.toString(name.replace('.', '/').getBytes());
+        return name.length() + "," + v.substring(1, v.length() - 1).replaceAll(" ", "");
     }
 
     /**
