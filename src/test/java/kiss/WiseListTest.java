@@ -10,6 +10,7 @@
 package kiss;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,9 @@ public class WiseListTest {
 
     @Test
     void select() {
-        WiseList<Integer> list = I.list(1, 2, 3, 4, 5);
+        WiseList<Integer> list = I.list(ArrayList.class);
+        list.addAll(Arrays.asList(1, 2, 3, 4, 5));
+
         WiseList<Integer> selected = list.take(v -> v % 2 == 0);
         assert selected.size() == 2;
         assert selected instanceof ArrayList;

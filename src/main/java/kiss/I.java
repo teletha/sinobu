@@ -945,10 +945,8 @@ public class I {
      * @param items A list of itmes.
      * @return The new created {@link ArrayList}.
      */
-    public static <V> WiseList<V> list(V... items) {
-        WiseList<V> list = list(ArrayList.class);
-        list.addAll(List.of(items));
-        return list;
+    public static <V> List<V> list(V... items) {
+        return collect(ArrayList.class, items);
     }
 
     /**
