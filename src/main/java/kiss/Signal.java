@@ -4014,6 +4014,19 @@ public final class Signal<V> {
     }
 
     /**
+     * This is another name for {@link #flatMap(WiseFunction)}, primarily for use in DSL.
+     * 
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<R> $(WiseFunction<V, Signal<R>> function) {
+        return flatMap(function);
+    }
+
+    /**
      * Create countable completer.
      * 
      * @param delgator A complete action.
