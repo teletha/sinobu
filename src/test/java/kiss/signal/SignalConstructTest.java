@@ -68,7 +68,7 @@ class SignalConstructTest extends SignalTester {
             observer.error(new FirstError());
             observer.error(new SecondError());
             return disposer;
-        }).to(values::add, errors::add);
+        }).to(values::add, e -> errors.add(e));
 
         assert values.size() == 0;
         assert errors.size() == 1;
@@ -87,7 +87,7 @@ class SignalConstructTest extends SignalTester {
             observer.accept("After");
 
             return disposer;
-        }).to(values::add, errors::add);
+        }).to(values::add, e -> errors.add(e));
 
         assert values.size() == 1;
         assert errors.size() == 1;

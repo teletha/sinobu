@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -317,7 +318,7 @@ public final class Signal<V> {
      * @return A {@link Collection} as value receiver.
      */
     public final <C extends Collection<V>> C to(Class<C> type) {
-        return to(type, Collection::add);
+        return to(I.make(type), Collection::add);
     }
 
     /**
@@ -325,32 +326,16 @@ public final class Signal<V> {
      * Receive values from this {@link Signal}.
      * </p>
      *
-     * @param type A value receiver type.
+     * @param receiver A value receiver.
      * @param assigner A value assigner.
      * @return A value receiver.
      */
-    public final <R> R to(Class<R> type, BiConsumer<R, V> assigner) {
-        // value receiver
-        R receiver = I.make(type);
-
+    public final <R> R to(R receiver, BiConsumer<R, V> assigner) {
         // start receiving values
         to(v -> assigner.accept(receiver, v));
 
         // API definition
         return receiver;
-    }
-
-    /**
-     * <p>
-     * Receive values as {@link Collector} from this {@link Signal}.
-     * </p>
-     *
-     * @return A {@link Collector} as value receiver.
-     */
-    public final <A, R> R to(Collector<V, A, R> collector) {
-        A ref = collector.supplier().get();
-        to(value -> collector.accumulator().accept(ref, value));
-        return collector.finisher().apply(ref);
     }
 
     /**
@@ -362,7 +347,7 @@ public final class Signal<V> {
      * @return A {@link Set} as value receiver.
      */
     public final Set<V> toAlternate() {
-        return to(Set.class, (set, value) -> {
+        return to(new HashSet(), (set, value) -> {
             if (!set.add(value)) {
                 set.remove(value);
             }
@@ -408,7 +393,7 @@ public final class Signal<V> {
      * @return
      */
     public final <Key> Map<Key, List<V>> toGroup(Function<V, Key> keyGenerator) {
-        return to(Collectors.groupingBy(keyGenerator));
+        return to(new HashMap<>(), (map, v) -> map.computeIfAbsent(keyGenerator.apply(v), k -> new ArrayList()).add(v));
     }
 
     /**
@@ -444,7 +429,7 @@ public final class Signal<V> {
      * @return A {@link Map} as value receiver.
      */
     public final <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        return to(Map.class, (map, v) -> map.put(keyGenerator.apply(v), valueGenerator.apply(v)));
+        return to(new HashMap(), (map, v) -> map.put(keyGenerator.apply(v), valueGenerator.apply(v)));
     }
 
     /**
