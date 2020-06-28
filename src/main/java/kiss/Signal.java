@@ -311,9 +311,7 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
      * Receive values as {@link Collection} type from this {@link Signal}.
-     * </p>
      *
      * @return A {@link Collection} as value receiver.
      */
@@ -322,9 +320,7 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
      * Receive values from this {@link Signal}.
-     * </p>
      *
      * @param receiver A value receiver.
      * @param assigner A value assigner.
