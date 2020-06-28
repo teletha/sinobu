@@ -15,6 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -129,5 +130,17 @@ class ReceiverTest extends SignalTester {
 
         set = I.signal("A", "B", "A").toSet();
         assert set.size() == 2;
+    }
+
+    @Test
+    void toGroup() {
+        Map<Integer, List<String>> map = I.<String> signal().toGroup(String::length);
+        assert map.isEmpty();
+
+        map = I.signal("A", "BC", "DE", "F", "GHI", "JKLN").to(Collectors.groupingBy(String::length));
+        assert map.get(1).size() == 2;
+        assert map.get(2).size() == 2;
+        assert map.get(3).size() == 1;
+        assert map.get(4).size() == 1;
     }
 }

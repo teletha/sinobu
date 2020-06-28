@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -52,6 +52,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -341,6 +342,19 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Receive values as {@link Collector} from this {@link Signal}.
+     * </p>
+     *
+     * @return A {@link Collector} as value receiver.
+     */
+    public final <A, R> R to(Collector<V, A, R> collector) {
+        A ref = collector.supplier().get();
+        to(value -> collector.accumulator().accept(ref, value));
+        return collector.finisher().apply(ref);
+    }
+
+    /**
+     * <p>
      * Receive values as {@link Set} from this {@link Signal}. Each value alternates between In and
      * Out.
      * </p>
@@ -384,6 +398,17 @@ public final class Signal<V> {
     public final <C extends Collection<? super V>> C toCollection(C collection) {
         to(collection::add);
         return collection;
+    }
+
+    /**
+     * Short hand method to {@link #to(Collector)} with {@link Collectors#groupingBy(Function)}.
+     * 
+     * @param <Key>
+     * @param keyGenerator
+     * @return
+     */
+    public final <Key> Map<Key, List<V>> toGroup(Function<V, Key> keyGenerator) {
+        return to(Collectors.groupingBy(keyGenerator));
     }
 
     /**
