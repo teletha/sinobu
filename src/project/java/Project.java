@@ -18,6 +18,7 @@ public class Project extends bee.api.Project {
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
 
         require("com.github.teletha", "antibug").atTest();
+        require("com.pgs-soft", "HttpClientMock").atTest();
         require("io.reactivex.rxjava2", "rxjava").atTest();
         require("com.fasterxml.jackson.core", "jackson-databind").atTest();
 

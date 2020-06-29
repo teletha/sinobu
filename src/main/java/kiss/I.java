@@ -33,7 +33,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.net.http.HttpResponse.BodySubscriber;
+import java.net.http.HttpResponse.BodySubscribers;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -221,6 +224,9 @@ public class I {
 
     /** The expression placeholder syntax. */
     private static final Pattern express = Pattern.compile("\\{([^}]+)\\}");
+
+    /** The reusable http client. */
+    static HttpClient client = HttpClient.newHttpClient();
 
     // initialization
     static {
@@ -768,6 +774,62 @@ public class I {
      */
     private static synchronized <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new CopyOnWriteArrayList(), new ConcurrentHashMap()));
+    }
+
+    /**
+     * Obtain a {@link Signal} to request a resource by HTTP(S). If the request is successful, the
+     * content is converted to the specified type before it is sent.
+     * 
+     * @param <T>
+     * @param request Request URI.
+     * @param response Response type.
+     * @return If the request is successful, the content will be sent. If the request is
+     *         unsuccessful, an error will be sent.
+     */
+    public static <T> Signal<T> http(String request, Class<T> type) {
+        return http(HttpRequest.newBuilder(URI.create(request)), type);
+    }
+
+    /**
+     * Obtain a {@link Signal} to request a resource by HTTP(S). If the request is successful, the
+     * content is converted to the specified type before it is sent.
+     * 
+     * @param <T>
+     * @param request Request builder.
+     * @param response Response type.
+     * @return If the request is successful, the content will be sent. If the request is
+     *         unsuccessful, an error will be sent.
+     */
+    public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> response) {
+        BodySubscriber s = response == String.class ? BodySubscribers.ofString(StandardCharsets.UTF_8)
+                : BodySubscribers.mapping(BodySubscribers.ofInputStream(), //
+                        response == JSON.class ? I::json : response == XML.class ? I::xml : i -> I.json(i).to(response));
+
+        return http(null, request, i -> s);
+    }
+
+    /**
+     * Obtain a {@link Signal} to request a resource by HTTP(S).
+     * 
+     * @param <T>
+     * @param request Request builder.
+     * @param response Response handler.
+     * @return If the request is successful, the content will be sent. If the request is
+     *         unsuccessful, an error will be sent.
+     */
+    public static <T> Signal<T> http(HttpClient client, HttpRequest.Builder request, HttpResponse.BodyHandler<T> response) {
+        return new Signal<>((observer, disposer) -> {
+            CompletableFuture<HttpResponse<T>> future = (client == null ? I.client : client).sendAsync(request.build(), response)
+                    .whenComplete((v, e) -> {
+                        if (e == null) {
+                            observer.accept(v.body());
+                            observer.complete();
+                        } else {
+                            observer.error(e);
+                        }
+                    });
+            return disposer.add(() -> future.cancel(true));
+        });
     }
 
     /**
