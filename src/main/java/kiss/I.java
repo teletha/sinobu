@@ -625,6 +625,11 @@ public class I {
      * @return A calculated text.
      */
     public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
+        // skip when context is empty
+        if (contexts == null || contexts.length == 0) {
+            return text;
+        }
+
         resolvers = I.array(new WiseTriFunction[] {(WiseTriFunction<Model, Object, String, Object>) Model::get}, resolvers);
 
         StringBuilder str = new StringBuilder();
