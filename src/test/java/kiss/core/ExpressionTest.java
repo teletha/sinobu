@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -67,7 +66,8 @@ class ExpressionTest {
     @Test
     void contextNull() {
         assert I.express("null context is {ignored}", Collections.singletonList(null)).equals("null context is ");
-        Assertions.assertThrows(NullPointerException.class, () -> I.express("null context is {ignored}", (Object[]) null));
+        assert I.express("null context is {ignored}", (Object[]) null).equals("null context is {ignored}");
+        assert I.express("null context is {ignored}", new Object[0]).equals("null context is {ignored}");
     }
 
     @Test
