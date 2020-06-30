@@ -45,20 +45,13 @@ class TranscriptTest {
      * @param lang
      * @param translated
      */
-    private void createBundle(Transcript base, String lang, String translated) {
+    private void createBundle(String base, String lang, String translated) {
         // build bundle in memory
         Bundle bundle = new Bundle(lang);
-        bundle.put(base.v, translated);
-        bundle.put("WARNING : This setting will allow all operations on your account.", "注意 : この設定を行うとあなたのアカウントに対する全ての操作を許可することになります。");
-        bundle.put("You can notify LINE by specifying the access token acquired from [LINE Notify](https://notify-bot.line.me/).", "[LINE Notify](https://notify-bot.line.me/)から取得したアクセストークンを指定することでLINEに通知することが出来ます。");
-        bundle.put("Display a grouped board with a specified price range.", "指定された値幅でまとめられた板を表示します。");
+        bundle.put(base, translated);
 
         // save it into temporary file
-        Transcript.bundles.put(lang, bundle);
         bundle.store();
-
-        // remove from memory
-        Transcript.bundles.remove(lang);
     }
 
     @Test
@@ -75,25 +68,30 @@ class TranscriptTest {
     @Test
     void with() {
         Transcript text = new Transcript("You can use {0}.", "context");
-        assert text.toString().equals("You can use context.");
+        assert text.is("You can use context.");
     }
 
     @Test
     void withMultiple() {
         Transcript text = new Transcript("You can {1} {0}.", "context", "use");
-        assert text.toString().equals("You can use context.");
+        assert text.is("You can use context.");
     }
 
     @Test
     void translateByBundle() {
         Transcript text = new Transcript("base");
-        createBundle(text, "fr", "nombre d'unités");
-        createBundle(text, "de", "Anzahl der Einheiten");
-        createBundle(text, "ja", "基数");
+        createBundle("base", "fr", "nombre d'unités");
+        createBundle("base", "de", "Anzahl der Einheiten");
+        createBundle("base", "ja", "基数");
 
-        assert text.observing().to().is("nombre d'unités");
-        assert text.observing().to().is("Anzahl der Einheiten");
-        assert text.observing().to().is("基数");
+        Transcript.Lang.set("de");
+        assert text.is("nombre d'unités");
+
+        Transcript.Lang.set("fr");
+        assert text.is("Anzahl der Einheiten");
+
+        Transcript.Lang.set("ja");
+        assert text.is("基数");
     }
 
     @Test
