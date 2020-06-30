@@ -801,11 +801,25 @@ public class I {
      *         unsuccessful, an error will be sent.
      */
     public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> response) {
+        return http(null, request, response);
+    }
+
+    /**
+     * Obtain a {@link Signal} to request a resource by HTTP(S). If the request is successful, the
+     * content is converted to the specified type before it is sent.
+     * 
+     * @param <T>
+     * @param request Request builder.
+     * @param response Response type.
+     * @return If the request is successful, the content will be sent. If the request is
+     *         unsuccessful, an error will be sent.
+     */
+    public static <T> Signal<T> http(HttpClient client, HttpRequest.Builder request, Class<T> response) {
         BodySubscriber s = response == String.class ? BodySubscribers.ofString(StandardCharsets.UTF_8)
                 : BodySubscribers.mapping(BodySubscribers.ofInputStream(), //
                         response == JSON.class ? I::json : response == XML.class ? I::xml : i -> I.json(i).to(response));
 
-        return http(null, request, i -> s);
+        return http(client, request, i -> s);
     }
 
     /**

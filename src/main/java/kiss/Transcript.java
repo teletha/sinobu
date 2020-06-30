@@ -12,6 +12,7 @@ package kiss;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.file.Files;
@@ -22,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,6 +32,8 @@ import java.util.concurrent.TimeUnit;
  * the text is translated, it is saved to the local disk and loaded from there in the future.
  */
 public final class Transcript extends Variable<String> implements CharSequence {
+
+    private static final HttpClient client = HttpClient.newBuilder().executor(Executors.newSingleThreadExecutor()).build();
 
     /** The default language in the current environment. */
     public static final Variable<Locale> Lang = Variable.of(Locale.getDefault());
@@ -65,7 +69,7 @@ public final class Transcript extends Variable<String> implements CharSequence {
             // Finally, we will perform to translate text online dynamically.
             // We do not want to make more than one request at the same time,
             // so we have certain intervals.
-            return I.http(HttpRequest.newBuilder()
+            return I.http(client, HttpRequest.newBuilder()
                     .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
                     .header("Content-Type", "application/json")
                     .POST(BodyPublishers.ofString("{\"text\":\"" + text + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
@@ -73,7 +77,6 @@ public final class Transcript extends Variable<String> implements CharSequence {
                     .skipNull()
                     .map(v -> {
                         bundle.put(lang, v);
-                        action.accept(lang);
                         return v;
                     });
         }).startWith(text).to(v -> {
