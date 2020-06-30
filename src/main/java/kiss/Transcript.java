@@ -106,7 +106,7 @@ public final class Transcript extends Variable<String> implements CharSequence {
     // Resource Bundle Implemetation
     // ===================================================================
     /** The root directory of cache. */
-    static Path root = Path.of(I.env("TranslationDirectory", System.getProperty("user.dir") + "/language"));
+    static Path root = Path.of(I.env("TranslationDirectory", "language"));
 
     /** In-memory cache for dynamic bundles. */
     static Map<String, Map<String, String>> bundles = new HashMap();
