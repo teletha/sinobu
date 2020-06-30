@@ -56,23 +56,33 @@ public final class Transcript extends Variable<String> implements CharSequence {
 
             // The next step is to check for already translated text from
             // the locally stored bundle files.
-            Map<String, String> bundle = bundles.computeIfAbsent(lang, Transcript::load);
+            Map<String, String> bundle = bundles.computeIfAbsent(lang, a -> {
+                Map<String, String> map = new ConcurrentSkipListMap();
+                BufferedReader reader = null;
+
+                try {
+                    reader = Files.newBufferedReader(Path.of(I.env("TranslationDirectory", "language") + "/" + lang + ".txt"));
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        map.put(line.replace('﹍', '\r').replace('␣', '\n'), reader.readLine().replace('﹍', '\r').replace('␣', '\n'));
+                        reader.readLine();
+                    }
+                } catch (Exception e) {
+                    // ignore
+                } finally {
+                    I.quiet(reader);
+                }
+                return map;
+            });
+
             String cached = bundle.get(text);
             if (cached != null) {
                 return I.signal(cached);
             }
 
             // Finally, we will attempt to translate dynamically online.
-            return I.http(HttpRequest.newBuilder()
-                    .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
-                    .header("Content-Type", "application/json")
-                    .POST(BodyPublishers.ofString("{\"text\":\"" + text + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
-                    .flatMap(v -> v.find("payload.translations.0.translation", String.class))
-                    .skipNull()
-                    .effect(translated -> {
-                        bundle.put(text, translated);
-                        save.accept(lang);
-                    });
+            action.accept(I.pair(lang, text));
+            return I.signal(text);
         }).startWith(text).to(v -> {
             set(I.express(v, List.of(context)));
         });
@@ -105,68 +115,51 @@ public final class Transcript extends Variable<String> implements CharSequence {
     // ===================================================================
     // Resource Bundle Implemetation
     // ===================================================================
-    /** The root directory of cache. */
-    static Path root = Path.of(I.env("TranslationDirectory", "language"));
-
     /** In-memory cache for dynamic bundles. */
     static Map<String, Map<String, String>> bundles = new HashMap();
 
-    /** Coordinator of preservation timing */
-    private static final Signaling<String> save = new Signaling();
+    /** Coordinator of translation timing */
+    private static final Signaling<Ⅱ<String, String>> action = new Signaling();
 
     static {
-        save.expose.debounce(20, TimeUnit.SECONDS).to(Transcript::save);
-    }
-
-    /**
-     * Saves the translation of the specified language to the local disk. The next time it is read
-     * from here, it can help reduce translation resources.
-     * 
-     * @param lang ISO 639 alpha-2 or alpha-3 language code, or registration of up to 8 English
-     *            characters Pre-language subtags (for future extensions). If the language has both
-     *            alpha-2 and alpha-3 codes, use the alpha-2 code.
-     * @return
-     */
-    static Map<String, String> load(String lang) {
-        Map<String, String> map = new ConcurrentSkipListMap();
-        BufferedReader reader = null;
-
-        try {
-            reader = Files.newBufferedReader(root.resolve(lang + ".txt"));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                map.put(line.replace('﹍', '\r').replace('␣', '\n'), reader.readLine().replace('﹍', '\r').replace('␣', '\n'));
-                reader.readLine();
-            }
-        } catch (Exception e) {
-            // ignore
-        } finally {
-            I.quiet(reader);
-        }
-        return map;
-    }
-
-    /**
-     * Write bundle data to local cache.
-     * 
-     * @param lang ISO 639 alpha-2 or alpha-3 language code, or registration of up to 8 English
-     *            characters Pre-language subtags (for future extensions). If the language has both
-     *            alpha-2 and alpha-3 codes, use the alpha-2 code.
-     */
-    static void save(String lang) {
-        Path path = root.resolve(lang + ".txt");
-        BufferedWriter writer = null;
-        try {
-            Files.createDirectories(path.getParent());
-            writer = Files.newBufferedWriter(path);
-            for (Entry<String, String> entry : bundles.get(lang).entrySet()) {
-                writer.append(entry.getKey().replace('\r', '﹍').replace('\n', '␣')).append("\n");
-                writer.append(entry.getValue().replace('\r', '﹍').replace('\n', '␣')).append("\n\n");
-            }
-        } catch (Exception e) {
-            // ignore
-        } finally {
-            I.quiet(writer);
-        }
+        action.expose
+                // Perform the translation online. We do not want to make more than one request
+                // at the same time, so we have certain intervals.
+                .interval(1, TimeUnit.SECONDS)
+                .flatMap(text -> {
+                    return I.http(HttpRequest.newBuilder()
+                            .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
+                            .header("Content-Type", "application/json")
+                            .POST(BodyPublishers
+                                    .ofString("{\"text\":\"" + text.ⅱ + "\",\"source\":\"en\",\"target\":\"" + text.ⅰ + "\"}")), JSON.class)
+                            .flatMap(v -> v.find("payload.translations.0.translation", String.class))
+                            .skipNull()
+                            .map(v -> {
+                                bundles.get(text.ⅰ).put(text.ⅱ, v);
+                                return text.ⅲ(v);
+                            });
+                })
+                // Automatic translation is often done multiple times in a short period of time, and
+                // it is not efficient to save the translation results every time you get them, so
+                // it is necessary to process them in batches over a period of time.
+                .debounce(30, TimeUnit.SECONDS)
+                .to(text -> {
+                    // Saves the translation of the specified language to the local disk. The next
+                    // time it is read from here, it can help reduce translation resources.
+                    Path path = Path.of(I.env("TranslationDirectory", "language") + "/" + text.ⅰ + ".txt");
+                    BufferedWriter writer = null;
+                    try {
+                        Files.createDirectories(path.getParent());
+                        writer = Files.newBufferedWriter(path);
+                        for (Entry<String, String> entry : bundles.get(text.ⅰ).entrySet()) {
+                            writer.append(entry.getKey().replace('\r', '﹍').replace('\n', '␣')).append("\n");
+                            writer.append(entry.getValue().replace('\r', '﹍').replace('\n', '␣')).append("\n\n");
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    } finally {
+                        I.quiet(writer);
+                    }
+                });
     }
 }

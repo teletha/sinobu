@@ -53,7 +53,7 @@ class TranscriptTest {
 
         // save it into temporary file
         Transcript.bundles.put(lang, bundle);
-        Transcript.save(lang);
+        Transcript.save(I.pair(lang, base.v, translated));
 
         // remove from memory
         Transcript.bundles.remove(lang);
@@ -110,7 +110,7 @@ class TranscriptTest {
 
         Transcript.Lang.set(Locale.JAPANESE);
         Variable<String> translated = text.observing().to();
-        Thread.sleep(2000);
+        Thread.sleep(5000);
         assert translated.is("ランタイムでの変換");
     }
 }
