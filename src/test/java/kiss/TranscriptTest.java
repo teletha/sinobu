@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Locale;
 import java.util.Map;
@@ -31,7 +31,7 @@ class TranscriptTest {
     @BeforeEach
     private void init() {
         Transcript.Lang.set(Locale.ENGLISH);
-        Transcript.root = room.locateDirectory("transcript-temp");
+        I.envy("TranscriptDirectory", room.locateDirectory("transcript-temp").toAbsolutePath().toString());
     }
 
     @AfterEach
@@ -53,7 +53,7 @@ class TranscriptTest {
 
         // save it into temporary file
         Transcript.bundles.put(lang, bundle);
-        Transcript.save(I.pair(lang, base.v, translated));
+        Transcript.save(lang);
 
         // remove from memory
         Transcript.bundles.remove(lang);
