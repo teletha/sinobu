@@ -404,7 +404,7 @@ class JSONTest {
         // @formatter:on
     }
 
-    private static class AnimalRef {
+    static class AnimalRef {
         public Animal animal;
     }
 

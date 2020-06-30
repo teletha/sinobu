@@ -17,8 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.I;
-
 public class WiseListTest {
 
     /** The mixined class holder. */

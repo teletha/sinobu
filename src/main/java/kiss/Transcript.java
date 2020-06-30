@@ -12,7 +12,6 @@ package kiss;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.file.Files;
@@ -23,7 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,10 +31,8 @@ import java.util.concurrent.TimeUnit;
  */
 public final class Transcript extends Variable<String> implements CharSequence {
 
-    private static final HttpClient client = HttpClient.newBuilder().executor(Executors.newSingleThreadExecutor()).build();
-
     /** The default language in the current environment. */
-    public static final Variable<Locale> Lang = Variable.of(Locale.getDefault());
+    public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
     /**
      * The text will be automatically translated. Basic sentences must be written in English. It
@@ -50,9 +46,7 @@ public final class Transcript extends Variable<String> implements CharSequence {
     public Transcript(String text, Object... context) {
         super(null);
 
-        Lang.observing().switchMap(locale -> {
-            String lang = locale.getLanguage();
-
+        Lang.observing().switchMap(lang -> {
             // First, check inline cache.
             if (lang.equals("en")) {
                 return I.signal(text);
@@ -66,17 +60,18 @@ public final class Transcript extends Variable<String> implements CharSequence {
                 return I.signal(cached);
             }
 
-            // Finally, we will perform to translate text online dynamically.
-            // We do not want to make more than one request at the same time,
+            // Perform the translation online.
+            // TODO We do not want to make more than one request at the same time,
             // so we have certain intervals.
-            return I.http(client, HttpRequest.newBuilder()
+            return I.http(HttpRequest.newBuilder()
                     .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
                     .header("Content-Type", "application/json")
                     .POST(BodyPublishers.ofString("{\"text\":\"" + text + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
                     .flatMap(v -> v.find("payload.translations.0.translation", String.class))
                     .skipNull()
                     .map(v -> {
-                        bundle.put(lang, v);
+                        bundles.get(lang).put(text, v);
+                        action.accept(lang);
                         return v;
                     });
         }).startWith(text).to(v -> {
@@ -127,6 +122,31 @@ public final class Transcript extends Variable<String> implements CharSequence {
     }
 
     /**
+     * Saves the translation of the specified language to the local disk. The next time it is read
+     * from here, it can help reduce translation resources.
+     * 
+     * @param lang A target language code.
+     */
+    static void save(String text) {
+        // Saves the translation of the specified language to the local disk. The next
+        // time it is read from here, it can help reduce translation resources.
+        Path path = Path.of(I.env("TranslationDirectory", "language") + "/" + text + ".txt");
+        BufferedWriter writer = null;
+        try {
+            Files.createDirectories(path.getParent());
+            writer = Files.newBufferedWriter(path);
+            for (Entry<String, String> entry : bundles.get(text).entrySet()) {
+                writer.append(entry.getKey().replace('\r', '﹍').replace('\n', '␣')).append("\n");
+                writer.append(entry.getValue().replace('\r', '﹍').replace('\n', '␣')).append("\n\n");
+            }
+        } catch (Exception e) {
+            // ignore
+        } finally {
+            I.quiet(writer);
+        }
+    }
+
+    /**
      * Reads the translated text from a locally stored bundle file, it can help reduce translation
      * resources.
      * 
@@ -150,28 +170,5 @@ public final class Transcript extends Variable<String> implements CharSequence {
             I.quiet(reader);
         }
         return map;
-    }
-
-    /**
-     * Saves the translation of the specified language to the local disk. The next time it is read
-     * from here, it can help reduce translation resources.
-     * 
-     * @param lang A target language code.
-     */
-    static void save(String lang) {
-        Path path = Path.of(I.env("TranslationDirectory", "language") + "/" + lang + ".txt");
-        BufferedWriter writer = null;
-        try {
-            Files.createDirectories(path.getParent());
-            writer = Files.newBufferedWriter(path);
-            for (Entry<String, String> entry : bundles.get(lang).entrySet()) {
-                writer.append(entry.getKey().replace('\r', '﹍').replace('\n', '␣')).append("\n");
-                writer.append(entry.getValue().replace('\r', '﹍').replace('\n', '␣')).append("\n\n");
-            }
-        } catch (Exception e) {
-            // ignore
-        } finally {
-            I.quiet(writer);
-        }
     }
 }

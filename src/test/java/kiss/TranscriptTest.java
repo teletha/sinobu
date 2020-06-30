@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Locale;
 import java.util.Map;
@@ -30,13 +30,13 @@ class TranscriptTest {
 
     @BeforeEach
     private void init() {
-        Transcript.Lang.set(Locale.ENGLISH);
+        Transcript.Lang.set("en");
         I.envy("TranscriptDirectory", room.locateDirectory("transcript-temp").toAbsolutePath().toString());
     }
 
     @AfterEach
     private void reset() throws Exception {
-        Transcript.Lang.set(Locale.getDefault());
+        Transcript.Lang.set(Locale.getDefault().getLanguage());
     }
 
     /**
@@ -108,7 +108,7 @@ class TranscriptTest {
     void dynamic() throws InterruptedException {
         Transcript text = new Transcript("translate on runtime");
 
-        Transcript.Lang.set(Locale.JAPANESE);
+        Transcript.Lang.set("ja");
         Variable<String> translated = text.observing().to();
         Thread.sleep(5000);
         assert translated.is("ランタイムでの変換");
