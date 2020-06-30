@@ -9,15 +9,14 @@
  */
 package kiss;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -48,12 +47,15 @@ class TranscriptTest {
      */
     private void createBundle(Transcript base, String lang, String translated) {
         // build bundle in memory
-        Map<String, String> bundle = new ConcurrentSkipListMap();
+        Bundle bundle = new Bundle(lang);
         bundle.put(base.v, translated);
+        bundle.put("WARNING : This setting will allow all operations on your account.", "注意 : この設定を行うとあなたのアカウントに対する全ての操作を許可することになります。");
+        bundle.put("You can notify LINE by specifying the access token acquired from [LINE Notify](https://notify-bot.line.me/).", "[LINE Notify](https://notify-bot.line.me/)から取得したアクセストークンを指定することでLINEに通知することが出来ます。");
+        bundle.put("Display a grouped board with a specified price range.", "指定された値幅でまとめられた板を表示します。");
 
         // save it into temporary file
         Transcript.bundles.put(lang, bundle);
-        Transcript.save(lang);
+        bundle.store();
 
         // remove from memory
         Transcript.bundles.remove(lang);
@@ -67,7 +69,7 @@ class TranscriptTest {
 
     @Test
     void nullInput() {
-        assertThrows(NullPointerException.class, () -> new Transcript((String) null));
+        Assertions.assertThrows(NullPointerException.class, () -> new Transcript((String) null));
     }
 
     @Test
@@ -83,7 +85,6 @@ class TranscriptTest {
     }
 
     @Test
-    @Disabled
     void translateByBundle() {
         Transcript text = new Transcript("base");
         createBundle(text, "fr", "nombre d'unités");
@@ -112,5 +113,17 @@ class TranscriptTest {
         Variable<String> translated = text.observing().to();
         Thread.sleep(5000);
         assert translated.is("ランタイムでの変換");
+    }
+
+    @Test
+    void testName() {
+        I.http(HttpRequest.newBuilder()
+                .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
+                .header("Content-Type", "application/json; charset=utf-8")
+                .POST(BodyPublishers.ofString("{\"text\":\"" + "translate on\r\nruntime"
+                        .replaceAll("\\n|\\r\\n|\\r", " ") + "\",\"source\":\"en\",\"target\":\"" + "ja" + "\"}")), String.class)
+                .to(e -> {
+                    System.out.println(e);
+                });
     }
 }

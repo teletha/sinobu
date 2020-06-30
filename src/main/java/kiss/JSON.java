@@ -538,19 +538,15 @@ public class JSON {
     private Appendable out;
 
     /**
-     * <p>
      * JSON serializer for Java object graph.
-     * </p>
      */
     JSON(Appendable out) {
         this.out = out;
     }
 
     /**
-     * <p>
      * JSON serializer for Java object graph. This serializer rejects cyclic node within ancestor
      * nodes, but same object in sibling nodes will be acceptable.
-     * </p>
      * 
      * @param model
      * @param property
@@ -569,7 +565,7 @@ public class JSON {
                     // property key (List node doesn't need key)
                     if (model.type != List.class) {
                         write(property.name, String.class);
-                        out.append(": ");
+                        out.append(model.type == Bundle.class ? ":\n\t\t" : ": ");
                     }
                 }
 

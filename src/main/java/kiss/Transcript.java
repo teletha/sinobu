@@ -9,19 +9,13 @@
  */
 package kiss;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -53,8 +47,8 @@ public final class Transcript extends Variable<String> implements CharSequence {
             }
 
             // The next step is to check for already translated text from
-            // the locally stored bundle files.
-            Map<String, String> bundle = bundles.computeIfAbsent(lang, Transcript::load);
+            // the locally stored bundle files. Iit can help reduce translationresources.
+            Bundle bundle = bundles.computeIfAbsent(lang, Bundle::new);
             String cached = bundle.get(text);
             if (cached != null) {
                 return I.signal(cached);
@@ -66,12 +60,13 @@ public final class Transcript extends Variable<String> implements CharSequence {
             return I.http(HttpRequest.newBuilder()
                     .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
                     .header("Content-Type", "application/json")
-                    .POST(BodyPublishers.ofString("{\"text\":\"" + text + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
+                    .POST(BodyPublishers.ofString("{\"text\":\"" + text
+                            .replaceAll("\\n|\\r\\n|\\r", " ") + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
                     .flatMap(v -> v.find("payload.translations.0.translation", String.class))
                     .skipNull()
                     .map(v -> {
                         bundles.get(lang).put(text, v);
-                        action.accept(lang);
+                        action.accept(bundle);
                         return v;
                     });
         }).startWith(text).to(v -> {
@@ -107,68 +102,19 @@ public final class Transcript extends Variable<String> implements CharSequence {
     // Resource Bundle Implemetation
     // ===================================================================
     /** In-memory cache for dynamic bundles. */
-    static Map<String, Map<String, String>> bundles = new HashMap();
+    static Map<String, Bundle> bundles = new ConcurrentHashMap();
 
     /** Coordinator of translation timing */
-    private static final Signaling<String> action = new Signaling();
+    private static final Signaling<Bundle> action = new Signaling();
 
     static {
+        // Saves the translation of the specified language to the local disk. The next time it is
+        // read from here, it can help reduce translation resources.
         action.expose
                 // Automatic translation is often done multiple times in a short period of time, and
                 // it is not efficient to save the translation results every time you get them, so
                 // it is necessary to process them in batches over a period of time.
                 .debounce(30, TimeUnit.SECONDS)
-                .to(Transcript::save);
-    }
-
-    /**
-     * Saves the translation of the specified language to the local disk. The next time it is read
-     * from here, it can help reduce translation resources.
-     * 
-     * @param lang A target language code.
-     */
-    static void save(String text) {
-        // Saves the translation of the specified language to the local disk. The next
-        // time it is read from here, it can help reduce translation resources.
-        Path path = Path.of(I.env("TranslationDirectory", "language") + "/" + text + ".txt");
-        BufferedWriter writer = null;
-        try {
-            Files.createDirectories(path.getParent());
-            writer = Files.newBufferedWriter(path);
-            for (Entry<String, String> entry : bundles.get(text).entrySet()) {
-                writer.append(entry.getKey().replace('\r', '﹍').replace('\n', '␣')).append("\n");
-                writer.append(entry.getValue().replace('\r', '﹍').replace('\n', '␣')).append("\n\n");
-            }
-        } catch (Exception e) {
-            // ignore
-        } finally {
-            I.quiet(writer);
-        }
-    }
-
-    /**
-     * Reads the translated text from a locally stored bundle file, it can help reduce translation
-     * resources.
-     * 
-     * @param lang A target language code.
-     * @return
-     */
-    static Map<String, String> load(String lang) {
-        Map<String, String> map = new ConcurrentSkipListMap();
-        BufferedReader reader = null;
-
-        try {
-            reader = Files.newBufferedReader(Path.of(I.env("TranslationDirectory", "language") + "/" + lang + ".txt"));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                map.put(line.replace('﹍', '\r').replace('␣', '\n'), reader.readLine().replace('﹍', '\r').replace('␣', '\n'));
-                reader.readLine();
-            }
-        } catch (Exception e) {
-            // ignore
-        } finally {
-            I.quiet(reader);
-        }
-        return map;
+                .to(Bundle::store);
     }
 }
