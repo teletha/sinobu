@@ -64,23 +64,30 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
-     * Compute the current value. If it is <code>null</code>, this method returns the specified
-     * default value.
-     * </p>
+     * Get the current value. If there is no value, wait until the value is set.
      *
-     * @param value The default value.
-     * @return The current value or the specified default value.
+     * @return Current value or next value.
+     * @see #acquire()
+     * @see #exact()
+     * @see #get()
+     * @see #next()
+     * @see #or(Object)
+     * @see #or(Supplier)
      */
-    @Override
-    public V get() {
-        return v;
+    public final V acquire() {
+        return or(this::next);
     }
 
     /**
-     * Exact value. If this {@link Variable} is empty, throw {@link NullPointerException}.
+     * Get the current value. If there is no value, {@link NullPointerException} will be thrown.
      * 
-     * @return A current value.
+     * @return Current value or throws error.
+     * @see #acquire()
+     * @see #exact()
+     * @see #get()
+     * @see #next()
+     * @see #or(Object)
+     * @see #or(Supplier)
      */
     public final V exact() {
         return or(() -> {
@@ -89,22 +96,31 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * Acquire value. If the {@link Variable} is empty, it waits until it reaches a non-null value.
-     * 
-     * @return
+     * Get the current value. If there is no value, returns null.
+     *
+     * @return Current value or null.
+     * @see #acquire()
+     * @see #exact()
+     * @see #get()
+     * @see #next()
+     * @see #or(Object)
+     * @see #or(Supplier)
      */
-    public final V acquire() {
-        if (v != null) {
-            return v;
-        }
+    @Override
+    public final V get() {
+        return v;
+    }
 
-        try {
-            CompletableFuture<V> c = new CompletableFuture();
-            observe().first().to(c::complete);
-            return c.get();
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
+    /**
+     * Intercept the value modification.
+     * 
+     * @param interceptor A interceptor for value modification. First parameter is the current
+     *            value, Second parameter is the new value.
+     * @return Chainable API.
+     */
+    public final Variable<V> intercept(WiseBiFunction<V, V, V> interceptor) {
+        this.interceptor = interceptor;
+        return this;
     }
 
     /**
@@ -197,6 +213,18 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * Perform the specified action if the value is present.
      * </p>
      *
+     * @param action An action to perform.
+     * @return The computed {@link Variable}.
+     */
+    public final <R> Variable<R> flatMap(Function<V, Variable<R>> converter) {
+        return v == null || converter == null ? new Variable(null) : converter.apply(v);
+    }
+
+    /**
+     * <p>
+     * Perform the specified action if the value is present.
+     * </p>
+     *
      * @param then An action to perform.
      * @return The computed {@link Variable}.
      */
@@ -212,15 +240,24 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
-     * Perform the specified action if the value is present.
-     * </p>
+     * Get the value to be set next. The method waits until a new value is set.
      *
-     * @param action An action to perform.
-     * @return The computed {@link Variable}.
+     * @return The next value.
+     * @see #acquire()
+     * @see #exact()
+     * @see #get()
+     * @see #next()
+     * @see #or(Object)
+     * @see #or(Supplier)
      */
-    public final <R> Variable<R> flatMap(Function<V, Variable<R>> converter) {
-        return v == null || converter == null ? new Variable(null) : converter.apply(v);
+    public final V next() {
+        try {
+            CompletableFuture<V> c = new CompletableFuture();
+            observe().first().to(c::complete);
+            return c.get();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -245,20 +282,32 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * Return the value if present, otherwise return other.
+     * Get the current value. If there is no value, returns the specified alternative value.
      *
      * @param other A value to be returned if there is no value present, may be null.
-     * @return A value, if present, otherwise other.
+     * @return The current value or alternative value.
+     * @see #acquire()
+     * @see #exact()
+     * @see #get()
+     * @see #next()
+     * @see #or(Object)
+     * @see #or(Supplier)
      */
     public final V or(V other) {
         return v != null ? v : other;
     }
 
     /**
-     * Return the value if present, otherwise return other.
+     * Get the current value. If there is no value, returns the specified alternative value.
      *
      * @param other A value to be returned if there is no value present, may be null.
-     * @return A value, if present, otherwise other.
+     * @return The current value or alternative value.
+     * @see #acquire()
+     * @see #exact()
+     * @see #get()
+     * @see #next()
+     * @see #or(Object)
+     * @see #or(Supplier)
      */
     public final V or(Supplier<V> other) {
         return v != null ? v : other == null ? null : other.get();
@@ -317,18 +366,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     public final V set(UnaryOperator<V> value) {
         return set(value == null ? null : value.apply(v));
-    }
-
-    /**
-     * Intercept the value modification.
-     * 
-     * @param interceptor A interceptor for value modification. First parameter is the current
-     *            value, Second parameter is the new value.
-     * @return Chainable API.
-     */
-    public final Variable<V> intercept(WiseBiFunction<V, V, V> interceptor) {
-        this.interceptor = interceptor;
-        return this;
     }
 
     /**

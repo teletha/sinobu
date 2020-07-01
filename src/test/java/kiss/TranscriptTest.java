@@ -142,8 +142,7 @@ class TranscriptTest {
         assert text.is("Water");
 
         // It will be reflected when the translation results are available.
-        waitForTranslation(text);
-        assert text.is("Wasser");
+        assert text.acquire().equals("Wasser");
 
         // Immediately after the language change,
         // it has not yet been translated due to network usage.

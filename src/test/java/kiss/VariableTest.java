@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -280,5 +281,27 @@ class VariableTest {
         var.fix();
         var.set("fail");
         assert var.is("change");
+    }
+
+    @Test
+    void next() {
+        Variable<String> empty = Variable.empty();
+        I.schedule(20, TimeUnit.MILLISECONDS, () -> empty.set("changed"));
+        assert empty.next().equals("changed");
+
+        Variable<String> withValue = Variable.of("current");
+        I.schedule(20, TimeUnit.MILLISECONDS, () -> withValue.set("changed"));
+        assert withValue.next().equals("changed");
+    }
+
+    @Test
+    void acquire() {
+        Variable<String> empty = Variable.empty();
+        I.schedule(20, TimeUnit.MILLISECONDS, () -> empty.set("changed"));
+        assert empty.acquire().equals("changed");
+
+        Variable<String> withValue = Variable.of("current");
+        I.schedule(20, TimeUnit.MILLISECONDS, () -> withValue.set("changed"));
+        assert withValue.acquire().equals("current");
     }
 }
