@@ -2404,9 +2404,7 @@ public class I {
 
             // stream to byte
             if (input instanceof InputStream) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                copy((InputStream) input, out, true);
-                input = out.toByteArray();
+                input = ((InputStream) input).readAllBytes();
             } else if (input instanceof Readable) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 copy((Readable) input, new OutputStreamWriter(out, StandardCharsets.UTF_8), true);
