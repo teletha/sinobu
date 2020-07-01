@@ -61,7 +61,7 @@ public final class Transcript extends Variable<String> implements CharSequence {
                     .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
                     .header("Content-Type", "application/json")
                     .POST(BodyPublishers.ofString("{\"text\":\"" + text
-                            .replaceAll("\\n|\\r\\n|\\r", " ") + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
+                            .replaceAll("[\\n|\\r]+", " ") + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
                     .flatMap(v -> v.find("payload.translations.0.translation", String.class))
                     .skipNull()
                     .map(v -> {

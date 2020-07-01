@@ -9,9 +9,6 @@
  */
 package kiss;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.AfterAll;
@@ -37,6 +34,8 @@ class TranscriptTest {
     private void initialize() {
         Transcript.Lang.set("en");
         I.envy("LangDirectory", room.locateDirectory("transcript").toAbsolutePath().toString());
+
+        Transcript.bundles.clear();
     }
 
     @BeforeAll
@@ -157,14 +156,34 @@ class TranscriptTest {
     }
 
     @Test
-    void testName() {
-        I.http(HttpRequest.newBuilder()
-                .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
-                .header("Content-Type", "application/json; charset=utf-8")
-                .POST(BodyPublishers.ofString("{\"text\":\"" + "translate on\r\nruntime"
-                        .replaceAll("\\n|\\r\\n|\\r", " ") + "\",\"source\":\"en\",\"target\":\"" + "ja" + "\"}")), String.class)
-                .to(e -> {
-                    System.out.println(e);
-                });
+    void translateLineFeed() {
+        Transcript text = new Transcript("one\ntwo");
+
+        waitForTranslationTo("fr", text);
+        assert text.is("Un deux");
+    }
+
+    @Test
+    void translateCarrigeReturn() {
+        Transcript text = new Transcript("three\rfour");
+
+        waitForTranslationTo("zh", text);
+        assert text.is("三四");
+    }
+
+    @Test
+    void translateBreak() {
+        Transcript text = new Transcript("five\r\nsix");
+
+        waitForTranslationTo("ru", text);
+        assert text.is("пять шести");
+    }
+
+    @Test
+    void translateContextParameter() {
+        Transcript text = new Transcript("The correct answer is {0}.", "101");
+
+        waitForTranslationTo("es", text);
+        assert text.is("La respuesta correcta es 101.");
     }
 }
