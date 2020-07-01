@@ -9,8 +9,6 @@
  */
 package kiss;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -59,38 +57,6 @@ class TranscriptTest {
         Bundle bundle = new Bundle(lang);
         bundle.put(base, translated);
         bundle.store();
-    }
-
-    /**
-     * Wait for online translation result.
-     * 
-     * @param text
-     */
-    private void waitForTranslation(Variable<String> text) {
-        try {
-            CompletableFuture future = new CompletableFuture();
-            text.observe().to(future::complete);
-            future.get();
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
-    /**
-     * Wait for online translation result.
-     * 
-     * @param text
-     */
-    private void waitForTranslationTo(String lang, Variable<String> text) {
-        try {
-            CompletableFuture future = new CompletableFuture();
-            text.observe().to(future::complete);
-
-            I.Lang.set(lang);
-            future.get();
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
     }
 
     @Test
@@ -142,7 +108,7 @@ class TranscriptTest {
         assert text.is("Water");
 
         // It will be reflected when the translation results are available.
-        assert text.acquire().equals("Wasser");
+        assert text.next().equals("Wasser");
 
         // Immediately after the language change,
         // it has not yet been translated due to network usage.
@@ -150,39 +116,38 @@ class TranscriptTest {
         assert text.is("Wasser");
 
         // It will be reflected when the translation results are available.
-        waitForTranslation(text);
-        assert text.is("水");
+        assert text.next().equals("水");
     }
 
     @Test
     void translateLineFeed() {
         Variable<String> text = I.translate("one\ntwo");
 
-        waitForTranslationTo("fr", text);
-        assert text.is("Un deux");
+        I.Lang.set("fr");
+        assert text.next().equals("Un deux");
     }
 
     @Test
     void translateCarrigeReturn() {
         Variable<String> text = I.translate("three\rfour");
 
-        waitForTranslationTo("zh", text);
-        assert text.is("三四");
+        I.Lang.set("zh");
+        assert text.next().equals("三四");
     }
 
     @Test
     void translateBreak() {
         Variable<String> text = I.translate("five\r\nsix");
 
-        waitForTranslationTo("ru", text);
-        assert text.is("пять шести");
+        I.Lang.set("ru");
+        assert text.next().equals("пять шести");
     }
 
     @Test
     void translateContextParameter() {
         Variable<String> text = I.translate("The correct answer is {0}.", "101");
 
-        waitForTranslationTo("es", text);
-        assert text.is("La respuesta correcta es 101.");
+        I.Lang.set("es");
+        assert text.next().equals("La respuesta correcta es 101.");
     }
 }
