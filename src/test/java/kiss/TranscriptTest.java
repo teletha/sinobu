@@ -12,52 +12,92 @@ package kiss;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
-import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import antibug.CleanRoom;
 
+@Execution(ExecutionMode.SAME_THREAD)
 class TranscriptTest {
+
+    static String originalLanguage;
 
     @RegisterExtension
     final CleanRoom room = new CleanRoom();
 
     @BeforeEach
-    private void init() {
+    private void initialize() {
         Transcript.Lang.set("en");
-        I.envy("TranscriptDirectory", room.locateDirectory("transcript-temp").toAbsolutePath().toString());
+        I.envy("LangDirectory", room.locateDirectory("transcript").toAbsolutePath().toString());
     }
 
-    @AfterEach
-    private void reset() throws Exception {
-        Transcript.Lang.set(Locale.getDefault().getLanguage());
+    @BeforeAll
+    static void startup() {
+        originalLanguage = Transcript.Lang.v;
+    }
+
+    @AfterAll
+    static void cleanup() {
+        Transcript.Lang.set(originalLanguage);
     }
 
     /**
      * Create bundle dynamically.
      * 
-     * @param base
      * @param lang
+     * @param base
      * @param translated
      */
-    private void createBundle(String base, String lang, String translated) {
-        // build bundle in memory
+    private void createBundle(String lang, String base, String translated) {
         Bundle bundle = new Bundle(lang);
         bundle.put(base, translated);
-
-        // save it into temporary file
         bundle.store();
+    }
+
+    /**
+     * Wait for online translation result.
+     * 
+     * @param text
+     */
+    private void waitForTranslation(Transcript text) {
+        try {
+            CompletableFuture future = new CompletableFuture();
+            text.observe().to(future::complete);
+            future.get();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * Wait for online translation result.
+     * 
+     * @param text
+     */
+    private void waitForTranslationTo(String lang, Transcript text) {
+        try {
+            CompletableFuture future = new CompletableFuture();
+            text.observe().to(future::complete);
+
+            Transcript.Lang.set(lang);
+            future.get();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     @Test
     void base() {
-        Transcript text = new Transcript("Base");
-        assert text.toString().equals("Base");
+        Transcript text = new Transcript("test");
+        assert text.is("test");
     }
 
     @Test
@@ -66,29 +106,27 @@ class TranscriptTest {
     }
 
     @Test
-    void with() {
+    void context() {
         Transcript text = new Transcript("You can use {0}.", "context");
         assert text.is("You can use context.");
     }
 
     @Test
-    void withMultiple() {
+    void contexts() {
         Transcript text = new Transcript("You can {1} {0}.", "context", "use");
         assert text.is("You can use context.");
     }
 
     @Test
     void translateByBundle() {
-        Transcript text = new Transcript("base");
-        createBundle("base", "fr", "nombre d'unités");
-        createBundle("base", "de", "Anzahl der Einheiten");
-        createBundle("base", "ja", "基数");
+        createBundle("fr", "base", "nombre d'unités");
+        createBundle("ja", "base", "基数");
 
-        Transcript.Lang.set("de");
-        assert text.is("nombre d'unités");
+        Transcript text = new Transcript("base");
+        assert text.is("base");
 
         Transcript.Lang.set("fr");
-        assert text.is("Anzahl der Einheiten");
+        assert text.is("nombre d'unités");
 
         Transcript.Lang.set("ja");
         assert text.is("基数");
@@ -96,21 +134,26 @@ class TranscriptTest {
 
     @Test
     void translateByOnline() {
-        Transcript text = new Transcript("base");
+        Transcript text = new Transcript("Water");
+        assert text.is("Water");
 
-        assert text.observing().to().is("base");
-        assert text.observing().to().is("base");
-        assert text.observing().to().is("base");
-    }
+        // Immediately after the language change,
+        // it has not yet been translated due to network usage.
+        Transcript.Lang.set("de");
+        assert text.is("Water");
 
-    @Test
-    void dynamic() throws InterruptedException {
-        Transcript text = new Transcript("translate on runtime");
+        // It will be reflected when the translation results are available.
+        waitForTranslation(text);
+        assert text.is("Wasser");
 
+        // Immediately after the language change,
+        // it has not yet been translated due to network usage.
         Transcript.Lang.set("ja");
-        Variable<String> translated = text.observing().to();
-        Thread.sleep(5000);
-        assert translated.is("ランタイムでの変換");
+        assert text.is("Wasser");
+
+        // It will be reflected when the translation results are available.
+        waitForTranslation(text);
+        assert text.is("水");
     }
 
     @Test

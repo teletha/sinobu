@@ -30,6 +30,6 @@ class Bundle extends ConcurrentSkipListMap<String, String> implements Storable<B
      */
     @Override
     public String locate() {
-        return I.env("LanguageDirectory", "language") + "/" + lang + ".json";
+        return I.env("LangDirectory", "lang") + "/" + lang + ".json";
     }
 }
