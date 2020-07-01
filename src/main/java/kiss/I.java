@@ -193,12 +193,6 @@ public class I {
     /** The xpath evaluator. */
     static final XPath xpath;
 
-    /** In-memory cache for dynamic bundles. */
-    static final Map<String, Bundle> bundles = new ConcurrentHashMap();
-
-    /** Coordinator of bundle save timing */
-    static final Signaling<Bundle> bundleSave = new Signaling();
-
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
@@ -359,11 +353,6 @@ public class I {
                 return null;
             }
         });
-
-        // Automatic translation is often done multiple times in a short period of time, and
-        // it is not efficient to save the translation results every time you get them, so
-        // it is necessary to process them in batches over a period of time.
-        bundleSave.expose.debounce(1, TimeUnit.MINUTES).to(Bundle::store);
 
         // build twelve-factor configuration
         try {
@@ -1929,13 +1918,26 @@ public class I {
                     .skipNull()
                     .map(v -> {
                         bundle.put(text, v);
-                        bundleSave.accept(bundle);
+                        translate.accept(bundle);
                         return v;
                     });
         }).startWith(text).to(v -> {
             t.set(I.express(v, I.list(context)));
         });
         return t;
+    }
+
+    /** In-memory cache for dynamic bundles. */
+    static final Map<String, Bundle> bundles = new ConcurrentHashMap();
+
+    /** Coordinator of bundle save timing */
+    static final Signaling<Bundle> translate = new Signaling();
+
+    static {
+        // Automatic translation is often done multiple times in a short period of time, and
+        // it is not efficient to save the translation results every time you get them, so
+        // it is necessary to process them in batches over a period of time.
+        translate.expose.debounce(1, TimeUnit.MINUTES).to(Bundle::store);
     }
 
     /**
