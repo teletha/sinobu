@@ -33,7 +33,7 @@ class TranscriptTest {
     @BeforeEach
     private void initialize() {
         I.Lang.set("en");
-        I.envy("LangDirectory", room.locateDirectory("transcript").toAbsolutePath().toString());
+        I.env("LangDirectory", room.locateDirectory("transcript").toAbsolutePath().toString());
 
         I.bundles.clear();
     }

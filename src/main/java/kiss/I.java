@@ -602,18 +602,11 @@ public class I {
      * @return
      */
     public static String env(String key, String defaults) {
-        return env.getProperty(key, defaults);
-    }
-
-    /**
-     * If a value is not set for the specified key, register it as an environment variable on
-     * runtime.
-     * 
-     * @param key A environment variable name.
-     * @param value A value to set.
-     */
-    public static void envy(String key, String defaults) {
-        env.putIfAbsent(key, defaults);
+        String value = env.getProperty(key);
+        if (value == null) {
+            env.setProperty(key, value = defaults);
+        }
+        return value;
     }
 
     /**
