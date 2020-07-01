@@ -19,7 +19,7 @@ import java.util.List;
  * translated online automatically into the language specified in the global variable "lang". Once
  * the text is translated, it is saved to the local disk and loaded from there in the future.
  */
-public final class Transcript extends Variable<String> implements CharSequence {
+public final class Transcript extends Variable<String> {
 
     /**
      * The text will be automatically translated. Basic sentences must be written in English. It
@@ -65,29 +65,5 @@ public final class Transcript extends Variable<String> implements CharSequence {
         }).startWith(text).to(v -> {
             set(I.express(v, List.of(context)));
         });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int length() {
-        return toString().length();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public char charAt(int index) {
-        return toString().charAt(index);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CharSequence subSequence(int start, int end) {
-        return toString().subSequence(start, end);
     }
 }
