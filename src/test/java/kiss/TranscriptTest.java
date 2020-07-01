@@ -32,20 +32,20 @@ class TranscriptTest {
 
     @BeforeEach
     private void initialize() {
-        Transcript.Lang.set("en");
+        I.Lang.set("en");
         I.envy("LangDirectory", room.locateDirectory("transcript").toAbsolutePath().toString());
 
-        Transcript.bundles.clear();
+        I.bundles.clear();
     }
 
     @BeforeAll
     static void startup() {
-        originalLanguage = Transcript.Lang.v;
+        originalLanguage = I.Lang.v;
     }
 
     @AfterAll
     static void cleanup() {
-        Transcript.Lang.set(originalLanguage);
+        I.Lang.set(originalLanguage);
     }
 
     /**
@@ -86,7 +86,7 @@ class TranscriptTest {
             CompletableFuture future = new CompletableFuture();
             text.observe().to(future::complete);
 
-            Transcript.Lang.set(lang);
+            I.Lang.set(lang);
             future.get();
         } catch (Exception e) {
             throw I.quiet(e);
@@ -124,10 +124,10 @@ class TranscriptTest {
         Transcript text = new Transcript("base");
         assert text.is("base");
 
-        Transcript.Lang.set("fr");
+        I.Lang.set("fr");
         assert text.is("nombre d'unités");
 
-        Transcript.Lang.set("ja");
+        I.Lang.set("ja");
         assert text.is("基数");
     }
 
@@ -138,7 +138,7 @@ class TranscriptTest {
 
         // Immediately after the language change,
         // it has not yet been translated due to network usage.
-        Transcript.Lang.set("de");
+        I.Lang.set("de");
         assert text.is("Water");
 
         // It will be reflected when the translation results are available.
@@ -147,7 +147,7 @@ class TranscriptTest {
 
         // Immediately after the language change,
         // it has not yet been translated due to network usage.
-        Transcript.Lang.set("ja");
+        I.Lang.set("ja");
         assert text.is("Wasser");
 
         // It will be reflected when the translation results are available.

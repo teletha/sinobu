@@ -177,6 +177,9 @@ public class I {
     public static final WiseRunnable NoOP = () -> {
     };
 
+    /** The default language in this vm environment. */
+    public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
+
     /** The automatic saver references. */
     static final WeakHashMap<Object, Disposable> autosaver = new WeakHashMap();
 
@@ -188,6 +191,12 @@ public class I {
 
     /** The xpath evaluator. */
     static final XPath xpath;
+
+    /** In-memory cache for dynamic bundles. */
+    static final Map<String, Bundle> bundles = new ConcurrentHashMap();
+
+    /** Coordinator of bundle save timing */
+    static final Signaling<Bundle> bundleSave = new Signaling();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -349,6 +358,11 @@ public class I {
                 return null;
             }
         });
+
+        // Automatic translation is often done multiple times in a short period of time, and
+        // it is not efficient to save the translation results every time you get them, so
+        // it is necessary to process them in batches over a period of time.
+        bundleSave.expose.debounce(1, TimeUnit.MINUTES).to(Bundle::store);
 
         // build twelve-factor configuration
         try {

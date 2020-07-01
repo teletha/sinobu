@@ -13,10 +13,6 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The text will be automatically translated. Basic sentences must be written in English. It will be
@@ -24,9 +20,6 @@ import java.util.concurrent.TimeUnit;
  * the text is translated, it is saved to the local disk and loaded from there in the future.
  */
 public final class Transcript extends Variable<String> implements CharSequence {
-
-    /** The default language in the current environment. */
-    public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
     /**
      * The text will be automatically translated. Basic sentences must be written in English. It
@@ -40,15 +33,15 @@ public final class Transcript extends Variable<String> implements CharSequence {
     public Transcript(String text, Object... context) {
         super(null);
 
-        Lang.observing().switchMap(lang -> {
+        I.Lang.observing().switchMap(lang -> {
             // First, check inline cache.
-            if (lang.equals("en")) {
+            if ("en".equals(lang)) {
                 return I.signal(text);
             }
 
             // The next step is to check for already translated text from
             // the locally stored bundle files. Iit can help reduce translationresources.
-            Bundle bundle = bundles.computeIfAbsent(lang, Bundle::new);
+            Bundle bundle = I.bundles.computeIfAbsent(lang, Bundle::new);
             String cached = bundle.get(text);
             if (cached != null) {
                 return I.signal(cached);
@@ -65,8 +58,8 @@ public final class Transcript extends Variable<String> implements CharSequence {
                     .flatMap(v -> v.find("payload.translations.0.translation", String.class))
                     .skipNull()
                     .map(v -> {
-                        bundles.get(lang).put(text, v);
-                        action.accept(bundle);
+                        bundle.put(text, v);
+                        I.bundleSave.accept(bundle);
                         return v;
                     });
         }).startWith(text).to(v -> {
@@ -96,25 +89,5 @@ public final class Transcript extends Variable<String> implements CharSequence {
     @Override
     public CharSequence subSequence(int start, int end) {
         return toString().subSequence(start, end);
-    }
-
-    // ===================================================================
-    // Resource Bundle Implemetation
-    // ===================================================================
-    /** In-memory cache for dynamic bundles. */
-    static Map<String, Bundle> bundles = new ConcurrentHashMap();
-
-    /** Coordinator of translation timing */
-    private static final Signaling<Bundle> action = new Signaling();
-
-    static {
-        // Saves the translation of the specified language to the local disk. The next time it is
-        // read from here, it can help reduce translation resources.
-        action.expose
-                // Automatic translation is often done multiple times in a short period of time, and
-                // it is not efficient to save the translation results every time you get them, so
-                // it is necessary to process them in batches over a period of time.
-                .debounce(30, TimeUnit.SECONDS)
-                .to(Bundle::store);
     }
 }
