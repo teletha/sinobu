@@ -2399,7 +2399,7 @@ public class I {
             if (input instanceof File) {
                 input = new FileInputStream((File) input);
             } else if (input instanceof HttpRequest) {
-                input = HttpClient.newHttpClient().send((HttpRequest) input, BodyHandlers.ofByteArray()).body();
+                input = client.send((HttpRequest) input, BodyHandlers.ofByteArray()).body();
             }
 
             // stream to byte
