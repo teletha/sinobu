@@ -12,7 +12,6 @@ package kiss;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -929,7 +928,7 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
-    public static JSON json(HttpRequest input) {
+    public static JSON json(HttpRequest.Builder input) {
         return json((Object) input);
     }
 
@@ -1491,52 +1490,6 @@ public class I {
      */
     private static <T extends Throwable> T quiet(Throwable throwable) throws T {
         throw (T) throwable;
-    }
-
-    /**
-     * <p>
-     * Reads Java object from the JSON input.
-     * </p>
-     *
-     * @param input A serialized JSON representation of Java object. If the input is incompatible
-     *            with Java object, this method ignores the input. <code>null</code> will throw
-     *            {@link NullPointerException}. The empty or invalid format data will throw
-     *            {@link IllegalStateException}.
-     * @param output A root Java object. All properties will be assigned from the given data deeply.
-     *            If the input is incompatible with Java object, this method ignores the input.
-     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
-     * @return A root Java object.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
-     * @see #write(Object, Appendable)
-     */
-    public static <M> M read(CharSequence input, M output) {
-        return json(input).to(output);
-    }
-
-    /**
-     * <p>
-     * Reads Java object from the JSON input.
-     * </p>
-     * <p>
-     * If the input object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
-     * will be invoked certainly.
-     * </p>
-     *
-     * @param input A serialized JSON representation of Java object. If the input is incompatible
-     *            with Java object, this method ignores the input. <code>null</code> will throw
-     *            {@link NullPointerException}. The empty or invalid format data will throw
-     *            {@link IllegalStateException}.
-     * @param output A root Java object. All properties will be assigned from the given data deeply.
-     *            If the input is incompatible with Java object, this method ignores the input.
-     *            <code>null</code> will throw {@link java.lang.NullPointerException}.
-     * @return A root Java object.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IOError If the input data is empty or invalid format.
-     * @see #write(Object, Appendable)
-     */
-    public static <M> M read(Readable input, M output) {
-        return json(input).to(output);
     }
 
     /**
@@ -2290,7 +2243,7 @@ public class I {
      * @param source A xml expression.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(HttpRequest source) {
+    public static XML xml(HttpRequest.Builder source) {
         return I.xml(null, source);
     }
 
@@ -2343,23 +2296,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
-     * <ul>
-     * <li>{@link XML}</li>
-     * <li>{@link File}</li>
-     * <li>{@link InputStream}</li>
-     * <li>{@link Readable}</li>
-     * <li>{@link URL}</li>
-     * <li>{@link URI}</li>
-     * <li>{@link Node}</li>
-     * <li>{@link CharSequence}</li>
-     * </ul>
-     * <ul>
-     * <li>XML Literal</li>
-     * <li>HTML Literal</li>
-     * </ul>
      *
      * @param xml A xml expression.
      * @return A constructed {@link XML}.
@@ -2415,7 +2352,7 @@ public class I {
 
             if (input instanceof URI) {
                 URI uri = (URI) input;
-                input = uri.getScheme().equals("file") ? new File(uri) : HttpRequest.newBuilder(uri).build();
+                input = uri.getScheme().equals("file") ? Path.of(uri) : HttpRequest.newBuilder(uri);
             }
 
             if (input instanceof File) {
@@ -2424,8 +2361,8 @@ public class I {
 
             if (input instanceof Path) {
                 input = Files.readAllBytes((Path) input);
-            } else if (input instanceof HttpRequest) {
-                input = client.send((HttpRequest) input, BodyHandlers.ofByteArray()).body();
+            } else if (input instanceof HttpRequest.Builder) {
+                input = client.send(((HttpRequest.Builder) input).build(), BodyHandlers.ofByteArray()).body();
             }
 
             // stream to byte

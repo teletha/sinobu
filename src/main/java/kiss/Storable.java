@@ -34,7 +34,7 @@ public interface Storable<Self> {
      */
     default Self restore() {
         try {
-            I.read(Files.newBufferedReader(Paths.get(locate())), this);
+            I.json(Files.newBufferedReader(Paths.get(locate()))).to(this);
         } catch (Throwable e) {
             // ignore error
         }

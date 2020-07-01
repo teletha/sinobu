@@ -315,15 +315,6 @@ class JSONTest {
     }
 
     @Test
-    void readIncompatible() {
-        Person instance = I.read("15", I.make(Person.class));
-        assert instance != null;
-        assert instance.getAge() == 0;
-        assert instance.getFirstName() == null;
-        assert instance.getLastName() == null;
-    }
-
-    @Test
     void cyclic() {
         assertThrows(ClassCircularityError.class, () -> {
             ChainBean chain = I.make(ChainBean.class);
@@ -450,7 +441,7 @@ class JSONTest {
         Model model = Model.of(object.getClass());
 
         // write and read
-        validate(model, object, I.read(serialized, I.make((Class<M>) model.type)));
+        validate(model, object, I.json(serialized).to(model.type));
     }
 
     /**

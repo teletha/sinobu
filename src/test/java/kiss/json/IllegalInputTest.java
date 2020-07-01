@@ -9,9 +9,15 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpRequest;
+import java.nio.file.Path;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,57 +34,73 @@ class IllegalInputTest {
 
     @Test
     void readNullCharSequence() {
-        assertThrows(NullPointerException.class, () -> {
-            I.read((CharSequence) null, bean);
-        });
+        assertThrows(NullPointerException.class, () -> I.json((CharSequence) null));
     }
 
     @Test
     void readNullReader() {
-        assertThrows(NullPointerException.class, () -> {
-            I.read((Reader) null, bean);
-        });
+        assertThrows(NullPointerException.class, () -> I.json((Reader) null));
     }
 
     @Test
-    void readNullOutput() {
-        assertThrows(NullPointerException.class, () -> {
-            I.read("{\"age\":\"15\"}", (Object) null);
-        });
+    void readNullURL() {
+        assertThrows(NullPointerException.class, () -> I.json((URL) null));
     }
 
     @Test
-    void readInvalidOutputBean() {
-        Class clazz = I.read("{\"age\":\"15\"}", Class.class);
-        assert clazz == Class.class;
+    void readNullURI() {
+        assertThrows(NullPointerException.class, () -> I.json((URI) null));
+    }
+
+    @Test
+    void readNullFile() {
+        assertThrows(NullPointerException.class, () -> I.json((File) null));
+    }
+
+    @Test
+    void readNullPath() {
+        assertThrows(NullPointerException.class, () -> I.json((Path) null));
+    }
+
+    @Test
+    void readNullHTTPRequest() {
+        assertThrows(NullPointerException.class, () -> I.json((HttpRequest.Builder) null));
+    }
+
+    @Test
+    void readToIncompatibleType() {
+        Locale locale = I.json("{\"age\":\"15\"}").to(Locale.class);
+        assert locale instanceof Locale;
+        assert locale.toString().equals("");
     }
 
     @Test
     void readEmpty() {
-        assertThrows(IllegalStateException.class, () -> {
-            assert I.read("", bean) != null;
-        });
+        assertThrows(IllegalStateException.class, () -> I.json("").to(bean));
     }
 
     @Test
-    void readInvalid() {
-        assertThrows(IllegalStateException.class, () -> {
-            assert I.read("@", bean) != null;
-        });
+    void readJS() {
+        Person instance = I.json("15").to(Person.class);
+        assert instance != null;
+        assert instance.getAge() == 0;
+        assert instance.getFirstName() == null;
+        assert instance.getLastName() == null;
+    }
+
+    @Test
+    void readInvalidJSON() {
+        assertThrows(IllegalStateException.class, () -> I.json("@").to(bean));
     }
 
     @Test
     void writeNullAppendable() {
-        assertThrows(NullPointerException.class, () -> {
-            I.write(bean, (Appendable) null);
-        });
+        assertThrows(NullPointerException.class, () -> I.write(bean, (Appendable) null));
     }
 
     @Test
     void writeNullJavaObject() {
-        assertThrows(NullPointerException.class, () -> {
-            I.write(null, new StringBuilder());
-        });
+        assertThrows(NullPointerException.class, () -> I.write(null, new StringBuilder()));
     }
 
 }
