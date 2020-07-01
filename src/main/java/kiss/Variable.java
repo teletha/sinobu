@@ -13,6 +13,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -85,6 +86,25 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
         return or(() -> {
             throw new NullPointerException();
         });
+    }
+
+    /**
+     * Acquire value. If the {@link Variable} is empty, it waits until it reaches a non-null value.
+     * 
+     * @return
+     */
+    public final V acquire() {
+        if (v != null) {
+            return v;
+        }
+
+        try {
+            CompletableFuture<V> c = new CompletableFuture();
+            observe().first().to(c::complete);
+            return c.get();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
