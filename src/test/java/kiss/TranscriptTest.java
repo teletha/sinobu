@@ -66,7 +66,7 @@ class TranscriptTest {
      * 
      * @param text
      */
-    private void waitForTranslation(Transcript text) {
+    private void waitForTranslation(Variable<String> text) {
         try {
             CompletableFuture future = new CompletableFuture();
             text.observe().to(future::complete);
@@ -81,7 +81,7 @@ class TranscriptTest {
      * 
      * @param text
      */
-    private void waitForTranslationTo(String lang, Transcript text) {
+    private void waitForTranslationTo(String lang, Variable<String> text) {
         try {
             CompletableFuture future = new CompletableFuture();
             text.observe().to(future::complete);
@@ -95,24 +95,24 @@ class TranscriptTest {
 
     @Test
     void base() {
-        Transcript text = new Transcript("test");
+        Variable<String> text = I.translate("test");
         assert text.is("test");
     }
 
     @Test
     void nullInput() {
-        Assertions.assertThrows(NullPointerException.class, () -> new Transcript((String) null));
+        Assertions.assertThrows(NullPointerException.class, () -> I.translate((String) null));
     }
 
     @Test
     void context() {
-        Transcript text = new Transcript("You can use {0}.", "context");
+        Variable<String> text = I.translate("You can use {0}.", "context");
         assert text.is("You can use context.");
     }
 
     @Test
     void contexts() {
-        Transcript text = new Transcript("You can {1} {0}.", "context", "use");
+        Variable<String> text = I.translate("You can {1} {0}.", "context", "use");
         assert text.is("You can use context.");
     }
 
@@ -121,7 +121,7 @@ class TranscriptTest {
         createBundle("fr", "base", "nombre d'unités");
         createBundle("ja", "base", "基数");
 
-        Transcript text = new Transcript("base");
+        Variable<String> text = I.translate("base");
         assert text.is("base");
 
         I.Lang.set("fr");
@@ -133,7 +133,7 @@ class TranscriptTest {
 
     @Test
     void translateByOnline() {
-        Transcript text = new Transcript("Water");
+        Variable<String> text = I.translate("Water");
         assert text.is("Water");
 
         // Immediately after the language change,
@@ -157,7 +157,7 @@ class TranscriptTest {
 
     @Test
     void translateLineFeed() {
-        Transcript text = new Transcript("one\ntwo");
+        Variable<String> text = I.translate("one\ntwo");
 
         waitForTranslationTo("fr", text);
         assert text.is("Un deux");
@@ -165,7 +165,7 @@ class TranscriptTest {
 
     @Test
     void translateCarrigeReturn() {
-        Transcript text = new Transcript("three\rfour");
+        Variable<String> text = I.translate("three\rfour");
 
         waitForTranslationTo("zh", text);
         assert text.is("三四");
@@ -173,7 +173,7 @@ class TranscriptTest {
 
     @Test
     void translateBreak() {
-        Transcript text = new Transcript("five\r\nsix");
+        Variable<String> text = I.translate("five\r\nsix");
 
         waitForTranslationTo("ru", text);
         assert text.is("пять шести");
@@ -181,7 +181,7 @@ class TranscriptTest {
 
     @Test
     void translateContextParameter() {
-        Transcript text = new Transcript("The correct answer is {0}.", "101");
+        Variable<String> text = I.translate("The correct answer is {0}.", "101");
 
         waitForTranslationTo("es", text);
         assert text.is("La respuesta correcta es 101.");

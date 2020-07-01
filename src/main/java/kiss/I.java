@@ -33,6 +33,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.HttpResponse.BodySubscriber;
@@ -1889,6 +1890,52 @@ public class I {
             return (Out) encoded;
         }
         return ((Decoder<Out>) find(Decoder.class, output)).decode(encoded);
+    }
+
+    /**
+     * The text will be automatically translated. Basic sentences must be written in English. It
+     * will be translated online automatically into the language specified in the global variable
+     * {@link #Lang}. Once the text is translated, it is saved to the local disk and loaded from
+     * there in the future.
+     * 
+     * @param text Basic English sentences.
+     * @param context Parameters to be assigned to variables in a sentence. (Optional)
+     */
+    public static Variable<String> translate(String text, Object... context) {
+        Variable<String> t = Variable.empty();
+        I.Lang.observing().switchMap(lang -> {
+            // First, check inline cache.
+            if ("en".equals(lang)) {
+                return I.signal(text);
+            }
+
+            // The next step is to check for already translated text from
+            // the locally stored bundle files. Iit can help reduce translationresources.
+            Bundle bundle = bundles.computeIfAbsent(lang, Bundle::new);
+            String cached = bundle.get(text);
+            if (cached != null) {
+                return I.signal(cached);
+            }
+
+            // Perform the translation online.
+            // TODO We do not want to make more than one request at the same time,
+            // so we have certain intervals.
+            return I.http(HttpRequest.newBuilder()
+                    .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
+                    .header("Content-Type", "application/json")
+                    .POST(BodyPublishers.ofString("{\"text\":\"" + text
+                            .replaceAll("[\\n|\\r]+", " ") + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
+                    .flatMap(v -> v.find("payload.translations.0.translation", String.class))
+                    .skipNull()
+                    .map(v -> {
+                        bundle.put(text, v);
+                        bundleSave.accept(bundle);
+                        return v;
+                    });
+        }).startWith(text).to(v -> {
+            t.set(I.express(v, I.list(context)));
+        });
+        return t;
     }
 
     /**
