@@ -12,6 +12,7 @@ package kiss.json;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
@@ -60,6 +61,16 @@ class IllegalInputTest {
     @Test
     void readNullPath() {
         assertThrows(NullPointerException.class, () -> I.json((Path) null));
+    }
+
+    @Test
+    void readNullInputStream() {
+        assertThrows(NullPointerException.class, () -> I.json((InputStream) null));
+    }
+
+    @Test
+    void readNullReadable() {
+        assertThrows(NullPointerException.class, () -> I.json((Readable) null));
     }
 
     @Test
