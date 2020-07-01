@@ -12,7 +12,6 @@ package kiss;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
@@ -886,6 +885,21 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(File input) {
+        return json((Object) input);
+    }
+
+    /**
+     * <p>
+     * Parse the specified JSON format text.
+     * </p>
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
+     */
+    public static JSON json(Path input) {
         return json((Object) input);
     }
 
@@ -2225,14 +2239,22 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
      *
      * @param source A xml expression.
      * @return A constructed {@link XML}.
      */
     public static XML xml(File source) {
+        return I.xml(null, source);
+    }
+
+    /**
+     * Parse as xml fragment.
+     *
+     * @param source A xml expression.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(Path source) {
         return I.xml(null, source);
     }
 
@@ -2397,7 +2419,11 @@ public class I {
             }
 
             if (input instanceof File) {
-                input = new FileInputStream((File) input);
+                input = ((File) input).toPath();
+            }
+
+            if (input instanceof Path) {
+                input = Files.readAllBytes((Path) input);
             } else if (input instanceof HttpRequest) {
                 input = client.send((HttpRequest) input, BodyHandlers.ofByteArray()).body();
             }
