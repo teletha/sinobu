@@ -34,6 +34,7 @@ import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.net.http.WebSocket;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -844,6 +845,20 @@ public class I {
                         }
                         observer.error(e);
                     });
+            return disposer.add(() -> future.cancel(true));
+        });
+    }
+
+    public static Signal<String> http(String uri, Consumer<WebSocket> opening) {
+        return new Signal<>((observer, disposer) -> {
+            Subscriber sub = new Subscriber();
+            sub.observer = observer;
+            sub.disposer = disposer;
+            sub.text = new StringBuilder();
+            sub.next = opening;
+
+            CompletableFuture<WebSocket> future = client.newWebSocketBuilder().buildAsync(URI.create(uri), sub);
+
             return disposer.add(() -> future.cancel(true));
         });
     }

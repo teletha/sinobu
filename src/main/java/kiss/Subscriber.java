@@ -9,17 +9,17 @@
  */
 package kiss;
 
+import java.net.http.WebSocket;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 
 /**
  * Internal subscription.
- * 
- * @version 2018/03/23 10:27:07
  */
-class Subscriber<T> implements Observer<T>, Disposable {
+class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener {
 
     /** Generic counter. */
     volatile long index;
@@ -125,5 +125,48 @@ class Subscriber<T> implements Observer<T>, Disposable {
         } else {
             return cache.computeIfAbsent(disposable, k -> new Subscriber());
         }
+    }
+
+    StringBuilder text;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onOpen(WebSocket web) {
+        web.request(1024);
+        next.accept((T) web);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletionStage<?> onText(WebSocket web, CharSequence data, boolean last) {
+        web.request(1);
+        text.append(data);
+
+        if (last) {
+            observer.accept(text.toString());
+            text = new StringBuilder();
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletionStage<?> onClose(WebSocket web, int status, String reason) {
+        observer.complete();
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onError(WebSocket web, Throwable e) {
+        observer.error(e);
     }
 }
