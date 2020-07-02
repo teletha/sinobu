@@ -1082,7 +1082,6 @@ public class I {
      * @see #find(Class, Class)
      * @see #findAs(Class)
      */
-    @SuppressWarnings("resource")
     private static Disposable load(URL source, String pattern, ClassLoader loader) {
         // =======================================
         // List up extension class names
