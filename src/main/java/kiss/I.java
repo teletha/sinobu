@@ -30,12 +30,11 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.net.http.HttpResponse.BodySubscriber;
-import java.net.http.HttpResponse.BodySubscribers;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -78,6 +77,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -228,7 +229,7 @@ public class I {
     private static final Pattern express = Pattern.compile("\\{([^}]+)\\}");
 
     /** The reusable http client. */
-    static HttpClient client = HttpClient.newHttpClient();
+    static HttpClient client = HttpClient.newBuilder().followRedirects(Redirect.ALWAYS).build();
 
     // initialization
     static {
@@ -777,7 +778,7 @@ public class I {
      * 
      * @param <T>
      * @param request Request URI.
-     * @param response Response type.
+     * @param type Response type.
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      */
@@ -791,16 +792,12 @@ public class I {
      * 
      * @param <T>
      * @param request Request builder.
-     * @param response Response type.
+     * @param type Response type.
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      */
-    public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> response) {
-        BodySubscriber s = response == String.class ? BodySubscribers.ofString(StandardCharsets.UTF_8)
-                : BodySubscribers.mapping(BodySubscribers.ofInputStream(), //
-                        response == JSON.class ? I::json : response == XML.class ? I::xml : i -> I.json(i).to(response));
-
-        return http(null, request, i -> s);
+    public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> type) {
+        return http(null, request, type);
     }
 
     /**
@@ -808,20 +805,46 @@ public class I {
      * 
      * @param <T>
      * @param request Request builder.
-     * @param response Response handler.
+     * @param type Response handler.
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      */
-    public static <T> Signal<T> http(HttpClient client, HttpRequest.Builder request, HttpResponse.BodyHandler<T> response) {
+    public static <T> Signal<T> http(HttpClient client, HttpRequest.Builder request, Class<T> type) {
         return new Signal<>((observer, disposer) -> {
-            CompletableFuture<HttpResponse<T>> future = (client == null ? I.client : client).sendAsync(request.build(), response)
-                    .whenComplete((v, e) -> {
+            CompletableFuture<HttpResponse<InputStream>> future = (client == null ? I.client : client)
+                    .sendAsync(request.build(), BodyHandlers.ofInputStream())
+                    .whenComplete((res, e) -> {
                         if (e == null) {
-                            observer.accept(v.body());
-                            observer.complete();
-                        } else {
-                            observer.error(e);
+                            try {
+                                InputStream in = res.body();
+
+                                // =============================================
+                                // Decoding Phase
+                                // =============================================
+                                List<String> encodings = res.headers().allValues("Content-Encoding");
+                                if (encodings.contains("gzip")) {
+                                    in = new GZIPInputStream(in);
+                                } else if (encodings.contains("deflate")) {
+                                    in = new InflaterInputStream(in);
+                                }
+
+                                // =============================================
+                                // Materializing Phase
+                                // =============================================
+                                T v = (T) (type == String.class ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
+                                        : type == JSON.class ? I.json(in) : type == XML.class ? I.xml(in) : I.json(in).to(type));
+
+                                // =============================================
+                                // Signaling Phase
+                                // =============================================
+                                observer.accept(v);
+                                observer.complete();
+                                return;
+                            } catch (Exception x) {
+                                e = x; // fall-through to error handling
+                            }
                         }
+                        observer.error(e);
                     });
             return disposer.add(() -> future.cancel(true));
         });

@@ -9,7 +9,12 @@
  */
 package kiss;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.http.HttpClient;
+import java.nio.ByteBuffer;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import com.pgssoft.httpclient.Action;
 import com.pgssoft.httpclient.HttpClientMock;
 
 @Execution(ExecutionMode.SAME_THREAD)
@@ -46,7 +52,7 @@ class HTTPTest {
 
     @Test
     void httpXML() {
-        client.onGet().doReturn("<root>yes</root>");
+        client.onGet().doReturnXML("<root>yes</root>");
 
         XML xml = I.http("http://test", XML.class).to().exact();
         assert xml.name().equals("root");
@@ -55,7 +61,7 @@ class HTTPTest {
 
     @Test
     void httpJSON() {
-        client.onGet().doReturn(text("{'state' : 'ok'}"));
+        client.onGet().doReturnJSON(text("{'state' : 'ok'}"));
 
         JSON json = I.http("http://test", JSON.class).to().exact();
         assert json.get("state", String.class).equals("ok");
@@ -71,6 +77,68 @@ class HTTPTest {
 
     static class Server {
         public String state;
+    }
+
+    @Test
+    void httpGzip() {
+        client.onGet().doAction(gzip("<root>gzip</root>"));
+
+        XML xml = I.http("http://test", XML.class).to().exact();
+        assert xml.name().equals("root");
+        assert xml.text().equals("gzip");
+    }
+
+    @Test
+    void httpDeflate() {
+        client.onGet().doAction(deflate("<root>deflate</root>"));
+
+        XML xml = I.http("http://test", XML.class).to().exact();
+        assert xml.name().equals("root");
+        assert xml.text().equals("deflate");
+    }
+
+    /**
+     * Build gziped response.
+     * 
+     * @param response
+     * @param text
+     */
+    private Action gzip(String text) {
+        return response -> {
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                GZIPOutputStream writer = new GZIPOutputStream(out);
+                writer.write(text.getBytes());
+                writer.close();
+
+                response.addHeader("Content-Encoding", "gzip");
+                response.setBodyBytes(ByteBuffer.wrap(out.toByteArray()));
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
+        };
+    }
+
+    /**
+     * Build gziped response.
+     * 
+     * @param response
+     * @param text
+     */
+    private Action deflate(String text) {
+        return response -> {
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                DeflaterOutputStream writer = new DeflaterOutputStream(out);
+                writer.write(text.getBytes());
+                writer.close();
+
+                response.addHeader("Content-Encoding", "deflate");
+                response.setBodyBytes(ByteBuffer.wrap(out.toByteArray()));
+            } catch (IOException e) {
+                throw I.quiet(e);
+            }
+        };
     }
 
     /**
