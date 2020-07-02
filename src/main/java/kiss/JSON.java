@@ -117,6 +117,9 @@ public class JSON {
      * @return A created model.
      */
     public <M> M to(Class<M> type) {
+        if (JSON.class == type) {
+            return (M) this;
+        }
         Model<M> model = Model.of(type);
         return model.attribute ? I.transform(root, type) : to(model, I.make(type), root);
     }

@@ -33,7 +33,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
@@ -811,8 +810,7 @@ public class I {
      */
     public static <T> Signal<T> http(HttpClient client, HttpRequest.Builder request, Class<T> type) {
         return new Signal<>((observer, disposer) -> {
-            CompletableFuture<HttpResponse<InputStream>> future = (client == null ? I.client : client)
-                    .sendAsync(request.build(), BodyHandlers.ofInputStream())
+            CompletableFuture future = (client == null ? I.client : client).sendAsync(request.build(), BodyHandlers.ofInputStream())
                     .whenComplete((res, e) -> {
                         if (e == null) {
                             try {
@@ -832,7 +830,7 @@ public class I {
                                 // Materializing Phase
                                 // =============================================
                                 T v = (T) (type == String.class ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
-                                        : type == JSON.class ? I.json(in) : type == XML.class ? I.xml(in) : I.json(in).to(type));
+                                        : type == XML.class ? I.xml(in) : I.json(in).to(type));
 
                                 // =============================================
                                 // Signaling Phase
