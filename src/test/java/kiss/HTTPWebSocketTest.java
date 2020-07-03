@@ -9,45 +9,40 @@
  */
 package kiss;
 
+import java.net.http.WebSocket;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class HTTPWebSocketTest {
 
+    static WebSocket web;
+
     public static void main(String[] args) throws InterruptedException {
-        Signal<String> socket = I.http("wss://ws.lightstream.bitflyer.com/json-rpc", input -> {
-            JsonRPC rpc = new JsonRPC();
-            rpc.method = "subscribe";
-            rpc.params.put("channel", "lightning_executions_FX_BTC_JPY");
-            input.sendText(I.write(rpc), true);
-
-            rpc = new JsonRPC();
-            rpc.method = "subscribe";
-            rpc.params.put("channel", "lightning_board_FX_BTC_JPY");
-            input.sendText(I.write(rpc), true);
-        }).share();
-
-        Disposable disposable = socket.to(v -> {
+        WS ws = new WS("wss://ws.lightstream.bitflyer.com/json-rpc");
+        Disposable disposable = ws.invoke(new JsonRPC("subscribe", "lightning_executions_FX_BTC_JPY")).effectOnDispose(() -> {
+            ws.invoke(new JsonRPC("unsubscribe", "lightning_executions_FX_BTC_JPY"));
+        }).to(v -> {
             System.out.println(v);
-        }, e -> {
-            e.printStackTrace();
-        }, () -> {
-            System.out.println("COMPLETE");
         });
 
         Thread.sleep(1000 * 2);
-        socket.to(v -> {
+        Disposable disposable2 = ws.invoke(new JsonRPC("subscribe", "lightning_board_FX_BTC_JPY")).effectOnDispose(() -> {
+            ws.invoke(new JsonRPC("unsubscribe", "lightning_board_FX_BTC_JPY"));
+        }).to(v -> {
             System.out.println(v);
-        }, e -> {
-            e.printStackTrace();
-        }, () -> {
-            System.out.println("COMPLETE");
         });
 
-        Thread.sleep(1000 * 60);
+        Thread.sleep(1000 * 10);
         disposable.dispose();
-        System.out.println("Dispose");
-        Thread.sleep(1000 * 5);
+        System.out.println("Dispose1");
+        Thread.sleep(1000 * 10);
+        disposable2.dispose();
+        System.out.println("Dispose2");
+
+        Thread.sleep(1000 * 10);
     }
 
     private static class JsonRPC {
@@ -59,6 +54,68 @@ public class HTTPWebSocketTest {
         public String method;
 
         public Map<String, String> params = new HashMap();
+
+        private JsonRPC(String method, String channel) {
+            this.method = method;
+            this.params.put("channel", channel);
+        }
+    }
+
+    public static Function<Object, Signal<String>> webscoket(String uri) {
+        Deque queued = new ArrayDeque();
+        WebSocket[] ws = new WebSocket[1];
+        Signal<String> shared = I.http(uri, web -> {
+            ws[0] = web;
+            for (Object command : queued) {
+                web.sendText(I.write(command), true);
+            }
+            queued.clear();
+        }).share();
+
+        return command -> {
+            if (ws[0] == null) {
+                queued.add(command);
+            } else {
+                ws[0].sendText(I.write(command), true);
+            }
+            return shared;
+        };
+    }
+
+    public static class WS {
+
+        private WebSocket ws;
+
+        private Deque queued = new ArrayDeque();
+
+        public final Signal<String> expose;
+
+        private WS(String uri) {
+            this.expose = I.http(uri, ws -> {
+                synchronized (this) {
+                    this.ws = ws;
+                    for (Object command : queued) {
+                        invoke(command);
+                    }
+                    queued = null;
+                }
+            }).share();
+        }
+
+        public synchronized Signal<String> invoke(Object command) {
+            if (ws == null) {
+                queued.add(command);
+            } else {
+                ws.sendText(I.write(command), true);
+            }
+            return expose;
+        }
+
+        public void close() {
+            if (ws != null) {
+                ws.sendClose(WebSocket.NORMAL_CLOSURE, "");
+            }
+        }
     }
 
 }

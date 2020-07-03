@@ -21,6 +21,7 @@ public class Project extends bee.api.Project {
         require("com.pgs-soft", "HttpClientMock").atTest();
         require("io.reactivex.rxjava2", "rxjava").atTest();
         require("com.fasterxml.jackson.core", "jackson-databind").atTest();
+        require("com.google.code.gson", "gson").atTest();
 
         versionControlSystem("https://github.com/teletha/sinobu");
     }

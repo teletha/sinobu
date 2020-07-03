@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import kiss.model.Model;
@@ -47,6 +48,17 @@ public class JSON {
     }
 
     /**
+     * Check the direct child value with the specified key.
+     * 
+     * @param key A target key.
+     * @param value An expected value.
+     * @return A result.
+     */
+    public boolean has(String key, Object value) {
+        return root instanceof Map ? Objects.equals(((Map) root).get(key), value) : false;
+    }
+
+    /**
      * Get the direct child value as your type with the specified key. Unknown key and object key
      * will return null.
      * 
@@ -55,6 +67,9 @@ public class JSON {
      * @return An associated value.
      */
     public <T> T get(String key, Class<T> type) {
+        if (type == JSON.class) {
+            return (T) new JSON(((Map) root).get(key));
+        }
         return root instanceof Map ? I.transform(((Map) root).get(key), type) : null;
     }
 
@@ -72,6 +87,18 @@ public class JSON {
         return this;
     }
 
+    public Signal<JSON> children() {
+        return new Signal<>((observer, disposer) -> {
+            if (root instanceof Map) {
+                for (Object o : ((Map) root).values()) {
+                    observer.accept(new JSON(o));
+                }
+            }
+            observer.complete();
+            return disposer;
+        });
+    }
+
     /**
      * Find values by the specified property path.
      * 
@@ -82,6 +109,31 @@ public class JSON {
         Signal<Object> current = I.signal(root);
 
         for (String name : P.split(path)) {
+            current = current.flatMap(v -> {
+                if (v instanceof Map == false) {
+                    return Signal.never();
+                } else if (name.equals("*")) {
+                    return I.signal(((Map) v).values());
+                } else if (name.equals("^")) {
+                    return I.signal(((Map) v).values()).reverse();
+                } else {
+                    return I.signal(((Map) v).get(name));
+                }
+            });
+        }
+        return current.map(JSON::new);
+    }
+
+    /**
+     * Find values by the specified property path.
+     * 
+     * @param path A property path.
+     * @return A traversed {@link JSON} stream.
+     */
+    public Signal<JSON> find(String... path) {
+        Signal<Object> current = I.signal(root);
+
+        for (String name : path) {
             current = current.flatMap(v -> {
                 if (v instanceof Map == false) {
                     return Signal.never();

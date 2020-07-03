@@ -849,13 +849,21 @@ public class I {
         });
     }
 
-    public static Signal<String> http(String uri, Consumer<WebSocket> opening) {
+    /**
+     * Connect to the specified URI by Websocket. The status of the communication is transmitted to
+     * {@link Signal}. Once the connection is established, it performs a 'open' callback.
+     * 
+     * @param uri URI to connect.
+     * @param open Called only once, when a connection is established.
+     * @return Communication status.
+     */
+    public static Signal<String> http(String uri, Consumer<WebSocket> open) {
         return new Signal<>((observer, disposer) -> {
             Subscriber sub = new Subscriber();
             sub.observer = observer;
             sub.disposer = disposer;
             sub.text = new StringBuilder();
-            sub.next = opening;
+            sub.next = open;
 
             CompletableFuture<WebSocket> future = client.newWebSocketBuilder().buildAsync(URI.create(uri), sub);
 
@@ -904,8 +912,16 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
-    public static JSON json(CharSequence input) {
-        return json((Object) input);
+    public static JSON json(String input) {
+        // Don't use #read(Object).
+        // Since general purpose reader goes through the byte array once, it is considerably
+        // slower, so when reading from JSON format text, Reader is generated directly as an
+        // optimization.
+        try {
+            return new JSON(new StringReader(input));
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
