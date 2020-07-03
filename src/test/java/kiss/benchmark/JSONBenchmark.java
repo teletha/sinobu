@@ -15,38 +15,19 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import antibug.profiler.Benchmark;
 import kiss.I;
 import kiss.JSON;
 
-public class SampleBenchmark {
+public class JSONBenchmark {
 
     private static final String json = "{\"jsonrpc\":\"2.0\",\"method\":\"channelMessage\",\"params\":{\"channel\":\"lightning_executions_FX_BTC_JPY\",\"message\":[{\"id\":1817558716,\"side\":\"BUY\",\"price\":986398.0,\"size\":0.09,\"exec_date\":\"2020-07-03T03:58:43.2166073Z\",\"buy_child_order_acceptance_id\":\"JRF20200703-035843-441414\",\"sell_child_order_acceptance_id\":\"JRF20200703-035842-128834\"},{\"id\":1817558717,\"side\":\"BUY\",\"price\":986399.0,\"size\":0.01710225,\"exec_date\":\"2020-07-03T03:58:43.2166073Z\",\"buy_child_order_acceptance_id\":\"JRF20200703-035843-441414\",\"sell_child_order_acceptance_id\":\"JRF20200703-035841-660736\"}]}}";
 
     public static void main(String[] args) {
         Benchmark benchmark = new Benchmark();
-        benchmark.measure("Gson", () -> {
-            Gson gson = new Gson();
-            List list = new ArrayList();
-
-            JsonArray e = gson.fromJson(json, JsonObject.class).getAsJsonObject("params").getAsJsonArray("message");
-            for (int j = 0; j < e.size(); j++) {
-                list.add(e.get(j));
-            }
-            return list;
-        });
-
-        benchmark.measure("Jackson", () -> {
-            ObjectMapper mapper = new ObjectMapper();
-            List list = new ArrayList();
-
-            for (JsonNode e : mapper.readTree(json).get("params").get("message")) {
-                list.add(e);
-            }
-            return list;
-        });
 
         benchmark.measure("Sinobu", () -> {
             List list = new ArrayList();
@@ -55,6 +36,26 @@ public class SampleBenchmark {
             return list;
         });
 
-        benchmark.show();
+        Gson gson = new Gson();
+        benchmark.measure("Gson", () -> {
+            List list = new ArrayList();
+
+            for (JsonElement e : gson.fromJson(json, JsonObject.class).getAsJsonObject("params").getAsJsonArray("message")) {
+                list.add(e);
+            }
+            return list;
+        });
+
+        ObjectMapper mapper = new ObjectMapper();
+        benchmark.measure("Jackson", () -> {
+            List list = new ArrayList();
+
+            for (JsonNode e : mapper.readTree(json).get("params").get("message")) {
+                list.add(e);
+            }
+            return list;
+        });
+
+        benchmark.perform();
     }
 }
