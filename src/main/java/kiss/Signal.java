@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1830,10 +1830,11 @@ public final class Signal<V> {
 
         return new Signal<>((observer, disposer) -> {
             Subscriber end = countable(observer, 1);
+            end.next = observer;
 
             return to(value -> {
                 end.index++;
-                function.apply(value).to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
+                function.apply(value).to(end, end::error, null, disposer.sub().add(end::complete), true);
             }, observer::error, end::complete, disposer);
         });
     }
