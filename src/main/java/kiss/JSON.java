@@ -63,8 +63,8 @@ public class JSON {
      * @param type A value type to find.
      * @return An associated value.
      */
-    public <T> T get(String key, Class<T> type) {
-        return root instanceof Map == false ? null : to(type, ((Map) root).get(key));
+    public JSON get(String key) {
+        return root instanceof Map == false ? null : new JSON(((Map) root).get(key));
     }
 
     /**
@@ -145,9 +145,7 @@ public class JSON {
      * @return
      */
     private static <M> M to(Class<M> type, Object o) {
-        if (o == null) {
-            return null;
-        } else if (JSON.class == type) {
+        if (JSON.class == type) {
             return (M) new JSON(o);
         } else {
             Model<M> model = Model.of(type);

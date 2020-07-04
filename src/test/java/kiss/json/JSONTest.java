@@ -329,7 +329,7 @@ class JSONTest {
         person.setFirstName("name");
 
         JSON json = I.json(I.write(person));
-        assert json.get("firstName", String.class).equals("name");
+        assert json.get("firstName").to(String.class).equals("name");
     }
 
     @Test
@@ -338,7 +338,7 @@ class JSONTest {
         person.setAge(15);
 
         JSON json = I.json(I.write(person));
-        assert json.get("age", int.class) == 15;
+        assert json.get("age").to(int.class) == 15;
     }
 
     @Test
@@ -347,7 +347,7 @@ class JSONTest {
         person.setFirstName("name");
 
         JSON json = I.json(I.write(person));
-        assert json.get("invalid", String.class) == null;
+        assert json.get("invalid").to(String.class) == null;
     }
 
     @Test

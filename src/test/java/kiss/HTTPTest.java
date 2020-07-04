@@ -64,7 +64,7 @@ class HTTPTest {
         client.onGet().doReturnJSON(text("{'state' : 'ok'}"));
 
         JSON json = I.http("http://test", JSON.class).to().exact();
-        assert json.get("state", String.class).equals("ok");
+        assert json.get("state").to(String.class).equals("ok");
     }
 
     @Test

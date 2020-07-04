@@ -32,7 +32,7 @@ public class JSONBenchmark {
         benchmark.measure("Sinobu", () -> {
             List list = new ArrayList();
 
-            I.json(json).get("params", JSON.class).get("message", JSON.class).find(JSON.class, "*").forEach(list::add);
+            I.json(json).get("params").get("message").find(JSON.class, "*").forEach(list::add);
             return list;
         });
 
