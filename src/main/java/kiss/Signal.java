@@ -943,9 +943,7 @@ public final class Signal<V> {
 
             Subscriber end = countable(observer, 1);
 
-            return
-
-            index().to(indexed -> {
+            return index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
