@@ -81,22 +81,37 @@ public class JSON {
         return this;
     }
 
+    /**
+     * Get all objects pointed to by the property path starting from this JSON. The property path
+     * can use the property name and the wildcard "*".
+     * 
+     * @param path A property path.
+     * @return A result set.
+     */
+    public List<JSON> find(String... path) {
+        return find(JSON.class, path);
+    }
+
+    /**
+     * Get all objects pointed to by the property path starting from this JSON. The property path
+     * can use the property name and the wildcard "*".
+     * 
+     * @param type The convertion type.
+     * @param path A property path.
+     * @return A result set.
+     */
     public <T> List<T> find(Class<T> type, String... path) {
         List items = List.of(root);
 
-        for (String key : path) {
-            List next = new ArrayList(1);
+        for (int i = 0; i < path.length; i++) {
+            List next = new ArrayList();
 
-            if (key.equals("*")) {
-                for (Object item : items) {
-                    if (item instanceof Map) {
+            for (Object item : items) {
+                if (item instanceof Map) {
+                    if (path[i].equals("*")) {
                         next.addAll(((Map) item).values());
-                    }
-                }
-            } else {
-                for (Object item : items) {
-                    if (item instanceof Map) {
-                        Object value = ((Map) item).get(key);
+                    } else {
+                        Object value = ((Map) item).get(path[i]);
                         if (value != null) {
                             next.add(value);
                         }
