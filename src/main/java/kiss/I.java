@@ -1926,7 +1926,7 @@ public class I {
                     .header("Content-Type", "application/json")
                     .POST(BodyPublishers.ofString("{\"text\":\"" + text
                             .replaceAll("[\\n|\\r]+", " ") + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
-                    .flatMap(v -> v.find("payload.translations.0.translation", String.class))
+                    .flatIterable(v -> v.find(String.class, "payload", "translations", "0", "translation"))
                     .skipNull()
                     .map(v -> {
                         bundle.put(text, v);

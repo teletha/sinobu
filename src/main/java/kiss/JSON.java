@@ -12,21 +12,18 @@ package kiss;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import kiss.model.Model;
 import kiss.model.Property;
 
 public class JSON {
-
-    /** The reusable selector separator pattern. */
-    private static final Pattern P = Pattern.compile("\\.");
 
     /** The root object. */
     private Object root;
@@ -67,10 +64,7 @@ public class JSON {
      * @return An associated value.
      */
     public <T> T get(String key, Class<T> type) {
-        if (type == JSON.class) {
-            return (T) new JSON(((Map) root).get(key));
-        }
-        return root instanceof Map ? I.transform(((Map) root).get(key), type) : null;
+        return root instanceof Map == false ? null : to(type, ((Map) root).get(key));
     }
 
     /**
@@ -87,77 +81,35 @@ public class JSON {
         return this;
     }
 
-    public Signal<JSON> children() {
-        return new Signal<>((observer, disposer) -> {
-            if (root instanceof Map) {
-                for (Object o : ((Map) root).values()) {
-                    observer.accept(new JSON(o));
+    public <T> List<T> find(Class<T> type, String... path) {
+        List items = List.of(root);
+
+        for (String key : path) {
+            List next = new ArrayList(1);
+
+            if (key.equals("*")) {
+                for (Object item : items) {
+                    if (item instanceof Map) {
+                        next.addAll(((Map) item).values());
+                    }
+                }
+            } else {
+                for (Object item : items) {
+                    if (item instanceof Map) {
+                        Object value = ((Map) item).get(key);
+                        if (value != null) {
+                            next.add(value);
+                        }
+                    }
                 }
             }
-            observer.complete();
-            return disposer;
-        });
-    }
-
-    /**
-     * Find values by the specified property path.
-     * 
-     * @param path A property path.
-     * @return A traversed {@link JSON} stream.
-     */
-    public Signal<JSON> find(String path) {
-        Signal<Object> current = I.signal(root);
-
-        for (String name : P.split(path)) {
-            current = current.flatMap(v -> {
-                if (v instanceof Map == false) {
-                    return Signal.never();
-                } else if (name.equals("*")) {
-                    return I.signal(((Map) v).values());
-                } else if (name.equals("^")) {
-                    return I.signal(((Map) v).values()).reverse();
-                } else {
-                    return I.signal(((Map) v).get(name));
-                }
-            });
+            items = next;
         }
-        return current.map(JSON::new);
-    }
 
-    /**
-     * Find values by the specified property path.
-     * 
-     * @param path A property path.
-     * @return A traversed {@link JSON} stream.
-     */
-    public Signal<JSON> find(String... path) {
-        Signal<Object> current = I.signal(root);
-
-        for (String name : path) {
-            current = current.flatMap(v -> {
-                if (v instanceof Map == false) {
-                    return Signal.never();
-                } else if (name.equals("*")) {
-                    return I.signal(((Map) v).values());
-                } else if (name.equals("^")) {
-                    return I.signal(((Map) v).values()).reverse();
-                } else {
-                    return I.signal(((Map) v).get(name));
-                }
-            });
+        for (int i = 0; i < items.size(); i++) {
+            items.set(i, to(type, items.get(i)));
         }
-        return current.map(JSON::new);
-    }
-
-    /**
-     * Find values by the specified property path.
-     * 
-     * @param path A property path.
-     * @param type A property type you want.
-     * @return A traversed {@link JSON} stream.
-     */
-    public <T> Signal<T> find(String path, Class<T> type) {
-        return find(path).map(v -> v.to(type));
+        return items;
     }
 
     /**
@@ -169,11 +121,7 @@ public class JSON {
      * @return A created model.
      */
     public <M> M to(Class<M> type) {
-        if (JSON.class == type) {
-            return (M) this;
-        }
-        Model<M> model = Model.of(type);
-        return model.attribute ? I.transform(root, type) : to(model, I.make(type), root);
+        return to(type, root);
     }
 
     /**
@@ -189,9 +137,26 @@ public class JSON {
     }
 
     /**
-     * <p>
+     * Helper method to convert json object to java object.
+     * 
+     * @param <M>
+     * @param type
+     * @param o
+     * @return
+     */
+    private static <M> M to(Class<M> type, Object o) {
+        if (o == null) {
+            return null;
+        } else if (JSON.class == type) {
+            return (M) new JSON(o);
+        } else {
+            Model<M> model = Model.of(type);
+            return model.attribute ? I.transform(o, type) : to(model, I.make(type), o);
+        }
+    }
+
+    /**
      * Helper method to traverse json structure using Java Object {@link Model}.
-     * </p>
      *
      * @param <M> A current model type.
      * @param model A java object model.
@@ -199,7 +164,7 @@ public class JSON {
      * @param js A javascript value.
      * @return A restored java object.
      */
-    private <M> M to(Model<M> model, M java, Object js) {
+    private static <M> M to(Model<M> model, M java, Object js) {
         if (js instanceof Map) {
             for (Entry<String, Object> e : ((Map<String, Object>) js).entrySet()) {
                 Property p = model.property(e.getKey());

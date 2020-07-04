@@ -18,13 +18,10 @@ import kiss.I;
 import kiss.JSON;
 import kiss.sample.bean.Person;
 
-/**
- * @version 2017/03/26 9:51:00
- */
-public class PathTest {
+class PathTest {
 
     @Test
-    public void integer() throws Exception {
+    void integer() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -32,13 +29,13 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<Integer> values = json.find("age", int.class).toList();
+        List<Integer> values = json.find(int.class, "age");
         assert values.size() == 1;
         assert values.get(0) == 20;
     }
 
     @Test
-    public void string() throws Exception {
+    void string() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -46,13 +43,13 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("name", String.class).toList();
+        List<String> values = json.find(String.class, "name");
         assert values.size() == 1;
         assert values.get(0).equals("Jill");
     }
 
     @Test
-    public void null_() throws Exception {
+    void nullValue() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -60,13 +57,12 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("name", String.class).toList();
-        assert values.size() == 1;
-        assert values.get(0) == null;
+        List<String> values = json.find(String.class, "name");
+        assert values.size() == 0;
     }
 
     @Test
-    public void nestObject() throws Exception {
+    void nestObject() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -76,13 +72,13 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("city.id", String.class).toList();
+        List<String> values = json.find(String.class, "city", "id");
         assert values.size() == 1;
         assert values.get(0).equals("NY");
     }
 
     @Test
-    public void arrayAll() throws Exception {
+    void arrayAll() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -94,7 +90,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names.*", String.class).toList();
+        List<String> values = json.find(String.class, "names", "*");
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
@@ -102,7 +98,7 @@ public class PathTest {
     }
 
     @Test
-    public void arrayIndex() throws Exception {
+    void arrayIndex() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -114,13 +110,13 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names.1", String.class).toList();
+        List<String> values = json.find(String.class, "names", "1");
         assert values.size() == 1;
         assert values.get(0).equals("Bell");
     }
 
     @Test
-    public void arrayObject() throws Exception {
+    void arrayObject() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -132,7 +128,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names.*.name", String.class).toList();
+        List<String> values = json.find(String.class, "names", "*", "name");
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
@@ -140,7 +136,7 @@ public class PathTest {
     }
 
     @Test
-    public void arrayIndexObject() throws Exception {
+    void arrayIndexObject() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -152,13 +148,13 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.find("names.1.name", String.class).toList();
+        List<String> values = json.find(String.class, "names", "1", "name");
         assert values.size() == 1;
         assert values.get(0).equals("Bell");
     }
 
     @Test
-    public void arrayModel() throws Exception {
+    void arrayModel() {
         // @formatter:off
         JSON json = json(
         "{",
@@ -170,7 +166,7 @@ public class PathTest {
         "}");
         // @formatter:on
 
-        List<Person> values = json.find("names.*", Person.class).toList();
+        List<Person> values = json.find(Person.class, "names", "*");
         assert values.size() == 3;
         assert values.get(0).getFirstName().equals("Jill");
         assert values.get(1).getFirstName().equals("Bell");
@@ -178,7 +174,7 @@ public class PathTest {
     }
 
     @Test
-    public void wildcard() throws Exception {
+    void wildcard() {
         // @formatter:off
         JSON json = json(
         "[",
@@ -188,29 +184,11 @@ public class PathTest {
         "]");
         // @formatter:on
 
-        List<Person> values = json.find("*", Person.class).toList();
+        List<Person> values = json.find(Person.class, "*");
         assert values.size() == 3;
         assert values.get(0).getFirstName().equals("Jill");
         assert values.get(1).getFirstName().equals("Bell");
         assert values.get(2).getFirstName().equals("Alice");
-    }
-
-    @Test
-    public void wildCardInverse() throws Exception {
-        // @formatter:off
-        JSON json = json(
-        "[",
-        "    {'firstName': 'Jill'},",
-        "    {'firstName': 'Bell'},",
-        "    {'firstName': 'Alice'}",
-        "]");
-        // @formatter:on
-
-        List<Person> values = json.find("^", Person.class).toList();
-        assert values.size() == 3;
-        assert values.get(0).getFirstName().equals("Alice");
-        assert values.get(1).getFirstName().equals("Bell");
-        assert values.get(2).getFirstName().equals("Jill");
     }
 
     /**
