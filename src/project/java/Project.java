@@ -20,8 +20,11 @@ public class Project extends bee.api.Project {
         require("com.github.teletha", "antibug").atTest();
         require("com.pgs-soft", "HttpClientMock").atTest();
         require("io.reactivex.rxjava2", "rxjava").atTest();
+
+        // JSON Parsers
         require("com.fasterxml.jackson.core", "jackson-databind").atTest();
         require("com.google.code.gson", "gson").atTest();
+        require("com.alibaba", "fastjson").atTest();
 
         versionControlSystem("https://github.com/teletha/sinobu");
     }

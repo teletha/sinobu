@@ -63,7 +63,7 @@ public class JSON {
      * @return An associated value.
      */
     public JSON get(String key) {
-        return get(JSON.class, key);
+        return getAs(JSON.class, key);
     }
 
     /**
@@ -75,7 +75,7 @@ public class JSON {
      * @return An associated value.
      * @throws NullPointerException If type is null.
      */
-    public <T> T get(Class<T> type, String key) {
+    public <T> T getAs(Class<T> type, String key) {
         if (root instanceof Map) {
             Map m = (Map) root;
             Object o = m.get(key);
@@ -111,7 +111,7 @@ public class JSON {
      * @return A result set.
      */
     public List<JSON> find(String... path) {
-        return find(JSON.class, path);
+        return findAs(JSON.class, path);
     }
 
     /**
@@ -123,7 +123,7 @@ public class JSON {
      * @return A result set.
      * @throws NullPointerException If type is null.
      */
-    public <T> List<T> find(Class<T> type, String... path) {
+    public <T> List<T> findAs(Class<T> type, String... path) {
         List items = List.of(root);
 
         for (int i = 0; i < path.length; i++) {

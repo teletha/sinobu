@@ -12,6 +12,7 @@ package kiss.json;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -32,7 +33,9 @@ public class JSONBenchmark {
         benchmark.measure("Sinobu", () -> {
             List list = new ArrayList();
 
-            I.json(json).get("params").get("message").find("*").forEach(list::add);
+            for (JSON e : I.json(json).get("params").get("message").find("*")) {
+                list.add(e);
+            }
             return list;
         });
 
@@ -60,6 +63,15 @@ public class JSONBenchmark {
             List list = new ArrayList();
 
             for (JsonNode e : mapper.readTree(json).get("params").get("message")) {
+                list.add(e);
+            }
+            return list;
+        });
+
+        benchmark.measure("FastJson", () -> {
+            List list = new ArrayList();
+
+            for (Object e : com.alibaba.fastjson.JSON.parseObject(json, JSONObject.class).getJSONObject("params").getJSONArray("message")) {
                 list.add(e);
             }
             return list;

@@ -38,53 +38,53 @@ class ManipulateTest {
     @Test
     void getTyped() {
         JSON json = write("{ 'key':'value' }");
-        assert json.get(String.class, "key").equals("value");
+        assert json.getAs(String.class, "key").equals("value");
     }
 
     @Test
-    void getTypedNullKey() {
+    void getAsNullKey() {
         JSON json = write("{ 'key':'value' }");
-        assert json.get(String.class, null) == null;
+        assert json.getAs(String.class, null) == null;
     }
 
     @Test
-    void getTypedUnkwnonKey() {
+    void getAsUnkwnonKey() {
         JSON json = write("{ 'key':'value' }");
-        assert json.get(String.class, "unknown") == null;
+        assert json.getAs(String.class, "unknown") == null;
     }
 
     @Test
-    void getTypedNullType() {
+    void getAsNullType() {
         JSON json = write("{ 'key':'value' }");
-        Assertions.assertThrows(NullPointerException.class, () -> json.get(null, "key"));
+        Assertions.assertThrows(NullPointerException.class, () -> json.getAs(null, "key"));
     }
 
     @Test
     void set() {
         JSON json = write("{ 'key':'value' }");
         assert json.set("set", "new") == json;
-        assert json.get(String.class, "set").equals("new");
+        assert json.getAs(String.class, "set").equals("new");
     }
 
     @Test
     void setNullKey() {
         JSON json = write("{ 'key':'value' }");
         assert json.set(null, "fail") == json;
-        assert json.get(String.class, "set") == null;
+        assert json.getAs(String.class, "set") == null;
     }
 
     @Test
     void setNullValue() {
         JSON json = write("{ 'key':'value' }");
         assert json.set("fail", null) == json;
-        assert json.get(String.class, "fail") == null;
+        assert json.getAs(String.class, "fail") == null;
     }
 
     @Test
     void setExistKey() {
         JSON json = write("{ 'key':'value' }");
         assert json.set("key", "update") == json;
-        assert json.get(String.class, "key").equals("update");
+        assert json.getAs(String.class, "key").equals("update");
     }
 
     @Test
