@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -339,15 +339,6 @@ class JSONTest {
 
         JSON json = I.json(I.write(person));
         assert json.get("age").to(int.class) == 15;
-    }
-
-    @Test
-    void getInvalid() {
-        Person person = new Person();
-        person.setFirstName("name");
-
-        JSON json = I.json(I.write(person));
-        assert json.get("invalid").to(String.class) == null;
     }
 
     @Test

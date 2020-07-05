@@ -60,11 +60,33 @@ public class JSON {
      * will return null.
      * 
      * @param key A key for value to find.
-     * @param type A value type to find.
      * @return An associated value.
      */
     public JSON get(String key) {
-        return root instanceof Map == false ? null : new JSON(((Map) root).get(key));
+        return get(JSON.class, key);
+    }
+
+    /**
+     * Get the direct child value as your type with the specified key. Unknown key and object key
+     * will return null.
+     * 
+     * @param type A value type to find.
+     * @param key A key for value to find.
+     * @return An associated value.
+     * @throws NullPointerException If type is null.
+     */
+    public <T> T get(Class<T> type, String key) {
+        if (root instanceof Map) {
+            Map m = (Map) root;
+            Object o = m.get(key);
+            if (o == null) {
+                return null;
+            } else {
+                return to(type, o);
+            }
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -99,6 +121,7 @@ public class JSON {
      * @param type The convertion type.
      * @param path A property path.
      * @return A result set.
+     * @throws NullPointerException If type is null.
      */
     public <T> List<T> find(Class<T> type, String... path) {
         List items = List.of(root);
