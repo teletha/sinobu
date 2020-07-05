@@ -32,7 +32,6 @@ public class JSONBenchmark {
 
         benchmark.measure("Sinobu", () -> {
             List list = new ArrayList();
-
             for (JSON e : I.json(json).get("params").get("message").find("*")) {
                 list.add(e);
             }
@@ -41,7 +40,6 @@ public class JSONBenchmark {
 
         benchmark.measure("SinobuFind", () -> {
             List list = new ArrayList();
-
             for (JSON e : I.json(json).find("params", "message", "*")) {
                 list.add(e);
             }
@@ -51,7 +49,6 @@ public class JSONBenchmark {
         Gson gson = new Gson();
         benchmark.measure("Gson", () -> {
             List list = new ArrayList();
-
             for (JsonElement e : gson.fromJson(json, JsonObject.class).getAsJsonObject("params").getAsJsonArray("message")) {
                 list.add(e);
             }
@@ -61,7 +58,6 @@ public class JSONBenchmark {
         ObjectMapper mapper = new ObjectMapper();
         benchmark.measure("Jackson", () -> {
             List list = new ArrayList();
-
             for (JsonNode e : mapper.readTree(json).get("params").get("message")) {
                 list.add(e);
             }
@@ -70,7 +66,6 @@ public class JSONBenchmark {
 
         benchmark.measure("FastJson", () -> {
             List list = new ArrayList();
-
             for (Object e : com.alibaba.fastjson.JSON.parseObject(json, JSONObject.class).getJSONObject("params").getJSONArray("message")) {
                 list.add(e);
             }
