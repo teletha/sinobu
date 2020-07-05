@@ -128,9 +128,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Data mapping to the specified model.
-     * </p>
      * 
      * @param type A model type.
      * @return A created model.
@@ -140,9 +138,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Data mapping to the specified model.
-     * </p>
      * 
      * @param value A model.
      * @return A specified model.
@@ -239,6 +235,7 @@ public class JSON {
         this.reader = reader;
         this.buffer = new char[1024];
         this.captureStart = -1;
+        this.capture = new StringBuilder();
 
         read();
         space();
@@ -246,9 +243,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Read value.
-     * </p>
      * 
      * @throws IOException
      */
@@ -316,7 +311,8 @@ public class JSON {
         case '7':
         case '8':
         case '9':
-            startCapture();
+            // start capture
+            captureStart = index - 1;
             read('-');
             if (current == '0') {
                 read();
@@ -345,9 +341,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Read the sequence of white spaces
-     * </p>
      * 
      * @throws IOException
      */
@@ -358,9 +352,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Read the sequence of digit.
-     * </p>
      * 
      * @throws IOException
      */
@@ -378,9 +370,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Read the sequence of keyword.
-     * </p>
      * 
      * @param keyword A target value.
      * @return A target value.
@@ -398,16 +388,15 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Read the sequence of String.
-     * </p>
      * 
      * @return A parsed string.
      * @throws IOException
      */
     private String string() throws IOException {
         token('"');
-        startCapture();
+        // start capture
+        captureStart = index - 1;
         while (current != '"') {
             if (current == '\\') {
                 pauseCapture();
@@ -446,7 +435,9 @@ public class JSON {
                     expected("escape sequence");
                 }
                 read();
-                startCapture();
+
+                // start capture
+                captureStart = index - 1;
             } else if (current < 0x20) {
                 expected("string character");
             } else {
@@ -459,9 +450,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Read the next character.
-     * </p>
      * 
      * @throws IOException
      */
@@ -482,9 +471,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Read the specified character.
-     * </p>
      * 
      * @param c The character to be red.
      * @return A result.
@@ -500,9 +487,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Read the specified character surely.
-     * </p>
      * 
      * @param c The character to be red.
      * @return A result.
@@ -514,16 +499,6 @@ public class JSON {
         } else {
             expected(c);
         }
-    }
-
-    /**
-     * Start text capturing.
-     */
-    private void startCapture() {
-        if (capture == null) {
-            capture = new StringBuilder();
-        }
-        captureStart = index - 1;
     }
 
     /**
@@ -553,15 +528,13 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Throw parsing error.
-     * </p>
      * 
      * @param expected A reason.
      * @return This method NEVER return value.
      */
     private Object expected(Object expected) {
-        throw new IllegalStateException("Expected : ".concat(String.valueOf(expected)));
+        throw new IllegalStateException("Expected ".concat(String.valueOf(expected)));
     }
 
     // ===========================================================
@@ -631,9 +604,7 @@ public class JSON {
     }
 
     /**
-     * <p>
      * Write JSON literal with quote.
-     * </p>
      * 
      * @param value A value.
      * @param type A value type.
