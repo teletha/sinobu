@@ -117,6 +117,9 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener {
         return signal.expose;
     }
 
+    // ======================================================================
+    // Anonymous Disposable Instance Manager
+    // ======================================================================
     private static Map<Disposable, Subscriber> cache = new WeakHashMap();
 
     static synchronized Subscriber of(Disposable disposable) {
@@ -127,6 +130,9 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener {
         }
     }
 
+    // ======================================================================
+    // Websocket Listener
+    // ======================================================================
     StringBuilder text;
 
     /**
