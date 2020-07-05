@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.JSON;
 
-class JSONManipulationTest {
+class ManipulateTest {
 
     @Test
     void get() {

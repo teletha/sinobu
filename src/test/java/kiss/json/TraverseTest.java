@@ -18,7 +18,7 @@ import kiss.I;
 import kiss.JSON;
 import kiss.sample.bean.Person;
 
-class PathTest {
+class TraverseTest {
 
     @Test
     void integer() {
