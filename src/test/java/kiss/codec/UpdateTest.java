@@ -14,27 +14,26 @@ import static org.junit.jupiter.api.Assertions.*;
 import kiss.Decoder;
 import kiss.Disposable;
 import kiss.Encoder;
+import kiss.I;
 import kiss.LoadableTestBase;
-import kiss.model.Model;
 
 class UpdateTest {
 
     void updateCodecDynamically() {
         // check built-in enum codec
-        Model<Code> model = Model.of(Code.class);
-        assert model.encode(Code.BuiltIn) == "BuiltIn";
-        assert model.decode("BuiltIn") == Code.BuiltIn;
+        assert I.transform(Code.BuiltIn, String.class) == "BuiltIn";
+        assert I.transform("BuiltIn", Code.class) == Code.BuiltIn;
 
         // load codec dynamically
         Disposable unload = LoadableTestBase.load(DynamicCodec.class);
-        assert model.encode(Code.BuiltIn) == "Updated";
-        assert model.decode("Replaced codec accepts any word") == Code.BuiltIn;
+        assert I.transform(Code.BuiltIn, String.class) == "Updated";
+        assert I.transform("Replaced codec accepts any word", Code.class) == Code.BuiltIn;
 
         // unload codec dynamically
         unload.dispose();
-        assert model.encode(Code.BuiltIn) == "BuiltIn";
-        assert model.decode("BuiltIn") == Code.BuiltIn;
-        assertThrows(IllegalArgumentException.class, () -> model.decode("Replaced codec accepts any word"));
+        assert I.transform(Code.BuiltIn, String.class) == "BuiltIn";
+        assert I.transform("BuiltIn", Code.class) == Code.BuiltIn;
+        assertThrows(IllegalArgumentException.class, () -> I.transform("Replaced codec accepts any word", Code.class));
     }
 
     private static enum Code {

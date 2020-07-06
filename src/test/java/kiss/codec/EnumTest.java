@@ -13,23 +13,21 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.I;
 import kiss.LoadableTestBase;
-import kiss.model.Model;
 
 class EnumTest extends LoadableTestBase {
 
     @Test
     void builtin() {
-        Model<RetentionPolicy> model = Model.of(RetentionPolicy.class);
-        assert model.encode(RetentionPolicy.CLASS) == "CLASS";
-        assert model.decode("RUNTIME") == RetentionPolicy.RUNTIME;
+        assert I.transform(RetentionPolicy.CLASS, String.class) == "CLASS";
+        assert I.transform("RUNTIME", RetentionPolicy.class) == RetentionPolicy.RUNTIME;
     }
 
     @Test
     void overrideToString() {
-        Model<EnumUseNameMethod> model = Model.of(EnumUseNameMethod.class);
-        assert model.decode("DontUseToStringMethod") == EnumUseNameMethod.DontUseToStringMethod;
-        assert model.encode(EnumUseNameMethod.DontUseToStringMethod) == "DontUseToStringMethod";
+        assert I.transform("DontUseToStringMethod", EnumUseNameMethod.class) == EnumUseNameMethod.DontUseToStringMethod;
+        assert I.transform(EnumUseNameMethod.DontUseToStringMethod, String.class) == "DontUseToStringMethod";
     }
 
     /**

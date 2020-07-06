@@ -697,7 +697,7 @@ public class I {
      *            otherwise this method will return empty list.
      * @return All Extensions of the given Extension Point or empty list.
      */
-    public static synchronized <E extends Extensible> List<E> find(Class<E> extensionPoint) {
+    public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
         return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).skip(e -> Modifier.isAbstract(e.getModifiers())).map(I::make).toList();
     }
 
@@ -768,7 +768,7 @@ public class I {
      * @return All Extension classes of the given Extension Point or empty list.
      * @throws NullPointerException If the Extension Point is <code>null</code>.
      */
-    public static synchronized <E extends Extensible> List<Class<E>> findAs(Class<E> extensionPoint) {
+    public static <E extends Extensible> List<Class<E>> findAs(Class<E> extensionPoint) {
         return new ArrayList(findBy(extensionPoint).ⅰ);
     }
 
@@ -780,7 +780,7 @@ public class I {
      * @param extensionPoint A target extension point.
      * @return A extension definition.
      */
-    private static synchronized <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> findBy(Class<E> extensionPoint) {
+    private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new CopyOnWriteArrayList(), new ConcurrentHashMap()));
     }
 

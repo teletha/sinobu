@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.Decoder;
-import kiss.Encoder;
 import kiss.I;
 import kiss.Managed;
 import kiss.Signal;
@@ -253,28 +252,6 @@ public class Model<M> {
      */
     public List<Property> properties() {
         return this.properties;
-    }
-
-    /**
-     * <p>
-     * Retrieve {@link Decoder} for this model.
-     * </p>
-     * 
-     * @return An associated {@link Decoder}.
-     */
-    public M decode(String value) {
-        return ((Decoder<M>) I.find(Decoder.class, type)).decode(value);
-    }
-
-    /**
-     * <p>
-     * Retrieve {@link Encoder} for this model.
-     * </p>
-     * 
-     * @return An associated {@link Encoder}.
-     */
-    public String encode(M value) {
-        return I.find(Encoder.class, type).encode(value);
     }
 
     /**
