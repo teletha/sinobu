@@ -45,6 +45,81 @@ public class JSON {
     }
 
     /**
+     * Data mapping to the specified model.
+     * 
+     * @param type A model type.
+     * @return A created model.
+     */
+    public <M> M as(Class<M> type) {
+        return as(type, root);
+    }
+
+    /**
+     * Data mapping to the specified model.
+     * 
+     * @param value A model.
+     * @return A specified model.
+     */
+    public <M> M as(M value) {
+        return as(Model.of(value), value, root);
+    }
+
+    /**
+     * Helper method to convert json object to java object.
+     * 
+     * @param <M>
+     * @param type
+     * @param o
+     * @return
+     */
+    private static <M> M as(Class<M> type, Object o) {
+        if (JSON.class == type) {
+            return (M) new JSON(o);
+        } else if (o instanceof Map) {
+            return as(Model.of(type), I.make(type), o);
+        } else {
+            return I.transform(o, type);
+        }
+    }
+
+    /**
+     * Helper method to traverse json structure using Java Object {@link Model}.
+     *
+     * @param <M> A current model type.
+     * @param model A java object model.
+     * @param java A java value.
+     * @param js A javascript value.
+     * @return A restored java object.
+     */
+    private static <M> M as(Model<M> model, M java, Object js) {
+        if (js instanceof Map) {
+            for (Entry<String, Object> e : ((Map<String, Object>) js).entrySet()) {
+                Property p = model.property(e.getKey());
+    
+                if (p != null && !p.isTransient) {
+                    Object value = e.getValue();
+    
+                    // convert value
+                    if (p.isAttribute()) {
+                        value = I.transform(value, p.model.type);
+                    } else if (value != null) {
+                        Object nest = model.get(java, p);
+                        String impl = (String) ((Map) value).get("#");
+                        Model m = impl == null ? p.model : Model.of(I.type(impl));
+                        value = as(m, nest == null ? I.make(m.type) : nest, value);
+                    }
+    
+                    // assign value
+                    model.set(java, p, value);
+                }
+            }
+        }
+    
+        // API definition
+        return java;
+    }
+
+    /**
      * Check the direct child value with the specified key.
      * 
      * @param key A target key.
@@ -159,81 +234,6 @@ public class JSON {
             items.set(i, as(type, items.get(i)));
         }
         return items;
-    }
-
-    /**
-     * Data mapping to the specified model.
-     * 
-     * @param type A model type.
-     * @return A created model.
-     */
-    public <M> M as(Class<M> type) {
-        return as(type, root);
-    }
-
-    /**
-     * Data mapping to the specified model.
-     * 
-     * @param value A model.
-     * @return A specified model.
-     */
-    public <M> M as(M value) {
-        return as(Model.of(value), value, root);
-    }
-
-    /**
-     * Helper method to convert json object to java object.
-     * 
-     * @param <M>
-     * @param type
-     * @param o
-     * @return
-     */
-    private static <M> M as(Class<M> type, Object o) {
-        if (JSON.class == type) {
-            return (M) new JSON(o);
-        } else if (o instanceof Map) {
-            return as(Model.of(type), I.make(type), o);
-        } else {
-            return I.transform(o, type);
-        }
-    }
-
-    /**
-     * Helper method to traverse json structure using Java Object {@link Model}.
-     *
-     * @param <M> A current model type.
-     * @param model A java object model.
-     * @param java A java value.
-     * @param js A javascript value.
-     * @return A restored java object.
-     */
-    private static <M> M as(Model<M> model, M java, Object js) {
-        if (js instanceof Map) {
-            for (Entry<String, Object> e : ((Map<String, Object>) js).entrySet()) {
-                Property p = model.property(e.getKey());
-
-                if (p != null && !p.isTransient) {
-                    Object value = e.getValue();
-
-                    // convert value
-                    if (p.isAttribute()) {
-                        value = I.transform(value, p.model.type);
-                    } else if (value != null) {
-                        Object nest = model.get(java, p);
-                        String impl = (String) ((Map) value).get("#");
-                        Model m = impl == null ? p.model : Model.of(I.type(impl));
-                        value = as(m, nest == null ? I.make(m.type) : nest, value);
-                    }
-
-                    // assign value
-                    model.set(java, p, value);
-                }
-            }
-        }
-
-        // API definition
-        return java;
     }
 
     // ===========================================================
