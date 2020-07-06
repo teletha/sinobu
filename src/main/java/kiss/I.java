@@ -715,23 +715,35 @@ public class I {
      * @return A associated Extension of the given Extension Point and the given Extension Key or
      *         <code>null</code>.
      */
-    public static synchronized <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
+    public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
         if (extensionPoint != null && key != null) {
             Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> extensions = findBy(extensionPoint);
 
-            for (Class type : Model.collectTypes(key)) {
-                Supplier<E> supplier = extensions.ⅱ.get(type);
-
-                if (supplier != null) {
-                    return supplier.get();
-                }
+            // In the majority of cases, a search query for an extension uses the extension key
+            // itself, and rarely a subclass of the extension key is used. Since it is very costly
+            // to obtain all types of extension key, we try to save computation resource by
+            // performing a searc with the specified extension key at the beginning.
+            Lifestyle<E> lifestyle = extensions.ⅱ.get(key);
+            if (lifestyle != null) {
+                return lifestyle.get();
             }
 
+            // search from extension factory
             if (extensionPoint != ExtensionFactory.class) {
                 ExtensionFactory<E> factory = find(ExtensionFactory.class, extensionPoint);
 
                 if (factory != null) {
                     return factory.create(key);
+                }
+            }
+
+            // Since a search query using the extension key itself did not find any extensions, we
+            // extend the search by using the ancestor classes and interfaces of the extension key.
+            for (Class type : Model.collectTypes(key)) {
+                lifestyle = extensions.ⅱ.get(type);
+
+                if (lifestyle != null) {
+                    return lifestyle.get();
                 }
             }
         }
@@ -1926,7 +1938,7 @@ public class I {
                     .header("Content-Type", "application/json")
                     .POST(BodyPublishers.ofString("{\"text\":\"" + text
                             .replaceAll("[\\n|\\r]+", " ") + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
-                    .flatIterable(v -> v.findAs(String.class, "payload", "translations", "0", "translation"))
+                    .flatIterable(v -> v.find(String.class, "payload", "translations", "0", "translation"))
                     .skipNull()
                     .map(v -> {
                         bundle.put(text, v);
