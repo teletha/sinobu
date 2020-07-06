@@ -82,7 +82,7 @@ public class JSON {
             if (o == null) {
                 return null;
             } else {
-                return to(type, o);
+                return as(type, o);
             }
         } else {
             return null;
@@ -156,7 +156,7 @@ public class JSON {
         }
 
         for (int i = 0; i < items.size(); i++) {
-            items.set(i, to(type, items.get(i)));
+            items.set(i, as(type, items.get(i)));
         }
         return items;
     }
@@ -167,8 +167,8 @@ public class JSON {
      * @param type A model type.
      * @return A created model.
      */
-    public <M> M to(Class<M> type) {
-        return to(type, root);
+    public <M> M as(Class<M> type) {
+        return as(type, root);
     }
 
     /**
@@ -177,8 +177,8 @@ public class JSON {
      * @param value A model.
      * @return A specified model.
      */
-    public <M> M to(M value) {
-        return to(Model.of(value), value, root);
+    public <M> M as(M value) {
+        return as(Model.of(value), value, root);
     }
 
     /**
@@ -189,11 +189,11 @@ public class JSON {
      * @param o
      * @return
      */
-    private static <M> M to(Class<M> type, Object o) {
+    private static <M> M as(Class<M> type, Object o) {
         if (JSON.class == type) {
             return (M) new JSON(o);
         } else if (o instanceof Map) {
-            return to(Model.of(type), I.make(type), o);
+            return as(Model.of(type), I.make(type), o);
         } else {
             return I.transform(o, type);
         }
@@ -208,7 +208,7 @@ public class JSON {
      * @param js A javascript value.
      * @return A restored java object.
      */
-    private static <M> M to(Model<M> model, M java, Object js) {
+    private static <M> M as(Model<M> model, M java, Object js) {
         if (js instanceof Map) {
             for (Entry<String, Object> e : ((Map<String, Object>) js).entrySet()) {
                 Property p = model.property(e.getKey());
@@ -223,7 +223,7 @@ public class JSON {
                         Object nest = model.get(java, p);
                         String impl = (String) ((Map) value).get("#");
                         Model m = impl == null ? p.model : Model.of(I.type(impl));
-                        value = to(m, nest == null ? I.make(m.type) : nest, value);
+                        value = as(m, nest == null ? I.make(m.type) : nest, value);
                     }
 
                     // assign value

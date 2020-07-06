@@ -329,7 +329,7 @@ class JSONTest {
         person.setFirstName("name");
 
         JSON json = I.json(I.write(person));
-        assert json.get("firstName").to(String.class).equals("name");
+        assert json.get("firstName").as(String.class).equals("name");
     }
 
     @Test
@@ -338,7 +338,7 @@ class JSONTest {
         person.setAge(15);
 
         JSON json = I.json(I.write(person));
-        assert json.get("age").to(int.class) == 15;
+        assert json.get("age").as(int.class) == 15;
     }
 
     @Test
@@ -432,7 +432,7 @@ class JSONTest {
         Model model = Model.of(object.getClass());
 
         // write and read
-        validate(model, object, I.json(serialized).to(model.type));
+        validate(model, object, I.json(serialized).as(model.type));
     }
 
     /**

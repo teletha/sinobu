@@ -20,7 +20,7 @@ class ManipulateTest {
     @Test
     void get() {
         JSON json = write("{ 'key':'value' }");
-        assert json.get("key").to(String.class).equals("value");
+        assert json.get("key").as(String.class).equals("value");
     }
 
     @Test

@@ -824,7 +824,7 @@ public class I {
                                 // Materializing Phase
                                 // =============================================
                                 T v = (T) (type == String.class ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
-                                        : type == XML.class ? I.xml(in) : I.json(in).to(type));
+                                        : type == XML.class ? I.xml(in) : I.json(in).as(type));
 
                                 // =============================================
                                 // Signaling Phase

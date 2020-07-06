@@ -80,19 +80,19 @@ class IllegalInputTest {
 
     @Test
     void readToIncompatibleType() {
-        Locale locale = I.json("{\"age\":\"15\"}").to(Locale.class);
+        Locale locale = I.json("{\"age\":\"15\"}").as(Locale.class);
         assert locale instanceof Locale;
         assert locale == Locale.getDefault();
     }
 
     @Test
     void readEmpty() {
-        assertThrows(IllegalStateException.class, () -> I.json("").to(bean));
+        assertThrows(IllegalStateException.class, () -> I.json("").as(bean));
     }
 
     @Test
     void readJS() {
-        Person instance = I.json("15").to(Person.class);
+        Person instance = I.json("15").as(Person.class);
         assert instance != null;
         assert instance.getAge() == 0;
         assert instance.getFirstName() == null;
@@ -101,7 +101,7 @@ class IllegalInputTest {
 
     @Test
     void readInvalidJSON() {
-        assertThrows(IllegalStateException.class, () -> I.json("@").to(bean));
+        assertThrows(IllegalStateException.class, () -> I.json("@").as(bean));
     }
 
     @Test
