@@ -82,7 +82,7 @@ class IllegalInputTest {
     void readToIncompatibleType() {
         Locale locale = I.json("{\"age\":\"15\"}").to(Locale.class);
         assert locale instanceof Locale;
-        assert locale.toString().equals("");
+        assert locale == Locale.getDefault();
     }
 
     @Test

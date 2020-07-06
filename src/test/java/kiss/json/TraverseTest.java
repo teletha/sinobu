@@ -29,7 +29,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<Integer> values = json.findAs(int.class, "age");
+        List<Integer> values = json.find(int.class, "age");
         assert values.size() == 1;
         assert values.get(0) == 20;
     }
@@ -43,7 +43,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.findAs(String.class, "name");
+        List<String> values = json.find(String.class, "name");
         assert values.size() == 1;
         assert values.get(0).equals("Jill");
     }
@@ -57,7 +57,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.findAs(String.class, "name");
+        List<String> values = json.find(String.class, "name");
         assert values.size() == 0;
     }
 
@@ -72,7 +72,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.findAs(String.class, "city", "id");
+        List<String> values = json.find(String.class, "city", "id");
         assert values.size() == 1;
         assert values.get(0).equals("NY");
     }
@@ -90,7 +90,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.findAs(String.class, "names", "*");
+        List<String> values = json.find(String.class, "names", "*");
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
@@ -110,7 +110,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.findAs(String.class, "names", "1");
+        List<String> values = json.find(String.class, "names", "1");
         assert values.size() == 1;
         assert values.get(0).equals("Bell");
     }
@@ -128,7 +128,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.findAs(String.class, "names", "*", "name");
+        List<String> values = json.find(String.class, "names", "*", "name");
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
@@ -148,7 +148,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<String> values = json.findAs(String.class, "names", "1", "name");
+        List<String> values = json.find(String.class, "names", "1", "name");
         assert values.size() == 1;
         assert values.get(0).equals("Bell");
     }
@@ -166,7 +166,7 @@ class TraverseTest {
         "}");
         // @formatter:on
 
-        List<Person> values = json.findAs(Person.class, "names", "*");
+        List<Person> values = json.find(Person.class, "names", "*");
         assert values.size() == 3;
         assert values.get(0).getFirstName().equals("Jill");
         assert values.get(1).getFirstName().equals("Bell");
@@ -184,7 +184,7 @@ class TraverseTest {
         "]");
         // @formatter:on
 
-        List<Person> values = json.findAs(Person.class, "*");
+        List<Person> values = json.find(Person.class, "*");
         assert values.size() == 3;
         assert values.get(0).getFirstName().equals("Jill");
         assert values.get(1).getFirstName().equals("Bell");

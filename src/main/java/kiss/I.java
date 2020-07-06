@@ -138,8 +138,6 @@ import kiss.model.Property;
  * </ul>
  * </dd>
  * </dl>
- * 
- * @version 2018/02/28 17:10:55
  */
 public class I {
 
@@ -368,17 +366,13 @@ public class I {
     }
 
     /**
-     * <p>
      * Initialize environment.
-     * </p>
      */
     private I() {
     }
 
     /**
-     * <p>
      * Create {@link Predicate} which accepts any item.
-     * </p>
      * 
      * @return An acceptable {@link Predicate}.
      */
@@ -387,9 +381,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create {@link BiPredicate} which accepts any item.
-     * </p>
      * 
      * @return An acceptable {@link BiPredicate}.
      */
@@ -417,9 +409,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Bundle all given funcitons into single function.
-     * </p>
      * 
      * @param functions A list of functions to bundle.
      * @return A bundled function.
@@ -452,9 +442,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Bundle all given typed funcitons into single typed function.
-     * </p>
      * 
      * @param type A function type.
      * @param functions A list of functions to bundle.
@@ -465,9 +453,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Bundle all given typed funcitons into single typed function.
-     * </p>
      * 
      * @param type A function type.
      * @param functions A list of functions to bundle.
@@ -493,9 +479,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create the specified {@link Collection} with the specified items.
-     * </p>
      * 
      * @param type A {@link Collection} type.
      * @param items A list of itmes.
@@ -542,10 +526,8 @@ public class I {
     }
 
     /**
-     * <p>
      * Copy data from a {@link Readable} to an {@link Appendable}. This method buffers the input
      * internally, so there is no need to use a buffer.
-     * </p>
      *
      * @param input A {@link Readable} to read from.
      * @param output An {@link Appendable} to write to.
@@ -731,7 +713,6 @@ public class I {
             // search from extension factory
             if (extensionPoint != ExtensionFactory.class) {
                 ExtensionFactory<E> factory = find(ExtensionFactory.class, extensionPoint);
-
                 if (factory != null) {
                     return factory.create(key);
                 }
@@ -884,10 +865,8 @@ public class I {
     }
 
     /**
-     * <p>
      * Returns a string containing the string representation of each of items, using the specified
      * separator between each.
-     * </p>
      *
      * @param delimiter A sequence of characters that is used to separate each of the elements in
      *            the resulting String.
@@ -899,10 +878,8 @@ public class I {
     }
 
     /**
-     * <p>
      * Returns a string containing the string representation of each of items, using the specified
      * separator between each.
-     * </p>
      *
      * @param delimiter A sequence of characters that is used to separate each of the elements in
      *            the resulting String.
@@ -914,9 +891,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -937,9 +912,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -952,9 +925,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -967,9 +938,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -982,9 +951,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -997,9 +964,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -1012,9 +977,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -1027,9 +990,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -1075,9 +1036,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create {@link ArrayList} with the specified items.
-     * </p>
      * 
      * @param items A list of itmes.
      * @return The new created {@link ArrayList}.
@@ -1258,9 +1217,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Register extension with key.
-     * </p>
      * 
      * @param extensionPoint A extension point.
      * @param extensionKey A extension key,
@@ -1296,9 +1253,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create proxy instance.
-     * </p>
      * 
      * @param type A model type.
      * @param handler A proxy handler.
@@ -1414,9 +1369,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create value set.
-     * </p>
      *
      * @param param1 A first parameter.
      * @param param2 A second parameter.
@@ -1427,9 +1380,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create value set.
-     * </p>
      *
      * @param param1 A first parameter.
      * @param param2 A second parameter.
@@ -1441,9 +1392,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create paired value {@link Consumer}.
-     * </p>
      *
      * @param consumer A {@link BiConsumer} to make parameters paired.
      * @return A paired value {@link Consumer}.
@@ -1453,9 +1402,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create paired value {@link Function}.
-     * </p>
      *
      * @param funtion A {@link BiFunction} to make parameters paired.
      * @return A paired value {@link Function}.
@@ -1543,9 +1490,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Deceive complier that the specified checked exception is unchecked exception.
-     * </p>
      *
      * @param <T> A dummy type for {@link RuntimeException}.
      * @param throwable Any error.
@@ -1684,9 +1629,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create {@link BiPredicate} which rejects any item.
-     * </p>
      * 
      * @return An rejectable {@link BiPredicate}.
      */
@@ -1752,9 +1695,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Create {@link HashSet} with the specified items.
-     * </p>
      * 
      * @param items A list of itmes.
      * @return The new created {@link HashSet}.
@@ -1764,9 +1705,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Signal the specified values.
-     * </p>
      *
      * @param values A list of values to emit.
      * @return The {@link Signal} to emit sequencial values.
@@ -1799,9 +1738,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Signal the specified values.
-     * </p>
      *
      * @param values A list of values to emit.
      * @return The {@link Signal} to emit sequencial values.
@@ -1811,9 +1748,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Signal the specified values.
-     * </p>
      *
      * @param values A list of values to emit.
      * @return The {@link Signal} to emit sequencial values.
@@ -1823,9 +1758,7 @@ public class I {
     }
 
     /**
-     * <p>
      * {@link Signal} the specified values.
-     * </p>
      *
      * @param values A list of values to emit.
      * @return The {@link Signal} to emit sequencial values.
@@ -1865,10 +1798,8 @@ public class I {
     }
 
     /**
-     * <p>
      * Returns an {@link Signal} that invokes an {@link Observer#error(Throwable)} method when the
      * {@link Observer} subscribes to it.
-     * </p>
      *
      * @param error An error to emit.
      * @return The {@link Signal} to emit error.
@@ -1881,9 +1812,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Transform any type object into the specified type if possible.
-     * </p>
      *
      * @param <In> A input type you want to transform from.
      * @param <Out> An output type you want to transform into.
@@ -1902,7 +1831,9 @@ public class I {
         if (output == String.class) {
             return (Out) encoded;
         }
-        return ((Decoder<Out>) find(Decoder.class, output)).decode(encoded);
+
+        Decoder<Out> out = I.find(Decoder.class, output);
+        return out == null ? I.make(output) : out.decode(encoded);
     }
 
     /**
@@ -1965,9 +1896,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Find the class by the specified fully qualified class name.
-     * </p>
      *
      * @param fqcn A fully qualified class name to want.
      * @return The specified class.
@@ -2181,10 +2110,8 @@ public class I {
     }
 
     /**
-     * <p>
      * Return a non-primitive {@link Class} of the specified {@link Class} object. <code>null</code>
      * will be return <code>null</code>.
-     * </p>
      *
      * @param type A {@link Class} object to convert to non-primitive class.
      * @return A non-primitive {@link Class} object.
@@ -2208,9 +2135,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Write JSON representation of Java object.
-     * </p>
      *
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
@@ -2276,9 +2201,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
      *
      * @param source A xml expression.
      * @return A constructed {@link XML}.
@@ -2288,9 +2211,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
      *
      * @param source A xml expression.
      * @return A constructed {@link XML}.
@@ -2300,9 +2221,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
      *
      * @param source A xml expression.
      * @return A constructed {@link XML}.
@@ -2312,9 +2231,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
      *
      * @param source A xml expression.
      * @return A constructed {@link XML}.
@@ -2324,9 +2241,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
      *
      * @param source A xml expression.
      * @return A constructed {@link XML}.
@@ -2336,9 +2251,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
      *
      * @param source A xml expression.
      * @return A constructed {@link XML}.
@@ -2348,9 +2261,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse as xml fragment.
-     * </p>
      *
      * @param source A xml expression.
      * @return A constructed {@link XML}.
@@ -2399,9 +2310,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Read byte data from various sources.
-     * </p>
      * 
      * @param input A data source.
      * @return A data.

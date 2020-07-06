@@ -63,7 +63,7 @@ public class JSON {
      * @return An associated value.
      */
     public JSON get(String key) {
-        return getAs(JSON.class, key);
+        return get(JSON.class, key);
     }
 
     /**
@@ -75,7 +75,7 @@ public class JSON {
      * @return An associated value.
      * @throws NullPointerException If type is null.
      */
-    public <T> T getAs(Class<T> type, String key) {
+    public <T> T get(Class<T> type, String key) {
         if (root instanceof Map) {
             Map m = (Map) root;
             Object o = m.get(key);
@@ -87,6 +87,17 @@ public class JSON {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get the direct child value as your type with the specified key. Unknown key and object key
+     * will return null.
+     * 
+     * @param key A key for value to find.
+     * @return An associated value.
+     */
+    public String text(String key) {
+        return get(String.class, key);
     }
 
     /**
@@ -111,7 +122,7 @@ public class JSON {
      * @return A result set.
      */
     public List<JSON> find(String... path) {
-        return findAs(JSON.class, path);
+        return find(JSON.class, path);
     }
 
     /**
@@ -123,7 +134,7 @@ public class JSON {
      * @return A result set.
      * @throws NullPointerException If type is null.
      */
-    public <T> List<T> findAs(Class<T> type, String... path) {
+    public <T> List<T> find(Class<T> type, String... path) {
         List items = List.of(root);
 
         for (int i = 0; i < path.length; i++) {
@@ -181,9 +192,10 @@ public class JSON {
     private static <M> M to(Class<M> type, Object o) {
         if (JSON.class == type) {
             return (M) new JSON(o);
+        } else if (o instanceof Map) {
+            return to(Model.of(type), I.make(type), o);
         } else {
-            Model<M> model = Model.of(type);
-            return model.attribute ? I.transform(o, type) : to(model, I.make(type), o);
+            return I.transform(o, type);
         }
     }
 

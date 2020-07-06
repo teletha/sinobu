@@ -46,8 +46,6 @@ import kiss.WiseTriConsumer;
 
 /**
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
- * 
- * @version 2018/09/06 23:29:00
  */
 public class Model<M> {
 
