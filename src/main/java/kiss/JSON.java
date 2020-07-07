@@ -95,10 +95,10 @@ public class JSON {
         if (js instanceof Map) {
             for (Entry<String, Object> e : ((Map<String, Object>) js).entrySet()) {
                 Property p = model.property(e.getKey());
-    
+
                 if (p != null && !p.isTransient) {
                     Object value = e.getValue();
-    
+
                     // convert value
                     if (p.isAttribute()) {
                         value = I.transform(value, p.model.type);
@@ -108,13 +108,13 @@ public class JSON {
                         Model m = impl == null ? p.model : Model.of(I.type(impl));
                         value = as(m, nest == null ? I.make(m.type) : nest, value);
                     }
-    
+
                     // assign value
                     model.set(java, p, value);
                 }
             }
         }
-    
+
         // API definition
         return java;
     }
@@ -234,6 +234,14 @@ public class JSON {
             items.set(i, as(type, items.get(i)));
         }
         return items;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return root.toString();
     }
 
     // ===========================================================
