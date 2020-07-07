@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.InputStream;
@@ -83,11 +83,6 @@ class IllegalInputTest {
         Locale locale = I.json("{\"age\":\"15\"}").as(Locale.class);
         assert locale instanceof Locale;
         assert locale == Locale.getDefault();
-    }
-
-    @Test
-    void readEmpty() {
-        assertThrows(IllegalStateException.class, () -> I.json("").as(bean));
     }
 
     @Test

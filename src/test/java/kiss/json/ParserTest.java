@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -20,9 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/09/28 13:25:13
- */
 class ParserTest {
 
     @Test
@@ -33,6 +30,7 @@ class ParserTest {
         parse("{\r}");
         parse("{\n}");
         parse(" { } ");
+        parse("");
     }
 
     @Test

@@ -282,8 +282,10 @@ public class JSON {
         this.capture = new StringBuilder();
 
         read();
-        space();
-        root = value();
+        if (fill != -1) {
+            space();
+            root = value();
+        }
     }
 
     /**
