@@ -205,20 +205,6 @@ class TraverseTest {
         assert values.get(0) == 20;
     }
 
-    @Test
-    void nullPath() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'age': 20",
-        "}");
-        // @formatter:on
-
-        List<Integer> values = json.get("age").find(int.class, (String[]) null);
-        assert values.size() == 1;
-        assert values.get(0) == 20;
-    }
-
     /**
      * <p>
      * Write JSON.

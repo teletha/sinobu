@@ -207,30 +207,28 @@ public class JSON {
      * @param type The convertion type.
      * @param path A property path.
      * @return A result set.
-     * @throws NullPointerException If type is null.
+     * @throws NullPointerException If type or path is null.
      */
     public <T> List<T> find(Class<T> type, String... path) {
         List items = new ArrayList();
         items.add(root);
 
-        if (path != null) {
-            for (int i = 0; i < path.length; i++) {
-                List next = new ArrayList();
+        for (int i = 0; i < path.length; i++) {
+            List next = new ArrayList();
 
-                for (Object item : items) {
-                    if (item instanceof Map) {
-                        if (path[i].equals("*")) {
-                            next.addAll(((Map) item).values());
-                        } else {
-                            Object value = ((Map) item).get(path[i]);
-                            if (value != null) {
-                                next.add(value);
-                            }
+            for (Object item : items) {
+                if (item instanceof Map) {
+                    if (path[i].equals("*")) {
+                        next.addAll(((Map) item).values());
+                    } else {
+                        Object value = ((Map) item).get(path[i]);
+                        if (value != null) {
+                            next.add(value);
                         }
                     }
                 }
-                items = next;
             }
+            items = next;
         }
 
         for (int i = 0; i < items.size(); i++) {
