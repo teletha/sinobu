@@ -11,6 +11,8 @@ package kiss.signal;
 
 import org.junit.jupiter.api.Test;
 
+import antibug.Chronus;
+
 class WaitTest extends SignalTester {
 
     @Test
@@ -59,5 +61,39 @@ class WaitTest extends SignalTester {
         monitor(signal -> signal.wait(10, null));
 
         assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
+
+    Chronus chrnous = new Chronus();
+
+    @Test
+    void waitForTerminate() {
+        monitor(signal -> signal.startWith(1, 2).delay(500, ms, chrnous).take(2).waitForTerminate());
+
+        chrnous.await();
+        assert main.value(1, 2);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void waitForTerminateByError() {
+        monitor(signal -> signal.startWith(1, 2).map(errorFunction()).delay(50, ms, chrnous).waitForTerminate());
+
+        chrnous.await();
+        assert main.value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void waitForTerminateByDispose() {
+        monitor(signal -> signal.startWith(1).delay(50, ms, chrnous).effectOnce(main::dispose).waitForTerminate());
+
+        chrnous.await();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 }

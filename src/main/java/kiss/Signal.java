@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
@@ -4016,6 +4017,26 @@ public final class Signal<V> {
             return this;
         }
         return effect(((WiseConsumer<Long>) Thread::sleep).bind(unit.toMillis(time)));
+    }
+
+    /**
+     * Synchronization Support Tool : Wait in the current thread until this {@link Signal} to be
+     * terminated. Termination is one of the states of completed, error or disposed.
+     * 
+     * @return
+     */
+    public final Signal<V> waitForTerminate() {
+        return new Signal<>((observer, disposer) -> {
+            try {
+                CountDownLatch latch = new CountDownLatch(1);
+                to(observer::accept, I.bundle(I.wiseC(latch::countDown), observer::error), I
+                        .bundle(latch::countDown, observer::complete), disposer.add(latch::countDown));
+                latch.await();
+            } catch (Exception e) {
+                observer.error(e);
+            }
+            return disposer;
+        });
     }
 
     /**
