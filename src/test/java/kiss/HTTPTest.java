@@ -11,8 +11,10 @@ package kiss;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.HttpRetryException;
 import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -41,6 +43,16 @@ class HTTPTest {
     @AfterEach
     void cleanup() {
         I.client = original;
+    }
+
+    /**
+     * Unescape the special characters.
+     * 
+     * @param json
+     * @return
+     */
+    private String text(String json) {
+        return json.replace('\'', '"');
     }
 
     @Test
@@ -141,13 +153,47 @@ class HTTPTest {
         };
     }
 
-    /**
-     * Unescape the special characters.
-     * 
-     * @param json
-     * @return
-     */
-    private String text(String json) {
-        return json.replace('\'', '"');
+    @Test
+    void clientErrorResponse400() {
+        client.onGet().doReturn(400, "Bad Request");
+
+        AtomicReference<Throwable> error = new AtomicReference();
+        Variable<JSON> result = I.http("http://test", JSON.class).effectOnError(error::set).to();
+        assert result.isAbsent();
+        assert error.get() instanceof HttpRetryException;
+        assert error.get().getMessage().equals("Bad Request");
+    }
+
+    @Test
+    void clientErrorResponse404() {
+        client.onGet().doReturn(404, "Not Found");
+
+        AtomicReference<Throwable> error = new AtomicReference();
+        Variable<JSON> result = I.http("http://test", JSON.class).effectOnError(error::set).to();
+        assert result.isAbsent();
+        assert error.get() instanceof HttpRetryException;
+        assert error.get().getMessage().equals("Not Found");
+    }
+
+    @Test
+    void serverErrorResponse500() {
+        client.onGet().doReturn(500, "Internal Server Error");
+
+        AtomicReference<Throwable> error = new AtomicReference();
+        Variable<JSON> result = I.http("http://test", JSON.class).effectOnError(error::set).to();
+        assert result.isAbsent();
+        assert error.get() instanceof HttpRetryException;
+        assert error.get().getMessage().equals("Internal Server Error");
+    }
+
+    @Test
+    void serverErrorResponse503() {
+        client.onGet().doReturn(503, "Service Unavailable");
+
+        AtomicReference<Throwable> error = new AtomicReference();
+        Variable<JSON> result = I.http("http://test", JSON.class).effectOnError(error::set).to();
+        assert result.isAbsent();
+        assert error.get() instanceof HttpRetryException;
+        assert error.get().getMessage().equals("Service Unavailable");
     }
 }
