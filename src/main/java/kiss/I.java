@@ -809,34 +809,34 @@ public class I {
                     .whenComplete((res, e) -> {
                         if (e == null) {
                             try {
-                                if (res.statusCode() < 400) {
-                                    InputStream in = res.body();
+                                InputStream in = res.body();
 
-                                    // =============================================
-                                    // Decoding Phase
-                                    // =============================================
-                                    List<String> encodings = res.headers().allValues("Content-Encoding");
-                                    if (encodings.contains("gzip")) {
-                                        in = new GZIPInputStream(in);
-                                    } else if (encodings.contains("deflate")) {
-                                        in = new InflaterInputStream(in);
-                                    }
+                                // =============================================
+                                // Decoding Phase
+                                // =============================================
+                                List<String> encodings = res.headers().allValues("Content-Encoding");
+                                if (encodings.contains("gzip")) {
+                                    in = new GZIPInputStream(in);
+                                } else if (encodings.contains("deflate")) {
+                                    in = new InflaterInputStream(in);
+                                }
 
-                                    // =============================================
-                                    // Materializing Phase
-                                    // =============================================
-                                    T v = (T) (type == String.class ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
-                                            : type == XML.class ? I.xml(in) : I.json(in).as(type));
+                                // =============================================
+                                // Materializing Phase
+                                // =============================================
+                                int code = res.statusCode();
+                                T v = (T) (type == String.class || 400 <= code ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
+                                        : type == XML.class ? I.xml(in) : I.json(in).as(type));
 
-                                    // =============================================
-                                    // Signaling Phase
-                                    // =============================================
+                                // =============================================
+                                // Signaling Phase
+                                // =============================================
+                                if (code < 400) {
                                     observer.accept(v);
                                     observer.complete();
                                     return;
                                 } else {
-                                    e = new HttpRetryException(new String(res.body().readAllBytes(), StandardCharsets.UTF_8), res
-                                            .statusCode(), res.uri().toString());
+                                    e = new HttpRetryException(v.toString(), code, res.uri().toString());
                                 }
                             } catch (Exception x) {
                                 e = x; // fall-through to error handling
