@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -228,7 +229,7 @@ public class I {
     private static final Pattern express = Pattern.compile("\\{([^}]+)\\}");
 
     /** The reusable http client. */
-    static HttpClient client = HttpClient.newBuilder().followRedirects(Redirect.ALWAYS).build();
+    static HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).followRedirects(Redirect.ALWAYS).build();
 
     // initialization
     static {
@@ -864,7 +865,14 @@ public class I {
             sub.text = new StringBuilder();
             sub.next = open;
 
-            CompletableFuture<WebSocket> future = client.newWebSocketBuilder().buildAsync(URI.create(uri), sub);
+            CompletableFuture<WebSocket> future = client.newWebSocketBuilder()
+                    .connectTimeout(Duration.ofSeconds(5))
+                    .buildAsync(URI.create(uri), sub)
+                    .whenComplete((ok, e) -> {
+                        if (e != null) {
+                            observer.error(e);
+                        }
+                    });
 
             return disposer.add(() -> future.cancel(true));
         });
