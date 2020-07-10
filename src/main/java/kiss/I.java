@@ -779,6 +779,7 @@ public class I {
      * @param type Response type.
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
+     * @throws NullPointerException When one of the arguments is null.
      */
     public static <T> Signal<T> http(String request, Class<T> type, HttpClient... client) {
         return http(HttpRequest.newBuilder(URI.create(request)), type, client);
@@ -792,11 +793,11 @@ public class I {
      * @param type Response handler.
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
+     * @throws NullPointerException When one of the arguments is null.
      */
     public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> type, HttpClient... client) {
         return new Signal<>((observer, disposer) -> {
-            CompletableFuture future = (client == null || client.length == 0 ? I.client : client[0])
-                    .sendAsync(request.build(), BodyHandlers.ofInputStream())
+            CompletableFuture future = (client.length == 0 ? I.client : client[0]).sendAsync(request.build(), BodyHandlers.ofInputStream())
                     .whenComplete((res, e) -> {
                         if (e == null) {
                             try {
@@ -846,6 +847,7 @@ public class I {
      * @param uri URI to connect.
      * @param open Called only once, when a connection is established.
      * @return Communication status.
+     * @throws NullPointerException if uri or client is null.
      */
     public static Signal<String> http(String uri, Consumer<WebSocket> open, HttpClient... client) {
         return new Signal<>((observer, disposer) -> {
@@ -855,7 +857,7 @@ public class I {
             sub.text = new StringBuilder();
             sub.next = open;
 
-            CompletableFuture<WebSocket> future = (client == null || client.length == 0 ? I.client : client[0]).newWebSocketBuilder()
+            CompletableFuture<WebSocket> future = (client.length == 0 ? I.client : client[0]).newWebSocketBuilder()
                     .connectTimeout(Duration.ofSeconds(5))
                     .buildAsync(URI.create(uri), sub)
                     .whenComplete((ok, e) -> {
