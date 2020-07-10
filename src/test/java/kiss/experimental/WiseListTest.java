@@ -36,7 +36,7 @@ public class WiseListTest {
         return (MIX) I.make(wised.computeIfAbsent(base.getName() + mixin.getName(), k -> {
             try {
                 String[] raw = "-54,-2,-70,-66,0,0,0,58,0,12,1,0,U,7,0,1,1,0,S,7,0,3,1,0,I,7,0,5,1,0,6,60,105,110,105,116,62,1,0,3,40,41,86,12,0,7,0,8,10,0,4,0,9,1,0,4,67,111,100,101,0,1,0,2,0,4,0,1,0,6,0,0,0,1,0,1,0,7,0,8,0,1,0,11,0,0,0,17,0,2,0,1,0,0,0,5,42,-73,0,10,-79,0,0,0,0,0,0"
-                        .replace("U", b("kiss/".concat(base.getName().replace('.', '_'))))
+                        .replace("U", b("kiss/experimental/".concat(base.getName().replace('.', '_'))))
                         .replace("S", b(base.getName()))
                         .replace("I", b(mixin.getName()))
                         .split(",");
