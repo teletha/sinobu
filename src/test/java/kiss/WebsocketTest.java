@@ -9,10 +9,9 @@
  */
 package kiss;
 
+import java.net.UnknownHostException;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.AfterEach;
@@ -21,22 +20,41 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import antibug.WebSocketServer;
+import antibug.WebSocketServer.Validator;
+
 @Execution(ExecutionMode.SAME_THREAD)
 class WebsocketTest {
 
     HttpClient original;
 
-    MockWebSocketServer server;
+    WebSocketServer server;
 
-    Starter starter;
+    Validator validator = new Validator();
 
-    Listener listener;
+    Observer<String> observer = new Observer<>() {
+
+        @Override
+        public void accept(String value) {
+            validator.onText(null, value, true);
+        }
+
+        @Override
+        public void complete() {
+            validator.onClose(null, 1000, "");
+        }
+
+        @Override
+        public void error(Throwable e) {
+            validator.onError(null, e);
+        }
+    };
+
+    Consumer<WebSocket> open = validator::onOpen;
 
     @BeforeEach
     void setup() {
-        starter = new Starter();
-        listener = new Listener();
-        server = new MockWebSocketServer();
+        server = new WebSocketServer();
         original = I.client;
         I.client = server.client();
     }
@@ -47,52 +65,56 @@ class WebsocketTest {
     }
 
     @Test
-    void unknownServer() {
-        I.http("ws://unknown-web-socket-server.desu", starter).to(listener);
+    void connectToServer() {
+        I.http("ws://websocket-server", open).to(observer);
 
-        assert listener.isError();
+        assert validator.isOpened();
+        assert validator.isNotError();
+        assert validator.isNotClosed();
     }
 
-    /**
-     * 
-     */
-    private static class Starter implements Consumer<WebSocket> {
+    @Test
+    void unknownServerWillThrowError() {
+        server.rejectConnectionBy(new UnknownHostException());
 
-        private WebSocket ws;
+        I.http("ws://unknown-websocket-server", open).to(observer);
 
-        @Override
-        public void accept(WebSocket socket) {
-            this.ws = socket;
-        }
+        assert validator.isNotClosed();
+        assert validator.isError(UnknownHostException.class);
     }
 
-    /**
-     * 
-     */
-    private static class Listener implements Observer<String> {
+    @Test
+    void response() {
+        server.send("Welcome!");
 
-        private final List<String> text = new ArrayList();
+        I.http("ws://websocket-server", open).to(observer);
 
-        private boolean completed;
+        assert validator.hasMessage("Welcome!");
+    }
 
-        private Throwable error;
+    @Test
+    void request() {
+        server.replyWhen("Ping", () -> {
+            server.send("Pong");
+        });
 
-        @Override
-        public void accept(String text) {
-        }
+        I.http("ws://websocket-server", open).to(observer);
+        validator.send("Ping");
 
-        @Override
-        public void complete() {
-            this.completed = true;
-        }
+        assert validator.hasMessage("Pong");
+    }
 
-        @Override
-        public void error(Throwable e) {
-            this.error = e;
-        }
+    @Test
+    void close() {
+        server.replyWhen("Close", () -> {
+            server.sendClose(1000, "Bye");
+        });
 
-        private boolean isError() {
-            return error != null;
-        }
+        I.http("ws://websocket-server", open).to(observer);
+        validator.send("Close");
+
+        assert validator.hasNoMessage();
+        assert validator.isClosed();
+        assert validator.isNotError();
     }
 }
