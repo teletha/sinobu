@@ -7,12 +7,15 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss;
+package kiss.experimental;
 
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+
+import kiss.I;
+import kiss.Variable;
 
 public interface WiseList<E> extends List<E> {
 

@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss;
+package kiss.experimental;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.Test;
+
+import kiss.I;
 
 public class WiseListTest {
 
