@@ -12,38 +12,19 @@ package kiss;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpRetryException;
-import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import com.pgssoft.httpclient.Action;
 import com.pgssoft.httpclient.HttpClientMock;
 
-@Execution(ExecutionMode.SAME_THREAD)
 class HTTPTest {
 
-    HttpClient original;
-
-    HttpClientMock client;
-
-    @BeforeEach
-    void setup() {
-        original = I.client;
-        I.client = client = new HttpClientMock();
-    }
-
-    @AfterEach
-    void cleanup() {
-        I.client = original;
-    }
+    HttpClientMock client = new HttpClientMock();
 
     /**
      * Unescape the special characters.
@@ -59,14 +40,14 @@ class HTTPTest {
     void httpString() {
         client.onGet().doReturn("ok");
 
-        assert I.http("http://test", String.class).to().is("ok");
+        assert I.http("http://test", String.class, client).to().is("ok");
     }
 
     @Test
     void httpXML() {
         client.onGet().doReturnXML("<root>yes</root>");
 
-        XML xml = I.http("http://test", XML.class).to().exact();
+        XML xml = I.http("http://test", XML.class, client).to().exact();
         assert xml.name().equals("root");
         assert xml.text().equals("yes");
     }
@@ -75,7 +56,7 @@ class HTTPTest {
     void httpJSON() {
         client.onGet().doReturnJSON(text("{'state' : 'ok'}"));
 
-        JSON json = I.http("http://test", JSON.class).to().exact();
+        JSON json = I.http("http://test", JSON.class, client).to().exact();
         assert json.get("state").as(String.class).equals("ok");
     }
 
@@ -83,7 +64,7 @@ class HTTPTest {
     void httpType() {
         client.onGet().doReturn(text("{'state' : 'ok'}"));
 
-        Server server = I.http("http://test", Server.class).to().exact();
+        Server server = I.http("http://test", Server.class, client).to().exact();
         assert server.state.equals("ok");
     }
 
@@ -95,7 +76,7 @@ class HTTPTest {
     void httpGzip() {
         client.onGet().doAction(gzip("<root>gzip</root>"));
 
-        XML xml = I.http("http://test", XML.class).to().exact();
+        XML xml = I.http("http://test", XML.class, client).to().exact();
         assert xml.name().equals("root");
         assert xml.text().equals("gzip");
     }
@@ -104,7 +85,7 @@ class HTTPTest {
     void httpDeflate() {
         client.onGet().doAction(deflate("<root>deflate</root>"));
 
-        XML xml = I.http("http://test", XML.class).to().exact();
+        XML xml = I.http("http://test", XML.class, client).to().exact();
         assert xml.name().equals("root");
         assert xml.text().equals("deflate");
     }
@@ -158,7 +139,7 @@ class HTTPTest {
         client.onGet().doReturn(400, "Bad Request");
 
         AtomicReference<Throwable> error = new AtomicReference();
-        Variable<JSON> result = I.http("http://test", JSON.class).effectOnError(error::set).to();
+        Variable<JSON> result = I.http("http://test", JSON.class, client).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Bad Request");
@@ -169,7 +150,7 @@ class HTTPTest {
         client.onGet().doReturn(404, "Not Found");
 
         AtomicReference<Throwable> error = new AtomicReference();
-        Variable<JSON> result = I.http("http://test", JSON.class).effectOnError(error::set).to();
+        Variable<JSON> result = I.http("http://test", JSON.class, client).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Not Found");
@@ -180,7 +161,7 @@ class HTTPTest {
         client.onGet().doReturn(500, "Internal Server Error");
 
         AtomicReference<Throwable> error = new AtomicReference();
-        Variable<JSON> result = I.http("http://test", JSON.class).effectOnError(error::set).to();
+        Variable<JSON> result = I.http("http://test", JSON.class, client).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Internal Server Error");
@@ -191,7 +172,7 @@ class HTTPTest {
         client.onGet().doReturn(503, "Service Unavailable");
 
         AtomicReference<Throwable> error = new AtomicReference();
-        Variable<JSON> result = I.http("http://test", JSON.class).effectOnError(error::set).to();
+        Variable<JSON> result = I.http("http://test", JSON.class, client).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Service Unavailable");

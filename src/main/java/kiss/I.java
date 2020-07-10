@@ -229,7 +229,10 @@ public class I {
     private static final Pattern express = Pattern.compile("\\{([^}]+)\\}");
 
     /** The reusable http client. */
-    static HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).followRedirects(Redirect.ALWAYS).build();
+    private static final HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(15))
+            .followRedirects(Redirect.ALWAYS)
+            .build();
 
     // initialization
     static {
@@ -777,22 +780,8 @@ public class I {
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      */
-    public static <T> Signal<T> http(String request, Class<T> type) {
-        return http(HttpRequest.newBuilder(URI.create(request)), type);
-    }
-
-    /**
-     * Obtain a {@link Signal} to request a resource by HTTP(S). If the request is successful, the
-     * content is converted to the specified type before it is sent.
-     * 
-     * @param <T>
-     * @param request Request builder.
-     * @param type Response type.
-     * @return If the request is successful, the content will be sent. If the request is
-     *         unsuccessful, an error will be sent.
-     */
-    public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> type) {
-        return http(null, request, type);
+    public static <T> Signal<T> http(String request, Class<T> type, HttpClient... client) {
+        return http(HttpRequest.newBuilder(URI.create(request)), type, client);
     }
 
     /**
@@ -804,9 +793,10 @@ public class I {
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      */
-    public static <T> Signal<T> http(HttpClient client, HttpRequest.Builder request, Class<T> type) {
+    public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> type, HttpClient... client) {
         return new Signal<>((observer, disposer) -> {
-            CompletableFuture future = (client == null ? I.client : client).sendAsync(request.build(), BodyHandlers.ofInputStream())
+            CompletableFuture future = (client == null || client.length == 0 ? I.client : client[0])
+                    .sendAsync(request.build(), BodyHandlers.ofInputStream())
                     .whenComplete((res, e) -> {
                         if (e == null) {
                             try {
@@ -857,7 +847,7 @@ public class I {
      * @param open Called only once, when a connection is established.
      * @return Communication status.
      */
-    public static Signal<String> http(String uri, Consumer<WebSocket> open) {
+    public static Signal<String> http(String uri, Consumer<WebSocket> open, HttpClient... client) {
         return new Signal<>((observer, disposer) -> {
             Subscriber sub = new Subscriber();
             sub.observer = observer;
@@ -865,7 +855,7 @@ public class I {
             sub.text = new StringBuilder();
             sub.next = open;
 
-            CompletableFuture<WebSocket> future = client.newWebSocketBuilder()
+            CompletableFuture<WebSocket> future = (client == null || client.length == 0 ? I.client : client[0]).newWebSocketBuilder()
                     .connectTimeout(Duration.ofSeconds(5))
                     .buildAsync(URI.create(uri), sub)
                     .whenComplete((ok, e) -> {
