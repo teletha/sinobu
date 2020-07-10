@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss;
+package kiss.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,6 +21,11 @@ import org.junit.jupiter.api.Test;
 
 import com.pgssoft.httpclient.Action;
 import com.pgssoft.httpclient.HttpClientMock;
+
+import kiss.I;
+import kiss.JSON;
+import kiss.Variable;
+import kiss.XML;
 
 class HTTPTest {
 

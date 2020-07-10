@@ -7,7 +7,7 @@
  *
  *          http://clientsource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.web;
 
 import java.net.UnknownHostException;
 import java.net.http.HttpClient;
@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import antibug.WebSocketServer;
 import antibug.WebSocketServer.WebSocketClient;
+import kiss.I;
+import kiss.Observer;
 
 class WebsocketTest {
 
