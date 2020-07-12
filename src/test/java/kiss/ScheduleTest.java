@@ -16,6 +16,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import antibug.Chronus;
@@ -105,28 +106,26 @@ class ScheduleTest {
 
         assert variable.isAbsent();
         chronus.await();
-        assert variable.is(0L);
+        assert variable.is(1L);
     }
 
     @Test
     void scheduleSignalNegativeTime() {
         Variable<Long> variable = I.schedule(-1, MILLISECONDS, chronus).to();
 
-        assert variable.is(0L);
+        assert variable.is(1L);
     }
 
     @Test
     void scheduleSignalZeroTime() {
         Variable<Long> variable = I.schedule(0, MILLISECONDS, chronus).to();
 
-        assert variable.is(0L);
+        assert variable.is(1L);
     }
 
     @Test
     void scheduleSignalNullTimeUnit() {
-        Variable<Long> variable = I.schedule(10, null, chronus).to();
-
-        assert variable.is(0L);
+        Assertions.assertThrows(NullPointerException.class, () -> I.schedule(10, null, chronus));
     }
 
     @Test
@@ -135,6 +134,6 @@ class ScheduleTest {
 
         assert variable.isAbsent();
         chronus.await(100, TimeUnit.MILLISECONDS);
-        assert variable.is(0L);
+        assert variable.is(1L);
     }
 }

@@ -1720,17 +1720,7 @@ public class I {
      * @return {@link Signal} that emits a {@code 0L} after the {@code delayTime}
      */
     public static Signal<Long> schedule(long delayTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
-        if (delayTime <= 0 || timeUnit == null) {
-            return I.signal(0L);
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            Future future = (scheduler == null ? I.scheduler : scheduler).schedule(() -> {
-                observer.accept(0L);
-                observer.complete();
-            }, delayTime, timeUnit);
-            return disposer.add(future);
-        });
+        return schedule(delayTime, -1, timeUnit, false, scheduler).take(1);
     }
 
     /**
@@ -1758,14 +1748,23 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate, ScheduledExecutorService scheduler) {
+        Objects.requireNonNull(timeUnit);
+
         return new Signal<>((observer, disposer) -> {
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
+            ScheduledExecutorService exe = scheduler == null ? I.scheduler : scheduler;
 
-            if (fixedRate) {
-                future = (scheduler == null ? I.scheduler : scheduler).scheduleAtFixedRate(task, delayTime, intervalTime, timeUnit);
+            if (intervalTime <= 0) {
+                if (delayTime <= 0) {
+                    future = CompletableFuture.runAsync(task, Runnable::run);
+                } else {
+                    future = exe.schedule(task, delayTime, timeUnit);
+                }
+            } else if (fixedRate) {
+                future = exe.scheduleAtFixedRate(task, delayTime, intervalTime, timeUnit);
             } else {
-                future = (scheduler == null ? I.scheduler : scheduler).scheduleWithFixedDelay(task, delayTime, intervalTime, timeUnit);
+                future = exe.scheduleWithFixedDelay(task, delayTime, intervalTime, timeUnit);
             }
             return disposer.add(future);
         }).count();
