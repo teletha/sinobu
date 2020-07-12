@@ -9,10 +9,12 @@
  */
 package kiss;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
@@ -91,9 +93,48 @@ class ScheduleTest {
 
     @Test
     void scheduleNullTask() {
-        CompletableFuture result = I.schedule(30, MILLISECONDS, null);
+        CompletableFuture result = I.schedule(30, MILLISECONDS, (Runnable) null);
 
         assert value == null;
         assert result.isDone();
+    }
+
+    @Test
+    void scheduleSignal() {
+        Variable<Long> variable = I.schedule(10, MILLISECONDS, chronus).to();
+
+        assert variable.isAbsent();
+        chronus.await();
+        assert variable.is(0L);
+    }
+
+    @Test
+    void scheduleSignalNegativeTime() {
+        Variable<Long> variable = I.schedule(-1, MILLISECONDS, chronus).to();
+
+        assert variable.is(0L);
+    }
+
+    @Test
+    void scheduleSignalZeroTime() {
+        Variable<Long> variable = I.schedule(0, MILLISECONDS, chronus).to();
+
+        assert variable.is(0L);
+    }
+
+    @Test
+    void scheduleSignalNullTimeUnit() {
+        Variable<Long> variable = I.schedule(10, null, chronus).to();
+
+        assert variable.is(0L);
+    }
+
+    @Test
+    void scheduleSignalNullScheduler() {
+        Variable<Long> variable = I.schedule(10, TimeUnit.MILLISECONDS, (ScheduledExecutorService) null).to();
+
+        assert variable.isAbsent();
+        chronus.await(100, TimeUnit.MILLISECONDS);
+        assert variable.is(0L);
     }
 }

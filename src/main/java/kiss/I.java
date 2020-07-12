@@ -1701,6 +1701,39 @@ public class I {
     }
 
     /**
+     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime}.
+     *
+     * @param delayTime The delay time to wait before emitting the first value of 0L
+     * @param timeUnit the time unit for {@code delayTime}
+     * @return {@link Signal} that emits a {@code 0L} after the {@code delayTime}
+     */
+    public static Signal<Long> schedule(long time, TimeUnit unit) {
+        return schedule(time, unit, (ScheduledExecutorService) null);
+    }
+
+    /**
+     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime}.
+     *
+     * @param delayTime The delay time to wait before emitting the first value of 0L
+     * @param timeUnit The time unit for {@code delayTime}
+     * @param scheduler The task scheduler.
+     * @return {@link Signal} that emits a {@code 0L} after the {@code delayTime}
+     */
+    public static Signal<Long> schedule(long delayTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
+        if (delayTime <= 0 || timeUnit == null) {
+            return I.signal(0L);
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            Future future = (scheduler == null ? I.scheduler : scheduler).schedule(() -> {
+                observer.accept(0L);
+                observer.complete();
+            }, delayTime, timeUnit);
+            return disposer.add(future);
+        });
+    }
+
+    /**
      * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
      * increasing numbers after each {@code intervalTime} of time thereafter.
      * 
