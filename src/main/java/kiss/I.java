@@ -1714,23 +1714,6 @@ public class I {
         return schedule(delayTime, intervalTime, timeUnit, fixedRate, scheduler);
     }
 
-    // /**
-    // * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
-    // * increasing numbers after each {@code intervalTime} of time thereafter.
-    // *
-    // * @param delayTime The initial delay time to wait before emitting the first value of 0L
-    // * @param intervalTime The period of time between emissions of the subsequent numbers
-    // * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
-    // * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
-    // * numbers after each {@code intervalTime} of time thereafter
-    // */
-    // public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit,
-    // ScheduledExecutorService scheduler) {
-    // return I.signal(0L)
-    // .delay(delayTime, timeUnit, scheduler)
-    // .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), scheduler);
-    // }
-    
     /**
      * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
      * increasing numbers after each {@code intervalTime} of time thereafter.
@@ -1745,7 +1728,7 @@ public class I {
         return new Signal<>((observer, disposer) -> {
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
-    
+
             if (fixedRate) {
                 future = (scheduler == null ? I.scheduler : scheduler).scheduleAtFixedRate(task, delayTime, intervalTime, timeUnit);
             } else {
@@ -1827,8 +1810,6 @@ public class I {
     public static <V> Signal<V> signal(Supplier<V> value) {
         return I.<V> signal().startWith(value);
     }
-
-    
 
     // /**
     // * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
