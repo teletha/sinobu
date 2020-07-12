@@ -1675,32 +1675,6 @@ public class I {
     }
 
     /**
-     * Execute the specified task lazily in the sinobu managed background thread pool.
-     *
-     * @param time A delay time.
-     * @param unit A delay time unit.
-     * @param task A task to execute.
-     * @return A result of the executing task.
-     */
-    public static CompletableFuture schedule(long time, TimeUnit unit, Runnable task) {
-        return schedule(time, unit, null, task);
-    }
-
-    /**
-     * Internal API : Execute the specified task lazily in the sinobu managed background thread
-     * pool.
-     *
-     * @param time A delay time.
-     * @param unit A delay time unit.
-     * @param executor A task executor.
-     * @param task A task to execute.
-     * @return A result of the executing task.
-     */
-    public static CompletableFuture schedule(long time, TimeUnit unit, ScheduledExecutorService executor, Runnable task) {
-        return schedule(time <= 0 ? Runnable::run : t -> (executor == null ? I.scheduler : executor).schedule(t, time, unit), task);
-    }
-
-    /**
      * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime}.
      *
      * @param delayTime The delay time to wait before emitting the first value of 0L

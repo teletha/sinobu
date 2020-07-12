@@ -61,15 +61,15 @@ class ScheduleTest {
 
     @Test
     void schedule() {
-        CompletableFuture result = I.schedule(30, MILLISECONDS, chronus, () -> {
+        Disposable result = I.schedule(30, MILLISECONDS, chronus).to(() -> {
             value = "scheduled";
         });
 
         assert value == null;
-        assert result.isDone() == false;
+        assert result.isNotDisposed();
         chronus.await();
         assert value.equals("scheduled");
-        assert result.isDone();
+        assert result.isDisposed();
     }
 
     @Test
