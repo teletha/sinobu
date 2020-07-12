@@ -156,7 +156,7 @@ class SignalCreationTest extends SignalTester {
 
     @Test
     void interval() {
-        monitor(() -> I.signal(0, 30, ms, scheduler)
+        monitor(() -> I.schedule(0, 30, ms, false, scheduler)
                 .take(4)
                 .map(e -> System.currentTimeMillis())
                 .maps((previous, now) -> 30 <= now - previous));
@@ -164,7 +164,7 @@ class SignalCreationTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isNotDisposed();
 
-        scheduler.await();
+        scheduler.await(200, ms);
         assert main.value(true, true, true);
         assert main.isCompleted();
         assert main.isDisposed();

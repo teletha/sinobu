@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -572,7 +572,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<List<V>> buffer(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
-        return buffer(I.signal(time, time, unit, scheduler));
+        return buffer(I.schedule(time, time, unit, true, scheduler));
     }
 
     /**

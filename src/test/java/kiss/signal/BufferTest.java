@@ -74,11 +74,11 @@ class BufferTest extends SignalTester {
         // So awaiting all tasks will be deadlock, don't use it
 
         assert main.emit("A", "B").value();
-        scheduler.mark().elapse(100, ms);
+        scheduler.await(100, ms);
         assert main.value("AB");
 
         assert main.emit("C", "D", "E").value();
-        scheduler.mark().elapse(100, ms);
+        scheduler.await(100, ms);
         assert main.value("CDE");
     }
 

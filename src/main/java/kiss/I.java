@@ -1701,6 +1701,61 @@ public class I {
     }
 
     /**
+     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
+     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * 
+     * @param delayTime The initial delay time to wait before emitting the first value of 0L
+     * @param intervalTime The period of time between emissions of the subsequent numbers
+     * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
+     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
+     *         numbers after each {@code intervalTime} of time thereafter
+     */
+    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate) {
+        return schedule(delayTime, intervalTime, timeUnit, fixedRate, scheduler);
+    }
+
+    // /**
+    // * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
+    // * increasing numbers after each {@code intervalTime} of time thereafter.
+    // *
+    // * @param delayTime The initial delay time to wait before emitting the first value of 0L
+    // * @param intervalTime The period of time between emissions of the subsequent numbers
+    // * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
+    // * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
+    // * numbers after each {@code intervalTime} of time thereafter
+    // */
+    // public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit,
+    // ScheduledExecutorService scheduler) {
+    // return I.signal(0L)
+    // .delay(delayTime, timeUnit, scheduler)
+    // .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), scheduler);
+    // }
+    
+    /**
+     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
+     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * 
+     * @param delayTime The initial delay time to wait before emitting the first value of 0L
+     * @param intervalTime The period of time between emissions of the subsequent numbers
+     * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
+     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
+     *         numbers after each {@code intervalTime} of time thereafter
+     */
+    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate, ScheduledExecutorService scheduler) {
+        return new Signal<>((observer, disposer) -> {
+            Runnable task = I.wiseC(observer).bindLast(null);
+            Future future;
+    
+            if (fixedRate) {
+                future = (scheduler == null ? I.scheduler : scheduler).scheduleAtFixedRate(task, delayTime, intervalTime, timeUnit);
+            } else {
+                future = (scheduler == null ? I.scheduler : scheduler).scheduleWithFixedDelay(task, delayTime, intervalTime, timeUnit);
+            }
+            return disposer.add(future);
+        }).count();
+    }
+
+    /**
      * Create {@link HashSet} with the specified items.
      * 
      * @param items A list of itmes.
@@ -1739,7 +1794,7 @@ public class I {
             } catch (Throwable e) {
                 observer.error(e);
             }
-            return disposer.add(() -> value.cancel(true));
+            return disposer.add(value);
         });
     }
 
@@ -1773,35 +1828,24 @@ public class I {
         return I.<V> signal().startWith(value);
     }
 
-    /**
-     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
-     * increasing numbers after each {@code intervalTime} of time thereafter.
-     * 
-     * @param delayTime The initial delay time to wait before emitting the first value of 0L
-     * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
-     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
-     *         numbers after each {@code intervalTime} of time thereafter
-     */
-    public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit) {
-        return signal(delayTime, intervalTime, timeUnit, scheduler);
-    }
+    
 
-    /**
-     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
-     * increasing numbers after each {@code intervalTime} of time thereafter.
-     * 
-     * @param delayTime The initial delay time to wait before emitting the first value of 0L
-     * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
-     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
-     *         numbers after each {@code intervalTime} of time thereafter
-     */
-    public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
-        return I.signal(0L)
-                .delay(delayTime, timeUnit, scheduler)
-                .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), scheduler);
-    }
+    // /**
+    // * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
+    // * increasing numbers after each {@code intervalTime} of time thereafter.
+    // *
+    // * @param delayTime The initial delay time to wait before emitting the first value of 0L
+    // * @param intervalTime The period of time between emissions of the subsequent numbers
+    // * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
+    // * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
+    // * numbers after each {@code intervalTime} of time thereafter
+    // */
+    // public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit,
+    // ScheduledExecutorService scheduler) {
+    // return I.signal(0L)
+    // .delay(delayTime, timeUnit, scheduler)
+    // .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), scheduler);
+    // }
 
     /**
      * Returns an {@link Signal} that invokes an {@link Observer#error(Throwable)} method when the

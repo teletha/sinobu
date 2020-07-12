@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -241,7 +241,7 @@ public class SignalTester {
     }
 
     /**
-     * Shorthand method of {@link I#signal(long, long, TimeUnit)}
+     * Shorthand method of {@link I#schedule(long, long, TimeUnit, boolean)}
      * 
      * @param initial
      * @param interval
@@ -249,7 +249,7 @@ public class SignalTester {
      * @return
      */
     protected Signal<Long> signal(long initial, int interval, TimeUnit unit) {
-        return I.signal(initial, interval, unit);
+        return I.schedule(initial, interval, unit, true);
     }
 
     /**
