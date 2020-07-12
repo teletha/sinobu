@@ -1051,18 +1051,18 @@ public final class Signal<V> {
         }
 
         return new Signal<List<V>>((observer, disposer) -> {
-            AtomicReference<Future> latest = new AtomicReference();
+            AtomicReference<Disposable> latest = new AtomicReference();
             AtomicReference<List<V>> list = new AtomicReference(new ArrayList());
 
             return to(value -> {
                 list.get().add(value);
-                Future future = latest.get();
+                Disposable d = latest.get();
 
-                if (future != null) {
-                    future.cancel(true);
+                if (d != null) {
+                    d.dispose();
                 }
 
-                latest.set(I.schedule(time, unit, scheduler, () -> {
+                latest.set(I.schedule(time, unit, scheduler).to(() -> {
                     latest.set(null);
                     observer.accept(list.getAndSet(new ArrayList()));
                 }));
@@ -1212,7 +1212,7 @@ public final class Signal<V> {
                     }
                 }
                 if (!queue.isEmpty()) {
-                    I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler, self);
+                    I.schedule(queue.first().ⅱ - System.nanoTime(), NANOSECONDS, scheduler).to(self);
                 }
             });
 
@@ -1221,10 +1221,10 @@ public final class Signal<V> {
             return to(value -> {
                 long delay = time.apply(value).toNanos();
                 queue.add(I.pair(value, lastDelay[0] = delay + System.nanoTime()));
-                if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler, sender);
+                if (queue.size() == 1) I.schedule(delay, NANOSECONDS, scheduler).to(sender);
             }, observer::error, () -> {
                 queue.add(I.pair(this, lastDelay[0] + 1));
-                if (queue.size() == 1) I.schedule(lastDelay[0] + 1 - System.nanoTime(), NANOSECONDS, scheduler, sender);
+                if (queue.size() == 1) I.schedule(lastDelay[0] + 1 - System.nanoTime(), NANOSECONDS, scheduler).to(sender);
             }, disposer);
         });
     }
@@ -3890,10 +3890,10 @@ public final class Signal<V> {
                 disposer.dispose();
             };
 
-            AtomicReference<Future<?>> future = new AtomicReference<>(I.schedule(time, unit, scheduler, timeout));
+            AtomicReference<Disposable> d = new AtomicReference<>(I.schedule(time, unit, scheduler).to(timeout));
 
             WiseConsumer<Object> effect = v -> {
-                future.getAndSet(v == null ? null : I.schedule(time, unit, scheduler, timeout)).cancel(false);
+                d.getAndSet(v == null ? null : I.schedule(time, unit, scheduler).to(timeout)).dispose();
             };
             return effect(effect.bind(this)).effectOnTerminate(effect.bind((V) null)).to(observer, disposer);
         });

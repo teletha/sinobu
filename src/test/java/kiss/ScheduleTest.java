@@ -74,30 +74,22 @@ class ScheduleTest {
 
     @Test
     void scheduleNegativeDelay() {
-        CompletableFuture result = I.schedule(-1, MILLISECONDS, () -> {
+        Disposable result = I.schedule(-1, MILLISECONDS).to(() -> {
             value = "done immediately";
         });
 
         assert value.equals("done immediately");
-        assert result.isDone();
+        assert result.isDisposed();
     }
 
     @Test
     void scheduleZeroDelay() {
-        CompletableFuture result = I.schedule(0, MILLISECONDS, () -> {
+        Disposable result = I.schedule(0, MILLISECONDS).to(() -> {
             value = "done immediately";
         });
 
         assert value.equals("done immediately");
-        assert result.isDone();
-    }
-
-    @Test
-    void scheduleNullTask() {
-        CompletableFuture result = I.schedule(30, MILLISECONDS, (Runnable) null);
-
-        assert value == null;
-        assert result.isDone();
+        assert result.isDisposed();
     }
 
     @Test

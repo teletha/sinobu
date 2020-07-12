@@ -286,22 +286,22 @@ class VariableTest {
     @Test
     void next() {
         Variable<String> empty = Variable.empty();
-        I.schedule(20, TimeUnit.MILLISECONDS, () -> empty.set("changed"));
+        I.schedule(20, TimeUnit.MILLISECONDS).to(() -> empty.set("changed"));
         assert empty.next().equals("changed");
 
         Variable<String> withValue = Variable.of("current");
-        I.schedule(20, TimeUnit.MILLISECONDS, () -> withValue.set("changed"));
+        I.schedule(20, TimeUnit.MILLISECONDS).to(() -> withValue.set("changed"));
         assert withValue.next().equals("changed");
     }
 
     @Test
     void acquire() {
         Variable<String> empty = Variable.empty();
-        I.schedule(20, TimeUnit.MILLISECONDS, () -> empty.set("changed"));
+        I.schedule(20, TimeUnit.MILLISECONDS).to(() -> empty.set("changed"));
         assert empty.acquire().equals("changed");
 
         Variable<String> withValue = Variable.of("current");
-        I.schedule(20, TimeUnit.MILLISECONDS, () -> withValue.set("changed"));
+        I.schedule(20, TimeUnit.MILLISECONDS).to(() -> withValue.set("changed"));
         assert withValue.acquire().equals("current");
     }
 }
