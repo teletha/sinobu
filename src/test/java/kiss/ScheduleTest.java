@@ -11,8 +11,6 @@ package kiss;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -28,35 +26,8 @@ class ScheduleTest {
     String value;
 
     @Test
-    void executeImmediately() {
-        CompletableFuture result = I.schedule(Runnable::run, () -> {
-            value = "executed";
-        });
-        assert value.equals("executed");
-        assert result.isDone();
-    }
-
-    @Test
-    void executeLazily() {
-        Executor scheduler = task -> {
-            chronus.schedule(task, 30, MILLISECONDS);
-        };
-
-        CompletableFuture result = I.schedule(scheduler, () -> {
-            value = "scheduled";
-        });
-
-        assert value == null;
-        assert result.isDone() == false;
-        chronus.await();
-        assert value.equals("scheduled");
-        assert result.isDone();
-    }
-
-    @Test
     void executeNull() {
-        CompletableFuture future = I.schedule(null);
-        assert future.isDone();
+        Assertions.assertThrows(NullPointerException.class, () -> I.schedule(null));
     }
 
     @Test

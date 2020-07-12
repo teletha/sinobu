@@ -2043,7 +2043,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAll(WiseFunction<V, R> mapper) {
-        return map(mapper::bind).buffer().flatIterable(v -> I.signal(I.parallel.invokeAll(v)).map(Future<R>::get).toList());
+        return map(mapper::bind).buffer().flatIterable(v -> I.signal(I.scheduler.invokeAll(v)).map(Future<R>::get).toList());
     }
 
     /**
@@ -2054,7 +2054,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final <R> Signal<R> joinAny(WiseFunction<V, R> mapper) {
-        return map(mapper::bind).buffer().map(I.parallel::invokeAny);
+        return map(mapper::bind).buffer().map(I.scheduler::invokeAny);
     }
 
     /**
@@ -2381,7 +2381,7 @@ public final class Signal<V> {
     public final Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor executor) {
         // DON'T use the recursive call, it will throw StackOverflowError.
         return flatMap(init -> new Signal<V>((observer, disposer) -> {
-            I.schedule(executor, () -> {
+            (executor == null ? I.scheduler : executor).execute(() -> {
                 try {
                     LinkedList<V> values = new LinkedList(); // LinkedList accepts null
                     LinkedTransferQueue<Signal<V>> signal = new LinkedTransferQueue();

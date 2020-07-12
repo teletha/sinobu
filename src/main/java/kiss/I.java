@@ -63,12 +63,9 @@ import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -198,18 +195,13 @@ public class I {
     /** The definitions of extensions. */
     private static final Map<Class, Ⅱ> extensions = new HashMap<>();
 
-    private static final ThreadFactory factory = run -> {
+    /** The parallel task scheduler. */
+    static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8, run -> {
         Thread thread = new Thread(run);
         thread.setName("Sinobu Scheduler");
         thread.setDaemon(true);
         return thread;
-    };
-
-    /** The parallel task manager. */
-    static final ExecutorService parallel = Executors.newCachedThreadPool(factory);
-
-    /** The parallel task scheduler. */
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8, factory);
+    });
 
     /** The list of primitive classes. (except for void type) */
     private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
@@ -1648,63 +1640,46 @@ public class I {
      *
      * @param task A task to execute.
      * @return A result of the executing task.
+     * @see #schedule(long, TimeUnit)
+     * @see #schedule(long, TimeUnit, ScheduledExecutorService)
+     * @see #schedule(long, long, TimeUnit, boolean)
+     * @see #schedule(long, long, TimeUnit, boolean, ScheduledExecutorService)
      */
-    public static CompletableFuture schedule(Runnable task) {
-        return schedule(null, task);
+    public static CompletableFuture<?> schedule(Runnable task) {
+        return CompletableFuture.runAsync(task, scheduler);
     }
 
     /**
-     * Internal API : Execute the task on the specified {@link Executor}.
-     * 
-     * @param executor A task executor.
-     * @param task A task to execute.
-     * @return A result of the executing task.
-     */
-    static CompletableFuture schedule(Executor executor, Runnable task) {
-        if (task == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        return CompletableFuture.runAsync(() -> {
-            try {
-                task.run();
-            } catch (Throwable e) {
-                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
-            }
-        }, executor == null ? parallel : executor);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime}.
+     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime}.
      *
-     * @param delayTime The delay time to wait before emitting the first value of 0L
+     * @param delayTime The delay time to wait before emitting the first value of 1L
      * @param timeUnit the time unit for {@code delayTime}
-     * @return {@link Signal} that emits a {@code 0L} after the {@code delayTime}
+     * @return {@link Signal} that emits a {@code 1L} after the {@code delayTime}
      */
-    public static Signal<Long> schedule(long time, TimeUnit unit) {
-        return schedule(time, unit, (ScheduledExecutorService) null);
+    public static Signal<Long> schedule(long delayTime, TimeUnit unit) {
+        return schedule(delayTime, unit, (ScheduledExecutorService) null);
     }
 
     /**
-     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime}.
+     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime}.
      *
-     * @param delayTime The delay time to wait before emitting the first value of 0L
+     * @param delayTime The delay time to wait before emitting the first value of 1L
      * @param timeUnit The time unit for {@code delayTime}
      * @param scheduler The task scheduler.
-     * @return {@link Signal} that emits a {@code 0L} after the {@code delayTime}
+     * @return {@link Signal} that emits a {@code 1L} after the {@code delayTime}
      */
     public static Signal<Long> schedule(long delayTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
         return schedule(delayTime, -1, timeUnit, false, scheduler).take(1);
     }
 
     /**
-     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
+     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime} and ever
      * increasing numbers after each {@code intervalTime} of time thereafter.
      * 
-     * @param delayTime The initial delay time to wait before emitting the first value of 0L
+     * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
-     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
+     * @param timeUnit the time unit for both {@code delayTime} and {@code intervalTime}
+     * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate) {
@@ -1712,13 +1687,13 @@ public class I {
     }
 
     /**
-     * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
+     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime} and ever
      * increasing numbers after each {@code intervalTime} of time thereafter.
      * 
-     * @param delayTime The initial delay time to wait before emitting the first value of 0L
+     * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
-     * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
+     * @param timeUnit the time unit for both {@code delayTime} and {@code intervalTime}
+     * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate, ScheduledExecutorService scheduler) {
@@ -1796,23 +1771,6 @@ public class I {
     public static <V> Signal<V> signal(Supplier<V> value) {
         return I.<V> signal().startWith(value);
     }
-
-    // /**
-    // * Returns an {@link Signal} that emits a {@code 0L} after the {@code delayTime} and ever
-    // * increasing numbers after each {@code intervalTime} of time thereafter.
-    // *
-    // * @param delayTime The initial delay time to wait before emitting the first value of 0L
-    // * @param intervalTime The period of time between emissions of the subsequent numbers
-    // * @param timeUnit the time unit for both {@code initialDelay} and {@code period}
-    // * @return {@link Signal} that emits a 0L after the {@code delayTime} and ever increasing
-    // * numbers after each {@code intervalTime} of time thereafter
-    // */
-    // public static Signal<Long> signal(long delayTime, long intervalTime, TimeUnit timeUnit,
-    // ScheduledExecutorService scheduler) {
-    // return I.signal(0L)
-    // .delay(delayTime, timeUnit, scheduler)
-    // .recurseMap(s -> s.map(v -> v + 1).delay(intervalTime, timeUnit, scheduler), scheduler);
-    // }
 
     /**
      * Returns an {@link Signal} that invokes an {@link Observer#error(Throwable)} method when the
