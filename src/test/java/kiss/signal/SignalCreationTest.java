@@ -12,7 +12,6 @@ package kiss.signal;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
@@ -167,26 +166,6 @@ class SignalCreationTest extends SignalTester {
         scheduler.await(200, ms);
         assert main.value(true, true, true);
         assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void future() {
-        monitor(() -> I.signal(CompletableFuture.completedFuture("ok")));
-
-        assert main.value("ok");
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void futureError() {
-        monitor(() -> I.signal(CompletableFuture.failedFuture(new Error())));
-
-        assert main.value();
-        assert main.isNotCompleted();
-        assert main.isError();
         assert main.isDisposed();
     }
 
