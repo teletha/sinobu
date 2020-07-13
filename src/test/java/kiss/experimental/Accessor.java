@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss;
+package kiss.experimental;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
