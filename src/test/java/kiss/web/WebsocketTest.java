@@ -98,4 +98,19 @@ class WebsocketTest {
         assert client.isClosed();
         assert client.isNotError();
     }
+
+    @Test
+    void clientIsNull() {
+        assert I.http("http://test", client, (HttpClient[]) null).to().isAbsent();
+    }
+
+    @Test
+    void clientHasNullItem() {
+        assert I.http("http://test", client, new HttpClient[] {null, null}).to().isAbsent();
+    }
+
+    @Test
+    void clientIsEmpty() {
+        assert I.http("http://test", client, new HttpClient[0]).to().isAbsent();
+    }
 }

@@ -789,7 +789,10 @@ public class I {
      */
     public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> type, HttpClient... client) {
         return new Signal<>((observer, disposer) -> {
-            CompletableFuture future = I.array(client, I.client)[0].sendAsync(request.build(), BodyHandlers.ofInputStream())
+            CompletableFuture future = I.signal(client)
+                    .to()
+                    .or(I.client)
+                    .sendAsync(request.build(), BodyHandlers.ofInputStream())
                     .whenComplete((res, e) -> {
                         if (e == null) {
                             try {
@@ -849,7 +852,10 @@ public class I {
             sub.text = new StringBuilder();
             sub.next = open;
 
-            CompletableFuture<WebSocket> future = I.array(client, I.client)[0].newWebSocketBuilder()
+            CompletableFuture<WebSocket> future = I.signal(client)
+                    .to()
+                    .or(I.client)
+                    .newWebSocketBuilder()
                     .connectTimeout(Duration.ofSeconds(5))
                     .buildAsync(URI.create(uri), sub)
                     .whenComplete((ok, e) -> {

@@ -12,6 +12,7 @@ package kiss.web;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpRetryException;
+import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.DeflaterOutputStream;
@@ -181,5 +182,20 @@ class HTTPTest {
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Service Unavailable");
+    }
+
+    @Test
+    void clientIsNull() {
+        assert I.http("http://test", String.class, (HttpClient[]) null).to().isAbsent();
+    }
+
+    @Test
+    void clientHasNullItem() {
+        assert I.http("http://test", String.class, new HttpClient[] {null, null}).to().isAbsent();
+    }
+
+    @Test
+    void clientIsEmpty() {
+        assert I.http("http://test", String.class, new HttpClient[0]).to().isAbsent();
     }
 }
