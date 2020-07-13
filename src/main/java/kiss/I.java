@@ -181,7 +181,7 @@ public class I {
     static final WeakHashMap<Object, Disposable> autosaver = new WeakHashMap();
 
     /** The circularity dependency graph per thread. */
-    static final ThreadSpecific<Deque<Class>> dependencies = new ThreadSpecific(ArrayDeque.class);
+    static final ThreadLocal<Deque<Class>> dependencies = ThreadLocal.withInitial(ArrayDeque::new);
 
     /** The document builder. */
     static final DocumentBuilder dom;

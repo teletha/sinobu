@@ -16,8 +16,6 @@ package kiss;
  * 
  * @param <M> A {@link Managed} class.
  * @see Prototype
- * @see ThreadSpecific
- * @version 2011/11/04 0:11:41
  */
 public class Singleton<M> extends Prototype<M> {
 

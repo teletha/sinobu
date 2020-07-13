@@ -11,8 +11,8 @@ package kiss;
 
 /**
  * <p>
- * Lifestyle manages the instance in the specific context. Sinobu provides three commonly used
- * lifestyles ({@link Prototype}, {@link Singleton} and {@link ThreadSpecific}).
+ * Lifestyle manages the instance in the specific context. Sinobu provides two commonly used
+ * lifestyles ({@link Prototype} and {@link Singleton}.
  * </p>
  * <p>
  * There are two ways to specify {@link Lifestyle} for the class.
@@ -44,9 +44,7 @@ package kiss;
  * @param <M> A {@link Managed} class.
  * @see Prototype
  * @see Singleton
- * @see ThreadSpecific
  * @see Managed#value()
- * @version 2017/03/29 11:16:17
  */
 public interface Lifestyle<M> extends WiseSupplier<M>, Extensible {
 }
