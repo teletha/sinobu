@@ -9,6 +9,7 @@
  */
 package kiss.core;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -25,5 +26,12 @@ class BetweenTest {
         assert I.between(1, 3, 2) == false;
         assert I.between(4, 3, 5) == false;
         assert I.between(5, 3, 1) == false;
+    }
+
+    @Test
+    void nullInput() {
+        Assertions.assertThrows(NullPointerException.class, () -> I.between(null, 2, 5));
+        Assertions.assertThrows(NullPointerException.class, () -> I.between(1, null, 5));
+        Assertions.assertThrows(NullPointerException.class, () -> I.between(0, 2, null));
     }
 }

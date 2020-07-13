@@ -413,6 +413,7 @@ public class I {
      * @param target A target value to compare.
      * @param max The maximum value.
      * @return The test result.
+     * @throws NullPointerException If any of the values are null.
      */
     public static <C extends Comparable> boolean between(C min, C target, C max) {
         return min.compareTo(target) <= 0 && target.compareTo(max) <= 0;
