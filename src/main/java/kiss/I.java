@@ -1683,7 +1683,7 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate) {
-        return schedule(delayTime, intervalTime, timeUnit, fixedRate, scheduler);
+        return schedule(delayTime, intervalTime, timeUnit, fixedRate, null);
     }
 
     /**
