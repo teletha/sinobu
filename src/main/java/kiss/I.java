@@ -406,6 +406,19 @@ public class I {
     }
 
     /**
+     * Checks if the specified value exists between the minimum and maximum values.
+     * 
+     * @param <C> Target type to compare.
+     * @param min The minimum value.
+     * @param target A target value to compare.
+     * @param max The maximum value.
+     * @return The test result.
+     */
+    public static <C extends Comparable> boolean between(C min, C target, C max) {
+        return min.compareTo(target) <= 0 && target.compareTo(max) <= 0;
+    }
+
+    /**
      * Bundle all given funcitons into single function.
      * 
      * @param functions A list of functions to bundle.
