@@ -1836,7 +1836,7 @@ public class I {
 
             // The next step is to check for already translated text from
             // the locally stored bundle files. Iit can help reduce translationresources.
-            Bundle bundle = bundles.computeIfAbsent(lang, Bundle::new);
+            Subscriber<?> bundle = bundles.computeIfAbsent(lang, Subscriber::new);
             String cached = bundle.get(text);
             if (cached != null) {
                 return I.signal(cached);
@@ -1864,16 +1864,16 @@ public class I {
     }
 
     /** In-memory cache for dynamic bundles. */
-    static final Map<String, Bundle> bundles = new ConcurrentHashMap();
+    static final Map<String, Subscriber> bundles = new ConcurrentHashMap();
 
     /** Coordinator of bundle save timing */
-    static final Signaling<Bundle> translate = new Signaling();
+    static final Signaling<Subscriber> translate = new Signaling();
 
     static {
         // Automatic translation is often done multiple times in a short period of time, and
         // it is not efficient to save the translation results every time you get them, so
         // it is necessary to process them in batches over a period of time.
-        translate.expose.debounce(1, TimeUnit.MINUTES).to(Bundle::store);
+        translate.expose.debounce(1, TimeUnit.MINUTES).to(Subscriber::store);
     }
 
     /**

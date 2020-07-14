@@ -14,12 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
 
 /**
  * Internal subscription.
  */
-class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener {
+@SuppressWarnings("serial")
+class Subscriber<T> extends ConcurrentSkipListMap<String, String>
+        implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber> {
 
     /** Generic counter. */
     volatile long index;
@@ -178,5 +181,25 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener {
     @Override
     public void onError(WebSocket web, Throwable e) {
         observer.error(e);
+    }
+
+    // ======================================================================
+    // Resource Bundle
+    // ======================================================================
+    /**
+     * @param lang An associated language.
+     */
+    Subscriber(String lang) {
+        text = new StringBuilder(lang);
+
+        restore();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String locate() {
+        return I.env("LangDirectory", "lang") + "/" + text + ".json";
     }
 }

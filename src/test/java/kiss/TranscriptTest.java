@@ -54,7 +54,7 @@ class TranscriptTest {
      * @param translated
      */
     private void createBundle(String lang, String base, String translated) {
-        Bundle bundle = new Bundle(lang);
+        Subscriber bundle = new Subscriber(lang);
         bundle.put(base, translated);
         bundle.store();
     }

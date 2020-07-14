@@ -617,7 +617,7 @@ public class JSON {
                     // property key (List node doesn't need key)
                     if (model.type != List.class) {
                         write(property.name, String.class);
-                        out.append(model.type == Bundle.class ? ":\n\t\t" : ": ");
+                        out.append(model.type == Subscriber.class ? ":\n\t\t" : ": ");
                     }
                 }
 
