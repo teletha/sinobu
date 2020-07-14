@@ -212,7 +212,7 @@ public class Model<M> {
 
                 // trim and sort property list
                 properties.trimToSize();
-                Collections.sort(properties);
+                properties.sort(Comparator.<Property, String> comparing(v -> v.name));
 
                 // exposed property list must be unmodifiable
                 this.properties = Collections.unmodifiableList(properties);

@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -114,10 +114,10 @@ class JSONTest {
         // @formatter:off
         validate(instant,
         "{",
-        "  'value': 'default',",
         "  'items': [",
         "    'default'",
-        "  ]",
+        "  ],",
+        "  'value': 'default'",
         "}");
          // @formatter:on
 
@@ -128,8 +128,8 @@ class JSONTest {
         // @formatter:off
         validate(instant,
         "{",
-        "  'value': null,",
-        "  'items': null",
+        "  'items': null,",
+        "  'value': null",
         "}");
         // @formatter:on
     }

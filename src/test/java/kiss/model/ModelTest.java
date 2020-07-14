@@ -9,9 +9,9 @@
  */
 package kiss.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -598,7 +598,7 @@ class ModelTest {
         assertThrows(UnsupportedOperationException.class, () -> {
             Model model = Model.of(Person.class);
             List<Property> properties = model.properties();
-            Collections.sort(properties);
+            properties.sort(Comparator.comparing(v -> v.name));
         });
     }
 

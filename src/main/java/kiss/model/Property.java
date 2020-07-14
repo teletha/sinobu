@@ -9,7 +9,7 @@
  */
 package kiss.model;
 
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.TRANSIENT;
 
 import java.lang.reflect.Member;
 
@@ -25,7 +25,7 @@ import kiss.WiseFunction;
  * ordering is inconsistent with equals. See {@link Comparable}, {@link java.util.SortedMap} or
  * {@link java.util.SortedSet} for more information.
  */
-public class Property implements Comparable<Property> {
+public class Property {
 
     /** The assosiated object model with this {@link Property}. */
     public final Model model;
@@ -56,19 +56,5 @@ public class Property implements Comparable<Property> {
         this.model = model;
         this.name = name;
         this.transitory = mem != null && (mem.getModifiers() & TRANSIENT) != 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compareTo(Property o) {
-        // compare type
-        if (model.atomic != o.model.atomic) {
-            return model.atomic ? -1 : 1;
-        }
-
-        // compare name
-        return name.compareTo(o.name);
     }
 }
