@@ -95,11 +95,14 @@ class JSONTest {
         TransientBean bean = I.make(TransientBean.class);
         bean.field = "transient";
         bean.noneField = "serializable";
+        bean.variable.set("transient");
+        bean.noneVariable.set("serializable");
 
         // @formatter:off
         validate(bean,
         "{",
-        "  'noneField': 'serializable'",
+        "  'noneField': 'serializable',",
+        "  'noneVariable': 'serializable'",
         "}");
         // @formatter:on
     }

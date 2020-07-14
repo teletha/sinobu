@@ -155,7 +155,7 @@ public class Model<M> {
                                 methods[1].setAccessible(true);
 
                                 // this property is valid
-                                Property property = new Property(model, entry.getKey(), methods);
+                                Property property = new Property(model, entry.getKey(), null);
                                 property.getter = m -> methods[0].invoke(m);
                                 property.setter = (m, v) -> methods[1].invoke(m, v);
 

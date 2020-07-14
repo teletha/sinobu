@@ -40,7 +40,7 @@ class ListModel<V> extends Model<List<V>> {
      */
     @Override
     public Property property(String name) {
-        return new Property(itemModel, name);
+        return new Property(itemModel, name, null);
     }
 
     /**
@@ -85,7 +85,7 @@ class ListModel<V> extends Model<List<V>> {
             int counter = 0;
 
             for (V value : object) {
-                walker.accept(this, new Property(itemModel, String.valueOf(counter++)), value);
+                walker.accept(this, new Property(itemModel, String.valueOf(counter++), null), value);
             }
         }
     }

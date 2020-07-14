@@ -11,9 +11,7 @@ package kiss.model;
 
 import static java.lang.reflect.Modifier.*;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 
 import kiss.Signal;
 import kiss.WiseBiConsumer;
@@ -50,22 +48,14 @@ public class Property implements Comparable<Property> {
     /**
      * Create a property.
      * 
-     * @param T The type which can treat as {@link Property}. (i.e. {@link Field} or {@link Method})
      * @param model A model that this property belongs to.
      * @param name A property name.
+     * @param mem An associated member (filed or method).
      */
-    public Property(Model model, String name, Member... elements) {
+    public Property(Model model, String name, Member mem) {
         this.model = model;
         this.name = name;
-
-        boolean serializable = false;
-
-        for (Member element : elements) {
-            if ((element.getModifiers() & TRANSIENT) != 0) {
-                serializable = true;
-            }
-        }
-        this.isTransient = serializable;
+        this.isTransient = mem != null && (mem.getModifiers() & TRANSIENT) != 0;
     }
 
     /**

@@ -2154,7 +2154,7 @@ public class I {
         try {
             // traverse object as json
             Model model = Model.of(input);
-            new JSON(out).write(model, new Property(model, ""), input);
+            new JSON(out).write(model, new Property(model, "", null), input);
         } finally {
             // close carefuly
             quiet(out);

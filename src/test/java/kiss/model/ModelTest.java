@@ -574,7 +574,7 @@ class ModelTest {
         assertThrows(UnsupportedOperationException.class, () -> {
             Model model = Model.of(Person.class);
             List<Property> properties = model.properties();
-            properties.add(new Property(model, "test"));
+            properties.add(new Property(model, "test", null));
         });
     }
 

@@ -49,7 +49,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public Property property(String name) {
-        return !key.attribute ? null : new Property(value, name);
+        return !key.attribute ? null : new Property(value, name, null);
     }
 
     /**
@@ -86,7 +86,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
         } else {
             if (object != null) {
                 for (Entry<K, V> entry : object.entrySet()) {
-                    walker.accept(this, new Property(value, I.transform(entry.getKey(), String.class)), entry.getValue());
+                    walker.accept(this, new Property(value, I.transform(entry.getKey(), String.class), null), entry.getValue());
                 }
             }
         }

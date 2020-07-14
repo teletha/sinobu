@@ -37,11 +37,11 @@ public class PropertyComparatorTest {
     public void testCompare() {
         List<Property> properties = new ArrayList();
 
-        properties.add(new Property(Model.of(School.class), "aaa"));
-        properties.add(new Property(Model.of(String.class), "string"));
-        properties.add(new Property(Model.of(int.class), "int"));
-        properties.add(new Property(Model.of(Person.class), "abc"));
-        properties.add(new Property(Model.of(String.class), "first"));
+        properties.add(new Property(Model.of(School.class), "aaa", null));
+        properties.add(new Property(Model.of(String.class), "string", null));
+        properties.add(new Property(Model.of(int.class), "int", null));
+        properties.add(new Property(Model.of(Person.class), "abc", null));
+        properties.add(new Property(Model.of(String.class), "first", null));
 
         // create innocuous BeanModel as property comparator and sort above properties by it
         Collections.sort(properties);
