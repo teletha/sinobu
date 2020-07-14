@@ -101,7 +101,7 @@ public interface Storable<Self> {
         Signal[] signal = {Signal.never()};
 
         model.walk(object, (m, p, o) -> {
-            if (p.attribute) {
+            if (p.model.attribute) {
                 signal[0] = signal[0].merge(m.observe(object, p).diff());
             } else {
                 signal[0] = signal[0].merge(auto(p.model, o));

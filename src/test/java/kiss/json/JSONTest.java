@@ -472,7 +472,7 @@ class JSONTest {
 
             if (property.transitory) {
                 // ignore
-            } else if (property.attribute) {
+            } else if (property.model.attribute) {
                 if (oneValue == null) {
                     assert otherValue == null;
                 } else {

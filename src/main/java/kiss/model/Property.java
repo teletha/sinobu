@@ -33,9 +33,6 @@ public class Property implements Comparable<Property> {
     /** The human readable identifier of this {@link Property}. */
     public final String name;
 
-    /** Whether this {@link Property} is an attribute or not. */
-    public final boolean attribute;
-
     /** Whether this {@link Property} is transient or not. */
     public final boolean transitory;
 
@@ -59,7 +56,6 @@ public class Property implements Comparable<Property> {
         this.model = model;
         this.name = name;
         this.transitory = mem != null && (mem.getModifiers() & TRANSIENT) != 0;
-        this.attribute = model.attribute;
     }
 
     /**
@@ -68,8 +64,8 @@ public class Property implements Comparable<Property> {
     @Override
     public int compareTo(Property o) {
         // compare type
-        if (attribute != o.attribute) {
-            return attribute ? -1 : 1;
+        if (model.attribute != o.model.attribute) {
+            return model.attribute ? -1 : 1;
         }
 
         // compare name
