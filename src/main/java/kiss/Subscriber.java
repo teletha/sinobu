@@ -18,7 +18,9 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
 
 /**
- * Internal subscription.
+ * In order to reduce code size, a variety of less relevant interfaces are implemented in a single
+ * class. Fields should only be initialized if they are needed in the constructor. If you initialize
+ * a field at the time of its declaration, even unnecessary fields will be initialized.
  */
 @SuppressWarnings("serial")
 class Subscriber<T> extends ConcurrentSkipListMap<String, String>
@@ -143,7 +145,7 @@ class Subscriber<T> extends ConcurrentSkipListMap<String, String>
      */
     @Override
     public void onOpen(WebSocket web) {
-        web.request(1024);
+        web.request(8);
         next.accept((T) web);
     }
 
