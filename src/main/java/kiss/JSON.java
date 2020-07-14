@@ -100,7 +100,7 @@ public class JSON {
                     Object value = e.getValue();
 
                     // convert value
-                    if (p.attribute) {
+                    if (p.model.attribute) {
                         value = I.transform(value, p.model.type);
                     } else if (value != null) {
                         Object nest = model.get(java, p);
@@ -622,7 +622,7 @@ public class JSON {
                 }
 
                 // property value
-                if (property.attribute) {
+                if (property.model.attribute) {
                     write(I.transform(value, String.class), property.model.type);
                 } else if (value == null) {
                     out.append("null");

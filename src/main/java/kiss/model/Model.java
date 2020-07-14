@@ -78,7 +78,7 @@ public class Model<M> {
         // if (type == null) throw new NullPointerException("Model class shouldn't be null.");
         this.type = type;
         this.name = type.getSimpleName();
-        this.attribute = I.find(Decoder.class, type) != null;
+        this.attribute = I.find(Decoder.class, type) != null || type.isArray();
     }
 
     /**

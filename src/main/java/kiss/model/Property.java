@@ -59,7 +59,7 @@ public class Property implements Comparable<Property> {
         this.model = model;
         this.name = name;
         this.transitory = mem != null && (mem.getModifiers() & TRANSIENT) != 0;
-        this.attribute = model.attribute || model.type.isArray();
+        this.attribute = model.attribute;
     }
 
     /**
