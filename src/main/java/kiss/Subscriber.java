@@ -22,9 +22,7 @@ import java.util.function.Consumer;
  * class. Fields should only be initialized if they are needed in the constructor. If you initialize
  * a field at the time of its declaration, even unnecessary fields will be initialized.
  */
-@SuppressWarnings("serial")
-class Subscriber<T> extends ConcurrentSkipListMap<String, String>
-        implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber> {
+class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber> {
 
     /** Generic counter. */
     volatile long index;
@@ -188,11 +186,15 @@ class Subscriber<T> extends ConcurrentSkipListMap<String, String>
     // ======================================================================
     // Resource Bundle
     // ======================================================================
+    @Managed
+    Map<String, String> messages;
+
     /**
      * @param lang An associated language.
      */
     Subscriber(String lang) {
         text = new StringBuilder(lang);
+        messages = new ConcurrentSkipListMap();
 
         restore();
     }

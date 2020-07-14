@@ -1016,7 +1016,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
-        return debounceAll(time, unit, scheduler).map(list -> list.get(list.size() - 1));
+        return debounceAll(time, unit, scheduler).flatMap(list -> I.signal(list).last());
     }
 
     /**

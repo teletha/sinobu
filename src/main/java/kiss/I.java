@@ -1837,7 +1837,7 @@ public class I {
             // The next step is to check for already translated text from
             // the locally stored bundle files. Iit can help reduce translationresources.
             Subscriber<?> bundle = bundles.computeIfAbsent(lang, Subscriber::new);
-            String cached = bundle.get(text);
+            String cached = bundle.messages.get(text);
             if (cached != null) {
                 return I.signal(cached);
             }
@@ -1853,7 +1853,7 @@ public class I {
                     .flatIterable(v -> v.find(String.class, "payload", "translations", "0", "translation"))
                     .skipNull()
                     .map(v -> {
-                        bundle.put(text, v);
+                        bundle.messages.put(text, v);
                         translate.accept(bundle);
                         return v;
                     });

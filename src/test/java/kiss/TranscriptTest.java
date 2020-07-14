@@ -55,7 +55,7 @@ class TranscriptTest {
      */
     private void createBundle(String lang, String base, String translated) {
         Subscriber bundle = new Subscriber(lang);
-        bundle.put(base, translated);
+        bundle.messages.put(base, translated);
         bundle.store();
     }
 
