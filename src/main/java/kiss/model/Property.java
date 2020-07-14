@@ -11,7 +11,6 @@ package kiss.model;
 
 import static java.lang.reflect.Modifier.*;
 
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -55,13 +54,13 @@ public class Property implements Comparable<Property> {
      * @param model A model that this property belongs to.
      * @param name A property name.
      */
-    public <T extends AccessibleObject & Member> Property(Model model, String name, T... elements) {
+    public Property(Model model, String name, Member... elements) {
         this.model = model;
         this.name = name;
 
         boolean serializable = false;
 
-        for (T element : elements) {
+        for (Member element : elements) {
             if ((element.getModifiers() & TRANSIENT) != 0) {
                 serializable = true;
             }

@@ -9,12 +9,15 @@
  */
 package kiss.sample.bean;
 
-/**
- * @version 2018/03/30 1:46:27
- */
+import kiss.Variable;
+
 public class TransientBean {
 
     public transient String field;
 
     public String noneField;
+
+    public transient Variable<String> variable = Variable.empty();
+
+    public Variable<String> noneVariable = Variable.empty();
 }

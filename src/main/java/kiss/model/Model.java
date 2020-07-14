@@ -185,7 +185,7 @@ public class Model<M> {
                                 if (Variable.class.isAssignableFrom(fieldModel.type)) {
                                     // variable
                                     Property property = new Property(of(collectParameters(field
-                                            .getGenericType(), Variable.class, type)[0], Variable.class), field.getName());
+                                            .getGenericType(), Variable.class, type)[0], Variable.class), field.getName(), field);
                                     property.getter = m -> ((Variable) field.get(m)).v;
                                     property.setter = (m, v) -> ((Variable) field.get(m)).set(v);
                                     property.observer = m -> ((Variable) field.get(m)).observe();
