@@ -594,6 +594,7 @@ public class JSON {
      */
     JSON(Appendable out) {
         this.out = out;
+        this.fill = -1;
     }
 
     /**
@@ -605,6 +606,8 @@ public class JSON {
      * @param value
      */
     void write(Model model, Property property, Object value) {
+        if (model.type == Subscriber.class) fill = 2;
+
         if (!property.transitory && property.name != null) {
             try {
                 // non-first properties requires separator
@@ -617,7 +620,7 @@ public class JSON {
                     // property key (List node doesn't need key)
                     if (model.type != List.class) {
                         write(property.name, String.class);
-                        out.append(model.type == Subscriber.class ? ":\n\t\t" : ": ");
+                        out.append(current == fill ? ":\n\t\t\t" : ": ");
                     }
                 }
 
@@ -633,6 +636,7 @@ public class JSON {
 
                     JSON walker = new JSON(out);
                     walker.current = current + 1;
+                    walker.fill = fill;
                     out.append(property.model.type == List.class ? '[' : '{');
                     Model<Object> m = property.model;
                     if (Modifier.isAbstract(m.type.getModifiers()) && m.getClass() == Model.class) {
