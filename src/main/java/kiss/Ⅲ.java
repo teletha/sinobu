@@ -9,6 +9,11 @@
  */
 package kiss;
 
+import java.util.List;
+
+/**
+ * {@link List#of(Object, Object)}
+ */
 public class Ⅲ<Param1, Param2, Param3> extends Ⅱ<Param1, Param2> {
 
     /** The third parameter. */
