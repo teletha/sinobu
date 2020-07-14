@@ -470,9 +470,9 @@ class JSONTest {
             Object oneValue = model.get(one, property);
             Object otherValue = model.get(other, property);
 
-            if (property.isTransient) {
+            if (property.transitory) {
                 // ignore
-            } else if (property.isAttribute()) {
+            } else if (property.attribute) {
                 if (oneValue == null) {
                     assert otherValue == null;
                 } else {

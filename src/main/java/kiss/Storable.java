@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -101,7 +101,7 @@ public interface Storable<Self> {
         Signal[] signal = {Signal.never()};
 
         model.walk(object, (m, p, o) -> {
-            if (p.isAttribute()) {
+            if (p.attribute) {
                 signal[0] = signal[0].merge(m.observe(object, p).diff());
             } else {
                 signal[0] = signal[0].merge(auto(p.model, o));

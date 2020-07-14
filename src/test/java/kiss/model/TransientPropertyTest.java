@@ -22,27 +22,27 @@ public class TransientPropertyTest {
     public void transientField() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("field");
-        assert property.isTransient;
+        assert property.transitory;
     }
 
     @Test
     public void noneTransientField() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("noneField");
-        assert !property.isTransient;
+        assert !property.transitory;
     }
 
     @Test
     public void transientVariableField() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("variable");
-        assert property.isTransient;
+        assert property.transitory;
     }
 
     @Test
     public void noneTransientVariableField() {
         Model model = Model.of(TransientBean.class);
         Property property = model.property("noneVariable");
-        assert !property.isTransient;
+        assert !property.transitory;
     }
 }

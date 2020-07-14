@@ -96,11 +96,11 @@ public class JSON {
             for (Entry<String, Object> e : ((Map<String, Object>) js).entrySet()) {
                 Property p = model.property(e.getKey());
 
-                if (p != null && !p.isTransient) {
+                if (p != null && !p.transitory) {
                     Object value = e.getValue();
 
                     // convert value
-                    if (p.isAttribute()) {
+                    if (p.attribute) {
                         value = I.transform(value, p.model.type);
                     } else if (value != null) {
                         Object nest = model.get(java, p);
@@ -605,7 +605,7 @@ public class JSON {
      * @param value
      */
     void write(Model model, Property property, Object value) {
-        if (!property.isTransient && property.name != null) {
+        if (!property.transitory && property.name != null) {
             try {
                 // non-first properties requires separator
                 if (index++ != 0) out.append(',');
@@ -622,7 +622,7 @@ public class JSON {
                 }
 
                 // property value
-                if (property.isAttribute()) {
+                if (property.attribute) {
                     write(I.transform(value, String.class), property.model.type);
                 } else if (value == null) {
                     out.append("null");

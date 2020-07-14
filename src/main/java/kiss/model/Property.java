@@ -33,8 +33,11 @@ public class Property implements Comparable<Property> {
     /** The human readable identifier of this {@link Property}. */
     public final String name;
 
-    /** The flag whether this {@link Property} is transient or not. */
-    public final boolean isTransient;
+    /** Whether this {@link Property} is an attribute or not. */
+    public final boolean attribute;
+
+    /** Whether this {@link Property} is transient or not. */
+    public final boolean transitory;
 
     /** The property accessor. */
     WiseFunction getter;
@@ -55,7 +58,8 @@ public class Property implements Comparable<Property> {
     public Property(Model model, String name, Member mem) {
         this.model = model;
         this.name = name;
-        this.isTransient = mem != null && (mem.getModifiers() & TRANSIENT) != 0;
+        this.transitory = mem != null && (mem.getModifiers() & TRANSIENT) != 0;
+        this.attribute = model.attribute || model.type.isArray();
     }
 
     /**
@@ -64,20 +68,11 @@ public class Property implements Comparable<Property> {
     @Override
     public int compareTo(Property o) {
         // compare type
-        if (isAttribute() != o.isAttribute()) {
-            return isAttribute() ? -1 : 1;
+        if (attribute != o.attribute) {
+            return attribute ? -1 : 1;
         }
 
         // compare name
         return name.compareTo(o.name);
-    }
-
-    /**
-     * Decide whether this object model can be Attribute or not.
-     * 
-     * @return A result.
-     */
-    public boolean isAttribute() {
-        return model.attribute || model.type.isArray();
     }
 }
