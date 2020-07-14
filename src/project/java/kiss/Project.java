@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2020 Nameless Production Committee
  *
@@ -8,6 +7,8 @@
  *
  *          https://opensource.org/licenses/MIT
  */
+package kiss;
+
 import bee.task.Test;
 
 public class Project extends bee.api.Project {
