@@ -58,8 +58,8 @@ public class Model<M> {
     /** The human readable identifier of this object model. */
     public final String name;
 
-    /** The attribute type or object type. */
-    public final boolean attribute;
+    /** Whether this {@link Model} is an atomic type or a object type. */
+    public final boolean atomic;
 
     /** The unmodifiable properties list of this object model. */
     private List<Property> properties = Collections.EMPTY_LIST;
@@ -78,7 +78,7 @@ public class Model<M> {
         // if (type == null) throw new NullPointerException("Model class shouldn't be null.");
         this.type = type;
         this.name = type.getSimpleName();
-        this.attribute = I.find(Decoder.class, type) != null || type.isArray();
+        this.atomic = I.find(Decoder.class, type) != null || type.isArray();
     }
 
     /**
@@ -192,7 +192,7 @@ public class Model<M> {
 
                                     // register it
                                     properties.add(property);
-                                } else if ((fieldModel.attribute && notFinal) || !fieldModel.attribute) {
+                                } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic) {
                                     // field
                                     field.setAccessible(true);
 

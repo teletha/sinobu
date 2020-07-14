@@ -49,7 +49,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public Property property(String name) {
-        return !key.attribute ? null : new Property(value, name, null);
+        return !key.atomic ? null : new Property(value, name, null);
     }
 
     /**
@@ -57,7 +57,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public Object get(Map object, Property property) {
-        if (!key.attribute) {
+        if (!key.atomic) {
             return super.get(object, property);
         } else {
             return object.get(I.transform(property.name, key.type));
@@ -69,7 +69,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public void set(Map object, Property property, Object value) {
-        if (!key.attribute) {
+        if (!key.atomic) {
             super.set(object, property, value);
         } else {
             object.put(I.transform(property.name, key.type), value);
@@ -81,7 +81,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public void walk(Map<K, V> object, WiseTriConsumer<Model<Map<K, V>>, Property, Object> walker) {
-        if (!key.attribute) {
+        if (!key.atomic) {
             super.walk(object, walker);
         } else {
             if (object != null) {

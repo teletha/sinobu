@@ -64,8 +64,8 @@ public class Property implements Comparable<Property> {
     @Override
     public int compareTo(Property o) {
         // compare type
-        if (model.attribute != o.model.attribute) {
-            return model.attribute ? -1 : 1;
+        if (model.atomic != o.model.atomic) {
+            return model.atomic ? -1 : 1;
         }
 
         // compare name
