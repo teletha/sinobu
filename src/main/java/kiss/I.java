@@ -2109,7 +2109,7 @@ public class I {
      * @return A constructed {@link XML}.
      */
     public static XML xml(File source) {
-        return I.xml(null, source);
+        return xml(source.toPath());
     }
 
     /**
@@ -2119,7 +2119,11 @@ public class I {
      * @return A constructed {@link XML}.
      */
     public static XML xml(Path source) {
-        return I.xml(null, source);
+        try {
+            return xml(null, Files.readAllBytes(source));
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -2129,7 +2133,11 @@ public class I {
      * @return A constructed {@link XML}.
      */
     public static XML xml(InputStream source) {
-        return I.xml(null, source);
+        try {
+            return xml(null, source.readAllBytes());
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -2138,8 +2146,10 @@ public class I {
      * @param source A xml expression.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(Readable source) {
-        return I.xml(null, source);
+    public static XML xml(Reader source) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        copy(source, new OutputStreamWriter(out, StandardCharsets.UTF_8), true);
+        return I.xml(null, out.toByteArray());
     }
 
     /**
@@ -2158,7 +2168,7 @@ public class I {
      * @param source A xml expression.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(CharSequence source) {
+    public static XML xml(String source) {
         return I.xml(null, source);
     }
 
@@ -2178,7 +2188,13 @@ public class I {
             }
 
             // byte data types
-            byte[] bytes = read(xml);
+            byte[] bytes;
+
+            if (xml instanceof String) {
+                bytes = ((String) xml).getBytes(StandardCharsets.UTF_8);
+            } else {
+                bytes = (byte[]) xml;
+            }
 
             if (6 < bytes.length && bytes[0] == '<') {
                 // doctype declaration (starts with <! )
@@ -2199,35 +2215,5 @@ public class I {
         } catch (Exception e) {
             throw quiet(e);
         }
-    }
-
-    /**
-     * Read byte data from various sources.
-     * 
-     * @param input A data source.
-     * @return A data.
-     */
-    private static byte[] read(Object input) throws Exception {
-        // skip character data
-        if (input instanceof CharSequence == false) {
-            // object to stream
-            if (input instanceof File) {
-                input = ((File) input).toPath();
-            }
-
-            if (input instanceof Path) {
-                input = Files.readAllBytes((Path) input);
-            }
-
-            // stream to byte
-            if (input instanceof InputStream) {
-                input = ((InputStream) input).readAllBytes();
-            } else if (input instanceof Readable) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                copy((Readable) input, new OutputStreamWriter(out, StandardCharsets.UTF_8), true);
-                input = out.toByteArray();
-            }
-        }
-        return input instanceof byte[] ? (byte[]) input : input.toString().getBytes(StandardCharsets.UTF_8);
     }
 }
