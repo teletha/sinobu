@@ -9,14 +9,11 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URI;
-import java.net.URL;
-import java.net.http.HttpRequest;
 import java.nio.file.Path;
 import java.util.Locale;
 
@@ -25,9 +22,6 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.sample.bean.Person;
 
-/**
- * @version 2018/09/28 13:20:01
- */
 class IllegalInputTest {
 
     /** The normal bean. */
@@ -41,16 +35,6 @@ class IllegalInputTest {
     @Test
     void readNullReader() {
         assertThrows(NullPointerException.class, () -> I.json((Reader) null));
-    }
-
-    @Test
-    void readNullURL() {
-        assertThrows(NullPointerException.class, () -> I.json((URL) null));
-    }
-
-    @Test
-    void readNullURI() {
-        assertThrows(NullPointerException.class, () -> I.json((URI) null));
     }
 
     @Test
@@ -71,11 +55,6 @@ class IllegalInputTest {
     @Test
     void readNullReadable() {
         assertThrows(NullPointerException.class, () -> I.json((Readable) null));
-    }
-
-    @Test
-    void readNullHTTPRequest() {
-        assertThrows(NullPointerException.class, () -> I.json((HttpRequest.Builder) null));
     }
 
     @Test

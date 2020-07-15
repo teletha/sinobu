@@ -963,45 +963,6 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
-    public static JSON json(HttpRequest.Builder input) {
-        return json((Object) input);
-    }
-
-    /**
-     * Parse the specified JSON format text.
-     * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
-     * @return A parsed {@link JSON}.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
-     */
-    public static JSON json(URL input) {
-        return json((Object) input);
-    }
-
-    /**
-     * Parse the specified JSON format text.
-     * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
-     * @return A parsed {@link JSON}.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
-     */
-    public static JSON json(URI input) {
-        return json((Object) input);
-    }
-
-    /**
-     * Parse the specified JSON format text.
-     * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
-     * @return A parsed {@link JSON}.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
-     */
     public static JSON json(Readable input) {
         return json((Object) input);
     }
@@ -2207,36 +2168,6 @@ public class I {
      * @param source A xml expression.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(HttpRequest.Builder source) {
-        return I.xml(null, source);
-    }
-
-    /**
-     * Parse as xml fragment.
-     *
-     * @param source A xml expression.
-     * @return A constructed {@link XML}.
-     */
-    public static XML xml(URL source) {
-        return I.xml(null, source);
-    }
-
-    /**
-     * Parse as xml fragment.
-     *
-     * @param source A xml expression.
-     * @return A constructed {@link XML}.
-     */
-    public static XML xml(URI source) {
-        return I.xml(null, source);
-    }
-
-    /**
-     * Parse as xml fragment.
-     *
-     * @param source A xml expression.
-     * @return A constructed {@link XML}.
-     */
     public static XML xml(Node source) {
         return I.xml(null, source);
     }
@@ -2300,23 +2231,12 @@ public class I {
         // skip character data
         if (input instanceof CharSequence == false) {
             // object to stream
-            if (input instanceof URL) {
-                input = ((URL) input).toURI();
-            }
-
-            if (input instanceof URI) {
-                URI uri = (URI) input;
-                input = uri.getScheme().equals("file") ? Path.of(uri) : HttpRequest.newBuilder(uri);
-            }
-
             if (input instanceof File) {
                 input = ((File) input).toPath();
             }
 
             if (input instanceof Path) {
                 input = Files.readAllBytes((Path) input);
-            } else if (input instanceof HttpRequest.Builder) {
-                input = client.send(((HttpRequest.Builder) input).build(), BodyHandlers.ofByteArray()).body();
             }
 
             // stream to byte

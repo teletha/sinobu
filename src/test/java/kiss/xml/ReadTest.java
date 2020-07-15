@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -24,10 +23,7 @@ import antibug.CleanRoom;
 import kiss.I;
 import kiss.XML;
 
-/**
- * @version 2018/09/28 13:35:29
- */
-public class ReadTest {
+class ReadTest {
 
     @RegisterExtension
     CleanRoom room = new CleanRoom();
@@ -70,20 +66,6 @@ public class ReadTest {
     @Test
     void file() {
         XML xml = I.xml(room.locateFile("temp", "<html/>").toFile());
-        assert xml.size() == 1;
-        assert xml.name() == "html";
-    }
-
-    @Test
-    void url() throws MalformedURLException {
-        XML xml = I.xml(room.locateFile("temp", "<html/>").toUri().toURL());
-        assert xml.size() == 1;
-        assert xml.name() == "html";
-    }
-
-    @Test
-    void uri() {
-        XML xml = I.xml(room.locateFile("temp", "<html/>").toUri());
         assert xml.size() == 1;
         assert xml.name() == "html";
     }
