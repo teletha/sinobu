@@ -904,14 +904,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(String input) {
-        // Don't use #json(Reader).
-        // StringReader does not require calls to close methods and other methods, so it is
-        // optimized even as the code size increases.
-        try {
-            return new JSON(new StringReader(input));
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
+        return json(new StringReader(input));
     }
 
     /**
