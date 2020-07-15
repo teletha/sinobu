@@ -186,8 +186,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     // ======================================================================
     // Resource Bundle
     // ======================================================================
-    @Managed
-    Map<String, String> messages;
+    public Map<String, String> messages;
 
     /**
      * @param lang An associated language.
