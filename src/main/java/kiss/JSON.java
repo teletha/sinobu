@@ -594,7 +594,6 @@ public class JSON {
      */
     JSON(Appendable out) {
         this.out = out;
-        this.fill = -1;
     }
 
     /**
@@ -606,8 +605,6 @@ public class JSON {
      * @param value
      */
     void write(Model model, Property property, Object value) {
-        if (model.type == Subscriber.class) fill = 2;
-
         if (!property.transitory && property.name != null) {
             try {
                 // non-first properties requires separator
@@ -615,12 +612,12 @@ public class JSON {
 
                 // all properties need the properly indents
                 if (0 < current) {
-                    out.append("\r\n").append("\t".repeat(current)); // indent
+                    out.append('\n').append("\t".repeat(current)); // indent
 
                     // property key (List node doesn't need key)
                     if (model.type != List.class) {
                         write(property.name, String.class);
-                        out.append(current == fill ? ":\n\t\t\t" : ": ");
+                        out.append(": ");
                     }
                 }
 
@@ -636,15 +633,14 @@ public class JSON {
 
                     JSON walker = new JSON(out);
                     walker.current = current + 1;
-                    walker.fill = fill;
                     out.append(property.model.type == List.class ? '[' : '{');
                     Model<Object> m = property.model;
-                    if (Modifier.isAbstract(m.type.getModifiers()) && m.getClass() == Model.class) {
+                    if ((m.type.getModifiers() & Modifier.ABSTRACT) != 0 && m.getClass() == Model.class) {
                         m = Model.of(value);
-                        out.append("\r\n").append("\t".repeat(current + 1)).append("\"#\": \"").append(m.type.getName()).append("\",");
+                        out.append('\n').append("\t".repeat(current + 1)).append("\"#\": \"").append(m.type.getName()).append("\",");
                     }
                     m.walk(value, walker::write);
-                    if (walker.index != 0) out.append("\r\n").append("\t".repeat(current)); // indent
+                    if (walker.index != 0) out.append('\n').append("\t".repeat(current)); // indent
                     out.append(property.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {

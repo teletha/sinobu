@@ -9,7 +9,7 @@
  */
 package kiss.model;
 
-import static java.lang.reflect.Modifier.TRANSIENT;
+import static java.lang.reflect.Modifier.*;
 
 import java.lang.reflect.Member;
 

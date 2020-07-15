@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -422,7 +422,7 @@ class JSONTest {
         I.write(object, output);
         String serialized = output.toString();
 
-        StringJoiner joiner = new StringJoiner("\r\n");
+        StringJoiner joiner = new StringJoiner("\n");
         for (String text : texts) {
             text = text.replaceAll("'", "\"");
             joiner.add(text.replaceAll("  ", "\t"));
