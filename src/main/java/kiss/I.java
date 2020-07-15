@@ -916,19 +916,6 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
-    public static JSON json(File input) {
-        return json(input.toPath());
-    }
-
-    /**
-     * Parse the specified JSON format text.
-     * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
-     * @return A parsed {@link JSON}.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
-     */
     public static JSON json(Path input) {
         try {
             return json(Files.newBufferedReader(input));
@@ -2100,16 +2087,6 @@ public class I {
             // close carefuly
             quiet(out);
         }
-    }
-
-    /**
-     * Parse as xml fragment.
-     *
-     * @param source A xml expression.
-     * @return A constructed {@link XML}.
-     */
-    public static XML xml(File source) {
-        return xml(source.toPath());
     }
 
     /**

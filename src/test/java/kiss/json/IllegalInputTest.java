@@ -9,9 +9,8 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Path;
@@ -35,11 +34,6 @@ class IllegalInputTest {
     @Test
     void readNullReader() {
         assertThrows(NullPointerException.class, () -> I.json((Reader) null));
-    }
-
-    @Test
-    void readNullFile() {
-        assertThrows(NullPointerException.class, () -> I.json((File) null));
     }
 
     @Test

@@ -9,11 +9,11 @@
  */
 package kiss.xml;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.StringReader;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -64,8 +64,8 @@ class ReadTest {
     }
 
     @Test
-    void file() {
-        XML xml = I.xml(room.locateFile("temp", "<html/>").toFile());
+    void path() {
+        XML xml = I.xml(room.locateFile("temp", "<html/>"));
         assert xml.size() == 1;
         assert xml.name() == "html";
     }
@@ -73,7 +73,7 @@ class ReadTest {
     @Test
     void inputNull() {
         assertThrows(NullPointerException.class, () -> {
-            I.xml((File) null);
+            I.xml((Path) null);
         });
     }
 
