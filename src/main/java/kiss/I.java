@@ -938,18 +938,7 @@ public class I {
     }
 
     /**
-     * <p>
      * Parse the specified JSON format text.
-     * </p>
-     * <ul>
-     * <li>{@link JSON}</li>
-     * <li>{@link File}</li>
-     * <li>{@link InputStream}</li>
-     * <li>{@link Readable}</li>
-     * <li>{@link URL}</li>
-     * <li>{@link URI}</li>
-     * <li>{@link CharSequence}</li>
-     * </ul>
      * 
      * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
      *            The empty or invalid format data will throw {@link IllegalStateException}.
@@ -2090,20 +2079,24 @@ public class I {
     }
 
     /**
-     * Parse the input and build {@link XML}.
+     * Parse the specified XML format text.
      *
      * @param input Text of xml representation.
      * @return A constructed {@link XML}.
+     * @throws NullPointerException If the input data is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static XML xml(String input) {
         return I.xml(null, input);
     }
 
     /**
-     * Parse the input and build {@link XML}.
+     * Parse the specified XML format text.
      *
      * @param input Path to the XML file.
      * @return A constructed {@link XML}.
+     * @throws NullPointerException If the input data is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static XML xml(Path input) {
         try {
@@ -2114,10 +2107,12 @@ public class I {
     }
 
     /**
-     * Parse the input and build {@link XML}.
+     * Parse the specified XML format text.
      *
      * @param input Text stream of xml representation.
      * @return A constructed {@link XML}.
+     * @throws NullPointerException If the input data is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static XML xml(InputStream input) {
         try {
@@ -2128,10 +2123,12 @@ public class I {
     }
 
     /**
-     * Parse the input and build {@link XML}.
+     * Parse the specified XML format text.
      *
      * @param input Text stream of xml representation.
      * @return A constructed {@link XML}.
+     * @throws NullPointerException If the input data is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static XML xml(Reader input) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -2140,17 +2137,18 @@ public class I {
     }
 
     /**
-     * Parse the input and build {@link XML}.
+     * Parse the specified XML format text.
      *
      * @param input A xml expression.
      * @return A constructed {@link XML}.
+     * @throws NullPointerException If the input data is <code>null</code>.
      */
     public static XML xml(Node input) {
         return I.xml(null, input);
     }
 
     /**
-     * Parse the input and build {@link XML}.
+     * Parse the specified XML format text.
      *
      * @param xml A xml expression.
      * @return A constructed {@link XML}.
