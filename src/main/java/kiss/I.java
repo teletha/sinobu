@@ -2090,67 +2090,67 @@ public class I {
     }
 
     /**
-     * Parse as xml fragment.
+     * Parse the input and build {@link XML}.
      *
-     * @param source A xml expression.
+     * @param input Text of xml representation.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(Path source) {
+    public static XML xml(String input) {
+        return I.xml(null, input);
+    }
+
+    /**
+     * Parse the input and build {@link XML}.
+     *
+     * @param input Path to the XML file.
+     * @return A constructed {@link XML}.
+     */
+    public static XML xml(Path input) {
         try {
-            return xml(null, Files.readAllBytes(source));
+            return xml(null, Files.readAllBytes(input));
         } catch (Exception e) {
             throw I.quiet(e);
         }
     }
 
     /**
-     * Parse as xml fragment.
+     * Parse the input and build {@link XML}.
      *
-     * @param source A xml expression.
+     * @param input Text stream of xml representation.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(InputStream source) {
+    public static XML xml(InputStream input) {
         try {
-            return xml(null, source.readAllBytes());
+            return xml(null, input.readAllBytes());
         } catch (Exception e) {
             throw I.quiet(e);
         }
     }
 
     /**
-     * Parse as xml fragment.
+     * Parse the input and build {@link XML}.
      *
-     * @param source A xml expression.
+     * @param input Text stream of xml representation.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(Reader source) {
+    public static XML xml(Reader input) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        copy(source, new OutputStreamWriter(out, StandardCharsets.UTF_8), true);
+        copy(input, new OutputStreamWriter(out, StandardCharsets.UTF_8), true);
         return I.xml(null, out.toByteArray());
     }
 
     /**
-     * Parse as xml fragment.
+     * Parse the input and build {@link XML}.
      *
-     * @param source A xml expression.
+     * @param input A xml expression.
      * @return A constructed {@link XML}.
      */
-    public static XML xml(Node source) {
-        return I.xml(null, source);
+    public static XML xml(Node input) {
+        return I.xml(null, input);
     }
 
     /**
-     * Parse as xml fragment.
-     *
-     * @param source A xml expression.
-     * @return A constructed {@link XML}.
-     */
-    public static XML xml(String source) {
-        return I.xml(null, source);
-    }
-
-    /**
-     * Parse as xml fragment.
+     * Parse the input and build {@link XML}.
      *
      * @param xml A xml expression.
      * @return A constructed {@link XML}.
@@ -2165,14 +2165,7 @@ public class I {
             }
 
             // byte data types
-            byte[] bytes;
-
-            if (xml instanceof String) {
-                bytes = ((String) xml).getBytes(StandardCharsets.UTF_8);
-            } else {
-                bytes = (byte[]) xml;
-            }
-
+            byte[] bytes = xml instanceof String ? ((String) xml).getBytes(StandardCharsets.UTF_8) : (byte[]) xml;
             if (6 < bytes.length && bytes[0] == '<') {
                 // doctype declaration (starts with <! )
                 // root element is html (starts with <html> )
