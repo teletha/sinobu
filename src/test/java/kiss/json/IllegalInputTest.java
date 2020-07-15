@@ -53,11 +53,6 @@ class IllegalInputTest {
     }
 
     @Test
-    void readNullReadable() {
-        assertThrows(NullPointerException.class, () -> I.json((Readable) null));
-    }
-
-    @Test
     void readToIncompatibleType() {
         Locale locale = I.json("{\"age\":\"15\"}").as(Locale.class);
         assert locale instanceof Locale;

@@ -9,7 +9,6 @@
  */
 package kiss;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -904,10 +904,9 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(String input) {
-        // Don't use #read(Object).
-        // Since general purpose reader goes through the byte array once, it is considerably
-        // slower, so when reading from JSON format text, Reader is generated directly as an
-        // optimization.
+        // Don't use #json(Reader).
+        // StringReader does not require calls to close methods and other methods, so it is
+        // optimized even as the code size increases.
         try {
             return new JSON(new StringReader(input));
         } catch (Exception e) {
@@ -925,7 +924,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(File input) {
-        return json((Object) input);
+        return json(input.toPath());
     }
 
     /**
@@ -938,7 +937,11 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(Path input) {
-        return json((Object) input);
+        try {
+            return json(Files.newBufferedReader(input));
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -951,20 +954,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(InputStream input) {
-        return json((Object) input);
-    }
-
-    /**
-     * Parse the specified JSON format text.
-     * 
-     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
-     *            The empty or invalid format data will throw {@link IllegalStateException}.
-     * @return A parsed {@link JSON}.
-     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
-     */
-    public static JSON json(Readable input) {
-        return json((Object) input);
+        return json(new InputStreamReader(input, StandardCharsets.UTF_8));
     }
 
     /**
@@ -987,16 +977,13 @@ public class I {
      * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
-    private static JSON json(Object input) {
-        InputStreamReader stream = null;
-
+    public static JSON json(Reader input) {
         try {
-            // Parse as JSON
-            return new JSON(stream = new InputStreamReader(new ByteArrayInputStream(read(input)), StandardCharsets.UTF_8));
+            return new JSON(input);
         } catch (Exception e) {
-            throw quiet(e);
+            throw I.quiet(e);
         } finally {
-            I.quiet(stream);
+            I.quiet(input);
         }
     }
 
