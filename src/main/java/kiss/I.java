@@ -1313,26 +1313,6 @@ public class I {
     }
 
     /**
-     * Create paired value {@link Consumer}.
-     *
-     * @param consumer A {@link BiConsumer} to make parameters paired.
-     * @return A paired value {@link Consumer}.
-     */
-    public static <Param1, Param2> Consumer<Ⅱ<Param1, Param2>> pair(BiConsumer<Param1, Param2> consumer) {
-        return params -> consumer.accept(params.ⅰ, params.ⅱ);
-    }
-
-    /**
-     * Create paired value {@link Function}.
-     *
-     * @param funtion A {@link BiFunction} to make parameters paired.
-     * @return A paired value {@link Function}.
-     */
-    public static <Param1, Param2, Return> Function<Ⅱ<Param1, Param2>, Return> pair(BiFunction<Param1, Param2, Return> funtion) {
-        return params -> funtion.apply(params.ⅰ, params.ⅱ);
-    }
-
-    /**
      * <p>
      * Close the specified object quietly if it is {@link AutoCloseable}. Equivalent to
      * {@link AutoCloseable#close()}, except any exceptions will be ignored. This is typically used
