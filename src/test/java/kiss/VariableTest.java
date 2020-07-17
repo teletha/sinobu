@@ -46,25 +46,6 @@ class VariableTest {
     }
 
     @Test
-    void ofSupplier() {
-        Variable<String> var = Variable.of(() -> "A");
-        assert var != null;
-        assert var.v != null;
-        assert var.v.equals("A");
-
-        var = Variable.of(() -> null);
-        assert var != null;
-        assert var.v == null;
-    }
-
-    @Test
-    void ofNullSupplier() {
-        Variable<String> var = Variable.of((Supplier) null);
-        assert var != null;
-        assert var.v == null;
-    }
-
-    @Test
     void emptyIsNotSingleton() {
         Variable<String> e1 = Variable.empty();
         Variable<String> e2 = Variable.empty();

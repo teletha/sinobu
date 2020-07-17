@@ -353,7 +353,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A previous value.
      */
     public final V set(Supplier<V> value) {
-        return set(of(value).v);
+        return set(value == null ? null : value.get());
     }
 
     /**
@@ -433,18 +433,6 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     public static <T> Variable<T> of(T value) {
         return new Variable(value);
-    }
-
-    /**
-     * <p>
-     * Create {@link Variable} with the specified value.
-     * </p>
-     *
-     * @param value An actual value, <code>null</code> will be acceptable.
-     * @return A created {@link Variable}.
-     */
-    public static <T> Variable<T> of(Supplier<T> value) {
-        return of(value == null ? null : value.get());
     }
 
     /**
