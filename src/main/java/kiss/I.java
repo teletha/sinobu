@@ -197,10 +197,10 @@ public class I {
 
     /** The parallel task scheduler. */
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8, run -> {
-        Thread thread = new Thread(run);
-        thread.setName("Sinobu Scheduler");
-        thread.setDaemon(true);
-        return thread;
+        Thread t = new Thread(run);
+        t.setName("Sinobu Scheduler");
+        t.setDaemon(true);
+        return t;
     });
 
     /** The list of built-in primitive and wrapper classes. */
