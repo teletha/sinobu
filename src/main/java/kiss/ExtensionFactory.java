@@ -10,14 +10,14 @@
 package kiss;
 
 /**
- * @version 2016/08/01 22:39:25
+ * This is an extension point to dynamically create and retrieve an extension corresponding to a
+ * given extension key at the associated extension point.
  */
 public interface ExtensionFactory<E extends Extensible> extends Extensible {
 
     /**
-     * <p>
-     * Create the extension by the specified key.
-     * </p>
+     * Gets the extension corresponding to the given extension key at the associated extension
+     * point.
      * 
      * @param key An extension key.
      * @return A created extension.

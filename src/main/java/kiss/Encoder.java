@@ -10,13 +10,10 @@
 package kiss;
 
 /**
- * <p>
  * Codec for interconversion of object and {@link String}.
- * </p>
  * <p>
  * This class provides all-purpose codec for literalization and provids the default encoder which
  * uses {@link String#valueOf(Object)}.
- * </p>
  *
  * @param <M> A model class to decode and encode.
  * @see Decoder
@@ -24,9 +21,7 @@ package kiss;
 public interface Encoder<M> extends Extensible {
 
     /**
-     * <p>
      * Encode the model object to {@link String}.
-     * </p>
      * 
      * @param value A model object to encode.
      * @return A encoded {@link String} representation.

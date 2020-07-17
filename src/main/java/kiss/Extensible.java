@@ -34,7 +34,7 @@ package kiss;
  * }
  * 
  * class ThisIsAlsoExtensionPoint implements Extensible {
- *     // At once Extension Point and Extension.
+ *     // This is both Extension Point and Extension.
  * }
  * </pre>
  * <h2 id="Extension">What is Extension?</h2>
@@ -48,7 +48,7 @@ package kiss;
  * </ul>
  * <pre>
  * class ThisIsExtension implements Extensible {
- *     // At once Extension Point and Extension.
+ *     // This is both Extension Point and Extension.
  * }
  * 
  * class ThisIsAlsoExtension extends ThisIsExtension {
@@ -58,7 +58,7 @@ package kiss;
  * class ThisIsNotExtension extends ThisIsExtension {
  * 
  *     public ThisIsNotExtension(NotInjectable object) {
- *         // invalid constructor
+ *         // because of invalid constructor
  *     }
  * }
  * </pre>

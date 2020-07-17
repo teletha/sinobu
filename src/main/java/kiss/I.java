@@ -171,8 +171,7 @@ public class I {
     // zip zoom zone
 
     /** No Operation */
-    public static final WiseRunnable NoOP = () -> {
-    };
+    public static final WiseRunnable NoOP = new Subscriber()::vandalize;
 
     /** The default language in this vm environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
@@ -2016,8 +2015,6 @@ public class I {
      *            throw {@link java.lang.NullPointerException}.
      * @return A JSON representation of Java object.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
-     * @see #read(Readable, Object)
-     * @see #read(CharSequence, Object)
      */
     public static String write(Object input) {
         StringBuilder output = new StringBuilder();
@@ -2039,8 +2036,6 @@ public class I {
      * @param out A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
-     * @see #read(Readable, Object)
-     * @see #read(CharSequence, Object)
      */
     public static void write(Object input, Appendable out) {
         Objects.requireNonNull(out);
@@ -2051,7 +2046,7 @@ public class I {
             new JSON(out).write(model, new Property(model, "", null), input);
         } finally {
             // close carefuly
-            quiet(out);
+            I.quiet(out);
         }
     }
 
@@ -2109,7 +2104,7 @@ public class I {
      */
     public static XML xml(Reader input) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        copy(input, new OutputStreamWriter(out, StandardCharsets.UTF_8), true);
+        I.copy(input, new OutputStreamWriter(out, StandardCharsets.UTF_8), true);
         return I.xml(null, out.toByteArray());
     }
 
@@ -2158,7 +2153,7 @@ public class I {
                 return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
             }
         } catch (Exception e) {
-            throw quiet(e);
+            throw I.quiet(e);
         }
     }
 }
