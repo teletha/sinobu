@@ -203,13 +203,10 @@ public class I {
         return thread;
     });
 
-    /** The list of primitive classes. (except for void type) */
-    private static final Class[] primitives = {boolean.class, int.class, long.class, float.class, double.class, byte.class, short.class,
-            char.class, void.class};
-
-    /** The list of wrapper classes. (except for void type) */
-    private static final Class[] wrappers = {Boolean.class, Integer.class, Long.class, Float.class, Double.class, Byte.class, Short.class,
-            Character.class, Void.class};
+    /** The list of built-in primitive and wrapper classes. */
+    private static final Class[] types = {boolean.class, int.class, long.class, float.class, double.class, char.class, byte.class,
+            short.class, void.class, Boolean.class, Integer.class, Long.class, Float.class, Double.class, Character.class, Byte.class,
+            Short.class, Void.class};
 
     /** XML literal pattern. */
     private static final Pattern xmlLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
@@ -1781,9 +1778,9 @@ public class I {
      */
     public static Class type(String fqcn) {
         if (fqcn.indexOf('.') == -1) {
-            for (Class clazz : primitives) {
-                if (clazz.getName().equals(fqcn)) {
-                    return clazz;
+            for (int i = 0; i < 9; i++) {
+                if (types[i].getName().equals(fqcn)) {
+                    return types[i];
                 }
             }
         }
@@ -2001,9 +1998,9 @@ public class I {
 
         if (type.isPrimitive()) {
             // check primitive classes
-            for (int i = 0; i < primitives.length; i++) {
-                if (primitives[i] == type) {
-                    return wrappers[i];
+            for (int i = 0; i < 9; i++) {
+                if (types[i] == type) {
+                    return types[i + 9];
                 }
             }
         }
