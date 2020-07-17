@@ -15,33 +15,15 @@ import java.util.function.Supplier;
 public interface WiseSupplier<Return> extends Supplier<Return>, Callable<Return>, Wise {
 
     /**
-     * <p>
-     * Internal API.
-     * </p>
-     * 
-     * @return A proxy result.
-     * @throws Throwable A sneaky exception for lambda.
-     */
-    Return GET() throws Throwable;
-
-    /**
      * {@inheritDoc}
      */
     @Override
     default Return get() {
         try {
-            return GET();
+            return call();
         } catch (Throwable e) {
             throw I.quiet(e);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default Return call() throws Exception {
-        return get();
     }
 
     /**

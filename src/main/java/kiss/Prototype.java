@@ -54,7 +54,7 @@ public class Prototype<M> implements Lifestyle<M> {
      * @see kiss.Lifestyle#get()
      */
     @Override
-    public M GET() throws Throwable {
+    public M call() throws Exception {
         Class[] types = constructor.getParameterTypes();
 
         // constructor injection
