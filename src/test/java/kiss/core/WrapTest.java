@@ -13,13 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/09/13 10:29:24
- */
-public class WrapTest {
+class WrapTest {
 
     @Test
-    public void wrapPrimitives() {
+    void wrapPrimitives() {
         assert Integer.class == I.wrap(int.class);
         assert Long.class == I.wrap(long.class);
         assert Float.class == I.wrap(float.class);
@@ -32,12 +29,21 @@ public class WrapTest {
     }
 
     @Test
-    public void wrapClass() {
+    void wrapClass() {
         assert String.class == I.wrap(String.class);
     }
 
     @Test
-    public void wrapNull() {
+    void wrapArrayClass() {
+        assert int[].class == I.wrap(int[].class);
+        assert long[].class == I.wrap(long[].class);
+        assert boolean[].class == I.wrap(boolean[].class);
+        assert String[].class == I.wrap(String[].class);
+        assert String[][].class == I.wrap(String[][].class);
+    }
+
+    @Test
+    void wrapNull() {
         assert Object.class == I.wrap(null);
     }
 }
