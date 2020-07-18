@@ -13,6 +13,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -20,6 +21,17 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+/**
+ * A reassignable container object which may or may not contain a non-null value. If a value is
+ * present, {@link #isPresent()} returns true. If no value is present, the object is considered
+ * empty and {@link #isPresent()} returns false. Unlike {@link Optional}, this container is
+ * reassignable.
+ * <p>
+ * Additional methods that depend on the presence or absence of a contained value are provided, such
+ * as {@link #or(Object)} (returns a default value if no value is present) and {@link #to(Consumer)}
+ * (performs an action if a value is present).
+ * <p>
+ */
 public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The modifier base. */
@@ -124,9 +136,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Test whether the current value is equal to the specified value or not.
-     * </p>
      * 
      * @param value A value to check the equality.
      * @return A result of equality.
@@ -136,9 +146,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Test whether the current value fulfills the specified condition or not.
-     * </p>
      * 
      * @param value A value to check the equality.
      * @return A result of equality.
@@ -148,9 +156,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Test whether the current value is NOT equal to the specified value or not.
-     * </p>
      * 
      * @param value A value to check the equality.
      * @return A result of equality.
@@ -160,9 +166,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Test whether the current value does NOT fulfill the specified condition or not.
-     * </p>
      * 
      * @param value A value to check the equality.
      * @return A result of equality.
@@ -209,9 +213,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Perform the specified action if the value is present.
-     * </p>
      *
      * @param action An action to perform.
      * @return The computed {@link Variable}.
@@ -221,9 +223,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Perform the specified action if the value is present.
-     * </p>
      *
      * @param then An action to perform.
      * @return The computed {@link Variable}.
@@ -314,9 +314,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Assign the new value.
-     * </p>
      *
      * @param value A value to assign.
      * @return A previous value.
@@ -345,9 +343,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Assign the new value.
-     * </p>
      *
      * @param value A value generator.
      * @return A previous value.
@@ -357,9 +353,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Assign the new value.
-     * </p>
      *
      * @param value A value generator.
      * @return A previous value.
@@ -369,9 +363,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * <p>
      * Execute the specified action if the value is present.
-     * </p>
      * 
      * @param some A user action.
      */
